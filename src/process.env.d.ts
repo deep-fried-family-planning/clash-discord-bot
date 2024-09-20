@@ -6,6 +6,8 @@ declare namespace NodeJS {
         SQS_POLL       : string;
         SQS_APP_DISCORD: string;
 
+        DDB_SERVER: string;
+
         AWS_LAMBDA_FUNCTION_NAME  : string;
         AWS_REGION                : string;
         AWS_LAMBDA_LOG_GROUP_NAME : string;
