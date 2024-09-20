@@ -26,7 +26,7 @@ export const oneofus = buildCommand(COMMANDS.ONE_OF_US, async (body) => {
 
     return [{
         desc: [
-            'test',
+            'player tag successfully linked',
         ],
     }];
 });
