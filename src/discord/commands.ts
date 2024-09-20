@@ -22,6 +22,13 @@ export const COMMANDS = {
         ],
     },
 
+    FAQ: {
+        type       : ApplicationCommandType.ChatInput,
+        name       : 'faq',
+        description: 'DFFP Frequently Asked Questions (FAQ) page',
+        options    : [],
+    },
+
     ONE_OF_US: {
         type       : ApplicationCommandType.ChatInput,
         name       : 'oneofus',
