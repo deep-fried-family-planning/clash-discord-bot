@@ -1,5 +1,5 @@
-import {ApplicationCommandOptionType, type RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
-import {ApplicationCommandType} from 'discord-api-types/v10';
+import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
+import {ApplicationCommandOptionType, ApplicationCommandType} from 'discord-api-types/v10';
 import {
     OPTION_CLAN,
     OPTION_EXHAUSTIVE,
@@ -13,13 +13,28 @@ import {
 export type CommandConfig = typeof COMMANDS[keyof typeof COMMANDS];
 
 export const COMMANDS = {
-    TEST_DFFP: {
+    CONFIG: {
+        name       : 'config',
         type       : ApplicationCommandType.ChatInput,
-        name       : 'test-dffp',
-        description: 'WIP - try it out if curious in the meantime tho!',
-        options    : [
-
-        ],
+        description: 'configure DeepFryer',
+        options    : [{
+            name       : 'server',
+            type       : ApplicationCommandOptionType.SubcommandGroup,
+            description: 'configure DeepFryer for your server',
+            options    : [{
+                name       : 'add',
+                type       : ApplicationCommandOptionType.Subcommand,
+                description: 'add your server',
+            }, {
+                name       : 'edit',
+                type       : ApplicationCommandOptionType.Subcommand,
+                description: 'edit server configuration',
+            }, {
+                name       : 'remove',
+                type       : ApplicationCommandOptionType.Subcommand,
+                description: 'remove your server',
+            }],
+        }],
     },
 
     FAQ: {

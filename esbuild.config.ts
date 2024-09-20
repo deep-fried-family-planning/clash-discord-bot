@@ -18,14 +18,20 @@ export default {
 
     format      : 'esm',
     outExtension: {'.js': '.mjs'},
+    mainFields  : ['module', 'main'],
 
     bundle           : true,
-    external         : ['@aws-sdk/*', 'node:*'],
+    external         : ['@aws-sdk/*'],
     treeShaking      : true,
     minifySyntax     : true,
     minifyIdentifiers: true,
     minifyWhitespace : true,
-    sourcemap        : 'linked',
-    sourcesContent   : false,
+
+    banner: {
+        js: 'import { createRequire } from \'module\'; const require = createRequire(import.meta.url);',
+    },
+
+    sourcemap     : 'linked',
+    sourcesContent: false,
 
 } satisfies BuildOptions;
