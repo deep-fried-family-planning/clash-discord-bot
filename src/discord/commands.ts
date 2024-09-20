@@ -1,6 +1,14 @@
+import {ApplicationCommandOptionType, type RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
 import {ApplicationCommandType} from 'discord-api-types/v10';
-import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LATEST_PLAYER_INFO, OPTION_LIMIT, OPTION_NSHOW, OPTION_TO} from '#src/discord/commands-options.ts';
+import {
+    OPTION_CLAN,
+    OPTION_EXHAUSTIVE,
+    OPTION_FROM,
+    OPTION_LATEST_PLAYER_INFO,
+    OPTION_LIMIT,
+    OPTION_NSHOW,
+    OPTION_TO,
+} from '#src/discord/commands-options.ts';
 
 export type CommandConfig = typeof COMMANDS[keyof typeof COMMANDS];
 
@@ -12,6 +20,23 @@ export const COMMANDS = {
         options    : [
 
         ],
+    },
+
+    ONE_OF_US: {
+        type       : ApplicationCommandType.ChatInput,
+        name       : 'oneofus',
+        description: 'link clash account to discord',
+        options    : [{
+            type       : ApplicationCommandOptionType.String,
+            name       : 'player_tag',
+            description: 'tag for player in-game (ex. #2GR2G0PGG)',
+            required   : true,
+        }, {
+            type       : ApplicationCommandOptionType.User,
+            name       : 'discord_user',
+            description: 'discord user account to link player tag',
+            required   : true,
+        }],
     },
 
     CWL_SCOUT: {
