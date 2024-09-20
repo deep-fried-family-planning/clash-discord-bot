@@ -3,10 +3,17 @@ import {ddb} from '#src/data/api/aws-ddb.ts';
 
 type ServerId = Snowflake;
 type UserId = Snowflake;
+type RoleId = Snowflake;
 type PlayerTag = string;
 
 export type ServerRecord = {
     id: ServerId;
+
+    roles: {
+        admin: RoleId;
+    };
+
+    custom_roles: {[k in string]: RoleId};
 
     links: {[k in PlayerTag]: UserId};
 };

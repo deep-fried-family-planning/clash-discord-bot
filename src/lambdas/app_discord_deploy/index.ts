@@ -19,6 +19,17 @@ const COMMAND_CONFIG = pipe(COMMANDS, toArray) satisfies [string, RESTPostAPIApp
 export const handler = async () => {
     const discord_app_id = await getSecret(DISCORD_APP_ID);
 
+    const allNames = COMMAND_CONFIG.map(([,c]) => c.name);
+    const current = await discord.applicationCommands.getGlobalCommands(discord_app_id);
+
+    for (const cmd of current) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if (!allNames.includes(cmd.name)) {
+            await discord.applicationCommands.deleteGlobalCommand(discord_app_id, cmd.id);
+        }
+    }
+
     for (const [, cmd] of COMMAND_CONFIG) {
         await discord.applicationCommands.createGlobalCommand(discord_app_id, cmd);
     }
