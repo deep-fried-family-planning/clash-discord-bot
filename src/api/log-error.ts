@@ -15,6 +15,13 @@ export const logError = async (error: Error) => {
 
     console.error(error);
 
+    const cloudWatchUrl = `https://${process.env.AWS_REGION}.console.aws.amazon.com/cloudwatch/home?`
+        + `region=${process.env.AWS_REGION}`
+        + `#logsV2:log-groups/log-group/`
+        + encodeURIComponent(process.env.AWS_LAMBDA_LOG_GROUP_NAME)
+        + '/log-events/'
+        + encodeURIComponent(process.env.AWS_LAMBDA_LOG_STREAM_NAME);
+
     await errorCall({
         path    : '',
         method  : 'POST',
@@ -22,23 +29,16 @@ export const logError = async (error: Error) => {
             embeds: [{
                 title      : process.env.AWS_LAMBDA_FUNCTION_NAME,
                 description: dLines([
-                    process.env.AWS_LAMBDA_LOG_GROUP_NAME,
-                    process.env.AWS_LAMBDA_LOG_STREAM_NAME,
-                ]).join(''),
-                color: EMBED_COLOR,
-            }, {
-                description: dLines([
                     error.name,
                     error.message,
+                    '',
+                    process.env.AWS_LAMBDA_LOG_GROUP_NAME,
+                    process.env.AWS_LAMBDA_LOG_STREAM_NAME,
+                    '',
+                    cloudWatchUrl,
                 ]).join(''),
                 color: EMBED_COLOR,
-            }, {
-                description: error.stack,
-                color      : EMBED_COLOR,
-            }, error.cause && {
-                description: error.cause,
-                color      : EMBED_COLOR,
-            }].filter(Boolean),
+            }],
         },
     });
 };
