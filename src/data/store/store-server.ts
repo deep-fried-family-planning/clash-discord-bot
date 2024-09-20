@@ -11,7 +11,7 @@ export type ServerRecord = {
     links: {[k in PlayerTag]: UserId};
 };
 
-export const putServerRecord = async (serverId: ServerId, serverRecord: ServerRecord) => {
+export const putServerRecord = async (serverRecord: ServerRecord) => {
     await ddb.put({
         TableName: process.env.DDB_SERVER,
         Item     : serverRecord,
@@ -20,7 +20,7 @@ export const putServerRecord = async (serverId: ServerId, serverRecord: ServerRe
 
 export const getServerRecord = async (serverId: ServerId) => {
     const record = await ddb.get({
-        TableName: process.env.DDB_TABLE_NAME,
+        TableName: process.env.DDB_SERVER,
         Key      : {
             id: serverId,
         },

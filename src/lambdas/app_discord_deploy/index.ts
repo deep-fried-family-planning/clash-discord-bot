@@ -7,6 +7,7 @@ import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10
 import {COMMANDS} from '#src/discord/commands.ts';
 import {authDiscord} from '#src/discord/api/auth-discord.ts';
 import {DISCORD_APP_ID, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_PUBLIC_KEY} from '#src/constants-secrets.ts';
+import type {num} from '#src/data/types-pure.ts';
 
 /**
  * @init
@@ -22,6 +23,12 @@ const COMMAND_CONFIG = pipe(
     reduce([] as RESTPostAPIApplicationCommandsJSONBody[], (acc, [, cmd]) => [...acc, cmd]),
 ) satisfies RESTPostAPIApplicationCommandsJSONBody[];
 
+const wait = async (ms: num) => new Promise((resolve) => {
+    setTimeout(() => {
+        resolve('');
+    }, ms);
+});
+
 /**
  * @invoke
  */
@@ -33,6 +40,7 @@ export const handler = async () => {
     );
 
     for (const cmd of COMMAND_CONFIG) {
+        await wait(5000);
         await callDiscord({
             method  : 'POST',
             path    : `/applications/${discord_app_id}/commands`,
