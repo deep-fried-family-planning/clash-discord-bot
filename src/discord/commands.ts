@@ -1,4 +1,4 @@
-import type {CommandSpec} from '#src/discord/types.ts';
+import type {CommandData, CommandSpec} from '#src/discord/types.ts';
 import {FAQ} from '#src/discord/commands/faq.cmd.ts';
 import {ONE_OF_US} from '#src/discord/commands/oneofus.cmd.ts';
 import {CWL_SCOUT} from '#src/discord/commands/cwl-scout.cmd.ts';
@@ -18,3 +18,5 @@ export const COMMANDS = {
     WAR_OPPONENT,
     WAR_SCOUT,
 } as const satisfies {[k in string]: CommandSpec};
+
+export type CommandBody = CommandData<typeof COMMANDS[keyof typeof COMMANDS]>;

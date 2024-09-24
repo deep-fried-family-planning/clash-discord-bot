@@ -1,3 +1,3 @@
 import {Client} from 'clashofclans.js';
 
-export const api_coc = new Client();
+export const api_coc = new Client({baseURL: 'https://cocproxy.royaleapi.dev'});

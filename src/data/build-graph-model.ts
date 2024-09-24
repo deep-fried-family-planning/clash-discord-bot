@@ -10,9 +10,14 @@ import {filterL, mapL} from '#src/data/pure-list.ts';
 import {findFirst} from 'fp-ts/Array';
 import {toUndefined} from 'fp-ts/Option';
 import {sortMapPosition} from '#src/data/api/api-coc.ts';
+import {notFound} from '@hapi/boom';
 
 export const buildGraphModel = async (ops: SharedOptions) => {
     const entities = await fetchWarEntities(ops);
+
+    if (!entities.currentWar.length) {
+        throw notFound('no current war found');
+    }
 
     const cids = pipe(entities.current.clans, mapL((c) => c.tag));
     const previousWars = await callCkWarsByClan(cids, ops.limit);

@@ -32,14 +32,16 @@ export const cwlScout = specCommand<typeof COMMANDS.CWL_SCOUT>(async (body) => {
 
     const n_samples = describeSamples(graph.model);
 
-    return [{
-        desc: dLines([
-            dHdr1(`${graph.clan.name} CWL Scouting`),
-            '',
-            dBold('entity sample size'),
-            pipe(n_samples, toEntries, mapL(([k, v]) => [k, nNatr(v)]), dTable, mapL(dCode)),
-        ].flat()),
-    }, ...scouts.map((s) => ({
-        desc: messageEmbedScout(s),
-    }))];
+    return {
+        embeds: [{
+            description: dLines([
+                dHdr1(`${graph.clan.name} CWL Scouting`),
+                '',
+                dBold('entity sample size'),
+                pipe(n_samples, toEntries, mapL(([k, v]) => [k, nNatr(v)]), dTable, mapL(dCode)),
+            ].flat()).join(''),
+        }, ...scouts.map((s) => ({
+            description: messageEmbedScout(s).join(''),
+        }))],
+    };
 });

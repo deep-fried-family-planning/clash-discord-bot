@@ -25,7 +25,7 @@ export type SharedOptions = {
 
 export const getSharedOptions = (body: Any): SharedOptions => ({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
-    cid1       : getAliasTag(body.data.options.clan),
+    cid1       : getAliasTag(body.data.options.clan.value),
     limit      : getLimit(body),
     from       : getFrom(body),
     to         : getTo(body),

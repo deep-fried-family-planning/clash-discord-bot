@@ -19,9 +19,11 @@ export const configServerAdd = specCommand<typeof CONFIG_SERVER_ADD>(async (body
         },
     });
 
-    return [{
-        desc: [
-            `server ${server.id} added successfully with admin role: <@&${server.roles.admin}>`,
-        ],
-    }];
+    return {
+        embeds: [{
+            description: [
+                `server ${server.id} added successfully with admin role: <@&${server.roles.admin}>`,
+            ].join(''),
+        }],
+    };
 });

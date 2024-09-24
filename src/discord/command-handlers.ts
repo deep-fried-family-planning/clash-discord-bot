@@ -18,14 +18,21 @@ import {cmdName} from '#src/discord/command-pipeline/cmd-name.ts';
 import type {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {CONFIG_SERVER_EDIT} from '#src/discord/commands/config/server/server-edit.cmd.ts';
 import {configServerEdit} from '#src/discord/commands/config/server/server-edit.ts';
+import {BOT} from '#src/discord/commands/bot/bot.cmd.ts';
+import {BOT_ABOUT} from '#src/discord/commands/bot/bot-about.cmd.ts';
+import {BOT_GETTING_STARTED} from '#src/discord/commands/bot/bot-getting-started.cmd.ts';
+import {botGettingStarted} from '#src/discord/commands/bot/bot-getting-started.ts';
+import {botAbout} from '#src/discord/commands/bot/bot-about.ts';
 
 export const COMMAND_HANDLERS = {
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)] : configServerAdd,
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]: configServerEdit,
-    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]          : oneofus,
-    [cmdName(FAQ, FAQ, FAQ)]                            : faq,
-    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]          : cwlScout,
-    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]          : warLinks,
-    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)] : warOpponent,
-    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]          : warScout,
+    [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                    : botAbout,
+    [cmdName(BOT, BOT_GETTING_STARTED, BOT_GETTING_STARTED)]: botGettingStarted,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)]     : configServerAdd,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]    : configServerEdit,
+    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]              : oneofus,
+    [cmdName(FAQ, FAQ, FAQ)]                                : faq,
+    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]              : cwlScout,
+    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]              : warLinks,
+    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)]     : warOpponent,
+    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]              : warScout,
 } as const satisfies {[key in string]: ReturnType<typeof specCommand>};
