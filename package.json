@@ -27,6 +27,7 @@
         "@aws-sdk/client-dynamodb": "3.637.0",
         "@aws-sdk/client-sqs": "3.637.0",
         "@aws-sdk/lib-dynamodb": "3.637.0",
+        "@discordjs/builders": "1.9.0",
         "@discordjs/core": "2.0.0",
         "@discordjs/rest": "2.4.0",
         "@hapi/boom": "10.0.1",

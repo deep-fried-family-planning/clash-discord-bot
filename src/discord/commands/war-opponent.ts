@@ -1,7 +1,6 @@
 import {pipe} from 'fp-ts/function';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
-import {buildCommand} from '#src/discord/types.ts';
-import {COMMANDS} from '#src/discord/commands.ts';
+import type {COMMANDS} from '#src/discord/commands.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {concatL, filterIdxL, flattenL, mapIdxL, zipL} from '#src/data/pure-list.ts';
 import {
@@ -15,8 +14,9 @@ import {
 } from '#src/discord/command-util/message.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
+import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 
-export const warOpponent = buildCommand(COMMANDS.WAR_OPPONENT, async (body) => {
+export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body) => {
     const options = getSharedOptions(body);
 
     const graph = await buildGraphModel(options);
