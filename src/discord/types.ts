@@ -60,7 +60,7 @@ export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, Sp
 
 type OptionData<T extends CommandSpec['options']>
     = T extends KV<SpecOptionBasic> ? {
-        [k in keyof T]: GetOptionData<T[k]['type']>
+        [k in keyof T]: T[k] extends {required: true} ? GetOptionData<T[k]['type']> : (GetOptionData<T[k]['type']> | undefined);
     }
     : T extends KV<SpecOptionSubCmd> ? {
         [k in keyof T]: OverrideOptions<DataSubCmd, OptionData<T[k]['options']>>

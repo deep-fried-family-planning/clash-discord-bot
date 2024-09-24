@@ -9,7 +9,7 @@ import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
 import {logError} from '#src/api/log-error.ts';
 import {COC_PASSWORD, COC_USER, DISCORD_APP_ID} from '#src/constants-secrets.ts';
 import {discord, initDiscordClient} from '#src/api/api-discord.ts';
-import {dLines} from '#src/discord/command-util/message.ts';
+import {dCode, dLines} from '#src/discord/command-util/message.ts';
 import {getHandlerKey} from '#src/discord/command-pipeline/commands-interaction.ts';
 import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
 import type {EmbedSpec} from '#src/discord/types.ts';
@@ -55,15 +55,18 @@ export const handler = async (event: AppDiscordEvent) => {
     catch (e) {
         const error = e as Error;
 
-        await logError(error);
+        const log = await logError(error);
+
+        show(log.contents);
 
         await discord.interactions.editReply(discord_app_id, body.token, {
             embeds: [{
                 title      : 'Error',
                 description: dLines([
-                    `something went wrong. show this to ryan:`,
-                    `\`log group:\` ${process.env.AWS_LAMBDA_LOG_GROUP_NAME}`,
-                    `\`instance: \` ${process.env.AWS_LAMBDA_LOG_STREAM_NAME}`,
+                    error.message,
+                    '',
+                    `send this link to <@644290645350940692> (${dCode('yourguyryry')}) for debugging:`,
+                    `<https://discord.com/channels/1283847240061947964/${log.contents.channel_id}/${log.contents.id}>`,
                 ]).join(''),
                 color: EMBED_COLOR,
             }],

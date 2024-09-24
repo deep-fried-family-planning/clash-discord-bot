@@ -1,13 +1,21 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {dLines} from '#src/discord/command-util/message.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
+import {getServerReject} from '#src/data-store/server/get-server.ts';
+import {notFound} from '@hapi/boom';
 
-export const faq = specCommand<typeof COMMANDS.FAQ>(async () => {
+export const faq = specCommand<typeof COMMANDS.FAQ>(async (body) => {
+    const server = await getServerReject(body.guild_id!);
+
+    if (!server.urls.faq) {
+        throw notFound('faq_url is not set for this server');
+    }
+
     return [{
         desc: dLines([
-            'Open this link to find answers to frequently asked questions for DFFP:',
+            'Open this link to find answers to frequently asked questions:',
             '',
-            'https://github.com/deep-fried-family-planning/clash-discord-bot-assets/wiki/FAQ',
+            server.urls.faq,
         ]),
     }];
 });

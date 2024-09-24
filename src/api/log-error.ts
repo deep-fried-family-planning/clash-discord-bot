@@ -7,7 +7,7 @@ import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
 let url = '';
 let errorCall: ReturnType<typeof bindApiCall>;
 
-export const logError = async (error: Error) => {
+export const logError = async (error: Error): Promise<{contents: {channel_id: string; id: string}}> => {
     if (url === '') {
         url = await getSecret(DISCORD_ERROR_URL);
         errorCall = bindApiCall(url);
@@ -22,7 +22,7 @@ export const logError = async (error: Error) => {
         + '/log-events/'
         + encodeURIComponent(process.env.AWS_LAMBDA_LOG_STREAM_NAME);
 
-    await errorCall({
+    return await errorCall({
         path    : '',
         method  : 'POST',
         jsonBody: {
@@ -39,6 +39,9 @@ export const logError = async (error: Error) => {
                 ]).join(''),
                 color: EMBED_COLOR,
             }],
+        },
+        query: {
+            wait: true,
         },
     });
 };

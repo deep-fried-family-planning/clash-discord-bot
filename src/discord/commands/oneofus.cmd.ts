@@ -12,11 +12,16 @@ export const ONE_OF_US = {
             description: 'tag for player in-game (ex. #2GR2G0PGG)',
             required   : true,
         },
+        api_token: {
+            type       : ApplicationCommandOptionType.String,
+            name       : 'api_token',
+            description: 'player api token from in-game settings',
+            required   : true,
+        },
         discord_user: {
             type       : ApplicationCommandOptionType.User,
             name       : 'discord_user',
-            description: 'discord user account to link player tag',
-            required   : true,
+            description: '[admin_role] discord user account to link player tag',
         },
     },
 } as const satisfies CommandSpec;
