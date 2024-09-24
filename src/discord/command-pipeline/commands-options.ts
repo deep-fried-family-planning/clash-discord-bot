@@ -4,7 +4,7 @@ export const OPTION_CLAN = {
     clan: {
         type       : ApplicationCommandOptionType.String,
         name       : 'clan',
-        description: 'tag/alias (ex. #2GR2G0PGG, main, labs...)',
+        description: 'YOUR clan tag/alias (ex. #2GR2G0PGG, main, labs) (temp: only DFFP aliases supported)',
         required   : true,
     },
 } as const;
@@ -13,7 +13,7 @@ export const OPTION_EXHAUSTIVE = {
     exhaustive: {
         type       : ApplicationCommandOptionType.Boolean,
         name       : 'exhaustive',
-        description: 'enable creative bypass when clan war log is private',
+        description: 'try player-based bypass when enemy war log is private (warning: slow)',
     },
 } as const;
 
@@ -37,7 +37,7 @@ export const OPTION_LIMIT = {
     limit: {
         type       : ApplicationCommandOptionType.Integer,
         name       : 'limit',
-        description: 'cap # of wars ingested by internal model (ex. only 50 wars per player)',
+        description: 'liimt wars ingested by stats model (ex. only 50 wars) (warning: slow)',
     },
 } as const;
 
@@ -45,7 +45,7 @@ export const OPTION_NSHOW = {
     nshow: {
         type       : ApplicationCommandOptionType.Boolean,
         name       : 'nshow',
-        description: 'turn off n sample size display in output',
+        description: '[todo] turn off n sample size display in output',
     },
 } as const;
 
@@ -53,6 +53,6 @@ export const OPTION_LATEST_PLAYER_INFO = {
     latest: {
         type       : ApplicationCommandOptionType.Boolean,
         name       : 'latest',
-        description: 'add latest player bot-info to response (ex. hero levels)',
+        description: '[todo] add latest player bot-info to response (ex. hero levels)',
     },
 } as const;

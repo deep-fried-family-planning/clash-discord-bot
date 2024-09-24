@@ -11,11 +11,13 @@ export const faq = specCommand<typeof COMMANDS.FAQ>(async (body) => {
         throw notFound('faq_url is not set for this server');
     }
 
-    return [{
-        desc: dLines([
-            'Open this link to find answers to frequently asked questions:',
-            '',
-            server.urls.faq,
-        ]),
-    }];
+    return {
+        embeds: [{
+            description: dLines([
+                'Open this link to find answers to frequently asked questions:',
+                '',
+                server.urls.faq,
+            ]).join(''),
+        }],
+    };
 });

@@ -1,8 +1,9 @@
-import type {CommandData, CommandSpec, EmbedSpec, Interaction, SubCommandSpec} from '#src/discord/types.ts';
+import type {CommandData, CommandSpec, Interaction, SubCommandSpec} from '#src/discord/types.ts';
 import {pipe} from 'fp-ts/function';
 import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
 import {reduceL} from '#src/data/pure-list.ts';
 import {show} from '../../../util.ts';
+import type {APIInteractionResponseCallbackData} from 'discord-api-types/v10';
 
 const overrideNames = <T extends {name: string}>(options?: T[]): Record<string, T> =>
     options
@@ -12,7 +13,7 @@ const overrideNames = <T extends {name: string}>(options?: T[]): Record<string, 
         }))
         : {};
 
-export const specCommand = <T extends CommandSpec | SubCommandSpec>(fn: (body: CommandData<T>) => Promise<EmbedSpec[]>) => {
+export const specCommand = <T extends CommandSpec | SubCommandSpec>(fn: (body: CommandData<T>) => Promise<APIInteractionResponseCallbackData>) => {
     return async (body: Interaction) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error

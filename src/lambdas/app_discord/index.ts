@@ -42,15 +42,14 @@ export const handler = async (event: AppDiscordEvent) => {
 
         const handlerKey = getHandlerKey(body);
 
-        const message: EmbedSpec[] = await COMMAND_HANDLERS[handlerKey](body);
+        const message = await COMMAND_HANDLERS[handlerKey](body);
 
         await discord.interactions.editReply(discord_app_id, body.token, {
-            embeds: message.map((m) => ({
-                title      : m.title,
-                description: m.desc.join(''),
-                color      : EMBED_COLOR,
+            embeds: message.embeds!.map((m) => ({
+                ...m,
+                color: EMBED_COLOR,
             } satisfies APIEmbed)),
-        });
+        }); // https://discord.gg/KfpCtU2rwY
     }
     catch (e) {
         const error = e as Error;

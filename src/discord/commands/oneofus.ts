@@ -36,7 +36,7 @@ export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
             users   : {},
         });
 
-        return [{desc: ['links initialized for this environment, please run this command again.']}];
+        return {embeds: [{description: ['links initialized for this environment, please run this command again.'].join('')}]};
     }
 
     const user = body.data.options.discord_user?.value ?? body.user!.id;
@@ -61,11 +61,9 @@ export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
             },
         });
 
-        return [{
-            desc: [
-                `player ${tag} ${player.name} successfully linked to <@${user}> via admin override`,
-            ],
-        }];
+        return {embeds: [{
+            description: [`player ${tag} ${player.name} successfully linked to <@${user}> via admin override`].join(''),
+        }]};
     }
 
     const player = await api_coc.getPlayer(tag);
@@ -86,9 +84,11 @@ export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
         },
     });
 
-    return [{
-        desc: [
-            `player ${tag} ${player.name} successfully linked to <@${user}>`,
-        ],
-    }];
+    return {
+        embeds: [{
+            description: [
+                `player ${tag} ${player.name} successfully linked to <@${user}>`,
+            ].join(''),
+        }],
+    };
 });

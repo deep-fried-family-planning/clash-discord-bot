@@ -31,31 +31,33 @@ export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body
         filterIdxL((idx) => idx >= from - 1 && idx <= to - 1),
     );
 
-    return [{
-        desc: pipe(
-            [
-                dHdr3(`${graph.currentWar.clan.name} vs. ${graph.currentWar.opponent.name}`),
-            ],
-            concatL(pipe(
+    return {
+        embeds: [{
+            description: pipe(
                 [
-                    ['rk', 'th', ' % hr', ' % dr', 'name'],
-                    [''],
+                    dHdr3(`${graph.currentWar.clan.name} vs. ${graph.currentWar.opponent.name}`),
                 ],
                 concatL(pipe(
-                    rates,
-                    mapIdxL((idx, [p1, p2]) => [
-                        [nNatT(idx + from), nNatT(p1[0].townHallLevel), `${nPrct(p1[1][0])} n=${nNatr(p1[1][1])}`, `${nPrct(p1[2][0])} n=${nNatr(p1[2][1])}`, (p1[0].name)],
-                        ['', nNatT(p2[0].townHallLevel), `${nPrct(p2[1][0])} n=${nNatr(p2[1][1])}`, `${nPrct(p2[2][0])} n=${nNatr(p2[2][1])}`, (p2[0].name)],
+                    [
+                        ['rk', 'th', ' % hr', ' % dr', 'name'],
                         [''],
-                    ]),
-                    flattenL,
+                    ],
+                    concatL(pipe(
+                        rates,
+                        mapIdxL((idx, [p1, p2]) => [
+                            [nNatT(idx + from), nNatT(p1[0].townHallLevel), `${nPrct(p1[1][0])} n=${nNatr(p1[1][1])}`, `${nPrct(p1[2][0])} n=${nNatr(p1[2][1])}`, (p1[0].name)],
+                            ['', nNatT(p2[0].townHallLevel), `${nPrct(p2[1][0])} n=${nNatr(p2[1][1])}`, `${nPrct(p2[2][0])} n=${nNatr(p2[2][1])}`, (p2[0].name)],
+                            [''],
+                        ]),
+                        flattenL,
+                    )),
+                    dTable,
+                    mapIdxL((idx, t) => idx % 3 === 1
+                        ? dEmpL()
+                        : dSubC(t)),
                 )),
-                dTable,
-                mapIdxL((idx, t) => idx % 3 === 1
-                    ? dEmpL()
-                    : dSubC(t)),
-            )),
-            dLines,
-        ),
-    }];
+                dLines,
+            ).join(''),
+        }],
+    };
 });

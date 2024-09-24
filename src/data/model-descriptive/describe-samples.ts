@@ -3,9 +3,9 @@ import type {GraphModel} from '#src/data/pipeline/optimize-types.ts';
 
 export const describeSamples = (model: GraphModel) => {
     return {
-        hits             : sizeKV(model.hits),
-        wars             : sizeKV(model.wars),
-        clan_instances   : sizeKV(model.clans),
-        players_instances: sizeKV(model.players),
+        hits_instances  : sizeKV(model.hits),
+        wars_instances  : sizeKV(model.wars),
+        clan_instances  : sizeKV(model.clans),
+        player_instances: sizeKV(model.players),
     };
 };

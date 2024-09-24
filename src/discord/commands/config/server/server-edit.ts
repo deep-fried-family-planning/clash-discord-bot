@@ -21,11 +21,13 @@ export const configServerEdit = specCommand<typeof CONFIG_SERVER_EDIT>(async (bo
         },
     });
 
-    return [{
-        desc: [
-            `admin_role: <@&${resolved.roles.admin}>`,
-            '',
-            `faq page: ${resolved.urls.faq}`,
-        ],
-    }];
+    return {
+        embeds: [{
+            description: [
+                `admin_role: <@&${resolved.roles.admin}>`,
+                '',
+                `faq page: ${resolved.urls.faq}`,
+            ].join(''),
+        }],
+    };
 });
