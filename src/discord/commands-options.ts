@@ -40,5 +40,5 @@ export const OPTION_NSHOW = {
 export const OPTION_LATEST_PLAYER_INFO = {
     type       : ApplicationCommandOptionType.Boolean,
     name       : 'latest',
-    description: 'add latest player info to response (ex. hero levels)',
+    description: 'add latest player bot-info to response (ex. hero levels)',
 } as const;
