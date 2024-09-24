@@ -1,61 +1,84 @@
+/* eslint-disable @stylistic/indent */
 import type {
-    APIEmbed,
     APIApplicationCommandAutocompleteInteraction,
     APIApplicationCommandInteraction,
+    APIApplicationCommand,
+    APIApplicationCommandInteractionDataOption, ApplicationCommandOptionType,
+    RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIChatInputApplicationCommandsJSONBody,
+    APIApplicationCommandOption,
+    APIApplicationCommandBasicOption,
+    APIApplicationCommandSubcommandGroupOption,
+    APIApplicationCommandSubcommandOption,
+    APIApplicationCommandInteractionDataBasicOption,
+    APIChatInputApplicationCommandInteraction, APIEmbed,
 } from 'discord-api-types/v10';
-import {pipe} from 'fp-ts/function';
-import {map} from 'fp-ts/Array';
-import type {CommandConfig} from '#src/discord/commands.ts';
-import {fromEntries} from 'fp-ts/Record';
+
+// Utils
+type Override<T, K extends string, O> = Omit<T, K> & {[k in K]: O};
+export type OverrideOptions<T, O> = Omit<T, 'options'> & {options: O};
+type KV<V> = Record<string, V>;
+
+// Aliases
+
+export type Interaction = APIApplicationCommandInteraction;
 
 type DiscordInteraction =
     | APIApplicationCommandAutocompleteInteraction
     | APIApplicationCommandInteraction;
 
+type CmdGroup = ApplicationCommandOptionType.SubcommandGroup;
+type SubCmd = ApplicationCommandOptionType.Subcommand;
+
+type GetOptionData<T extends ApplicationCommandOptionType> = Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
+
+type DataOption = APIApplicationCommandInteractionDataOption;
+type DataBasic = APIApplicationCommandInteractionDataBasicOption;
+type DataSubGroup = APIApplicationCommandInteractionDataBasicOption;
+type DataSubCmd = APIApplicationCommandInteractionDataBasicOption;
+
+//
+// Spec types
+//
+
+type SpecOptionBasic = APIApplicationCommandBasicOption;
+type SpecOptionSubGroup = APIApplicationCommandSubcommandGroupOption;
+type SpecOptionSubCmd = APIApplicationCommandSubcommandOption;
+
+export type CommandSpec = OverrideOptions<RESTPostAPIChatInputApplicationCommandsJSONBody, Record<string,
+    SpecOptionBasic
+    | SubCommandSpec
+    | SubGroupSpec
+>>;
+
+export type SubGroupSpec = OverrideOptions<SpecOptionSubGroup, Record<string, SubCommandSpec>>;
+
+export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, SpecOptionBasic>>;
+
+//
+// Data
+//
+
+type OptionData<T extends CommandSpec['options']>
+    = T extends KV<SpecOptionBasic> ? {
+        [k in keyof T]: GetOptionData<T[k]['type']>
+    }
+    : T extends KV<SpecOptionSubCmd> ? {
+        [k in keyof T]: OverrideOptions<DataSubCmd, OptionData<T[k]['options']>>
+    }
+    : T extends KV<SpecOptionSubCmd> ? {
+        [k in keyof T]: OverrideOptions<DataSubGroup, OptionData<T[k]['options']>>
+    }
+    : never;
+
+export type CommandData<T extends CommandSpec | SubCommandSpec> = Override<Interaction, 'data', Interaction['data'] & OverrideOptions<Interaction['data'], OptionData<T['options']>>>;
+
+//
+// Output
+//
+
 export type EmbedSpec =
     & Omit<APIEmbed, 'description' | 'footer'>
     & {
-        desc   : string[];
-        footer?: string[];
-    };
-
-type ResolvedInput<T extends CommandConfig> =
-    & Omit<Extract<DiscordInteraction, {data: {options: unknown[]}}>, 'data'>
-    & {
-        data: Omit<Extract<DiscordInteraction, {data: {options: unknown[]}}>['data'], 'options'> & {
-            options: {
-                // [k in T['options'][number]['name']]: (Extract<T['options'], {name: k}> & {value: any})
-                [k in T['options'][number] as T['options'][number]['name']]: Extract<T['options'][number], {name: k['name']}> extends {required: true}
-                    ? string
-                    : string | undefined;
-            };
-        };
-    };
-
-export const buildCommand
-    = <
-        T extends CommandConfig,
-        R extends EmbedSpec[] = EmbedSpec[],
-    >
-    (spec: T, fn: (outer: ResolvedInput<T>) => Promise<R>) => {
-        const getOps
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call
-            = map((option) => (ops) => [option.name, ops?.filter((o) => o.name === option.name)[0]?.value])(spec.options);
-
-        return [spec.name, async (inner: DiscordInteraction) => {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-            const namedOptions = pipe(getOps, map((getter) => getter(inner.data.options)), fromEntries);
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            inner.data.options = namedOptions;
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            return await fn(inner);
-        }] as const;
-    };
+    desc   : string[];
+    footer?: string[];
+};

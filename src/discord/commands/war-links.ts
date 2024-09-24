@@ -1,5 +1,4 @@
-import {COMMANDS} from '#src/discord/commands.ts';
-import {buildCommand} from '#src/discord/types.ts';
+import type {COMMANDS} from '#src/discord/commands.ts';
 import {pipe} from 'fp-ts/function';
 import {fromCompare} from 'fp-ts/Ord';
 import {OrdN} from '#src/data/pure.ts';
@@ -9,8 +8,9 @@ import {concatL, mapIdxL, mapL, sortL} from '#src/data/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
+import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 
-export const warLinks = buildCommand(COMMANDS.WAR_LINK, async (body) => {
+export const warLinks = specCommand<typeof COMMANDS.WAR_LINKS>(async (body) => {
     const options = getSharedOptions(body);
 
     const entities = await fetchWarEntities(options);

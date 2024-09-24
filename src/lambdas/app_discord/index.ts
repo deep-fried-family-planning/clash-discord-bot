@@ -5,25 +5,18 @@ import {initDiscord} from '#src/discord/api/api-discord.ts';
 import {api_coc} from '#src/lambdas/client-api-coc.ts';
 import type {APIEmbed} from 'discord-api-types/v10';
 import {show} from '../../../util.ts';
-import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
-import {pipe} from 'fp-ts/function';
-import {reduce} from 'fp-ts/ReadonlyArray';
-import type {IDKV} from '#src/data/types.ts';
-import type {buildCommand, EmbedSpec} from '#src/discord/types.ts';
 import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
 import {logError} from '#src/api/log-error.ts';
 import {COC_PASSWORD, COC_USER, DISCORD_APP_ID} from '#src/constants-secrets.ts';
 import {discord, initDiscordClient} from '#src/api/api-discord.ts';
 import {dLines} from '#src/discord/command-util/message.ts';
+import {getHandlerKey} from '#src/discord/command-pipeline/commands-interaction.ts';
+import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
+import type {EmbedSpec} from '#src/discord/types.ts';
 
 /**
  * @init
  */
-const commands = pipe(COMMAND_HANDLERS, reduce({} as IDKV<ReturnType<typeof buildCommand>[1]>, (acc, [name, cmd]) => {
-    acc[name] = cmd;
-    return acc;
-}));
-
 await initDiscordClient();
 const discord_app_id = await getSecret(DISCORD_APP_ID);
 
@@ -47,7 +40,9 @@ export const handler = async (event: AppDiscordEvent) => {
     try {
         show(body);
 
-        const message: EmbedSpec[] = await commands[body.data.name](body);
+        const handlerKey = getHandlerKey(body);
+
+        const message: EmbedSpec[] = await COMMAND_HANDLERS[handlerKey](body);
 
         await discord.interactions.editReply(discord_app_id, body.token, {
             embeds: message.map((m) => ({

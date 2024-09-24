@@ -1,5 +1,4 @@
-import {buildCommand} from '#src/discord/types.ts';
-import {COMMANDS} from '#src/discord/commands.ts';
+import type {COMMANDS} from '#src/discord/commands.ts';
 import {pipe} from 'fp-ts/function';
 import {mapL} from '#src/data/pure-list.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
@@ -10,8 +9,9 @@ import {dTable} from '#src/discord/command-util/message-table.ts';
 import {toEntries} from 'fp-ts/Record';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
+import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 
-export const cwlScout = buildCommand(COMMANDS.CWL_SCOUT, async (body) => {
+export const cwlScout = specCommand<typeof COMMANDS.CWL_SCOUT>(async (body) => {
     const options = getSharedOptions(body);
     const graph = await buildGraphModel(options);
 
