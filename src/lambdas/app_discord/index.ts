@@ -25,7 +25,7 @@ const password = await getSecret(COC_PASSWORD);
 await api_coc.login({
     email,
     password,
-    keyName: `${process.env.LAMBDA_ENV}-app-discord`,
+    keyName: process.env.LAMBDA_ENV,
 });
 
 await initDiscord();
