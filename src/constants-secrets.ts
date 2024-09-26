@@ -10,3 +10,4 @@ export const DISCORD_DEBUG_URL = `/DFFP/${ENV}/DISCORD_DEBUG_URL`;
 
 export const COC_USER = `/DFFP/${ENV}/COC_USER`;
 export const COC_PASSWORD = `/DFFP/${ENV}/COC_PASSWORD`;
+export const COC_KEY = `/DFFP/${ENV}/COC_KEY`;
