@@ -12,7 +12,6 @@ import {discord, initDiscordClient} from '#src/api/api-discord.ts';
 import {dCode, dLines} from '#src/discord/command-util/message.ts';
 import {getHandlerKey} from '#src/discord/command-pipeline/commands-interaction.ts';
 import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
-import type {EmbedSpec} from '#src/discord/types.ts';
 
 /**
  * @init
@@ -45,11 +44,12 @@ export const handler = async (event: AppDiscordEvent) => {
         const message = await COMMAND_HANDLERS[handlerKey](body);
 
         await discord.interactions.editReply(discord_app_id, body.token, {
+            ...message,
             embeds: message.embeds!.map((m) => ({
                 ...m,
                 color: EMBED_COLOR,
             } satisfies APIEmbed)),
-        }); // https://discord.gg/KfpCtU2rwY
+        });
     }
     catch (e) {
         const error = e as Error;
@@ -67,7 +67,6 @@ export const handler = async (event: AppDiscordEvent) => {
                     `send this link to <@644290645350940692> (${dCode('yourguyryry')}) for debugging:`,
                     `<https://discord.com/channels/1283847240061947964/${log.contents.channel_id}/${log.contents.id}>`,
                 ]).join(''),
-                color: EMBED_COLOR,
             }],
         });
     }

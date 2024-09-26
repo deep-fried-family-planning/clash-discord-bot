@@ -1,2 +1,2 @@
 # clash-discord-bot
-DFFP's clash of clans discord bot
+Deep Fried Family Planning's Official Discord Bot
