@@ -47,9 +47,7 @@ export const PLAYER_LINKS_CODEC: Codec<PlayerLinksModel, PlayerLinksStore> = {
                 },
             )),
             users: pipe(store.p, reduceL(
-                {} as {
-                    [k in DiscordUserId]: CocPlayerTag[]
-                },
+                {} as PlayerLinksModel['users'],
                 (acc, [tag, userId]) => {
                     acc[userId] ??= [];
                     acc[userId].push(tag);
