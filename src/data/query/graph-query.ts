@@ -1,10 +1,10 @@
 import type {CID, PID} from '#src/data/types.ts';
 import type {
     GClans, GHits,
-    GraphModel, GPlayers, GWars,
+    GPlayers, GWars, GraphModel,
+    OptimizedClan,
     OptimizedHit,
-    OptimizedPlayer,
-    OptimizedWar, OptimizedClan,
+    OptimizedPlayer, OptimizedWar,
 } from '#src/data/pipeline/optimize-types.ts';
 import {flow} from 'fp-ts/function';
 import {filterKV, toValuesKV} from '#src/data/pure-kv.ts';

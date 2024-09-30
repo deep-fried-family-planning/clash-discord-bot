@@ -1,16 +1,16 @@
 /* eslint-disable @stylistic/indent */
 import type {
-    APIApplicationCommandAutocompleteInteraction,
-    APIApplicationCommandInteraction,
     APIApplicationCommand,
-    APIApplicationCommandInteractionDataOption, ApplicationCommandOptionType,
-    RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIChatInputApplicationCommandsJSONBody,
-    APIApplicationCommandOption,
+    APIApplicationCommandAutocompleteInteraction,
     APIApplicationCommandBasicOption,
+    APIApplicationCommandInteraction, APIApplicationCommandInteractionDataBasicOption,
+    APIApplicationCommandInteractionDataOption, APIApplicationCommandOption,
     APIApplicationCommandSubcommandGroupOption,
     APIApplicationCommandSubcommandOption,
-    APIApplicationCommandInteractionDataBasicOption,
-    APIChatInputApplicationCommandInteraction, APIEmbed,
+    APIChatInputApplicationCommandInteraction,
+    APIEmbed,
+    ApplicationCommandOptionType,
+    RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from 'discord-api-types/v10';
 
 // Utils

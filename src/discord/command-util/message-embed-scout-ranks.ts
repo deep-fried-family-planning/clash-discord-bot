@@ -1,4 +1,4 @@
-import {dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/discord/command-util/message.ts';
+import {dHdr3, dLines, dSubC, nNatT, nNatr, nPrct} from '#src/discord/command-util/message.ts';
 import {pipe} from 'fp-ts/function';
 import {concatL, mapL} from '#src/data/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';

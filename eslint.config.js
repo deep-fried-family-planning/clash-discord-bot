@@ -8,6 +8,7 @@ const style = stylistic.configs.customize({
     semi        : true,
     commaDangle : 'always-multiline',
     quotes      : 'single',
+    jsx         : false,
     arrowParens : true,
     quoteProps  : 'as-needed',
     blockSpacing: false,
@@ -55,6 +56,7 @@ const config = [
             rules: {
                 '@typescript-eslint/consistent-type-imports'      : [2],
                 '@typescript-eslint/consistent-type-exports'      : [2],
+                '@typescript-eslint/no-import-type-side-effects'  : [2],
                 '@typescript-eslint/no-non-null-assertion'        : [1],
                 '@typescript-eslint/restrict-template-expressions': [2, {
                     allowBoolean: true,

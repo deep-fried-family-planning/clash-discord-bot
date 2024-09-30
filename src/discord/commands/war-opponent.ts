@@ -8,8 +8,8 @@ import {
     dHdr3,
     dLines,
     dSubC,
-    nNatr,
     nNatT,
+    nNatr,
     nPrct,
 } from '#src/discord/command-util/message.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
