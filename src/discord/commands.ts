@@ -7,11 +7,13 @@ import {WAR_LINKS} from '#src/discord/commands/war-links.cmd.ts';
 import {WAR_OPPONENT} from '#src/discord/commands/war-opponent.cmd.ts';
 import {WAR_SCOUT} from '#src/discord/commands/war-scout.cmd.ts';
 import {BOT} from '#src/discord/commands/bot/bot.cmd.ts';
+import {SMOKE} from '#src/discord/commands/smoke/smoke.cmd.ts';
 
 export const COMMANDS = {
     BOT,
     CONFIG,
     FAQ,
+    SMOKE,
     ONE_OF_US,
     CWL_SCOUT,
     WAR_LINKS,
