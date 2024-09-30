@@ -6,8 +6,8 @@ import {mapL} from '#src/data/pure-list.ts';
 import type {AnyKV} from '#src/data/types-pure.ts';
 
 import {
-    map as mapKV,
     filter as filterKV,
+    map as mapKV,
     size as sizeKV,
 } from 'fp-ts/Record';
 

@@ -1,15 +1,15 @@
 import {
     concat as concatL,
-    map as mapL,
-    mapWithIndex as mapIdxL,
+    filterWithIndex as filterIdxL,
+    filter as filterL,
     flatMap as flatMapL,
     flatten as flattenL,
-    filter as filterL,
-    filterWithIndex as filterIdxL,
-    reduce as reduceL,
+    mapWithIndex as mapIdxL,
+    map as mapL,
     reduceWithIndex as reduceIdxL,
-    zip as zipL,
+    reduce as reduceL,
     sort as sortL,
+    zip as zipL,
 } from 'fp-ts/Array';
 import type {num} from '#src/data/types-pure.ts';
 

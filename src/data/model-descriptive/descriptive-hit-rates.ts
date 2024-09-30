@@ -1,4 +1,4 @@
-import type {OptimizedHit, GraphModel} from '#src/data/pipeline/optimize-types.ts';
+import type {GraphModel, OptimizedHit} from '#src/data/pipeline/optimize-types.ts';
 import {pipe} from 'fp-ts/function';
 import {reduce} from 'fp-ts/Array';
 import {filter as filterRecords, reduce as reduceRecords} from 'fp-ts/Record';
