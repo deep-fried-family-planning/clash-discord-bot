@@ -1,16 +1,12 @@
 /* eslint-disable @stylistic/indent */
 import type {
-    APIApplicationCommand,
-    APIApplicationCommandAutocompleteInteraction,
     APIApplicationCommandBasicOption,
     APIApplicationCommandInteraction, APIApplicationCommandInteractionDataBasicOption,
-    APIApplicationCommandInteractionDataOption, APIApplicationCommandOption,
+    APIApplicationCommandInteractionDataOption,
     APIApplicationCommandSubcommandGroupOption,
     APIApplicationCommandSubcommandOption,
-    APIChatInputApplicationCommandInteraction,
     APIEmbed,
-    ApplicationCommandOptionType,
-    RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIChatInputApplicationCommandsJSONBody,
+    ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from 'discord-api-types/v10';
 
 // Utils
@@ -19,27 +15,14 @@ export type OverrideOptions<T, O> = Omit<T, 'options'> & {options: O};
 type KV<V> = Record<string, V>;
 
 // Aliases
-
 export type Interaction = APIApplicationCommandInteraction;
-
-type DiscordInteraction =
-    | APIApplicationCommandAutocompleteInteraction
-    | APIApplicationCommandInteraction;
-
-type CmdGroup = ApplicationCommandOptionType.SubcommandGroup;
-type SubCmd = ApplicationCommandOptionType.Subcommand;
-
 type GetOptionData<T extends ApplicationCommandOptionType> = Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
-
-type DataOption = APIApplicationCommandInteractionDataOption;
-type DataBasic = APIApplicationCommandInteractionDataBasicOption;
 type DataSubGroup = APIApplicationCommandInteractionDataBasicOption;
 type DataSubCmd = APIApplicationCommandInteractionDataBasicOption;
 
 //
 // Spec types
 //
-
 type SpecOptionBasic = APIApplicationCommandBasicOption;
 type SpecOptionSubGroup = APIApplicationCommandSubcommandGroupOption;
 type SpecOptionSubCmd = APIApplicationCommandSubcommandOption;
@@ -57,7 +40,6 @@ export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, Sp
 //
 // Data
 //
-
 type OptionData<T extends CommandSpec['options']>
     = T extends KV<SpecOptionBasic> ? {
         [k in keyof T]: T[k] extends {required: true} ? GetOptionData<T[k]['type']> : (GetOptionData<T[k]['type']> | undefined);
@@ -75,7 +57,6 @@ export type CommandData<T extends CommandSpec | SubCommandSpec> = Override<Inter
 //
 // Output
 //
-
 export type EmbedSpec =
     & Omit<APIEmbed, 'description' | 'footer'>
     & {

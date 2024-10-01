@@ -4,7 +4,7 @@ import {reduce} from 'fp-ts/Array';
 import {filter as filterRecords, reduce as reduceRecords} from 'fp-ts/Record';
 import {Ord} from 'fp-ts/string';
 import type {IDKV} from '#src/data/types.ts';
-import {tryOrDefault} from '#src/data/types-pure.ts';
+import {tryOrDefault} from '#src/pure/types-pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 
 export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: GraphModel) => {

@@ -1,5 +1,5 @@
 import {badRequest} from '@hapi/boom';
-import type {ServerModel} from '#src/data-store/codec/server-codec.ts';
+import type {ServerModel} from '#src/database/codec/server-codec.ts';
 import type {CommandBody} from '#src/discord/commands.ts';
 
 export const validateAdminRole = (server: ServerModel, body: CommandBody, failMsg: string) => {

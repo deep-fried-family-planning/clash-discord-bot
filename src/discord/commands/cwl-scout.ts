@@ -1,6 +1,6 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {pipe} from 'fp-ts/function';
-import {mapL} from '#src/data/pure-list.ts';
+import {mapL} from '#src/pure/pure-list.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/command-util/message-embed-scout.ts';
 import {dBold, dCode, dHdr1, dLines, nNatr} from '#src/discord/command-util/message.ts';

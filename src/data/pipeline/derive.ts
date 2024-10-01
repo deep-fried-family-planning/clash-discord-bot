@@ -3,9 +3,9 @@ import type {DerivedHit, DerivedModel, DerivedWar} from '#src/data/pipeline/deri
 import {pipe} from 'fp-ts/function';
 import {filter, map, reduce, sort} from 'fp-ts/Array';
 import type {IDKV} from '#src/data/types.ts';
-import type {n_bool} from '#src/data/types-pure.ts';
+import type {n_bool} from '#src/pure/types-pure.ts';
 import console from 'node:console';
-import {orderHits} from '#src/data/pure.ts';
+import {orderHits} from '#src/pure/pure.ts';
 
 export const deriveWar = (war: DispatchedWar): DerivedWar => {
     const clans = pipe(war.clans, reduce({} as IDKV<DispatchedClan>, (acc, c) => {

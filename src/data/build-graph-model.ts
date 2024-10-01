@@ -2,15 +2,19 @@ import {pipe} from 'fp-ts/function';
 import {ingestCkToModel} from '#src/data/pipeline/ingest-ck.ts';
 import {deriveModel} from '#src/data/pipeline/derive.ts';
 import {accumulateWarData, optimizeGraphModel} from '#src/data/pipeline/optimize-graph-model.ts';
-import {callCkWarsByClan} from '#src/data/api/api-ck-previous-wars.ts';
-import {callCkWarsByPlayer} from '#src/data/api/api-ck-previous-hits.ts';
+import {callCkWarsByClan} from '#src/api/calls/api-ck-get-previous-wars.ts';
+import {callCkWarsByPlayer} from '#src/api/calls/api-ck-get-warhits.ts';
 import type {SharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
-import {filterL, mapL} from '#src/data/pure-list.ts';
-import {findFirst} from 'fp-ts/Array';
+import {filterL, mapL} from '#src/pure/pure-list.ts';
+import {findFirst, sort} from 'fp-ts/Array';
 import {toUndefined} from 'fp-ts/Option';
-import {sortMapPosition} from '#src/data/api/api-coc.ts';
 import {notFound} from '@hapi/boom';
+import {fromCompare} from 'fp-ts/Ord';
+import type {ClanWarMember} from 'clashofclans.js';
+import {Ord} from 'fp-ts/number';
+
+const sortMapPosition = sort(fromCompare<ClanWarMember>((a, b) => Ord.compare(a.mapPosition, b.mapPosition)));
 
 export const buildGraphModel = async (ops: SharedOptions) => {
     const entities = await fetchWarEntities(ops);

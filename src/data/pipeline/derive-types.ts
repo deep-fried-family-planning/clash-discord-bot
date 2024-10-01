@@ -1,4 +1,4 @@
-import type {n_bool, num} from '#src/data/types-pure.ts';
+import type {n_bool, num} from '#src/pure/types-pure.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedModel, DispatchedPlayer, DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
 import type {UUID} from '#src/data/types.ts';
 

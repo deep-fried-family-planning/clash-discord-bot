@@ -1,5 +1,5 @@
-import type {DDB_ServerHashKey} from '#src/data-store/types.data.ts';
-import {ddbGetServer} from '#src/data-store/codec/server-codec-ddb.ts';
+import type {DDB_ServerHashKey} from '#src/database/types.data.ts';
+import {ddbGetServer} from '#src/database/codec/server-codec-ddb.ts';
 import {notFound} from '@hapi/boom';
 
 export const getServer = async (id: DDB_ServerHashKey, canThrow?: boolean) => {

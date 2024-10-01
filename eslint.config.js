@@ -54,11 +54,12 @@ const config = [
                 reportUnusedDisableDirectives: true,
             },
             rules: {
-                '@typescript-eslint/consistent-type-imports'      : [2],
-                '@typescript-eslint/consistent-type-exports'      : [2],
-                '@typescript-eslint/no-import-type-side-effects'  : [2],
-                '@typescript-eslint/no-non-null-assertion'        : [1],
-                '@typescript-eslint/restrict-template-expressions': [2, {
+                '@typescript-eslint/consistent-type-imports'       : [2],
+                '@typescript-eslint/no-unnecessary-type-parameters': [0],
+                '@typescript-eslint/consistent-type-exports'       : [2],
+                '@typescript-eslint/no-import-type-side-effects'   : [2],
+                '@typescript-eslint/no-non-null-assertion'         : [1],
+                '@typescript-eslint/restrict-template-expressions' : [2, {
                     allowBoolean: true,
                     allowNullish: true,
                     allowNumber : true,

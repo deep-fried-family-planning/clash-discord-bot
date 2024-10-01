@@ -1,9 +1,9 @@
-import {aws_ddb} from '#src/lambdas/client-aws-ddb.ts';
 import {
     PLAYER_LINKS_CODEC,
     type PlayerLinksModel,
     type PlayerLinksStore,
-} from '#src/data-store/codec/player-links-codec.ts';
+} from '#src/database/codec/player-links-codec.ts';
+import {aws_ddb} from '#src/api/aws-ddb.ts';
 
 export const ddbGetPlayerLinks = async () => {
     const {Item} = await aws_ddb.get({

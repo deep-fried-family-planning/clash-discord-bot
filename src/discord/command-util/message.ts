@@ -1,6 +1,6 @@
 import {pipe} from 'fp-ts/function';
-import {mapL} from '#src/data/pure-list.ts';
-import type {num, url} from '#src/data/types-pure.ts';
+import {mapL} from '#src/pure/pure-list.ts';
+import type {num, url} from '#src/pure/types-pure.ts';
 
 export const dUndr = (s: string) => `__${s}__`;
 export const dCrss = (s: string) => `~~${s}~~`;

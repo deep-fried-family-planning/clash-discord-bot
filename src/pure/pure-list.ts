@@ -11,7 +11,7 @@ import {
     sort as sortL,
     zip as zipL,
 } from 'fp-ts/Array';
-import type {num} from '#src/data/types-pure.ts';
+import type {num} from '#src/pure/types-pure.ts';
 
 export {
     concatL,

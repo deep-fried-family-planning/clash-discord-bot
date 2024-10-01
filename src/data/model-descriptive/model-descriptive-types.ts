@@ -1,4 +1,4 @@
-import type {num} from '#src/data/types-pure.ts';
+import type {num} from '#src/pure/types-pure.ts';
 
 export type Descriptive1D = {
     n_samples: num;

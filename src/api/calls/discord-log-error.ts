@@ -1,20 +1,11 @@
-import {getSecret} from '#src/lambdas/client-aws.ts';
 import {bindApiCall} from '#src/api/api-call.ts';
 import {dLines} from '#src/discord/command-util/message.ts';
-import {DISCORD_ERROR_URL} from '#src/constants-secrets.ts';
 import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
+import {SECRET_DISCORD_ERROR_URL} from '#src/constants/secret-values.ts';
 
-let url = '';
-let errorCall: ReturnType<typeof bindApiCall>;
+const errorCall = bindApiCall(SECRET_DISCORD_ERROR_URL);
 
-export const logError = async (error: Error): Promise<{contents: {channel_id: string; id: string}}> => {
-    if (url === '') {
-        url = await getSecret(DISCORD_ERROR_URL);
-        errorCall = bindApiCall(url);
-    }
-
-    console.error(error);
-
+export const discordLogError = async (error: Error): Promise<{contents: {channel_id: string; id: string}}> => {
     const cloudWatchUrl = `https://${process.env.AWS_REGION}.console.aws.amazon.com/cloudwatch/home?`
         + `region=${process.env.AWS_REGION}`
         + `#logsV2:log-groups/log-group/`

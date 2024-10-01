@@ -1,4 +1,4 @@
-import {concatL, mapIdxL, mapL, reduceL} from '#src/data/pure-list.ts';
+import {concatL, mapIdxL, mapL, reduceL} from '#src/pure/pure-list.ts';
 import {pipe} from 'fp-ts/function';
 import {range} from 'fp-ts/NonEmptyArray';
 

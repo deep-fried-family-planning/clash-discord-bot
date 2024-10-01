@@ -2,7 +2,7 @@ import {pipe} from 'fp-ts/function';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
-import {concatL, filterIdxL, flattenL, mapIdxL, zipL} from '#src/data/pure-list.ts';
+import {concatL, filterIdxL, flattenL, mapIdxL, zipL} from '#src/pure/pure-list.ts';
 import {
     dEmpL,
     dHdr3,

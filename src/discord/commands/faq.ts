@@ -1,7 +1,7 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {dLines} from '#src/discord/command-util/message.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
-import {getServerReject} from '#src/data-store/server/get-server.ts';
+import {getServerReject} from '#src/database/server/get-server.ts';
 import {notFound} from '@hapi/boom';
 
 export const faq = specCommand<typeof COMMANDS.FAQ>(async (body) => {

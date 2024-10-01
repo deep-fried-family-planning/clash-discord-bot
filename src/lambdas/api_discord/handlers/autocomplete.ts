@@ -3,5 +3,7 @@ import {respond} from '#src/lambdas/api_discord/api-util.ts';
 
 export const autocomplete = (body: APIApplicationCommandAutocompleteInteraction) => respond({
     status: 200,
-    body  : {},
+    body  : {
+        type: body.type,
+    },
 });

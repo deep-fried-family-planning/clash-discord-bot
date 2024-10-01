@@ -1,10 +1,10 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {pipe} from 'fp-ts/function';
 import {fromCompare} from 'fp-ts/Ord';
-import {OrdN} from '#src/data/pure.ts';
+import {OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/command-util/message.ts';
-import {concatL, mapIdxL, mapL, sortL} from '#src/data/pure-list.ts';
+import {concatL, mapIdxL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';

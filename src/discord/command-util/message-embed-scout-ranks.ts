@@ -1,6 +1,6 @@
 import {dHdr3, dLines, dSubC, nNatT, nNatr, nPrct} from '#src/discord/command-util/message.ts';
 import {pipe} from 'fp-ts/function';
-import {concatL, mapL} from '#src/data/pure-list.ts';
+import {concatL, mapL} from '#src/pure/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import type {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 

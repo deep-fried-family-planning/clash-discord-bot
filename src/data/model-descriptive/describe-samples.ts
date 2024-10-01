@@ -1,4 +1,4 @@
-import {sizeKV} from '#src/data/pure-kv.ts';
+import {sizeKV} from '#src/pure/pure-kv.ts';
 import type {GraphModel} from '#src/data/pipeline/optimize-types.ts';
 
 export const describeSamples = (model: GraphModel) => {

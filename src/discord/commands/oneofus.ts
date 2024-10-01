@@ -1,12 +1,12 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
-import {api_coc} from '#src/lambdas/client-api-coc.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
-import {ddbGetPlayerLinks, ddbPutPlayerLinks} from '#src/data-store/codec/player-links-ddb.ts';
-import {PLAYER_LINKS_CODEC_LATEST} from '#src/data-store/codec/player-links-codec.ts';
-import {getServerReject} from '#src/data-store/server/get-server.ts';
+import {ddbGetPlayerLinks, ddbPutPlayerLinks} from '#src/database/codec/player-links-ddb.ts';
+import {PLAYER_LINKS_CODEC_LATEST} from '#src/database/codec/player-links-codec.ts';
+import {getServerReject} from '#src/database/server/get-server.ts';
 import {validateAdminRole} from '#src/discord/command-util/validate-admin-role.ts';
 import {badRequest, notFound} from '@hapi/boom';
 import {discord} from '#src/api/api-discord.ts';
+import {api_coc} from '#src/api/api-coc.ts';
 
 export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
     const server = await getServerReject(body.guild_id!);

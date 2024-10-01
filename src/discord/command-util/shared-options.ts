@@ -1,4 +1,4 @@
-import type {bool, int} from '#src/data/types-pure.ts';
+import type {bool, int} from '#src/pure/types-pure.ts';
 import type {Any, CID} from '#src/data/types.ts';
 import {getAliasTag} from '#src/discord/command-util/get-alias-tag.ts';
 import {

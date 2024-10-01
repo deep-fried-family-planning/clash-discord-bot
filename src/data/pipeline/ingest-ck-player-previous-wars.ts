@@ -2,8 +2,8 @@ import type {DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
 import {pipe} from 'fp-ts/function';
 import {map} from 'fp-ts/Array';
 import {ingestCkWar} from '#src/data/pipeline/ingest-ck-wars.ts';
-import type {CK_Player_PreviousHits} from '#src/data/api/api-ck-previous-hits.ts';
-import type {CK_War} from '#src/data/api/api-ck-previous-wars.ts';
+import type {CK_Player_PreviousHits} from '#src/api/calls/api-ck-get-warhits.ts';
+import type {CK_War} from '#src/api/calls/api-ck-get-previous-wars.ts';
 
 export const ingestCkPlayerPreviousWars = (playerPreviousHits: CK_Player_PreviousHits[]): DispatchedWar[] => pipe(
     playerPreviousHits,
