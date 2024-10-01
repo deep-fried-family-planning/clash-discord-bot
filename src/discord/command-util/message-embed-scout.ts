@@ -8,7 +8,7 @@ import {
     nIdex,
     nNatr,
     nPrct,
-} from '#src/discord/command-util/message.ts';
+} from '#src/discord/helpers/markdown.ts';
 import {pipe} from 'fp-ts/function';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {mapL} from '#src/pure/pure-list.ts';
