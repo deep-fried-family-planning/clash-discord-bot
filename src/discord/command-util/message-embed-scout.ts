@@ -11,7 +11,7 @@ import {
 } from '#src/discord/command-util/message.ts';
 import {pipe} from 'fp-ts/function';
 import {dTable} from '#src/discord/command-util/message-table.ts';
-import {mapL} from '#src/data/pure-list.ts';
+import {mapL} from '#src/pure/pure-list.ts';
 import type {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 
 export const messageEmbedScout = (scout: ReturnType<typeof describeScout>) => {

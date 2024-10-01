@@ -1,7 +1,7 @@
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
-import {putServer} from '#src/data-store/server/put-server.ts';
+import {putServer} from '#src/database/server/put-server.ts';
 import type {CONFIG_SERVER_EDIT} from '#src/discord/commands/config/server/server-edit.cmd.ts';
-import {getServerReject} from '#src/data-store/server/get-server.ts';
+import {getServerReject} from '#src/database/server/get-server.ts';
 import {validateAdminRole} from '#src/discord/command-util/validate-admin-role.ts';
 
 export const configServerEdit = specCommand<typeof CONFIG_SERVER_EDIT>(async (body) => {

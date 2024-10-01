@@ -1,9 +1,9 @@
 import {reduce, toEntries} from 'fp-ts/Record';
 import {fromEntries} from 'fp-ts/ReadonlyRecord';
 import {flow} from 'fp-ts/function';
-import {OrdS} from '#src/data/pure.ts';
-import {mapL} from '#src/data/pure-list.ts';
-import type {AnyKV} from '#src/data/types-pure.ts';
+import {OrdS} from '#src/pure/pure.ts';
+import {mapL} from '#src/pure/pure-list.ts';
+import type {AnyKV} from '#src/pure/types-pure.ts';
 
 import {
     filter as filterKV,

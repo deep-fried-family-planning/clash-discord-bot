@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {CID, PID} from '#src/data/types.ts';
 import type {
     GClans, GHits,
@@ -7,8 +8,8 @@ import type {
     OptimizedPlayer, OptimizedWar,
 } from '#src/data/pipeline/optimize-types.ts';
 import {flow} from 'fp-ts/function';
-import {filterKV, toValuesKV} from '#src/data/pure-kv.ts';
-import {flattenL, mapL} from '#src/data/pure-list.ts';
+import {filterKV, toValuesKV} from '#src/pure/pure-kv.ts';
+import {flattenL, mapL} from '#src/pure/pure-list.ts';
 
 type GQ<I, O> = (m: I) => O;
 type MQ<O> = (model: GraphModel) => O;

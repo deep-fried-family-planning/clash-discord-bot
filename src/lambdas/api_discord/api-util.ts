@@ -1,8 +1,5 @@
 import {badRequest} from '@hapi/boom';
 
-export const DISCORD_PING = {type: 1};
-export const DISCORD_PONG = {type: 1};
-
 export const tryBody = <T>(body?: string | null): T => {
     try {
         if (!body) {
@@ -11,6 +8,7 @@ export const tryBody = <T>(body?: string | null): T => {
 
         return JSON.parse(body) as T;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     catch (e) {
         throw badRequest('unparsable json');
     }

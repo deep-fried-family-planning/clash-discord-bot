@@ -3,7 +3,6 @@ import {badImplementation} from '@hapi/boom';
 import type {Boom} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
-import {getSecret} from '#src/lambdas/client-aws.ts';
 import {respond, tryBody} from '#src/lambdas/api_discord/api-util.ts';
 import * as console from 'node:console';
 import type {APIInteraction} from 'discord-api-types/v10';
@@ -13,14 +12,12 @@ import {applicationCommand} from '#src/lambdas/api_discord/handlers/application-
 import {autocomplete} from '#src/lambdas/api_discord/handlers/autocomplete.ts';
 import {modalSubmit} from '#src/lambdas/api_discord/handlers/modal-submit.ts';
 import {messageComponent} from '#src/lambdas/api_discord/handlers/message-component.ts';
-import {DISCORD_PUBLIC_KEY} from '#src/constants-secrets.ts';
-import {logError} from '#src/api/log-error.ts';
+import {discordLogError} from '#src/api/calls/discord-log-error.ts';
+import {SECRET_DISCORD_PUBLIC_KEY} from '#src/constants/secret-values.ts';
 
 /**
  * @init
  */
-const discord_public_key = await getSecret(DISCORD_PUBLIC_KEY);
-
 const router = {
     [InteractionType.Ping]                          : pingPong,
     [InteractionType.ApplicationCommand]            : applicationCommand,
@@ -37,7 +34,7 @@ export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<APIG
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;
 
-        const isVerified = await verifyKey(Buffer.from(req.body!), signature, timestamp, discord_public_key);
+        const isVerified = await verifyKey(Buffer.from(req.body!), signature, timestamp, SECRET_DISCORD_PUBLIC_KEY);
 
         if (!isVerified) {
             throw unauthorized('invalid request signature');
@@ -52,7 +49,7 @@ export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<APIG
 
         if (error.message !== 'invalid request signature') {
             console.error(error, req);
-            await logError(error);
+            await discordLogError(error);
         }
 
         const boom = 'isBoom' in error

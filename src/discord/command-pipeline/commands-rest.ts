@@ -1,10 +1,10 @@
 import type {CommandSpec} from '#src/discord/types.ts';
 import {pipe} from 'fp-ts/function';
-import {mapL, sortL} from '#src/data/pure-list.ts';
-import {toValuesKV} from '#src/data/pure-kv.ts';
+import {mapL, sortL} from '#src/pure/pure-list.ts';
+import {toValuesKV} from '#src/pure/pure-kv.ts';
 import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
 import {fromCompare} from 'fp-ts/Ord';
-import {OrdB} from '#src/data/pure.ts';
+import {OrdB} from '#src/pure/pure.ts';
 import console from 'node:console';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

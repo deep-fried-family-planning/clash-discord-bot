@@ -1,4 +1,4 @@
-import type {AnyKV, KV, unixdate} from '#src/data/types-pure.ts';
+import type {AnyKV, unixdate} from '#src/pure/types-pure.ts';
 import {v4} from 'uuid';
 
 export type UUID = string;

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
+
 import {cmd, cwd} from '../cli-helpers';
 import {resolve} from 'node:path';
 import {build as esbuild} from 'esbuild';

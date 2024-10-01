@@ -1,12 +1,12 @@
-import type {Codec, Model, Store} from '#src/data-store/types.ts';
+import type {Codec, Model, Store} from '#src/database/types.ts';
 import type {
     CocClanCategory,
     CocClanTag, DDB_ServerHashKey,
     DiscordChannelId, DiscordRoleId,
     OpinionatedConfigToggle,
-} from '#src/data-store/types.data.ts';
+} from '#src/database/types.data.ts';
 import {pipe} from 'fp-ts/function';
-import {mapKV} from '#src/data/pure-kv.ts';
+import {mapKV} from '#src/pure/pure-kv.ts';
 
 type ClanChannel = DiscordChannelId;
 type ClanRole = DiscordRoleId;

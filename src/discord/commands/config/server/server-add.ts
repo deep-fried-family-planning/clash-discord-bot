@@ -1,7 +1,7 @@
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import type {CONFIG_SERVER_ADD} from '#src/discord/commands/config/server/server-add.cmd.ts';
-import {putServer} from '#src/data-store/server/put-server.ts';
-import {SERVER_CODEC_LATEST} from '#src/data-store/codec/server-codec.ts';
+import {putServer} from '#src/database/server/put-server.ts';
+import {SERVER_CODEC_LATEST} from '#src/database/codec/server-codec.ts';
 
 export const configServerAdd = specCommand<typeof CONFIG_SERVER_ADD>(async (body) => {
     const server = await putServer({

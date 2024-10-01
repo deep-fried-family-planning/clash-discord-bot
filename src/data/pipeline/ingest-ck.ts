@@ -7,8 +7,8 @@ import {toArray} from 'fp-ts/Record';
 import {ingestCkWar} from '#src/data/pipeline/ingest-ck-wars.ts';
 import type {IDKV} from '#src/data/types.ts';
 import {attachModelId} from '#src/data/types.ts';
-import type {CK_Player_PreviousHits} from '#src/data/api/api-ck-previous-hits.ts';
-import type {CK_War} from '#src/data/api/api-ck-previous-wars.ts';
+import type {CK_Player_PreviousHits} from '#src/api/calls/api-ck-get-warhits.ts';
+import type {CK_War} from '#src/api/calls/api-ck-get-previous-wars.ts';
 import console from 'node:console';
 
 export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPrevious?: CK_Player_PreviousHits[]) => {

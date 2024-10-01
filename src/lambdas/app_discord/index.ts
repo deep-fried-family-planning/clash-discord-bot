@@ -1,25 +1,19 @@
-import {getSecret} from '#src/lambdas/client-aws.ts';
-import {tryJson} from '#src/lambdas/util.ts';
-import type {AppDiscordEvent} from '#src/lambdas/types-events.ts';
-import {initDiscord} from '#src/discord/api/api-discord.ts';
+import {tryJson} from '#src/utils/try-json.ts';
 import type {APIEmbed} from 'discord-api-types/v10';
-import {show} from '../../../util.ts';
+import {show} from '../../utils/show.ts';
 import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
-import {logError} from '#src/api/log-error.ts';
-import {DISCORD_APP_ID} from '#src/constants-secrets.ts';
-import {discord, initDiscordClient} from '#src/api/api-discord.ts';
+import {discordLogError} from '#src/api/calls/discord-log-error.ts';
+import {discord} from '#src/api/api-discord.ts';
 import {dCode, dLines} from '#src/discord/command-util/message.ts';
 import {getHandlerKey} from '#src/discord/command-pipeline/commands-interaction.ts';
 import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
 import type {Boom} from '@hapi/boom';
+import type {AppDiscordEvent} from '#src/lambdas/app_discord/index-app-discord.types.ts';
+import {SECRET_DISCORD_APP_ID} from '#src/constants/secret-values.ts';
 
 /**
  * @init
  */
-await initDiscordClient();
-const discord_app_id = await getSecret(DISCORD_APP_ID);
-
-await initDiscord();
 
 /**
  * @invoke
@@ -34,7 +28,7 @@ export const handler = async (event: AppDiscordEvent) => {
 
         const message = await COMMAND_HANDLERS[handlerKey](body);
 
-        await discord.interactions.editReply(discord_app_id, body.token, {
+        await discord.interactions.editReply(SECRET_DISCORD_APP_ID, body.token, {
             ...message,
             embeds: message.embeds!.map((m) => ({
                 ...m,
@@ -45,11 +39,11 @@ export const handler = async (event: AppDiscordEvent) => {
     catch (e) {
         const error = e as Error | Boom;
 
-        const log = await logError(error);
+        const log = await discordLogError(error);
 
         show(log.contents);
 
-        await discord.interactions.editReply(discord_app_id, body.token, {
+        await discord.interactions.editReply(SECRET_DISCORD_APP_ID, body.token, {
             embeds: [{
                 title      : 'Error',
                 description: dLines([

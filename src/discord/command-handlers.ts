@@ -23,6 +23,8 @@ import {BOT_ABOUT} from '#src/discord/commands/bot/bot-about.cmd.ts';
 import {BOT_GETTING_STARTED} from '#src/discord/commands/bot/bot-getting-started.cmd.ts';
 import {botGettingStarted} from '#src/discord/commands/bot/bot-getting-started.ts';
 import {botAbout} from '#src/discord/commands/bot/bot-about.ts';
+import {smoke} from '#src/discord/commands/smoke/smoke.ts';
+import {SMOKE} from '#src/discord/commands/smoke/smoke.cmd.ts';
 
 export const COMMAND_HANDLERS = {
     [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                    : botAbout,
@@ -30,6 +32,7 @@ export const COMMAND_HANDLERS = {
     [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)]     : configServerAdd,
     [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]    : configServerEdit,
     [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]              : oneofus,
+    [cmdName(SMOKE, SMOKE, SMOKE)]                          : smoke,
     [cmdName(FAQ, FAQ, FAQ)]                                : faq,
     [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]              : cwlScout,
     [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]              : warLinks,

@@ -1,5 +1,5 @@
-import {callClashKing} from '#src/data/api/api-ck.ts';
-import type {int, isodate, num, url} from '#src/data/types-pure.ts';
+import {callClashKing} from '#src/api/api-ck.ts';
+import type {int, isodate, num, url} from '#src/pure/types-pure.ts';
 import type {CID, PID} from '#src/data/types.ts';
 
 export type CK_Player_PreviousHitsClan = {

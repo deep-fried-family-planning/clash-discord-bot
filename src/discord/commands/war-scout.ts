@@ -7,7 +7,7 @@ import {pipe} from 'fp-ts/function';
 import {toEntries} from 'fp-ts/Record';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {describeSamples} from '#src/data/model-descriptive/describe-samples.ts';
-import {mapL} from '#src/data/pure-list.ts';
+import {mapL} from '#src/pure/pure-list.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 

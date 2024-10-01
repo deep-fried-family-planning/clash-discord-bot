@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type,@typescript-eslint/no-unnecessary-type-parameters */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 
 import {URL} from 'node:url';
 import console from 'node:console';
@@ -63,7 +63,7 @@ export const bindApiCall = (baseUrl: string) =>
         if (!resp.ok) {
             const text = await resp.text();
 
-            const err = new Error(`[${url.hostname}][${ops.method} ${ops.path}]: ${resp.status} ${resp.statusText}\n${text}`);
+            const err = new Error(`[${url.hostname}][${ops.method} ${url.toString()}]: ${resp.status} ${resp.statusText}\n${text}`);
 
             throw err;
         }

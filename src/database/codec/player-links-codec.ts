@@ -1,12 +1,12 @@
-import type {Codec, Model, Store} from '#src/data-store/types.ts';
+import type {Codec, Model, Store} from '#src/database/types.ts';
 import type {
     CocPlayerTag,
     CocPlayerVerified,
     DiscordUserId,
-} from '#src/data-store/types.data.ts';
+} from '#src/database/types.data.ts';
 import {pipe} from 'fp-ts/function';
 import {toEntries} from 'fp-ts/Record';
-import {mapL, reduceL} from '#src/data/pure-list.ts';
+import {mapL, reduceL} from '#src/pure/pure-list.ts';
 
 export type PlayerLinksModel = Model<{
     id     : 'player-links';
