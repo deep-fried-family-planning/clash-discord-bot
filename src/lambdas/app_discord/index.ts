@@ -3,13 +3,13 @@ import type {APIEmbed} from 'discord-api-types/v10';
 import {show} from '../../utils/show.ts';
 import {EMBED_COLOR} from '#src/discord/command-util/message-embed.ts';
 import {discordLogError} from '#src/api/calls/discord-log-error.ts';
-import {DISCORD_APP_ID} from '#src/constants/secret-keys.ts';
 import {discord} from '#src/api/api-discord.ts';
 import {dCode, dLines} from '#src/discord/command-util/message.ts';
 import {getHandlerKey} from '#src/discord/command-pipeline/commands-interaction.ts';
 import {COMMAND_HANDLERS} from '#src/discord/command-handlers.ts';
 import type {Boom} from '@hapi/boom';
 import type {AppDiscordEvent} from '#src/lambdas/app_discord/index-app-discord.types.ts';
+import {SECRET_DISCORD_APP_ID} from '#src/constants/secret-values.ts';
 
 /**
  * @init
@@ -28,7 +28,7 @@ export const handler = async (event: AppDiscordEvent) => {
 
         const message = await COMMAND_HANDLERS[handlerKey](body);
 
-        await discord.interactions.editReply(DISCORD_APP_ID, body.token, {
+        await discord.interactions.editReply(SECRET_DISCORD_APP_ID, body.token, {
             ...message,
             embeds: message.embeds!.map((m) => ({
                 ...m,
@@ -43,7 +43,7 @@ export const handler = async (event: AppDiscordEvent) => {
 
         show(log.contents);
 
-        await discord.interactions.editReply(DISCORD_APP_ID, body.token, {
+        await discord.interactions.editReply(SECRET_DISCORD_APP_ID, body.token, {
             embeds: [{
                 title      : 'Error',
                 description: dLines([

@@ -6,6 +6,8 @@ import {SECRET_DISCORD_ERROR_URL} from '#src/constants/secret-values.ts';
 const errorCall = bindApiCall(SECRET_DISCORD_ERROR_URL);
 
 export const discordLogError = async (error: Error): Promise<{contents: {channel_id: string; id: string}}> => {
+    console.error(error);
+
     const cloudWatchUrl = `https://${process.env.AWS_REGION}.console.aws.amazon.com/cloudwatch/home?`
         + `region=${process.env.AWS_REGION}`
         + `#logsV2:log-groups/log-group/`
