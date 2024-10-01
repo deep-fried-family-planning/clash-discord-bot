@@ -3,7 +3,7 @@
 import {URL} from 'node:url';
 import console from 'node:console';
 
-export const bindApiCall = (baseUrl: string) =>
+export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
     async <
         RJSON = {},
         Q extends{[key: string]: string | number | boolean} = {},

@@ -5,9 +5,10 @@ import type {
     APIApplicationCommandInteractionDataOption,
     APIApplicationCommandSubcommandGroupOption,
     APIApplicationCommandSubcommandOption,
-    APIEmbed,
+    APIEmbed, APIInteractionResponseCallbackData,
     ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from 'discord-api-types/v10';
+import type {Just} from '#src/pure/types.ts';
 
 // Utils
 type Override<T, K extends string, O> = Omit<T, K> & {[k in K]: O};
@@ -63,3 +64,8 @@ export type EmbedSpec =
     desc   : string[];
     footer?: string[];
 };
+
+export type DiscordMessage = APIInteractionResponseCallbackData;
+export type DiscordEmbed = APIEmbed;
+
+export type DiscordComponent = Just<DiscordMessage['components']>;
