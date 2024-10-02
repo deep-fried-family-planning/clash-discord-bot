@@ -7,9 +7,9 @@ import type {
     OptimizedHit,
     OptimizedPlayer, OptimizedWar,
 } from '#src/data/pipeline/optimize-types.ts';
-import {flow} from 'fp-ts/function';
 import {filterKV, toValuesKV} from '#src/pure/pure-kv.ts';
 import {flattenL, mapL} from '#src/pure/pure-list.ts';
+import {flow} from '#src/utils/effect.ts';
 
 type GQ<I, O> = (m: I) => O;
 type MQ<O> = (model: GraphModel) => O;

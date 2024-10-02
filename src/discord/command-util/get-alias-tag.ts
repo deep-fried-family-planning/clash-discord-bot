@@ -1,7 +1,7 @@
 import {DFFP_CLANS_ALIAS} from '#src/constants/dffp-alias.ts';
 import type {CID} from '#src/data/types.ts';
 import {badRequest} from '@hapi/boom';
-import {api_coc} from '#src/api/api-coc.ts';
+import {api_coc} from '#src/https/api-coc.ts';
 
 export const getAliasTag = (cid?: CID): CID => {
     if (!cid) {

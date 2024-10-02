@@ -5,8 +5,8 @@ import type {
     DiscordChannelId, DiscordRoleId,
     OpinionatedConfigToggle,
 } from '#src/database/types.data.ts';
-import {pipe} from 'fp-ts/function';
 import {mapKV} from '#src/pure/pure-kv.ts';
+import {pipe} from '#src/utils/effect.ts';
 
 type ClanChannel = DiscordChannelId;
 type ClanRole = DiscordRoleId;

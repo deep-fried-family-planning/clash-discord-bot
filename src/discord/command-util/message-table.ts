@@ -1,6 +1,6 @@
-import {concatL, mapIdxL, mapL, reduceL} from '#src/pure/pure-list.ts';
-import {pipe} from 'fp-ts/function';
-import {range} from 'fp-ts/NonEmptyArray';
+import {concatL, mapL, reduceL} from '#src/pure/pure-list.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {range} from 'effect/Array';
 
 export const dTable = (tss: string[][]) => {
     const longest = pipe(
@@ -16,7 +16,7 @@ export const dTable = (tss: string[][]) => {
 
     return pipe(
         tss,
-        mapL(mapIdxL((idx, t) => {
+        mapL(mapL((t, idx) => {
             if (idx === longest.length - 1) {
                 return t;
             }

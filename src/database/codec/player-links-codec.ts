@@ -4,9 +4,9 @@ import type {
     CocPlayerVerified,
     DiscordUserId,
 } from '#src/database/types.data.ts';
-import {pipe} from 'fp-ts/function';
-import {toEntries} from 'fp-ts/Record';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {toEntries} from 'effect/Record';
 
 export type PlayerLinksModel = Model<{
     id     : 'player-links';

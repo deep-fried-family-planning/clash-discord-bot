@@ -1,8 +1,7 @@
-import {pipe} from 'fp-ts/function';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
 import type {COMMANDS} from '#src/discord/commands.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
-import {concatL, filterIdxL, flattenL, mapIdxL, zipL} from '#src/pure/pure-list.ts';
+import {concatL, filterL, flattenL, mapL, zipL} from '#src/pure/pure-list.ts';
 import {
     dEmpL,
     dHdr3,
@@ -16,6 +15,7 @@ import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {pipe} from '#src/utils/effect.ts';
 
 export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body) => {
     const options = getSharedOptions(body);
@@ -29,7 +29,7 @@ export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body
 
     const rates = pipe(
         zipL(clanRates, opponentRates),
-        filterIdxL((idx) => idx >= from - 1 && idx <= to - 1),
+        filterL((_, idx) => idx >= from - 1 && idx <= to - 1),
     );
 
     return {
@@ -46,7 +46,7 @@ export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body
                     ],
                     concatL(pipe(
                         rates,
-                        mapIdxL((idx, [p1, p2]) => [
+                        mapL(([p1, p2], idx) => [
                             [nNatT(idx + from), nNatT(p1[0].townHallLevel), `${nPrct(p1[1][0])} n=${nNatr(p1[1][1])}`, `${nPrct(p1[2][0])} n=${nNatr(p1[2][1])}`, (p1[0].name)],
                             ['', nNatT(p2[0].townHallLevel), `${nPrct(p2[1][0])} n=${nNatr(p2[1][1])}`, `${nPrct(p2[2][0])} n=${nNatr(p2[2][1])}`, (p2[0].name)],
                             [''],
@@ -54,7 +54,7 @@ export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body
                         flattenL,
                     )),
                     dTable,
-                    mapIdxL((idx, t) => idx % 3 === 1
+                    mapL((t, idx) => idx % 3 === 1
                         ? dEmpL()
                         : dSubC(t)),
                 )),

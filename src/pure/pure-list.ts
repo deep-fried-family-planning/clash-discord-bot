@@ -1,30 +1,26 @@
 import {
-    concat as concatL,
-    filterWithIndex as filterIdxL,
+    prependAll as concatL,
     filter as filterL,
     flatMap as flatMapL,
     flatten as flattenL,
-    mapWithIndex as mapIdxL,
     map as mapL,
-    reduceWithIndex as reduceIdxL,
     reduce as reduceL,
     sort as sortL,
     zip as zipL,
-} from 'fp-ts/Array';
+    of as ofL,
+} from 'effect/Array';
 import type {num} from '#src/pure/types-pure.ts';
 
 export {
     concatL,
     mapL,
-    mapIdxL,
     flatMapL,
     flattenL,
     filterL,
-    filterIdxL,
     reduceL,
-    reduceIdxL,
     zipL,
     sortL,
+    ofL,
 };
 
 export const numL = () => [] as num[];

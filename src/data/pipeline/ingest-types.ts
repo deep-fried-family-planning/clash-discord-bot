@@ -1,7 +1,6 @@
 import type {int, isodate} from '#src/pure/types-pure.ts';
 import type {CID, IGNAME, PID, _Model} from '#src/data/types.ts';
 import type {Player} from 'clashofclans.js';
-import type {ClanWarMember} from 'clashofclans.js';
 
 export type DispatchedWar =
     & _Model

@@ -1,12 +1,12 @@
-import {pipe} from 'fp-ts/function';
-import {flatMap, map} from 'fp-ts/Array';
 import {attachModelId} from '#src/data/types.ts';
-import type {CK_War, CK_War_Clan} from '#src/api/calls/api-ck-get-previous-wars.ts';
+import type {CK_War, CK_War_Clan} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedPlayer, DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {flatMapL, mapL} from '#src/pure/pure-list.ts';
 
 const ingestCkWarPlayers = (clan: CK_War_Clan): DispatchedPlayer[] => pipe(
     clan.members,
-    map((m) => attachModelId({
+    mapL((m) => attachModelId({
         cid   : clan.tag,
         pid   : m.tag,
         name  : m.name,
@@ -17,8 +17,8 @@ const ingestCkWarPlayers = (clan: CK_War_Clan): DispatchedPlayer[] => pipe(
 
 const ingestCkWarHits = (clan: CK_War_Clan): DispatchedHit[] => pipe(
     clan.members,
-    flatMap((m) => m.attacks ?? []),
-    map((a) => attachModelId({
+    flatMapL((m) => m.attacks ?? []),
+    mapL((a) => attachModelId({
         a_pid   : a.attackerTag,
         d_pid   : a.defenderTag,
         order   : a.order,
@@ -42,7 +42,7 @@ export const ingestCkWar = (war: CK_War): DispatchedWar => attachModelId({
     rules_prep : war.preparationStartTime,
     rules_start: war.startTime,
     rules_end  : war.endTime,
-    clans      : pipe([war.clan, war.opponent], map(ingestCkWarClan)),
-    players    : pipe([war.clan, war.opponent], flatMap(ingestCkWarPlayers)),
-    hits       : pipe([war.clan, war.opponent], flatMap(ingestCkWarHits)),
+    clans      : pipe([war.clan, war.opponent], mapL(ingestCkWarClan)),
+    players    : pipe([war.clan, war.opponent], flatMapL(ingestCkWarPlayers)),
+    hits       : pipe([war.clan, war.opponent], flatMapL(ingestCkWarHits)),
 });

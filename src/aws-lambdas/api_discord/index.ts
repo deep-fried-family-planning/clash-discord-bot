@@ -5,30 +5,32 @@ import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {respond, tryBody} from '#src/aws-lambdas/api_discord/api-util.ts';
 import type {APIInteraction} from 'discord-api-types/v10';
-import {InteractionType} from 'discord-api-types/v10';
 import {pingPong} from '#src/aws-lambdas/api_discord/handlers/ping-pong.ts';
 import {applicationCommand} from '#src/aws-lambdas/api_discord/handlers/application-command.ts';
 import {autocomplete} from '#src/aws-lambdas/api_discord/handlers/autocomplete.ts';
 import {modalSubmit} from '#src/aws-lambdas/api_discord/handlers/modal-submit.ts';
 import {messageComponent} from '#src/aws-lambdas/api_discord/handlers/message-component.ts';
-import {discordLogError} from '#src/api/calls/discord-log-error.ts';
+import {discordLogError} from '#src/https/calls/discord-log-error.ts';
 import {SECRET_DISCORD_PUBLIC_KEY} from '#src/constants/secrets/secret-discord-public-key.ts';
+import type {Maybe} from '#src/pure/types.ts';
+import {ITR} from '#src/discord/helpers/re-exports.ts';
+import {asBoom} from '#src/utils/as-boom.ts';
 
 /**
  * @init
  */
 const router = {
-    [InteractionType.Ping]                          : pingPong,
-    [InteractionType.ApplicationCommand]            : applicationCommand,
-    [InteractionType.ApplicationCommandAutocomplete]: autocomplete,
-    [InteractionType.ModalSubmit]                   : modalSubmit,
-    [InteractionType.MessageComponent]              : messageComponent,
+    [ITR.Ping]                          : pingPong,
+    [ITR.ApplicationCommand]            : applicationCommand,
+    [ITR.ApplicationCommandAutocomplete]: autocomplete,
+    [ITR.ModalSubmit]                   : modalSubmit,
+    [ITR.MessageComponent]              : messageComponent,
 } as const;
 
 /**
  * @invoke
  */
-export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<APIGatewayProxyResult> => {
+export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<Maybe<APIGatewayProxyResult>> => {
     try {
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;
@@ -41,13 +43,12 @@ export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<APIG
 
         const body = tryBody<APIInteraction>(req.body);
 
-        return await router[body.type](body as never);
+        return await router[body.type](body);
     }
     catch (e) {
-        const error = e as Error | Boom;
+        const error = asBoom(e);
 
         if (error.message !== 'invalid request signature') {
-            console.error(error, req);
             await discordLogError(error);
         }
 

@@ -1,15 +1,12 @@
-import {reduce, toEntries} from 'fp-ts/Record';
-import {fromEntries} from 'fp-ts/ReadonlyRecord';
-import {flow} from 'fp-ts/function';
-import {OrdS} from '#src/pure/pure.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import type {AnyKV} from '#src/pure/types-pure.ts';
-
 import {
+    reduce, toEntries, fromEntries,
     filter as filterKV,
     map as mapKV,
     size as sizeKV,
-} from 'fp-ts/Record';
+} from 'effect/Record';
+import {flow} from '#src/utils/effect.ts';
 
 export {
     mapKV,
@@ -17,7 +14,7 @@ export {
     sizeKV,
 };
 
-export const reduceKV = reduce(OrdS);
+export const reduceKV = reduce;
 
 export const toValuesKV = flow(toEntries, mapL(([, v]) => v));
 

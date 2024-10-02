@@ -1,9 +1,11 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
-import {dLines} from '#src/discord/helpers/markdown.ts';
+import {dLinesS} from '#src/discord/helpers/markdown.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {getServerReject} from '#src/database/server/get-server.ts';
 import {notFound} from '@hapi/boom';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {CMP} from '#src/discord/helpers/re-exports.ts';
+import {LBUTTON_FAQ} from '#src/discord/app-interactions/components/lbutton-faq.ts';
 
 export const faq = specCommand<typeof COMMANDS.FAQ>(async (body) => {
     const server = await getServerReject(body.guild_id!);
@@ -15,11 +17,15 @@ export const faq = specCommand<typeof COMMANDS.FAQ>(async (body) => {
     return {
         embeds: [{
             color      : nColor(COLOR.INFO),
-            description: dLines([
-                'Open this link to find answers to frequently asked questions:',
-                '',
-                server.urls.faq,
-            ]).join(''),
+            description: dLinesS(
+                'Open the link button below to find answers to frequently asked questions.',
+            ),
+        }],
+        components: [{
+            type      : CMP.ActionRow,
+            components: [
+                LBUTTON_FAQ(server.urls.faq),
+            ],
         }],
     };
 });

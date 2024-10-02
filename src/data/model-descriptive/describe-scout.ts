@@ -1,16 +1,14 @@
-import {pipe} from 'fp-ts/function';
 import {queryAttacksByClan, queryClan, queryWarsByClan} from '#src/data/query/graph-query.ts';
-import {filterL, flattenL, mapL, reduceL, sortL} from '#src/pure/pure-list.ts';
+import {filterL, flattenL, mapL, ofL, reduceL, sortL} from '#src/pure/pure-list.ts';
 import {mean, median, standardDeviation} from 'simple-statistics';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
 import type {buildGraphModel} from '#src/data/build-graph-model.ts';
-import {OrdN, OrdS} from '#src/pure/pure.ts';
-import {of} from 'fp-ts/Array';
-import {collect} from 'fp-ts/Record';
-import {fromCompare} from 'fp-ts/Ord';
+import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {OptimizedHit} from '#src/data/pipeline/optimize-types.ts';
 import {compareTwoStrings} from 'string-similarity';
 import type {num} from '#src/pure/types-pure.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {collect} from 'effect/Record';
 
 export const describeScout = (graph: Awaited<ReturnType<typeof buildGraphModel>>) => {
     const wars = pipe(graph.model, queryWarsByClan(graph.opponentTag));
@@ -44,9 +42,9 @@ export const describeScout = (graph: Awaited<ReturnType<typeof buildGraphModel>>
         wars,
         mapL((w) => pipe(
             w.hits,
-            collect(OrdS)((_, h) => h),
+            collect((_, h) => h),
             // filterL(h => h._id_attacker_clan )
-            sortL(fromCompare<OptimizedHit>((a, b) => OrdN.compare(a.data.order, b.data.order))),
+            sortL(fromCompare<OptimizedHit>((a, b) => OrdN(a.data.order, b.data.order))),
             reduceL([0, 1, 0], ([contN, isCont, hN], h) => {
                 if (h.attacker.clan.data.cid !== graph.opponentTag) {
                     isCont = 0;
@@ -60,7 +58,7 @@ export const describeScout = (graph: Awaited<ReturnType<typeof buildGraphModel>>
                 }
                 return [contN, isCont, hN];
             }),
-            of,
+            ofL,
             mapL(([contN,,hN]) => hN === 0
                 ? 0
                 : contN / hN),

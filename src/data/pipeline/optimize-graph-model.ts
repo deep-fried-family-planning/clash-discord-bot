@@ -1,10 +1,10 @@
 import type {DerivedModel} from '#src/data/pipeline/derive-types.ts';
-import {pipe} from 'fp-ts/function';
-import {reduce} from 'fp-ts/Array';
 import type {GraphModel} from '#src/data/pipeline/optimize-types.ts';
 import type {IDKV} from '#src/data/types.ts';
 import type {Player} from 'clashofclans.js';
 import console from 'node:console';
+import {pipe} from '#src/utils/effect.ts';
+import {reduceL} from '#src/pure/pure-list.ts';
 
 export const accumulateWarData = (model: DerivedModel): GraphModel['data'] => {
     const data_initial = {
@@ -17,7 +17,7 @@ export const accumulateWarData = (model: DerivedModel): GraphModel['data'] => {
 
     console.log('[GRAPH]: accumulate');
 
-    return pipe(model.wars, reduce(data_initial, (acc, w) => {
+    return pipe(model.wars, reduceL(data_initial, (acc, w) => {
         acc.wars.push(w);
         acc.clans.push(...w.clans);
         acc.players.push(...w.players);
@@ -93,7 +93,7 @@ export const optimizeGraphModel = (data: GraphModel['data']): GraphModel => {
         players,
         hits,
         current: {
-            players: pipe(data.current.players, reduce({} as IDKV<Player>, (acc, p) => {
+            players: pipe(data.current.players, reduceL({} as IDKV<Player>, (acc, p) => {
                 acc[p.tag] = p;
                 return acc;
             })),

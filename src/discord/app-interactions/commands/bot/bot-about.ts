@@ -1,8 +1,10 @@
 import {dLines} from '#src/discord/helpers/markdown.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import type {BOT_ABOUT} from '#src/discord/app-interactions/commands/bot/bot-about.cmd.ts';
-import {ButtonStyle, ComponentType} from 'discord-api-types/v10';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {LBUTTON_SUPPORT_SERVER} from '#src/discord/app-interactions/components/lbutton-support-server.ts';
+import {LBUTTON_PATREON} from '#src/discord/app-interactions/components/lbutton-patreon.ts';
+import {CMP} from '#src/discord/helpers/re-exports.ts';
 
 export const botAbout = specCommand<typeof BOT_ABOUT>(async (body) => {
     return {
@@ -16,21 +18,11 @@ export const botAbout = specCommand<typeof BOT_ABOUT>(async (body) => {
             ]).join(''),
         }],
         components: [{
-            type      : ComponentType.ActionRow,
-            components: [{
-                label: 'Support Server',
-                type : ComponentType.Button,
-                style: ButtonStyle.Link,
-                url  : 'https://discord.gg/KfpCtU2rwY',
-            }],
-        }, {
-            type      : ComponentType.ActionRow,
-            components: [{
-                label: 'Patreon',
-                type : ComponentType.Button,
-                style: ButtonStyle.Link,
-                url  : 'https://www.patreon.com/dffp',
-            }],
+            type      : CMP.ActionRow,
+            components: [
+                LBUTTON_SUPPORT_SERVER,
+                LBUTTON_PATREON,
+            ],
         }],
     };
 });

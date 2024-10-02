@@ -1,18 +1,17 @@
 import type {GraphModel, OptimizedHit} from '#src/data/pipeline/optimize-types.ts';
-import {pipe} from 'fp-ts/function';
-import {reduce} from 'fp-ts/Array';
-import {filter as filterRecords, reduce as reduceRecords} from 'fp-ts/Record';
-import {Ord} from 'fp-ts/string';
 import type {IDKV} from '#src/data/types.ts';
 import {tryOrDefault} from '#src/pure/types-pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
+import {filterKV, reduceKV} from '#src/pure/pure-kv.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {reduceL} from '#src/pure/pure-list.ts';
 
 export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: GraphModel) => {
     const [attacks, defenses] = pipe(
         graph.players,
-        filterRecords((p) => p.data.cid === cid),
-        reduceRecords(Ord)([{}, {}] as [IDKV<OptimizedHit[]>, IDKV<OptimizedHit[]>], ([atks, defs], p) => {
-            const attacks = pipe(p.attacks, reduceRecords(Ord)([] as OptimizedHit[], (as, a) => {
+        filterKV((p) => p.data.cid === cid),
+        reduceKV([{}, {}] as [IDKV<OptimizedHit[]>, IDKV<OptimizedHit[]>], ([atks, defs], p) => {
+            const attacks = pipe(p.attacks, reduceKV([] as OptimizedHit[], (as, a) => {
                 as.push(a);
                 return as;
             }));
@@ -20,7 +19,7 @@ export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: G
             atks[p.data.pid] ??= [];
             atks[p.data.pid].push(...attacks);
 
-            const defenses = pipe(p.defenses, reduceRecords(Ord)([] as OptimizedHit[], (ds, d) => {
+            const defenses = pipe(p.defenses, reduceKV([] as OptimizedHit[], (ds, d) => {
                 ds.push(d);
                 return ds;
             }));
@@ -32,7 +31,7 @@ export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: G
         }),
     );
 
-    return pipe(pids, reduce([] as [ClanWarMember, [number, number], [number, number]][], (acc, pid) => {
+    return pipe(pids, reduceL([] as [ClanWarMember, [number, number], [number, number]][], (acc, pid) => {
         const [atks, defs] = [attacks[pid.tag], defenses[pid.tag]];
 
         acc.push([

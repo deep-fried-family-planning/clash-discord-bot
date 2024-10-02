@@ -1,8 +1,8 @@
 import type {SQSRecord} from 'aws-lambda';
-import type {APIApplicationCommandInteraction} from 'discord-api-types/v10';
+import type {APIChatInputApplicationCommandGuildInteraction, APIMessageComponentInteraction, APIModalSubmitInteraction} from 'discord-api-types/v10';
 
 export interface AppDiscordRecord extends Omit<SQSRecord, 'body'> {
-    body: APIApplicationCommandInteraction;
+    body: APIChatInputApplicationCommandGuildInteraction | APIMessageComponentInteraction | APIModalSubmitInteraction;
 }
 
 export interface AppDiscordEvent {
