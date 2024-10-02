@@ -1,16 +1,16 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
-import {pipe} from 'fp-ts/function';
 import {mapL} from '#src/pure/pure-list.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/command-util/message-embed-scout.ts';
 import {dBold, dCode, dHdr1, dLines, nNatr} from '#src/discord/helpers/markdown.ts';
 import {describeSamples} from '#src/data/model-descriptive/describe-samples.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
-import {toEntries} from 'fp-ts/Record';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {pipe} from '#src/utils/effect.ts';
+import {toEntries} from 'effect/Record';
 
 export const cwlScout = specCommand<typeof COMMANDS.CWL_SCOUT>(async (body) => {
     const options = getSharedOptions(body);

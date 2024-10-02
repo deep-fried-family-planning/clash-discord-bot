@@ -6,7 +6,7 @@ import type {
     APIApplicationCommandSubcommandGroupOption,
     APIApplicationCommandSubcommandOption,
     APIEmbed, APIInteractionResponseCallbackData,
-    ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody,
+    ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody, APIModalInteractionResponseCallbackData,
 } from 'discord-api-types/v10';
 import type {Just} from '#src/pure/types.ts';
 
@@ -65,7 +65,9 @@ export type EmbedSpec =
     footer?: string[];
 };
 
-export type DiscordMessage = APIInteractionResponseCallbackData;
+export type DiscordMessage = APIInteractionResponseCallbackData | APIModalInteractionResponseCallbackData;
+export type DiscordMsg = APIInteractionResponseCallbackData;
+export type DiscordModal = APIModalInteractionResponseCallbackData;
 export type DiscordEmbed = APIEmbed;
 
 export type DiscordComponent = Just<DiscordMessage['components']>;

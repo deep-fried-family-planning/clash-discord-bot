@@ -1,4 +1,4 @@
-import {bindApiCall} from '#src/api/api-call.ts';
+import {bindApiCall} from '#src/https/api-call.ts';
 
 export const CK_URL = /* @__PURE__ */ 'https://api.clashking.xyz';
 

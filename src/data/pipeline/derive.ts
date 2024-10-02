@@ -1,27 +1,26 @@
 import type {DispatchedClan, DispatchedModel, DispatchedPlayer, DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
 import type {DerivedHit, DerivedModel, DerivedWar} from '#src/data/pipeline/derive-types.ts';
-import {pipe} from 'fp-ts/function';
-import {filter, map, reduce, sort} from 'fp-ts/Array';
 import type {IDKV} from '#src/data/types.ts';
 import type {n_bool} from '#src/pure/types-pure.ts';
-import console from 'node:console';
 import {orderHits} from '#src/pure/pure.ts';
+import {pipe} from '#src/utils/effect';
+import {filterL, mapL, reduceL, sortL} from '#src/pure/pure-list.ts';
 
 export const deriveWar = (war: DispatchedWar): DerivedWar => {
-    const clans = pipe(war.clans, reduce({} as IDKV<DispatchedClan>, (acc, c) => {
+    const clans = pipe(war.clans, reduceL({} as IDKV<DispatchedClan>, (acc, c) => {
         acc[c.cid] = c;
         return acc;
     }));
 
-    const players = pipe(war.players, reduce({} as IDKV<DispatchedPlayer>, (acc, p) => {
+    const players = pipe(war.players, reduceL({} as IDKV<DispatchedPlayer>, (acc, p) => {
         acc[p.pid] = p;
         return acc;
     }));
 
     const hits = pipe(
         war.hits,
-        sort(orderHits),
-        reduce({ore: {}, hits: []} as {ore: IDKV<n_bool>; hits: DerivedHit[]}, (acc, h) => {
+        sortL(orderHits),
+        reduceL({ore: {}, hits: []} as {ore: IDKV<n_bool>; hits: DerivedHit[]}, (acc, h) => {
             let ore0 = 0,
                 ore1 = 0;
 
@@ -64,8 +63,8 @@ export const deriveWar = (war: DispatchedWar): DerivedWar => {
 
     return {
         ...war,
-        clans: pipe(war.clans, map((c) => {
-            const chits = pipe(hits, filter((h) => h._id_attacker_clan === c.cid));
+        clans: pipe(war.clans, mapL((c) => {
+            const chits = pipe(hits, filterL((h) => h._id_attacker_clan === c.cid));
 
             return {
                 ...c,
@@ -74,7 +73,7 @@ export const deriveWar = (war: DispatchedWar): DerivedWar => {
                 score_atks      : chits.length,
             };
         })),
-        players: pipe(war.players, map((p) => ({
+        players: pipe(war.players, mapL((p) => ({
             ...p,
             _id_war : war._id,
             _id_clan: clans[p.cid]._id,
@@ -89,6 +88,6 @@ export const deriveModel = (model: DispatchedModel): DerivedModel => {
     return {
         ...model,
         current: model.current,
-        wars   : pipe(model.wars, map(deriveWar)),
+        wars   : pipe(model.wars, mapL(deriveWar)),
     };
 };

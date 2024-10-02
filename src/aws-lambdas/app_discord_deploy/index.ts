@@ -1,31 +1,28 @@
-import {pipe} from 'fp-ts/function';
-import {toArray} from 'fp-ts/Record';
-import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
 import {COMMANDS} from '#src/discord/commands.ts';
-import {discord} from '#src/api/api-discord.ts';
-import {mapL} from '#src/pure/pure-list.ts';
+import {discord} from '#src/https/api-discord.ts';
 import {specToREST} from '#src/discord/command-pipeline/commands-rest.ts';
 import {SECRET_DISCORD_APP_ID} from '#src/constants/secrets/secret-discord-app-id.ts';
+import {makeLambda} from '@effect-aws/lambda';
+import {E, Logger, pipe} from '#src/utils/effect.ts';
+import {mapEntries, toEntries} from 'effect/Record';
+import {map} from 'effect/Array';
 
-/**
- * @init
- */
-const COMMAND_CONFIG = pipe(COMMANDS, toArray, mapL(([k, v]) => [k, specToREST(v)])) satisfies [string, RESTPostAPIApplicationCommandsJSONBody][];
+const h = () => E.gen(function* () {
+    const cmds = yield * pipe(COMMANDS, mapEntries((v, k) => [k, specToREST(v)]), toEntries, E.succeed);
 
-/**
- * @invoke
- */
-export const handler = async () => {
-    const allNames = COMMAND_CONFIG.map(([,c]) => c.name);
-    const current = await discord.applicationCommands.getGlobalCommands(SECRET_DISCORD_APP_ID);
+    const allNames = pipe(cmds, map(([, cmd]) => cmd.name));
+
+    const current = yield * E.promise(() => discord.applicationCommands.getGlobalCommands(SECRET_DISCORD_APP_ID));
 
     for (const cmd of current) {
         if (!allNames.includes(cmd.name)) {
-            await discord.applicationCommands.deleteGlobalCommand(SECRET_DISCORD_APP_ID, cmd.id);
+            yield * E.promise(() => discord.applicationCommands.deleteGlobalCommand(SECRET_DISCORD_APP_ID, cmd.id));
         }
     }
 
-    for (const [, cmd] of COMMAND_CONFIG) {
-        await discord.applicationCommands.createGlobalCommand(SECRET_DISCORD_APP_ID, cmd);
+    for (const [, cmd] of cmds) {
+        yield * E.promise(() => discord.applicationCommands.createGlobalCommand(SECRET_DISCORD_APP_ID, cmd));
     }
-};
+});
+
+export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));

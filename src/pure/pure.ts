@@ -1,13 +1,14 @@
-import {Ord, Ord as OrdN} from 'fp-ts/number';
-import {Ord as OrdS} from 'fp-ts/string';
-import {Ord as OrdB} from 'fp-ts/boolean';
-import {fromCompare} from 'fp-ts/Ord';
+import {Order as OrdN} from 'effect/Number';
+import {Order as OrdS} from 'effect/String';
+import {Order as OrdB} from 'effect/Boolean';
+import {make as fromCompare} from 'effect/Order';
 import type {DispatchedHit} from '#src/data/pipeline/ingest-types.ts';
 
 export {
     OrdN,
     OrdS,
     OrdB,
+    fromCompare,
 };
 
-export const orderHits = fromCompare<DispatchedHit>((h1, h2) => Ord.compare(h1.order, h2.order));
+export const orderHits = fromCompare<DispatchedHit>((h1, h2) => OrdN(h1.order, h2.order));

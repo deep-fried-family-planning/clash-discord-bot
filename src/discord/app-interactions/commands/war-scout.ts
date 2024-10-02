@@ -3,14 +3,14 @@ import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {dBold, dCode, dHdr1, dLines, nNatr} from '#src/discord/helpers/markdown.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/command-util/message-embed-scout.ts';
-import {pipe} from 'fp-ts/function';
-import {toEntries} from 'fp-ts/Record';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {describeSamples} from '#src/data/model-descriptive/describe-samples.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {toEntries} from 'effect/Record';
+import {pipe} from '#src/utils/effect.ts';
 
 export const warScout = specCommand<typeof COMMANDS.WAR_SCOUT>(async (body) => {
     const options = getSharedOptions(body);

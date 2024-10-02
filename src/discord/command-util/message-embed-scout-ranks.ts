@@ -1,8 +1,8 @@
 import {dHdr3, dLines, dSubC, nNatT, nNatr, nPrct} from '#src/discord/helpers/markdown.ts';
-import {pipe} from 'fp-ts/function';
 import {concatL, mapL} from '#src/pure/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import type {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
+import {pipe} from '#src/utils/effect.ts';
 
 export const messageEmbedScoutRanks = (scout: ReturnType<typeof describeScout>, nshow?: boolean) => {
     return nshow

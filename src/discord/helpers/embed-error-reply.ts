@@ -1,10 +1,12 @@
-import type {DiscordMessage} from '#src/discord/types.ts';
+import type {DiscordMsg} from '#src/discord/types.ts';
 import type {Boom} from '@hapi/boom';
 import {dLinesS} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {ButtonStyle, ComponentType} from 'discord-api-types/v10';
+import {LBUTTON_SUPPORT_SERVER} from '#src/discord/app-interactions/components/lbutton-support-server.ts';
+import {CMP, MSG} from '#src/discord/helpers/re-exports.ts';
+import {LBUTTON_ERROR_LOG} from '#src/discord/app-interactions/components/lbutton-error-log.ts';
 
-export const eErrorReply = (e: Error | Boom, log: {contents: {channel_id: string; id: string}}): DiscordMessage => ({
+export const eErrorReply = (e: Error | Boom, log: {contents: {channel_id: string; id: string}}): DiscordMsg => ({
     embeds: [{
         color: nColor(COLOR.ERROR),
 
@@ -20,12 +22,10 @@ export const eErrorReply = (e: Error | Boom, log: {contents: {channel_id: string
         ),
     }],
     components: [{
-        type      : ComponentType.ActionRow,
-        components: [{
-            type : ComponentType.Button,
-            style: ButtonStyle.Link,
-            label: 'Support Server',
-            url  : 'https://discord.gg/KfpCtU2rwY',
-        }],
+        type      : CMP.ActionRow,
+        components: [
+            LBUTTON_SUPPORT_SERVER,
+            LBUTTON_ERROR_LOG(log.contents.channel_id, log.contents.id),
+        ],
     }],
 });

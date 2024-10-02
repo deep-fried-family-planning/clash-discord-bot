@@ -3,7 +3,7 @@ import {
     type PlayerLinksModel,
     type PlayerLinksStore,
 } from '#src/database/codec/player-links-codec.ts';
-import {aws_ddb} from '#src/api/aws-ddb.ts';
+import {aws_ddb} from '#src/https/aws-ddb.ts';
 
 export const ddbGetPlayerLinks = async () => {
     const {Item} = await aws_ddb.get({

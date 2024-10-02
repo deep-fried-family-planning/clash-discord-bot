@@ -1,6 +1,6 @@
 import type {DDB_ServerHashKey} from '#src/database/types.data.ts';
 import {SERVER_CODEC, type ServerModel, type ServerStore} from '#src/database/codec/server-codec.ts';
-import {aws_ddb} from '#src/api/aws-ddb.ts';
+import {aws_ddb} from '#src/https/aws-ddb.ts';
 
 export const ddbGetServer = async (id: DDB_ServerHashKey) => {
     const {Item} = await aws_ddb.get({

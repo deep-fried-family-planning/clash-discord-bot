@@ -1,16 +1,15 @@
 import type {CommandSpec} from '#src/discord/types.ts';
-import {pipe} from 'fp-ts/function';
 import {mapL, sortL} from '#src/pure/pure-list.ts';
 import {toValuesKV} from '#src/pure/pure-kv.ts';
 import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
-import {fromCompare} from 'fp-ts/Ord';
-import {OrdB} from '#src/pure/pure.ts';
+import {OrdB, fromCompare} from '#src/pure/pure.ts';
 import console from 'node:console';
+import {pipe} from '#src/utils/effect.ts';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 
-const sorter = fromCompare((a, b) => OrdB.compare(Boolean(b.required), Boolean(a.required)));
+const sorter = fromCompare((a, b) => OrdB(Boolean(b.required), Boolean(a.required)));
 
 export const specToREST = (spec: CommandSpec) => {
     const options = pipe(spec.options, toValuesKV, sortL(sorter), mapL((v) =>

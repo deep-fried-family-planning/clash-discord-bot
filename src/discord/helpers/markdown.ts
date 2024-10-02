@@ -1,6 +1,6 @@
-import {pipe} from 'fp-ts/function';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
 import type {num, url} from '#src/pure/types-pure.ts';
+import {pipe} from '#src/utils/effect.ts';
 
 export const dUndr = (s: string) => `__${s}__`;
 export const dCrss = (s: string) => `~~${s}~~`;

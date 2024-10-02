@@ -1,12 +1,9 @@
-import type {APIApplicationCommandInteraction} from 'discord-api-types/v10';
+import type {APIInteraction} from 'discord-api-types/v10';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import {InteractionResponseType} from 'discord-interactions';
-import console from 'node:console';
-import {aws_sqs} from '#src/api/aws-sqs.ts';
+import {aws_sqs} from '#src/https/aws-sqs.ts';
 
-export const applicationCommand = async (body: APIApplicationCommandInteraction) => {
-    console.log('event', body);
-
+export const applicationCommand = async (body: APIInteraction) => {
     await aws_sqs.sendMessage({
         QueueUrl   : process.env.SQS_APP_DISCORD,
         MessageBody: JSON.stringify(body),

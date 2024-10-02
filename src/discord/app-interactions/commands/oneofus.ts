@@ -5,8 +5,8 @@ import {PLAYER_LINKS_CODEC_LATEST} from '#src/database/codec/player-links-codec.
 import {getServerReject} from '#src/database/server/get-server.ts';
 import {validateAdminRole} from '#src/discord/command-util/validate-admin-role.ts';
 import {badRequest, notFound} from '@hapi/boom';
-import {discord} from '#src/api/api-discord.ts';
-import {api_coc} from '#src/api/api-coc.ts';
+import {discord} from '#src/https/api-discord.ts';
+import {api_coc} from '#src/https/api-coc.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 
 export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {

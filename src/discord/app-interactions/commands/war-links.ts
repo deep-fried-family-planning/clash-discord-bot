@@ -1,16 +1,15 @@
 import type {COMMANDS} from '#src/discord/commands.ts';
-import {pipe} from 'fp-ts/function';
-import {fromCompare} from 'fp-ts/Ord';
-import {OrdN} from '#src/pure/pure.ts';
+import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/helpers/markdown.ts';
-import {concatL, mapIdxL, mapL, sortL} from '#src/pure/pure-list.ts';
+import {concatL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {notFound} from '@hapi/boom';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {pipe} from '#src/utils/effect.ts';
 
 export const warLinks = specCommand<typeof COMMANDS.WAR_LINKS>(async (body) => {
     const options = getSharedOptions(body);
@@ -23,7 +22,7 @@ export const warLinks = specCommand<typeof COMMANDS.WAR_LINKS>(async (body) => {
 
     const opponentMembers = pipe(
         entities.currentWar[0].opponent.members,
-        sortL(fromCompare<ClanWarMember>((a, b) => OrdN.compare(a.mapPosition, b.mapPosition))),
+        sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition))),
     );
 
     return {
@@ -37,7 +36,7 @@ export const warLinks = specCommand<typeof COMMANDS.WAR_LINKS>(async (body) => {
                 ],
                 concatL(pipe(
                     [['wr', 'th', 'tag', 'name/link']],
-                    concatL(pipe(opponentMembers, mapIdxL((idx, m) =>
+                    concatL(pipe(opponentMembers, mapL((m, idx) =>
                         [nNatT(idx + options.from), nNatT(m.townHallLevel), m.tag, dCode(dBold(dLink(m.name, m.shareLink)))],
                     ))),
                     dTable,
