@@ -4,7 +4,7 @@ import type {Boom} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {respond, tryBody} from '#src/aws-lambdas/api_discord/api-util.ts';
-import type {APIInteraction} from 'discord-api-types/v10';
+import type {APIInteraction} from '@discordjs/core';
 import {pingPong} from '#src/aws-lambdas/api_discord/handlers/ping-pong.ts';
 import {applicationCommand} from '#src/aws-lambdas/api_discord/handlers/application-command.ts';
 import {autocomplete} from '#src/aws-lambdas/api_discord/handlers/autocomplete.ts';

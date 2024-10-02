@@ -1,4 +1,4 @@
-import type {Snowflake} from 'discord-api-types/v10';
+import type {Snowflake} from '@discordjs/core';
 
 export type CocPlayerTag = string;
 export type CocPlayerVerified = 1 | 0;

@@ -1,4 +1,4 @@
-import {ApplicationCommandType} from 'discord-api-types/v10';
+import {ApplicationCommandType} from '@discordjs/core';
 import type {CommandSpec} from '#src/discord/types.ts';
 
 export const FAQ = {

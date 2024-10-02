@@ -1,4 +1,4 @@
-import {ApplicationCommandOptionType} from 'discord-api-types/v10';
+import {ApplicationCommandOptionType} from '@discordjs/core';
 
 export const OPTION_CLAN = {
     clan: {

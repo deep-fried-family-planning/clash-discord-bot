@@ -1,4 +1,4 @@
-import {ApplicationCommandType} from 'discord-api-types/v10';
+import {ApplicationCommandType} from '@discordjs/core';
 import {
     OPTION_CLAN, OPTION_EXHAUSTIVE,
     OPTION_LIMIT,
