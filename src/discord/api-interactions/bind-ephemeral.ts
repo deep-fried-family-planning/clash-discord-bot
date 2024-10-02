@@ -6,7 +6,7 @@ import {SECRET_DISCORD_APP_ID} from '#src/constants/secrets/secret-discord-app-i
 import {eErrorReply} from '#src/discord/helpers/embed-error-reply.ts';
 import {discordLogError} from '#src/https/calls/discord-log-error.ts';
 import {p, E} from '#src/utils/effect.ts';
-import type {APIInteractionResponseCallbackData} from 'discord-api-types/v10';
+import type {APIInteractionResponseCallbackData} from '@discordjs/core';
 
 export const bindEphemeral = async (body) => {
     try {

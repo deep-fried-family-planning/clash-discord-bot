@@ -1,7 +1,7 @@
 import type {CommandSpec} from '#src/discord/types.ts';
 import {mapL, sortL} from '#src/pure/pure-list.ts';
 import {toValuesKV} from '#src/pure/pure-kv.ts';
-import type {RESTPostAPIApplicationCommandsJSONBody} from 'discord-api-types/v10';
+import type {RESTPostAPIApplicationCommandsJSONBody} from '@discordjs/core';
 import {OrdB, fromCompare} from '#src/pure/pure.ts';
 import console from 'node:console';
 import {pipe} from '#src/utils/effect.ts';

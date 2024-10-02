@@ -1,4 +1,4 @@
-import {ApplicationCommandOptionType} from 'discord-api-types/v10';
+import {ApplicationCommandOptionType} from '@discordjs/core';
 import type {SubCommandSpec} from '#src/discord/types.ts';
 
 export const CONFIG_SERVER_ADD = {

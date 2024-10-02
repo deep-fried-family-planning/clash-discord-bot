@@ -1,4 +1,4 @@
-import type {APIInteraction} from 'discord-api-types/v10';
+import type {APIInteraction} from '@discordjs/core';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import {InteractionResponseType} from 'discord-interactions';
 import {aws_sqs} from '#src/https/aws-sqs.ts';

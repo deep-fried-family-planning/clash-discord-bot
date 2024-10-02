@@ -1,4 +1,4 @@
-import type {APIInteraction} from 'discord-api-types/v10';
+import type {APIInteraction} from '@discordjs/core';
 import {aws_sqs} from '#src/https/aws-sqs.ts';
 
 export const messageComponent = async (body: APIInteraction) => {

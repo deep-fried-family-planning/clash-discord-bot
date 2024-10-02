@@ -1,5 +1,3 @@
-import {Cfg} from '#src/utils/effect.ts';
-
 export const enum SECRETS {
     DISCORD_APP_ID_______ = `/DFFP/{ENV}/DISCORD_APP_ID`,
     DISCORD_PUBLIC_KEY___ = `/DFFP/{ENV}/DISCORD_PUBLIC_KEY`,
@@ -15,7 +13,6 @@ export const enum SECRETS {
     COC_KEY______________ = `/DFFP/{ENV}/COC_KEY`,
 }
 
-export const secretKey = (s: SECRETS) => Cfg.string(s.replace(
+export const secretKey = (s: SECRETS) => s.replace(
     '{ENV}',
-    process.env.LAMBDA_ENV.toUpperCase(),
-));
+    process.env.LAMBDA_ENV.toUpperCase());
