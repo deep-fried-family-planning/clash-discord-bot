@@ -44,7 +44,7 @@
         "@hapi/boom": "10.0.1",
         "@hapi/bourne": "3.0.0",
         "clashofclans.js": "3.3.13",
-        "day": "0.0.2",
+        "dayjs": "1.11.13",
         "discord-interactions": "4.1.0",
         "effect": "3.8.4",
         "joi": "17.13.3",
