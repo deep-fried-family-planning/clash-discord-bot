@@ -8,12 +8,14 @@ import {WAR_OPPONENT} from '#src/discord/app-interactions/commands/war-opponent.
 import {WAR_SCOUT} from '#src/discord/app-interactions/commands/war-scout.cmd.ts';
 import {BOT} from '#src/discord/app-interactions/commands/bot/bot.cmd.ts';
 import {SMOKE} from '#src/discord/app-interactions/commands/smoke/smoke.cmd.ts';
+import {REST_TIME} from '#src/discord-commands/time.ts';
 
 export const COMMANDS = {
     BOT,
     CONFIG,
     FAQ,
     SMOKE,
+    REST_TIME,
     ONE_OF_US,
     CWL_SCOUT,
     WAR_LINKS,

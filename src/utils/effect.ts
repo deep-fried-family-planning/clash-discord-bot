@@ -10,6 +10,8 @@ export {
     LogLevel,
     LogSpan,
 
+    RateLimiter as RL,
+
     Metric as Metric,
 
     flow,

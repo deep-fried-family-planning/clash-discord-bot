@@ -10,15 +10,15 @@ import {SECRET_DISCORD_APP_ID} from '#src/constants/secrets/secret-discord-app-i
 import {ITR, MSG} from '#src/discord/helpers/re-exports.ts';
 import {INTERACTIONS} from '#src/discord/app-interactions/interactions.ts';
 import {asBoom} from '#src/utils/as-boom.ts';
-
-/**
- * @init
- */
+import {E, Logger} from '#src/utils/effect.ts';
+import {SSM_GET} from '#src/effect-aws/ssm.ts';
+import {makeLambda} from '@effect-aws/lambda';
+import {invokeCount, showMetric, SSM_counter} from '#src/internals/metrics.ts';
 
 /**
  * @invoke
  */
-export const handler = async (event: AppDiscordEvent) => {
+export const ope = async (event: AppDiscordEvent) => {
     const body = tryJson(event.Records[0].body);
 
     try {
@@ -53,3 +53,16 @@ export const handler = async (event: AppDiscordEvent) => {
         }
     }
 };
+
+const h = (event: AppDiscordEvent) => E.gen(function* () {
+    const ssm = yield * SSM_GET;
+
+    yield * showMetric(SSM_counter);
+    yield * showMetric(invokeCount);
+
+    yield * E.promise(async () => {
+        await ope(event);
+    });
+});
+
+export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));
