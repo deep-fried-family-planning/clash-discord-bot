@@ -1,4 +1,4 @@
-import {API} from '@discordjs/core';
+import {API} from '@discordjs/core/http-only';
 import {REST} from '@discordjs/rest';
 import {SECRET_DISCORD_BOT_TOKEN} from '#src/constants/secrets/secret-discord-bot-token.ts';
 

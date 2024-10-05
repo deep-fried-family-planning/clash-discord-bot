@@ -2,7 +2,7 @@ import type {
     APIButtonComponentWithCustomId, APIButtonComponentWithURL,
     APIMessageComponentButtonInteraction, APIBaseInteraction, APIMessageComponentInteraction,
     APIStringSelectComponent, APIMessageStringSelectInteractionData,
-} from '@discordjs/core';
+} from '@discordjs/core/http-only';
 import type {CMP} from '#src/discord/helpers/re-exports.ts';
 import type {ITR, CMP_T} from '#src/discord/helpers/re-exports.ts';
 

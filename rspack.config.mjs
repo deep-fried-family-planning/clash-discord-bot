@@ -6,7 +6,7 @@ import {readdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pipe} from 'effect';
 import {reduce, map, filter} from 'effect/Array';
-import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
+// import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
 
 const targets = ['node >= 20.12'];
 
@@ -25,9 +25,6 @@ export default defineConfig({
     externalsType: 'module',
     externals    : [
         /@aws-sdk./,
-        'zlib-sync',
-        'bufferutil',
-        'utf-8-validate',
     ],
 
     resolve: {
@@ -41,7 +38,7 @@ export default defineConfig({
     module: {
         rules: [{
             test   : /\.js$/,
-            exclude: /node_modules/,
+            exclude: /node_modules\/\.pnpm/,
             use    : [{
                 loader : 'builtin:swc-loader',
                 options: {
@@ -55,7 +52,7 @@ export default defineConfig({
             }],
         }, {
             test   : /\.ts$/,
-            exclude: /node_modules/,
+            exclude: /node_modules\/\.pnpm/,
             use    : [{
                 loader : 'builtin:swc-loader',
                 options: {
@@ -83,6 +80,9 @@ export default defineConfig({
         environment: {
             module: true,
         },
+        library: {
+            type: 'module',
+        },
         clean: true,
     },
 
@@ -96,7 +96,7 @@ export default defineConfig({
     },
 
     stats: {
-        preset     : 'summary',
+        preset     : 'normal',
         entrypoints: true,
         performance: true,
         children   : true,

@@ -7,7 +7,7 @@ import type {
     APIApplicationCommandSubcommandOption,
     APIEmbed, APIInteractionResponseCallbackData,
     ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody, APIModalInteractionResponseCallbackData,
-} from '@discordjs/core';
+} from '@discordjs/core/http-only';
 import type {Just} from '#src/pure/types.ts';
 
 // Utils

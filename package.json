@@ -11,7 +11,7 @@
     "type": "module",
     "scripts": {
         "types": "tsc --project tsconfig.check.json --noEmit",
-        "build": "rm -rf dist && dffp build",
+        "esbuild": "rm -rf dist && dffp build",
         "coverage": "vitest --coverage",
         "lint": "eslint .",
         "fixlint": "eslint . --fix",
@@ -22,7 +22,7 @@
         "plan": "pnpm run show && terraform -chdir=terraform plan -out .plan.tfplan",
         "apply": "terraform -chdir=terraform apply .plan.tfplan",
         "reset": "rm -rf **/node_modules **/dist **/*.tfplan **/*.lock.hcl **/.terraform",
-        "sendit": "pnpm run build && pnpm run plan && pnpm run apply",
+        "sendit": "pnpm run rspack && pnpm run plan && pnpm run apply",
         "postinstall": "husky",
         "rspack": "rspack build"
     },
@@ -44,6 +44,7 @@
         "@effect-aws/ssm": "1.0.1",
         "@hapi/boom": "10.0.1",
         "@hapi/bourne": "3.0.0",
+        "bufferutil": "4.0.8",
         "clashofclans.js": "3.3.13",
         "dayjs": "1.11.13",
         "discord-interactions": "4.1.0",
@@ -60,7 +61,6 @@
         "@commitlint/config-conventional": "19.5.0",
         "@dffp/clash-discord-bot-cli": "workspace:*",
         "@eslint/js": "9.12.0",
-        "@rsdoctor/rspack-plugin": "0.4.5",
         "@rspack/cli": "1.0.8",
         "@rspack/core": "1.0.8",
         "@stylistic/eslint-plugin": "2.8.0",

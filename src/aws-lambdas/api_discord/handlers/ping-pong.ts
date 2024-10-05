@@ -1,4 +1,4 @@
-import type {APIInteraction} from '@discordjs/core';
+import type {APIInteraction} from '@discordjs/core/http-only';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 
 export const pingPong = (body: APIInteraction) => respond({
