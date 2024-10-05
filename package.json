@@ -23,7 +23,8 @@
         "apply": "terraform -chdir=terraform apply .plan.tfplan",
         "reset": "rm -rf **/node_modules **/dist **/*.tfplan **/*.lock.hcl **/.terraform",
         "sendit": "pnpm run build && pnpm run plan && pnpm run apply",
-        "postinstall": "husky"
+        "postinstall": "husky",
+        "rspack": "rspack build"
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "3.662.0",
@@ -57,8 +58,9 @@
         "@aws-sdk/client-ssm": "3.662.0",
         "@commitlint/cli": "19.5.0",
         "@commitlint/config-conventional": "19.5.0",
-        "@dffp/clash-discord-bot-cli": "workspace:*",
         "@eslint/js": "9.11.1",
+        "@rspack/cli": "1.0.8",
+        "@rspack/core": "1.0.8",
         "@stylistic/eslint-plugin": "2.8.0",
         "@types/aws-lambda": "8.10.145",
         "@types/eslint__js": "8.42.3",
@@ -69,6 +71,7 @@
         "esbuild": "0.24.0",
         "eslint": "9.11.1",
         "husky": "9.1.6",
+        "ts-node": "10.9.2",
         "tsx": "4.19.1",
         "typescript": "5.6.2",
         "typescript-eslint": "8.8.0",
