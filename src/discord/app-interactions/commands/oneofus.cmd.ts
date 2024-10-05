@@ -1,4 +1,4 @@
-import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core';
+import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec} from '#src/discord/types.ts';
 
 export const ONE_OF_US = {

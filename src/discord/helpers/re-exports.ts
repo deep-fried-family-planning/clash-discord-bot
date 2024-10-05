@@ -7,4 +7,4 @@ export {
     ComponentType as CMP,
     TextInputStyle as CMP_T,
     ButtonStyle as CMP_B,
-} from '@discordjs/core';
+} from '@discordjs/core/http-only';

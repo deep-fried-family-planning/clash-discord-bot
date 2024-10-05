@@ -1,4 +1,4 @@
-import {ApplicationCommandType} from '@discordjs/core';
+import {ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec} from '#src/discord/types.ts';
 
 export const SMOKE = {

@@ -1,4 +1,4 @@
-import {ApplicationCommandType} from '@discordjs/core';
+import {ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec} from '#src/discord/types.ts';
 import {CONFIG_SERVER} from '#src/discord/app-interactions/commands/config/server/config-server.cmd.ts';
 

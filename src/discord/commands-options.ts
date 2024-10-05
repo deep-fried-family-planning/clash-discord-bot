@@ -1,4 +1,4 @@
-import {ApplicationCommandOptionType} from '@discordjs/core';
+import {ApplicationCommandOptionType} from '@discordjs/core/http-only';
 
 export const OPTION_CLAN = {
     type       : ApplicationCommandOptionType.String,

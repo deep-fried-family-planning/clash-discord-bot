@@ -2,7 +2,7 @@ import type {CommandData, CommandSpec, Interaction, SubCommandSpec} from '#src/d
 import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
 import {reduceL} from '#src/pure/pure-list.ts';
 import {show} from '../../utils/show.ts';
-import type {APIInteractionResponseCallbackData} from '@discordjs/core';
+import type {APIInteractionResponseCallbackData} from '@discordjs/core/http-only';
 import {pipe} from '#src/utils/effect.ts';
 
 const overrideNames = <T extends {name: string}>(options?: T[]): Record<string, T> =>

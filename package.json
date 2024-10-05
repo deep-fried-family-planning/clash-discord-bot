@@ -11,7 +11,7 @@
     "type": "module",
     "scripts": {
         "types": "tsc --project tsconfig.check.json --noEmit",
-        "build": "rm -rf dist && dffp build",
+        "esbuild": "rm -rf dist && dffp build",
         "coverage": "vitest --coverage",
         "lint": "eslint .",
         "fixlint": "eslint . --fix",
@@ -22,13 +22,14 @@
         "plan": "pnpm run show && terraform -chdir=terraform plan -out .plan.tfplan",
         "apply": "terraform -chdir=terraform apply .plan.tfplan",
         "reset": "rm -rf **/node_modules **/dist **/*.tfplan **/*.lock.hcl **/.terraform",
-        "sendit": "pnpm run build && pnpm run plan && pnpm run apply",
-        "postinstall": "husky"
+        "sendit": "pnpm run rspack && pnpm run plan && pnpm run apply",
+        "postinstall": "husky",
+        "rspack": "rspack build"
     },
     "dependencies": {
-        "@aws-sdk/client-dynamodb": "3.662.0",
-        "@aws-sdk/client-sqs": "3.662.0",
-        "@aws-sdk/lib-dynamodb": "3.662.0",
+        "@aws-sdk/client-dynamodb": "3.665.0",
+        "@aws-sdk/client-sqs": "3.665.0",
+        "@aws-sdk/lib-dynamodb": "3.665.0",
         "@discordjs/builders": "1.9.0",
         "@discordjs/core": "2.0.0",
         "@discordjs/rest": "2.4.0",
@@ -43,6 +44,7 @@
         "@effect-aws/ssm": "1.0.1",
         "@hapi/boom": "10.0.1",
         "@hapi/bourne": "3.0.0",
+        "bufferutil": "4.0.8",
         "clashofclans.js": "3.3.13",
         "dayjs": "1.11.13",
         "discord-interactions": "4.1.0",
@@ -54,26 +56,29 @@
         "uuid": "10.0.0"
     },
     "devDependencies": {
-        "@aws-sdk/client-ssm": "3.662.0",
+        "@aws-sdk/client-ssm": "3.665.0",
         "@commitlint/cli": "19.5.0",
         "@commitlint/config-conventional": "19.5.0",
         "@dffp/clash-discord-bot-cli": "workspace:*",
-        "@eslint/js": "9.11.1",
+        "@eslint/js": "9.12.0",
+        "@rspack/cli": "1.0.8",
+        "@rspack/core": "1.0.8",
         "@stylistic/eslint-plugin": "2.8.0",
         "@types/aws-lambda": "8.10.145",
         "@types/eslint__js": "8.42.3",
         "@types/node": "22.7.4",
         "@types/string-similarity": "4.0.2",
         "@types/uuid": "10.0.0",
-        "@vitest/coverage-istanbul": "2.1.1",
+        "@vitest/coverage-istanbul": "2.1.2",
         "esbuild": "0.24.0",
-        "eslint": "9.11.1",
+        "eslint": "9.12.0",
         "husky": "9.1.6",
+        "ts-node": "10.9.2",
         "tsx": "4.19.1",
         "typescript": "5.6.2",
         "typescript-eslint": "8.8.0",
         "vite": "5.4.8",
         "vite-tsconfig-paths": "5.0.1",
-        "vitest": "2.1.1"
+        "vitest": "2.1.2"
     }
 }

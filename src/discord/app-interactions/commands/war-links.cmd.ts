@@ -1,4 +1,4 @@
-import {ApplicationCommandType} from '@discordjs/core';
+import {ApplicationCommandType} from '@discordjs/core/http-only';
 import {
     OPTION_CLAN,
     OPTION_FROM,
