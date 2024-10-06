@@ -34,6 +34,9 @@ jobs:
     name:    validate
 #    needs:   [verify]
     runs-on: ubuntu-latest
+    env:
+      key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      key:    ${{ secrets.AWS_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,8 +56,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region:            us-east-1
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-access-key-id:     ${{ env.key_id }}
+          aws-secret-access-key: ${{ env.key }}
 
       - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         run:  terraform -chdir terraform workspace select qual
