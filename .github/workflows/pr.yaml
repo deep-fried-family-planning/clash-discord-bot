@@ -2,14 +2,16 @@ name: pr
 
 on:
   pull_request:
-    branches:
-      - main
-    types:
-      - synchronize
+    branches: [main]
+    types:    [synchronize]
+
+concurrency:
+  group:              ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   verify:
-    name: verify
+    name:    verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache: pnpm
+          cache:             pnpm
       - name: install
         run:  pnpm install
       - name: type check
@@ -28,10 +30,9 @@ jobs:
         run:  pnpm run build
 
   validate:
-    name: validate
+    name:    validate
+    needs:   [verify]
     runs-on: ubuntu-latest
-    if: 
-    needs: ['verify']
-
     steps:
       - uses: actions/checkout@v4
+      - run:  echo "todo - terraform CICD credentials"

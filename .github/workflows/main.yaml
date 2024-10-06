@@ -1,0 +1,48 @@
+name: main
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    name:    build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache:             pnpm
+      - name: install
+        run:  pnpm install
+      - name: rspack
+        run:  pnpm run build
+
+  qual:
+    name:    qual
+    needs:   [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run:  echo "todo - terraform CICD credentials"
+
+  regression:
+    name:    regression test
+    needs:   [qual]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run:  echo "todo - terraform CICD credentials"
+
+  prod:
+    name:    prod
+    needs:   [regression]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run:  echo "todo - terraform CICD credentials"
