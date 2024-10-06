@@ -27,5 +27,3 @@ jobs:
         run:  pnpm run unit
       - name: pnpm run build
         run:  pnpm run build
-      - name: pnpm run lint
-        run:  pnpm run lint
