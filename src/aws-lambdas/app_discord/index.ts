@@ -28,7 +28,7 @@ const ope = async (event: AppDiscordEvent) => {
             await discord.interactions.editReply(SECRET.DISCORD_APP_ID, body.token, message);
         }
         else {
-            await INTERACTIONS[body.type][body.data.custom_id](body);
+            await INTERACTIONS[body.type][body.data.custom_id](body as never);
         }
     }
     catch (e) {
@@ -41,7 +41,11 @@ const ope = async (event: AppDiscordEvent) => {
         try {
             await discord.interactions.editReply(SECRET.DISCORD_APP_ID, body.token, eErrorReply(error, log.log));
         }
-        catch (_) {
+        catch (e) {
+            const error2 = asBoom(e);
+
+            await discordLogError(error2);
+
             await discord.interactions.reply(body.id, body.token, {
                 flags: MSG.Ephemeral,
                 ...eErrorReply(error, log.log),

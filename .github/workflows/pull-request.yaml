@@ -25,9 +25,9 @@ jobs:
         run:  pnpm install
       - name: pnpm run types
         run:  pnpm run types
-      - name: pnpm run lint
-        run:  pnpm run lint
       - name: pnpm run unit
         run:  pnpm run unit
       - name: pnpm run build
         run:  pnpm run build
+      - name: pnpm run lint
+        run: pnpm run lint
