@@ -15,7 +15,7 @@ import {asBoom} from '#src/utils/as-boom.ts';
 import {SECRET} from '#src/internals/secrets.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {E, Logger} from '#src/utils/effect.ts';
-import {invokeCount, showMetric, SSM_counter} from '#src/internals/metrics.ts';
+import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 
 const router = {
     [ITR.Ping]                          : pingPong,
@@ -59,7 +59,6 @@ export const inner = async (req: APIGatewayProxyEventBase<null>) => {
 };
 
 export const h = (event: APIGatewayProxyEventBase<null>) => E.gen(function * () {
-    yield * showMetric(SSM_counter);
     yield * showMetric(invokeCount);
 
     return yield * E.promise(async () => await inner(event));

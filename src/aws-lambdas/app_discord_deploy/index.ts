@@ -6,8 +6,10 @@ import {E, Logger, pipe} from '#src/utils/effect.ts';
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {SECRET} from '#src/internals/secrets.ts';
+import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 
 const h = () => E.gen(function* () {
+    yield * invokeCount(showMetric(invokeCount));
     const cmds = yield * pipe(COMMANDS, mapEntries((v, k) => [k, specToREST(v)]), toEntries, E.succeed);
 
     const allNames = pipe(cmds, map(([, cmd]) => cmd.name));

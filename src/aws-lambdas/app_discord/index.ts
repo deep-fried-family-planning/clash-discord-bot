@@ -12,7 +12,7 @@ import {asBoom} from '#src/utils/as-boom.ts';
 import {E, Logger} from '#src/utils/effect.ts';
 import {SECRET} from '#src/internals/secrets.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {invokeCount, showMetric, SSM_counter} from '#src/internals/metrics.ts';
+import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 
 const ope = async (event: AppDiscordEvent) => {
     const body = tryJson(event.Records[0].body);
@@ -55,12 +55,11 @@ const ope = async (event: AppDiscordEvent) => {
 };
 
 const h = (event: AppDiscordEvent) => E.gen(function* () {
-    yield * showMetric(SSM_counter);
     yield * showMetric(invokeCount);
 
-    yield * E.promise(async () => {
+    yield * invokeCount(E.promise(async () => {
         await ope(event);
-    });
+    }));
 });
 
 export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));
