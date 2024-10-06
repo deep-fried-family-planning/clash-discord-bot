@@ -12,13 +12,22 @@ jobs:
     concurrency: 1
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: git
+        uses: actions/checkout@v4
+      - name: pnpm
+        uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20.12.2
           cache: 'pnpm'
 
-      - run: pnpm install
-      - run: pnpm run types
-      - run: pnpm run build
+      - name: pnpm install
+        run:  pnpm install
+      - name: pnpm run types
+        run:  pnpm run types
+      - name: pnpm run lint
+        run:  pnpm run lint
+      - name: pnpm run unit
+        run:  pnpm run unit
+      - name: pnpm run build
+        run:  pnpm run build
