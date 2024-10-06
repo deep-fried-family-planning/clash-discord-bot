@@ -12,7 +12,7 @@
   "type": "module",
   "scripts": {
     "types": "tsc --project tsconfig.check.json --noEmit",
-    "build": "rspack build",
+    "build": "rm -rf dist && rspack build",
     "coverage": "vitest --coverage",
     "lint": "eslint .",
     "fixlint": "eslint . --fix",
