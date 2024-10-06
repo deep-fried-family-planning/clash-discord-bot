@@ -28,12 +28,3 @@ jobs:
         run:  pnpm run unit
       - name: rspack
         run:  pnpm run build
-
-  validate:
-    name:    validate
-    if:      ${{contains(github.event.pull_request.body, '.tf')}}
-    needs:   [verify]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run:  echo "todo - terraform CICD credentials"
