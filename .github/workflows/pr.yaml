@@ -32,7 +32,7 @@ jobs:
 
   validate:
     name:    validate
-    needs:   [verify]
+#    needs:   [verify]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
