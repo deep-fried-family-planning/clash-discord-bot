@@ -16,8 +16,8 @@ jobs:
     steps:
       - env:
           EVENT_CONTEXT: ${{ toJSON(github.event) }}
-          run: |
-            echo $EVENT_CONTEXT
+        run: |
+          echo $EVENT_CONTEXT
   verify:
     name:    verify
     runs-on: ubuntu-latest
