@@ -19,6 +19,7 @@ resource "aws_scheduler_schedule" "schedule" {
   }
 }
 
+
 data "aws_iam_policy_document" "schedule_role" {
   statement {
     effect  = "Allow"
