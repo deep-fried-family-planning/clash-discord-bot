@@ -11,21 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: 1
 
-    strategy:
-      matrix:
-        node-version: [20.12.2]
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-
-
-      - name: node v${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20.12.2
           cache: 'pnpm'
 
       - run: pnpm install
