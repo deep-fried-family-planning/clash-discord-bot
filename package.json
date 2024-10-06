@@ -11,6 +11,7 @@
     "type": "module",
     "scripts": {
         "types": "tsc --project tsconfig.check.json --noEmit",
+        "build": "rspack build",
         "esbuild": "rm -rf dist && dffp build",
         "coverage": "vitest --coverage",
         "lint": "eslint .",
