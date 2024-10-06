@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: '2'
+          fetch-depth: 2
       - uses: tj-actions/changed-files@v45
         id:   changed
         with:
@@ -45,22 +45,22 @@ jobs:
             terraform/**
             *.tf
 
-      - run:  echo "${{ steps.changed.outputs.any_changed == true }}"
+      - run:  echo "${{ steps.changed.outputs.any_changed == 'true' }}"
 
-      - if:   ${{ steps.changed.outputs.any_changed == true }}
+      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         run:  echo "todo - terraform CICD credentials"
-      - if:   ${{ steps.changed.outputs.any_changed == true }}
+      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region:            us-east-1
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY }}
 
-      - if:   ${{ steps.changed.outputs.any_changed == true }}
+      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         run:  terraform -chdir terraform workspace select qual
 
-      - if: ${{ steps.changed.outputs.any_changed == true }}
+      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
         run: terraform -chdir terraform init
 
-      - if: ${{ steps.changed.outputs.any_changed == true }}
+      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
         run: terraform -chdir terraform validate
