@@ -17,6 +17,7 @@
         "coverage": "vitest --coverage",
         "lint": "eslint .",
         "fixlint": "eslint . --fix",
+        "unit": "echo 'not implemented'",
         "format": "terraform -chdir=terraform fmt -recursive",
         "init": "terraform -chdir=terraform init",
         "select": "terraform -chdir=terraform workspace select",

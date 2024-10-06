@@ -1,4 +1,4 @@
-name: PR Verify
+name: PR
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ jobs:
   build:
     name: Verify
     runs-on: ubuntu-latest
-    concurrency: 1
+    concurrency: "verify"
 
     steps:
       - name: git
