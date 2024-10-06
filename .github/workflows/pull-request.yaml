@@ -2,7 +2,8 @@ name: PR Verify
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: ['main']
+    type: ['synchronize']
 
 jobs:
   build:
