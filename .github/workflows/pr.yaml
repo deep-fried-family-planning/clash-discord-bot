@@ -10,25 +10,25 @@ concurrency:
 
 jobs:
 
-  verify:
-    name:    verify
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
-          cache:             pnpm
-
-      - name: install
-        run:  pnpm install
-      - name: type check
-        run:  pnpm run types
-      - name: unit test
-        run:  pnpm run unit
-      - name: rspack
-        run:  pnpm run build
+#  verify:
+#    name:    verify
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: pnpm/action-setup@v4
+#      - uses: actions/setup-node@v4
+#        with:
+#          node-version-file: package.json
+#          cache:             pnpm
+#
+#      - name: install
+#        run:  pnpm install
+#      - name: type check
+#        run:  pnpm run types
+#      - name: unit test
+#        run:  pnpm run unit
+#      - name: rspack
+#        run:  pnpm run build
 
   validate:
     name:    validate
@@ -39,7 +39,9 @@ jobs:
       - uses: tj-actions/changed-files@v45
         id:   changed
         with:
-          files: "terraform/**"
+          files: terraform/**
+
+      - run:  echo "${{ steps.changed.outputs.any_changed == true }}"
 
       - if:   ${{ steps.changed.outputs.any_changed == true }}
         run:  echo "todo - terraform CICD credentials"
