@@ -1,6 +1,5 @@
-import type {APIGatewayProxyEventBase, APIGatewayProxyResult} from 'aws-lambda';
+import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {badImplementation} from '@hapi/boom';
-import type {Boom} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {respond, tryBody} from '#src/aws-lambdas/api_discord/api-util.ts';
@@ -11,14 +10,13 @@ import {autocomplete} from '#src/aws-lambdas/api_discord/handlers/autocomplete.t
 import {modalSubmit} from '#src/aws-lambdas/api_discord/handlers/modal-submit.ts';
 import {messageComponent} from '#src/aws-lambdas/api_discord/handlers/message-component.ts';
 import {discordLogError} from '#src/https/calls/discord-log-error.ts';
-import {SECRET_DISCORD_PUBLIC_KEY} from '#src/constants/secrets/secret-discord-public-key.ts';
-import type {Maybe} from '#src/pure/types.ts';
 import {ITR} from '#src/discord/helpers/re-exports.ts';
 import {asBoom} from '#src/utils/as-boom.ts';
+import {SECRET} from '#src/internals/secrets.ts';
+import {makeLambda} from '@effect-aws/lambda';
+import {E, Logger} from '#src/utils/effect.ts';
+import {invokeCount, showMetric, SSM_counter} from '#src/internals/metrics.ts';
 
-/**
- * @init
- */
 const router = {
     [ITR.Ping]                          : pingPong,
     [ITR.ApplicationCommand]            : applicationCommand,
@@ -27,15 +25,12 @@ const router = {
     [ITR.MessageComponent]              : messageComponent,
 } as const;
 
-/**
- * @invoke
- */
-export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<Maybe<APIGatewayProxyResult>> => {
+export const inner = async (req: APIGatewayProxyEventBase<null>) => {
     try {
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;
 
-        const isVerified = await verifyKey(Buffer.from(req.body!), signature, timestamp, SECRET_DISCORD_PUBLIC_KEY);
+        const isVerified = await verifyKey(Buffer.from(req.body!), signature, timestamp, SECRET.DISCORD_PUBLIC_KEY);
 
         if (!isVerified) {
             throw unauthorized('invalid request signature');
@@ -62,3 +57,12 @@ export const handler = async (req: APIGatewayProxyEventBase<null>): Promise<Mayb
         });
     }
 };
+
+export const h = (event: APIGatewayProxyEventBase<null>) => E.gen(function * () {
+    yield * showMetric(SSM_counter);
+    yield * showMetric(invokeCount);
+
+    return yield * E.promise(async () => await inner(event));
+});
+
+export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));

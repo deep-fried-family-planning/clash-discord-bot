@@ -53,13 +53,16 @@ const prog = E.gen(function* () {
     };
 });
 
-export const SSM = pipe(
+const Secrets = pipe(
     prog,
     E.provide(L.setConfigProvider(SSM_PROVIDER)),
     E.cached,
 );
 
-export const SSM_GET = E.gen(function * () {
-    const task = yield * SSM;
-    return yield * task;
-});
+export const SECRET = await pipe(
+    E.gen(function * () {
+        const task = yield * Secrets;
+        return yield * task;
+    }),
+    E.runPromise,
+);
