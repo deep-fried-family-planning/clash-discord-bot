@@ -1,4 +1,4 @@
-name: pr (source)
+name: pr-verify
 
 on:
   pull_request:
@@ -10,7 +10,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changed:
+    name:    changed
+    runs-on: ubuntu-latest
+    outputs:
+      any_changed: ${{steps.changed.outputs.any_changed}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tj-actions/changed-files@v45
+        name: detect tf
+        id:   changed
+        with:
+          files: terraform/**
+
   verify:
+    name:    verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,3 +41,12 @@ jobs:
         run:  pnpm run unit
       - name: rspack
         run:  pnpm run build
+
+  validate:
+    name:    validate
+    if:      ${{jobs.changes.outputs.any_changed}}
+    needs:   [changed, verify]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "todo - terraform CICD credentials"
