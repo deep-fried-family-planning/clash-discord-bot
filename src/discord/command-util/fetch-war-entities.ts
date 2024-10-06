@@ -4,8 +4,6 @@ import type {Clan, ClanWar} from 'clashofclans.js';
 import {api_coc} from '#src/https/api-coc.ts';
 import {pipe} from '#src/utils/effect.ts';
 
-export type CurrentEntities = Awaited<ReturnType<typeof fetchWarEntities>>;
-
 export const fetchWarEntities = async (ops: SharedOptions) => {
     const clan = await api_coc.getClan(ops.cid1);
 
@@ -38,7 +36,7 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                     currentWar: [war],
                     current   : {
                         clans  : [clan, warClan],
-                        players: concatL(warPlayers)(players),
+                        players: pipe(players, concatL(warPlayers)),
                         wars   : [war],
                     },
                 };
@@ -65,6 +63,7 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                 currentWar,
             };
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         catch (e) {
             const players = await clan.fetchMembers();
             const war = await api_coc.getCurrentWar(ops.cid1);
@@ -89,7 +88,7 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                 currentWar: [war],
                 current   : {
                     clans  : [clan, warClan],
-                    players: concatL(warPlayers)(players),
+                    players: pipe(players, concatL(warPlayers)),
                     wars   : [war],
                 },
             };
@@ -119,7 +118,7 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
         currentWar: [war],
         current   : {
             clans  : [clan, warClan],
-            players: concatL(warPlayers)(players),
+            players: pipe(players, concatL(warPlayers)),
             wars   : [war],
         },
     };

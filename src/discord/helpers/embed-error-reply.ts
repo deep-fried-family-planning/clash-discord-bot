@@ -3,7 +3,7 @@ import type {Boom} from '@hapi/boom';
 import {dLinesS} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {LBUTTON_SUPPORT_SERVER} from '#src/discord/app-interactions/components/lbutton-support-server.ts';
-import {CMP, MSG} from '#src/discord/helpers/re-exports.ts';
+import {CMP} from '#src/discord/helpers/re-exports.ts';
 import {LBUTTON_ERROR_LOG} from '#src/discord/app-interactions/components/lbutton-error-log.ts';
 
 export const eErrorReply = (e: Error | Boom, log: {contents: {channel_id: string; id: string}}): DiscordMsg => ({

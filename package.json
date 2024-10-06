@@ -14,7 +14,7 @@
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "rm -rf dist && rspack build",
     "coverage": "vitest --coverage",
-    "lint": "eslint .",
+    "lint": "eslint . --quiet",
     "fixlint": "eslint . --fix",
     "unit": "echo 'not implemented'",
     "format": "terraform -chdir=terraform fmt -recursive",
