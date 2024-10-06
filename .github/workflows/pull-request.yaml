@@ -14,16 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          run_install: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
           cache: pnpm
 
-      - name: pnpm install
-        run:  pnpm install
-      - name: pnpm run types
+      - name: type check
         run:  pnpm run types
-      - name: pnpm run unit
+      - name: unit test
         run:  pnpm run unit
-      - name: pnpm run build
+      - name: rspack
         run:  pnpm run build
