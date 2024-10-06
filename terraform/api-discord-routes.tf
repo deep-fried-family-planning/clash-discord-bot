@@ -40,6 +40,7 @@ resource "aws_api_gateway_integration" "api_discord_option" {
 }
 
 
+
 #
 # POST /interactions
 #
