@@ -39,7 +39,7 @@ jobs:
       - uses: tj-actions/changed-files@v45
         id:   changed
         with:
-          files: terraform/**
+          files: "terraform/**"
 
       - if:   ${{ steps.changed.outputs.any_changed == true }}
         run:  echo "todo - terraform CICD credentials"
