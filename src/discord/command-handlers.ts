@@ -20,24 +20,21 @@ import {CONFIG_SERVER_EDIT} from '#src/discord/app-interactions/commands/config/
 import {configServerEdit} from '#src/discord/app-interactions/commands/config/server/server-edit.ts';
 import {BOT} from '#src/discord/app-interactions/commands/bot/bot.cmd.ts';
 import {BOT_ABOUT} from '#src/discord/app-interactions/commands/bot/bot-about.cmd.ts';
-import {BOT_GETTING_STARTED} from '#src/discord/app-interactions/commands/bot/bot-getting-started.cmd.ts';
-import {botGettingStarted} from '#src/discord/app-interactions/commands/bot/bot-getting-started.ts';
 import {botAbout} from '#src/discord/app-interactions/commands/bot/bot-about.ts';
 import {smoke} from '#src/discord/app-interactions/commands/smoke/smoke.ts';
 import {SMOKE} from '#src/discord/app-interactions/commands/smoke/smoke.cmd.ts';
 import {REST_TIME, time} from '#src/discord-commands/time.ts';
 
 export const COMMAND_HANDLERS = {
-    [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                    : botAbout,
-    [cmdName(BOT, BOT_GETTING_STARTED, BOT_GETTING_STARTED)]: botGettingStarted,
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)]     : configServerAdd,
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]    : configServerEdit,
-    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]              : oneofus,
-    [cmdName(SMOKE, SMOKE, SMOKE)]                          : smoke,
-    [cmdName(FAQ, FAQ, FAQ)]                                : faq,
-    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]              : cwlScout,
-    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]              : warLinks,
-    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)]     : warOpponent,
-    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]              : warScout,
-    [cmdName(REST_TIME, REST_TIME, REST_TIME)]              : time,
+    [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                : botAbout,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)] : configServerAdd,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]: configServerEdit,
+    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]          : oneofus,
+    [cmdName(SMOKE, SMOKE, SMOKE)]                      : smoke,
+    [cmdName(FAQ, FAQ, FAQ)]                            : faq,
+    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]          : cwlScout,
+    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]          : warLinks,
+    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)] : warOpponent,
+    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]          : warScout,
+    [cmdName(REST_TIME, REST_TIME, REST_TIME)]          : time,
 } as const satisfies {[key in string]: ReturnType<typeof specCommand>};

@@ -32,7 +32,9 @@ export const REST_TIME = {
     },
 } as const satisfies CommandSpec;
 
-export const time = /* @__PURE__ */ specCommand<typeof REST_TIME>(async (body) => {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+export const time = /* @__PURE__ */ specCommand<typeof REST_TIME>((body) => {
     dayjs.extend(dayutc);
     dayjs.extend(daytimezone);
 

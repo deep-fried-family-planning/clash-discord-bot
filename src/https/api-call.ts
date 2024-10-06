@@ -32,7 +32,7 @@ export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
             body  : ops.jsonBody
                 ? JSON.stringify(ops.jsonBody)
                 : ops.body
-                ?? null,
+                    ?? null,
         });
 
         if (ops.headers) {

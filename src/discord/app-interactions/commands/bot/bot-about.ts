@@ -6,7 +6,9 @@ import {LBUTTON_SUPPORT_SERVER} from '#src/discord/app-interactions/components/l
 import {LBUTTON_PATREON} from '#src/discord/app-interactions/components/lbutton-patreon.ts';
 import {CMP} from '#src/discord/helpers/re-exports.ts';
 
-export const botAbout = specCommand<typeof BOT_ABOUT>(async (body) => {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+export const botAbout = specCommand<typeof BOT_ABOUT>(() => {
     return {
         embeds: [{
             color      : nColor(COLOR.INFO),
