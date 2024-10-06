@@ -8,6 +8,8 @@ import {COLOR, nColor} from '#src/constants/colors.ts';
 import {dLinesS} from '#src/discord/helpers/markdown.ts';
 import {namedComponentOptions} from '#src/discord/helpers/named-options.ts';
 import {MODAL} from '#src/discord/app-interactions/custom-id.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import type {DModal, IModal} from '#src/discord/helpers/re-export-types.ts';
 
 export const MODAL_LINK_ACCOUNT
@@ -40,6 +42,7 @@ export const modalLinkAccount = async (inter: IModal<typeof MODAL_LINK_ACCOUNT>)
 
     const tag = api_coc.util.formatTag(options[MODAL.LINK_ACCOUNT_TAG].value);
     const token = options[MODAL.LINK_ACCOUNT_TOKEN].value;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
     const user = inter.member!.user.id;
 
     if (!api_coc.util.isValidTag(tag)) {
@@ -77,6 +80,7 @@ export const modalLinkAccount = async (inter: IModal<typeof MODAL_LINK_ACCOUNT>)
         players: {
             ...links.players,
             [tag]: {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                 user,
                 verified: 1,
             },

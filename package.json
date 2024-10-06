@@ -4,17 +4,20 @@
     "description": "",
     "author": "",
     "license": "ISC",
+    "engineStrict": true,
     "engines": {
-        "node": "20.12.2",
-        "pnpm": "9.9.0"
+        "node": "20.12.2"
     },
+    "packageManager": "pnpm@9.9.0",
     "type": "module",
     "scripts": {
         "types": "tsc --project tsconfig.check.json --noEmit",
+        "build": "rspack build",
         "esbuild": "rm -rf dist && dffp build",
         "coverage": "vitest --coverage",
         "lint": "eslint .",
         "fixlint": "eslint . --fix",
+        "unit": "echo 'not implemented'",
         "format": "terraform -chdir=terraform fmt -recursive",
         "init": "terraform -chdir=terraform init",
         "select": "terraform -chdir=terraform workspace select",
