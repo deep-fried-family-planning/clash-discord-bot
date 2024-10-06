@@ -3,7 +3,6 @@ name: pr
 on:
   pull_request:
     branches: [main]
-    types:    [synchronize]
 
 concurrency:
   group:              ${{ github.workflow }}-${{ github.ref }}
