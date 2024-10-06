@@ -41,7 +41,9 @@ jobs:
       - uses: tj-actions/changed-files@v45
         id:   changed
         with:
-          files: terraform/**
+          files: |
+            terraform/**
+            *.tf
 
       - run:  echo "${{ steps.changed.outputs.any_changed == true }}"
 
