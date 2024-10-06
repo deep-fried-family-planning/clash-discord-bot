@@ -59,6 +59,7 @@ jobs:
           aws-access-key-id:     ${{ env.key_id }}
           aws-secret-access-key: ${{ env.key }}
 
+
       - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         run:  terraform -chdir terraform workspace select qual
 
