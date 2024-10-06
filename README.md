@@ -10,6 +10,8 @@ Then run this command:
 pnpm install
 ```
 
+github (todo)
+
 ## TypeScript
 Type check code changes with [`typescript`](https://www.typescriptlang.org)
 using this command:
@@ -32,5 +34,4 @@ using this command:
 pnpm run unit
 ```
 
-## Terraform
-todo
+## Terraform (todo)
