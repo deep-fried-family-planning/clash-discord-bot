@@ -1,0 +1,41 @@
+name: pr
+concurrency: pr
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - synchronize
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - name: install
+        run:  pnpm install
+      - name: type check
+        run:  pnpm run types
+      - name: unit test
+        run:  pnpm run unit
+      - name: rspack
+        run:  pnpm run build
+
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    needs: ['verify']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
