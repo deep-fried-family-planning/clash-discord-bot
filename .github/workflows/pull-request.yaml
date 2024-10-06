@@ -9,17 +9,15 @@ jobs:
   build:
     name: Verify
     runs-on: ubuntu-latest
-    concurrency: "verify"
+    concurrency: verify
 
     steps:
-      - name: git
-        uses: actions/checkout@v4
-      - name: pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.12.2
-          cache: 'pnpm'
+          node-version-file: package.json
+          cache: pnpm
 
       - name: pnpm install
         run:  pnpm install
@@ -30,4 +28,4 @@ jobs:
       - name: pnpm run build
         run:  pnpm run build
       - name: pnpm run lint
-        run: pnpm run lint
+        run:  pnpm run lint
