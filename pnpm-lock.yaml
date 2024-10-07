@@ -28,31 +28,31 @@ importers:
         version: 2.4.0
       '@effect-aws/client-dynamodb':
         specifier: 1.4.0
-        version: 1.4.0(effect@3.8.4)
+        version: 1.4.0(effect@3.9.0)
       '@effect-aws/client-eventbridge':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.0)
       '@effect-aws/client-lambda':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.0)
       '@effect-aws/client-sqs':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.0)
       '@effect-aws/client-ssm':
         specifier: 1.1.0
-        version: 1.1.0(effect@3.8.4)
+        version: 1.1.0(effect@3.9.0)
       '@effect-aws/lambda':
         specifier: 1.2.0
-        version: 1.2.0(effect@3.8.4)
+        version: 1.2.0(effect@3.9.0)
       '@effect-aws/lib-dynamodb':
         specifier: 1.3.0
-        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.8.4))(effect@3.8.4)
+        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.9.0))(effect@3.9.0)
       '@effect-aws/powertools-logger':
         specifier: 1.3.0
-        version: 1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.8.4)
+        version: 1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.9.0)
       '@effect-aws/ssm':
         specifier: 1.0.1
-        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.8.4))(effect@3.8.4)
+        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.9.0))(effect@3.9.0)
       '@hapi/boom':
         specifier: 10.0.1
         version: 10.0.1
@@ -72,8 +72,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       effect:
-        specifier: 3.8.4
-        version: 3.8.4
+        specifier: 3.9.0
+        version: 3.9.0
       joi:
         specifier: 17.13.3
         version: 17.13.3
@@ -2144,8 +2144,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.8.4:
-    resolution: {integrity: sha512-rOZ1XAi+Fb+fAHoUJ5FnJPSPZEBxVbCl5QWtOWFTgOeFHx0QpbK3pezWvq9OIxQPdwvSkPOw926qrs4xdD9dLA==}
+  effect@3.9.0:
+    resolution: {integrity: sha512-KnbQNgPxd74cAHvAf0C7qv3+KLeuEVz9jUflCrB3gzVXrJQ0WTQzGF2DGg3frma1dFnPp1J4zJBonUVreAm1BQ==}
 
   electron-to-chromium@1.5.32:
     resolution: {integrity: sha512-M+7ph0VGBQqqpTT2YrabjNKSQ2fEl9PVx6AK3N558gDH9NO8O6XN9SXXFWRo9u9PbEg/bWq+tjXQr+eXmxubCw==}
@@ -5120,63 +5120,63 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect-aws/client-dynamodb@1.4.0(effect@3.8.4)':
+  '@effect-aws/client-dynamodb@1.4.0(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-eventbridge@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-eventbridge@1.5.0(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-eventbridge': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-lambda@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-lambda@1.5.0(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-lambda': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-sqs@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-sqs@1.5.0(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-sqs': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-ssm@1.1.0(effect@3.8.4)':
+  '@effect-aws/client-ssm@1.1.0(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-ssm': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/lambda@1.2.0(effect@3.8.4)':
+  '@effect-aws/lambda@1.2.0(effect@3.9.0)':
     dependencies:
-      effect: 3.8.4
+      effect: 3.9.0
 
-  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.8.4))(effect@3.8.4)':
+  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.9.0))(effect@3.9.0)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.665.0
       '@aws-sdk/lib-dynamodb': 3.665.0(@aws-sdk/client-dynamodb@3.665.0)
-      '@effect-aws/client-dynamodb': 1.4.0(effect@3.8.4)
-      effect: 3.8.4
+      '@effect-aws/client-dynamodb': 1.4.0(effect@3.9.0)
+      effect: 3.9.0
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.8.4)':
+  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.9.0)':
     dependencies:
       '@aws-lambda-powertools/logger': 2.8.0
-      effect: 3.8.4
+      effect: 3.9.0
 
-  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.8.4))(effect@3.8.4)':
+  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.9.0))(effect@3.9.0)':
     dependencies:
-      '@effect-aws/client-ssm': 1.1.0(effect@3.8.4)
-      effect: 3.8.4
+      '@effect-aws/client-ssm': 1.1.0(effect@3.9.0)
+      effect: 3.9.0
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
@@ -6864,7 +6864,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.8.4: {}
+  effect@3.9.0: {}
 
   electron-to-chromium@1.5.32: {}
 
