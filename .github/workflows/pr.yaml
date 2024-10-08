@@ -28,6 +28,8 @@ jobs:
         run:  pnpm run types
       - name: unit test
         run:  pnpm run unit
+      - name: build
+        run: pnpm run build
 
 
   validate:
