@@ -28,31 +28,31 @@ importers:
         version: 2.4.0
       '@effect-aws/client-dynamodb':
         specifier: 1.4.0
-        version: 1.4.0(effect@3.8.4)
+        version: 1.4.0(effect@3.9.1)
       '@effect-aws/client-eventbridge':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.1)
       '@effect-aws/client-lambda':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.1)
       '@effect-aws/client-sqs':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.8.4)
+        version: 1.5.0(effect@3.9.1)
       '@effect-aws/client-ssm':
         specifier: 1.1.0
-        version: 1.1.0(effect@3.8.4)
+        version: 1.1.0(effect@3.9.1)
       '@effect-aws/lambda':
         specifier: 1.2.0
-        version: 1.2.0(effect@3.8.4)
+        version: 1.2.0(effect@3.9.1)
       '@effect-aws/lib-dynamodb':
         specifier: 1.3.0
-        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.8.4))(effect@3.8.4)
+        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.9.1))(effect@3.9.1)
       '@effect-aws/powertools-logger':
         specifier: 1.3.0
-        version: 1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.8.4)
+        version: 1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.9.1)
       '@effect-aws/ssm':
         specifier: 1.0.1
-        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.8.4))(effect@3.8.4)
+        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.9.1))(effect@3.9.1)
       '@hapi/boom':
         specifier: 10.0.1
         version: 10.0.1
@@ -72,8 +72,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       effect:
-        specifier: 3.8.4
-        version: 3.8.4
+        specifier: 3.9.1
+        version: 3.9.1
       joi:
         specifier: 17.13.3
         version: 17.13.3
@@ -358,6 +358,7 @@ packages:
   '@aws-sdk/middleware-user-agent@3.667.0':
     resolution: {integrity: sha512-NJoPMV+9hpN90iZ2SgOpFmY6MJW71gGyT28kt0C68B0tBadYpT/J6WW8J7gxwdLA7d2CBwHbFGphTPWXXl+jzw==}
     engines: {node: '>=16.0.0'}
+    deprecated: Please use @aws-sdk/client-* packages with v3.668.0 or higher instead of v3.667.0
 
   '@aws-sdk/region-config-resolver@3.664.0':
     resolution: {integrity: sha512-o/B8dg8K+9714RGYPgMxZgAChPe/MTSMkf/eHXTUFHNik5i1HgVKfac22njV2iictGy/6GhpFsKa1OWNYAkcUg==}
@@ -2240,8 +2241,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.8.4:
-    resolution: {integrity: sha512-rOZ1XAi+Fb+fAHoUJ5FnJPSPZEBxVbCl5QWtOWFTgOeFHx0QpbK3pezWvq9OIxQPdwvSkPOw926qrs4xdD9dLA==}
+  effect@3.9.1:
+    resolution: {integrity: sha512-dxd+eiCqxOriBM12EQ6uIjn3cJpKIP7DfqafWTVEb45aMO157iEeDcO09SEdVSAy/OqpFlRF+4Lx7Hei1ipvOA==}
 
   electron-to-chromium@1.5.32:
     resolution: {integrity: sha512-M+7ph0VGBQqqpTT2YrabjNKSQ2fEl9PVx6AK3N558gDH9NO8O6XN9SXXFWRo9u9PbEg/bWq+tjXQr+eXmxubCw==}
@@ -4230,7 +4231,7 @@ snapshots:
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-sso-oidc': 3.667.0(@aws-sdk/client-sts@3.667.0)
+      '@aws-sdk/client-sso-oidc': 3.667.0(@aws-sdk/client-sts@3.665.0)
       '@aws-sdk/client-sts': 3.667.0
       '@aws-sdk/core': 3.667.0
       '@aws-sdk/credential-provider-node': 3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.667.0)
@@ -4485,6 +4486,51 @@ snapshots:
       '@aws-sdk/util-endpoints': 3.664.0
       '@aws-sdk/util-user-agent-browser': 3.664.0
       '@aws-sdk/util-user-agent-node': 3.664.0
+      '@smithy/config-resolver': 3.0.9
+      '@smithy/core': 2.4.8
+      '@smithy/fetch-http-handler': 3.2.9
+      '@smithy/hash-node': 3.0.7
+      '@smithy/invalid-dependency': 3.0.7
+      '@smithy/middleware-content-length': 3.0.9
+      '@smithy/middleware-endpoint': 3.1.4
+      '@smithy/middleware-retry': 3.0.23
+      '@smithy/middleware-serde': 3.0.7
+      '@smithy/middleware-stack': 3.0.7
+      '@smithy/node-config-provider': 3.1.8
+      '@smithy/node-http-handler': 3.2.4
+      '@smithy/protocol-http': 4.1.4
+      '@smithy/smithy-client': 3.4.0
+      '@smithy/types': 3.5.0
+      '@smithy/url-parser': 3.0.7
+      '@smithy/util-base64': 3.0.0
+      '@smithy/util-body-length-browser': 3.0.0
+      '@smithy/util-body-length-node': 3.0.0
+      '@smithy/util-defaults-mode-browser': 3.0.23
+      '@smithy/util-defaults-mode-node': 3.0.23
+      '@smithy/util-endpoints': 2.1.3
+      '@smithy/util-middleware': 3.0.7
+      '@smithy/util-retry': 3.0.7
+      '@smithy/util-utf8': 3.0.0
+      tslib: 2.7.0
+    transitivePeerDependencies:
+      - aws-crt
+
+  '@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.665.0)':
+    dependencies:
+      '@aws-crypto/sha256-browser': 5.2.0
+      '@aws-crypto/sha256-js': 5.2.0
+      '@aws-sdk/client-sts': 3.665.0
+      '@aws-sdk/core': 3.667.0
+      '@aws-sdk/credential-provider-node': 3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.665.0)
+      '@aws-sdk/middleware-host-header': 3.667.0
+      '@aws-sdk/middleware-logger': 3.667.0
+      '@aws-sdk/middleware-recursion-detection': 3.667.0
+      '@aws-sdk/middleware-user-agent': 3.667.0
+      '@aws-sdk/region-config-resolver': 3.667.0
+      '@aws-sdk/types': 3.667.0
+      '@aws-sdk/util-endpoints': 3.667.0
+      '@aws-sdk/util-user-agent-browser': 3.667.0
+      '@aws-sdk/util-user-agent-node': 3.667.0
       '@smithy/config-resolver': 3.0.9
       '@smithy/core': 2.4.8
       '@smithy/fetch-http-handler': 3.2.9
@@ -4821,6 +4867,25 @@ snapshots:
       - '@aws-sdk/client-sso-oidc'
       - aws-crt
 
+  '@aws-sdk/credential-provider-ini@3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.665.0)':
+    dependencies:
+      '@aws-sdk/client-sts': 3.665.0
+      '@aws-sdk/core': 3.667.0
+      '@aws-sdk/credential-provider-env': 3.667.0
+      '@aws-sdk/credential-provider-http': 3.667.0
+      '@aws-sdk/credential-provider-process': 3.667.0
+      '@aws-sdk/credential-provider-sso': 3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))
+      '@aws-sdk/credential-provider-web-identity': 3.667.0(@aws-sdk/client-sts@3.665.0)
+      '@aws-sdk/types': 3.667.0
+      '@smithy/credential-provider-imds': 3.2.4
+      '@smithy/property-provider': 3.1.7
+      '@smithy/shared-ini-file-loader': 3.1.8
+      '@smithy/types': 3.5.0
+      tslib: 2.7.0
+    transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
+      - aws-crt
+
   '@aws-sdk/credential-provider-ini@3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.667.0)':
     dependencies:
       '@aws-sdk/client-sts': 3.667.0
@@ -4849,6 +4914,25 @@ snapshots:
       '@aws-sdk/credential-provider-sso': 3.665.0(@aws-sdk/client-sso-oidc@3.665.0(@aws-sdk/client-sts@3.665.0))
       '@aws-sdk/credential-provider-web-identity': 3.664.0(@aws-sdk/client-sts@3.665.0)
       '@aws-sdk/types': 3.664.0
+      '@smithy/credential-provider-imds': 3.2.4
+      '@smithy/property-provider': 3.1.7
+      '@smithy/shared-ini-file-loader': 3.1.8
+      '@smithy/types': 3.5.0
+      tslib: 2.7.0
+    transitivePeerDependencies:
+      - '@aws-sdk/client-sso-oidc'
+      - '@aws-sdk/client-sts'
+      - aws-crt
+
+  '@aws-sdk/credential-provider-node@3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.665.0)':
+    dependencies:
+      '@aws-sdk/credential-provider-env': 3.667.0
+      '@aws-sdk/credential-provider-http': 3.667.0
+      '@aws-sdk/credential-provider-ini': 3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))(@aws-sdk/client-sts@3.665.0)
+      '@aws-sdk/credential-provider-process': 3.667.0
+      '@aws-sdk/credential-provider-sso': 3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))
+      '@aws-sdk/credential-provider-web-identity': 3.667.0(@aws-sdk/client-sts@3.665.0)
+      '@aws-sdk/types': 3.667.0
       '@smithy/credential-provider-imds': 3.2.4
       '@smithy/property-provider': 3.1.7
       '@smithy/shared-ini-file-loader': 3.1.8
@@ -4926,6 +5010,15 @@ snapshots:
     dependencies:
       '@aws-sdk/client-sts': 3.665.0
       '@aws-sdk/types': 3.664.0
+      '@smithy/property-provider': 3.1.7
+      '@smithy/types': 3.5.0
+      tslib: 2.7.0
+
+  '@aws-sdk/credential-provider-web-identity@3.667.0(@aws-sdk/client-sts@3.665.0)':
+    dependencies:
+      '@aws-sdk/client-sts': 3.665.0
+      '@aws-sdk/core': 3.667.0
+      '@aws-sdk/types': 3.667.0
       '@smithy/property-provider': 3.1.7
       '@smithy/types': 3.5.0
       tslib: 2.7.0
@@ -5085,7 +5178,7 @@ snapshots:
 
   '@aws-sdk/token-providers@3.667.0(@aws-sdk/client-sso-oidc@3.667.0(@aws-sdk/client-sts@3.667.0))':
     dependencies:
-      '@aws-sdk/client-sso-oidc': 3.667.0(@aws-sdk/client-sts@3.667.0)
+      '@aws-sdk/client-sso-oidc': 3.667.0(@aws-sdk/client-sts@3.665.0)
       '@aws-sdk/types': 3.667.0
       '@smithy/property-provider': 3.1.7
       '@smithy/shared-ini-file-loader': 3.1.8
@@ -5529,63 +5622,63 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect-aws/client-dynamodb@1.4.0(effect@3.8.4)':
+  '@effect-aws/client-dynamodb@1.4.0(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.667.0
-      effect: 3.8.4
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-eventbridge@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-eventbridge@1.5.0(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-eventbridge': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-lambda@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-lambda@1.5.0(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-lambda': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-sqs@1.5.0(effect@3.8.4)':
+  '@effect-aws/client-sqs@1.5.0(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-sqs': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-ssm@1.1.0(effect@3.8.4)':
+  '@effect-aws/client-ssm@1.1.0(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-ssm': 3.665.0
-      effect: 3.8.4
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/lambda@1.2.0(effect@3.8.4)':
+  '@effect-aws/lambda@1.2.0(effect@3.9.1)':
     dependencies:
-      effect: 3.8.4
+      effect: 3.9.1
 
-  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.8.4))(effect@3.8.4)':
+  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.9.1))(effect@3.9.1)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.667.0
       '@aws-sdk/lib-dynamodb': 3.665.0(@aws-sdk/client-dynamodb@3.667.0)
-      '@effect-aws/client-dynamodb': 1.4.0(effect@3.8.4)
-      effect: 3.8.4
+      '@effect-aws/client-dynamodb': 1.4.0(effect@3.9.1)
+      effect: 3.9.1
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.8.4)':
+  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.8.0)(effect@3.9.1)':
     dependencies:
       '@aws-lambda-powertools/logger': 2.8.0
-      effect: 3.8.4
+      effect: 3.9.1
 
-  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.8.4))(effect@3.8.4)':
+  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.9.1))(effect@3.9.1)':
     dependencies:
-      '@effect-aws/client-ssm': 1.1.0(effect@3.8.4)
-      effect: 3.8.4
+      '@effect-aws/client-ssm': 1.1.0(effect@3.9.1)
+      effect: 3.9.1
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
@@ -7273,7 +7366,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.8.4: {}
+  effect@3.9.1: {}
 
   electron-to-chromium@1.5.32: {}
 
