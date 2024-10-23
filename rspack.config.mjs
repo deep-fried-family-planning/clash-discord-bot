@@ -76,7 +76,7 @@ export default defineConfig({
 
     plugins: [new rspack.node.NodeTargetPlugin()],
 
-    devtool: 'nosources-cheap-module-source-map',
+    devtool: 'source-map',
 
     performance: {hints: 'warning'},
 

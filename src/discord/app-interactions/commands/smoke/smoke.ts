@@ -5,11 +5,14 @@ import {validateAdminRole} from '#src/discord/command-util/validate-admin-role.t
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {CMP} from '#src/discord/helpers/re-exports.ts';
 import {BUTTON_LINK_ACCOUNT} from '#src/discord/app-interactions/components/button-link-account.ts';
+import {createWarThread} from '#src/discord/actions/create-war-thread.ts';
 
 export const smoke = specCommand<typeof COMMANDS.SMOKE>(async (body) => {
     const server = await getServerReject(body.guild_id!);
 
     validateAdminRole(server, body, 'must be admin role');
+
+    await createWarThread();
 
     return {
         embeds: [{

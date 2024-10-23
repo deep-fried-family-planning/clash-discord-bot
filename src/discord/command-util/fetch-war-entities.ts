@@ -4,6 +4,8 @@ import type {Clan, ClanWar} from 'clashofclans.js';
 import {api_coc} from '#src/https/api-coc.ts';
 import {pipe} from '#src/utils/effect.ts';
 
+export type WarEntities = Awaited<ReturnType<typeof fetchWarEntities>>;
+
 export const fetchWarEntities = async (ops: SharedOptions) => {
     const clan = await api_coc.getClan(ops.cid1);
 

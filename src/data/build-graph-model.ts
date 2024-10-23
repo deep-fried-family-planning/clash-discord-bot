@@ -4,7 +4,7 @@ import {accumulateWarData, optimizeGraphModel} from '#src/data/pipeline/optimize
 import {callCkWarsByClan} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import {callCkWarsByPlayer} from '#src/https/calls/api-ck-get-warhits.ts';
 import type {SharedOptions} from '#src/discord/command-util/shared-options.ts';
-import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
+import {fetchWarEntities, type WarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
 import {filterL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {findFirst} from 'effect/Array';
 import {notFound} from '@hapi/boom';
@@ -15,8 +15,8 @@ import {Option} from 'effect';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 
-export const buildGraphModel = async (ops: SharedOptions) => {
-    const entities = await fetchWarEntities(ops);
+export const buildGraphModel = async (ops: SharedOptions, inentities?: WarEntities) => {
+    const entities = inentities ?? await fetchWarEntities(ops);
 
     if (!entities.currentWar.length) {
         throw notFound('no current war found');
@@ -32,7 +32,7 @@ export const buildGraphModel = async (ops: SharedOptions) => {
 
     const currentWar = pipe(
         entities.current.wars,
-        findFirst((w) => !w.isWarEnded && w.isPreparationDay && [w.clan.tag, w.opponent.tag].includes(ops.cid1)),
+        findFirst((w) => !w.isWarEnded && !(w.isCWL && w.isBattleDay) && [w.clan.tag, w.opponent.tag].includes(ops.cid1)),
         Option.getOrUndefined,
     )!;
 

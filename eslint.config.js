@@ -64,6 +64,7 @@ const config = [
                     allowNullish: true,
                     allowNumber : true,
                 }],
+                '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
             },
         },
         {
