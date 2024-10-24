@@ -8,7 +8,9 @@ import {ONE_OF_US} from '#src/discord/app-interactions/commands/oneofus.cmd.ts';
 import {FAQ} from '#src/discord/app-interactions/commands/faq.cmd.ts';
 import {CONFIG} from '#src/discord/app-interactions/commands/config/config.cmd.ts';
 import {CONFIG_SERVER} from '#src/discord/app-interactions/commands/config/server/config-server.cmd.ts';
-import {CONFIG_SERVER_ADD} from '#src/discord/app-interactions/commands/config/server/server-add.cmd.ts';
+import {
+    CONFIG_SERVER_ADD,
+} from '#src/discord/app-interactions/commands/config/server/server-add.cmd.ts';
 import {configServerAdd} from '#src/discord/app-interactions/commands/config/server/server-add.ts';
 import {CWL_SCOUT} from '#src/discord/app-interactions/commands/cwl-scout.cmd.ts';
 import {WAR_LINKS} from '#src/discord/app-interactions/commands/war-links.cmd.ts';
@@ -25,9 +27,9 @@ import {smoke} from '#src/discord/app-interactions/commands/smoke/smoke.ts';
 import {SMOKE} from '#src/discord/app-interactions/commands/smoke/smoke.cmd.ts';
 import {REST_TIME, time} from '#src/discord-commands/time.ts';
 import {
-    CONFIG_SERVER_ADDCLAN,
     configServerAddclan,
 } from '#src/discord/app-interactions/commands/config/server/server-addclan.ts';
+import {CONFIG_SERVER_ADDCLAN} from '#src/discord/app-interactions/commands/config/server/server-addclan.cmd.ts';
 
 export const COMMAND_HANDLERS = {
     [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                   : botAbout,
