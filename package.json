@@ -29,10 +29,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.675.0",
-    "@aws-sdk/client-scheduler": "3.678.0",
-    "@aws-sdk/client-sqs": "3.675.0",
-    "@aws-sdk/lib-dynamodb": "3.675.0",
+    "@aws-sdk/client-dynamodb": "3.679.0",
+    "@aws-sdk/client-scheduler": "3.679.0",
+    "@aws-sdk/client-sqs": "3.679.0",
+    "@aws-sdk/lib-dynamodb": "3.679.0",
     "@discordjs/builders": "1.9.0",
     "@discordjs/core": "2.0.0",
     "@discordjs/rest": "2.4.0",
@@ -52,7 +52,7 @@
     "clashofclans.js": "3.3.13",
     "dayjs": "1.11.13",
     "discord-interactions": "4.1.0",
-    "effect": "3.10.0",
+    "effect": "3.10.2",
     "joi": "17.13.3",
     "natural": "8.0.1",
     "simple-statistics": "7.8.7",
@@ -60,7 +60,7 @@
     "uuid": "10.0.0"
   },
   "devDependencies": {
-    "@aws-sdk/client-ssm": "3.675.0",
+    "@aws-sdk/client-ssm": "3.679.0",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
     "@eslint/js": "9.13.0",
@@ -69,7 +69,7 @@
     "@stylistic/eslint-plugin": "2.9.0",
     "@types/aws-lambda": "8.10.145",
     "@types/eslint__js": "8.42.3",
-    "@types/node": "22.7.8",
+    "@types/node": "22.7.9",
     "@types/string-similarity": "4.0.2",
     "@types/uuid": "10.0.0",
     "@vitest/coverage-istanbul": "2.1.3",

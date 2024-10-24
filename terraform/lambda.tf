@@ -133,11 +133,17 @@ module "lambda_scheduler" {
   prefix             = local.prefix
   fn_name            = "scheduler"
   custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
-  memory             = 128
-  timeout            = 300
+  memory             = 512
+  timeout            = 120
   fn_env = merge(local.lambda_env, {
 
   })
+}
+
+resource "aws_lambda_function_event_invoke_config" "example" {
+  function_name                = module.lambda_scheduler.fn_name
+  maximum_event_age_in_seconds = 120
+  maximum_retry_attempts       = 0
 }
 
 data "aws_iam_policy_document" "lambda_scheduler" {

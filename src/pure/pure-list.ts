@@ -8,4 +8,5 @@ export {
     sort as sortL,
     zip as zipL,
     of as ofL,
+    dedupe as dedupeL,
 } from 'effect/Array';
