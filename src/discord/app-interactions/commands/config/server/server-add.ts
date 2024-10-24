@@ -13,6 +13,9 @@ export const configServerAdd = specCommand<typeof CONFIG_SERVER_ADD>(async (body
         roles      : {
             admin: body.data.options.admin_role.value,
         },
+        channels: {
+            war_room: body.data.options.war_room.value,
+        },
         clans: {},
         urls : {
             home: '',
