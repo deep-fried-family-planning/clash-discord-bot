@@ -1,6 +1,6 @@
 import {queryAttacksByClan, queryClan, queryWarsByClan} from '#src/data/query/graph-query.ts';
 import {filterL, flattenL, mapL, ofL, reduceL, sortL} from '#src/pure/pure-list.ts';
-import {mean, median, standardDeviation} from 'simple-statistics';
+import {mean as meanThrowable, median as medianThrowable, standardDeviation as stdThrowable} from 'simple-statistics';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
 import type {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
@@ -9,6 +9,33 @@ import {compareTwoStrings} from 'string-similarity';
 import type {num} from '#src/pure/types-pure.ts';
 import {pipe} from '#src/utils/effect.ts';
 import {collect} from 'effect/Record';
+
+const median = (xs: num[]) => {
+    try {
+        return medianThrowable(xs);
+    }
+    catch (_) {
+        return 0;
+    }
+};
+
+const standardDeviation = (xs: num[]) => {
+    try {
+        return stdThrowable(xs);
+    }
+    catch (_) {
+        return 0;
+    }
+};
+
+const mean = (xs: num[]) => {
+    try {
+        return meanThrowable(xs);
+    }
+    catch (_) {
+        return 0;
+    }
+};
 
 export const describeScout = (graph: Awaited<ReturnType<typeof buildGraphModel>>) => {
     const wars = pipe(graph.model, queryWarsByClan(graph.opponentTag));
