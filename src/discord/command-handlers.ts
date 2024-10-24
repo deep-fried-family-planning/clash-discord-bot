@@ -24,17 +24,22 @@ import {botAbout} from '#src/discord/app-interactions/commands/bot/bot-about.ts'
 import {smoke} from '#src/discord/app-interactions/commands/smoke/smoke.ts';
 import {SMOKE} from '#src/discord/app-interactions/commands/smoke/smoke.cmd.ts';
 import {REST_TIME, time} from '#src/discord-commands/time.ts';
+import {
+    CONFIG_SERVER_ADDCLAN,
+    configServerAddclan,
+} from '#src/discord/app-interactions/commands/config/server/server-addclan.ts';
 
 export const COMMAND_HANDLERS = {
-    [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                : botAbout,
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)] : configServerAdd,
-    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]: configServerEdit,
-    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]          : oneofus,
-    [cmdName(SMOKE, SMOKE, SMOKE)]                      : smoke,
-    [cmdName(FAQ, FAQ, FAQ)]                            : faq,
-    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]          : cwlScout,
-    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]          : warLinks,
-    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)] : warOpponent,
-    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]          : warScout,
-    [cmdName(REST_TIME, REST_TIME, REST_TIME)]          : time,
+    [cmdName(BOT, BOT_ABOUT, BOT_ABOUT)]                   : botAbout,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADD)]    : configServerAdd,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_EDIT)]   : configServerEdit,
+    [cmdName(CONFIG, CONFIG_SERVER, CONFIG_SERVER_ADDCLAN)]: configServerAddclan,
+    [cmdName(ONE_OF_US, ONE_OF_US, ONE_OF_US)]             : oneofus,
+    [cmdName(SMOKE, SMOKE, SMOKE)]                         : smoke,
+    [cmdName(FAQ, FAQ, FAQ)]                               : faq,
+    [cmdName(CWL_SCOUT, CWL_SCOUT, CWL_SCOUT)]             : cwlScout,
+    [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]             : warLinks,
+    [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)]    : warOpponent,
+    [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]             : warScout,
+    [cmdName(REST_TIME, REST_TIME, REST_TIME)]             : time,
 } as const satisfies {[key in string]: ReturnType<typeof specCommand>};
