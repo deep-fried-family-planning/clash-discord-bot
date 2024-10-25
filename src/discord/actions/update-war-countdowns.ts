@@ -42,33 +42,57 @@ export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel
         const time = new Date(war.startTime.getTime() - Date.now());
         const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
         yield * Console.log(`prep ${clan.tag}`);
-        yield * oopTimeout('30 seconds', () => discord.channels.edit(
-            server.clans[serverclan.tag].war_countdown,
-            {
-                name: `🛠️│${cname}│${timeleft}`,
-            },
-        ));
+        yield * oopTimeout('30 seconds', async () => {
+            try {
+                await discord.channels.edit(
+                    server.clans[serverclan.tag].war_countdown,
+                    {
+                        name: `🛠️│${cname}│${timeleft}`,
+                    },
+                );
+            }
+            catch (e) {
+                console.error(e);
+                throw e;
+            }
+        });
     }
     else if (war.isBattleDay) {
         yield * Console.log(`battle day ${clan.tag}`);
         const time = new Date(war.endTime.getTime() - Date.now());
         const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
         yield * Console.log(`battle day ${clan.tag}`);
-        yield * oopTimeout('30 seconds', () => discord.channels.edit(
-            server.clans[serverclan.tag].war_countdown,
-            {
-                name: `🗡│${cname}│${timeleft}`,
-            },
-        ));
+        yield * oopTimeout('30 seconds', async () => {
+            try {
+                await discord.channels.edit(
+                    server.clans[serverclan.tag].war_countdown,
+                    {
+                        name: `🗡│${cname}│${timeleft}`,
+                    },
+                );
+            }
+            catch (e) {
+                console.error(e);
+                throw e;
+            }
+        });
     }
     else {
         yield * Console.log(`no war ${clan.tag}`);
-        yield * oopTimeout('30 seconds', () => discord.channels.edit(
-            server.clans[serverclan.tag].war_countdown,
-            {
-                name: `💤│${cname}`,
-            },
-        ));
+        yield * oopTimeout('30 seconds', async () => {
+            try {
+                await discord.channels.edit(
+                    server.clans[serverclan.tag].war_countdown,
+                    {
+                        name: `💤│${cname}`,
+                    },
+                );
+            }
+            catch (e) {
+                console.error(e);
+                throw e;
+            }
+        });
     }
 
     return yield * Console.log(`updated ${clan.tag}`);

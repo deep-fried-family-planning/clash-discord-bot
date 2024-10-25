@@ -33,18 +33,21 @@ const h = (event: AppDiscordEvent) => pipe(
 
                     return yield * updateWarCountdown(clan, war!, server);
                 }),
+                E.catchAll((error) => E.gen(function * () {
+                    yield * Console.log(error);
+                    yield * Console.log(Cause.originalError(error));
+
+                    if (error._tag !== 'TimeoutException') {
+                        yield * E.promise(() => discordLogError(Cause.originalError(error)));
+                    }
+                })),
+                E.catchAllDefect((defect) => E.gen(function* () {
+                    yield * Console.log(defect);
+                    yield * Console.log(Cause.originalError(defect));
+                    yield * E.promise(() => discordLogError(Cause.originalError(defect)));
+                })),
             )),
-            E.allWith({concurrency: 3}),
-            E.catchAll((error) => E.gen(function * () {
-                yield * Console.log(error);
-                yield * Console.log(Cause.originalError(error));
-                yield * E.promise(() => discordLogError(Cause.originalError(error)));
-            })),
-            E.catchAllDefect((defect) => E.gen(function* () {
-                yield * Console.log(defect);
-                yield * Console.log(Cause.originalError(defect));
-                yield * E.promise(() => discordLogError(Cause.originalError(defect)));
-            })),
+            E.allWith({concurrency: 5}),
         );
     }),
 );
