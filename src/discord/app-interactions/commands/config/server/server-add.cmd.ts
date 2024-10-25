@@ -12,5 +12,11 @@ export const CONFIG_SERVER_ADD = {
             description: 'admin role to further configure bot',
             required   : true,
         },
+        war_room: {
+            name       : 'war_room',
+            type       : ApplicationCommandOptionType.Channel,
+            description: 'war channel to post threads per clan',
+            required   : true,
+        },
     },
 } as const satisfies SubCommandSpec;

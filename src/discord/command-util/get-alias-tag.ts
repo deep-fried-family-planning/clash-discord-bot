@@ -17,7 +17,7 @@ export const getAliasTag = (cid?: CID): CID => {
     const formattedTag = api_coc.util.formatTag(tag);
 
     if (!api_coc.util.isValidTag(formattedTag)) {
-        throw badRequest('user entered an invalid tag');
+        throw badRequest('invalid clan tag');
     }
 
     return formattedTag;
