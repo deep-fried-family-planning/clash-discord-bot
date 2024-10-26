@@ -3,12 +3,10 @@ resource "aws_scheduler_schedule_group" "schedule_group" {
 }
 
 resource "aws_scheduler_schedule" "schedule" {
-  count = 0
-
   name       = "${local.prefix}-schedule"
   group_name = aws_scheduler_schedule_group.schedule_group.name
 
-  schedule_expression = "rate(15 minutes)"
+  schedule_expression = "rate(5 minutes)"
 
   flexible_time_window {
     mode = "OFF"
@@ -30,7 +28,7 @@ data "aws_iam_policy_document" "schedule_role" {
     }
     principals {
       type        = "AWS"
-      identifiers = []
+      identifiers = [local.account_id]
     }
   }
 }

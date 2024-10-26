@@ -5,8 +5,7 @@ import type {
     DiscordChannelId, DiscordRoleId,
     OpinionatedConfigToggle,
 } from '#src/database/types.data.ts';
-import {mapKV} from '#src/pure/pure-kv.ts';
-import {pipe} from '#src/utils/effect.ts';
+import type {ServerRecord} from '#src/database/schema/server-record.ts';
 
 type ClanChannel = DiscordChannelId;
 type ClanRole = DiscordRoleId;
@@ -14,24 +13,7 @@ type AdminRole = DiscordRoleId;
 type HomeURL = string;
 type FaqURL = DiscordRoleId;
 
-export type ServerModel = Model<{
-    id         : DDB_ServerHashKey;
-    opinionated: OpinionatedConfigToggle;
-    roles: {
-        admin: AdminRole;
-    };
-    clans: {
-        [k in CocClanTag]: {
-            category: CocClanCategory;
-            channel : DiscordChannelId;
-            role    : ClanRole;
-        };
-    };
-    urls: {
-        home: HomeURL;
-        faq : FaqURL;
-    };
-}>;
+export type ServerModel = ServerRecord;
 
 export type ServerStoreV1_0_0 = Store<'1.0.0', {
     id: DDB_ServerHashKey;
@@ -43,8 +25,9 @@ export type ServerStoreV1_0_0 = Store<'1.0.0', {
     u: [HomeURL, FaqURL];
 }>;
 
+// eslint-disable-next-line @stylistic/comma-dangle
 export type ServerStore = readonly [
-    ServerStoreV1_0_0,
+    (Store & ServerModel),
 ];
 
 export type ServerCodec = Codec<ServerModel, ServerStore>;
@@ -53,42 +36,11 @@ export const SERVER_CODEC_LATEST = '1.0.0';
 
 export const SERVER_CODEC: ServerCodec = {
     ['1.0.0']: {
-        model: (store) => {
-            const u = 'u' in store
-                ? store.u
-                : ['', ''];
-
-            return {
-                id         : store.id,
-                version    : SERVER_CODEC_LATEST,
-                migrated   : store.migrated,
-                opinionated: store.o,
-                roles      : {
-                    admin: store.r[0],
-                },
-                clans: pipe(store.c, mapKV((clan) => ({
-                    category: clan[0],
-                    channel : clan[1],
-                    role    : clan[2],
-                }))),
-                urls: {
-                    home: u[0],
-                    faq : u[1],
-                },
-            };
-        },
+        model: (store) => ({
+            ...store,
+        }),
         store: (model) => ({
-            id      : model.id,
-            version : '1.0.0',
-            migrated: model.migrated,
-            o       : model.opinionated,
-            r       : [model.roles.admin],
-            c       : pipe(model.clans, mapKV((clan) => [
-                clan.category,
-                clan.channel,
-                clan.role,
-            ])),
-            u: [model.urls.home, model.urls.faq],
+            ...model,
         }),
     },
 };
