@@ -5,7 +5,7 @@ import {E, pipe} from '#src/utils/effect.ts';
 import {Console} from 'effect';
 import {oopTimeout} from '#src/aws-lambdas/scheduler/oop-timeout.ts';
 
-const nicknames = {
+export const nicknames = {
     'ClashTest Dummy': 'CTD',
     'DFFP Labs'      : 'Labs',
     'DFFP EZ CWL'    : 'EZCWL',
@@ -45,7 +45,7 @@ export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel
         yield * oopTimeout('30 seconds', async () => {
             try {
                 await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown,
+                    server.clans[serverclan.tag].war_countdown_channel,
                     {
                         name: `🛠️│${cname}│${timeleft}`,
                     },
@@ -65,7 +65,7 @@ export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel
         yield * oopTimeout('30 seconds', async () => {
             try {
                 await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown,
+                    server.clans[serverclan.tag].war_countdown_channel,
                     {
                         name: `🗡│${cname}│${timeleft}`,
                     },
@@ -82,7 +82,7 @@ export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel
         yield * oopTimeout('30 seconds', async () => {
             try {
                 await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown,
+                    server.clans[serverclan.tag].war_countdown_channel,
                     {
                         name: `💤│${cname}`,
                     },

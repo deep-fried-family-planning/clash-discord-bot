@@ -6,11 +6,9 @@ import {COLOR, nColor} from '#src/constants/colors.ts';
 
 export const configServerAdd = specCommand<typeof CONFIG_SERVER_ADD>(async (body) => {
     const server = await putServer({
-        version    : SERVER_CODEC_LATEST,
-        migrated   : false,
-        id         : body.guild_id!,
-        opinionated: 0,
-        roles      : {
+        version: SERVER_CODEC_LATEST,
+        id     : body.guild_id!,
+        roles  : {
             admin: body.data.options.admin_role.value,
         },
         channels: {

@@ -6,24 +6,27 @@ import {getServerReject} from '#src/database/server/get-server.ts';
 import {putServer} from '#src/database/server/put-server.ts';
 
 import type {CONFIG_SERVER_ADDCLAN} from '#src/discord/app-interactions/commands/config/server/server-addclan.cmd.ts';
+import {SERVER_RECORD} from '#src/database/schema/server-record.ts';
 
 export const configServerAddclan = specCommand<typeof CONFIG_SERVER_ADDCLAN>(async (body) => {
     const tag = getAliasTag(body.data.options.clan.value);
 
     const server = await getServerReject(body.guild_id!);
 
-    await putServer({
+    await putServer(SERVER_RECORD.make({
         ...server,
         clans: {
             ...server.clans,
             [tag]: {
-                war_status         : 0,
-                war_countdown      : body.data.options.countdown.value,
-                war_thread_current : '',
-                war_thread_previous: '',
+                war_status           : 0,
+                war_countdown_channel: body.data.options.countdown.value,
+                war_prep_opponent    : '',
+                war_prep_thread      : '',
+                war_battle_opponent  : '',
+                war_battle_thread    : '',
             },
         },
-    });
+    }));
 
     return {
         embeds: [{

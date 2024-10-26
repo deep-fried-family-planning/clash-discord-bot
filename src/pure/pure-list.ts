@@ -9,4 +9,5 @@ export {
     zip as zipL,
     of as ofL,
     dedupe as dedupeL,
+    contains as containsL,
 } from 'effect/Array';

@@ -5,6 +5,7 @@ import type {
     DiscordChannelId, DiscordRoleId,
     OpinionatedConfigToggle,
 } from '#src/database/types.data.ts';
+import type {ServerRecord} from '#src/database/schema/server-record.ts';
 
 type ClanChannel = DiscordChannelId;
 type ClanRole = DiscordRoleId;
@@ -12,28 +13,7 @@ type AdminRole = DiscordRoleId;
 type HomeURL = string;
 type FaqURL = DiscordRoleId;
 
-export type ServerModel = Model<{
-    id         : DDB_ServerHashKey;
-    opinionated: OpinionatedConfigToggle;
-    roles: {
-        admin: AdminRole;
-    };
-    channels: {
-        war_room: DiscordChannelId;
-    };
-    clans: {
-        [k in CocClanTag]: {
-            war_status         : 0 | 1;
-            war_thread_current : DiscordChannelId;
-            war_thread_previous: DiscordChannelId;
-            war_countdown      : DiscordChannelId;
-        };
-    };
-    urls: {
-        home: HomeURL;
-        faq : FaqURL;
-    };
-}>;
+export type ServerModel = ServerRecord;
 
 export type ServerStoreV1_0_0 = Store<'1.0.0', {
     id: DDB_ServerHashKey;
