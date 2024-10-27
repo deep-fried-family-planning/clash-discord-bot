@@ -1,11 +1,10 @@
 locals {
   lambda_env = {
     LAMBDA_ENV    = local.env
+    LAMBDA_PREFIX = local.prefix
+    DDB_OPERATIONS = aws_dynamodb_table.operations.name
 
     DDB_SERVER = aws_dynamodb_table.server.name
-
-    DDB_TRACKING  = aws_dynamodb_table.tracking.name
-    DDB_SNAPSHOTS = aws_dynamodb_table.snapshots.name
   }
 }
 
