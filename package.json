@@ -50,7 +50,7 @@
     "@hapi/boom": "10.0.1",
     "@hapi/bourne": "3.0.0",
     "bufferutil": "4.0.8",
-    "clashofclans.js": "3.3.13",
+    "clashofclans.js": "3.3.15",
     "dayjs": "1.11.13",
     "discord-interactions": "4.1.0",
     "effect": "3.10.4",
