@@ -1,51 +1,46 @@
-import {ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CommandSpec} from '#src/discord/types.ts';
-import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
 import {dTable} from '#src/discord/command-util/message-table.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {E, pipe} from '#src/utils/effect.ts';
 import {dCodes, dLines} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {CMD_OP} from '#src/discord/helpers/re-exports.ts';
+import type {CmdFn} from '#src/aws-lambdas/slash/types.ts';
+import type {CommandSpec} from '#src/discord/types.ts';
 
-export const REST_TIME = {
-    type       : ApplicationCommandType.ChatInput,
+export const TIME = {
     name       : 'time',
     description: 'find current time in multiple timezones',
     options    : {
         hours_ahead: {
             name       : 'hours_ahead',
             description: 'number of hours ahead to offset',
-            type       : CMD_OP.Integer,
+            type       : 4,
             min_value  : 1,
             max_value  : 23,
         },
         minutes_ahead: {
             name       : 'minutes_ahead',
             description: 'number of minutes ahead to offset',
-            type       : CMD_OP.Integer,
+            type       : 4,
             min_value  : 1,
             max_value  : 59,
         },
     },
 } as const satisfies CommandSpec;
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-export const time = /* @__PURE__ */ specCommand<typeof REST_TIME>((body) => {
+export const time: CmdFn<typeof TIME> = (_, options) => E.sync(() => {
     dayjs.extend(dayutc);
     dayjs.extend(daytimezone);
 
     let utc = dayjs();
 
-    if (body.data.options.hours_ahead?.value) {
-        utc = utc.add(body.data.options.hours_ahead.value, 'h');
+    if (options.hours_ahead) {
+        utc = utc.add(options.hours_ahead, 'h');
     }
 
-    if (body.data.options.minutes_ahead?.value) {
-        utc = utc.add(body.data.options.minutes_ahead.value, 'm');
+    if (options.minutes_ahead) {
+        utc = utc.add(options.minutes_ahead, 'm');
     }
 
     utc = utc.utc();

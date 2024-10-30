@@ -5,6 +5,7 @@ import {
     filter as filterKV,
     map as mapKV,
     size as sizeKV,
+    empty as emptyKV,
 } from 'effect/Record';
 import {flow} from '#src/utils/effect.ts';
 
@@ -12,6 +13,7 @@ export {
     mapKV,
     filterKV,
     sizeKV,
+    emptyKV,
 };
 
 export const reduceKV = reduce;

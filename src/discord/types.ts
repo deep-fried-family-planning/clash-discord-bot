@@ -2,6 +2,9 @@
 import type {
     APIApplicationCommandBasicOption,
     APIApplicationCommandInteraction, APIApplicationCommandInteractionDataBasicOption,
+    APIApplicationCommandInteractionDataSubcommandGroupOption,
+    APIApplicationCommandInteractionDataSubcommandOption,
+
     APIApplicationCommandInteractionDataOption,
     APIApplicationCommandSubcommandGroupOption,
     APIApplicationCommandSubcommandOption,
@@ -17,9 +20,13 @@ type KV<V> = Record<string, V>;
 
 // Aliases
 export type Interaction = APIApplicationCommandInteraction;
-type GetOptionData<T extends ApplicationCommandOptionType> = Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
-type DataSubGroup = APIApplicationCommandInteractionDataBasicOption;
-type DataSubCmd = APIApplicationCommandInteractionDataBasicOption;
+type GetOptionData<T extends ApplicationCommandOptionType> =
+    T extends APIApplicationCommandInteractionDataBasicOption['type']
+        ? Extract<APIApplicationCommandInteractionDataBasicOption, {type: T}>['value']
+        : Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
+
+type DataSubGroup = APIApplicationCommandInteractionDataSubcommandGroupOption;
+type DataSubCmd = APIApplicationCommandInteractionDataSubcommandOption;
 
 //
 // Spec types
@@ -41,7 +48,7 @@ export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, Sp
 //
 // Data
 //
-type OptionData<T extends CommandSpec['options']>
+export type OptionData<T extends CommandSpec['options']>
     = T extends KV<SpecOptionBasic> ? {
         [k in keyof T]: T[k] extends {required: true} ? GetOptionData<T[k]['type']> : (GetOptionData<T[k]['type']> | undefined);
     }

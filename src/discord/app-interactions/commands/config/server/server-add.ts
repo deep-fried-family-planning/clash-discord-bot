@@ -9,10 +9,10 @@ export const configServerAdd = specCommand<typeof CONFIG_SERVER_ADD>(async (body
         version: SERVER_CODEC_LATEST,
         id     : body.guild_id!,
         roles  : {
-            admin: body.data.options.admin_role.value,
+            admin: body.data.options.admin_role,
         },
         channels: {
-            war_room: body.data.options.war_room.value,
+            war_room: body.data.options.war_room,
         },
         clans: {},
         urls : {

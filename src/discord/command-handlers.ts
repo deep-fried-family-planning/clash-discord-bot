@@ -25,7 +25,6 @@ import {BOT_ABOUT} from '#src/discord/app-interactions/commands/bot/bot-about.cm
 import {botAbout} from '#src/discord/app-interactions/commands/bot/bot-about.ts';
 import {smoke} from '#src/discord/app-interactions/commands/smoke/smoke.ts';
 import {SMOKE} from '#src/discord/app-interactions/commands/smoke/smoke.cmd.ts';
-import {REST_TIME, time} from '#src/discord-commands/time.ts';
 import {
     configServerAddclan,
 } from '#src/discord/app-interactions/commands/config/server/server-addclan.ts';
@@ -43,5 +42,4 @@ export const COMMAND_HANDLERS = {
     [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]             : warLinks,
     [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)]    : warOpponent,
     [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]             : warScout,
-    [cmdName(REST_TIME, REST_TIME, REST_TIME)]             : time,
 } as const satisfies {[key in string]: ReturnType<typeof specCommand>};

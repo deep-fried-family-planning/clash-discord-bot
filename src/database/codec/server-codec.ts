@@ -1,4 +1,4 @@
-import type {Codec, Model, Store} from '#src/database/types.ts';
+import type {Codec, Store} from '#src/database/types.ts';
 import type {
     CocClanCategory,
     CocClanTag, DDB_ServerHashKey,

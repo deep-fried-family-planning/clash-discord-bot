@@ -32,6 +32,7 @@ export const PLAYER_LINKS_CODEC_LATEST = '1.0.0';
 
 export const PLAYER_LINKS_CODEC: Codec<PlayerLinksModel, PlayerLinksStore> = {
     ['1.0.0']: {
+        // @ts-expect-error early optimization is the devil!
         model: (store) => ({
             id      : store.id,
             version : PLAYER_LINKS_CODEC_LATEST,
@@ -55,6 +56,7 @@ export const PLAYER_LINKS_CODEC: Codec<PlayerLinksModel, PlayerLinksStore> = {
                 },
             )),
         }),
+        // @ts-expect-error early optimization is the devil!
         store: (model) => ({
             id      : model.id,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment

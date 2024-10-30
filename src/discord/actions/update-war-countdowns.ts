@@ -1,7 +1,7 @@
 import type {ServerModel} from '#src/database/codec/server-codec.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {discord} from '#src/https/api-discord.ts';
-import {E, pipe} from '#src/utils/effect.ts';
+import {E} from '#src/utils/effect.ts';
 import {Console} from 'effect';
 import {oopTimeout} from '#src/aws-lambdas/scheduler/oop-timeout.ts';
 
@@ -11,18 +11,12 @@ export const nicknames = {
     'DFFP EZ CWL'    : 'EZCWL',
 } as const;
 
-const ONE_DAY_MS
-    = 1000
-    * 60
-    * 60
-    * 24;
-
 export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel) => E.gen(function* () {
     const cname = clan.name in nicknames
         ? nicknames[clan.name as keyof typeof nicknames]
         : clan.name;
 
-    const [serverclan, enemyclan] = clan.tag === war.clan.tag
+    const [serverclan] = clan.tag === war.clan.tag
         ? [war.clan, war.opponent]
         : [war.opponent, war.clan];
 

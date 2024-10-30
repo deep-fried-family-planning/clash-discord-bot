@@ -9,7 +9,7 @@ import type {CONFIG_SERVER_ADDCLAN} from '#src/discord/app-interactions/commands
 import {SERVER_RECORD} from '#src/database/schema/server-record.ts';
 
 export const configServerAddclan = specCommand<typeof CONFIG_SERVER_ADDCLAN>(async (body) => {
-    const tag = getAliasTag(body.data.options.clan.value);
+    const tag = getAliasTag(body.data.options.clan);
 
     const server = await getServerReject(body.guild_id!);
 
@@ -19,7 +19,7 @@ export const configServerAddclan = specCommand<typeof CONFIG_SERVER_ADDCLAN>(asy
             ...server.clans,
             [tag]: {
                 war_status           : 0,
-                war_countdown_channel: body.data.options.countdown.value,
+                war_countdown_channel: body.data.options.countdown,
                 war_prep_opponent    : '',
                 war_prep_thread      : '',
                 war_battle_opponent  : '',
