@@ -19,6 +19,7 @@ export const specCommand = <T extends CommandSpec | SubCommandSpec>(fn: (body: C
         // @ts-expect-error
         let options: CommandData<T>['data']['options'] = {};
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if ('options' in body.data && body.data.options) {
             const subgroup = body.data.options.find((o) => o.type === GROUP_OPTION);
             const cmd = body.data.options.find((o) => o.type === SUBCMD_OPTION);

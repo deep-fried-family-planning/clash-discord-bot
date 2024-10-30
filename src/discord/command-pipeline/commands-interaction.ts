@@ -6,7 +6,7 @@ import {cmdName} from '#src/discord/command-pipeline/cmd-name.ts';
 export const getHandlerKey = (body: Interaction): keyof typeof COMMAND_HANDLERS => {
     const cmd = body.data;
 
-    if (!('options' in body.data) || !body.data.options?.length) {
+    if (!('options' in body.data) || !body.data.options.length) {
         return cmdName(cmd, cmd, cmd);
     }
 

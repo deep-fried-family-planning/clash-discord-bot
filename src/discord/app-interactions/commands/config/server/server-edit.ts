@@ -14,11 +14,11 @@ export const configServerEdit = specCommand<typeof CONFIG_SERVER_EDIT>(async (bo
         ...server,
         roles: {
             ...server.roles,
-            admin: body.data.options.admin_role?.value ?? server.roles.admin,
+            admin: body.data.options.admin_role ?? server.roles.admin,
         },
         urls: {
             ...server.urls,
-            faq: body.data.options.faq_url?.value ?? server.urls.faq,
+            faq: body.data.options.faq_url ?? server.urls.faq,
         },
     });
 

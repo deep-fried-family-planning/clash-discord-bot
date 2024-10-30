@@ -12,14 +12,14 @@ import {COLOR, nColor} from '#src/constants/colors.ts';
 export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
     const server = await getServerReject(body.guild_id!);
 
-    const tag = body.data.options.player_tag.value;
+    const tag = body.data.options.player_tag;
 
     if (!api_coc.util.isValidTag(tag)) {
         throw badRequest(`${tag} is not a valid player tag`);
     }
 
-    if (body.data.options.discord_user?.value) {
-        if (body.data.options.api_token.value !== 'admin') {
+    if (body.data.options.discord_user) {
+        if (body.data.options.api_token !== 'admin') {
             throw badRequest('api_token must be set to "admin" to admin override verified player link');
         }
 
@@ -45,7 +45,7 @@ export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
         };
     }
 
-    const user = body.data.options.discord_user?.value ?? body.user!.id;
+    const user = body.data.options.discord_user ?? body.user!.id;
 
     if (tag in links.players && links.players[tag].user !== user && links.players[tag].verified) {
         const serverMembers = await discord.guilds.getMembers(body.guild_id!, {limit: 1000});
@@ -76,9 +76,9 @@ export const oneofus = specCommand<typeof COMMANDS.ONE_OF_US>(async (body) => {
     }
 
     const player = await api_coc.getPlayer(tag);
-    const verified = await api_coc.verifyPlayerToken(tag, body.data.options.api_token.value);
+    const verified = await api_coc.verifyPlayerToken(tag, body.data.options.api_token);
 
-    if (body.data.options.api_token.value !== 'admin' && !verified) {
+    if (body.data.options.api_token !== 'admin' && !verified) {
         throw notFound(`incorrect token for player tag ${tag} ${player.name}`);
     }
 
