@@ -1,5 +1,10 @@
 import {Schema as S} from 'effect';
 import {ChannelId, RoleId, ServerId} from '#src/database/common.ts';
+import type {CompKey} from '#src/database/types.ts';
+import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {E, pipe} from '#src/utils/effect.ts';
+
+export type DServer = S.Schema.Type<typeof DiscordServer>;
 
 export const DiscordServer = S.Struct({
     pk: ServerId,
@@ -26,3 +31,26 @@ export const DiscordServer = S.Struct({
     member: S.optional(RoleId),
     guest : S.optional(RoleId),
 });
+
+export const DiscordServerEquivalence = S.equivalence(DiscordServer);
+
+export const DiscordServerEncode = S.encodeUnknown(DiscordServer);
+
+export const DiscordServerDecode = S.decodeUnknown(DiscordServer);
+
+export const putDiscordServer = (record: DServer) => pipe(
+    DiscordServerEncode(record),
+    E.flatMap((server) => DynamoDBDocumentService.put({
+        TableName: process.env.DDB_OPERATIONS,
+        Item     : server,
+    })),
+);
+
+;
+
+export const getDiscordServer = (key: CompKey<DServer>) => DynamoDBDocumentService
+    .get({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : key,
+    })
+    .pipe(E.flatMap(({Item}) => DiscordServerDecode(Item)));

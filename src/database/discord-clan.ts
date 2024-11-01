@@ -19,3 +19,5 @@ export const DiscordClan = S.Struct({
     battle_opponent: ClanTag,
     countdown      : ThreadId,
 });
+
+export const DiscordClanEquivalence = S.equivalence(DiscordClan);
