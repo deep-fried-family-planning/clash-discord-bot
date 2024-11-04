@@ -69,7 +69,7 @@
     "@eslint/js": "9.13.0",
     "@rspack/cli": "1.0.14",
     "@rspack/core": "1.0.14",
-    "@stylistic/eslint-plugin": "2.9.0",
+    "@stylistic/eslint-plugin": "2.10.1",
     "@types/aws-lambda": "8.10.145",
     "@types/eslint__js": "8.42.3",
     "@types/node": "22.8.4",
