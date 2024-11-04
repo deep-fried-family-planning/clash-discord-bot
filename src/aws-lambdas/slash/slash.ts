@@ -8,11 +8,13 @@ import {Redacted} from 'effect';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
 import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
 import {emptyKV} from '#src/pure/pure-kv.ts';
+import {ONE_OF_US, oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
 
 const dAppId = Cfg.redacted(REDACTED_DISCORD_APP_ID).pipe(E.map(Redacted.value));
 
 const lookup = {
-    [TIME.name]: time,
+    [TIME.name]     : time,
+    [ONE_OF_US.name]: oneofus,
 };
 
 export const slash = (event: SQSEvent) => pipe(
@@ -28,7 +30,7 @@ const each = (record: SQSRecord) => E.gen(function * () {
 
     const message = yield * lookup[root](
         interaction,
-        nameOptions(interaction) as Parameters<typeof lookup[typeof root]>[1],
+        nameOptions(interaction) as never,
     );
 
     const discord = yield * DiscordREST;
@@ -36,24 +38,25 @@ const each = (record: SQSRecord) => E.gen(function * () {
     yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, message);
 });
 
-const nameOptions = (data: Interaction) => {
-    if ('options' in data.data) {
-        const subgroup = data.data.options.find((o) => o.type === GROUP_OPTION);
-        const cmd = data.data.options.find((o) => o.type === SUBCMD_OPTION);
+const nameOptions
+    = (data: Interaction) => {
+        if ('options' in data.data) {
+            const subgroup = data.data.options.find((o) => o.type === GROUP_OPTION);
+            const cmd = data.data.options.find((o) => o.type === SUBCMD_OPTION);
 
-        if (subgroup) {
-            return overrideNames(subgroup.options[0].options);
+            if (subgroup) {
+                return overrideNames(subgroup.options[0].options);
+            }
+            else if (cmd) {
+                return overrideNames(cmd.options);
+            }
+            else {
+                return overrideNames(data.data.options);
+            }
         }
-        else if (cmd) {
-            return overrideNames(cmd.options);
-        }
-        else {
-            return overrideNames(data.data.options);
-        }
-    }
 
-    return {};
-};
+        return {};
+    };
 
 const overrideNames
     = <

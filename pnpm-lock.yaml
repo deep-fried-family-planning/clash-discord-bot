@@ -129,6 +129,9 @@ importers:
       '@types/aws-lambda':
         specifier: 8.10.145
         version: 8.10.145
+      '@types/chance':
+        specifier: 1.1.6
+        version: 1.1.6
       '@types/eslint__js':
         specifier: 8.42.3
         version: 8.42.3
@@ -144,6 +147,9 @@ importers:
       '@vitest/coverage-istanbul':
         specifier: 2.1.4
         version: 2.1.4(vitest@2.1.4(@types/node@22.8.4))
+      chance:
+        specifier: 1.1.12
+        version: 1.1.12
       eslint:
         specifier: 9.13.0
         version: 9.13.0(jiti@2.3.3)
@@ -1383,6 +1389,9 @@ packages:
   '@types/bonjour@3.5.13':
     resolution: {integrity: sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ==}
 
+  '@types/chance@1.1.6':
+    resolution: {integrity: sha512-V+pm3stv1Mvz8fSKJJod6CglNGVqEQ6OyuqitoDkWywEODM/eJd1eSuIp9xt6DrX8BWZ2eDSIzbw1tPCUTvGbQ==}
+
   '@types/connect-history-api-fallback@1.5.4':
     resolution: {integrity: sha512-n6Cr2xS1h4uAulPRdlw6Jl6s1oG8KrVilPN2yUITEs+K48EzMJJ3W1xy8K5eWuFvjp3R74AOIGSmp2UfBJ8HFw==}
 
@@ -1742,6 +1751,9 @@ packages:
   chalk@5.3.0:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
+  chance@1.1.12:
+    resolution: {integrity: sha512-vVBIGQVnwtUG+SYe0ge+3MvF78cvSpuCOEUJr7sVEk2vSBuMW6OXNJjSzdtzrlxNUEaoqH2GBd5Y/+18BEB01Q==}
 
   check-error@2.1.1:
     resolution: {integrity: sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw==}
@@ -5490,6 +5502,8 @@ snapshots:
     dependencies:
       '@types/node': 22.8.4
 
+  '@types/chance@1.1.6': {}
+
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
       '@types/express-serve-static-core': 5.0.1
@@ -5911,6 +5925,8 @@ snapshots:
       supports-color: 7.2.0
 
   chalk@5.3.0: {}
+
+  chance@1.1.12: {}
 
   check-error@2.1.1: {}
 

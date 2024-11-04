@@ -1,131 +1,125 @@
-import {ddbGetPlayerLinks, ddbPutPlayerLinks} from '#src/database/codec/player-links-ddb.ts';
-import {PLAYER_LINKS_CODEC_LATEST} from '#src/database/codec/player-links-codec.ts';
-import {getServerReject} from '#src/database/server/get-server.ts';
-import {validateAdminRole} from '#src/discord/command-util/validate-admin-role.ts';
-import {badRequest, notFound} from '@hapi/boom';
-import {discord} from '#src/https/api-discord.ts';
 import {api_coc} from '#src/https/api-coc.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
 import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CommandSpec, Interaction, OptionData} from '#src/discord/types.ts';
+import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import {E, pipe} from '#src/utils/effect';
-import {getDiscordServer} from '#src/database/discord-server.ts';
-import type {Embed} from 'dfx/types';
+import {failGetDiscordServer, getDiscordServer} from '#src/database/discord-server.ts';
 import {getDiscordPlayer, putDiscordPlayer} from '#src/database/discord-player.ts';
-import type {ResourceNotFoundException} from '@aws-sdk/client-dynamodb';
+import type {DPlayer} from '#src/database/discord-player.ts';
+import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
 
-export const ONE_OF_US = {
-    type       : ApplicationCommandType.ChatInput,
-    name       : 'oneofus',
-    description: 'link clash account to discord',
-    options    : {
-        player_tag: {
-            type       : ApplicationCommandOptionType.String,
-            name       : 'player_tag',
-            description: 'tag for player in-game (ex. #2GR2G0PGG)',
-            required   : true,
+export const ONE_OF_US
+    = {
+        type       : ApplicationCommandType.ChatInput,
+        name       : 'oneofus',
+        description: 'link clash account to discord',
+        options    : {
+            player_tag: {
+                type       : ApplicationCommandOptionType.String,
+                name       : 'player_tag',
+                description: 'tag for player in-game (ex. #2GR2G0PGG)',
+                required   : true,
+            },
+            api_token: {
+                type       : ApplicationCommandOptionType.String,
+                name       : 'api_token',
+                description: 'player api token from in-game settings',
+                required   : true,
+            },
+            discord_user: {
+                type       : ApplicationCommandOptionType.User,
+                name       : 'discord_user',
+                description: '[admin_role] discord user account to link player tag',
+            },
         },
-        api_token: {
-            type       : ApplicationCommandOptionType.String,
-            name       : 'api_token',
-            description: 'player api token from in-game settings',
-            required   : true,
-        },
-        discord_user: {
-            type       : ApplicationCommandOptionType.User,
-            name       : 'discord_user',
-            description: '[admin_role] discord user account to link player tag',
-        },
-    },
-} as const satisfies CommandSpec;
+    } as const satisfies CommandSpec;
 
-type ROptions<T extends CommandSpec> = OptionData<T['options']>;
-
-// fullstack test
-//
-//
-//
-//
-//  adrian needs to get his AWS creds and shit
-//  i need to make an ephemeral role / increase dynamo permissions in qual
-//
-//
-//
+/**
+ * @desc [SLASH /oneofus]
+ */
 export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) => E.gen(function * () {
-    const tag = api_coc.util.formatTag(options.player_tag);
+    if (!data.member) {
+        return yield * E.fail(new Error('contextual discord authentication failed'));
+    }
 
-    if (!api_coc.util.isValidTag(tag)) {
-        yield * E.fail(new Error('invalid tag'));
+    const server = yield * pipe(
+        getDiscordServer({pk: `server-${data.guild_id}`, sk: 'now'}),
+        E.flatMap(failGetDiscordServer),
+    );
+
+    const tag = `#${options.player_tag.toUpperCase().replace(/O/g, '0').replace(/^#/g, '').replace(/\s/g, '')}`;
+
+    if (/^#?[0289PYLQGRJCUV]$/.test(tag)) {
+        return yield * E.fail(new Error('invalid tag'));
     }
 
     const coc_player = yield * E.promise(async () => await api_coc.getPlayer(tag));
 
+    // server admin role link
     if (options.api_token === 'admin') {
+        if (!data.member.roles.includes(server.admin)) {
+            return yield * E.fail(new Error('admin role required'));
+        }
         if (!options.discord_user) {
-            yield * E.fail(new Error('must have discord_user defined'));
+            return yield * E.fail(new Error('admin links must have discord_user'));
         }
 
-        const server = yield * getDiscordServer({
-            pk: `server-${data.guild_id}`,
-            sk: 'now',
-        });
-
-        if (!data.member!.roles.includes(server.admin)) {
-            yield * E.fail(new Error('admin role required'));
-        }
+        const player = yield * getDiscordPlayer({pk: `user-${data.member.user.id}`, sk: `player-${options.player_tag}`});
+        const newPlayer = makeDiscordPlayer(options.discord_user, coc_player.tag, 1);
 
         yield * putDiscordPlayer({
-            pk            : `user-${data.member!.user.id}`,
-            sk            : `player-${coc_player.tag}`,
-            type          : 'DiscordPlayer',
-            version       : '1.0.0',
-            created       : new Date(Date.now()),
-            updated       : new Date(Date.now()),
-            gsi_user_id   : `user-${data.member!.user.id}`,
-            gsi_player_tag: `player-${coc_player.tag}`,
-            verification  : 2,
+            ...newPlayer,
+            created: player
+                ? player.created
+                : newPlayer.created,
         });
 
-        return {
-            embeds: [{
-                description: 'admin link',
-            }],
-        };
+        return {embeds: [{description: 'admin link successful'}]};
     }
 
-    const player = yield * pipe(
-        getDiscordPlayer({
-            pk: `user-${data.member!.user.id}`,
-            sk: options.player_tag,
-        }),
-        E.catchTag('ResourceNotFoundException', () => E.succeed(undefined)),
-    );
+    // COC player API token validity
+    const tokenValid = yield * E.promise(async () => await api_coc.verifyPlayerToken(coc_player.tag, options.api_token));
 
-    if (player) {
-        yield * E.fail(new Error('player link already exists'));
+    if (!tokenValid) {
+        return yield * E.fail(new Error('invalid api_token'));
     }
 
-    const tokenIsValid = yield * E.promise(async () => await api_coc.verifyPlayerToken(coc_player.tag, options.api_token));
+    const player = yield * getDiscordPlayer({pk: `user-${data.member.user.id}`, sk: `player-${options.player_tag}`});
 
-    if (!tokenIsValid) {
-        yield * E.fail(new Error('invalid api_token'));
+    // new player record
+    if (!player) {
+        yield * putDiscordPlayer(makeDiscordPlayer(data.member.user.id, coc_player.tag, 2));
+
+        return {embeds: [{description: 'new player link verified'}]};
     }
 
+    // already linked to current account
+    if (player.sk === coc_player.tag) {
+        return yield * E.fail(new Error('your account is already linked'));
+    }
+
+    // disallow higher verification override
+    if (player.verification > 2) {
+        return yield * E.fail(new Error('cannot override verification already present'));
+    }
+
+    // update player record
     yield * putDiscordPlayer({
-        pk            : `user-${data.member!.user.id}`,
-        sk            : `player-${coc_player.tag}`,
+        ...makeDiscordPlayer(data.member.user.id, coc_player.tag, 2),
+        created: new Date(Date.now()),
+    });
+
+    return {embeds: [{description: 'player link overridden'}]};
+});
+
+const makeDiscordPlayer
+    = (userId: string, playerTag: string, verification: DPlayer['verification']) => ({
+        pk            : `user-${userId}`,
+        sk            : `player-${playerTag}`,
         type          : 'DiscordPlayer',
         version       : '1.0.0',
         created       : new Date(Date.now()),
         updated       : new Date(Date.now()),
-        gsi_user_id   : `user-${data.member!.user.id}`,
-        gsi_player_tag: `player-${coc_player.tag}`,
-        verification  : 2,
-    });
-
-    return {
-        embeds: [{
-            description: 'noice',
-        }],
-    };
-});
+        gsi_user_id   : `user-${userId}`,
+        gsi_player_tag: `player-${playerTag}`,
+        verification  : verification,
+    } as const);

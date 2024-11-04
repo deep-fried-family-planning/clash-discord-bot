@@ -1,4 +1,4 @@
-import {Schema as S} from 'effect';
+import {Console, Schema as S} from 'effect';
 import {PlayerTag, UserId} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
@@ -32,19 +32,30 @@ export const DiscordPlayerEncode = S.encodeUnknown(DiscordPlayer);
 
 export const DiscordPlayerEquivalence = S.equivalence(DiscordPlayer);
 
-export const putDiscordPlayer = (record: DPlayer) => DynamoDBDocumentService.put({
-    TableName: process.env.DDB_OPERATIONS,
-    Item     : record,
-});
-
-export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    DynamoDBDocumentService.query({
-        TableName: process.env.DDB_OPERATIONS,
-        IndexName: '',
-
-        Key      : key,
-    }),
-    E.flatMap(({Item}) => DiscordPlayerDecode(Item)),
+export const putDiscordPlayer = (record: DPlayer) => pipe(
+    DiscordPlayerEncode(record),
+    E.flatMap((encoded) => pipe(
+        DynamoDBDocumentService.put({
+            TableName: process.env.DDB_OPERATIONS,
+            Item     : encoded,
+        }),
+        E.tap(Console.log('[PUT DDB]: player encoded', encoded)),
+    )),
 );
 
-export const getDiscordPlayerByGSI = ()
+export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
+    DynamoDBDocumentService.get({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : key,
+    }),
+    E.flatMap(({Item}) => pipe(
+        E.if(Boolean(Item), {
+            onTrue : () => DiscordPlayerDecode(Item),
+            onFalse: () => E.succeed(undefined),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[GET DDB]: player decoded', decoded)),
+        )),
+    )),
+);

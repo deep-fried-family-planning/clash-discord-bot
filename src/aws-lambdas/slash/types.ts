@@ -1,7 +1,6 @@
 import type * as D from 'dfx/types';
 import type {CommandSpec, Interaction, OptionData} from '#src/discord/types.ts';
 import type {Effect} from 'effect';
-import type {TaggedException} from '@effect-aws/client-dynamodb/lib/Errors';
 
 type Eff<A, E, R> = Effect.Effect<A, E, R>;
 
@@ -16,3 +15,5 @@ export type CmdFn<
 > = () => <
     E,
 > (data: Interaction, options: OptionData<T['options']>) => Helper<E>;
+
+export type ROptions<T extends CommandSpec> = OptionData<T['options']>;

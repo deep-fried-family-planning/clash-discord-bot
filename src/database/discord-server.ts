@@ -1,4 +1,4 @@
-import {Schema as S} from 'effect';
+import {Console, Schema as S} from 'effect';
 import {ChannelId, RoleId, ServerId} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
@@ -33,24 +33,37 @@ export const DiscordServer = S.Struct({
 });
 
 export const DiscordServerEquivalence = S.equivalence(DiscordServer);
-
 export const DiscordServerEncode = S.encodeUnknown(DiscordServer);
-
 export const DiscordServerDecode = S.decodeUnknown(DiscordServer);
 
 export const putDiscordServer = (record: DServer) => pipe(
     DiscordServerEncode(record),
-    E.flatMap((server) => DynamoDBDocumentService.put({
-        TableName: process.env.DDB_OPERATIONS,
-        Item     : server,
-    })),
+    E.flatMap((encoded) => pipe(
+        DynamoDBDocumentService.put({
+            TableName: process.env.DDB_OPERATIONS,
+            Item     : encoded,
+        }),
+        E.tap(Console.log('[PUT DDB]: server encoded', encoded)),
+    )),
 );
-
-;
 
 export const getDiscordServer = (key: CompKey<DServer>) => DynamoDBDocumentService
     .get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : key,
     })
-    .pipe(E.flatMap(({Item}) => DiscordServerDecode(Item)));
+    .pipe(E.flatMap(({Item}) => pipe(
+        E.if(Boolean(Item), {
+            onTrue : () => DiscordServerDecode(Item),
+            onFalse: () => E.succeed(undefined),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[GET DDB]: server decoded', decoded)),
+        )),
+    )));
+
+export const failGetDiscordServer = (decoded?: DServer) => E.if(Boolean(decoded), {
+    onTrue : () => E.succeed(decoded!),
+    onFalse: () => E.fail(new Error('the current server is not recognized')),
+});
