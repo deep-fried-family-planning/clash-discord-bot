@@ -31,40 +31,40 @@ importers:
         version: 2.4.0
       '@effect-aws/client-dynamodb':
         specifier: 1.4.0
-        version: 1.4.0(effect@3.10.6)
+        version: 1.4.0(effect@3.10.9)
       '@effect-aws/client-eventbridge':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.10.6)
+        version: 1.5.0(effect@3.10.9)
       '@effect-aws/client-lambda':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.10.6)
+        version: 1.5.0(effect@3.10.9)
       '@effect-aws/client-scheduler':
         specifier: 1.0.1
-        version: 1.0.1(effect@3.10.6)
+        version: 1.0.1(effect@3.10.9)
       '@effect-aws/client-sqs':
         specifier: 1.5.0
-        version: 1.5.0(effect@3.10.6)
+        version: 1.5.0(effect@3.10.9)
       '@effect-aws/client-ssm':
         specifier: 1.1.0
-        version: 1.1.0(effect@3.10.6)
+        version: 1.1.0(effect@3.10.9)
       '@effect-aws/lambda':
         specifier: 1.2.0
-        version: 1.2.0(effect@3.10.6)
+        version: 1.2.0(effect@3.10.9)
       '@effect-aws/lib-dynamodb':
         specifier: 1.3.0
-        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.10.6))(effect@3.10.6)
+        version: 1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.10.9))(effect@3.10.9)
       '@effect-aws/powertools-logger':
         specifier: 1.3.0
-        version: 1.3.0(@aws-lambda-powertools/logger@2.10.0)(effect@3.10.6)
+        version: 1.3.0(@aws-lambda-powertools/logger@2.10.0)(effect@3.10.9)
       '@effect-aws/ssm':
         specifier: 1.0.1
-        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.10.6))(effect@3.10.6)
+        version: 1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.10.9))(effect@3.10.9)
       '@effect/platform-node':
         specifier: 0.64.12
-        version: 0.64.12(@effect/platform@0.69.11(effect@3.10.6))(bufferutil@4.0.8)(effect@3.10.6)
+        version: 0.64.12(@effect/platform@0.69.11(effect@3.10.9))(bufferutil@4.0.8)(effect@3.10.9)
       '@effect/schema':
         specifier: 0.75.5
-        version: 0.75.5(effect@3.10.6)
+        version: 0.75.5(effect@3.10.9)
       '@hapi/boom':
         specifier: 10.0.1
         version: 10.0.1
@@ -82,13 +82,13 @@ importers:
         version: 1.11.13
       dfx:
         specifier: 0.106.0
-        version: 0.106.0(@effect/platform@0.69.11(effect@3.10.6))(effect@3.10.6)
+        version: 0.106.0(@effect/platform@0.69.11(effect@3.10.9))(effect@3.10.9)
       discord-interactions:
         specifier: 4.1.0
         version: 4.1.0
       effect:
-        specifier: 3.10.6
-        version: 3.10.6
+        specifier: 3.10.9
+        version: 3.10.9
       joi:
         specifier: 17.13.3
         version: 17.13.3
@@ -1975,8 +1975,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.10.6:
-    resolution: {integrity: sha512-gmEKTmnxvu0jX+WQAXINPKmXWE7cBTRuSZ/h6aJw9AzljIB3q+3x/vr0hTAg9UqLNXYyWLUVURt3pemj2AWykA==}
+  effect@3.10.9:
+    resolution: {integrity: sha512-nNRknWPKCBDvAfsoJ/XsxTvIsN9mRdnM02AD6SMPGmHE3dIpnG1lTC/3ywjSYtU7YtBhFV64s2KKaDzdIU8p4Q==}
 
   electron-to-chromium@1.5.49:
     resolution: {integrity: sha512-ZXfs1Of8fDb6z7WEYZjXpgIRF6MEu8JdeGA0A40aZq6OQbS+eJpnnV49epZRna2DU/YsEjSQuGtQPPtvt6J65A==}
@@ -4594,83 +4594,83 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect-aws/client-dynamodb@1.4.0(effect@3.10.6)':
+  '@effect-aws/client-dynamodb@1.4.0(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-eventbridge@1.5.0(effect@3.10.6)':
+  '@effect-aws/client-eventbridge@1.5.0(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-eventbridge': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-lambda@1.5.0(effect@3.10.6)':
+  '@effect-aws/client-lambda@1.5.0(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-lambda': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-scheduler@1.0.1(effect@3.10.6)':
+  '@effect-aws/client-scheduler@1.0.1(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-scheduler': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-sqs@1.5.0(effect@3.10.6)':
+  '@effect-aws/client-sqs@1.5.0(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-sqs': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-ssm@1.1.0(effect@3.10.6)':
+  '@effect-aws/client-ssm@1.1.0(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-ssm': 3.682.0
-      effect: 3.10.6
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/lambda@1.2.0(effect@3.10.6)':
+  '@effect-aws/lambda@1.2.0(effect@3.10.9)':
     dependencies:
-      effect: 3.10.6
+      effect: 3.10.9
 
-  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.10.6))(effect@3.10.6)':
+  '@effect-aws/lib-dynamodb@1.3.0(@effect-aws/client-dynamodb@1.4.0(effect@3.10.9))(effect@3.10.9)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.682.0
       '@aws-sdk/lib-dynamodb': 3.682.0(@aws-sdk/client-dynamodb@3.682.0)
-      '@effect-aws/client-dynamodb': 1.4.0(effect@3.10.6)
-      effect: 3.10.6
+      '@effect-aws/client-dynamodb': 1.4.0(effect@3.10.9)
+      effect: 3.10.9
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.10.0)(effect@3.10.6)':
+  '@effect-aws/powertools-logger@1.3.0(@aws-lambda-powertools/logger@2.10.0)(effect@3.10.9)':
     dependencies:
       '@aws-lambda-powertools/logger': 2.10.0
-      effect: 3.10.6
+      effect: 3.10.9
 
-  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.10.6))(effect@3.10.6)':
+  '@effect-aws/ssm@1.0.1(@effect-aws/client-ssm@1.1.0(effect@3.10.9))(effect@3.10.9)':
     dependencies:
-      '@effect-aws/client-ssm': 1.1.0(effect@3.10.6)
-      effect: 3.10.6
+      '@effect-aws/client-ssm': 1.1.0(effect@3.10.9)
+      effect: 3.10.9
 
-  '@effect/platform-node-shared@0.19.11(@effect/platform@0.69.11(effect@3.10.6))(effect@3.10.6)':
+  '@effect/platform-node-shared@0.19.11(@effect/platform@0.69.11(effect@3.10.9))(effect@3.10.9)':
     dependencies:
-      '@effect/platform': 0.69.11(effect@3.10.6)
+      '@effect/platform': 0.69.11(effect@3.10.9)
       '@parcel/watcher': 2.4.1
-      effect: 3.10.6
+      effect: 3.10.9
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.64.12(@effect/platform@0.69.11(effect@3.10.6))(bufferutil@4.0.8)(effect@3.10.6)':
+  '@effect/platform-node@0.64.12(@effect/platform@0.69.11(effect@3.10.9))(bufferutil@4.0.8)(effect@3.10.9)':
     dependencies:
-      '@effect/platform': 0.69.11(effect@3.10.6)
-      '@effect/platform-node-shared': 0.19.11(@effect/platform@0.69.11(effect@3.10.6))(effect@3.10.6)
-      effect: 3.10.6
+      '@effect/platform': 0.69.11(effect@3.10.9)
+      '@effect/platform-node-shared': 0.19.11(@effect/platform@0.69.11(effect@3.10.9))(effect@3.10.9)
+      effect: 3.10.9
       mime: 3.0.0
       undici: 6.19.8
       ws: 8.18.0(bufferutil@4.0.8)
@@ -4678,15 +4678,15 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.69.11(effect@3.10.6)':
+  '@effect/platform@0.69.11(effect@3.10.9)':
     dependencies:
-      effect: 3.10.6
+      effect: 3.10.9
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
 
-  '@effect/schema@0.75.5(effect@3.10.6)':
+  '@effect/schema@0.75.5(effect@3.10.9)':
     dependencies:
-      effect: 3.10.6
+      effect: 3.10.9
       fast-check: 3.22.0
 
   '@esbuild/aix-ppc64@0.21.5':
@@ -6077,10 +6077,10 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  dfx@0.106.0(@effect/platform@0.69.11(effect@3.10.6))(effect@3.10.6):
+  dfx@0.106.0(@effect/platform@0.69.11(effect@3.10.9))(effect@3.10.9):
     dependencies:
-      '@effect/platform': 0.69.11(effect@3.10.6)
-      effect: 3.10.6
+      '@effect/platform': 0.69.11(effect@3.10.9)
+      effect: 3.10.9
     optionalDependencies:
       discord-verify: 1.2.0
 
@@ -6109,7 +6109,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.10.6:
+  effect@3.10.9:
     dependencies:
       fast-check: 3.22.0
 
