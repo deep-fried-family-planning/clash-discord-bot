@@ -16,6 +16,10 @@ resource "aws_dynamodb_table" "operations" {
         type = "S"
     }
     attribute {
+        name = "gsi_all_server_id"
+        type = "S"
+    }
+    attribute {
         name = "gsi_server_id"
         type = "S"
     }
@@ -33,14 +37,14 @@ resource "aws_dynamodb_table" "operations" {
     }
 
     global_secondary_index {
-        name            = "GSI_SERVERS"
-        hash_key        = "gsi_server_id"
+        name            = "GSI_ALL_SERVERS"
+        hash_key        = "gsi_all_server_id"
         projection_type = "ALL"
         read_capacity   = 1
         write_capacity  = 1
     }
     global_secondary_index {
-        name            = "GSA_ALL_CLANS"
+        name            = "GSI_ALL_CLANS"
         hash_key        = "gsi_clan_tag"
         range_key       = "gsi_server_id"
         projection_type = "ALL"

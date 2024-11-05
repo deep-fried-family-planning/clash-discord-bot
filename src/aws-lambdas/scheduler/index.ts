@@ -1,90 +1,113 @@
-import type {AppDiscordEvent} from '#src/aws-lambdas/app_discord/index-app-discord.types.ts';
-import {E, Logger, pipe} from '#src/utils/effect.ts';
+import {Cfg, E, pipe} from '#src/utils/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {serverCache} from '#src/database/codec/server-cache.ts';
-import {fromEntries, toEntries} from 'effect/Record';
 import {mapL} from '#src/pure/pure-list.ts';
 import {api_coc} from '#src/https/api-coc.ts';
 import {updateWarCountdown} from '#src/discord/actions/update-war-countdowns.ts';
-import {Cause, Console} from 'effect';
-import {show} from '#src/utils/show.ts';
-import {discordLogError} from '#src/https/calls/discord-log-error.ts';
+import {Cause, Console, Layer, Redacted} from 'effect';
 import {oopTimeout} from '#src/aws-lambdas/scheduler/oop-timeout.ts';
 import {createWarThread} from '#src/discord/actions/create-war-thread.ts';
-import {SERVER_RECORD, SERVER_RECORD_EQ} from '#src/database/schema/server-record.ts';
-import {putServer} from '#src/database/server/put-server.ts';
+import {LambdaLayer} from '#src/aws-lambdas/slash';
+import {ClanCache, ClanCacheLive} from '#src/aws-lambdas/scheduler/clan-cache.ts';
+import {ServerCache, ServerCacheLive} from '#src/aws-lambdas/scheduler/server-cache.ts';
+import {DiscordClan, DiscordClanEquivalence, putDiscordClan} from '#src/database/discord-clan.ts';
+import {DiscordREST} from 'dfx';
+import {REDACTED_DISCORD_ERROR_URL} from '#src/constants/secrets.ts';
+import {PlayerCache, PlayerCacheLive} from '#src/aws-lambdas/scheduler/player-cache.ts';
 
-const h = (event: AppDiscordEvent) => pipe(E.gen(function* () {
+const LambdaLive = pipe(
+    ClanCacheLive,
+    Layer.provideMerge(ServerCacheLive),
+    Layer.provideMerge(PlayerCacheLive),
+    Layer.provideMerge(LambdaLayer),
+);
+
+const h = () => pipe(E.gen(function* () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
-    show(event);
+    const serverCache = yield * yield * ServerCache;
+    const clanCache = yield * (yield * ClanCache);
+    const players = yield * PlayerCache;
 
-    const server = yield * serverCache.get('RECORD');
+    yield * Console.log(players);
 
     yield * pipe(
-        server.clans,
-        toEntries,
-        mapL(([cid, cmeta]) => pipe(
-            E.gen(function* () {
-                const clan = yield * oopTimeout('30 seconds', () => api_coc.getClan(cid));
-                const war = yield * oopTimeout('30 seconds', () => api_coc.getCurrentWar(cid));
+        yield * clanCache.values,
+        mapL((clan) => pipe(
+            E.gen(function * () {
+                const server = yield * serverCache.get(clan.pk);
 
-                yield * Console.log(`checking ${cid}`);
+                const [, clanTag] = clan.sk.split('clan-');
 
-                yield * updateWarCountdown(clan, war!, server);
+                const recentClan = yield * clanCache.get({pk: clan.pk, sk: clan.sk});
 
-                return yield * createWarThread(server, clan, war!);
-            }),
-            E.catchAll((error) => E.gen(function * () {
-                yield * Console.log(error);
-                yield * Console.log(Cause.originalError(error));
+                const apiClan = yield * oopTimeout('10 seconds', () => api_coc.getClan(clanTag));
+                const apiWars = yield * oopTimeout('10 seconds', () => api_coc.getWars(clanTag));
 
-                if (error._tag !== 'TimeoutException') {
-                    yield * E.promise(() => discordLogError(Cause.originalError(error)));
+                yield * Console.log('COC');
+
+                // const wars = pipe(apiWars, sortL<ClanWar>((a, b) => {
+                //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+                //     const diff = a.preparationStartTime.getTime() - b.preparationStartTime.getTime();
+                //
+                //     if (diff > 0) {
+                //         return 1;
+                //     }
+                //     else if (diff < 0) {
+                //         return -1;
+                //     }
+                //     return 0;
+                // }));
+
+                // yield * updateWarCountdown(recentClan, apiClan, apiWars.find((a) => a.isBattleDay)!);
+
+                yield * Console.log('countdown');
+
+                if (apiWars.length === 1) {
+                    const newClan = yield * E.timeout(createWarThread(server, recentClan, players, apiClan, apiWars[0]), '10 seconds');
+
+                    if (!DiscordClanEquivalence(DiscordClan.make(newClan), clan)) {
+                        yield * clanCache.set({pk: newClan.pk, sk: newClan.sk}, newClan);
+                        yield * putDiscordClan(newClan);
+                    }
                 }
+                else if (apiWars.length > 1) {
+                    const newClan = yield * E.timeout(createWarThread(server, recentClan, players, apiClan, apiWars[0]), '10 seconds');
+                    const newNewClan = yield * E.timeout(createWarThread(server, newClan, players, apiClan, apiWars[1]), '10 seconds');
 
-                return [cid, cmeta] as const;
-            })),
-            E.catchAllDefect((defect) => E.gen(function* () {
-                yield * Console.log(defect);
-                yield * Console.log(Cause.originalError(defect));
-                yield * E.promise(() => discordLogError(Cause.originalError(defect)));
+                    if (!DiscordClanEquivalence(DiscordClan.make(newNewClan), clan)) {
+                        yield * clanCache.set({pk: newNewClan.pk, sk: newNewClan.sk}, newNewClan);
+                        yield * putDiscordClan(newNewClan);
+                    }
+                }
+            }),
+            E.catchAllCause((e) => E.gen(function * () {
+                const discord = yield * DiscordREST;
 
-                return [cid, cmeta] as const;
+                // yield * Console.error(e);
+
+                const error = Cause.prettyErrors(e);
+
+                yield * Console.error(...error);
+
+                const [token, id] = Redacted
+                    .value(yield * Cfg.redacted(REDACTED_DISCORD_ERROR_URL))
+                    .split('/')
+                    .reverse();
+
+                yield * discord.executeWebhook(id, token, {
+                    embeds: [{
+                        title      : 'Error',
+                        description: error.map((err) => `${err.name}\n${err.message}`).join('\n\n'),
+                    }],
+                });
             })),
         )),
         E.allWith({concurrency: 5}),
-        E.flatMap((cmetas) => E.gen(function * () {
-            const current = SERVER_RECORD.make(server);
-            const next = SERVER_RECORD.make({
-                ...server,
-                clans: fromEntries(cmetas),
-            });
-
-            yield * Console.log('staging db update');
-
-            if (!SERVER_RECORD_EQ(current, next)) {
-                yield * Console.log('updating db');
-                yield * E.promise(() => putServer(next));
-            }
-        })),
-        E.catchAll((error) => E.gen(function * () {
-            yield * Console.log(error);
-            yield * Console.log(Cause.originalError(error));
-
-            // @ts-expect-error TODO fix this after refactoring concurrency/db structure
-            if ('_tag' in error && error._tag !== 'TimeoutException') {
-                yield * E.promise(() => discordLogError(Cause.originalError(error)));
-            }
-        })),
-        E.catchAllDefect((defect) => E.gen(function* () {
-            yield * Console.log(defect);
-            yield * Console.log(Cause.originalError(defect));
-            yield * E.promise(() => discordLogError(Cause.originalError(defect)));
-        })),
     );
 }));
 
-export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));
+export const handler = makeLambda(h, LambdaLive);
+
+handler();

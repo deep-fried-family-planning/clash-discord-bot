@@ -1,9 +1,7 @@
-import type {ServerModel} from '#src/database/codec/server-codec.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
-import {discord} from '#src/https/api-discord.ts';
 import {E} from '#src/utils/effect.ts';
-import {Console} from 'effect';
-import {oopTimeout} from '#src/aws-lambdas/scheduler/oop-timeout.ts';
+import type {DClan} from '#src/database/discord-clan.ts';
+import {DiscordREST} from 'dfx';
 
 export const nicknames = {
     'ClashTest Dummy': 'CTD',
@@ -11,83 +9,32 @@ export const nicknames = {
     'DFFP EZ CWL'    : 'EZCWL',
 } as const;
 
-export const updateWarCountdown = (clan: Clan, war: ClanWar, server: ServerModel) => E.gen(function* () {
-    const cname = clan.name in nicknames
-        ? nicknames[clan.name as keyof typeof nicknames]
-        : clan.name;
+export const updateWarCountdown = (clan: DClan, apiClan: Clan, apiWar: ClanWar) => E.gen(function* () {
+    const cname = apiClan.name in nicknames
+        ? nicknames[apiClan.name as keyof typeof nicknames]
+        : apiClan.name;
 
-    const [serverclan] = clan.tag === war.clan.tag
-        ? [war.clan, war.opponent]
-        : [war.opponent, war.clan];
+    const discord = yield * DiscordREST;
 
-    // const links = yield * playerLinkCache.get(PLAYER_LINK_PLACEHOLDER_KEY);
-    //
-    // const permissions = pipe(
-    //     war.clan.members,
-    //     mapL((m) => links.players[m.tag].user),
-    //     dedupeL,
-    //
-    // );
-
-    yield * Console.log(`updating ${clan.tag}`);
-
-    if (war.isPreparationDay) {
-        yield * Console.log(`prep ${clan.tag}`);
-        const time = new Date(war.startTime.getTime() - Date.now());
+    if (apiWar.isPreparationDay) {
+        const time = new Date(apiWar.startTime.getTime() - Date.now());
         const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
-        yield * Console.log(`prep ${clan.tag}`);
-        yield * oopTimeout('30 seconds', async () => {
-            try {
-                await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown_channel,
-                    {
-                        name: `🛠️│${cname}│${timeleft}`,
-                    },
-                );
-            }
-            catch (e) {
-                console.error(e);
-                throw e;
-            }
+
+        return yield * discord.modifyChannel(clan.countdown, {
+            name: `🛠️│${cname}│${timeleft}`,
         });
     }
-    else if (war.isBattleDay) {
-        yield * Console.log(`battle day ${clan.tag}`);
-        const time = new Date(war.endTime.getTime() - Date.now());
+    else if (apiWar.isBattleDay) {
+        const time = new Date(apiWar.endTime.getTime() - Date.now());
         const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
-        yield * Console.log(`battle day ${clan.tag}`);
-        yield * oopTimeout('30 seconds', async () => {
-            try {
-                await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown_channel,
-                    {
-                        name: `🗡│${cname}│${timeleft}`,
-                    },
-                );
-            }
-            catch (e) {
-                console.error(e);
-                throw e;
-            }
+
+        return yield * discord.modifyChannel(clan.countdown, {
+            name: `🗡│${cname}│${timeleft}`,
         });
     }
     else {
-        yield * Console.log(`no war ${clan.tag}`);
-        yield * oopTimeout('30 seconds', async () => {
-            try {
-                await discord.channels.edit(
-                    server.clans[serverclan.tag].war_countdown_channel,
-                    {
-                        name: `💤│${cname}`,
-                    },
-                );
-            }
-            catch (e) {
-                console.error(e);
-                throw e;
-            }
+        return yield * discord.modifyChannel(clan.countdown, {
+            name: `💤│${cname}`,
         });
     }
-
-    return yield * Console.log(`updated ${clan.tag}`);
 });

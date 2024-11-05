@@ -3,6 +3,7 @@ import {ChannelId, RoleId, ServerId} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/utils/effect.ts';
+import {mapL} from '#src/pure/pure-list.ts';
 
 export type DServer = S.Schema.Type<typeof DiscordServer>;
 
@@ -15,7 +16,7 @@ export const DiscordServer = S.Struct({
     created: S.Date,
     updated: S.Date,
 
-    gsi_server_id: ServerId,
+    gsi_all_server_id: ServerId,
 
     polling: S.Boolean,
 
@@ -49,8 +50,9 @@ export const putDiscordServer = (record: DServer) => pipe(
 
 export const getDiscordServer = (key: CompKey<DServer>) => DynamoDBDocumentService
     .get({
-        TableName: process.env.DDB_OPERATIONS,
-        Key      : key,
+        TableName     : process.env.DDB_OPERATIONS,
+        Key           : key,
+        ConsistentRead: true,
     })
     .pipe(E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
@@ -62,6 +64,23 @@ export const getDiscordServer = (key: CompKey<DServer>) => DynamoDBDocumentServi
             E.tap(Console.log('[GET DDB]: server decoded', decoded)),
         )),
     )));
+
+export const scanDiscordServers = () => pipe(
+    DynamoDBDocumentService.scan({
+        TableName: process.env.DDB_OPERATIONS,
+        IndexName: 'GSI_ALL_SERVERS',
+    }),
+    E.flatMap(({Items}) => pipe(
+        E.if(Boolean(Items), {
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordServerDecode(Item)))),
+            onFalse: () => E.succeed([]),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[SCAN DDB]: servers decoded', decoded)),
+        )),
+    )),
+);
 
 export const failGetDiscordServer = (decoded?: DServer) => E.if(Boolean(decoded), {
     onTrue : () => E.succeed(decoded!),

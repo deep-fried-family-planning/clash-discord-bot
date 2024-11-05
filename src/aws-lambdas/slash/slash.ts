@@ -9,12 +9,16 @@ import {mapL, reduceL} from '#src/pure/pure-list.ts';
 import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
 import {emptyKV} from '#src/pure/pure-kv.ts';
 import {ONE_OF_US, oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
+import {server, SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
+import {CLAN_FAM, clanfam} from '#src/aws-lambdas/slash/commands/clanfam.ts';
 
 const dAppId = Cfg.redacted(REDACTED_DISCORD_APP_ID).pipe(E.map(Redacted.value));
 
 const lookup = {
     [TIME.name]     : time,
     [ONE_OF_US.name]: oneofus,
+    [SERVER.name]   : server,
+    [CLAN_FAM.name] : clanfam,
 };
 
 export const slash = (event: SQSEvent) => pipe(
@@ -24,6 +28,8 @@ export const slash = (event: SQSEvent) => pipe(
 );
 
 const each = (record: SQSRecord) => E.gen(function * () {
+    const discord = yield * DiscordREST;
+
     const interaction = JSON.parse(record.body) as Interaction;
 
     const root = interaction.data.name as keyof typeof lookup;
@@ -31,9 +37,9 @@ const each = (record: SQSRecord) => E.gen(function * () {
     const message = yield * lookup[root](
         interaction,
         nameOptions(interaction) as never,
-    );
-
-    const discord = yield * DiscordREST;
+    ).pipe(E.catchAll((e) => E.succeed({
+        embeds: [{description: `${e.name}\n${e.message}\n${e.stack}`}],
+    })));
 
     yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, message);
 });

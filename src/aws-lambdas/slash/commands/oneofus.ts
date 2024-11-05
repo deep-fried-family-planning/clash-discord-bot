@@ -3,7 +3,11 @@ import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/c
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import {E, pipe} from '#src/utils/effect';
 import {failGetDiscordServer, getDiscordServer} from '#src/database/discord-server.ts';
-import {getDiscordPlayer, putDiscordPlayer} from '#src/database/discord-player.ts';
+import {
+    deleteDiscordPlayer,
+    putDiscordPlayer,
+    queryDiscordPlayer,
+} from '#src/database/discord-player.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
 
@@ -63,14 +67,24 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
             return yield * E.fail(new Error('admin links must have discord_user'));
         }
 
-        const player = yield * getDiscordPlayer({pk: `user-${data.member.user.id}`, sk: `player-${options.player_tag}`});
-        const newPlayer = makeDiscordPlayer(options.discord_user, coc_player.tag, 1);
+        const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
 
+        if (rest.length) {
+            return yield * E.fail(new Error('real bad, this should never happen. call support lol'));
+        }
+
+        if (!player) {
+            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1));
+            return {embeds: [{description: 'admin link successful'}]};
+        }
+
+        yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
         yield * putDiscordPlayer({
-            ...newPlayer,
-            created: player
-                ? player.created
-                : newPlayer.created,
+            ...player,
+            pk          : `user-${data.member.user.id}`,
+            gsi_user_id : `user-${data.member.user.id}`,
+            updated     : new Date(Date.now()),
+            verification: 1,
         });
 
         return {embeds: [{description: 'admin link successful'}]};
@@ -83,13 +97,17 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
         return yield * E.fail(new Error('invalid api_token'));
     }
 
-    const player = yield * getDiscordPlayer({pk: `user-${data.member.user.id}`, sk: `player-${options.player_tag}`});
+    const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
 
     // new player record
     if (!player) {
         yield * putDiscordPlayer(makeDiscordPlayer(data.member.user.id, coc_player.tag, 2));
 
         return {embeds: [{description: 'new player link verified'}]};
+    }
+
+    if (rest.length) {
+        return yield * E.fail(new Error('real bad, this should never happen. call support lol'));
     }
 
     // already linked to current account
@@ -103,9 +121,13 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
     }
 
     // update player record
+    yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
     yield * putDiscordPlayer({
-        ...makeDiscordPlayer(data.member.user.id, coc_player.tag, 2),
-        created: new Date(Date.now()),
+        ...player,
+        pk          : `user-${data.member.user.id}`,
+        gsi_user_id : `user-${data.member.user.id}`,
+        updated     : new Date(Date.now()),
+        verification: 2,
     });
 
     return {embeds: [{description: 'player link overridden'}]};

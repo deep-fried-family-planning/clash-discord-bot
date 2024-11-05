@@ -33,7 +33,7 @@ export const TIME
 /**
  * @desc [SLASH /time]
  */
-export const time = (_, options: ROptions<typeof TIME>) => E.sync(() => {
+export const time = (_: unknown, options: ROptions<typeof TIME>) => E.sync(() => {
     dayjs.extend(dayutc);
     dayjs.extend(daytimezone);
 
