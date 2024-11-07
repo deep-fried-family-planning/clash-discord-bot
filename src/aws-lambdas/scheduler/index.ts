@@ -90,6 +90,8 @@ const h = () => E.gen(function* () {
         )),
         E.allWith({concurrency: 5}),
     );
+
+    return yield * E.die('temp kill instance'); // todo very important lol
 });
 
 // todo
