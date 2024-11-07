@@ -2,7 +2,7 @@ import {warOpponent} from '#src/discord/app-interactions/commands/war-opponent.t
 import {warScout} from '#src/discord/app-interactions/commands/war-scout.ts';
 import {warLinks} from '#src/discord/app-interactions/commands/war-links.ts';
 import {cwlScout} from '#src/discord/app-interactions/commands/cwl-scout.ts';
-import {oneofus} from '#src/discord/app-interactions/commands/oneofus.ts';
+import {oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
 import {faq} from '#src/discord/app-interactions/commands/faq.ts';
 import {ONE_OF_US} from '#src/discord/app-interactions/commands/oneofus.cmd.ts';
 import {FAQ} from '#src/discord/app-interactions/commands/faq.cmd.ts';
@@ -17,7 +17,6 @@ import {WAR_LINKS} from '#src/discord/app-interactions/commands/war-links.cmd.ts
 import {WAR_OPPONENT} from '#src/discord/app-interactions/commands/war-opponent.cmd.ts';
 import {WAR_SCOUT} from '#src/discord/app-interactions/commands/war-scout.cmd.ts';
 import {cmdName} from '#src/discord/command-pipeline/cmd-name.ts';
-import type {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {CONFIG_SERVER_EDIT} from '#src/discord/app-interactions/commands/config/server/server-edit.cmd.ts';
 import {configServerEdit} from '#src/discord/app-interactions/commands/config/server/server-edit.ts';
 import {BOT} from '#src/discord/app-interactions/commands/bot/bot.cmd.ts';
@@ -42,4 +41,4 @@ export const COMMAND_HANDLERS = {
     [cmdName(WAR_LINKS, WAR_LINKS, WAR_LINKS)]             : warLinks,
     [cmdName(WAR_OPPONENT, WAR_OPPONENT, WAR_OPPONENT)]    : warOpponent,
     [cmdName(WAR_SCOUT, WAR_SCOUT, WAR_SCOUT)]             : warScout,
-} as const satisfies {[key in string]: ReturnType<typeof specCommand>};
+} as const;

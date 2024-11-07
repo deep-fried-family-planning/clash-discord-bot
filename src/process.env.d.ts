@@ -6,6 +6,7 @@ declare namespace NodeJS {
         DDB_OPERATIONS : string;
         SQS_POLL       : string;
         SQS_APP_DISCORD: string;
+        SQS_SLASH      : string;
 
         DDB_SERVER: string;
 

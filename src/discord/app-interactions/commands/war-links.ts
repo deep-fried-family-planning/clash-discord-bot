@@ -1,4 +1,3 @@
-import type {COMMANDS} from '#src/discord/commands.ts';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/helpers/markdown.ts';
@@ -10,8 +9,9 @@ import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {notFound} from '@hapi/boom';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {pipe} from '#src/utils/effect.ts';
+import type {WAR_LINKS} from '#src/discord/app-interactions/commands/war-links.cmd.ts';
 
-export const warLinks = specCommand<typeof COMMANDS.WAR_LINKS>(async (body) => {
+export const warLinks = specCommand<typeof WAR_LINKS>(async (body) => {
     const options = getSharedOptions(body);
 
     const entities = await fetchWarEntities(options);

@@ -1,4 +1,3 @@
-import type {COMMANDS} from '#src/discord/commands.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/command-util/message-embed-scout.ts';
@@ -11,8 +10,9 @@ import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {pipe} from '#src/utils/effect.ts';
 import {toEntries} from 'effect/Record';
+import type {CWL_SCOUT} from '#src/discord/app-interactions/commands/cwl-scout.cmd.ts';
 
-export const cwlScout = specCommand<typeof COMMANDS.CWL_SCOUT>(async (body) => {
+export const cwlScout = specCommand<typeof CWL_SCOUT>(async (body) => {
     const options = getSharedOptions(body);
     const graph = await buildGraphModel(options);
 

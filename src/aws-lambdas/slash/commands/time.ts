@@ -5,31 +5,39 @@ import {dTable} from '#src/discord/command-util/message-table.ts';
 import {E, pipe} from '#src/utils/effect.ts';
 import {dCodes, dLines} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import type {CmdFn} from '#src/aws-lambdas/slash/types.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
+import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {Interaction} from '#src/internals/re-exports/discordjs.ts';
+import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
 
-export const TIME = {
-    name       : 'time',
-    description: 'find current time in multiple timezones',
-    options    : {
-        hours_ahead: {
-            name       : 'hours_ahead',
-            description: 'number of hours ahead to offset',
-            type       : 4,
-            min_value  : 1,
-            max_value  : 23,
+export const TIME
+    = {
+        name       : 'time',
+        description: 'find current time in multiple timezones',
+        options    : {
+            hours_ahead: {
+                name       : 'hours_ahead',
+                description: 'number of hours ahead to offset',
+                type       : 4,
+                min_value  : 1,
+                max_value  : 23,
+            },
+            minutes_ahead: {
+                name       : 'minutes_ahead',
+                description: 'number of minutes ahead to offset',
+                type       : 4,
+                min_value  : 1,
+                max_value  : 59,
+            },
         },
-        minutes_ahead: {
-            name       : 'minutes_ahead',
-            description: 'number of minutes ahead to offset',
-            type       : 4,
-            min_value  : 1,
-            max_value  : 59,
-        },
-    },
-} as const satisfies CommandSpec;
+    } as const satisfies CommandSpec;
 
-export const time: CmdFn<typeof TIME> = (_, options) => E.sync(() => {
+/**
+ * @desc [SLASH /time]
+ */
+export const time = (data: Interaction, options: ROptions<typeof TIME>) => E.gen(function * () {
+    yield * validateServer(data);
+
     dayjs.extend(dayutc);
     dayjs.extend(daytimezone);
 
@@ -63,6 +71,7 @@ export const time: CmdFn<typeof TIME> = (_, options) => E.sync(() => {
                     ['Middle East  ', utc.tz('Asia/Riyadh').utc(true).format('hh:mm A')],
                     ['ME - UAE     ', utc.tz('Asia/Dubai').utc(true).format('hh:mm A')],
                     ['South Africa ', utc.tz('Africa/Johannesburg').utc(true).format('hh:mm A')],
+                    ['Tokyo        ', utc.tz('Asia/Tokyo').utc(true).format('hh:mm A')],
                 ]),
                 dCodes,
                 dLines,

@@ -1,80 +1,114 @@
-import type {ServerModel} from '#src/database/codec/server-codec.ts';
 import {E} from '#src/utils/effect';
 import type {Clan, ClanWar} from 'clashofclans.js';
-import {oopTimeout} from '#src/aws-lambdas/scheduler/oop-timeout.ts';
-import {discord} from '#src/https/api-discord.ts';
 import {nicknames} from '#src/discord/actions/update-war-countdowns.ts';
-import {serverCache} from '#src/database/codec/server-cache.ts';
+import {DiscordREST} from 'dfx';
+import type {DServer} from '#src/database/discord-server.ts';
+import type {DClan} from '#src/database/discord-clan.ts';
+import {discord as old} from '#src/https/api-discord.ts';
+import type {DPlayer} from '#src/database/discord-player.ts';
+import {pipe} from 'effect';
+import {mapL, reduceL} from '#src/pure/pure-list.ts';
 
-export const createWarThread = (server: ServerModel, clan: Clan, war: ClanWar) => E.gen(function *() {
-    const cmeta = server.clans[clan.tag];
+export const createWarThread = (server: DServer, clan: DClan, players: Record<string, DPlayer | undefined>, apiClan: Clan, apiWar: ClanWar) => E.gen(function *() {
+    const discord = yield * DiscordREST;
 
-    const cname = clan.name in nicknames
-        ? nicknames[clan.name as keyof typeof nicknames]
-        : clan.name;
+    const cname = apiClan.name in nicknames
+        ? nicknames[apiClan.name as keyof typeof nicknames]
+        : apiClan.name;
 
-    const enemyclan = clan.tag === war.clan.tag
-        ? war.opponent
-        : war.clan;
+    const enemyclan = apiClan.tag === apiWar.clan.tag
+        ? apiWar.opponent
+        : apiWar.clan;
 
-    if (war.isPreparationDay && enemyclan.tag !== cmeta.war_prep_opponent) {
-        const thread = yield * oopTimeout('30 seconds', () => discord.channels.createForumThread(server.channels.war_room, {
+    const enemyclantag = `clan-${enemyclan.tag}`;
+
+    if (apiWar.isPreparationDay && enemyclantag !== clan.prep_opponent) {
+        const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
             name                 : `🛠️│${cname}`,
             auto_archive_duration: 1440,
             message              : {
-                content: `${clan.name} vs. ${enemyclan.name}`,
+                content: `${apiClan.name} vs. ${enemyclan.name}`,
             },
         }));
-        yield * serverCache.invalidate(server.id);
+        yield * discord.createMessage(result.id, {
+            content: pipe(
+                apiWar.clan.members,
+                mapL((m) => players[m.tag]
+                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
+                    : m.tag,
+                ),
+                reduceL('', (acc, a) => acc.concat(`\n${a}`)),
+            ),
+        });
 
-        return [clan.tag, {
-            ...cmeta,
-            war_prep_opponent: enemyclan.tag,
-            war_prep_thread  : thread.id,
-        }] as const;
+        return {
+            ...clan,
+            updated      : new Date(Date.now()),
+            prep_opponent: `clan-${enemyclan.tag}`,
+            thread_prep  : result.id,
+        };
     }
 
-    else if (war.isBattleDay && enemyclan.tag === cmeta.war_prep_opponent && enemyclan.tag !== cmeta.war_battle_opponent) {
-        yield * oopTimeout('30 seconds',
-            () => discord.channels.edit(cmeta.war_prep_thread, {
-                name: `🗡│${cname}`,
-            }),
-        );
-        yield * oopTimeout('30 seconds',
-            () => discord.channels.createMessage(cmeta.war_prep_thread, {
-                content: 'war started',
-            }),
-        );
-        yield * serverCache.invalidate(server.id);
+    else if (apiWar.isBattleDay && enemyclantag !== clan.prep_opponent && enemyclantag !== clan.battle_opponent) {
+        const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
+            name                 : `🗡️│${cname}`,
+            auto_archive_duration: 1440,
+            message              : {
+                content: `${apiClan.name} vs. ${enemyclan.name}`,
+            },
+        }));
+        yield * discord.createMessage(result.id, {
+            content: pipe(
+                apiWar.clan.members,
+                mapL((m) => players[m.tag]
+                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
+                    : m.tag,
+                ),
+                reduceL('', (acc, a) => acc.concat(`\n${a}`)),
+            ),
+        });
 
-        return [clan.tag, {
-            ...cmeta,
-            war_battle_opponent: enemyclan.tag,
-            war_battle_thread  : cmeta.war_prep_thread,
-        }] as const;
+        return {
+            ...clan,
+            updated        : new Date(Date.now()),
+            battle_opponent: `clan-${enemyclan.tag}`,
+            thread_battle  : result.id,
+        };
     }
 
-    else if (war.isWarEnded && enemyclan.tag === cmeta.war_battle_opponent) {
-        yield * oopTimeout('30 seconds',
-            () => discord.channels.createMessage(cmeta.war_battle_thread, {
-                content: `war ended in ${war.status}`,
-            }),
-        );
-        yield * oopTimeout('30 seconds',
-            () => discord.channels.edit(cmeta.war_battle_thread, {
-                name    : `🗂️│${cname}│${war.endTime.toDateString()}│${war.status}`,
-                archived: true,
-                locked  : true,
-            }),
-        );
-        yield * serverCache.invalidate(server.id);
+    else if (apiWar.isBattleDay && enemyclantag === clan.prep_opponent && enemyclantag !== clan.battle_opponent) {
+        yield * discord.modifyChannel(clan.thread_prep, {
+            name: `🗡│${cname}`,
+        }, {});
+        yield * discord.createMessage(clan.thread_prep, {
+            content: 'war started',
+        });
 
-        return [clan.tag, {
-            ...cmeta,
-            war_battle_opponent: '',
-            war_battle_thread  : '',
-        }] as const;
+        return {
+            ...clan,
+            updated        : new Date(Date.now()),
+            battle_opponent: `clan-${enemyclan.tag}`,
+            thread_battle  : clan.thread_prep,
+        };
     }
 
-    return [clan.tag, cmeta] as const;
+    else if (apiWar.isWarEnded && enemyclantag === clan.battle_opponent) {
+        yield * discord.createMessage(clan.thread_battle, {
+            content: `war ended in ${apiWar.status}`,
+        });
+        yield * discord.modifyChannel(clan.thread_battle, {
+            name    : `🗂️│${cname}│${apiWar.endTime.toDateString()}│${apiWar.status}`,
+            archived: true,
+            locked  : true,
+        });
+
+        return {
+            ...clan,
+            updated        : new Date(Date.now()),
+            battle_opponent: 'clan-',
+            thread_battle  : 'clan-',
+        };
+    }
+
+    return clan;
 });
