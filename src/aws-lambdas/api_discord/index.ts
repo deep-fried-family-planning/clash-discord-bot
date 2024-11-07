@@ -14,7 +14,7 @@ import {ITR} from '#src/discord/helpers/re-exports.ts';
 import {asBoom} from '#src/utils/as-boom.ts';
 import {SECRET} from '#src/internals/secrets.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {E, Logger} from '#src/utils/effect.ts';
+import {E, Logger} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 
 const router = {

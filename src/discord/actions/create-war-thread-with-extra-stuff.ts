@@ -1,7 +1,7 @@
 import {discord} from '#src/https/api-discord.ts';
 import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
 import {notFound} from '@hapi/boom';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';

@@ -3,7 +3,7 @@ import type {DerivedHit, DerivedModel, DerivedWar} from '#src/data/pipeline/deri
 import type {IDKV} from '#src/data/types.ts';
 import type {n_bool} from '#src/pure/types-pure.ts';
 import {orderHits} from '#src/pure/pure.ts';
-import {pipe} from '#src/utils/effect';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {filterL, mapL, reduceL, sortL} from '#src/pure/pure-list.ts';
 
 export const deriveWar = (war: DispatchedWar): DerivedWar => {

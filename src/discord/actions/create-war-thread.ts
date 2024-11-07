@@ -1,4 +1,4 @@
-import {E} from '#src/utils/effect';
+import {E} from '#src/internals/re-exports/effect.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {nicknames} from '#src/discord/actions/update-war-countdowns.ts';
 import {DiscordREST} from 'dfx';

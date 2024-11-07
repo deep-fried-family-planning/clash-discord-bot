@@ -1,5 +1,5 @@
 import {Client} from 'clashofclans.js';
-import {C, CFG, E, L, RDT} from '#src/utils/effect.ts';
+import {C, CFG, E, L, RDT} from '#src/internals/re-exports/effect.ts';
 import {REDACTED_COC_KEY} from '#src/constants/secrets.ts';
 import type {ClashError} from '#src/internals/errors/clash-error.ts';
 import {clashErrorFromUndefined} from '#src/internals/errors/clash-error.ts';

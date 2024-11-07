@@ -1,7 +1,7 @@
 import {attachModelId} from '#src/data/types.ts';
 import type {CK_War, CK_War_Clan} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedPlayer, DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {flatMapL, mapL} from '#src/pure/pure-list.ts';
 
 const ingestCkWarPlayers = (clan: CK_War_Clan): DispatchedPlayer[] => pipe(

@@ -7,7 +7,7 @@ import {attachModelId} from '#src/data/types.ts';
 import type {CK_Player_PreviousHits} from '#src/https/calls/api-ck-get-warhits.ts';
 import type {CK_War} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import {toEntries} from 'effect/Record';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, mapL, reduceL} from '#src/pure/pure-list.ts';
 
 export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPrevious?: CK_Player_PreviousHits[]) => {

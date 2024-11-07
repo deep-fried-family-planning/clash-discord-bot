@@ -1,7 +1,7 @@
 import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
-import {E} from '#src/utils/effect.ts';
+import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordServer} from '#src/database/discord-server.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';
 

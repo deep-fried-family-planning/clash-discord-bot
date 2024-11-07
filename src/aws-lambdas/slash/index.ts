@@ -1,5 +1,5 @@
 import {makeLambda} from '@effect-aws/lambda';
-import {Cfg, Logger, pipe} from '#src/utils/effect.ts';
+import {Cfg, Logger, pipe} from '#src/internals/re-exports/effect.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {Layer} from 'effect';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';

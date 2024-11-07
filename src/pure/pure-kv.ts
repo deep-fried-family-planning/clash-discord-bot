@@ -7,7 +7,7 @@ import {
     size as sizeKV,
     empty as emptyKV,
 } from 'effect/Record';
-import {flow} from '#src/utils/effect.ts';
+import {flow} from '#src/internals/re-exports/effect.ts';
 
 export {
     mapKV,

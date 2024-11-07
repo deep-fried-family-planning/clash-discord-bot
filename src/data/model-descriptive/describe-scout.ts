@@ -7,7 +7,7 @@ import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {OptimizedHit} from '#src/data/pipeline/optimize-types.ts';
 import {compareTwoStrings} from 'string-similarity';
 import type {num} from '#src/pure/types-pure.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {collect} from 'effect/Record';
 
 const median = (xs: num[]) => {

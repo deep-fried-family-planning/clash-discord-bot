@@ -2,7 +2,7 @@ import {COMMANDS} from '#src/discord/commands.ts';
 import {discord} from '#src/https/api-discord.ts';
 import {specToREST} from '#src/discord/command-pipeline/commands-rest.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {E, Logger, pipe} from '#src/utils/effect.ts';
+import {E, Logger, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {SECRET} from '#src/internals/secrets.ts';

@@ -1,4 +1,4 @@
-import {E, pipe} from '#src/utils/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';

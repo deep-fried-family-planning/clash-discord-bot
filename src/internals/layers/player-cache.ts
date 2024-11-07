@@ -1,5 +1,5 @@
 import {Console, Context, Layer} from 'effect';
-import {E, pipe} from '#src/utils/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {type DPlayer, scanDiscordPlayers} from '#src/database/discord-player.ts';
 import {reduceL} from '#src/pure/pure-list.ts';
 

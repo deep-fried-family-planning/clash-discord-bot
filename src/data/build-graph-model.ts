@@ -10,7 +10,7 @@ import {findFirst} from 'effect/Array';
 import {notFound} from '@hapi/boom';
 import type {ClanWarMember} from 'clashofclans.js';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));

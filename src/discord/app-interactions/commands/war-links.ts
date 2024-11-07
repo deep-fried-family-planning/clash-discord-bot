@@ -8,7 +8,7 @@ import {fetchWarEntities} from '#src/discord/command-util/fetch-war-entities.ts'
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {notFound} from '@hapi/boom';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import type {WAR_LINKS} from '#src/discord/app-interactions/commands/war-links.cmd.ts';
 
 export const warLinks = specCommand<typeof WAR_LINKS>(async (body) => {

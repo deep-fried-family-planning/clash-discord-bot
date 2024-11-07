@@ -1,6 +1,6 @@
 import type {Interaction} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {E} from '#src/utils/effect.ts';
+import {E} from '#src/internals/re-exports/effect.ts';
 import {getDiscordServer} from '#src/database/discord-server.ts';
 
 export const validateServer = (data: Interaction) => E.gen(function * () {

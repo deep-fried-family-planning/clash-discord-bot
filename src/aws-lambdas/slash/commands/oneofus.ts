@@ -1,5 +1,5 @@
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
-import {E} from '#src/utils/effect';
+import {E} from '#src/internals/re-exports/effect.ts';
 import {
     deleteDiscordPlayer,
     putDiscordPlayer,

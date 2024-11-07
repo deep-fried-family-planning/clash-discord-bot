@@ -1,4 +1,4 @@
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 
 export const getAllClans = () => pipe(

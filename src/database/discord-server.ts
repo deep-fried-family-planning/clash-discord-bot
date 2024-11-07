@@ -2,7 +2,7 @@ import {Console} from 'effect';
 import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import {E, S, pipe} from '#src/utils/effect.ts';
+import {E, S, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
 

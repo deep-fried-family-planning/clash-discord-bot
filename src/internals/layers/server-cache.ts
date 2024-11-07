@@ -1,6 +1,6 @@
 import {Cache, Console, Context, Effect, Layer} from 'effect';
 import type {CompKey} from '#src/database/types.ts';
-import {E, pipe} from '#src/utils/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {type DServer, getDiscordServer, scanDiscordServers} from '#src/database/discord-server.ts';
 

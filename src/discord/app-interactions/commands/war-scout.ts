@@ -9,7 +9,7 @@ import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {toEntries} from 'effect/Record';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import type {WAR_SCOUT} from './war-scout.cmd';
 
 export const warScout = specCommand<typeof WAR_SCOUT>(async (body) => {

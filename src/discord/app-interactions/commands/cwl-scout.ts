@@ -8,7 +8,7 @@ import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {toEntries} from 'effect/Record';
 import type {CWL_SCOUT} from '#src/discord/app-interactions/commands/cwl-scout.cmd.ts';
 

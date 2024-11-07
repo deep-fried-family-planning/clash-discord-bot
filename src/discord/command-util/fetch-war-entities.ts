@@ -2,7 +2,7 @@ import {concatL, filterL, flattenL, mapL} from '#src/pure/pure-list.ts';
 import type {SharedOptions} from '#src/discord/command-util/shared-options.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {api_coc} from '#src/https/api-coc.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 
 export type WarEntities = Awaited<ReturnType<typeof fetchWarEntities>>;
 
