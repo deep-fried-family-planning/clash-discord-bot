@@ -53,7 +53,7 @@ export const clanfam = (data: Interaction, options: ROptions<typeof CLAN_FAM>) =
 
     yield * putDiscordClan({
         pk             : `server-${data.guild_id}`,
-        sk             : `clan-${clanTag}`,
+        sk             : `clan-${clan.tag}`,
         type           : 'DiscordClan',
         version        : '1.0.0',
         created        : new Date(Date.now()),
@@ -61,9 +61,9 @@ export const clanfam = (data: Interaction, options: ROptions<typeof CLAN_FAM>) =
         gsi_server_id  : `server-${data.guild_id}`,
         gsi_clan_tag   : `clan-${clanTag}`,
         thread_prep    : '',
-        prep_opponent  : '',
+        prep_opponent  : 'clan-',
         thread_battle  : '',
-        battle_opponent: '',
+        battle_opponent: 'clan-',
         countdown      : options.countdown,
     });
 
