@@ -85,4 +85,6 @@ const h = () => E.gen(function* () {
     );
 });
 
+// todo
+// close war threads during CWL
 export const handler = makeLambda(h, LambdaLive);
