@@ -1,4 +1,3 @@
-import type {COMMANDS} from '#src/discord/commands.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {dBold, dCode, dHdr1, dLines, nNatr} from '#src/discord/helpers/markdown.ts';
 import {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
@@ -11,8 +10,9 @@ import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {toEntries} from 'effect/Record';
 import {pipe} from '#src/utils/effect.ts';
+import type {WAR_SCOUT} from './war-scout.cmd';
 
-export const warScout = specCommand<typeof COMMANDS.WAR_SCOUT>(async (body) => {
+export const warScout = specCommand<typeof WAR_SCOUT>(async (body) => {
     const options = getSharedOptions(body);
 
     const graph = await buildGraphModel(options);

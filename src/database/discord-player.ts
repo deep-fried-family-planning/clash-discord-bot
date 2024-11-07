@@ -1,10 +1,10 @@
 import {Console, Schema as S} from 'effect';
-import {PlayerTag, UserId} from '#src/database/common.ts';
+import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/utils/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
-import {DiscordServerDecode} from '#src/database/discord-server.ts';
+import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
 
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
 
@@ -46,14 +46,17 @@ export const putDiscordPlayer = (record: DPlayer) => pipe(
 );
 
 export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    DynamoDBDocumentService.get({
-        TableName: process.env.DDB_OPERATIONS,
-        Key      : key,
-    }),
+    UserIdEncode(key.pk),
+    E.andThen(PlayerTagEncode(key.sk)),
+    E.andThen(DynamoDBDocumentService.get({
+        TableName     : process.env.DDB_OPERATIONS,
+        Key           : key,
+        ConsistentRead: true,
+    })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
             onTrue : () => DiscordPlayerDecode(Item),
-            onFalse: () => E.succeed(undefined),
+            onFalse: () => new DynamoError({message: 'NotFound: DiscordPlayer'}),
         }),
         E.flatMap((decoded) => pipe(
             E.succeed(decoded),
@@ -63,14 +66,15 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
 );
 
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
-    DynamoDBDocumentService.query({
+    PlayerTagEncode(key.sk),
+    E.andThen(DynamoDBDocumentService.query({
         TableName                : process.env.DDB_OPERATIONS,
         IndexName                : 'GSI_ALL_PLAYERS',
         KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
         ExpressionAttributeValues: {
             ':gsi_player_tag': key.sk,
         },
-    }),
+    })),
     E.flatMap(({Items}) => pipe(
         E.if(Boolean(Items), {
             onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
@@ -101,8 +105,10 @@ export const scanDiscordPlayers = () => pipe(
 );
 
 export const deleteDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    DynamoDBDocumentService.delete({
+    UserIdEncode(key.pk),
+    E.andThen(PlayerTagEncode(key.sk)),
+    E.andThen(DynamoDBDocumentService.delete({
         TableName: process.env.DDB_OPERATIONS,
         Key      : key,
-    }),
+    })),
 );

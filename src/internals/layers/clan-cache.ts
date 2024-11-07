@@ -11,7 +11,9 @@ export class ClanCache extends Context.Tag('DeepFryerClanCache')<
 
 const clanCache = Cache.make({
     capacity  : 50,
-    timeToLive: '15 minutes',
+    timeToLive: process.env.LAMBDA_ENV === 'qual'
+        ? '1 minutes'
+        : '15 minutes',
 
     // todo ask in the Effect-TS server if this is referential equality...
     lookup: (key: CompKey<DClan>) => Effect.gen(function* () {
@@ -19,7 +21,7 @@ const clanCache = Cache.make({
 
         const record = yield * getDiscordClan(key);
 
-        return record!;
+        return record;
     }),
 });
 

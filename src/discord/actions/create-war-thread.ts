@@ -9,7 +9,7 @@ import type {DPlayer} from '#src/database/discord-player.ts';
 import {pipe} from 'effect';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
 
-export const createWarThread = (server: DServer, clan: DClan, players: Record<string, DPlayer>, apiClan: Clan, apiWar: ClanWar) => E.gen(function *() {
+export const createWarThread = (server: DServer, clan: DClan, players: Record<string, DPlayer | undefined>, apiClan: Clan, apiWar: ClanWar) => E.gen(function *() {
     const discord = yield * DiscordREST;
 
     const cname = apiClan.name in nicknames
@@ -20,12 +20,9 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         ? apiWar.opponent
         : apiWar.clan;
 
-    // nothing -> battle
-    // nothing -> war prep
-    // prep -> battle
-    // battle -> nothing
+    const enemyclantag = `clan-${enemyclan.tag}`;
 
-    if (apiWar.isPreparationDay && enemyclan.tag !== clan.prep_opponent) {
+    if (apiWar.isPreparationDay && enemyclantag !== clan.prep_opponent) {
         const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
             name                 : `🛠️│${cname}`,
             auto_archive_duration: 1440,
@@ -37,7 +34,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
             content: pipe(
                 apiWar.clan.members,
                 mapL((m) => players[m.tag]
-                    ? `<@${players[m.tag].pk.split('user-')[1]}>`
+                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
                     : m.tag,
                 ),
                 reduceL('', (acc, a) => acc.concat(`\n${a}`)),
@@ -47,12 +44,12 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated      : new Date(Date.now()),
-            prep_opponent: enemyclan.tag,
+            prep_opponent: `clan-${enemyclan.tag}`,
             thread_prep  : result.id,
         };
     }
 
-    else if (apiWar.isBattleDay && enemyclan.tag !== clan.prep_opponent && enemyclan.tag !== clan.battle_opponent) {
+    else if (apiWar.isBattleDay && enemyclantag !== clan.prep_opponent && enemyclantag !== clan.battle_opponent) {
         const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
             name                 : `🗡️│${cname}`,
             auto_archive_duration: 1440,
@@ -64,7 +61,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
             content: pipe(
                 apiWar.clan.members,
                 mapL((m) => players[m.tag]
-                    ? `<@${players[m.tag].pk.split('user-')[1]}>`
+                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
                     : m.tag,
                 ),
                 reduceL('', (acc, a) => acc.concat(`\n${a}`)),
@@ -74,12 +71,12 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: enemyclan.tag,
+            battle_opponent: `clan-${enemyclan.tag}`,
             thread_battle  : result.id,
         };
     }
 
-    else if (apiWar.isBattleDay && enemyclan.tag === clan.prep_opponent && enemyclan.tag !== clan.battle_opponent) {
+    else if (apiWar.isBattleDay && enemyclantag === clan.prep_opponent && enemyclantag !== clan.battle_opponent) {
         yield * discord.modifyChannel(clan.thread_prep, {
             name: `🗡│${cname}`,
         }, {});
@@ -90,12 +87,12 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: enemyclan.tag,
+            battle_opponent: `clan-${enemyclan.tag}`,
             thread_battle  : clan.thread_prep,
         };
     }
 
-    else if (apiWar.isWarEnded && enemyclan.tag === clan.battle_opponent) {
+    else if (apiWar.isWarEnded && enemyclantag === clan.battle_opponent) {
         yield * discord.createMessage(clan.thread_battle, {
             content: `war ended in ${apiWar.status}`,
         });
@@ -108,8 +105,8 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: '',
-            thread_battle  : '',
+            battle_opponent: 'clan-',
+            thread_battle  : 'clan-',
         };
     }
 

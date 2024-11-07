@@ -1,5 +1,4 @@
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
-import type {COMMANDS} from '#src/discord/commands.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/pure/pure-list.ts';
 import {
@@ -16,8 +15,9 @@ import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {pipe} from '#src/utils/effect.ts';
+import type {WAR_OPPONENT} from '#src/discord/app-interactions/commands/war-opponent.cmd.ts';
 
-export const warOpponent = specCommand<typeof COMMANDS.WAR_OPPONENT>(async (body) => {
+export const warOpponent = specCommand<typeof WAR_OPPONENT>(async (body) => {
     const options = getSharedOptions(body);
 
     const graph = await buildGraphModel(options);

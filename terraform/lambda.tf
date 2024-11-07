@@ -21,7 +21,6 @@ module "lambda_api_discord" {
   memory             = 128
   timeout            = 300
   fn_env = merge(local.lambda_env, {
-    SQS_APP_DISCORD = module.lambda_app_discord.fn_sqs_url
     SQS_SLASH = module.lambda_slash.fn_sqs_url
   })
 }
@@ -47,39 +46,6 @@ resource "aws_lambda_permission" "api_discord_post" {
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
   source_arn    = "arn:aws:execute-api:${local.aws_region}:${local.account_id}:${aws_api_gateway_rest_api.api_discord.id}/*/${aws_api_gateway_method.api_discord_post.http_method}${aws_api_gateway_resource.api_discord.path}"
-}
-
-
-#
-# app-discord
-#
-module "lambda_app_discord" {
-  source             = "./modules/lambda"
-  acc_id             = local.account_id
-  prefix             = local.prefix
-  fn_name            = "app_discord"
-  custom_policy_json = data.aws_iam_policy_document.lambda_app_discord.json
-  memory             = 1024
-  timeout            = 300
-  fn_env             = local.lambda_env
-  sqs                = true
-  sqs_source_arns    = [module.lambda_api_discord.fn_arn]
-}
-
-data "aws_iam_policy_document" "lambda_app_discord" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
-  statement {
-    effect    = "Allow"
-    actions   = ["*"]
-    resources = ["*"]
-  }
 }
 
 

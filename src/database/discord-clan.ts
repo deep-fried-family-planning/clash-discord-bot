@@ -1,9 +1,10 @@
 import {Console, Schema as S} from 'effect';
-import {ClanTag, ServerId, ThreadId} from '#src/database/common.ts';
+import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/database/common.ts';
 import {E, pipe} from '#src/utils/effect.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import type {CompKey} from '#src/database/types.ts';
 import {mapL} from '#src/pure/pure-list.ts';
+import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
 
 export type DClan = S.Schema.Type<typeof DiscordClan>;
 
@@ -43,15 +44,17 @@ export const putDiscordClan = (record: DClan) => pipe(
 );
 
 export const getDiscordClan = (key: CompKey<DClan>) => pipe(
-    DynamoDBDocumentService.get({
+    ServerIdEncode(key.pk),
+    E.andThen(ClanTagEncode(key.sk)),
+    E.andThen(DynamoDBDocumentService.get({
         TableName     : process.env.DDB_OPERATIONS,
         Key           : key,
         ConsistentRead: true,
-    }),
+    })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
             onTrue : () => DiscordClanDecode(Item),
-            onFalse: () => E.succeed(undefined),
+            onFalse: () => new DynamoError({message: 'NotFound: DiscordClan'}),
         }),
         E.flatMap((decoded) => pipe(
             E.succeed(decoded),

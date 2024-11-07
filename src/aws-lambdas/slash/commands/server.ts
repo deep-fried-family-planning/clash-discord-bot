@@ -3,6 +3,7 @@ import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/utils/effect.ts';
 import {putDiscordServer} from '#src/database/discord-server.ts';
+import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';
 
 export const SERVER
     = {
@@ -21,6 +22,9 @@ export const SERVER
                 name       : 'forum',
                 description: 'oomgaboomga',
                 required   : true,
+            },
+            tz: {
+                ...OPTION_TZ.tz,
             },
         },
     } as const satisfies CommandSpec;

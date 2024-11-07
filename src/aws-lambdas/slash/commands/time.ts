@@ -7,6 +7,8 @@ import {dCodes, dLines} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {Interaction} from '#src/internals/re-exports/discordjs.ts';
+import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
 
 export const TIME
     = {
@@ -33,7 +35,9 @@ export const TIME
 /**
  * @desc [SLASH /time]
  */
-export const time = (_: unknown, options: ROptions<typeof TIME>) => E.sync(() => {
+export const time = (data: Interaction, options: ROptions<typeof TIME>) => E.gen(function * () {
+    yield * validateServer(data);
+
     dayjs.extend(dayutc);
     dayjs.extend(daytimezone);
 
@@ -67,6 +71,7 @@ export const time = (_: unknown, options: ROptions<typeof TIME>) => E.sync(() =>
                     ['Middle East  ', utc.tz('Asia/Riyadh').utc(true).format('hh:mm A')],
                     ['ME - UAE     ', utc.tz('Asia/Dubai').utc(true).format('hh:mm A')],
                     ['South Africa ', utc.tz('Africa/Johannesburg').utc(true).format('hh:mm A')],
+                    ['Tokyo        ', utc.tz('Asia/Tokyo').utc(true).format('hh:mm A')],
                 ]),
                 dCodes,
                 dLines,

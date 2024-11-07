@@ -11,7 +11,9 @@ export class ServerCache extends Context.Tag('DeepFryerServerCache')<
 
 const serverCache = Cache.make({
     capacity  : 50,
-    timeToLive: '15 minutes',
+    timeToLive: process.env.LAMBDA_ENV === 'qual'
+        ? '1 minutes'
+        : '15 minutes',
 
     // todo ask in the Effect-TS server if this is referential equality...
     lookup: (key: CompKey<DServer>['pk']) => Effect.gen(function* () {
@@ -19,7 +21,7 @@ const serverCache = Cache.make({
 
         const record = yield * getDiscordServer({pk: key, sk: 'now'});
 
-        return record!;
+        return record;
     }),
 });
 
