@@ -55,7 +55,7 @@ const h = () => E.gen(function* () {
                 const apiClan = yield * clash.getClan(clanTag);
                 const apiWars = yield * clash.getWars(clanTag);
 
-                yield * E.timeout(updateWarCountdown(clan, apiClan, apiWars.find((a) => a.isBattleDay)!), '10 seconds');
+                yield * updateWarCountdown(clan, apiClan, apiWars.find((a) => a.isBattleDay)!);
 
                 if (apiWars.length === 1) {
                     const newClan = yield * E.timeout(createWarThread(server, clan, players, apiClan, apiWars[0]), '10 seconds');
@@ -85,7 +85,7 @@ const h = () => E.gen(function* () {
             E.catchAllCause((e) => E.gen(function * () {
                 const error = Cause.prettyErrors(e);
 
-                return yield * logDiscordError([error]);
+                yield * logDiscordError([error]);
             })),
         )),
         E.allWith({concurrency: 5}),

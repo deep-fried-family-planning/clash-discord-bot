@@ -1,6 +1,5 @@
 import {Cache, Console, Context, Effect, Layer} from 'effect';
-import type {CompKey} from '#src/database/types.ts';
-import {type DClan, getDiscordClan, scanDiscordClans} from '#src/database/discord-clan.ts';
+import {getDiscordClan, scanDiscordClans} from '#src/database/discord-clan.ts';
 import {E, pipe} from '#src/utils/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 
@@ -9,6 +8,8 @@ export class ClanCache extends Context.Tag('DeepFryerClanCache')<
     typeof clanCache
 >() {}
 
+// todo
+// cache timing at scale
 const clanCache = Cache.make({
     capacity  : 50,
     timeToLive: process.env.LAMBDA_ENV === 'qual'
