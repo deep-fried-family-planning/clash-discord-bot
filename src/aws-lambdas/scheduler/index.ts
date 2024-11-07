@@ -1,7 +1,7 @@
 import {E, pipe} from '#src/utils/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {mapL} from '#src/pure/pure-list.ts';
+import {mapL, reduceL} from '#src/pure/pure-list.ts';
 import {updateWarCountdown} from '#src/discord/actions/update-war-countdowns.ts';
 import {Cause, Console, Layer} from 'effect';
 import {createWarThread} from '#src/discord/actions/create-war-thread.ts';
@@ -36,25 +36,32 @@ const h = () => E.gen(function* () {
 
     const clash = yield * ClashService;
 
-    return yield * pipe(yield * clanCache.values,
-        mapL((clan) => pipe(
+    return yield * pipe(yield * clanCache.keys,
+        reduceL(new Set<`${string}/${string}`>(), (set, k) => {
+            set.add(k);
+            return set;
+        }),
+        (set) => [...set],
+        mapL((k) => pipe(
             E.gen(function * () {
-                const server = yield * serverCache.get(clan.pk);
+                const [pk, sk] = k.split('/');
 
-                const [, clanTag] = clan.sk.split('clan-');
+                const server = yield * serverCache.get(pk);
 
-                const recentClan = yield * clanCache.get({pk: clan.pk, sk: clan.sk});
+                const [, clanTag] = sk.split('clan-');
+
+                const clan = yield * clanCache.get(k);
 
                 const apiClan = yield * clash.getClan(clanTag);
                 const apiWars = yield * clash.getWars(clanTag);
 
-                yield * E.timeout(updateWarCountdown(recentClan, apiClan, apiWars.find((a) => a.isBattleDay)!), '10 seconds');
+                yield * E.timeout(updateWarCountdown(clan, apiClan, apiWars.find((a) => a.isBattleDay)!), '10 seconds');
 
                 if (apiWars.length === 1) {
-                    const newClan = yield * E.timeout(createWarThread(server, recentClan, players, apiClan, apiWars[0]), '10 seconds');
+                    const newClan = yield * E.timeout(createWarThread(server, clan, players, apiClan, apiWars[0]), '10 seconds');
 
                     if (!DiscordClanEquivalence(newClan, clan)) {
-                        yield * clanCache.set({pk: newClan.pk, sk: newClan.sk}, newClan);
+                        yield * clanCache.set(`${newClan.pk}/${newClan.sk}`, newClan);
                         yield * putDiscordClan({
                             ...newClan,
                             updated: new Date(Date.now()),
@@ -62,11 +69,11 @@ const h = () => E.gen(function* () {
                     }
                 }
                 else if (apiWars.length > 1) {
-                    const newClan = yield * E.timeout(createWarThread(server, recentClan, players, apiClan, apiWars[0]), '10 seconds');
+                    const newClan = yield * E.timeout(createWarThread(server, clan, players, apiClan, apiWars[0]), '10 seconds');
                     const newNewClan = yield * E.timeout(createWarThread(server, newClan, players, apiClan, apiWars[1]), '10 seconds');
 
                     if (!DiscordClanEquivalence(newNewClan, clan)) {
-                        yield * clanCache.set({pk: newNewClan.pk, sk: newNewClan.sk}, newNewClan);
+                        yield * clanCache.set(`${newNewClan.pk}/${newNewClan.sk}`, newNewClan);
                         yield * putDiscordClan({
                             ...newNewClan,
                             updated: new Date(Date.now()),

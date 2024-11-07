@@ -15,11 +15,12 @@ const clanCache = Cache.make({
         ? '1 minutes'
         : '15 minutes',
 
-    // todo ask in the Effect-TS server if this is referential equality...
-    lookup: (key: CompKey<DClan>) => Effect.gen(function* () {
+    lookup: (key: `${string}/${string}`) => Effect.gen(function* () {
         yield * Console.log('cache miss!');
 
-        const record = yield * getDiscordClan(key);
+        const [pk, sk] = key.split('/');
+
+        const record = yield * getDiscordClan({pk, sk});
 
         return record;
     }),
@@ -34,7 +35,7 @@ export const ClanCacheLive = Layer.effect(
 
         yield * pipe(
             clans,
-            mapL((clan) => cache.set({pk: clan.pk, sk: clan.sk}, clan)),
+            mapL((clan) => cache.set(`${clan.pk}/${clan.sk}`, clan)),
             E.allWith({concurrency: 'unbounded'}),
         );
 
