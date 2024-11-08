@@ -21,7 +21,7 @@
     "init": "terraform -chdir=terraform init",
     "select": "terraform -chdir=terraform workspace select",
     "show": "terraform -chdir=terraform workspace show",
-    "plan": "pnpm run show && terraform -chdir=terraform plan -out .plan.tfplan",
+    "plan": "pnpm run show && terraform -chdir=terraform plan -var-file .secret.tfvars -out .plan.tfplan",
     "apply": "terraform -chdir=terraform apply .plan.tfplan",
     "reset": "rm -rf **/node_modules **/dist **/*.tfplan **/*.lock.hcl **/.terraform",
     "sendit": "pnpm run build && pnpm run plan && pnpm run apply",
