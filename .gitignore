@@ -10,3 +10,4 @@ node_modules
 .env.local
 *.tfplan
 locals.tf
+terraform.tfstate.d
