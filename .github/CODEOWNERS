@@ -1,4 +1,4 @@
-CODEOWNERS @ryanemcdaniel
+.github/**/* @ryanemcdaniel
 * @deep-fried-family-planning/dev
 **/terraform/**/* @ryanemcdaniel
 *.tf @ryanemcdaniel
