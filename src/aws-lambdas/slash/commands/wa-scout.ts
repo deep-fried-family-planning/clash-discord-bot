@@ -12,7 +12,7 @@ import {ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec} from '#src/discord/types.ts';
 import {getAliasTag} from '#src/discord/get-alias-tag.ts';
 import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/aws-lambdas/slash/options.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
@@ -33,7 +33,7 @@ export const waScout = (data: CmdIx, ops: CmdOps<typeof WA_SCOUT>) => E.gen(func
 
     const clan = getAliasTag(ops.clan);
 
-    const graph = yield * E.promise(async () => await buildGraphModel({
+    const graph = yield * buildGraphModel({
         cid1       : clan,
         exhaustive : Boolean(ops.exhaustive),
         from       : 1,
@@ -41,7 +41,7 @@ export const waScout = (data: CmdIx, ops: CmdOps<typeof WA_SCOUT>) => E.gen(func
         limit      : ops.limit ?? 50,
         showCurrent: false,
         showN      : false,
-    }));
+    });
 
     const n_samples = describeSamples(graph.model);
     const scout = describeScout(graph);

@@ -1,10 +1,10 @@
 import {CFG, E, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {bindApiCall} from '#src/https/api-call.ts';
-import {REDACTED_DISCORD_ERROR_URL} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_ERROR_URL} from '#src/internals/constants/secrets.ts';
 import {Console} from 'effect';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {dLinesS} from '#src/discord/markdown.ts';
-import {buildCloudWatchLink} from '#src/utils/links.ts';
+import {buildCloudWatchLink} from '#src/discord/links.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {CMP} from '#src/discord/re-exports.ts';
 import {LBUTTON_SUPPORT_SERVER} from '#src/discord/lbutton-support-server.ts';

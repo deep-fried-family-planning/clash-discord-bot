@@ -1,9 +1,9 @@
-import {fetchWarEntities} from '#src/discord/fetch-war-entities.ts';
+import {fetchWarEntities} from '#src/data/fetch-war-entities.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/markdown.ts';
 import {dTable} from '#src/discord/message-table.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
@@ -39,7 +39,7 @@ export const waLinks = (data: Interaction, ops: CmdOps<typeof WA_LINKS>) => E.ge
         limit      : 50,
     };
 
-    const entities = yield * E.promise(async () => await fetchWarEntities(options));
+    const entities = yield * fetchWarEntities(options);
 
     const opponentMembers = pipe(
         entities.currentWar[0].opponent.members,

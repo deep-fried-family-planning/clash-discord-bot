@@ -3,32 +3,32 @@ import {deriveModel} from '#src/data/pipeline/derive.ts';
 import {accumulateWarData, optimizeGraphModel} from '#src/data/pipeline/optimize-graph-model.ts';
 import {callCkWarsByClan} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import {callCkWarsByPlayer} from '#src/https/calls/api-ck-get-warhits.ts';
-import {fetchWarEntities, type WarEntities} from '#src/discord/fetch-war-entities.ts';
+import {fetchWarEntities} from '#src/data/fetch-war-entities.ts';
 import {filterL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {findFirst} from 'effect/Array';
-import {notFound} from '@hapi/boom';
 import type {ClanWarMember} from 'clashofclans.js';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
-import {pipe} from '#src/internals/re-exports/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
 import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
+import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 
-export const buildGraphModel = async (ops: SharedOptions, inentities?: WarEntities) => {
-    const entities = inentities ?? await fetchWarEntities(ops);
+export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
+    const entities = yield * fetchWarEntities(ops);
 
     if (!entities.currentWar.length) {
-        throw notFound('no current war found');
+        return yield * new SlashUserError({issue: 'no current war found'});
     }
 
     const cids = pipe(entities.current.clans, mapL((c) => c.tag));
-    const previousWars = await callCkWarsByClan(cids, ops.limit);
+    const previousWars = yield * E.promise(async () => await callCkWarsByClan(cids, ops.limit));
 
     const pids = pipe(entities.current.players, mapL((p) => p.tag));
-    const previousWarsByPlayer = ops.exhaustive
-        ? await callCkWarsByPlayer(pids, ops.limit)
-        : [];
+    const previousWarsByPlayer = yield * ops.exhaustive
+        ? E.promise(async () => await callCkWarsByPlayer(pids, ops.limit))
+        : E.succeed([]);
 
     const currentWar = pipe(
         entities.current.wars,
@@ -60,4 +60,4 @@ export const buildGraphModel = async (ops: SharedOptions, inentities?: WarEntiti
             mapL((w) => w.clan),
         ),
     };
-};
+});

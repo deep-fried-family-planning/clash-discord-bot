@@ -1,4 +1,4 @@
-import {DFFP_CLANS_ALIAS} from '#src/constants/dffp-alias.ts';
+import {DFFP_CLANS_ALIAS} from '#src/internals/constants/dffp-alias.ts';
 import type {CID} from '#src/data/types.ts';
 
 export const getAliasTag = (cid?: CID): CID => {

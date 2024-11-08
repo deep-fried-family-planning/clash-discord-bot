@@ -16,7 +16,7 @@ import {ClashLive, ClashService} from '#src/internals/layers/clash-service.ts';
 import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
-import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
 

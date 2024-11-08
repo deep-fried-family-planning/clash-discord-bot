@@ -1,21 +1,24 @@
 import {concatL, filterL, flattenL, mapL} from '#src/pure/pure-list.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
-import {api_coc} from '#src/https/api-coc.ts';
-import {pipe} from '#src/internals/re-exports/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
+import {ClashService} from '#src/internals/layers/clash-service.ts';
+import type {EAR} from '#src/internals/types.ts';
 
-export type WarEntities = Awaited<ReturnType<typeof fetchWarEntities>>;
+export type WarEntities = EAR<typeof fetchWarEntities>;
 
-export const fetchWarEntities = async (ops: SharedOptions) => {
-    const clan = await api_coc.getClan(ops.cid1);
+export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
+    const clash = yield * ClashService;
+
+    const clan = yield * clash.getClan(ops.cid1);
 
     if (clan.warLeague?.id !== 48000000) {
         try {
-            const cwl = await api_coc.getClanWarLeagueGroup(ops.cid1);
+            const cwl = yield * clash.getClanWarLeagueGroup(ops.cid1);
 
             if (cwl.state === 'ended') {
-                const players = await clan.fetchMembers();
-                const war = await api_coc.getCurrentWar(ops.cid1);
+                const players = yield * E.promise(async () => await clan.fetchMembers());
+                const war = yield * clash.getCurrentWar(ops.cid1);
 
                 if (!war || war.isWarEnded) {
                     return {
@@ -30,8 +33,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                     };
                 }
 
-                const warClan = await api_coc.getClan(war.opponent.tag);
-                const warPlayers = await warClan.fetchMembers();
+                const warClan = yield * clash.getClan(war.opponent.tag);
+                const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
 
                 return {
                     options   : ops,
@@ -45,10 +48,14 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
             }
 
             const cids = pipe(cwl.clans, mapL((c) => c.tag));
-            const clans = await api_coc.getClans(cids);
-            const wars = await cwl.getWars();
-            const refWars = await cwl.getWars(ops.cid1);
-            const players = await pipe(cwl.clans, mapL(async (c) => await c.fetchMembers()), async (ps) => await Promise.all(ps));
+            const clans = yield * clash.getClans(cids);
+            const wars = yield * E.promise(async () => await cwl.getWars());
+            const refWars = yield * E.promise(async () => await cwl.getWars(ops.cid1));
+            const players = yield * pipe(
+                cwl.clans,
+                mapL((c) => E.promise(async () => await c.fetchMembers())),
+                E.allWith({concurrency: 'unbounded'}),
+            );
 
             const currentWar = pipe(
                 refWars,
@@ -67,8 +74,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
         }
 
         catch (_) {
-            const players = await clan.fetchMembers();
-            const war = await api_coc.getCurrentWar(ops.cid1);
+            const players = yield * E.promise(async () => await clan.fetchMembers());
+            const war = yield * clash.getCurrentWar(ops.cid1);
 
             if (!war || war.isWarEnded) {
                 return {
@@ -82,8 +89,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                 };
             }
 
-            const warClan = await api_coc.getClan(war.opponent.tag);
-            const warPlayers = await warClan.fetchMembers();
+            const warClan = yield * clash.getClan(war.opponent.tag);
+            const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
 
             return {
                 options   : ops,
@@ -97,8 +104,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
         }
     }
 
-    const players = await clan.fetchMembers();
-    const war = await api_coc.getCurrentWar(ops.cid1);
+    const players = yield * E.promise(async () => await clan.fetchMembers());
+    const war = yield * clash.getCurrentWar(ops.cid1);
 
     if (!war || war.isWarEnded) {
         return {
@@ -112,8 +119,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
         };
     }
 
-    const warClan = await api_coc.getClan(war.opponent.tag);
-    const warPlayers = await warClan.fetchMembers();
+    const warClan = yield * clash.getClan(war.opponent.tag);
+    const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
 
     return {
         options   : ops,
@@ -124,4 +131,4 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
             wars   : [war],
         },
     };
-};
+});

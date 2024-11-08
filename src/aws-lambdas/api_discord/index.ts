@@ -8,7 +8,7 @@ import {ITR} from '#src/discord/re-exports.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
-import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';

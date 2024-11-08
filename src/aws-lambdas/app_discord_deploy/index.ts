@@ -10,7 +10,7 @@ import {SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
 import {CLAN_FAM} from '#src/aws-lambdas/slash/commands/clanfam.ts';
 import {USER} from '#src/aws-lambdas/slash/commands/user.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
-import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {SMOKE} from '#src/aws-lambdas/slash/commands/smoke.ts';
 import {WA_LINKS} from '#src/aws-lambdas/slash/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/aws-lambdas/slash/commands/wa-mirrors.ts';

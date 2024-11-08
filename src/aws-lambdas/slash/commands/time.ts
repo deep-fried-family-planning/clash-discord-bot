@@ -4,7 +4,7 @@ import dayutc from 'dayjs/plugin/utc';
 import {dTable} from '#src/discord/message-table.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {dCodes, dLines} from '#src/discord/markdown.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';

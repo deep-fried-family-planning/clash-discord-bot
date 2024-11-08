@@ -1,6 +1,6 @@
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/pure/pure-list.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/discord/markdown.ts';
 import {dTable} from '#src/discord/message-table.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
@@ -40,7 +40,7 @@ export const waMirrors = (data: Interaction, ops: CmdOps<typeof WA_MIRRORS>) => 
         limit      : ops.limit ?? 50,
     };
 
-    const graph = yield * E.promise(async () => await buildGraphModel(options));
+    const graph = yield * buildGraphModel(options);
 
     const clanRates = descriptiveHitRates(graph.clanTag, graph.clanMembers, graph.model);
     const opponentRates = descriptiveHitRates(graph.opponentTag, graph.opponentMembers, graph.model);

@@ -3,7 +3,7 @@ import {Cfg, L, Logger, pipe} from '#src/internals/re-exports/effect.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {slash} from '#src/aws-lambdas/slash/slash.ts';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {ClashLive} from '#src/internals/layers/clash-service.ts';

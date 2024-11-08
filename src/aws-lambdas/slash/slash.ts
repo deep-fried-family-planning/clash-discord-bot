@@ -3,7 +3,7 @@ import {Cfg, E, pipe} from '#src/internals/re-exports/effect.ts';
 import type {Interaction} from '#src/discord/types.ts';
 import {DiscordREST} from 'dfx';
 import type {SQSEvent, SQSRecord} from 'aws-lambda';
-import {REDACTED_DISCORD_APP_ID} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_APP_ID} from '#src/internals/constants/secrets.ts';
 import {Cause, Redacted} from 'effect';
 import {mapL} from '#src/pure/pure-list.ts';
 import {ONE_OF_US, oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
