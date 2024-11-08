@@ -5,8 +5,8 @@ import type {ClashError} from '#src/internals/errors/clash-error.ts';
 import {clashErrorFromUndefined} from '#src/internals/errors/clash-error.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
-export class ClashService extends C.Tag('DeepFryerClash')<
-    ClashService,
+export class ClashperkService extends C.Tag('DeepFryerClash')<
+    ClashperkService,
     {
         [k in keyof Pick<
             Client,
@@ -24,7 +24,7 @@ export class ClashService extends C.Tag('DeepFryerClash')<
     }
 >() {}
 
-export const ClashLive = L.effect(ClashService, E.gen(function* () {
+export const ClashPerkServiceLive = L.effect(ClashperkService, E.gen(function* () {
     const apiKey = RDT.value(yield * CFG.redacted(REDACTED_COC_KEY));
 
     const client = new Client({

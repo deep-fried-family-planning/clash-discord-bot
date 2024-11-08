@@ -9,14 +9,14 @@ import {TIME} from '#src/aws-lambdas/slash/commands/time.ts';
 import {SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
 import {CLAN_FAM} from '#src/aws-lambdas/slash/commands/clanfam.ts';
 import {USER} from '#src/aws-lambdas/slash/commands/user.ts';
-import type {CommandSpec} from '#src/discord/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
 import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {SMOKE} from '#src/aws-lambdas/slash/commands/smoke.ts';
 import {WA_LINKS} from '#src/aws-lambdas/slash/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/aws-lambdas/slash/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/aws-lambdas/slash/commands/wa-scout.ts';
 import {DiscordConfig, DiscordREST, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {ClashLive} from '#src/internals/layers/clash-service.ts';
+import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
@@ -69,7 +69,7 @@ const h = () => E.gen(function* () {
 
 const LambdaLive = pipe(
     DiscordRESTLive,
-    L.provideMerge(ClashLive),
+    L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
     L.provide(MemoryRateLimitStoreLive),

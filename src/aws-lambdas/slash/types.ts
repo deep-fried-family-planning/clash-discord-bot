@@ -1,5 +1,5 @@
 import type * as D from 'dfx/types';
-import type {CommandSpec, Interaction, OptionData} from '#src/discord/types.ts';
+import type {CommandSpec, Interaction, OptionData} from '#src/aws-lambdas/menu/old/types.ts';
 import type {Effect} from 'effect';
 import type {CID} from '#src/data/types.ts';
 import type {bool, int} from '#src/pure/types-pure.ts';

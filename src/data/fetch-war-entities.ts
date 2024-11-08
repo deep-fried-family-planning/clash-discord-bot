@@ -2,13 +2,13 @@ import {concatL, filterL, flattenL, mapL} from '#src/pure/pure-list.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
-import {ClashService} from '#src/internals/layers/clash-service.ts';
+import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import type {EAR} from '#src/internals/types.ts';
 
 export type WarEntities = EAR<typeof fetchWarEntities>;
 
 export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
-    const clash = yield * ClashService;
+    const clash = yield * ClashperkService;
 
     const clan = yield * clash.getClan(ops.cid1);
 

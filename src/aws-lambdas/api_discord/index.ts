@@ -4,15 +4,15 @@ import {unauthorized} from '@hapi/boom';
 import {InteractionResponseType, verifyKey} from 'discord-interactions';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import type {APIInteraction} from '@discordjs/core/http-only';
-import {ITR} from '#src/discord/re-exports.ts';
+import {ITR} from '#src/aws-lambdas/menu/old/re-exports.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
-import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
+import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {ClashLive} from '#src/internals/layers/clash-service.ts';
+import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
@@ -124,7 +124,7 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
 const LambdaLive = pipe(
     DiscordRESTLive,
-    L.provideMerge(ClashLive),
+    L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
     L.provideMerge(DefaultSQSServiceLayer),
     L.provide(MemoryRateLimitStoreLive),

@@ -1,4 +1,4 @@
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {
     deleteDiscordPlayer,
@@ -8,7 +8,7 @@ import {
 import type {DPlayer} from '#src/database/discord-player.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {ClashService} from '#src/internals/layers/clash-service.ts';
+import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
@@ -44,7 +44,7 @@ export const ONE_OF_US
 export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
-    const clash = yield * ClashService;
+    const clash = yield * ClashperkService;
 
     const tag = yield * clash.validateTag(options.player_tag);
 

@@ -1,4 +1,4 @@
-import type {DiscordEmbed, DiscordMessage} from '#src/discord/types.ts';
+import type {DiscordEmbed, DiscordMessage} from '#src/aws-lambdas/menu/old/types.ts';
 import {MSG} from './re-exports.ts';
 
 export const rEmbed = (...embeds: DiscordEmbed[]): DiscordMessage => ({

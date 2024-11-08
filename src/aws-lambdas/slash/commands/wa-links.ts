@@ -4,14 +4,15 @@ import {concatL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
-import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/markdown.ts';
-import {dTable} from '#src/discord/message-table.ts';
+import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/aws-lambdas/menu/old/markdown.ts';
+import {dTable} from '#src/aws-lambdas/menu/old/message-table.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
-import {getAliasTag} from '#src/discord/get-alias-tag.ts';
+import {getAliasTag} from '#src/aws-lambdas/menu/old/get-alias-tag.ts';
 import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
+import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_LINKS = {
     type       : ApplicationCommandType.ChatInput,
@@ -24,7 +25,7 @@ export const WA_LINKS = {
     },
 } as const satisfies CommandSpec;
 
-export const waLinks = (data: Interaction, ops: CmdOps<typeof WA_LINKS>) => E.gen(function * () {
+export const waLinks = (data: CmdIx, ops: CmdOps<typeof WA_LINKS>) => E.gen(function * () {
     yield * validateServer(data);
 
     const clan = getAliasTag(ops.clan);

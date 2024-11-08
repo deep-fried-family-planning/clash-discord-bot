@@ -9,8 +9,8 @@ import {ClanCache, ClanCacheLive} from '#src/internals/layers/clan-cache.ts';
 import {ServerCache, ServerCacheLive} from '#src/internals/layers/server-cache.ts';
 import {DiscordClanEquivalence, putDiscordClan} from '#src/database/discord-clan.ts';
 import {PlayerCache, PlayerCacheLive} from '#src/internals/layers/player-cache.ts';
-import {ClashLive, ClashService} from '#src/internals/layers/clash-service.ts';
-import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
+import {ClashPerkServiceLive, ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
@@ -23,7 +23,7 @@ const LambdaLive = pipe(
     L.provideMerge(ServerCacheLive),
     L.provideMerge(PlayerCacheLive),
     L.provideMerge(DiscordRESTLive),
-    L.provideMerge(ClashLive),
+    L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
     L.provideMerge(DiscordOldServiceLive),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
@@ -45,7 +45,7 @@ const h = () => E.gen(function* () {
 
     yield * Console.log(players);
 
-    const clash = yield * ClashService;
+    const clash = yield * ClashperkService;
 
     return yield * pipe(yield * clanCache.keys,
         reduceL(new Set<`${string}/${string}`>(), (set, k) => {

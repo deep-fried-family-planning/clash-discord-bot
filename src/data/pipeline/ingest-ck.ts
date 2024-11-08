@@ -4,8 +4,8 @@ import {ingestCkPlayerPreviousWars} from '#src/data/pipeline/ingest-ck-player-pr
 import {ingestCkWar} from '#src/data/pipeline/ingest-ck-wars.ts';
 import type {IDKV} from '#src/data/types.ts';
 import {attachModelId} from '#src/data/types.ts';
-import type {CK_Player_PreviousHits} from '#src/https/calls/api-ck-get-warhits.ts';
-import type {CK_War} from '#src/https/calls/api-ck-get-previous-wars.ts';
+import type {CK_Player_PreviousHits} from '#src/https/api-ck-get-warhits.ts';
+import type {CK_War} from '#src/https/api-ck-get-previous-wars.ts';
 import {toEntries} from 'effect/Record';
 import {pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, mapL, reduceL} from '#src/pure/pure-list.ts';

@@ -1,4 +1,3 @@
-import {callClashKing} from '#src/https/api-ck.ts';
 import type {int, isodate, num, url} from '#src/pure/types-pure.ts';
 import type {CID, PID} from '#src/data/types.ts';
 
@@ -56,24 +55,4 @@ export type CK_Player_PreviousHits = {
     };
     attacks : CK_Player_PreviousHitsAttack[];
     defenses: CK_Player_PreviousHitsAttack[];
-};
-
-export const callPreviousHitsByPlayer = async (tag: string, limit: num) => await callClashKing<{items: CK_Player_PreviousHits[]}>({
-    method: 'GET',
-    path  : `/player/${encodeURIComponent(tag)}/warhits`,
-    query : {
-        timestamp_start: 0,
-        timestamp_end  : 2527625513,
-        limit          : limit,
-    },
-});
-
-export const callCkWarsByPlayer = async (pids: string[], limit: num): Promise<CK_Player_PreviousHits[]> => {
-    const wars = [] as CK_Player_PreviousHits[];
-
-    for (const pid of pids) {
-        wars.push(...(await callPreviousHitsByPlayer(pid, limit)).contents.items);
-    }
-
-    return wars;
 };

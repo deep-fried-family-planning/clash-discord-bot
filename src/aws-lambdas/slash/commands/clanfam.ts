@@ -1,9 +1,9 @@
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordClan} from '#src/database/discord-clan.ts';
-import {getAliasTag} from '#src/discord/get-alias-tag.ts';
-import {ClashService} from '#src/internals/layers/clash-service.ts';
+import {getAliasTag} from '#src/aws-lambdas/menu/old/get-alias-tag.ts';
+import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
@@ -44,7 +44,7 @@ export const clanfam = (data: Interaction, options: CmdOps<typeof CLAN_FAM>) => 
         return yield * new SlashUserError({issue: 'admin role required'});
     }
 
-    const clash = yield * ClashService;
+    const clash = yield * ClashperkService;
     const clanTag = getAliasTag(options.clan);
     const clan
         = yield * clash.getClan(clanTag)

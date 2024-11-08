@@ -3,33 +3,13 @@ import type {
     APIMessageComponentButtonInteraction, APIBaseInteraction, APIMessageComponentInteraction,
     APIStringSelectComponent, APIMessageStringSelectInteractionData,
 } from '@discordjs/core/http-only';
-import type {CMP} from '#src/discord/re-exports.ts';
-import type {ITR, CMP_T} from '#src/discord/re-exports.ts';
+import type {ITR} from '#src/aws-lambdas/menu/old/re-exports.ts';
 
 export type DLinkButton = APIButtonComponentWithURL;
 
 export type DButton = APIButtonComponentWithCustomId;
 export type DIButton = APIMessageComponentButtonInteraction;
 export type IButton<T extends DButton> = DIButton & {data: {custom_id: T['custom_id']}};
-
-export type DModal = {
-    custom_id : string;
-    title     : string;
-    components: {
-        type      : CMP.ActionRow;
-        components: {
-            type        : CMP.TextInput;
-            style       : CMP_T;
-            custom_id   : string;
-            label       : string;
-            placeholder?: string;
-            value?      : string;
-            min_length? : number;
-            max_length? : number;
-            required?   : boolean;
-        }[];
-    }[];
-};
 
 export type DMenu = APIStringSelectComponent;
 export type DIMenu = APIBaseInteraction<typeof ITR.MessageComponent, APIMessageStringSelectInteractionData> & Required<Pick<APIBaseInteraction<typeof ITR.MessageComponent, APIMessageStringSelectInteractionData>, 'app_permissions' | 'channel_id' | 'channel' | 'data' | 'message'>>;

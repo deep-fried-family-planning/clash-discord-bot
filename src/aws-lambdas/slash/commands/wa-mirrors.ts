@@ -1,16 +1,16 @@
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/pure/pure-list.ts';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
-import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/discord/markdown.ts';
-import {dTable} from '#src/discord/message-table.ts';
+import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/aws-lambdas/menu/old/markdown.ts';
+import {dTable} from '#src/aws-lambdas/menu/old/message-table.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
-import type {Interaction} from '#src/discord/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
-import {getAliasTag} from '#src/discord/get-alias-tag.ts';
+import {getAliasTag} from '#src/aws-lambdas/menu/old/get-alias-tag.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
 import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
+import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_MIRRORS = {
     type       : ApplicationCommandType.ChatInput,
@@ -25,7 +25,7 @@ export const WA_MIRRORS = {
     },
 } as const;
 
-export const waMirrors = (data: Interaction, ops: CmdOps<typeof WA_MIRRORS>) => E.gen(function * () {
+export const waMirrors = (data: CmdIx, ops: CmdOps<typeof WA_MIRRORS>) => E.gen(function * () {
     yield * validateServer(data);
 
     const clan = getAliasTag(ops.clan);

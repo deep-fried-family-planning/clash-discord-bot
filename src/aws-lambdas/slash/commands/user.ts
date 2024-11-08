@@ -1,10 +1,11 @@
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
 import {E, S} from '#src/internals/re-exports/effect.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
 import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
-import {SlashUserError} from '#src/internals/errors/slash-error.ts';
+import {SlashError, SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const USER
@@ -28,7 +29,7 @@ export const USER
 /**
  * @desc [SLASH /user]
  */
-export const user = (data: Interaction, options: CmdOps<typeof USER>) => E.gen(function * () {
+export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(function * () {
     if (!data.member) {
         return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
     }
@@ -69,4 +70,6 @@ export const user = (data: Interaction, options: CmdOps<typeof USER>) => E.gen(f
     });
 
     return {embeds: [{description: `<@${userId}> user registration updated`}]};
-});
+}).pipe(
+    E.catchTag('ParseError', (e) => new SlashError({original: e})),
+);
