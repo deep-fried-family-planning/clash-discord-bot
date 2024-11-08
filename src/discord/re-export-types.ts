@@ -3,8 +3,8 @@ import type {
     APIMessageComponentButtonInteraction, APIBaseInteraction, APIMessageComponentInteraction,
     APIStringSelectComponent, APIMessageStringSelectInteractionData,
 } from '@discordjs/core/http-only';
-import type {CMP} from '#src/discord/helpers/re-exports.ts';
-import type {ITR, CMP_T} from '#src/discord/helpers/re-exports.ts';
+import type {CMP} from '#src/discord/re-exports.ts';
+import type {ITR, CMP_T} from '#src/discord/re-exports.ts';
 
 export type DLinkButton = APIButtonComponentWithURL;
 

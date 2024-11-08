@@ -3,8 +3,7 @@ import {deriveModel} from '#src/data/pipeline/derive.ts';
 import {accumulateWarData, optimizeGraphModel} from '#src/data/pipeline/optimize-graph-model.ts';
 import {callCkWarsByClan} from '#src/https/calls/api-ck-get-previous-wars.ts';
 import {callCkWarsByPlayer} from '#src/https/calls/api-ck-get-warhits.ts';
-import type {SharedOptions} from '#src/discord/command-util/shared-options.ts';
-import {fetchWarEntities, type WarEntities} from '#src/discord/command-util/fetch-war-entities.ts';
+import {fetchWarEntities, type WarEntities} from '#src/discord/fetch-war-entities.ts';
 import {filterL, mapL, sortL} from '#src/pure/pure-list.ts';
 import {findFirst} from 'effect/Array';
 import {notFound} from '@hapi/boom';
@@ -12,6 +11,7 @@ import type {ClanWarMember} from 'clashofclans.js';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
+import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 

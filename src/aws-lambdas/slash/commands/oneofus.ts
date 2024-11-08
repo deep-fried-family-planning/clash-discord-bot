@@ -6,10 +6,10 @@ import {
     queryDiscordPlayer,
 } from '#src/database/discord-player.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {ClashService} from '#src/internals/layers/clash-service.ts';
-import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
+import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
 
 export const ONE_OF_US
@@ -19,19 +19,19 @@ export const ONE_OF_US
         description: 'link clash account to discord',
         options    : {
             player_tag: {
-                type       : OPT.String,
+                type       : CMDOPT.String,
                 name       : 'player_tag',
                 description: 'tag for player in-game (ex. #2GR2G0PGG)',
                 required   : true,
             },
             api_token: {
-                type       : OPT.String,
+                type       : CMDOPT.String,
                 name       : 'api_token',
                 description: 'player api token from in-game settings',
                 required   : true,
             },
             discord_user: {
-                type       : OPT.User,
+                type       : CMDOPT.User,
                 name       : 'discord_user',
                 description: '[admin_role] discord user account to link player tag',
             },
@@ -41,7 +41,7 @@ export const ONE_OF_US
 /**
  * @desc [SLASH /oneofus]
  */
-export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) => E.gen(function * () {
+export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
     const clash = yield * ClashService;

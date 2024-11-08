@@ -3,11 +3,11 @@ import {bindApiCall} from '#src/https/api-call.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/constants/secrets.ts';
 import {Console} from 'effect';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dLinesS} from '#src/discord/helpers/markdown.ts';
+import {dLinesS} from '#src/discord/markdown.ts';
 import {buildCloudWatchLink} from '#src/utils/links.ts';
 import {mapL} from '#src/pure/pure-list.ts';
-import {CMP} from '#src/discord/helpers/re-exports.ts';
-import {LBUTTON_SUPPORT_SERVER} from '#src/discord/app-interactions/components/lbutton-support-server.ts';
+import {CMP} from '#src/discord/re-exports.ts';
+import {LBUTTON_SUPPORT_SERVER} from '#src/discord/lbutton-support-server.ts';
 // import {LBUTTON_ERROR_LOG} from '#src/discord/app-interactions/components/lbutton-error-log.ts';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

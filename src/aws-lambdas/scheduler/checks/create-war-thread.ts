@@ -1,6 +1,6 @@
 import {E} from '#src/internals/re-exports/effect.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
-import {nicknames} from '#src/discord/actions/update-war-countdowns.ts';
+import {nicknames} from '#src/aws-lambdas/scheduler/checks/update-war-countdowns.ts';
 import {DiscordREST} from 'dfx';
 import type {DServer} from '#src/database/discord-server.ts';
 import type {DClan} from '#src/database/discord-clan.ts';

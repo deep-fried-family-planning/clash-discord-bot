@@ -1,10 +1,10 @@
 import type {CommandSpec} from '#src/discord/types.ts';
 import {mapL, sortL} from '#src/pure/pure-list.ts';
 import {toValuesKV} from '#src/pure/pure-kv.ts';
-import type {RESTPostAPIApplicationCommandsJSONBody} from '@discordjs/core/http-only';
 import {OrdB, fromCompare} from '#src/pure/pure.ts';
 import console from 'node:console';
 import {pipe} from '#src/internals/re-exports/effect.ts';
+import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -34,5 +34,5 @@ export const specToREST = (spec: CommandSpec) => {
     return {
         ...spec,
         options,
-    } as RESTPostAPIApplicationCommandsJSONBody;
+    } as unknown as CreateGlobalApplicationCommandParams;
 };

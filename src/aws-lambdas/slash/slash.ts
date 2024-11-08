@@ -5,23 +5,28 @@ import {DiscordREST} from 'dfx';
 import type {SQSEvent, SQSRecord} from 'aws-lambda';
 import {REDACTED_DISCORD_APP_ID} from '#src/constants/secrets.ts';
 import {Cause, Redacted} from 'effect';
-import {mapL, reduceL} from '#src/pure/pure-list.ts';
-import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
-import {emptyKV} from '#src/pure/pure-kv.ts';
+import {mapL} from '#src/pure/pure-list.ts';
 import {ONE_OF_US, oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
 import {server, SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
 import {CLAN_FAM, clanfam} from '#src/aws-lambdas/slash/commands/clanfam.ts';
 import {user, USER} from '#src/aws-lambdas/slash/commands/user.ts';
 import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
+import {WA_SCOUT, waScout} from '#src/aws-lambdas/slash/commands/wa-scout.ts';
+import {WA_LINKS, waLinks} from '#src/aws-lambdas/slash/commands/wa-links.ts';
+import {WA_MIRRORS, waMirrors} from '#src/aws-lambdas/slash/commands/wa-mirrors.ts';
+import {nameOptions} from '#src/aws-lambdas/slash/options.ts';
 
 const dAppId = Cfg.redacted(REDACTED_DISCORD_APP_ID).pipe(E.map(Redacted.value));
 
 const lookup = {
-    [TIME.name]     : time,
-    [ONE_OF_US.name]: oneofus,
-    [SERVER.name]   : server,
-    [CLAN_FAM.name] : clanfam,
-    [USER.name]     : user,
+    [TIME.name]      : time,
+    [ONE_OF_US.name] : oneofus,
+    [SERVER.name]    : server,
+    [CLAN_FAM.name]  : clanfam,
+    [USER.name]      : user,
+    [WA_LINKS.name]  : waLinks,
+    [WA_MIRRORS.name]: waMirrors,
+    [WA_SCOUT.name]  : waScout,
 } as const;
 
 export const slash = (event: SQSEvent) => pipe(
@@ -38,10 +43,7 @@ const each = (record: SQSRecord) => E.gen(function * () {
     const root = interaction.data.name as keyof typeof lookup;
 
     const message = yield * pipe(
-        lookup[root](
-            interaction,
-            nameOptions(interaction) as never,
-        ),
+        lookup[root](interaction, nameOptions(interaction)),
         E.catchTags({
             DeepFryerSlashUserError: (e) => E.gen(function * () {
                 const userMessage = yield * logDiscordError([e]);
@@ -77,35 +79,3 @@ const each = (record: SQSRecord) => E.gen(function * () {
     // @ts-expect-error rest api types
     yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, message);
 });
-
-const nameOptions
-    = (data: Interaction) => {
-        if ('options' in data.data) {
-            const subgroup = data.data.options.find((o) => o.type === GROUP_OPTION);
-            const cmd = data.data.options.find((o) => o.type === SUBCMD_OPTION);
-
-            if (subgroup) {
-                return overrideNames(subgroup.options[0].options);
-            }
-            else if (cmd) {
-                return overrideNames(cmd.options);
-            }
-            else {
-                return overrideNames(data.data.options);
-            }
-        }
-
-        return {};
-    };
-
-const overrideNames
-    = <
-        T extends {name: string; value?: unknown},
-    >
-    (options?: T[]): Record<string, T['value']> =>
-        options
-            ? pipe(options, reduceL(emptyKV(), (acc, op) => {
-                acc[op.name] = op.value;
-                return acc;
-            }))
-            : {};

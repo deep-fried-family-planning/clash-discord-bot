@@ -1,8 +1,8 @@
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import {E, S} from '#src/internals/re-exports/effect.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
-import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
-import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
+import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
 import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
@@ -18,7 +18,7 @@ export const USER
                 required: true,
             },
             discord_user: {
-                type       : OPT.User,
+                type       : CMDOPT.User,
                 name       : 'discord_user',
                 description: '[admin_role] discord user to update',
             },
@@ -28,7 +28,7 @@ export const USER
 /**
  * @desc [SLASH /user]
  */
-export const user = (data: Interaction, options: ROptions<typeof USER>) => E.gen(function * () {
+export const user = (data: Interaction, options: CmdOps<typeof USER>) => E.gen(function * () {
     if (!data.member) {
         return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
     }

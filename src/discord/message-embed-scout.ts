@@ -8,8 +8,8 @@ import {
     nIdex,
     nNatr,
     nPrct,
-} from '#src/discord/helpers/markdown.ts';
-import {dTable} from '#src/discord/command-util/message-table.ts';
+} from '#src/discord/markdown.ts';
+import {dTable} from '#src/discord/message-table.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import type {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';

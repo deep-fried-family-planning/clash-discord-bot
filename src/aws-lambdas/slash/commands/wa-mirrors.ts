@@ -1,26 +1,46 @@
-import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
-import {buildGraphModel} from '#src/data/build-graph-model.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/pure/pure-list.ts';
-import {
-    dEmpL,
-    dHdr3,
-    dLines,
-    dSubC,
-    nNatT,
-    nNatr,
-    nPrct,
-} from '#src/discord/helpers/markdown.ts';
-import {dTable} from '#src/discord/command-util/message-table.ts';
-import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
-import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {pipe} from '#src/internals/re-exports/effect.ts';
-import type {WAR_OPPONENT} from '#src/discord/app-interactions/commands/war-opponent.cmd.ts';
+import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/discord/markdown.ts';
+import {dTable} from '#src/discord/message-table.ts';
+import {ApplicationCommandType} from '@discordjs/core/http-only';
+import type {Interaction} from '#src/discord/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import {getAliasTag} from '#src/discord/get-alias-tag.ts';
+import {buildGraphModel} from '#src/data/build-graph-model.ts';
+import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
+import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
 
-export const warOpponent = specCommand<typeof WAR_OPPONENT>(async (body) => {
-    const options = getSharedOptions(body);
+export const WA_MIRRORS = {
+    type       : ApplicationCommandType.ChatInput,
+    name       : 'war-opponent',
+    description: 'mirror-to-mirror comparison of our clan vs enemy clan with hit/defense rates',
+    options    : {
+        ...OPTION_CLAN,
+        ...OPTION_FROM,
+        ...OPTION_TO,
+        ...OPTION_LIMIT,
+        ...OPTION_EXHAUSTIVE,
+    },
+} as const;
 
-    const graph = await buildGraphModel(options);
+export const waMirrors = (data: Interaction, ops: CmdOps<typeof WA_MIRRORS>) => E.gen(function * () {
+    yield * validateServer(data);
+
+    const clan = getAliasTag(ops.clan);
+
+    const options = {
+        cid1       : clan,
+        from       : ops.from ?? 1,
+        to         : ops.to ?? 50,
+        showCurrent: false,
+        showN      : false,
+        exhaustive : ops.exhaustive ?? false,
+        limit      : ops.limit ?? 50,
+    };
+
+    const graph = yield * E.promise(async () => await buildGraphModel(options));
 
     const clanRates = descriptiveHitRates(graph.clanTag, graph.clanMembers, graph.model);
     const opponentRates = descriptiveHitRates(graph.opponentTag, graph.opponentMembers, graph.model);

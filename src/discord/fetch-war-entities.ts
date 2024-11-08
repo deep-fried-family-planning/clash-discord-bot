@@ -1,8 +1,8 @@
 import {concatL, filterL, flattenL, mapL} from '#src/pure/pure-list.ts';
-import type {SharedOptions} from '#src/discord/command-util/shared-options.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {api_coc} from '#src/https/api-coc.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';
+import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
 
 export type WarEntities = Awaited<ReturnType<typeof fetchWarEntities>>;
 
@@ -65,8 +65,8 @@ export const fetchWarEntities = async (ops: SharedOptions) => {
                 currentWar,
             };
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        catch (e) {
+
+        catch (_) {
             const players = await clan.fetchMembers();
             const war = await api_coc.getCurrentWar(ops.cid1);
 

@@ -1,14 +1,13 @@
-import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordClan} from '#src/database/discord-clan.ts';
-import {OPTION_CLAN} from '#src/discord/commands-options.ts';
-import {getAliasTag} from '#src/discord/command-util/get-alias-tag.ts';
+import {getAliasTag} from '#src/discord/get-alias-tag.ts';
 import {ClashService} from '#src/internals/layers/clash-service.ts';
-import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
+import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {OPTION_CLAN} from '#src/aws-lambdas/slash/options.ts';
 
 export const CLAN_FAM
     = {
@@ -16,9 +15,9 @@ export const CLAN_FAM
         name       : 'clanfam',
         description: 'link clan to your discord server in deepfryer',
         options    : {
-            clan     : OPTION_CLAN,
+            ...OPTION_CLAN,
             countdown: {
-                type       : OPT.Channel,
+                type       : CMDOPT.Channel,
                 name       : 'countdown',
                 description: 'oomgaboomga',
                 required   : true,
@@ -29,7 +28,7 @@ export const CLAN_FAM
 /**
  * @desc [SLASH /clanfam]
  */
-export const clanfam = (data: Interaction, options: ROptions<typeof CLAN_FAM>) => E.gen(function * () {
+export const clanfam = (data: Interaction, options: CmdOps<typeof CLAN_FAM>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
     // validations

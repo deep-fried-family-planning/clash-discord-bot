@@ -1,11 +1,10 @@
-import {E, pipe} from '#src/internals/re-exports/effect.ts';
+import {Cfg, E, L, Logger, pipe} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
-import {updateWarCountdown} from '#src/discord/actions/update-war-countdowns.ts';
+import {updateWarCountdown} from '#src/aws-lambdas/scheduler/checks/update-war-countdowns.ts';
 import {Cause, Console, Layer} from 'effect';
-import {createWarThread} from '#src/discord/actions/create-war-thread.ts';
-import {LambdaLayer} from '#src/aws-lambdas/slash';
+import {createWarThread} from '#src/aws-lambdas/scheduler/checks/create-war-thread.ts';
 import {ClanCache, ClanCacheLive} from '#src/internals/layers/clan-cache.ts';
 import {ServerCache, ServerCacheLive} from '#src/internals/layers/server-cache.ts';
 import {
@@ -13,14 +12,27 @@ import {
     putDiscordClan,
 } from '#src/database/discord-clan.ts';
 import {PlayerCache, PlayerCacheLive} from '#src/internals/layers/player-cache.ts';
-import {ClashService} from '#src/internals/layers/clash-service.ts';
+import {ClashLive, ClashService} from '#src/internals/layers/clash-service.ts';
 import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
+import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
+import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
+import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {fromParameterStore} from '@effect-aws/ssm';
 
 const LambdaLive = pipe(
     ClanCacheLive,
-    Layer.provideMerge(ServerCacheLive),
-    Layer.provideMerge(PlayerCacheLive),
-    Layer.provideMerge(LambdaLayer),
+    L.provideMerge(ServerCacheLive),
+    L.provideMerge(PlayerCacheLive),
+    L.provideMerge(DiscordRESTLive),
+    L.provideMerge(ClashLive),
+    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+    L.provide(MemoryRateLimitStoreLive),
+    L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+    L.provide(layerWithoutAgent),
+    L.provide(makeAgentLayer({keepAlive: true})),
+    L.provide(Layer.setConfigProvider(fromParameterStore())),
 );
 
 // todo this lambda is annoying asl, fullstack test
