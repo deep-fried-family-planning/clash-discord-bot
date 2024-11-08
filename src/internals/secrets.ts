@@ -1,5 +1,5 @@
 import {fromParameterStore} from '@effect-aws/ssm';
-import {Cfg, E, L, pipe} from '#src/utils/effect.ts';
+import {Cfg, E, L, pipe} from '#src/internals/re-exports/effect.ts';
 import * as process from 'node:process';
 import {SSM_counter} from '#src/internals/metrics.ts';
 

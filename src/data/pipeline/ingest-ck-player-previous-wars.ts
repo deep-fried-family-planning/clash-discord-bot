@@ -2,7 +2,7 @@ import type {DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
 import {ingestCkWar} from '#src/data/pipeline/ingest-ck-wars.ts';
 import type {CK_Player_PreviousHits} from '#src/https/calls/api-ck-get-warhits.ts';
 import type {CK_War} from '#src/https/calls/api-ck-get-previous-wars.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 
 export const ingestCkPlayerPreviousWars = (playerPreviousHits: CK_Player_PreviousHits[]): DispatchedWar[] => pipe(

@@ -30,10 +30,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.686.0",
-    "@aws-sdk/client-scheduler": "3.686.0",
-    "@aws-sdk/client-sqs": "3.686.0",
-    "@aws-sdk/lib-dynamodb": "3.686.0",
+    "@aws-sdk/client-dynamodb": "3.687.0",
+    "@aws-sdk/client-scheduler": "3.687.0",
+    "@aws-sdk/client-sqs": "3.687.0",
+    "@aws-sdk/lib-dynamodb": "3.687.0",
     "@discordjs/builders": "1.9.0",
     "@discordjs/core": "2.0.0",
     "@discordjs/rest": "2.4.0",
@@ -64,12 +64,12 @@
     "uuid": "11.0.2"
   },
   "devDependencies": {
-    "@aws-sdk/client-ssm": "3.686.0",
+    "@aws-sdk/client-ssm": "3.687.0",
     "@commitlint/cli": "19.5.0",
     "@commitlint/config-conventional": "19.5.0",
     "@eslint/js": "9.14.0",
-    "@rspack/cli": "1.0.14",
-    "@rspack/core": "1.0.14",
+    "@rspack/cli": "1.1.0",
+    "@rspack/core": "1.1.0",
     "@stylistic/eslint-plugin": "2.10.1",
     "@types/aws-lambda": "8.10.145",
     "@types/chance": "1.1.6",

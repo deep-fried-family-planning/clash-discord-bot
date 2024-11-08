@@ -1,4 +1,4 @@
-import {D, E} from '#src/utils/effect.ts';
+import {D, E} from '#src/internals/re-exports/effect.ts';
 
 export class SlashError extends D.TaggedError('DeepFryerSlashError')<{
     original: unknown;

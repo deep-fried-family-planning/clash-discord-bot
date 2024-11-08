@@ -1,5 +1,5 @@
 import {time, TIME} from '#src/aws-lambdas/slash/commands/time.ts';
-import {Cfg, E, pipe} from '#src/utils/effect.ts';
+import {Cfg, E, pipe} from '#src/internals/re-exports/effect.ts';
 import type {Interaction} from '#src/discord/types.ts';
 import {DiscordREST} from 'dfx';
 import type {SQSEvent, SQSRecord} from 'aws-lambda';

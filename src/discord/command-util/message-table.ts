@@ -1,5 +1,5 @@
 import {concatL, mapL, reduceL} from '#src/pure/pure-list.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {range} from 'effect/Array';
 
 export const dTable = (tss: string[][]) => {

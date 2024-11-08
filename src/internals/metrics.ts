@@ -1,4 +1,4 @@
-import {E, flow, Metric, pipe} from '#src/utils/effect.ts';
+import {E, flow, Metric, pipe} from '#src/internals/re-exports/effect.ts';
 import {Console} from 'effect';
 
 export const invokeCount = Metric

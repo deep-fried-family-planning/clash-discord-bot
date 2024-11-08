@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
 import {dTable} from '#src/discord/command-util/message-table.ts';
-import {E, pipe} from '#src/utils/effect.ts';
+import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {dCodes, dLines} from '#src/discord/helpers/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import type {CommandSpec} from '#src/discord/types.ts';

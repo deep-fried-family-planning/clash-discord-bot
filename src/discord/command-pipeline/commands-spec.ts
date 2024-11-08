@@ -3,7 +3,7 @@ import {GROUP_OPTION, SUBCMD_OPTION} from '#src/discord/commands-constants.ts';
 import {reduceL} from '#src/pure/pure-list.ts';
 import {show} from '../../utils/show.ts';
 import type {APIInteractionResponseCallbackData} from '@discordjs/core/http-only';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 
 const overrideNames = <T extends {name: string}>(options?: T[]): Record<string, T> =>
     options

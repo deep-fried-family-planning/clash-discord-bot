@@ -3,7 +3,7 @@ import {show} from '#src/utils/show.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import type {DModal, IModal} from '#src/discord/helpers/re-export-types.ts';
-import {pipe} from '#src/utils/effect';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import type {ModalSubmitComponent} from '@discordjs/core/http-only';
 
 export const namedComponentOptions = <T extends DModal>(m: IModal<T>) => {

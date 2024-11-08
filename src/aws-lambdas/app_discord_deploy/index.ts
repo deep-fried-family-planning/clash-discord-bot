@@ -1,12 +1,25 @@
-import {COMMANDS} from '#src/discord/commands.ts';
 import {discord} from '#src/https/api-discord.ts';
-import {specToREST} from '#src/discord/command-pipeline/commands-rest.ts';
+import {specToREST} from '#src/aws-lambdas/api_discord/commands-rest.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {E, Logger, pipe} from '#src/utils/effect.ts';
+import {E, Logger, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {SECRET} from '#src/internals/secrets.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
+import {ONE_OF_US} from '#src/aws-lambdas/slash/commands/oneofus.ts';
+import {TIME} from '#src/aws-lambdas/slash/commands/time.ts';
+import {SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
+import {CLAN_FAM} from '#src/aws-lambdas/slash/commands/clanfam.ts';
+import {USER} from '#src/aws-lambdas/slash/commands/user.ts';
+import type {CommandSpec} from '#src/discord/types.ts';
+
+export const COMMANDS = {
+    ONE_OF_US,
+    TIME,
+    SERVER,
+    CLAN_FAM,
+    USER,
+} as const satisfies {[k in string]: CommandSpec};
 
 const h = () => E.gen(function* () {
     yield * invokeCount(showMetric(invokeCount));

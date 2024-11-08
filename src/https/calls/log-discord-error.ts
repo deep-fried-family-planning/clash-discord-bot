@@ -1,4 +1,4 @@
-import {CFG, E, pipe, RDT} from '#src/utils/effect.ts';
+import {CFG, E, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {bindApiCall} from '#src/https/api-call.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/constants/secrets.ts';
 import {Console} from 'effect';

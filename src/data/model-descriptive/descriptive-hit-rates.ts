@@ -3,7 +3,7 @@ import type {IDKV} from '#src/data/types.ts';
 import {tryOrDefault} from '#src/pure/types-pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {filterKV, reduceKV} from '#src/pure/pure-kv.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {reduceL} from '#src/pure/pure-list.ts';
 
 export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: GraphModel) => {

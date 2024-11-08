@@ -1,5 +1,5 @@
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
-import {E, S} from '#src/utils/effect';
+import {E, S} from '#src/internals/re-exports/effect.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
 import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';

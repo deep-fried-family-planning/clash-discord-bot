@@ -1,5 +1,5 @@
 import type {Clan, ClanWar} from 'clashofclans.js';
-import {E} from '#src/utils/effect.ts';
+import {E} from '#src/internals/re-exports/effect.ts';
 import type {DClan} from '#src/database/discord-clan.ts';
 import {DiscordREST} from 'dfx';
 

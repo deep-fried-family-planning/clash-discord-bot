@@ -14,7 +14,7 @@ import {dTable} from '#src/discord/command-util/message-table.ts';
 import {getSharedOptions} from '#src/discord/command-util/shared-options.ts';
 import {specCommand} from '#src/discord/command-pipeline/commands-spec.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import type {WAR_OPPONENT} from '#src/discord/app-interactions/commands/war-opponent.cmd.ts';
 
 export const warOpponent = specCommand<typeof WAR_OPPONENT>(async (body) => {

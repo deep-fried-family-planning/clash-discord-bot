@@ -3,7 +3,7 @@ import type {GraphModel} from '#src/data/pipeline/optimize-types.ts';
 import type {IDKV} from '#src/data/types.ts';
 import type {Player} from 'clashofclans.js';
 import console from 'node:console';
-import {pipe} from '#src/utils/effect.ts';
+import {pipe} from '#src/internals/re-exports/effect.ts';
 import {reduceL} from '#src/pure/pure-list.ts';
 
 export const accumulateWarData = (model: DerivedModel): GraphModel['data'] => {

@@ -1,7 +1,7 @@
 import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
-import {E} from '#src/utils/effect.ts';
+import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordClan} from '#src/database/discord-clan.ts';
 import {OPTION_CLAN} from '#src/discord/commands-options.ts';
 import {getAliasTag} from '#src/discord/command-util/get-alias-tag.ts';

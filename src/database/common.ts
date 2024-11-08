@@ -1,4 +1,4 @@
-import {S} from '#src/utils/effect.ts';
+import {S} from '#src/internals/re-exports/effect.ts';
 
 export const ServerId = S.String.pipe(S.startsWith('server-'));
 export const UserId = S.String.pipe(S.startsWith('user-'));
