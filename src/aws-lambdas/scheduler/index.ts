@@ -7,10 +7,7 @@ import {Cause, Console, Layer} from 'effect';
 import {createWarThread} from '#src/aws-lambdas/scheduler/checks/create-war-thread.ts';
 import {ClanCache, ClanCacheLive} from '#src/internals/layers/clan-cache.ts';
 import {ServerCache, ServerCacheLive} from '#src/internals/layers/server-cache.ts';
-import {
-    DiscordClanEquivalence,
-    putDiscordClan,
-} from '#src/database/discord-clan.ts';
+import {DiscordClanEquivalence, putDiscordClan} from '#src/database/discord-clan.ts';
 import {PlayerCache, PlayerCacheLive} from '#src/internals/layers/player-cache.ts';
 import {ClashLive, ClashService} from '#src/internals/layers/clash-service.ts';
 import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
@@ -19,6 +16,7 @@ import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
+import {DiscordOldServiceLive} from '#src/internals/layers/discord-old-service.ts';
 
 const LambdaLive = pipe(
     ClanCacheLive,
@@ -27,6 +25,7 @@ const LambdaLive = pipe(
     L.provideMerge(DiscordRESTLive),
     L.provideMerge(ClashLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    L.provideMerge(DiscordOldServiceLive),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
     L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

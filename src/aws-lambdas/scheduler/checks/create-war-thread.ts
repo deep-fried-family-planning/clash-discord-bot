@@ -4,13 +4,14 @@ import {nicknames} from '#src/aws-lambdas/scheduler/checks/update-war-countdowns
 import {DiscordREST} from 'dfx';
 import type {DServer} from '#src/database/discord-server.ts';
 import type {DClan} from '#src/database/discord-clan.ts';
-import {discord as old} from '#src/https/api-discord.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
 import {pipe} from 'effect';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
+import {DiscordOldService} from '#src/internals/layers/discord-old-service.ts';
 
 export const createWarThread = (server: DServer, clan: DClan, players: Record<string, DPlayer | undefined>, apiClan: Clan, apiWar: ClanWar) => E.gen(function *() {
     const discord = yield * DiscordREST;
+    const old = yield * DiscordOldService;
 
     const cname = apiClan.name in nicknames
         ? nicknames[apiClan.name as keyof typeof nicknames]
