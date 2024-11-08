@@ -10,7 +10,7 @@ import {ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec, Interaction} from '#src/discord/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {getAliasTag} from '#src/discord/get-alias-tag.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
 
 export const WA_LINKS = {

@@ -4,10 +4,10 @@ import {REDACTED_DISCORD_ERROR_URL} from '#src/internals/constants/secrets.ts';
 import {Console} from 'effect';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {dLinesS} from '#src/discord/markdown.ts';
-import {buildCloudWatchLink} from '#src/discord/links.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {CMP} from '#src/discord/re-exports.ts';
 import {LBUTTON_SUPPORT_SERVER} from '#src/discord/lbutton-support-server.ts';
+import {buildCloudWatchLink} from '#src/aws-lambdas/slash/utils.ts';
 // import {LBUTTON_ERROR_LOG} from '#src/discord/app-interactions/components/lbutton-error-log.ts';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

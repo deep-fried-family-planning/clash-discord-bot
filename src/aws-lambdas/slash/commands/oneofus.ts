@@ -10,7 +10,7 @@ import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {ClashService} from '#src/internals/layers/clash-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const ONE_OF_US
     = {

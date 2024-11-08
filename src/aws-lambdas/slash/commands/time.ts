@@ -8,7 +8,7 @@ import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const TIME
     = {

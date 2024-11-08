@@ -5,7 +5,7 @@ import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
 import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const USER
     = {

@@ -6,7 +6,7 @@ import {getAliasTag} from '#src/discord/get-alias-tag.ts';
 import {ClashService} from '#src/internals/layers/clash-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {OPTION_CLAN} from '#src/aws-lambdas/slash/options.ts';
 
 export const CLAN_FAM

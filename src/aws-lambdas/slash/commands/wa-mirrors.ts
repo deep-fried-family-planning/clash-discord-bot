@@ -9,7 +9,7 @@ import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {getAliasTag} from '#src/discord/get-alias-tag.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
 
 export const WA_MIRRORS = {
