@@ -64,6 +64,7 @@ const h = () => E.gen(function* () {
         E.allWith({concurrency: 'unbounded'}),
     );
 }).pipe(
+    E.catchAll((e) => logDiscordError([e])),
     E.catchAllDefect((e) => logDiscordError([e])),
 );
 

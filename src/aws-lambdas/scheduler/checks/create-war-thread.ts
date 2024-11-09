@@ -19,7 +19,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         ? apiWar.opponent
         : apiWar.clan;
 
-    const enemyclantag = `clan-${enemyclan.tag}`;
+    const enemyclantag = `c-${enemyclan.tag}`;
 
     if (apiWar.isPreparationDay && enemyclantag !== clan.prep_opponent) {
         const result = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
@@ -34,7 +34,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
             content: pipe(
                 apiWar.clan.members,
                 mapL((m) => players[m.tag]
-                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
+                    ? `<@${players[m.tag]!.pk.split('u-')[1]}>`
                     : m.tag,
                 ),
                 reduceL('', (acc, a) => acc.concat(`\n${a}`)),
@@ -44,7 +44,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated      : new Date(Date.now()),
-            prep_opponent: `clan-${enemyclan.tag}`,
+            prep_opponent: `c-${enemyclan.tag}`,
             thread_prep  : result.id,
         };
     }
@@ -62,7 +62,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
             content: pipe(
                 apiWar.clan.members,
                 mapL((m) => players[m.tag]
-                    ? `<@${players[m.tag]!.pk.split('user-')[1]}>`
+                    ? `<@${players[m.tag]!.pk.split('u-')[1]}>`
                     : m.tag,
                 ),
                 reduceL('', (acc, a) => acc.concat(`\n${a}`)),
@@ -72,7 +72,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: `clan-${enemyclan.tag}`,
+            battle_opponent: `c-${enemyclan.tag}`,
             thread_battle  : result.id,
         };
     }
@@ -88,7 +88,7 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: `clan-${enemyclan.tag}`,
+            battle_opponent: `c-${enemyclan.tag}`,
             thread_battle  : clan.thread_prep,
         };
     }
@@ -106,8 +106,8 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
         return {
             ...clan,
             updated        : new Date(Date.now()),
-            battle_opponent: 'clan-',
-            thread_battle  : 'clan-',
+            battle_opponent: 'c-',
+            thread_battle  : 'c-',
         };
     }
 

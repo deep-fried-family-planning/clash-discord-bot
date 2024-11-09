@@ -30,6 +30,19 @@ export const ONE_OF_US
                 description: 'player api token from in-game settings',
                 required   : true,
             },
+            account_type: {
+                type       : CMDOPT.String,
+                name       : 'account_kind',
+                description: 'how the account is played',
+                choices    : [
+                    {name: 'main', value: 'main'},
+                    {name: 'alt', value: 'alt'},
+                    {name: 'donation', value: 'donation'},
+                    {name: 'war asset', value: 'war-asset'},
+                    {name: 'clan capital', value: 'clan-capital'},
+                    {name: 'strategic rush', value: 'strategic-rush'},
+                ],
+            },
             discord_user: {
                 type       : CMDOPT.User,
                 name       : 'discord_user',
@@ -59,22 +72,22 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
             return yield * new SlashUserError({issue: 'admin links must have discord_user'});
         }
 
-        const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
+        const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
         if (rest.length) {
             return yield * new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
         }
 
         if (!player) {
-            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1));
+            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_type));
             return {embeds: [{description: 'admin link successful'}]};
         }
 
         yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
         yield * putDiscordPlayer({
             ...player,
-            pk          : `user-${user.user.id}`,
-            gsi_user_id : `user-${user.user.id}`,
+            pk          : `u-${user.user.id}`,
+            gsi_user_id : `u-${user.user.id}`,
             updated     : new Date(Date.now()),
             verification: 1,
         });
@@ -89,11 +102,11 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
         return yield * new SlashUserError({issue: 'invalid api_token'});
     }
 
-    const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
+    const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
     // new player record
     if (!player) {
-        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2));
+        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2, options.account_type));
 
         return {embeds: [{description: 'new player link verified'}]};
     }
@@ -116,8 +129,8 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
     yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
     yield * putDiscordPlayer({
         ...player,
-        pk          : `user-${user.user.id}`,
-        gsi_user_id : `user-${user.user.id}`,
+        pk          : `u-${user.user.id}`,
+        gsi_user_id : `u-${user.user.id}`,
         updated     : new Date(Date.now()),
         verification: 2,
     });
@@ -126,14 +139,15 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
 });
 
 const makeDiscordPlayer
-    = (userId: string, playerTag: string, verification: DPlayer['verification']) => ({
-        pk            : `user-${userId}`,
-        sk            : `player-${playerTag}`,
+    = (userId: string, playerTag: string, verification: DPlayer['verification'], accountType?: string) => ({
+        pk            : `u-${userId}`,
+        sk            : `p-${playerTag}`,
         type          : 'DiscordPlayer',
         version       : '1.0.0',
         created       : new Date(Date.now()),
         updated       : new Date(Date.now()),
-        gsi_user_id   : `user-${userId}`,
-        gsi_player_tag: `player-${playerTag}`,
+        gsi_user_id   : `u-${userId}`,
+        gsi_player_tag: `p-${playerTag}`,
         verification  : verification,
+        account_type  : accountType ?? 'main',
     } as const);

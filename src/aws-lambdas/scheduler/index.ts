@@ -57,7 +57,7 @@ const h = () => E.gen(function* () {
 
                 const server = yield * serverCache.get(pk);
 
-                const [, clanTag] = sk.split('clan-');
+                const [, clanTag] = sk.split('c-');
 
                 const clan = yield * clanCache.get(k);
 
