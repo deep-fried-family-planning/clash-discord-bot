@@ -1,11 +1,13 @@
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
-import {E, S} from '#src/internals/re-exports/effect.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
-import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
-import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
+import {E, pipe, S} from '#src/internals/re-exports/effect.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
+import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
+import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
 import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
-import {SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {SlashError, SlashUserError} from '#src/internals/errors/slash-error.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
+import {omit} from 'effect/Struct';
 
 export const USER
     = {
@@ -17,8 +19,26 @@ export const USER
                 ...OPTION_TZ.tz,
                 required: true,
             },
+            quiet_hours_start: {
+                type       : CMDOPT.String,
+                name       : 'quiet_hours_start',
+                description: 'hours not to be pinged',
+                choices    : Array(24).fill(0).map((_, idx) => ({
+                    name : `${idx.toString().padStart(2, '0')}:00`,
+                    value: `${idx.toString().padStart(2, '0')}:00`,
+                })),
+            },
+            quiet_hours_end: {
+                type       : CMDOPT.String,
+                name       : 'quiet_hours_end',
+                description: 'hours not to be pinged',
+                choices    : Array(24).fill(0).map((_, idx) => ({
+                    name : `${idx.toString().padStart(2, '0')}:00`,
+                    value: `${idx.toString().padStart(2, '0')}:00`,
+                })),
+            },
             discord_user: {
-                type       : OPT.User,
+                type       : CMDOPT.User,
                 name       : 'discord_user',
                 description: '[admin_role] discord user to update',
             },
@@ -28,9 +48,13 @@ export const USER
 /**
  * @desc [SLASH /user]
  */
-export const user = (data: Interaction, options: ROptions<typeof USER>) => E.gen(function * () {
+export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(function * () {
     if (!data.member) {
         return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
+    }
+
+    if (Boolean(options.quiet_hours_start) !== Boolean(options.quiet_hours_end)) {
+        return yield * new SlashUserError({issue: 'must have both quiet hours start/end defined'});
     }
 
     const userId = options.discord_user ?? data.member.user.id;
@@ -43,21 +67,32 @@ export const user = (data: Interaction, options: ROptions<typeof USER>) => E.gen
         }
     }
 
-    const user = yield * getDiscordUser({pk: `user-${userId}`})
+    const user = yield * getDiscordUser({pk: `u-${userId}`})
         .pipe(
             E.catchTag('DeepFryerDynamoError', () => E.succeed(undefined)),
         );
 
     if (!user) {
-        yield * putDiscordUser({
-            type    : 'DiscordUser',
-            pk      : `user-${userId}`,
-            sk      : 'now',
-            version : '1.0.0',
-            created : new Date(Date.now()),
-            updated : new Date(Date.now()),
-            timezone: yield * S.decodeUnknown(S.TimeZone)(options.tz),
-        });
+        yield * putDiscordUser(pipe(
+            {
+                type   : 'DiscordUser',
+                pk     : `u-${userId}`,
+                sk     : 'now',
+                version: '1.0.0',
+                created: new Date(Date.now()),
+                updated: new Date(Date.now()),
+
+                gsi_all_user_id: `u-${userId}`,
+
+                timezone: yield * S.decodeUnknown(S.TimeZone)(options.tz),
+                quiet   : options.quiet_hours_start
+                    ? `${options.quiet_hours_start}-${options.quiet_hours_end}`
+                    : undefined,
+            } as const,
+            (r) => r.quiet
+                ? omit('quiet')(r)
+                : r,
+        ));
 
         return {embeds: [{description: `<@${userId}> new user registration successful`}]};
     }
@@ -69,4 +104,6 @@ export const user = (data: Interaction, options: ROptions<typeof USER>) => E.gen
     });
 
     return {embeds: [{description: `<@${userId}> user registration updated`}]};
-});
+}).pipe(
+    E.catchTag('ParseError', (e) => new SlashError({original: e})),
+);

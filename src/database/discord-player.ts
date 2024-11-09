@@ -27,6 +27,7 @@ export const DiscordPlayer = S.Struct({
         token    : 2,
         developer: 3,
     }),
+    account_type: S.String,
 });
 
 export const DiscordPlayerDecode = S.decodeUnknown(DiscordPlayer);

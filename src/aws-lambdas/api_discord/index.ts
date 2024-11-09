@@ -4,18 +4,15 @@ import {unauthorized} from '@hapi/boom';
 import {InteractionResponseType, verifyKey} from 'discord-interactions';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import type {APIInteraction} from '@discordjs/core/http-only';
-import {ITR} from '#src/discord/helpers/re-exports.ts';
+import {ITR} from '#src/aws-lambdas/menu/old/re-exports.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
-import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
-import {logDiscordError} from '#src/https/calls/log-discord-error.ts';
-import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {Layer} from 'effect';
-import {ClashLive} from '#src/internals/layers/clash-service.ts';
-import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
-import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 
 type DIngress = APIInteraction;
@@ -124,15 +121,11 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 );
 
 const LambdaLive = pipe(
-    DiscordRESTLive,
-    L.provideMerge(ClashLive),
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    DiscordRESTMemoryLive,
     L.provideMerge(DefaultSQSServiceLayer),
-    L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(layerWithoutAgent),
-    L.provide(makeAgentLayer({keepAlive: true})),
-    L.provide(Layer.setConfigProvider(fromParameterStore())),
+    L.provide(NodeHttpClient.layer),
+    L.provide(L.setConfigProvider(fromParameterStore())),
     L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 

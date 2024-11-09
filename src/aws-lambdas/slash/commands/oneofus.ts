@@ -1,4 +1,4 @@
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {
     deleteDiscordPlayer,
@@ -6,11 +6,11 @@ import {
     queryDiscordPlayer,
 } from '#src/database/discord-player.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {ClashService} from '#src/internals/layers/clash-service.ts';
-import {CMDT, OPT} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const ONE_OF_US
     = {
@@ -19,19 +19,32 @@ export const ONE_OF_US
         description: 'link clash account to discord',
         options    : {
             player_tag: {
-                type       : OPT.String,
+                type       : CMDOPT.String,
                 name       : 'player_tag',
                 description: 'tag for player in-game (ex. #2GR2G0PGG)',
                 required   : true,
             },
             api_token: {
-                type       : OPT.String,
+                type       : CMDOPT.String,
                 name       : 'api_token',
                 description: 'player api token from in-game settings',
                 required   : true,
             },
+            account_type: {
+                type       : CMDOPT.String,
+                name       : 'account_kind',
+                description: 'how the account is played',
+                choices    : [
+                    {name: 'main', value: 'main'},
+                    {name: 'alt', value: 'alt'},
+                    {name: 'donation', value: 'donation'},
+                    {name: 'war asset', value: 'war-asset'},
+                    {name: 'clan capital', value: 'clan-capital'},
+                    {name: 'strategic rush', value: 'strategic-rush'},
+                ],
+            },
             discord_user: {
-                type       : OPT.User,
+                type       : CMDOPT.User,
                 name       : 'discord_user',
                 description: '[admin_role] discord user account to link player tag',
             },
@@ -41,10 +54,10 @@ export const ONE_OF_US
 /**
  * @desc [SLASH /oneofus]
  */
-export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) => E.gen(function * () {
+export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
-    const clash = yield * ClashService;
+    const clash = yield * ClashperkService;
 
     const tag = yield * clash.validateTag(options.player_tag);
 
@@ -59,22 +72,22 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
             return yield * new SlashUserError({issue: 'admin links must have discord_user'});
         }
 
-        const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
+        const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
         if (rest.length) {
             return yield * new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
         }
 
         if (!player) {
-            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1));
+            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_type));
             return {embeds: [{description: 'admin link successful'}]};
         }
 
         yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
         yield * putDiscordPlayer({
             ...player,
-            pk          : `user-${user.user.id}`,
-            gsi_user_id : `user-${user.user.id}`,
+            pk          : `u-${user.user.id}`,
+            gsi_user_id : `u-${user.user.id}`,
             updated     : new Date(Date.now()),
             verification: 1,
         });
@@ -89,11 +102,11 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
         return yield * new SlashUserError({issue: 'invalid api_token'});
     }
 
-    const [player, ...rest] = yield * queryDiscordPlayer({sk: `player-${options.player_tag}`});
+    const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
     // new player record
     if (!player) {
-        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2));
+        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2, options.account_type));
 
         return {embeds: [{description: 'new player link verified'}]};
     }
@@ -116,8 +129,8 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
     yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
     yield * putDiscordPlayer({
         ...player,
-        pk          : `user-${user.user.id}`,
-        gsi_user_id : `user-${user.user.id}`,
+        pk          : `u-${user.user.id}`,
+        gsi_user_id : `u-${user.user.id}`,
         updated     : new Date(Date.now()),
         verification: 2,
     });
@@ -126,14 +139,15 @@ export const oneofus = (data: Interaction, options: ROptions<typeof ONE_OF_US>) 
 });
 
 const makeDiscordPlayer
-    = (userId: string, playerTag: string, verification: DPlayer['verification']) => ({
-        pk            : `user-${userId}`,
-        sk            : `player-${playerTag}`,
+    = (userId: string, playerTag: string, verification: DPlayer['verification'], accountType?: string) => ({
+        pk            : `u-${userId}`,
+        sk            : `p-${playerTag}`,
         type          : 'DiscordPlayer',
         version       : '1.0.0',
         created       : new Date(Date.now()),
         updated       : new Date(Date.now()),
-        gsi_user_id   : `user-${userId}`,
-        gsi_player_tag: `player-${playerTag}`,
+        gsi_user_id   : `u-${userId}`,
+        gsi_player_tag: `p-${playerTag}`,
         verification  : verification,
+        account_type  : accountType ?? 'main',
     } as const);

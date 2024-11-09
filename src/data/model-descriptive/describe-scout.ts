@@ -9,6 +9,7 @@ import {compareTwoStrings} from 'string-similarity';
 import type {num} from '#src/pure/types-pure.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';
 import {collect} from 'effect/Record';
+import type {EAR} from '#src/internals/types.ts';
 
 const median = (xs: num[]) => {
     try {
@@ -37,7 +38,7 @@ const mean = (xs: num[]) => {
     }
 };
 
-export const describeScout = (graph: Awaited<ReturnType<typeof buildGraphModel>>) => {
+export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
     const wars = pipe(graph.model, queryWarsByClan(graph.opponentTag));
     const attacks = pipe(graph.model, queryAttacksByClan(graph.opponentTag));
 

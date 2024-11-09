@@ -1,9 +1,9 @@
 import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CommandSpec, Interaction} from '#src/discord/types.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordServer} from '#src/database/discord-server.ts';
-import {OPTION_TZ} from '#src/aws-lambdas/slash/shared-options.ts';
+import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
 
 export const SERVER
     = {
@@ -32,9 +32,9 @@ export const SERVER
 /**
  * @desc [SLASH /server]
  */
-export const server = (data: Interaction, options: ROptions<typeof SERVER>) => E.gen(function * () {
+export const server = (data: Interaction, options: CmdOps<typeof SERVER>) => E.gen(function * () {
     yield * putDiscordServer({
-        pk               : `server-${data.guild_id}`,
+        pk               : `s-${data.guild_id}`,
         sk               : 'now',
         type             : 'DiscordServer',
         version          : '1.0.0',
@@ -42,7 +42,7 @@ export const server = (data: Interaction, options: ROptions<typeof SERVER>) => E
         forum            : options.forum,
         created          : new Date(Date.now()),
         updated          : new Date(Date.now()),
-        gsi_all_server_id: `server-${data.guild_id}`,
+        gsi_all_server_id: `s-${data.guild_id}`,
         polling          : true,
     });
 

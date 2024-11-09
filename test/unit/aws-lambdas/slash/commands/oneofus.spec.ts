@@ -42,8 +42,8 @@ describe('[SLASH /oneofus]: player/discord account linking', () => {
         await dynamoDB.put({
             TableName: 'qual-dffp-clash-discord-bot-operations',
             Item     : {
-                pk: 'user-123',
-                sk: 'player-#0289PYLQGRJCUV',
+                pk: 'u-123',
+                sk: 'p-#0289PYLQGRJCUV',
             },
         });
     });
@@ -52,14 +52,14 @@ describe('[SLASH /oneofus]: player/discord account linking', () => {
         await dynamoDB.delete({
             TableName: 'qual-dffp-clash-discord-bot-operations',
             Key      : {
-                pk: 'user-123',
-                sk: 'player-#0289PYLQGRJCUV',
+                pk: 'u-123',
+                sk: 'p-#0289PYLQGRJCUV',
             },
         });
         await dynamoDB.delete({
             TableName: 'qual-dffp-clash-discord-bot-operations',
             Key      : {
-                pk: 'server-123',
+                pk: 's-123',
                 sk: 'now',
             },
         });
@@ -78,13 +78,13 @@ describe('[SLASH /oneofus]: player/discord account linking', () => {
             await dynamoDB.put({
                 TableName: 'qual-dffp-clash-discord-bot-operations',
                 Item     : E.runSync(DiscordServerEncode(DiscordServer.make({
-                    pk           : 'server-123',
+                    pk           : 's-123',
                     sk           : 'now',
                     type         : 'DiscordServer',
                     version      : '1.0.0',
                     created      : new Date(),
                     updated      : new Date(),
-                    gsi_server_id: `server-123`,
+                    gsi_server_id: `s-123`,
                     admin        : '',
                     polling      : false,
                 }))),

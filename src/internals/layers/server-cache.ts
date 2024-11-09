@@ -15,7 +15,6 @@ const serverCache = Cache.make({
         ? '1 minutes'
         : '15 minutes',
 
-    // todo ask in the Effect-TS server if this is referential equality...
     lookup: (key: CompKey<DServer>['pk']) => Effect.gen(function* () {
         yield * Console.log('cache miss!');
 
