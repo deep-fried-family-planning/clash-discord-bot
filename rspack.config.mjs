@@ -19,7 +19,7 @@ export default defineConfig({
     entry: pipe(
         await readdir('src/aws-lambdas', {withFileTypes: true, recursive: true}),
         filter((l) => l.name === 'index.ts'),
-        map((l) => resolve(l.parentPath, l.name).replace(import.meta.dirname, '')),
+        map((l) => resolve(l.parentPath, l.name).replace(import.meta.dirname, '').replaceAll('\\', '/')),
         reduce({}, (ls, l) => (ls[l.replace('/src/aws-lambdas/', '').replace('.ts', '')] = l) && ls),
     ),
 
