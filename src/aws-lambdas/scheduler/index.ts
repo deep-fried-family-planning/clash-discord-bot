@@ -16,7 +16,6 @@ import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {DiscordOldServiceLive} from '#src/internals/layers/discord-old-service.ts';
 
 const LambdaLive = pipe(
     ClanCacheLive,
@@ -25,7 +24,6 @@ const LambdaLive = pipe(
     L.provideMerge(DiscordRESTLive),
     L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
-    L.provideMerge(DiscordOldServiceLive),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
     L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

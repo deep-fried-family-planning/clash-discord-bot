@@ -7,11 +7,9 @@ import type {DClan} from '#src/database/discord-clan.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
 import {pipe} from 'effect';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
-import {DiscordOldService} from '#src/internals/layers/discord-old-service.ts';
 
 export const createWarThread = (server: DServer, clan: DClan, players: Record<string, DPlayer | undefined>, apiClan: Clan, apiWar: ClanWar) => E.gen(function *() {
     const discord = yield * DiscordREST;
-    const old = yield * DiscordOldService;
 
     const cname = apiClan.name in nicknames
         ? nicknames[apiClan.name as keyof typeof nicknames]
@@ -24,13 +22,14 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
     const enemyclantag = `clan-${enemyclan.tag}`;
 
     if (apiWar.isPreparationDay && enemyclantag !== clan.prep_opponent) {
-        const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
-            name                 : `🛠️│${cname}`,
-            auto_archive_duration: 1440,
-            message              : {
+        const result = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
+            name   : `🛠️│${cname}`,
+            // @ts-expect-error dfx types need to be fixed
+            message: {
                 content: `${apiClan.name} vs. ${enemyclan.name}`,
             },
-        }));
+            auto_archive_duration: 1440,
+        }).json;
         yield * discord.createMessage(result.id, {
             content: pipe(
                 apiWar.clan.members,
@@ -51,13 +50,14 @@ export const createWarThread = (server: DServer, clan: DClan, players: Record<st
     }
 
     else if (apiWar.isBattleDay && enemyclantag !== clan.prep_opponent && enemyclantag !== clan.battle_opponent) {
-        const result = yield * E.tryPromise(() => old.channels.createForumThread(server.forum!, {
-            name                 : `🗡️│${cname}`,
-            auto_archive_duration: 1440,
-            message              : {
+        const result = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
+            name   : `🗡️│${cname}`,
+            // @ts-expect-error dfx types need to be fixed
+            message: {
                 content: `${apiClan.name} vs. ${enemyclan.name}`,
             },
-        }));
+            auto_archive_duration: 1440,
+        }).json;
         yield * discord.createMessage(result.id, {
             content: pipe(
                 apiWar.clan.members,
