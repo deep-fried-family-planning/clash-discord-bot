@@ -16,6 +16,7 @@ import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
 import {fromParameterStore} from '@effect-aws/ssm';
+import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
 
 const LambdaLive = pipe(
     ClanCacheLive,
@@ -24,6 +25,7 @@ const LambdaLive = pipe(
     L.provideMerge(DiscordRESTLive),
     L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    L.provideMerge(DefaultSQSServiceLayer),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
     L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
@@ -36,6 +38,11 @@ const LambdaLive = pipe(
 const h = () => E.gen(function* () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
+
+    yield * SQSService.sendMessage({
+        QueueUrl   : process.env.SQS_SCHEDULED_TASK,
+        MessageBody: JSON.stringify({}),
+    });
 
     const serverCache = yield * yield * ServerCache;
     const clanCache = yield * (yield * ClanCache);

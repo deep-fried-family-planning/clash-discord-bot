@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "sqs" {
   count                      = var.sqs == true ? 1 : 0
   name                       = "${var.prefix}-${local.fn_name}-sqs"
   visibility_timeout_seconds = aws_lambda_function.main.timeout
-  delay_seconds = 1
+  delay_seconds              = 1
 }
 
 data "aws_iam_policy_document" "sqs" {

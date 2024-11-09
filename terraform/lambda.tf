@@ -1,7 +1,7 @@
 locals {
   lambda_env = {
-    LAMBDA_ENV    = local.env
-    LAMBDA_PREFIX = local.prefix
+    LAMBDA_ENV     = local.env
+    LAMBDA_PREFIX  = local.prefix
     DDB_OPERATIONS = aws_dynamodb_table.operations.name
 
     DDB_SERVER = aws_dynamodb_table.server.name
@@ -102,7 +102,7 @@ module "lambda_scheduler" {
   memory             = 512
   timeout            = 120
   fn_env = merge(local.lambda_env, {
-
+    SQS_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
   })
 }
 
@@ -160,4 +160,18 @@ data "aws_iam_policy_document" "lambda_slash" {
     actions   = ["*"]
     resources = ["*"]
   }
+}
+
+module "lambda_scheduled_task" {
+  source = "./modules/lambda"
+
+  acc_id             = local.account_id
+  custom_policy_json = data.aws_iam_policy_document.lambda_slash.json
+  fn_env             = local.lambda_env
+  fn_name            = "scheduled_task"
+  memory             = 512
+  prefix             = local.prefix
+  timeout            = 300
+  sqs                = true
+  sqs_source_arns    = [module.lambda_scheduler.fn_arn]
 }
