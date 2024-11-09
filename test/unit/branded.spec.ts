@@ -1,5 +1,6 @@
 import {Console, DateTime, Schema} from 'effect';
 import {DT, E} from '#src/internals/re-exports/effect.ts';
+import {ServerId} from '#src/database/common.ts';
 
 const str
     = '{ readonly pk: a string starting with "server-"; readonly sk: a string starting with "clan-"; readonly type: "DiscordClan"; readonly version: "1.0.0"; readonly created: Date; readonly updated: Date; readonly gsi_server_id: a string starting with "server-"; readonly gsi_clan_tag: a string starting with "clan-"; readonly thread_prep: string; readonly prep_opponent: a string starting with "clan-"; readonly thread_battle: string; readonly battle_opponent: a string starting with "clan-"; readonly countdown: string }\n└─ ["battle_opponent"]\n   └─ a string starting with "clan-"\n      └─ Predicate refinement failure\n         └─ Expected a string starting with "clan-", actual "#QUJLU28U"';
@@ -10,10 +11,13 @@ describe('deep fryer branded types', () => {
 
             DT.CurrentTimeZone;
 
-            return tz;
+            const ope = yield * Schema.decodeUnknown(ServerId)('s-1234');
+            const ope2 = yield * Schema.encodeUnknown(ServerId)('1234');
+
+            return [ope, ope2];
         })));
 
-        console.log(decodeURIComponent('/players/%23ASDF'));
-        console.log(str);
+        // console.log(decodeURIComponent('/players/%23ASDF'));
+        // console.log(str);
     });
 });

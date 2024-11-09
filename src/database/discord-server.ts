@@ -52,14 +52,17 @@ export const putDiscordServer = (record: DServer) => pipe(
 
 export const getDiscordServer = (key: CompKey<DServer>) => pipe(
     ServerIdEncode(key.pk),
-    E.andThen(DynamoDBDocumentService.get({
-        TableName     : process.env.DDB_OPERATIONS,
-        Key           : key,
+    E.flatMap((pk) => DynamoDBDocumentService.get({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : {
+            pk: pk,
+            sk: key.sk,
+        },
         ConsistentRead: true,
     })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
-            onTrue : () => DiscordServerDecode(Item!),
+            onTrue : () => DiscordServerDecode(Item),
             onFalse: () => new DynamoError({message: 'NotFound: DiscordServer'}),
         }),
         E.flatMap((decoded) => pipe(

@@ -14,10 +14,10 @@ export const LambdaLayer = pipe(
     L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(ClashkingServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(NodeHttpClient.layer),
+    L.provide(NodeHttpClient.layerUndici),
     L.provide(L.setConfigProvider(fromParameterStore())),
+    L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 
 export const handler = makeLambda(slash, LambdaLayer);

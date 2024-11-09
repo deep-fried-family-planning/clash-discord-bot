@@ -14,25 +14,9 @@ import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
-import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
-
-const LambdaLive = pipe(
-    ClanCacheLive,
-    L.provideMerge(ServerCacheLive),
-    L.provideMerge(PlayerCacheLive),
-    L.provideMerge(DiscordRESTLive),
-    L.provideMerge(ClashPerkServiceLive),
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
-    L.provideMerge(DefaultSQSServiceLayer),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-    L.provide(MemoryRateLimitStoreLive),
-    L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(layerWithoutAgent),
-    L.provide(makeAgentLayer({keepAlive: true})),
-    L.provide(Layer.setConfigProvider(fromParameterStore())),
-);
 
 // todo this lambda is annoying asl, fullstack test
 const h = () => E.gen(function* () {
@@ -64,12 +48,10 @@ const h = () => E.gen(function* () {
 
                 const server = yield * serverCache.get(pk);
 
-                const [, clanTag] = sk.split('c-');
-
                 const clan = yield * clanCache.get(k);
 
-                const apiClan = yield * clash.getClan(clanTag);
-                const apiWars = yield * clash.getWars(clanTag);
+                const apiClan = yield * clash.getClan(sk);
+                const apiWars = yield * clash.getWars(sk);
 
                 yield * updateWarCountdown(clan, apiClan, apiWars.find((a) => a.isBattleDay)!);
 
@@ -106,10 +88,21 @@ const h = () => E.gen(function* () {
         )),
         E.allWith({concurrency: 5}),
     );
-
-    return yield * E.die('temp kill instance'); // todo very important lol
 });
 
-// todo
-// close war threads during CWL
+const LambdaLive = pipe(
+    ClanCacheLive,
+    L.provideMerge(ServerCacheLive),
+    L.provideMerge(PlayerCacheLive),
+    L.provideMerge(ClashPerkServiceLive),
+    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    L.provideMerge(DefaultSQSServiceLayer),
+    L.provideMerge(DiscordRESTLive),
+    L.provide(MemoryRateLimitStoreLive),
+    L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+    L.provide(NodeHttpClient.layerUndici),
+    L.provide(Layer.setConfigProvider(fromParameterStore())),
+    L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+);
+
 export const handler = makeLambda(h, LambdaLive);

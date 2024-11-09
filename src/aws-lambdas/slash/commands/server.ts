@@ -34,7 +34,7 @@ export const SERVER
  */
 export const server = (data: Interaction, options: CmdOps<typeof SERVER>) => E.gen(function * () {
     yield * putDiscordServer({
-        pk               : `s-${data.guild_id}`,
+        pk               : data.guild_id!,
         sk               : 'now',
         type             : 'DiscordServer',
         version          : '1.0.0',
@@ -42,7 +42,7 @@ export const server = (data: Interaction, options: CmdOps<typeof SERVER>) => E.g
         forum            : options.forum,
         created          : new Date(Date.now()),
         updated          : new Date(Date.now()),
-        gsi_all_server_id: `s-${data.guild_id}`,
+        gsi_all_server_id: data.guild_id!,
         polling          : true,
     });
 

@@ -67,7 +67,7 @@ export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(functio
         }
     }
 
-    const user = yield * getDiscordUser({pk: `u-${userId}`})
+    const user = yield * getDiscordUser({pk: userId})
         .pipe(
             E.catchTag('DeepFryerDynamoError', () => E.succeed(undefined)),
         );
@@ -76,13 +76,13 @@ export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(functio
         yield * putDiscordUser(pipe(
             {
                 type   : 'DiscordUser',
-                pk     : `u-${userId}`,
+                pk     : userId,
                 sk     : 'now',
                 version: '1.0.0',
                 created: new Date(Date.now()),
                 updated: new Date(Date.now()),
 
-                gsi_all_user_id: `u-${userId}`,
+                gsi_all_user_id: userId,
 
                 timezone: yield * S.decodeUnknown(S.TimeZone)(options.tz),
                 quiet   : options.quiet_hours_start

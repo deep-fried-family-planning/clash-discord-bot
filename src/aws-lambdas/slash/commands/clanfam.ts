@@ -51,18 +51,18 @@ export const clanfam = (data: Interaction, options: CmdOps<typeof CLAN_FAM>) => 
             .pipe(replyError('Provided clan tag does not exist.'));
 
     yield * putDiscordClan({
-        pk             : `s-${data.guild_id}`,
-        sk             : `c-${clan.tag}`,
+        pk             : data.guild_id!,
+        sk             : clan.tag,
         type           : 'DiscordClan',
         version        : '1.0.0',
         created        : new Date(Date.now()),
         updated        : new Date(Date.now()),
-        gsi_server_id  : `s-${data.guild_id}`,
-        gsi_clan_tag   : `c-${clanTag}`,
+        gsi_server_id  : data.guild_id!,
+        gsi_clan_tag   : clanTag,
         thread_prep    : '',
-        prep_opponent  : 'c-',
+        prep_opponent  : '',
         thread_battle  : '',
-        battle_opponent: 'c-',
+        battle_opponent: '',
         countdown      : options.countdown,
     });
 
