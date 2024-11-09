@@ -1,7 +1,7 @@
 import {makeLambda} from '@effect-aws/lambda';
 import {Cfg, L, Logger, pipe} from '#src/internals/re-exports/effect.ts';
-import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {slash} from '#src/aws-lambdas/slash/slash.ts';
@@ -10,15 +10,13 @@ import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
 import {ClashkingServiceLive} from '#src/internals/layers/clashking-service.ts';
 
 export const LambdaLayer = pipe(
-    DiscordRESTLive,
+    DiscordRESTMemoryLive,
     L.provideMerge(ClashPerkServiceLive),
     L.provideMerge(ClashkingServiceLive),
     L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-    L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(layerWithoutAgent),
-    L.provide(makeAgentLayer({keepAlive: true})),
+    L.provide(NodeHttpClient.layer),
     L.provide(L.setConfigProvider(fromParameterStore())),
 );
 

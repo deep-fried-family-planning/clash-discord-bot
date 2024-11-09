@@ -1,7 +1,7 @@
 import {Client} from 'clashofclans.js';
 import {C, CFG, E, L, RDT} from '#src/internals/re-exports/effect.ts';
 import {REDACTED_COC_KEY} from '#src/internals/constants/secrets.ts';
-import type {ClashError} from '#src/internals/errors/clash-error.ts';
+import type {ClashperkError} from '#src/internals/errors/clash-error.ts';
 import {clashErrorFromUndefined} from '#src/internals/errors/clash-error.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
@@ -17,7 +17,7 @@ export class ClashperkService extends C.Tag('DeepFryerClash')<
             | 'getClans'
             | 'getCurrentWar'
             | 'getClanWarLeagueGroup'
-        >]: (...params: Parameters<Client[k]>) => E.Effect<Awaited<ReturnType<Client[k]>>, ClashError>
+        >]: (...params: Parameters<Client[k]>) => E.Effect<Awaited<ReturnType<Client[k]>>, ClashperkError>
     }
     & {
         validateTag: (tag: string) => E.Effect<string, SlashUserError>;

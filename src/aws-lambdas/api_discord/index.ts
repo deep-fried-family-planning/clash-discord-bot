@@ -11,10 +11,8 @@ import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
-import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
-import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
-import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 
 type DIngress = APIInteraction;
@@ -123,14 +121,10 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 );
 
 const LambdaLive = pipe(
-    DiscordRESTLive,
-    L.provideMerge(ClashPerkServiceLive),
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    DiscordRESTMemoryLive,
     L.provideMerge(DefaultSQSServiceLayer),
-    L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(layerWithoutAgent),
-    L.provide(makeAgentLayer({keepAlive: true})),
+    L.provide(NodeHttpClient.layer),
     L.provide(L.setConfigProvider(fromParameterStore())),
     L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );

@@ -3,13 +3,13 @@ import {C, E, L, pipe, RL} from '#src/internals/re-exports/effect.ts';
 import type {CK_War} from '#src/https/api-ck-get-previous-wars.ts';
 import type {CK_Player_PreviousHits} from '#src/https/api-ck-get-warhits.ts';
 import type {num} from '#src/pure/types-pure.ts';
-import {ClashError} from '#src/internals/errors/clash-error.ts';
+import {DeepFryerUnknownError} from '#src/internals/errors/clash-error.ts';
 
 export class ClashkingService extends C.Tag('DeepFryerClashkingService')<
     ClashkingService,
     {
-        previousHits: (pid: string, limit: num) => E.Effect<CK_Player_PreviousHits[], ClashError>;
-        previousWars: (cid: string, limit: num) => E.Effect<CK_War[], ClashError>;
+        previousHits: (pid: string, limit: num) => E.Effect<CK_Player_PreviousHits[], DeepFryerUnknownError>;
+        previousWars: (cid: string, limit: num) => E.Effect<CK_War[], DeepFryerUnknownError>;
     }
 >() {}
 
@@ -36,8 +36,8 @@ export const ClashkingServiceLive = L.scoped(ClashkingService, E.gen(function* (
 
                 return data.contents.items;
             }),
-            E.catchAllCause((d) => new ClashError({original: d as unknown as Error})),
-            E.catchAllDefect((d) => new ClashError({original: d as Error})),
+            E.catchAllCause((d) => new DeepFryerUnknownError({original: d as unknown as Error})),
+            E.catchAllDefect((d) => new DeepFryerUnknownError({original: d as Error})),
             rateLimit,
         ),
 
@@ -55,8 +55,8 @@ export const ClashkingServiceLive = L.scoped(ClashkingService, E.gen(function* (
 
                 return data.contents;
             }),
-            E.catchAllCause((d) => new ClashError({original: d as unknown as Error})),
-            E.catchAllDefect((d) => new ClashError({original: d as Error})),
+            E.catchAllCause((d) => new DeepFryerUnknownError({original: d as unknown as Error})),
+            E.catchAllDefect((d) => new DeepFryerUnknownError({original: d as Error})),
             rateLimit,
         ),
     };

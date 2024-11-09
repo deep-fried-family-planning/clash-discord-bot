@@ -9,17 +9,18 @@ import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
 import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
-import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {ClashkingService} from '#src/internals/layers/clashking-service.ts';
+import {DeepFryerUnknownError} from '#src/internals/errors/clash-error.ts';
+import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 
 export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
     const entities = yield * fetchWarEntities(ops);
 
-    // if (!entities.currentWar.length) {
-    //     return yield * new SlashUserError({issue: 'no current war found'});
-    // }
+    if (!entities.currentWar.length) {
+        return yield * new SlashUserError({issue: 'no current war found'});
+    }
 
     const clashking = yield * ClashkingService;
 

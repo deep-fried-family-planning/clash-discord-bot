@@ -15,12 +15,11 @@ import {SMOKE} from '#src/aws-lambdas/slash/commands/smoke.ts';
 import {WA_LINKS} from '#src/aws-lambdas/slash/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/aws-lambdas/slash/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/aws-lambdas/slash/commands/wa-scout.ts';
-import {DiscordConfig, DiscordREST, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
-import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
-import {layerWithoutAgent, makeAgentLayer} from '@effect/platform-node/NodeHttpClient';
+import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
+import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {concatL, filterL, mapL} from '#src/pure/pure-list.ts';
+import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 
 const commands = pipe(
     {
@@ -46,8 +45,7 @@ const h = () => E.gen(function* () {
     const discord = yield * DiscordREST;
     const APP_ID = yield * CFG.redacted(REDACTED_DISCORD_APP_ID);
 
-    const globalCommandsResp = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID));
-    const globalCommands = yield * globalCommandsResp.json;
+    const globalCommands = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
 
     const deletes = pipe(
         globalCommands,
@@ -65,18 +63,16 @@ const h = () => E.gen(function* () {
         concatL(updates),
         E.allWith({concurrency: 'unbounded'}),
     );
-});
+}).pipe(
+    E.catchAllDefect((e) => logDiscordError([e])),
+);
 
 const LambdaLive = pipe(
-    DiscordRESTLive,
-    L.provideMerge(ClashPerkServiceLive),
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-    L.provide(MemoryRateLimitStoreLive),
+    DiscordRESTMemoryLive,
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
-    L.provide(layerWithoutAgent),
-    L.provide(makeAgentLayer({keepAlive: true})),
+    L.provide(NodeHttpClient.layer),
     L.provide(L.setConfigProvider(fromParameterStore())),
+    L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 
 export const handler = makeLambda(h, LambdaLive);

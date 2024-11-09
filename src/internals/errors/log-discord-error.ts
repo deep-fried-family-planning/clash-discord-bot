@@ -1,5 +1,4 @@
 import {CFG, E, pipe, RDT} from '#src/internals/re-exports/effect.ts';
-import {bindApiCall} from '#src/internals/api-call.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/internals/constants/secrets.ts';
 import {Console} from 'effect';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
@@ -8,20 +7,20 @@ import {mapL} from '#src/pure/pure-list.ts';
 import {CMP} from '#src/aws-lambdas/menu/old/re-exports.ts';
 import {LBUTTON_SUPPORT_SERVER} from '#src/aws-lambdas/menu/old/lbutton-support-server.ts';
 import {buildCloudWatchLink} from '#src/aws-lambdas/slash/utils.ts';
-// import {LBUTTON_ERROR_LOG} from '#src/discord/app-interactions/components/lbutton-error-log.ts';
+import {DiscordREST} from 'dfx';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
     yield * Console.error('[CAUSE]:', ...e);
 
     const url = RDT.value(yield * CFG.redacted(REDACTED_DISCORD_ERROR_URL));
 
-    const {contents: log} = yield * E.tryPromise(async () => (await bindApiCall(url)({
-        path  : '',
-        method: 'POST',
-        query : {
-            wait: true,
-        },
-        jsonBody: {
+    const [token, id] = url.split('/').reverse();
+
+    const discord = yield * DiscordREST;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const log = yield * discord.executeWebhook(id, token,
+        {
             embeds: [{
                 color      : nColor(COLOR.ERROR),
                 title      : process.env.AWS_LAMBDA_FUNCTION_NAME,
@@ -44,13 +43,12 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 ),
             }],
         },
-    })) as {contents: {channel_id: string; id: string}}).pipe(E.catchAllCause((e) => E.gen(function * () {
-        yield * Console.log(e);
-        return {contents: {
-            channel_id: 'failed',
-            id        : 'failed',
-        }};
-    })));
+        {
+            urlParams: {
+                wait: true,
+            },
+        },
+    ).json;
 
     return {
         embeds: [{
@@ -58,6 +56,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
             title      : 'Unknown Error',
             description: dLinesS(
                 `If you don't think your input caused this error, send this link to the support server:`,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 `-# <https://discord.com/channels/1283847240061947964/${log.channel_id}/${log.id}>`,
             ),
         }],
