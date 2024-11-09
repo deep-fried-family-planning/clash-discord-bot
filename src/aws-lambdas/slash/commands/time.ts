@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
-import {dTable} from '#src/discord/command-util/message-table.ts';
+import {dTable} from '#src/aws-lambdas/menu/old/message-table.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
-import {dCodes, dLines} from '#src/discord/helpers/markdown.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import type {CommandSpec} from '#src/discord/types.ts';
-import type {ROptions} from '#src/aws-lambdas/slash/types.ts';
-import type {Interaction} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/validation-utils.ts';
+import {dCodes, dLines} from '#src/aws-lambdas/menu/old/markdown.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
+import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 
 export const TIME
     = {
@@ -35,7 +35,7 @@ export const TIME
 /**
  * @desc [SLASH /time]
  */
-export const time = (data: Interaction, options: ROptions<typeof TIME>) => E.gen(function * () {
+export const time = (data: CmdIx, options: CmdOps<typeof TIME>) => E.gen(function * () {
     yield * validateServer(data);
 
     dayjs.extend(dayutc);

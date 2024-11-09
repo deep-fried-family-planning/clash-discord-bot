@@ -15,7 +15,10 @@ export const DiscordUser = S.Struct({
     created: S.Date,
     updated: S.Date,
 
+    gsi_all_user_id: UserId,
+
     timezone: S.TimeZone,
+    quiet   : S.optional(S.String),
 });
 
 export const DiscordUserDecode = S.decodeUnknown(DiscordUser);

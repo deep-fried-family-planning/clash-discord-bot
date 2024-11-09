@@ -17,7 +17,7 @@ export const PlayerCacheLive = Layer.effect(
         return pipe(
             players,
             reduceL({} as Record<string, DPlayer>, (acc, a) => {
-                acc[a.sk.split('player-')[1]] = a;
+                acc[a.sk.split('p-')[1]] = a;
 
                 return acc;
             }),

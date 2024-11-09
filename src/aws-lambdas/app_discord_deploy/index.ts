@@ -1,43 +1,79 @@
-import {discord} from '#src/https/api-discord.ts';
 import {specToREST} from '#src/aws-lambdas/api_discord/commands-rest.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {E, Logger, pipe} from '#src/internals/re-exports/effect.ts';
+import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
-import {SECRET} from '#src/internals/secrets.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {ONE_OF_US} from '#src/aws-lambdas/slash/commands/oneofus.ts';
 import {TIME} from '#src/aws-lambdas/slash/commands/time.ts';
 import {SERVER} from '#src/aws-lambdas/slash/commands/server.ts';
 import {CLAN_FAM} from '#src/aws-lambdas/slash/commands/clanfam.ts';
 import {USER} from '#src/aws-lambdas/slash/commands/user.ts';
-import type {CommandSpec} from '#src/discord/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
+import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
+import {SMOKE} from '#src/aws-lambdas/slash/commands/smoke.ts';
+import {WA_LINKS} from '#src/aws-lambdas/slash/commands/wa-links.ts';
+import {WA_MIRRORS} from '#src/aws-lambdas/slash/commands/wa-mirrors.ts';
+import {WA_SCOUT} from '#src/aws-lambdas/slash/commands/wa-scout.ts';
+import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
+import {NodeHttpClient} from '@effect/platform-node';
+import {fromParameterStore} from '@effect-aws/ssm';
+import {concatL, filterL, mapL} from '#src/pure/pure-list.ts';
+import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 
-export const COMMANDS = {
-    ONE_OF_US,
-    TIME,
-    SERVER,
-    CLAN_FAM,
-    USER,
-} as const satisfies {[k in string]: CommandSpec};
+const commands = pipe(
+    {
+        CLAN_FAM,
+        ONE_OF_US,
+        SERVER,
+        SMOKE,
+        TIME,
+        USER,
+        WA_LINKS,
+        WA_MIRRORS,
+        WA_SCOUT,
+    } as const satisfies {[k in string]: CommandSpec},
+    mapEntries((v, k) => [k, specToREST(v)]),
+    toEntries,
+);
+
+const names = pipe(commands, map(([, cmd]) => cmd.name));
 
 const h = () => E.gen(function* () {
     yield * invokeCount(showMetric(invokeCount));
-    const cmds = yield * pipe(COMMANDS, mapEntries((v, k) => [k, specToREST(v)]), toEntries, E.succeed);
 
-    const allNames = pipe(cmds, map(([, cmd]) => cmd.name));
+    const discord = yield * DiscordREST;
+    const APP_ID = yield * CFG.redacted(REDACTED_DISCORD_APP_ID);
 
-    const current = yield * E.promise(() => discord.applicationCommands.getGlobalCommands(SECRET.DISCORD_APP_ID));
+    const globalCommands = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
 
-    for (const cmd of current) {
-        if (!allNames.includes(cmd.name)) {
-            yield * E.promise(() => discord.applicationCommands.deleteGlobalCommand(SECRET.DISCORD_APP_ID, cmd.id));
-        }
-    }
+    const deletes = pipe(
+        globalCommands,
+        filterL((gc) => !names.includes(gc.name)),
+        mapL((gc) => discord.deleteGlobalApplicationCommand(RDT.value(APP_ID), gc.id)),
+    );
 
-    for (const [, cmd] of cmds) {
-        yield * E.promise(() => discord.applicationCommands.createGlobalCommand(SECRET.DISCORD_APP_ID, cmd));
-    }
-});
+    const updates = pipe(
+        commands,
+        mapL(([,cmd]) => discord.createGlobalApplicationCommand(RDT.value(APP_ID), cmd)),
+    );
 
-export const handler = makeLambda(h, Logger.replace(Logger.defaultLogger, Logger.structuredLogger));
+    yield * pipe(
+        deletes,
+        concatL(updates),
+        E.allWith({concurrency: 'unbounded'}),
+    );
+}).pipe(
+    E.catchAll((e) => logDiscordError([e])),
+    E.catchAllDefect((e) => logDiscordError([e])),
+);
+
+const LambdaLive = pipe(
+    DiscordRESTMemoryLive,
+    L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+    L.provide(NodeHttpClient.layer),
+    L.provide(L.setConfigProvider(fromParameterStore())),
+    L.provide(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+);
+
+export const handler = makeLambda(h, LambdaLive);

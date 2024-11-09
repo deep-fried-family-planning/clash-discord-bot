@@ -9,16 +9,17 @@ import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
 export type DClan = S.Schema.Type<typeof DiscordClan>;
 
 export const DiscordClan = S.Struct({
+    type: S.Literal('DiscordClan'),
+
     pk: ServerId,
     sk: ClanTag,
 
-    type   : S.Literal('DiscordClan'),
+    gsi_server_id: ServerId,
+    gsi_clan_tag : ClanTag,
+
     version: S.Literal('1.0.0'),
     created: S.Date,
     updated: S.Date,
-
-    gsi_server_id: ServerId,
-    gsi_clan_tag : ClanTag,
 
     thread_prep    : ThreadId,
     prep_opponent  : ClanTag,
