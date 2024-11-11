@@ -1,11 +1,11 @@
 import {Client} from 'clashofclans.js';
-import {C, CFG, E, L, RDT} from '#src/internals/re-exports/effect.ts';
+import {CFG, E, L, RDT} from '#src/internals/re-exports/effect.ts';
 import {REDACTED_COC_KEY} from '#src/internals/constants/secrets.ts';
 import type {ClashperkError} from '#src/internals/errors/clash-error.ts';
 import {clashErrorFromUndefined} from '#src/internals/errors/clash-error.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
-export class ClashperkService extends C.Tag('DeepFryerClash')<
+export class ClashperkService extends E.Tag('DeepFryerClash')<
     ClashperkService,
     {
         [k in keyof Pick<
@@ -22,7 +22,9 @@ export class ClashperkService extends C.Tag('DeepFryerClash')<
     & {
         validateTag: (tag: string) => E.Effect<string, SlashUserError>;
     }
->() {}
+>() {
+    static Live = L.effect(this);
+}
 
 export const ClashPerkServiceLive = L.effect(ClashperkService, E.gen(function* () {
     const apiKey = RDT.value(yield * CFG.redacted(REDACTED_COC_KEY));

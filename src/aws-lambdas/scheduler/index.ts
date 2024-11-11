@@ -23,11 +23,6 @@ const h = () => E.gen(function* () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
-    yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_SCHEDULED_TASK,
-        MessageBody: JSON.stringify({}),
-    });
-
     const serverCache = yield * yield * ServerCache;
     const clanCache = yield * (yield * ClanCache);
     const players = yield * PlayerCache;

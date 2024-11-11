@@ -102,7 +102,7 @@ module "lambda_scheduler" {
   memory             = 512
   timeout            = 120
   fn_env = merge(local.lambda_env, {
-    SQS_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
+    SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
   })
 }
 
@@ -141,7 +141,10 @@ module "lambda_slash" {
   custom_policy_json = data.aws_iam_policy_document.lambda_slash.json
   memory             = 1024
   timeout            = 300
-  fn_env             = local.lambda_env
+  fn_env             = merge(local.lambda_env, {
+    SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
+    SQS_ARN_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_arn
+  })
   sqs                = true
   sqs_source_arns    = [module.lambda_slash.fn_arn]
 }
@@ -162,6 +165,9 @@ data "aws_iam_policy_document" "lambda_slash" {
   }
 }
 
+#
+# slash
+#
 module "lambda_scheduled_task" {
   source = "./modules/lambda"
 
@@ -173,5 +179,5 @@ module "lambda_scheduled_task" {
   prefix             = local.prefix
   timeout            = 300
   sqs                = true
-  sqs_source_arns    = [module.lambda_scheduler.fn_arn]
+  sqs_source_arns    = [module.lambda_scheduler.fn_arn, module.lambda_slash.fn_arn, module.lambda_slash.fn_role_arn]
 }
