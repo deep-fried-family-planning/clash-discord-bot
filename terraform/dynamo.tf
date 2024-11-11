@@ -77,3 +77,23 @@ resource "aws_dynamodb_resource_policy" "operations" {
   resource_arn = aws_dynamodb_table.operations.arn
   policy       = data.aws_iam_policy_document.operations.json
 }
+
+
+
+
+# ==
+# Table - Server deprecated
+# ==
+resource "aws_dynamodb_table" "server" {
+  name = "${local.prefix}-server"
+
+  read_capacity  = 1
+  write_capacity = 1
+
+  hash_key = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}

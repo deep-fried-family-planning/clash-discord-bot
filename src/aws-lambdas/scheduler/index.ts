@@ -9,13 +9,13 @@ import {PlayerCache, PlayerCacheLive} from '#src/internals/layers/player-cache.t
 import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
-import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {DefaultSQSServiceLayer} from '@effect-aws/client-sqs';
+import {SQSService} from '@effect-aws/client-sqs';
 import {eachClan} from '#src/aws-lambdas/scheduler/checks/clan-war.ts';
-import {DefaultSchedulerServiceLayer} from '@effect-aws/client-scheduler';
+import {SchedulerService} from '@effect-aws/client-scheduler';
 
 // todo this lambda is annoying asl, fullstack test
 const h = () => E.gen(function* () {
@@ -59,9 +59,9 @@ const LambdaLive = pipe(
     L.provideMerge(ServerCacheLive),
     L.provideMerge(PlayerCacheLive),
     L.provideMerge(ClashPerkServiceLive),
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
-    L.provideMerge(DefaultSQSServiceLayer),
-    L.provideMerge(DefaultSchedulerServiceLayer),
+    L.provideMerge(DynamoDBDocumentService.defaultLayer),
+    L.provideMerge(SQSService.defaultLayer),
+    L.provideMerge(SchedulerService.defaultLayer),
     L.provideMerge(DiscordRESTLive),
     L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

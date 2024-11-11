@@ -33,4 +33,12 @@ provider "aws" {
 
 locals {
   prefix = "${local.env}-${local.org}-${local.service_name}"
+
+  lambda_env = {
+    LAMBDA_ENV     = local.env
+    LAMBDA_PREFIX  = local.prefix
+    DDB_OPERATIONS = aws_dynamodb_table.operations.name
+
+    DDB_SERVER = aws_dynamodb_table.server.name
+  }
 }
