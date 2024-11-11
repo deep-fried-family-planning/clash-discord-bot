@@ -33,9 +33,27 @@ resource "aws_lambda_invocation" "lambda_app_discord_deploy" {
   input         = jsonencode({})
   triggers = {
     redeployment = jsonencode([
-#       module.lambda_app_discord_deploy.fn_src_hash
+      module.lambda_app_discord_deploy.fn_src_hash
     ])
   }
+}
+
+
+#
+# scheduled_task
+#
+module "lambda_scheduled_task" {
+  source = "./modules/lambda"
+
+  acc_id             = local.account_id
+  custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
+  fn_env             = local.lambda_env
+  fn_name            = "scheduled_task"
+  memory             = 512
+  prefix             = local.prefix
+  timeout            = 300
+  sqs                = true
+  sqs_source_arns    = [module.lambda_scheduler.fn_arn]
 }
 
 
@@ -51,7 +69,7 @@ module "lambda_scheduler" {
   memory             = 512
   timeout            = 120
   fn_env = merge(local.lambda_env, {
-    SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
+#     SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
   })
 }
 
@@ -109,21 +127,4 @@ data "aws_iam_policy_document" "lambda_slash" {
     actions   = ["*"]
     resources = ["*"]
   }
-}
-
-#
-# slash
-#
-module "lambda_scheduled_task" {
-  source = "./modules/lambda"
-
-  acc_id             = local.account_id
-  custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
-  fn_env             = local.lambda_env
-  fn_name            = "scheduled_task"
-  memory             = 512
-  prefix             = local.prefix
-  timeout            = 300
-  sqs                = true
-  sqs_source_arns    = [module.lambda_scheduler.fn_arn]
 }
