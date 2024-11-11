@@ -7,7 +7,6 @@ import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {SQSService} from '@effect-aws/client-sqs';
 import {OPTION_CLAN} from '#src/aws-lambdas/slash/options.ts';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {getDiscordClan} from '#src/database/discord-clan.ts';
 import {getAliasTag} from '#src/aws-lambdas/menu/old/get-alias-tag.ts';
 
@@ -58,7 +57,7 @@ export const smoke = (data: CmdIx, options: CmdOps<typeof SMOKE>) => E.gen(funct
     yield * SQSService.sendMessage({
         QueueUrl   : process.env.SQS_URL_SCHEDULED_TASK,
         MessageBody: JSON.stringify({
-
+            name: 'hello world instant',
         }),
     });
 
@@ -66,7 +65,7 @@ export const smoke = (data: CmdIx, options: CmdOps<typeof SMOKE>) => E.gen(funct
 
     const now = DT.addDuration('1 minutes')(zoned);
 
-    SchedulerService.createSchedule({
+    yield * SchedulerService.createSchedule({
         GroupName            : `s-${clan.pk}-c-${clan.sk}`,
         FlexibleTimeWindow   : {Mode: 'OFF'},
         ActionAfterCompletion: 'DELETE',
@@ -76,7 +75,7 @@ export const smoke = (data: CmdIx, options: CmdOps<typeof SMOKE>) => E.gen(funct
             Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
             RoleArn: process.env.LAMBDA_ROLE_ARN,
             Input  : JSON.stringify({
-                name: 'hello world',
+                name: 'hello world scheduled',
             }),
         },
     });
