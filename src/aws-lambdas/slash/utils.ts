@@ -9,7 +9,7 @@ export const validateServer = (data: CmdIx) => E.gen(function * () {
     }
 
     const server
-        = yield * getDiscordServer({pk: `s-${data.guild_id}`, sk: 'now'})
+        = yield * getDiscordServer({pk: data.guild_id!, sk: 'now'})
             .pipe(replyError('Server is not registered.'));
 
     return [server, data.member] as const;

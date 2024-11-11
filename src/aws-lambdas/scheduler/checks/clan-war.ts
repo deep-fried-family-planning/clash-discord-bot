@@ -1,31 +1,22 @@
 import {type DClan, putDiscordClan} from '#src/database/discord-clan.ts';
 import type {DServer} from '#src/database/discord-server.ts';
-import {CSL, E, pipe} from '#src/internals/re-exports/effect.ts';
+import {CSL, DT, E, pipe} from '#src/internals/re-exports/effect.ts';
 import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import type {ClanWar} from 'clashofclans.js';
-import {EventBridgeService} from '@effect-aws/client-eventbridge';
 import {SchedulerService} from '@effect-aws/client-scheduler';
-import {Console} from 'effect';
-import {SQSService} from '@effect-aws/client-sqs';
+import {DiscordREST} from 'dfx';
+import {ClanCache} from '#src/internals/layers/clan-cache.ts';
+import {scheduleTaskWarBattleThread} from '#src/aws-lambdas/scheduled_task/tasks/war-battle-thread.ts';
+import {scheduleTaskWarCloseThread} from '#src/aws-lambdas/scheduled_task/tasks/war-close-thread.ts';
+import {updateWarCountdown} from '#src/aws-lambdas/scheduler/checks/update-war-countdowns.ts';
 
-// todos
-// 1. check for war prep clan tag change
-// 2. update war countdowns
+export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
+    const discord = yield * DiscordREST;
 
-const clanWar = (server: DServer, clans: DClan[]) => E.gen(function * () {
-    clans.map();
-
-    pipe(
-        clans,
-        mapL((c) => E.gen(function * () {
-
-        })),
-    );
-});
-
-const eachClan = (clan: DClan) => E.gen(function * () {
     const wars = yield * ClashperkService.getWars(clan.sk).pipe(E.catchAll(() => E.succeed([] as ClanWar[])));
+
+    const cname = yield * updateWarCountdown(clan, wars);
 
     const prepWar = wars.find((w) => w.isPreparationDay);
 
@@ -61,21 +52,51 @@ const eachClan = (clan: DClan) => E.gen(function * () {
     // 46 hrs - srsly do ur hits
     // 48 hrs - close battle day thread + results
 
-    yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_SCHEDULED_TASK,
-        MessageBody: JSON.stringify({}),
+    const thread = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
+        name   : `🛠️│${prepWar.clan.name}`,
+        // @ts-expect-error dfx types need to be fixed
+        message: {
+            content: `${prepWar.clan.name} vs. ${prepWar.opponent.name}`,
+        },
+        auto_archive_duration: 1440,
+    }).json;
+
+    const clanCache = yield * yield * ClanCache;
+
+    const updatedClan = yield * putDiscordClan({
+        ...clan,
+        prep_opponent: prepWar.opponent.tag,
+        thread_prep  : thread.id,
     });
 
-    SchedulerService.createSchedule({
-        GroupName            : `s-${clan.pk}-c-${clan.sk}`,
-        FlexibleTimeWindow   : {Mode: 'OFF'},
-        ActionAfterCompletion: 'DELETE',
-        Name                 : undefined,
-        ScheduleExpression   : `at()`,
-        Target               : {
-            Arn    : '',
-            RoleArn: '',
-            Input  : JSON.stringify({}),
-        },
-    });
+    yield * clanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
+
+    yield * E.all([
+        scheduleTaskWarBattleThread(yield * DT.make(prepWar.startTime), {
+            task: 'WarBattleThread',
+            data: {
+                server,
+                clan,
+                clanName: cname,
+                opponent: {
+                    name: prepWar.clan.name,
+                    tag : prepWar.clan.tag,
+                },
+                thread: thread.id,
+            },
+        }),
+        scheduleTaskWarCloseThread(yield * DT.make(prepWar.endTime), {
+            task: 'WarBattleThread',
+            data: {
+                server,
+                clan,
+                clanName: cname,
+                opponent: {
+                    name: prepWar.clan.name,
+                    tag : prepWar.clan.tag,
+                },
+                thread: thread.id,
+            },
+        }),
+    ]);
 });

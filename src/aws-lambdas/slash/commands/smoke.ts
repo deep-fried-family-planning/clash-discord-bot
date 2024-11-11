@@ -30,13 +30,13 @@ export const smoke = (data: CmdIx, options: CmdOps<typeof SMOKE>) => E.gen(funct
 
     const clan = yield * getDiscordClan({pk: data.guild_id!, sk: clanTag});
 
-    const group = yield * SchedulerService.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk}`});
+    const group = yield * SchedulerService.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`}).pipe(E.catchAll(() => E.succeed({Name: undefined})));
 
     yield * CSL.log(group);
 
     if (!group.Name) {
         const newgroup = yield * SchedulerService.createScheduleGroup({
-            Name: `s-${clan.pk}-c-${clan.sk}`,
+            Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`,
         });
         yield * CSL.log(newgroup.ScheduleGroupArn);
     }
@@ -66,11 +66,11 @@ export const smoke = (data: CmdIx, options: CmdOps<typeof SMOKE>) => E.gen(funct
     const now = DT.addDuration('1 minutes')(zoned);
 
     yield * SchedulerService.createSchedule({
-        GroupName            : `s-${clan.pk}-c-${clan.sk}`,
+        GroupName            : `s-${clan.pk}-c-${clan.sk.replace('#', '')}`,
         FlexibleTimeWindow   : {Mode: 'OFF'},
         ActionAfterCompletion: 'DELETE',
-        Name                 : undefined,
-        ScheduleExpression   : `at(${DT.formatIso(now)})`,
+        Name                 : Date.now().toString(),
+        ScheduleExpression   : `at(${DT.formatIso(now).replace(/\..+Z/, '')})`,
         Target               : {
             Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
             RoleArn: process.env.LAMBDA_ROLE_ARN,

@@ -84,7 +84,7 @@ resource "aws_lambda_invocation" "lambda_app_discord_deploy" {
   input         = jsonencode({})
   triggers = {
     redeployment = jsonencode([
-      module.lambda_app_discord_deploy.fn_src_hash
+#       module.lambda_app_discord_deploy.fn_src_hash
     ])
   }
 }

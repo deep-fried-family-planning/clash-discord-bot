@@ -42,6 +42,7 @@ export const putDiscordClan = (record: DClan) => pipe(
         }),
         E.tap(Console.log('[PUT DDB]: clan encoded', encoded)),
     )),
+    E.as(record),
 );
 
 export const getDiscordClan = (key: CompKey<DClan>) => pipe(
