@@ -1,8 +1,7 @@
 import {type DClan, putDiscordClan} from '#src/database/discord-clan.ts';
 import type {DServer} from '#src/database/discord-server.ts';
-import {CSL, DT, E, pipe} from '#src/internals/re-exports/effect.ts';
+import {CSL, DT, E} from '#src/internals/re-exports/effect.ts';
 import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
-import {mapL} from '#src/pure/pure-list.ts';
 import type {ClanWar} from 'clashofclans.js';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';

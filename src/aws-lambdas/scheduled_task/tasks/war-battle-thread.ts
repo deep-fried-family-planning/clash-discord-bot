@@ -30,7 +30,7 @@ export const scheduleTaskWarBattleThread = (time: DT.Utc, event: TWarBattleThrea
         GroupName            : `s-${event.data.clan.pk}-c-${event.data.clan.sk.replace('#', '')}`,
         FlexibleTimeWindow   : {Mode: 'OFF'},
         ActionAfterCompletion: 'DELETE',
-        Name                 : Date.now().toString(),
+        Name                 : `${encoded.task}-${encoded.data.opponent.tag.replace('#', '')}`,
         ScheduleExpression   : `at(${DT.formatIso(time).replace(/\..+Z/, '')})`,
         Target               : {
             Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
