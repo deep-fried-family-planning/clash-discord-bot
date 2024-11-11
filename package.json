@@ -39,7 +39,7 @@
     "@discordjs/rest": "2.4.0",
     "@effect-aws/client-dynamodb": "1.4.1",
     "@effect-aws/client-eventbridge": "1.5.1",
-    "@effect-aws/client-lambda": "1.5.1",
+    "@effect-aws/client-lambda": "1.6.0",
     "@effect-aws/client-scheduler": "1.0.2",
     "@effect-aws/client-sqs": "1.5.1",
     "@effect-aws/client-ssm": "1.1.1",
