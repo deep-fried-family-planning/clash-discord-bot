@@ -86,8 +86,8 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
         yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
         yield * putDiscordPlayer({
             ...player,
-            pk          : `u-${user.user.id}`,
-            gsi_user_id : `u-${user.user.id}`,
+            pk          : user.user.id,
+            gsi_user_id : user.user.id,
             updated     : new Date(Date.now()),
             verification: 1,
         });
@@ -129,8 +129,8 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
     yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
     yield * putDiscordPlayer({
         ...player,
-        pk          : `u-${user.user.id}`,
-        gsi_user_id : `u-${user.user.id}`,
+        pk          : user.user.id,
+        gsi_user_id : user.user.id,
         updated     : new Date(Date.now()),
         verification: 2,
     });
@@ -140,14 +140,14 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
 
 const makeDiscordPlayer
     = (userId: string, playerTag: string, verification: DPlayer['verification'], accountType?: string) => ({
-        pk            : `u-${userId}`,
-        sk            : `p-${playerTag}`,
+        pk            : userId,
+        sk            : playerTag,
         type          : 'DiscordPlayer',
         version       : '1.0.0',
         created       : new Date(Date.now()),
         updated       : new Date(Date.now()),
-        gsi_user_id   : `u-${userId}`,
-        gsi_player_tag: `p-${playerTag}`,
+        gsi_user_id   : userId,
+        gsi_player_tag: playerTag,
         verification  : verification,
         account_type  : accountType ?? 'main',
     } as const);

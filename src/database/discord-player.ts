@@ -47,11 +47,14 @@ export const putDiscordPlayer = (record: DPlayer) => pipe(
 );
 
 export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    UserIdEncode(key.pk),
-    E.andThen(PlayerTagEncode(key.sk)),
-    E.andThen(DynamoDBDocumentService.get({
-        TableName     : process.env.DDB_OPERATIONS,
-        Key           : key,
+    [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
+    E.all,
+    E.flatMap(([pk, sk]) => DynamoDBDocumentService.get({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : {
+            pk,
+            sk,
+        },
         ConsistentRead: true,
     })),
     E.flatMap(({Item}) => pipe(
@@ -68,12 +71,12 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
 
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
     PlayerTagEncode(key.sk),
-    E.andThen(DynamoDBDocumentService.query({
+    E.flatMap((sk) => DynamoDBDocumentService.query({
         TableName                : process.env.DDB_OPERATIONS,
         IndexName                : 'GSI_ALL_PLAYERS',
         KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
         ExpressionAttributeValues: {
-            ':gsi_player_tag': key.sk,
+            ':gsi_player_tag': sk,
         },
     })),
     E.flatMap(({Items}) => pipe(
@@ -106,10 +109,13 @@ export const scanDiscordPlayers = () => pipe(
 );
 
 export const deleteDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    UserIdEncode(key.pk),
-    E.andThen(PlayerTagEncode(key.sk)),
-    E.andThen(DynamoDBDocumentService.delete({
+    [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
+    E.all,
+    E.flatMap(([pk, sk]) => DynamoDBDocumentService.delete({
         TableName: process.env.DDB_OPERATIONS,
-        Key      : key,
+        Key      : {
+            pk,
+            sk,
+        },
     })),
 );

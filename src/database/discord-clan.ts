@@ -42,14 +42,18 @@ export const putDiscordClan = (record: DClan) => pipe(
         }),
         E.tap(Console.log('[PUT DDB]: clan encoded', encoded)),
     )),
+    E.as(record),
 );
 
 export const getDiscordClan = (key: CompKey<DClan>) => pipe(
-    ServerIdEncode(key.pk),
-    E.andThen(ClanTagEncode(key.sk)),
-    E.andThen(DynamoDBDocumentService.get({
-        TableName     : process.env.DDB_OPERATIONS,
-        Key           : key,
+    [ServerIdEncode(key.pk), ClanTagEncode(key.sk)],
+    E.all,
+    E.flatMap(([pk, sk]) => DynamoDBDocumentService.get({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : {
+            pk,
+            sk,
+        },
         ConsistentRead: true,
     })),
     E.flatMap(({Item}) => pipe(

@@ -23,10 +23,10 @@ provider "aws" {
   }
   default_tags {
     tags = {
-      org   = local.org
-      env   = local.env
-      comp  = local.service_name
-      git   = local.git
+      org  = local.org
+      env  = local.env
+      comp = local.service_name
+      git  = local.git
     }
   }
 }

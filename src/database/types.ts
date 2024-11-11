@@ -23,4 +23,7 @@ export type Codec<M extends Model, C extends readonly Store[]> = {
 
 export type HashKey<T extends {pk: unknown}> = Pick<T, 'pk'>;
 
-export type CompKey<T extends {pk: unknown; sk: unknown}> = Pick<T, 'pk' | 'sk'>;
+export type CompKey<T extends {pk: unknown; sk: unknown}> = Pick<T, 'pk' | 'sk'> & {
+    pk: string;
+    sk: string;
+};

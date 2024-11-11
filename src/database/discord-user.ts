@@ -1,16 +1,15 @@
-import {Console, Schema as S} from 'effect';
 import {NowId, UserId, UserIdEncode} from '#src/database/common.ts';
 import type {CompKey} from '#src/database/types.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import {E, pipe} from '#src/internals/re-exports/effect.ts';
+import {CSL, E, pipe, S} from '#src/internals/re-exports/effect.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
 
 export type DUser = S.Schema.Type<typeof DiscordUser>;
 
 export const DiscordUser = S.Struct({
-    type   : S.Literal('DiscordUser'),
     pk     : UserId,
     sk     : NowId,
+    type   : S.Literal('DiscordUser'),
     version: S.Literal('1.0.0'),
     created: S.Date,
     updated: S.Date,
@@ -32,16 +31,16 @@ export const putDiscordUser = (record: DUser) => pipe(
             TableName: process.env.DDB_OPERATIONS,
             Item     : encoded,
         }),
-        E.tap(Console.log('[PUT DDB]: player encoded', encoded)),
+        E.tap(CSL.log('[PUT DDB]: player encoded', encoded)),
     )),
 );
 
 export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
     UserIdEncode(key.pk),
-    E.andThen(DynamoDBDocumentService.get({
+    E.flatMap((pk) => DynamoDBDocumentService.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
-            pk: key.pk,
+            pk: pk,
             sk: 'now',
         },
     })),
@@ -52,7 +51,7 @@ export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
         }),
         E.flatMap((decoded) => pipe(
             E.succeed(decoded),
-            E.tap(Console.log('[GET DDB]: player decoded', decoded)),
+            E.tap(CSL.log('[GET DDB]: player decoded', decoded)),
         )),
     )),
 );
