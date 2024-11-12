@@ -4,7 +4,7 @@ import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
-import {slash} from '#src/aws-lambdas/slash/slash.ts';
+import {slash} from '#src/aws-lambdas/discord_slash/slash.ts';
 import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
 import {ClashkingServiceLive} from '#src/internals/layers/clashking-service.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';

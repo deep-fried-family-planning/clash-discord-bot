@@ -1,12 +1,12 @@
 import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {E, pipe, S} from '#src/internals/re-exports/effect.ts';
-import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
-import {OPTION_TZ} from '#src/aws-lambdas/slash/options.ts';
+import {OPTION_TZ} from '#src/aws-lambdas/discord_slash/options.ts';
 import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
 import {SlashError, SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
+import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {omit} from 'effect/Struct';
 
 export const USER

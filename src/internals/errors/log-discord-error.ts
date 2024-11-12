@@ -6,7 +6,7 @@ import {dLinesS} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {CMP} from '#src/aws-lambdas/discord_menu/old/re-exports.ts';
 import {LBUTTON_SUPPORT_SERVER} from '#src/aws-lambdas/discord_menu/old/lbutton-support-server.ts';
-import {buildCloudWatchLink} from '#src/aws-lambdas/slash/utils.ts';
+import {buildCloudWatchLink} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {DiscordREST} from 'dfx';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

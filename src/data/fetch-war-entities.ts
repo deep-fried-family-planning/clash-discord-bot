@@ -1,7 +1,7 @@
 import {concatL, filterL, flattenL, mapL} from '#src/pure/pure-list.ts';
 import type {Clan, ClanWar} from 'clashofclans.js';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
-import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
+import type {SharedOptions} from '#src/aws-lambdas/discord_slash/types.ts';
 import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import type {EAR} from '#src/internals/types.ts';
 

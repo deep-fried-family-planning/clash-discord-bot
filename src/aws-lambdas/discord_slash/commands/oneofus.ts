@@ -6,11 +6,11 @@ import {
     queryDiscordPlayer,
 } from '#src/database/discord-player.ts';
 import type {DPlayer} from '#src/database/discord-player.ts';
-import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
+import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 
 export const ONE_OF_US
     = {

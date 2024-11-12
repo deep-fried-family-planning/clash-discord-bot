@@ -1,4 +1,37 @@
 #
+# discord_slash
+#
+module "discord_slash" {
+  source             = "./modules/lambda"
+  acc_id             = local.account_id
+  prefix             = local.prefix
+  fn_name            = "discord_slash"
+  custom_policy_json = data.aws_iam_policy_document.lambda_slash.json
+  memory             = 1024
+  timeout            = 300
+  fn_env             = merge(local.lambda_env, {})
+  sqs                = true
+  sqs_source_arns    = [module.lambda_api_discord.fn_arn]
+}
+
+data "aws_iam_policy_document" "lambda_slash" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["*"]
+    resources = ["*"]
+  }
+}
+
+
+#
 # scheduled_task
 #
 module "lambda_scheduled_task" {
@@ -28,7 +61,7 @@ module "lambda_scheduler" {
   memory             = 512
   timeout            = 120
   fn_env = merge(local.lambda_env, {
-#     SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
+    SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
   })
 }
 
@@ -48,39 +81,6 @@ data "aws_iam_policy_document" "lambda_scheduler" {
     resources = ["arn:aws:logs:*:*:*"]
   }
   // todo IAM security
-  statement {
-    effect    = "Allow"
-    actions   = ["*"]
-    resources = ["*"]
-  }
-}
-
-
-#
-# slash
-#
-module "lambda_slash" {
-  source             = "./modules/lambda"
-  acc_id             = local.account_id
-  prefix             = local.prefix
-  fn_name            = "slash"
-  custom_policy_json = data.aws_iam_policy_document.lambda_slash.json
-  memory             = 1024
-  timeout            = 300
-  fn_env             = merge(local.lambda_env, {})
-  sqs                = true
-  sqs_source_arns    = [module.lambda_slash.fn_arn]
-}
-
-data "aws_iam_policy_document" "lambda_slash" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
   statement {
     effect    = "Allow"
     actions   = ["*"]

@@ -2,8 +2,8 @@ import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
 import {afterAll, beforeAll, describe, vi} from 'vitest';
 import {E} from '#src/internals/re-exports/effect.ts';
-import {oneofus} from '#src/aws-lambdas/slash/commands/oneofus.ts';
-import {LambdaLayer} from '#src/aws-lambdas/slash';
+import {oneofus} from '#src/aws-lambdas/discord_slash/commands/oneofus.ts';
+import {LambdaLayer} from 'src/aws-lambdas/discord_slash';
 import {Client} from 'clashofclans.js';
 import {DiscordServer, DiscordServerEncode} from '#src/database/discord-server.ts';
 

@@ -6,9 +6,9 @@ import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {dCodes, dLines} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
-import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
-import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
+import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 
 export const TIME
     = {

@@ -4,12 +4,12 @@ import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
 import {dTable} from '#src/aws-lambdas/discord_menu/old/message-table.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {getAliasTag} from '#src/aws-lambdas/discord_menu/old/get-alias-tag.ts';
 import {buildGraphModel} from '#src/data/build-graph-model.ts';
 import {descriptiveHitRates} from '#src/data/model-descriptive/descriptive-hit-rates.ts';
-import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/aws-lambdas/slash/options.ts';
+import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/aws-lambdas/discord_slash/options.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_MIRRORS = {

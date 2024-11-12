@@ -6,14 +6,14 @@ import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {toEntries} from 'effect/Record';
 import {mapL} from '#src/pure/pure-list.ts';
 import {dTable} from '#src/aws-lambdas/discord_menu/old/message-table.ts';
-import {messageEmbedScout} from '#src/aws-lambdas/slash/messages/message-embed-scout.ts';
-import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
+import {messageEmbedScout} from '#src/aws-lambdas/discord_slash/messages/message-embed-scout.ts';
+import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {ApplicationCommandType} from '@discordjs/core/http-only';
 import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {getAliasTag} from '#src/aws-lambdas/discord_menu/old/get-alias-tag.ts';
-import {validateServer} from '#src/aws-lambdas/slash/utils.ts';
+import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/aws-lambdas/slash/options.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/aws-lambdas/discord_slash/options.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_SCOUT
