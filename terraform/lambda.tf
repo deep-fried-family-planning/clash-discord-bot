@@ -45,7 +45,10 @@ module "lambda_scheduled_task" {
   prefix             = local.prefix
   timeout            = 300
   sqs                = true
-  sqs_source_arns    = [module.lambda_scheduler.fn_arn]
+  sqs_source_arns    = [
+    module.lambda_scheduler.fn_arn,
+    module.lambda_scheduler.fn_role_arn
+  ]
 }
 
 
@@ -62,6 +65,7 @@ module "lambda_scheduler" {
   timeout            = 120
   fn_env = merge(local.lambda_env, {
     SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
+    SQS_ARN_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_arn
   })
 }
 

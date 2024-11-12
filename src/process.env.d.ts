@@ -10,7 +10,6 @@ declare namespace NodeJS {
         SQS_SLASH             : string;
         SQS_URL_SCHEDULED_TASK: string;
         SQS_ARN_SCHEDULED_TASK: string;
-        DDB_SERVER            : string;
 
         AWS_LAMBDA_FUNCTION_NAME  : string;
         AWS_REGION                : string;

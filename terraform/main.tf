@@ -38,7 +38,5 @@ locals {
     LAMBDA_ENV     = local.env
     LAMBDA_PREFIX  = local.prefix
     DDB_OPERATIONS = aws_dynamodb_table.operations.name
-
-    DDB_SERVER = aws_dynamodb_table.server.name
   }
 }
