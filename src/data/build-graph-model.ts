@@ -8,7 +8,7 @@ import type {ClanWarMember} from 'clashofclans.js';
 import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
-import type {SharedOptions} from '#src/aws-lambdas/slash/types.ts';
+import type {SharedOptions} from '#src/aws-lambdas/discord_slash/types.ts';
 import {ClashkingService} from '#src/internals/layers/clashking-service.ts';
 import {DeepFryerUnknownError} from '#src/internals/errors/clash-error.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';

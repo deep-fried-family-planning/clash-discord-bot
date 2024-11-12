@@ -6,7 +6,7 @@ import type {SQSEvent} from 'aws-lambda';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {DefaultDynamoDBDocumentServiceLayer} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 import {mapL} from '#src/pure/pure-list.ts';
 import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/aws-lambdas/scheduled_task/tasks/war-battle-thread.ts';
@@ -44,7 +44,7 @@ const h = (event: SQSEvent) => pipe(
 
 const LambdaLive = pipe(
     DiscordRESTMemoryLive,
-    L.provideMerge(DefaultDynamoDBDocumentServiceLayer),
+    L.provideMerge(DynamoDBDocumentService.defaultLayer),
     L.provideMerge(ClashPerkServiceLive),
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

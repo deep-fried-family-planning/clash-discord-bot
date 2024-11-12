@@ -2,11 +2,11 @@ import {CFG, E, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/internals/constants/secrets.ts';
 import {Console} from 'effect';
 import {COLOR, nColor} from '#src/internals/constants/colors.ts';
-import {dLinesS} from '#src/aws-lambdas/menu/old/markdown.ts';
+import {dLinesS} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
 import {mapL} from '#src/pure/pure-list.ts';
-import {CMP} from '#src/aws-lambdas/menu/old/re-exports.ts';
-import {LBUTTON_SUPPORT_SERVER} from '#src/aws-lambdas/menu/old/lbutton-support-server.ts';
-import {buildCloudWatchLink} from '#src/aws-lambdas/slash/utils.ts';
+import {CMP} from '#src/aws-lambdas/discord_menu/old/re-exports.ts';
+import {LBUTTON_SUPPORT_SERVER} from '#src/aws-lambdas/discord_menu/old/lbutton-support-server.ts';
+import {buildCloudWatchLink} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {DiscordREST} from 'dfx';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

@@ -27,7 +27,7 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         return;
     }
 
-    const group = yield * SchedulerService.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk}`});
+    const group = yield * SchedulerService.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk}`}).pipe(E.catchAll(() => E.succeed({Name: undefined})));
 
     yield * CSL.log(group);
 

@@ -3,7 +3,7 @@ import type {
     APIMessageComponentButtonInteraction, APIBaseInteraction, APIMessageComponentInteraction,
     APIStringSelectComponent, APIMessageStringSelectInteractionData,
 } from '@discordjs/core/http-only';
-import type {ITR} from '#src/aws-lambdas/menu/old/re-exports.ts';
+import type {ITR} from '#src/aws-lambdas/discord_menu/old/re-exports.ts';
 
 export type DLinkButton = APIButtonComponentWithURL;
 

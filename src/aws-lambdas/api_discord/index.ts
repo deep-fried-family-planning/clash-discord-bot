@@ -4,12 +4,12 @@ import {unauthorized} from '@hapi/boom';
 import {InteractionResponseType, verifyKey} from 'discord-interactions';
 import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import type {APIInteraction} from '@discordjs/core/http-only';
-import {ITR} from '#src/aws-lambdas/menu/old/re-exports.ts';
+import {ITR} from '#src/aws-lambdas/discord_menu/old/re-exports.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
-import {DefaultSQSServiceLayer, SQSService} from '@effect-aws/client-sqs';
+import {SQSService} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import {NodeHttpClient} from '@effect/platform-node';
@@ -122,7 +122,7 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
 const LambdaLive = pipe(
     DiscordRESTMemoryLive,
-    L.provideMerge(DefaultSQSServiceLayer),
+    L.provideMerge(SQSService.defaultLayer),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
     L.provide(NodeHttpClient.layer),
     L.provide(L.setConfigProvider(fromParameterStore())),
