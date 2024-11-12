@@ -1,4 +1,4 @@
-import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {
     deleteDiscordPlayer,

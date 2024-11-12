@@ -1,8 +1,8 @@
-import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordClan} from '#src/database/discord-clan.ts';
-import {getAliasTag} from '#src/aws-lambdas/menu/old/get-alias-tag.ts';
+import {getAliasTag} from '#src/aws-lambdas/discord_menu/old/get-alias-tag.ts';
 import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';

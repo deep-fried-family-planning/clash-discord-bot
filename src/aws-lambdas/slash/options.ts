@@ -1,5 +1,5 @@
 import {CMDOPT} from '#src/internals/re-exports/discordjs.ts';
-import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';
 import {reduceL} from '#src/pure/pure-list.ts';

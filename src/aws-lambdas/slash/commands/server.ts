@@ -1,5 +1,5 @@
 import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/core/http-only';
-import type {CommandSpec, Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
 import {putDiscordServer} from '#src/database/discord-server.ts';

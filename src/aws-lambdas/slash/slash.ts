@@ -1,6 +1,6 @@
 import {time, TIME} from '#src/aws-lambdas/slash/commands/time.ts';
 import {Cfg, E, pipe} from '#src/internals/re-exports/effect.ts';
-import type {Interaction} from '#src/aws-lambdas/menu/old/types.ts';
+import type {Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {DiscordREST} from 'dfx';
 import type {SQSEvent} from 'aws-lambda';
 import {REDACTED_DISCORD_APP_ID} from '#src/internals/constants/secrets.ts';

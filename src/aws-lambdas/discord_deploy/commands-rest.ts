@@ -1,4 +1,4 @@
-import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {mapL, sortL} from '#src/pure/pure-list.ts';
 import {toValuesKV} from '#src/pure/pure-kv.ts';
 import {OrdB, fromCompare} from '#src/pure/pure.ts';

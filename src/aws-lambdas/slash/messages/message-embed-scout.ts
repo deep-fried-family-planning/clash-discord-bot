@@ -8,8 +8,8 @@ import {
     nIdex,
     nNatr,
     nPrct,
-} from '#src/aws-lambdas/menu/old/markdown.ts';
-import {dTable} from '#src/aws-lambdas/menu/old/message-table.ts';
+} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
+import {dTable} from '#src/aws-lambdas/discord_menu/old/message-table.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import type {describeScout} from '#src/data/model-descriptive/describe-scout.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';

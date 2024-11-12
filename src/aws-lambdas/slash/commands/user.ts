@@ -1,4 +1,4 @@
-import type {CommandSpec} from '#src/aws-lambdas/menu/old/types.ts';
+import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {E, pipe, S} from '#src/internals/re-exports/effect.ts';
 import type {CmdOps} from '#src/aws-lambdas/slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
