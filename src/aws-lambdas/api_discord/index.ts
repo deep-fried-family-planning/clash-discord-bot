@@ -61,7 +61,7 @@ const modal = (body: DIngress) => E.gen(function * () {
 
 const component = (body: DIngress) => E.gen(function * () {
     yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_APP_DISCORD,
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
         MessageBody: JSON.stringify(body),
     });
 
