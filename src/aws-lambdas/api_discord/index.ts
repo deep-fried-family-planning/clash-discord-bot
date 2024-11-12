@@ -26,7 +26,7 @@ const ping = (body: DIngress) => E.succeed(respond({
 
 const slashCmd = (body: DIngress) => E.gen(function * () {
     yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_SLASH,
+        QueueUrl   : process.env.SQS_URL_DISCORD_SLASH,
         MessageBody: JSON.stringify(body),
     });
 

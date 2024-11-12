@@ -10,7 +10,7 @@ module "lambda_api_discord" {
     memory             = 128
     timeout            = 300
     fn_env = merge(local.lambda_env, {
-        SQS_SLASH = module.discord_slash.fn_sqs_url
+        SQS_DISCORD_SLASH = module.discord_slash.fn_sqs_url
     })
 }
 
