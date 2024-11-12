@@ -5,7 +5,7 @@ import {E} from '#src/internals/re-exports/effect.ts';
 import {oneofus} from '#src/aws-lambdas/discord_slash/commands/oneofus.ts';
 import {LambdaLayer} from 'src/aws-lambdas/discord_slash';
 import {Client} from 'clashofclans.js';
-import {DiscordServer, DiscordServerEncode} from '#src/database/discord-server.ts';
+import {DiscordServer, DiscordServerEncode} from '#src/dynamo/discord-server.ts';
 
 const base = new DynamoDB({region: 'us-east-1'});
 const dynamoDB = DynamoDBDocument.from(base);

@@ -7,7 +7,7 @@ import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {SQSService} from '@effect-aws/client-sqs';
 import {OPTION_CLAN} from '#src/aws-lambdas/discord_slash/options.ts';
-import {getDiscordClan} from '#src/database/discord-clan.ts';
+import {getDiscordClan} from '#src/dynamo/discord-clan.ts';
 import {getAliasTag} from '#src/aws-lambdas/discord_menu/old/get-alias-tag.ts';
 import {Discord, UI} from 'dfx';
 

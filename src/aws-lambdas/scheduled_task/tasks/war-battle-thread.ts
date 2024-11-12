@@ -1,9 +1,9 @@
 import {DT, E, pipe, S} from '#src/internals/re-exports/effect.ts';
-import {DiscordClan} from '#src/database/discord-clan.ts';
-import {DiscordServer} from '#src/database/discord-server.ts';
+import {DiscordClan} from '#src/dynamo/discord-clan.ts';
+import {DiscordServer} from '#src/dynamo/discord-server.ts';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
-import {ThreadId} from '#src/database/common.ts';
+import {ThreadId} from '#src/dynamo/common.ts';
 
 export type TWarBattleThread = S.Schema.Type<typeof TaskWarBattleThread>;
 

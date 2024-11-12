@@ -16,7 +16,7 @@ import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_LINKS = {
     type       : ApplicationCommandType.ChatInput,
-    name       : 'war-links',
+    name       : 'wa-links',
     description: 'get player profile links to rapidly scout enemy war camps',
     options    : {
         ...OPTION_CLAN,

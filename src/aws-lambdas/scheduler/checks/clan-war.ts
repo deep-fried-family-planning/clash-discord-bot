@@ -1,7 +1,7 @@
-import {type DClan, putDiscordClan} from '#src/database/discord-clan.ts';
-import type {DServer} from '#src/database/discord-server.ts';
+import {type DClan, putDiscordClan} from '#src/dynamo/discord-clan.ts';
+import type {DServer} from '#src/dynamo/discord-server.ts';
 import {CSL, DT, E} from '#src/internals/re-exports/effect.ts';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 import type {ClanWar} from 'clashofclans.js';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
@@ -13,7 +13,7 @@ import {updateWarCountdown} from '#src/aws-lambdas/scheduler/checks/update-war-c
 export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
     const discord = yield * DiscordREST;
 
-    const wars = yield * ClashperkService.getWars(clan.sk).pipe(E.catchAll(() => E.succeed([] as ClanWar[])));
+    const wars = yield * Clashofclans.getWars(clan.sk).pipe(E.catchAll(() => E.succeed([] as ClanWar[])));
 
     const cname = yield * updateWarCountdown(clan, wars);
 
@@ -60,15 +60,13 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         auto_archive_duration: 1440,
     }).json;
 
-    const clanCache = yield * yield * ClanCache;
-
     const updatedClan = yield * putDiscordClan({
         ...clan,
         prep_opponent: prepWar.opponent.tag,
         thread_prep  : thread.id,
     });
 
-    yield * clanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
+    yield * ClanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
 
     yield * E.all([
         scheduleTaskWarBattleThread(yield * DT.make(prepWar.startTime), {

@@ -1,4 +1,5 @@
 const ENV = process.env.LAMBDA_ENV.toUpperCase();
+const env = process.env.LAMBDA_ENV;
 
 export const REDACTED_DISCORD_BOT_TOKEN = `/DFFP/${ENV}/DISCORD_BOT_TOKEN`;
 export const REDACTED_DISCORD_APP_ID = `/DFFP/${ENV}/DISCORD_APP_ID`;
@@ -10,3 +11,4 @@ export const REDACTED_DISCORD_CLIENT_ID = `/DFFP/${ENV}/DISCORD_CLIENT_ID`;
 export const REDACTED_COC_KEY = `/DFFP/${ENV}/COC_KEY`;
 export const REDACTED_COC_USER = `/DFFP/${ENV}/COC_USER`;
 export const REDACTED_COC_PASSWORD = `/DFFP/${ENV}/COC_PASSWORD`;
+export const REDACTED_DEVIDS = `/dffp/${env}/devids`;

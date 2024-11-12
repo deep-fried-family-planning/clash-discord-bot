@@ -1,10 +1,10 @@
 import {Console} from 'effect';
-import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/database/common.ts';
-import type {CompKey} from '#src/database/types.ts';
+import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/common.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DServer = S.Schema.Type<typeof DiscordServer>;
 
@@ -34,6 +34,8 @@ export const DiscordServer = S.Struct({
     member: S.optional(RoleId),
     guest : S.optional(RoleId),
 });
+
+S.pick();
 
 export const DiscordServerEquivalence = S.equivalence(DiscordServer);
 export const DiscordServerEncode = S.encodeUnknown(DiscordServer);

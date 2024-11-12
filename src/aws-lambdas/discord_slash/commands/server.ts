@@ -2,8 +2,9 @@ import {ApplicationCommandOptionType, ApplicationCommandType} from '@discordjs/c
 import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
-import {putDiscordServer} from '#src/database/discord-server.ts';
+import {putDiscordServer} from '#src/dynamo/discord-server.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/discord_slash/options.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 
 export const SERVER
     = {
@@ -47,6 +48,9 @@ export const server = (data: Interaction, options: CmdOps<typeof SERVER>) => E.g
     });
 
     return {
-        embeds: [{description: 'ya did the thing'}],
+        embeds: [{
+            color      : nColor(COLOR.SUCCESS),
+            description: 'server linked',
+        }],
     };
 });

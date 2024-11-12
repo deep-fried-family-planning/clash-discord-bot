@@ -1,13 +1,14 @@
 import type {CommandSpec, Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {E} from '#src/internals/re-exports/effect.ts';
-import {putDiscordClan} from '#src/database/discord-clan.ts';
+import {putDiscordClan} from '#src/dynamo/discord-clan.ts';
 import {getAliasTag} from '#src/aws-lambdas/discord_menu/old/get-alias-tag.ts';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {replyError, SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {OPTION_CLAN} from '#src/aws-lambdas/discord_slash/options.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 
 export const CLAN_FAM
     = {
@@ -21,6 +22,12 @@ export const CLAN_FAM
                 name       : 'countdown',
                 description: 'oomgaboomga',
                 required   : true,
+            },
+            alias: {
+                type       : CMDOPT.Channel,
+                name       : 'countdown',
+                description: 'oomgaboomga',
+                required   : false,
             },
         },
     } as const satisfies CommandSpec;
@@ -44,10 +51,9 @@ export const clanfam = (data: Interaction, options: CmdOps<typeof CLAN_FAM>) => 
         return yield * new SlashUserError({issue: 'admin role required'});
     }
 
-    const clash = yield * ClashperkService;
     const clanTag = getAliasTag(options.clan);
     const clan
-        = yield * clash.getClan(clanTag)
+        = yield * Clashofclans.getClan(clanTag)
             .pipe(replyError('Provided clan tag does not exist.'));
 
     yield * putDiscordClan({
@@ -67,6 +73,9 @@ export const clanfam = (data: Interaction, options: CmdOps<typeof CLAN_FAM>) => 
     });
 
     return {
-        embeds: [{description: 'ya did the thing'}],
+        embeds: [{
+            color      : nColor(COLOR.SUCCESS),
+            description: `server ${data.guild_id} added ${clan.name} (${clan.tag})`,
+        }],
     };
 });

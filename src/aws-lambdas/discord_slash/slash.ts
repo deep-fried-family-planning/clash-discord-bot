@@ -1,7 +1,6 @@
 import {time, TIME} from '#src/aws-lambdas/discord_slash/commands/time.ts';
-import {Cfg, E, pipe} from '#src/internals/re-exports/effect.ts';
+import {Cfg, CSL, E, pipe} from '#src/internals/re-exports/effect.ts';
 import type {Interaction} from '#src/aws-lambdas/discord_menu/old/types.ts';
-import {DiscordREST} from 'dfx';
 import type {SQSEvent} from 'aws-lambda';
 import {REDACTED_DISCORD_APP_ID} from '#src/internals/constants/secrets.ts';
 import {Cause, Redacted} from 'effect';
@@ -17,6 +16,7 @@ import {WA_MIRRORS, waMirrors} from '#src/aws-lambdas/discord_slash/commands/wa-
 import {nameOptions} from '#src/aws-lambdas/discord_slash/options.ts';
 import {SMOKE, smoke} from '#src/aws-lambdas/discord_slash/commands/smoke.ts';
 import type {EditWebhookMessageParams} from 'dfx/types';
+import {DiscordApi} from '#src/internals/layer-api/discord-api.ts';
 
 const dAppId = Cfg.redacted(REDACTED_DISCORD_APP_ID).pipe(E.map(Redacted.value));
 
@@ -43,18 +43,20 @@ export const slash = (event: SQSEvent) => pipe(
 );
 
 const each = (interaction: Interaction) => E.gen(function * () {
+    yield * CSL.debug('SlashInput', interaction);
+    // @ts-expect-error temp need to see these
+    yield * CSL.debug('SlashOptions', interaction.data.options);
+
     const root = interaction.data.name as keyof typeof lookup;
 
     const message = yield * lookup[root](interaction, nameOptions(interaction));
 
-    const discord = yield * DiscordREST;
-    yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, message);
+    yield * DiscordApi.editOriginalInteractionResponse(yield * dAppId, interaction.token, message);
 }).pipe(
     E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
         const userMessage = yield * logDiscordError([e]);
 
-        const discord = yield * DiscordREST;
-        yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, {
+        yield * DiscordApi.editOriginalInteractionResponse(yield * dAppId, interaction.token, {
             ...userMessage,
             embeds: [{
                 ...userMessage.embeds[0],
@@ -65,8 +67,7 @@ const each = (interaction: Interaction) => E.gen(function * () {
     E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
         const userMessage = yield * logDiscordError([e]);
 
-        const discord = yield * DiscordREST;
-        yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, {
+        yield * DiscordApi.editOriginalInteractionResponse(yield * dAppId, interaction.token, {
             ...userMessage,
             embeds: [{
                 ...userMessage.embeds[0],
@@ -80,7 +81,6 @@ const each = (interaction: Interaction) => E.gen(function * () {
 
         const userMessage = yield * logDiscordError(e);
 
-        const discord = yield * DiscordREST;
-        yield * discord.editOriginalInteractionResponse(yield * dAppId, interaction.token, userMessage);
+        yield * DiscordApi.editOriginalInteractionResponse(yield * dAppId, interaction.token, userMessage);
     })),
 );

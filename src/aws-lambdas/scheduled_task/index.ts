@@ -1,4 +1,4 @@
-import {CFG, E, L, Logger, pipe} from '#src/internals/re-exports/effect';
+import {CFG, CSL, E, L, Logger, pipe} from '#src/internals/re-exports/effect';
 import {makeLambda} from '@effect-aws/lambda';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
@@ -11,7 +11,7 @@ import {Cause} from 'effect';
 import {mapL} from '#src/pure/pure-list.ts';
 import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/aws-lambdas/scheduled_task/tasks/war-battle-thread.ts';
 import {taskWarCloseThread, TaskWarCloseThreadDecode} from '#src/aws-lambdas/scheduled_task/tasks/war-close-thread.ts';
-import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 
 const lookup = {
     WarBattleThread: [TaskWarBattleThreadDecode, taskWarBattleThread],
@@ -24,6 +24,8 @@ const h = (event: SQSEvent) => pipe(
         E.gen(function * () {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const json = JSON.parse(r.body);
+
+            yield * CSL.debug('ScheduledTask', json);
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             const [decode, task] = lookup[json.task as keyof typeof lookup];
@@ -45,7 +47,7 @@ const h = (event: SQSEvent) => pipe(
 const LambdaLive = pipe(
     DiscordRESTMemoryLive,
     L.provideMerge(DynamoDBDocumentService.defaultLayer),
-    L.provideMerge(ClashPerkServiceLive),
+    L.provideMerge(Clashofclans.Live),
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
     L.provide(L.setConfigProvider(fromParameterStore())),

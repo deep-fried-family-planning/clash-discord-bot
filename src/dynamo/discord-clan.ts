@@ -1,10 +1,10 @@
 import {Console, Schema as S} from 'effect';
-import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/database/common.ts';
+import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/common.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import type {CompKey} from '#src/database/types.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DClan = S.Schema.Type<typeof DiscordClan>;
 

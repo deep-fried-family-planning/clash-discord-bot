@@ -14,7 +14,7 @@ import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 
 export const WA_MIRRORS = {
     type       : ApplicationCommandType.ChatInput,
-    name       : 'war-opponent',
+    name       : 'wa-opponent',
     description: 'mirror-to-mirror comparison of our clan vs enemy clan with hit/defense rates',
     options    : {
         ...OPTION_CLAN,
