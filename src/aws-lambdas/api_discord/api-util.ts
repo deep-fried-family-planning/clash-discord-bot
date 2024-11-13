@@ -14,7 +14,7 @@ export const tryBody = <T>(body?: string | null): T => {
     }
 };
 
-export const respond = ({status, body}: {status: number; body: object}) => ({
+export const respond = ({status, body}: {status: number; body: object | string}) => ({
     statusCode: status,
     body      : JSON.stringify(body),
 });

@@ -11,9 +11,10 @@ import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {SQSService} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
-import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {DiscordConfig, DiscordRESTMemoryLive, UI} from 'dfx';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
+import {TXTS} from '#src/internals/re-exports/discordjs.ts';
 
 type DIngress = APIInteraction;
 
@@ -47,7 +48,7 @@ const autocomplete = (body: DIngress) => E.succeed(respond({
 
 const modal = (body: DIngress) => E.gen(function * () {
     yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_APP_DISCORD,
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
         MessageBody: JSON.stringify(body),
     });
 
@@ -65,10 +66,53 @@ const component = (body: DIngress) => E.gen(function * () {
         MessageBody: JSON.stringify(body),
     });
 
-    return {
-        statusCode: 202,
-        body      : '',
-    };
+    if ('custom_id' in body.data!) {
+        if (body.data.custom_id.startsWith('Modal')) {
+            return respond({
+                status: 200,
+                body  : {
+                    type: InteractionResponseType.MODAL,
+                    data: {
+                        title     : 'Link Account',
+                        custom_id : `modal-link-account`,
+                        components: UI.singleColumn([
+                            UI.textInput({
+                                style      : TXTS.Short,
+                                custom_id  : 'modal-link-account-player-tag',
+                                label      : 'Player Tag',
+                                placeholder: 'check in-game profile',
+                            }),
+                            UI.textInput({
+                                style      : TXTS.Short,
+                                custom_id  : 'modal-link-account-api-token',
+                                label      : 'API Token',
+                                placeholder: 'check in-game settings',
+                            }),
+                            UI.textInput({
+                                style      : TXTS.Paragraph,
+                                custom_id  : 'modal-link-account-about',
+                                label      : 'Tell Us About Yourself',
+                                placeholder: 'fun facts',
+                            }),
+                        ]),
+                    },
+                },
+            });
+        }
+        else if (body.data.custom_id.startsWith('Entry')) {
+            return {
+                statusCode: 202,
+                body      : '',
+            };
+        }
+    }
+
+    return respond({
+        status: 200,
+        body  : {
+            type: InteractionResponseType.DEFERRED_UPDATE_MESSAGE,
+        },
+    });
 });
 
 const router = {

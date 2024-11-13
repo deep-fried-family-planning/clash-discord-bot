@@ -13,14 +13,6 @@ import {concatL, filterL, mapL} from '#src/pure/pure-list.ts';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {COMMANDS} from '#src/aws-lambdas/discord_deploy/commands.ts';
 
-const commands = pipe(
-    COMMANDS satisfies {[k in string]: CommandSpec},
-    mapEntries((v, k) => [k, specToREST(v)]),
-    toEntries,
-);
-
-const names = pipe(commands, map(([, cmd]) => cmd.name));
-
 const h = () => E.gen(function* () {
     yield * invokeCount(showMetric(invokeCount));
 
@@ -28,6 +20,14 @@ const h = () => E.gen(function* () {
     const APP_ID = yield * CFG.redacted(REDACTED_DISCORD_APP_ID);
 
     const globalCommands = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
+
+    const commands = pipe(
+        COMMANDS satisfies {[k in string]: CommandSpec},
+        mapEntries((v, k) => [k, specToREST(v)]),
+        toEntries,
+    );
+
+    const names = pipe(commands, map(([, cmd]) => cmd.name));
 
     const deletes = pipe(
         globalCommands,

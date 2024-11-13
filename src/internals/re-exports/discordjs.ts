@@ -13,4 +13,19 @@ export type {
     APIApplicationCommandInteraction as CmdIx,
     APIMessageComponentInteraction as CompIx,
 
+    APIModalSubmitInteraction as ModIx,
+
+    APIBaseInteraction as IxBase,
+    APIMessageComponentInteractionData as IxComp,
+    APIMessageButtonInteractionData as IxButton,
+    APIMessageChannelSelectInteractionData as IxSChannel,
+    APIMessageMentionableSelectInteractionData as IxSMentionable,
+    APIMessageRoleSelectInteractionData as IxSRole,
+    APIMessageStringSelectInteractionData as IxSString,
+    APIMessageUserSelectInteractionData as IxSUser,
+
 } from '@discordjs/core/http-only';
+
+export type {
+    InteractionResponse as IxRes,
+} from 'dfx/types';

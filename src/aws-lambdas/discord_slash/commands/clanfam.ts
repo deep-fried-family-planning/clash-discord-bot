@@ -12,6 +12,9 @@ import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 import {queryPlayersForUser} from '#src/dynamo/discord-player.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 
+// todo
+// 1. disallow selection of countdown channel linked to other clan within same server
+
 export const CLAN_FAM
     = {
         type       : CMDT.ChatInput,
