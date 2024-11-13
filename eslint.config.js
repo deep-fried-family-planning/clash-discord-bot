@@ -77,10 +77,11 @@ const config = [
                 }],
                 '@stylistic/object-curly-spacing'   : [2, 'never'],
                 '@stylistic/type-annotation-spacing': [0],
-                '@stylistic/multiline-ternary'      : [2],
                 '@stylistic/max-statements-per-line': [2, {max: 2}],
                 '@stylistic/semi'                   : [2, 'always', {omitLastInOneLineBlock: true}],
                 '@stylistic/no-multi-spaces'        : [2, {exceptions: {TSPropertySignature: true}}],
+                '@stylistic/multiline-ternary'      : [0],
+                '@stylistic/indent'                 : [2, 4, {flatTernaryExpressions: true}],
             },
         },
         {

@@ -4,13 +4,15 @@ import {
     deleteDiscordPlayer,
     putDiscordPlayer,
     queryDiscordPlayer,
-} from '#src/database/discord-player.ts';
-import type {DPlayer} from '#src/database/discord-player.ts';
+} from '#src/dynamo/discord-player.ts';
+import type {DPlayer} from '#src/dynamo/discord-player.ts';
 import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
+import {dLinesS} from '#src/aws-lambdas/discord_menu/old/markdown.ts';
+import {COLOR, nColor} from '#src/internals/constants/colors.ts';
 
 export const ONE_OF_US
     = {
@@ -30,10 +32,11 @@ export const ONE_OF_US
                 description: 'player api token from in-game settings',
                 required   : true,
             },
-            account_type: {
+            account_kind: {
                 type       : CMDOPT.String,
                 name       : 'account_kind',
                 description: 'how the account is played',
+                required   : true,
                 choices    : [
                     {name: 'main', value: 'main'},
                     {name: 'alt', value: 'alt'},
@@ -41,6 +44,7 @@ export const ONE_OF_US
                     {name: 'war asset', value: 'war-asset'},
                     {name: 'clan capital', value: 'clan-capital'},
                     {name: 'strategic rush', value: 'strategic-rush'},
+                    {name: 'admin parking', value: 'admin-parking'},
                 ],
             },
             discord_user: {
@@ -57,11 +61,9 @@ export const ONE_OF_US
 export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
-    const clash = yield * ClashperkService;
+    const tag = yield * Clashofclans.validateTag(options.player_tag);
 
-    const tag = yield * clash.validateTag(options.player_tag);
-
-    const coc_player = yield * clash.getPlayer(tag);
+    const coc_player = yield * Clashofclans.getPlayer(tag);
 
     // server admin role link
     if (options.api_token === 'admin') {
@@ -79,8 +81,14 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
         }
 
         if (!player) {
-            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_type));
-            return {embeds: [{description: 'admin link successful'}]};
+            yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_kind));
+            return {embeds: [{
+                color      : nColor(COLOR.SUCCESS),
+                description: dLinesS(
+                    'new admin link successful',
+                    `<@${options.discord_user}> linked to ${coc_player.name} (${coc_player.tag}) (${options.account_kind})`,
+                )}],
+            };
         }
 
         yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
@@ -92,11 +100,17 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
             verification: 1,
         });
 
-        return {embeds: [{description: 'admin link successful'}]};
+        return {embeds: [{
+            color      : nColor(COLOR.SUCCESS),
+            description: dLinesS(
+                'admin link override successful',
+                `<@${options.discord_user}> linked to ${coc_player.name} (${coc_player.tag}) (${options.account_kind})`,
+            )}],
+        };
     }
 
     // COC player API token validity
-    const tokenValid = yield * clash.verifyPlayerToken(coc_player.tag, options.api_token);
+    const tokenValid = yield * Clashofclans.verifyPlayerToken(coc_player.tag, options.api_token);
 
     if (!tokenValid) {
         return yield * new SlashUserError({issue: 'invalid api_token'});
@@ -106,9 +120,15 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
 
     // new player record
     if (!player) {
-        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2, options.account_type));
+        yield * putDiscordPlayer(makeDiscordPlayer(user.user.id, coc_player.tag, 2, options.account_kind));
 
-        return {embeds: [{description: 'new player link verified'}]};
+        return {embeds: [{
+            color      : nColor(COLOR.SUCCESS),
+            description: dLinesS(
+                'new player link verified',
+                `<@${user.user.id}> linked to ${coc_player.name} (${coc_player.tag}) (${options.account_kind})`,
+            )}],
+        };
     }
 
     if (rest.length) {
@@ -135,7 +155,13 @@ export const oneofus = (data: Interaction, options: CmdOps<typeof ONE_OF_US>) =>
         verification: 2,
     });
 
-    return {embeds: [{description: 'player link overridden'}]};
+    return {embeds: [{
+        color      : nColor(COLOR.SUCCESS),
+        description: dLinesS(
+            'player link overridden',
+            `<@${user.user.id}> linked to ${coc_player.name} (${coc_player.tag}) (${options.account_kind})`,
+        )}],
+    };
 });
 
 const makeDiscordPlayer

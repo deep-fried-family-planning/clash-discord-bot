@@ -11,8 +11,10 @@ export {
 
     Redacted as RDT,
     Config as CFG,
-    Context as C,
+    Context as CTX,
     Layer as L,
+
+    Cache as C,
 
     Logger as Logger,
     LogLevel,

@@ -4,35 +4,17 @@ import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effec
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
-import {ONE_OF_US} from '#src/aws-lambdas/discord_slash/commands/oneofus.ts';
-import {TIME} from '#src/aws-lambdas/discord_slash/commands/time.ts';
-import {SERVER} from '#src/aws-lambdas/discord_slash/commands/server.ts';
-import {CLAN_FAM} from '#src/aws-lambdas/discord_slash/commands/clanfam.ts';
-import {USER} from '#src/aws-lambdas/discord_slash/commands/user.ts';
 import type {CommandSpec} from '#src/aws-lambdas/discord_menu/old/types.ts';
 import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internals/constants/secrets.ts';
-import {SMOKE} from '#src/aws-lambdas/discord_slash/commands/smoke.ts';
-import {WA_LINKS} from '#src/aws-lambdas/discord_slash/commands/wa-links.ts';
-import {WA_MIRRORS} from '#src/aws-lambdas/discord_slash/commands/wa-mirrors.ts';
-import {WA_SCOUT} from '#src/aws-lambdas/discord_slash/commands/wa-scout.ts';
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {concatL, filterL, mapL} from '#src/pure/pure-list.ts';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
+import {COMMANDS} from '#src/aws-lambdas/discord_deploy/commands.ts';
 
 const commands = pipe(
-    {
-        CLAN_FAM,
-        ONE_OF_US,
-        SERVER,
-        SMOKE,
-        TIME,
-        USER,
-        WA_LINKS,
-        WA_MIRRORS,
-        WA_SCOUT,
-    } as const satisfies {[k in string]: CommandSpec},
+    COMMANDS satisfies {[k in string]: CommandSpec},
     mapEntries((v, k) => [k, specToREST(v)]),
     toEntries,
 );

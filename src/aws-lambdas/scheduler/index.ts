@@ -3,10 +3,10 @@ import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/pure/pure-list.ts';
 import {Cause, Console, Layer} from 'effect';
-import {ClanCache, ClanCacheLive} from '#src/internals/layers/clan-cache.ts';
-import {ServerCache, ServerCacheLive} from '#src/internals/layers/server-cache.ts';
-import {PlayerCache, PlayerCacheLive} from '#src/internals/layers/player-cache.ts';
-import {ClashPerkServiceLive} from '#src/internals/layers/clashperk-service.ts';
+import {ClanCache} from '#src/internals/layers/clan-cache.ts';
+import {ServerCache} from '#src/internals/layers/server-cache.ts';
+import {PlayerCache} from '#src/internals/layers/player-cache.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 import {logDiscordError} from '#src/internals/errors/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTLive, MemoryRateLimitStoreLive} from 'dfx';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
@@ -22,13 +22,11 @@ const h = () => E.gen(function* () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
-    const serverCache = yield * yield * ServerCache;
-    const clanCache = yield * (yield * ClanCache);
-    const players = yield * PlayerCache;
+    const players = yield * PlayerCache.all();
 
     yield * Console.log(players);
 
-    return yield * pipe(yield * clanCache.keys,
+    yield * pipe(yield * ClanCache.keys,
         reduceL(new Set<`${string}/${string}`>(), (set, k) => {
             set.add(k);
             return set;
@@ -36,10 +34,10 @@ const h = () => E.gen(function* () {
         (set) => [...set],
         mapL((k) => pipe(
             E.gen(function * () {
-                const [pk, sk] = k.split('/');
+                const [pk] = k.split('/');
 
-                const server = yield * serverCache.get(pk);
-                const clan = yield * clanCache.get(k);
+                const server = yield * ServerCache.get(pk);
+                const clan = yield * ClanCache.get(k);
 
                 yield * eachClan(server, clan);
             }),
@@ -55,13 +53,17 @@ const h = () => E.gen(function* () {
 });
 
 const LambdaLive = pipe(
-    ClanCacheLive,
-    L.provideMerge(ServerCacheLive),
-    L.provideMerge(PlayerCacheLive),
-    L.provideMerge(ClashPerkServiceLive),
-    L.provideMerge(DynamoDBDocumentService.defaultLayer),
-    L.provideMerge(SQSService.defaultLayer),
-    L.provideMerge(SchedulerService.defaultLayer),
+    L.mergeAll(
+        Clashofclans.Live,
+        ServerCache.Live,
+        PlayerCache.Live,
+        ClanCache.Live,
+    ),
+    L.provideMerge(L.mergeAll(
+        DynamoDBDocumentService.defaultLayer,
+        SchedulerService.defaultLayer,
+        SQSService.defaultLayer,
+    )),
     L.provideMerge(DiscordRESTLive),
     L.provide(MemoryRateLimitStoreLive),
     L.provide(DiscordConfig.layerConfig({token: Cfg.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

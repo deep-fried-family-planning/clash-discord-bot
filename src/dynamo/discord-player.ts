@@ -1,10 +1,10 @@
 import {Console, Schema as S} from 'effect';
-import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/database/common.ts';
-import type {CompKey} from '#src/database/types.ts';
+import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/common.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {mapL} from '#src/pure/pure-list.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
 
@@ -65,6 +65,28 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
         E.flatMap((decoded) => pipe(
             E.succeed(decoded),
             E.tap(Console.log('[GET DDB]: player decoded', decoded)),
+        )),
+    )),
+);
+
+export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
+    UserIdEncode(key.pk),
+    E.flatMap((pk) => DynamoDBDocumentService.query({
+        TableName                : process.env.DDB_OPERATIONS,
+        KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
+        ExpressionAttributeValues: {
+            ':pk': pk,
+            ':sk': 'p-',
+        },
+    })),
+    E.flatMap(({Items}) => pipe(
+        E.if(Boolean(Items), {
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
+            onFalse: () => E.succeed([] as DPlayer[]),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[QUERY DDB]: player decoded', decoded)),
         )),
     )),
 );

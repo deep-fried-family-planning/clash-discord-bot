@@ -4,7 +4,7 @@ import type {CmdOps} from '#src/aws-lambdas/discord_slash/types.ts';
 import type {CmdIx} from '#src/internals/re-exports/discordjs.ts';
 import {CMDT, CMDOPT} from '#src/internals/re-exports/discordjs.ts';
 import {OPTION_TZ} from '#src/aws-lambdas/discord_slash/options.ts';
-import {getDiscordUser, putDiscordUser} from '#src/database/discord-user.ts';
+import {getDiscordUser, putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {SlashError, SlashUserError} from '#src/internals/errors/slash-error.ts';
 import {validateServer} from '#src/aws-lambdas/discord_slash/utils.ts';
 import {omit} from 'effect/Struct';
@@ -94,7 +94,7 @@ export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(functio
                 : r,
         ));
 
-        return {embeds: [{description: `<@${userId}> new user registration successful`}]};
+        return {embeds: [{description: `<@${userId}> new user registration successful (${options.tz})`}]};
     }
 
     yield * putDiscordUser({
@@ -103,7 +103,7 @@ export const user = (data: CmdIx, options: CmdOps<typeof USER>) => E.gen(functio
         timezone: yield * S.decodeUnknown(S.TimeZone)(options.tz),
     });
 
-    return {embeds: [{description: `<@${userId}> user registration updated`}]};
+    return {embeds: [{description: `<@${userId}> user registration updated (${options.tz})`}]};
 }).pipe(
     E.catchTag('ParseError', (e) => new SlashError({original: e})),
 );

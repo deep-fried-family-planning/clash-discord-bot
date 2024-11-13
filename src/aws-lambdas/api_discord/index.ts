@@ -6,7 +6,7 @@ import {respond} from '#src/aws-lambdas/api_discord/api-util.ts';
 import type {APIInteraction} from '@discordjs/core/http-only';
 import {ITR} from '#src/aws-lambdas/discord_menu/old/re-exports.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import {Cfg, CFG, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
+import {Cfg, CFG, CSL, E, L, Logger, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {invokeCount, showMetric} from '#src/internals/metrics.ts';
 import {REDACTED_DISCORD_BOT_TOKEN, REDACTED_DISCORD_PUBLIC_KEY} from '#src/internals/constants/secrets.ts';
 import {SQSService} from '@effect-aws/client-sqs';
@@ -26,7 +26,7 @@ const ping = (body: DIngress) => E.succeed(respond({
 
 const slashCmd = (body: DIngress) => E.gen(function * () {
     yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_SLASH,
+        QueueUrl   : process.env.SQS_URL_DISCORD_SLASH,
         MessageBody: JSON.stringify(body),
     });
 
@@ -61,7 +61,7 @@ const modal = (body: DIngress) => E.gen(function * () {
 
 const component = (body: DIngress) => E.gen(function * () {
     yield * SQSService.sendMessage({
-        QueueUrl   : process.env.SQS_APP_DISCORD,
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
         MessageBody: JSON.stringify(body),
     });
 
@@ -82,6 +82,7 @@ const router = {
 const h = (req: APIGatewayProxyEventBase<null>) => pipe(
     E.gen(function * () {
         yield * showMetric(invokeCount);
+        yield * CSL.debug('DiscordIngress', req);
 
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;

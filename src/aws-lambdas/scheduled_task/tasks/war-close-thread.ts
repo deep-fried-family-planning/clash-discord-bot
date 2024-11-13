@@ -1,10 +1,10 @@
 import {DT, E, pipe, S} from '#src/internals/re-exports/effect.ts';
-import {DiscordClan} from '#src/database/discord-clan.ts';
-import {DiscordServer} from '#src/database/discord-server.ts';
+import {DiscordClan} from '#src/dynamo/discord-clan.ts';
+import {DiscordServer} from '#src/dynamo/discord-server.ts';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
-import {ThreadId} from '#src/database/common.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
+import {ThreadId} from '#src/dynamo/common.ts';
 
 export type TWarCloseThread = S.Schema.Type<typeof TaskWarCloseThread>;
 
@@ -44,7 +44,7 @@ export const scheduleTaskWarCloseThread = (time: DT.Utc, event: TWarCloseThread)
 export const taskWarCloseThread = (event: TWarCloseThread) => E.gen(function * () {
     const discord = yield * DiscordREST;
 
-    const wars = yield * ClashperkService.getWars(event.data.clan.sk).pipe(E.catchAll(() => E.succeed([])));
+    const wars = yield * Clashofclans.getWars(event.data.clan.sk).pipe(E.catchAll(() => E.succeed([])));
 
     const apiWar = wars.find((w) => w.opponent.tag === event.data.opponent.tag);
 

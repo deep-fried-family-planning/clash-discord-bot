@@ -1,5 +1,5 @@
 import {attachModelId} from '#src/data/types.ts';
-import type {CK_War, CK_War_Clan} from '#src/https/api-ck-get-previous-wars.ts';
+import type {CK_War, CK_War_Clan} from '#src/internals/layer-api/api-ck-get-previous-wars.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedPlayer, DispatchedWar} from '#src/data/pipeline/ingest-types.ts';
 import {pipe} from '#src/internals/re-exports/effect.ts';
 import {flatMapL, mapL} from '#src/pure/pure-list.ts';

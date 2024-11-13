@@ -1,8 +1,8 @@
 import type {ClanWar} from 'clashofclans.js';
 import {E} from '#src/internals/re-exports/effect.ts';
-import type {DClan} from '#src/database/discord-clan.ts';
+import type {DClan} from '#src/dynamo/discord-clan.ts';
 import {DiscordREST} from 'dfx';
-import {ClashperkService} from '#src/internals/layers/clashperk-service.ts';
+import {Clashofclans} from '#src/internals/layer-api/clashofclans.ts';
 
 export const nicknames = {
     'ClashTest Dummy': 'CTD',
@@ -11,7 +11,7 @@ export const nicknames = {
 } as const;
 
 export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(function* () {
-    const apiClan = yield * ClashperkService.getClan(clan.sk);
+    const apiClan = yield * Clashofclans.getClan(clan.sk);
 
     const cname = apiClan.name in nicknames
         ? nicknames[apiClan.name as keyof typeof nicknames]

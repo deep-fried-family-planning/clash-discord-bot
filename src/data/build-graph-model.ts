@@ -9,8 +9,7 @@ import {fromCompare, OrdN} from '#src/pure/pure.ts';
 import {E, pipe} from '#src/internals/re-exports/effect.ts';
 import {Option} from 'effect';
 import type {SharedOptions} from '#src/aws-lambdas/discord_slash/types.ts';
-import {ClashkingService} from '#src/internals/layers/clashking-service.ts';
-import {DeepFryerUnknownError} from '#src/internals/errors/clash-error.ts';
+import {Clashking} from '#src/internals/layer-api/clashking.ts';
 import {SlashUserError} from '#src/internals/errors/slash-error.ts';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
@@ -22,14 +21,12 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
         return yield * new SlashUserError({issue: 'no current war found'});
     }
 
-    const clashking = yield * ClashkingService;
-
     const cids = pipe(entities.current.clans, mapL((c) => c.tag));
     const pids = pipe(entities.current.players, mapL((p) => p.tag));
 
     const warCalls = pipe(
         cids,
-        mapL((cid) => clashking.previousWars(cid, ops.limit)),
+        mapL((cid) => Clashking.previousWars(cid, ops.limit)),
         E.allWith({concurrency: 'unbounded'}),
         E.map(flattenL),
     );
@@ -37,7 +34,7 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
     const playerWarCalls = ops.exhaustive
         ? pipe(
             pids,
-            mapL((p) => clashking.previousHits(p, ops.limit)),
+            mapL((p) => Clashking.previousHits(p, ops.limit)),
             E.allWith({concurrency: 'unbounded'}),
             E.map(flattenL),
         )

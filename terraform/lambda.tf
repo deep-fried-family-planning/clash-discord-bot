@@ -1,3 +1,35 @@
+module "discord_menu" {
+  source             = "./modules/lambda"
+  acc_id             = local.account_id
+  prefix             = local.prefix
+  fn_name            = "discord_menu"
+  custom_policy_json = data.aws_iam_policy_document.lambda_discord_menu.json
+  memory             = 1024
+  timeout            = 300
+  fn_env             = merge(local.lambda_env, {})
+  sqs                = true
+  sqs_source_arns    = [module.lambda_api_discord.fn_arn]
+}
+
+data "aws_iam_policy_document" "lambda_discord_menu" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+    resources = ["arn:aws:logs:*:*:*"]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["*"]
+    resources = ["*"]
+  }
+}
+
+
+
+
 #
 # discord_slash
 #
@@ -61,8 +93,8 @@ module "lambda_scheduler" {
   prefix             = local.prefix
   fn_name            = "scheduler"
   custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
-  memory             = 512
-  timeout            = 120
+  memory             = 1024
+  timeout            = 300
   fn_env = merge(local.lambda_env, {
     SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
     SQS_ARN_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_arn
@@ -71,7 +103,7 @@ module "lambda_scheduler" {
 
 resource "aws_lambda_function_event_invoke_config" "example" {
   function_name                = module.lambda_scheduler.fn_name
-  maximum_event_age_in_seconds = 120
+  maximum_event_age_in_seconds = 300
   maximum_retry_attempts       = 0
 }
 

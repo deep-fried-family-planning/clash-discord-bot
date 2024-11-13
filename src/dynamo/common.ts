@@ -21,6 +21,7 @@ export const ChannelId = S.String;
 export const RoleId = S.String;
 export const ThreadId = S.String;
 export const MessageId = S.String;
+export const ForumTagId = S.String;
 
 export const ServerIdEncode = S.encodeUnknown(ServerId);
 export const UserIdEncode = S.encodeUnknown(UserId);

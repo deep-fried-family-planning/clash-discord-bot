@@ -1,8 +1,8 @@
-import {NowId, UserId, UserIdEncode} from '#src/database/common.ts';
-import type {CompKey} from '#src/database/types.ts';
+import {NowId, UserId, UserIdEncode} from '#src/dynamo/common.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
 import {CSL, E, pipe, S} from '#src/internals/re-exports/effect.ts';
 import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DUser = S.Schema.Type<typeof DiscordUser>;
 
