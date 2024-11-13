@@ -12,4 +12,5 @@ export {
 export type {
     APIApplicationCommandInteraction as CmdIx,
     APIMessageComponentInteraction as CompIx,
+
 } from '@discordjs/core/http-only';
