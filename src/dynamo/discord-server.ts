@@ -35,8 +35,6 @@ export const DiscordServer = S.Struct({
     guest : S.optional(RoleId),
 });
 
-S.pick();
-
 export const DiscordServerEquivalence = S.equivalence(DiscordServer);
 export const DiscordServerEncode = S.encodeUnknown(DiscordServer);
 export const DiscordServerDecode = S.decodeUnknown(DiscordServer);

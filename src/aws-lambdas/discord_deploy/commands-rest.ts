@@ -17,15 +17,15 @@ export const specToREST = (spec: CommandSpec) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
             ? {...v, options: pipe(v.options, toValuesKV, sortL(sorter), mapL((v2) =>
-                    'options' in v2
-                        ? {
-                                ...v2,
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                // @ts-expect-error
-                                options: pipe(v2.options, toValuesKV, sortL(sorter)),
-                            }
-                        : v2,
-                ))}
+                'options' in v2
+                    ? {
+                        ...v2,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
+                        options: pipe(v2.options, toValuesKV, sortL(sorter)),
+                    }
+                    : v2,
+            ))}
             : v,
     ));
 

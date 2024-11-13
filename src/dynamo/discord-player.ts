@@ -69,6 +69,28 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
     )),
 );
 
+export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
+    UserIdEncode(key.pk),
+    E.flatMap((pk) => DynamoDBDocumentService.query({
+        TableName                : process.env.DDB_OPERATIONS,
+        KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
+        ExpressionAttributeValues: {
+            ':pk': pk,
+            ':sk': 'p-',
+        },
+    })),
+    E.flatMap(({Items}) => pipe(
+        E.if(Boolean(Items), {
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
+            onFalse: () => E.succeed([] as DPlayer[]),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[QUERY DDB]: player decoded', decoded)),
+        )),
+    )),
+);
+
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
     PlayerTagEncode(key.sk),
     E.flatMap((sk) => DynamoDBDocumentService.query({

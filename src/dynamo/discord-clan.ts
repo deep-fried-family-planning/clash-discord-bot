@@ -21,6 +21,16 @@ export const DiscordClan = S.Struct({
     created: S.Date,
     updated: S.Date,
 
+    verification: S.Enums({
+        admin    : 0,
+        elder    : 1,
+        coleader : 2,
+        leader   : 3,
+        developer: 4,
+    }).pipe(S.optionalWith({
+        default: () => 0,
+    })),
+
     thread_prep    : ThreadId,
     prep_opponent  : ClanTag,
     thread_battle  : ThreadId,
@@ -68,6 +78,28 @@ export const getDiscordClan = (key: CompKey<DClan>) => pipe(
     )),
 );
 
+export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
+    ClanTagEncode(key.sk),
+    E.flatMap((sk) => DynamoDBDocumentService.query({
+        TableName                : process.env.DDB_OPERATIONS,
+        IndexName                : 'GSI_ALL_CLANS',
+        KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
+        ExpressionAttributeValues: {
+            ':gsi_clan_tag': sk,
+        },
+    })),
+    E.flatMap(({Items}) => pipe(
+        E.if(Boolean(Items), {
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordClanDecode(Item)))),
+            onFalse: () => E.succeed([undefined] as const),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[QUERY DDB]: clan decoded', decoded)),
+        )),
+    )),
+);
+
 export const scanDiscordClans = () => pipe(
     DynamoDBDocumentService.scan({
         TableName: process.env.DDB_OPERATIONS,
@@ -83,4 +115,16 @@ export const scanDiscordClans = () => pipe(
             E.tap(Console.log('[SCAN DDB]: clans decoded', decoded)),
         )),
     )),
+);
+
+export const deleteDiscordClan = (key: CompKey<DClan>) => pipe(
+    [ServerIdEncode(key.pk), ClanTagEncode(key.sk)],
+    E.all,
+    E.flatMap(([pk, sk]) => DynamoDBDocumentService.delete({
+        TableName: process.env.DDB_OPERATIONS,
+        Key      : {
+            pk,
+            sk,
+        },
+    })),
 );

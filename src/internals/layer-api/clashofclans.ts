@@ -1,5 +1,5 @@
 import {Client} from 'clashofclans.js';
-import {CFG, E, L, RDT} from '#src/internals/re-exports/effect.ts';
+import {CFG, E, L, pipe, RDT} from '#src/internals/re-exports/effect.ts';
 import {REDACTED_COC_KEY} from '#src/internals/constants/secrets.ts';
 import type {ClashperkError} from '#src/internals/errors/clash-error.ts';
 import {clashErrorFromUndefined} from '#src/internals/errors/clash-error.ts';
@@ -13,6 +13,7 @@ export class Clashofclans extends E.Tag('DeepFryerClash')<
             'verifyPlayerToken'
             | 'getClan'
             | 'getPlayer'
+            | 'getPlayers'
             | 'getWars'
             | 'getClans'
             | 'getCurrentWar'
@@ -47,6 +48,11 @@ export class Clashofclans extends E.Tag('DeepFryerClash')<
                 .pipe(
                     E.catchAll(clashErrorFromUndefined),
                 ),
+
+            getPlayers: (playerTag, options) => pipe(
+                E.tryPromise(async () => await client.getPlayers(playerTag, options)),
+                E.catchAll(clashErrorFromUndefined),
+            ),
 
             getClan: (clanTag, options) => E
                 .tryPromise(

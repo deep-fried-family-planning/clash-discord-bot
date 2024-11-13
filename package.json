@@ -50,6 +50,7 @@
     "@effect/platform": "0.69.21",
     "@effect/platform-node": "0.64.23",
     "@effect/schema": "0.75.5",
+    "@effect/vitest": "0.13.14",
     "@hapi/boom": "10.0.1",
     "@hapi/bourne": "3.0.0",
     "bufferutil": "4.0.8",
