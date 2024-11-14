@@ -26,7 +26,7 @@ export const EditTimezone = makeMenu('EditTimezone', UI.select, {
     placeholder: 'Edit Timezone',
     options    : SELECT_TIMEZONES,
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));
 
@@ -34,7 +34,7 @@ export const EditQuietStart = makeMenu('EditQuietStart', UI.select, {
     placeholder: 'Edit Quiet Hours (start)',
     options    : SELECT_TIMES,
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));
 
@@ -42,6 +42,6 @@ export const EditQuietEnd = makeMenu('EditQuietEnd', UI.select, {
     placeholder: 'Edit Quiet Hours (end)',
     options    : SELECT_TIMEZONES,
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));

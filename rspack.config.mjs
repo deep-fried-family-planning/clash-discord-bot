@@ -32,7 +32,7 @@ export default defineConfig({
     externalsType: 'module',
     externals    : [
         /@aws-sdk./,
-        'undici',
+        // 'undici',
     ],
 
     resolve: {

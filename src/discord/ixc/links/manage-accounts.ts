@@ -37,7 +37,7 @@ export const ManageAccounts = makeMenu('ManageAccounts', UI.button, {
 export const SelectAccount = makeMenu('SelectAccount', UI.select, {
     placeholder: 'Select Account',
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));
 
@@ -45,6 +45,6 @@ export const SelectAccount = makeMenu('SelectAccount', UI.select, {
 export const DeleteAccount = makeMenu('DeleteAccount', UI.select, {
     placeholder: 'Select Account',
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));

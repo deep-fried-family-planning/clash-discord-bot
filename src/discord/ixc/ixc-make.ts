@@ -1,10 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {UI} from 'dfx';
 import type {IxR, IxRE} from '#src/discord/util/discord.ts';
 import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
+
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+
+type CSelect = Parameters<typeof UI.select>[0];
+type IxcF = (...p: any) => UI.UIComponent;
+
+
+type E_Entry = E.Effect<Partial<IxR['data']> | undefined, any, any>;
+type E_Edit = E.Effect<Partial<IxRE> | undefined, any, any>;
+type EAny = E.Effect<any, any, any>;
 
 
 type Menu<R extends EAny, C extends IxcF, D > = (
@@ -63,7 +73,7 @@ export const makeMenu = <R extends E_Edit, C extends IxcF, D = IxDc >(
 };
 
 
-export const makeSelectSubmit = <R>(
+export const makeSelectSubmit = (
     name: string,
     previous: ReturnType<typeof makeMenu>,
     next: ReturnType<typeof makeMenu>,
@@ -102,19 +112,3 @@ export const makeSelectSubmit = <R>(
         back, selector, submit,
     ];
 };
-
-
-type CSelect = Parameters<typeof UI.select>[0];
-type IxcF = (...p: any) => UI.UIComponent;
-type IxcFn =
-    | typeof UI.select
-    | typeof UI.channelSelect
-    | typeof UI.userSelect
-    | typeof UI.roleSelect
-    | typeof UI.mentionableSelect
-    | typeof UI.button;
-
-
-type E_Entry = E.Effect<Partial<IxR['data']> | undefined, any, any>;
-type E_Edit = E.Effect<Partial<IxRE> | undefined, any, any>;
-type EAny = E.Effect<any, any, any>;

@@ -3,14 +3,19 @@ import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
 import {afterAll, beforeAll, describe, vi} from 'vitest';
 import {E} from '#src/internal/pure/effect.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
-import {LambdaLayer} from '#src/lambda/discord_slash';
 import {Client} from 'clashofclans.js';
 import {DiscordServer, DiscordServerEncode} from '#src/dynamo/discord-server.ts';
+
+
+/* eslint-disable */
+
 
 const base = new DynamoDB({region: 'us-east-1'});
 const dynamoDB = DynamoDBDocument.from(base);
 
+
 process.env.DDB_OPERATIONS = 'qual-dffp-clash-discord-bot-operations';
+
 
 vi.mock('clashofclans.js', async (importActual) => {
     const actual = await importActual();
@@ -22,6 +27,7 @@ vi.mock('clashofclans.js', async (importActual) => {
 
     return actual;
 });
+
 
 describe('[SLASH /oneofus]: player/discord account linking', () => {
     const data = {

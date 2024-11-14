@@ -1,20 +1,20 @@
-import {Cache, Console, Context, Effect, Layer} from 'effect';
-import {type C, L} from '#src/internal/pure/effect.ts';
+import {C, CSL, L} from '#src/internal/pure/effect.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {type DServer, getDiscordServer, scanDiscordServers} from '#src/dynamo/discord-server.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 import type {EA} from '#src/internal/types.ts';
 
+
 const cache = E.gen(function* () {
-    const cache = yield * Cache.make({
+    const cache = yield * C.make({
         capacity  : 50,
         timeToLive: process.env.LAMBDA_ENV === 'qual'
             ? '1 minutes'
             : '15 minutes',
 
-        lookup: (key: CompKey<DServer>['pk']) => Effect.gen(function* () {
-            yield * Console.log('cache miss!');
+        lookup: (key: CompKey<DServer>['pk']) => E.gen(function* () {
+            yield * CSL.log('cache miss!');
 
             const record = yield * getDiscordServer({pk: key, sk: 'now'});
 
@@ -32,6 +32,7 @@ const cache = E.gen(function* () {
 
     return cache;
 });
+
 
 export class ServerCache extends E.Tag('DeepFryerServerCache')<
     ServerCache,

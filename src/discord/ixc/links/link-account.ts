@@ -22,7 +22,7 @@ export const ModalLinkAccount = makeMenu('ModalLinkAccount', UI.button, {
     label: 'Open',
     style: ButtonStyle.SUCCESS,
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));
 
@@ -30,6 +30,6 @@ export const LinkAccountHelp = makeMenu('LinkAccountHelp', UI.button, {
     label: 'Help',
     style: ButtonStyle.SECONDARY,
 },
-(ix, data) => E.gen(function * () {
+() => E.gen(function * () {
     return undefined;
 }));
