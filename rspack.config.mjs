@@ -17,10 +17,10 @@ export default defineConfig({
     experiments: {outputModule: true, topLevelAwait: true},
 
     entry: pipe(
-        await readdir('src/aws-lambdas', {withFileTypes: true, recursive: true}),
+        await readdir('src/lambda', {withFileTypes: true, recursive: true}),
         filter((l) => l.name === 'index.ts'),
         map((l) => resolve(l.parentPath, l.name).replace(import.meta.dirname, '').replaceAll('\\', '/')),
-        reduce({}, (ls, l) => (ls[l.replace('/src/aws-lambdas/', '').replace('.ts', '')] = l) && ls),
+        reduce({}, (ls, l) => (ls[l.replace('/src/lambda/', '').replace('.ts', '')] = l) && ls),
     ),
 
     output: {
@@ -30,7 +30,10 @@ export default defineConfig({
     },
 
     externalsType: 'module',
-    externals    : [/@aws-sdk./],
+    externals    : [
+        /@aws-sdk./,
+        'undici',
+    ],
 
     resolve: {
         tsConfig: {
@@ -76,7 +79,7 @@ export default defineConfig({
 
     plugins: [new rspack.node.NodeTargetPlugin()],
 
-    devtool: 'source-map',
+    devtool: 'nosources-source-map',
 
     performance: {hints: 'warning'},
 

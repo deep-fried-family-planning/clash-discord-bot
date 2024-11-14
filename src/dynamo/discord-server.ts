@@ -1,9 +1,9 @@
 import {Console} from 'effect';
 import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/common.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import {E, S, pipe} from '#src/internals/re-exports/effect.ts';
-import {mapL} from '#src/pure/pure-list.ts';
-import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import {E, S, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DServer = S.Schema.Type<typeof DiscordServer>;

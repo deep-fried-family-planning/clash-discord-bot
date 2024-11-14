@@ -1,4 +1,4 @@
-import {S} from '#src/internals/re-exports/effect.ts';
+import {S} from '#src/internal/pure/effect.ts';
 import type {Brand} from 'effect';
 
 const startsId = <T extends string>(start: string, brand: T) => S.transform(

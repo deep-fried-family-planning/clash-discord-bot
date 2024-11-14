@@ -1,9 +1,9 @@
 import {Console, Schema as S} from 'effect';
 import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/common.ts';
 import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import {E, pipe} from '#src/internals/re-exports/effect.ts';
-import {mapL} from '#src/pure/pure-list.ts';
-import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;

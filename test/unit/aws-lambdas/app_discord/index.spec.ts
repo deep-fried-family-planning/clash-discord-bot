@@ -1,6 +1,6 @@
-import {CSL, E, L} from '#src/internals/re-exports/effect.ts';
+import {CSL, E, L} from '#src/internal/pure/effect.ts';
 import {Logger, pipe} from 'effect';
-import {mapL} from '#src/pure/pure-list.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
 
 describe('test', () => {
     it('does the thing', () => {

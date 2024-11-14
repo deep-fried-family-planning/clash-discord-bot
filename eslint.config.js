@@ -54,6 +54,7 @@ const config = [
                 reportUnusedDisableDirectives: true,
             },
             rules: {
+                'require-yield'                                    : [1],
                 '@typescript-eslint/consistent-type-imports'       : [2],
                 '@typescript-eslint/no-unnecessary-type-parameters': [0],
                 '@typescript-eslint/consistent-type-exports'       : [2],
@@ -82,6 +83,7 @@ const config = [
                 '@stylistic/no-multi-spaces'        : [2, {exceptions: {TSPropertySignature: true}}],
                 '@stylistic/multiline-ternary'      : [0],
                 '@stylistic/indent'                 : [2, 4, {flatTernaryExpressions: true}],
+                '@stylistic/no-multiple-empty-lines': [2],
             },
         },
         {

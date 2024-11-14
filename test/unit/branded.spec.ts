@@ -1,5 +1,5 @@
 import {Console, DateTime, Schema} from 'effect';
-import {DT, E} from '#src/internals/re-exports/effect.ts';
+import {DT, E} from '#src/internal/pure/effect.ts';
 import {ServerId} from '#src/dynamo/common.ts';
 
 const str
