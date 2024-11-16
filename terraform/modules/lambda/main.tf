@@ -19,7 +19,7 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = merge(
       {
-        NODE_OPTIONS = "--enable-source-maps"
+        NODE_OPTIONS    = "--enable-source-maps"
         LAMBDA_ROLE_ARN = aws_iam_role.execution_role.arn
       },
       var.fn_env

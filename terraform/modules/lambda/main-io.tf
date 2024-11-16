@@ -6,6 +6,8 @@ variable "timeout" {}
 variable "fn_env" {}
 variable "sqs" { default = false }
 variable "sqs_source_arns" { default = null }
+variable "sqs_delay_s" { default = 1 }
+variable "sqs_retries" { default = 2 }
 variable "acc_id" {}
 
 data "archive_file" "source_code" {

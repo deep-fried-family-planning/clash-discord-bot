@@ -1,5 +1,5 @@
 import {it} from '@effect/vitest';
-import {E} from '#src/internals/re-exports/effect.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {type DClan, DiscordClanDecode} from '#src/dynamo/discord-clan.ts';
 
 describe('DiscordClan', () => {

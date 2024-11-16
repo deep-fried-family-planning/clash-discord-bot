@@ -6,7 +6,6 @@ terraform {
       version = "5.57.0"
     }
   }
-
   backend "s3" {
     region               = "us-east-1"
     bucket               = "tfstate-dffp"
@@ -15,6 +14,7 @@ terraform {
     dynamodb_table       = "tfstate-dffp"
   }
 }
+
 
 provider "aws" {
   region = "us-east-1"
@@ -30,6 +30,7 @@ provider "aws" {
     }
   }
 }
+
 
 locals {
   prefix = "${local.env}-${local.org}-${local.service_name}"

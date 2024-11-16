@@ -5,7 +5,7 @@ resource "aws_sqs_queue" "sqs" {
   count                      = var.sqs == true ? 1 : 0
   name                       = "${var.prefix}-${local.fn_name}-sqs"
   visibility_timeout_seconds = aws_lambda_function.main.timeout
-  delay_seconds              = 1
+  delay_seconds              = var.sqs_delay_s
 }
 
 data "aws_iam_policy_document" "sqs" {
@@ -37,7 +37,7 @@ resource "aws_sqs_queue_redrive_policy" "sqs_redrive" {
   queue_url = aws_sqs_queue.sqs[0].id
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq[0].arn
-    maxReceiveCount     = 2
+    maxReceiveCount     = var.sqs_retries
   })
 }
 

@@ -1,3 +1,6 @@
+#
+# LAMBDA: discord_menu
+#
 module "discord_menu" {
   source             = "./modules/lambda"
   acc_id             = local.account_id
@@ -9,7 +12,10 @@ module "discord_menu" {
   fn_env             = merge(local.lambda_env, {})
   sqs                = true
   sqs_source_arns    = [module.lambda_api_discord.fn_arn]
+  sqs_retries = 1
+  sqs_delay_s = 0
 }
+
 
 data "aws_iam_policy_document" "lambda_discord_menu" {
   statement {
@@ -29,9 +35,8 @@ data "aws_iam_policy_document" "lambda_discord_menu" {
 
 
 
-
 #
-# discord_slash
+# LAMBDA: discord_slash
 #
 module "discord_slash" {
   source             = "./modules/lambda"
@@ -45,6 +50,7 @@ module "discord_slash" {
   sqs                = true
   sqs_source_arns    = [module.lambda_api_discord.fn_arn]
 }
+
 
 data "aws_iam_policy_document" "lambda_slash" {
   statement {
@@ -63,8 +69,9 @@ data "aws_iam_policy_document" "lambda_slash" {
 }
 
 
+
 #
-# scheduled_task
+# LAMBDA: scheduled_task
 #
 module "lambda_scheduled_task" {
   source = "./modules/lambda"
@@ -77,15 +84,16 @@ module "lambda_scheduled_task" {
   prefix             = local.prefix
   timeout            = 300
   sqs                = true
-  sqs_source_arns    = [
+  sqs_source_arns = [
     module.lambda_scheduler.fn_arn,
     module.lambda_scheduler.fn_role_arn
   ]
 }
 
 
+
 #
-# scheduler
+# LAMBDA: scheduler
 #
 module "lambda_scheduler" {
   source             = "./modules/lambda"
@@ -101,11 +109,13 @@ module "lambda_scheduler" {
   })
 }
 
+
 resource "aws_lambda_function_event_invoke_config" "example" {
   function_name                = module.lambda_scheduler.fn_name
   maximum_event_age_in_seconds = 300
   maximum_retry_attempts       = 0
 }
+
 
 data "aws_iam_policy_document" "lambda_scheduler" {
   statement {

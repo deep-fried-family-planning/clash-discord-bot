@@ -1,12 +1,11 @@
 import {Console, Schema as S} from 'effect';
 import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/common.ts';
-import {E, pipe} from '#src/internals/re-exports/effect.ts';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
-import {mapL} from '#src/pure/pure-list.ts';
-import {DynamoError} from '#src/internals/errors/dynamo-error.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
-export type DClan = S.Schema.Type<typeof DiscordClan>;
 
 export const DiscordClan = S.Struct({
     type: S.Literal('DiscordClan'),
@@ -27,9 +26,7 @@ export const DiscordClan = S.Struct({
         coleader : 2,
         leader   : 3,
         developer: 4,
-    }).pipe(S.optionalWith({
-        default: () => 0,
-    })),
+    }).pipe(S.optionalWith({default: () => 0})),
 
     thread_prep    : ThreadId,
     prep_opponent  : ClanTag,
@@ -37,16 +34,18 @@ export const DiscordClan = S.Struct({
     battle_opponent: ClanTag,
     countdown      : ThreadId,
 });
+export type DClan = S.Schema.Type<typeof DiscordClan>;
+
 
 export const DiscordClanEncode = S.encodeUnknown(DiscordClan);
 export const DiscordClanDecode = S.decodeUnknown(DiscordClan);
-
 export const DiscordClanEquivalence = S.equivalence(DiscordClan);
+
 
 export const putDiscordClan = (record: DClan) => pipe(
     DiscordClanEncode(record),
     E.flatMap((encoded) => pipe(
-        DynamoDBDocumentService.put({
+        DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
             Item     : encoded,
         }),
@@ -55,17 +54,21 @@ export const putDiscordClan = (record: DClan) => pipe(
     E.as(record),
 );
 
+
 export const getDiscordClan = (key: CompKey<DClan>) => pipe(
     [ServerIdEncode(key.pk), ClanTagEncode(key.sk)],
     E.all,
-    E.flatMap(([pk, sk]) => DynamoDBDocumentService.get({
-        TableName: process.env.DDB_OPERATIONS,
-        Key      : {
-            pk,
-            sk,
-        },
-        ConsistentRead: true,
-    })),
+    E.flatMap(([pk, sk]) => pipe(
+        DynamoDBDocument.get({
+            TableName: process.env.DDB_OPERATIONS,
+            Key      : {
+                pk,
+                sk,
+            },
+            ConsistentRead: true,
+        }),
+        E.tap(CSL.log('encoded', pk, sk)),
+    )),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
             onTrue : () => DiscordClanDecode(Item),
@@ -78,9 +81,10 @@ export const getDiscordClan = (key: CompKey<DClan>) => pipe(
     )),
 );
 
+
 export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
     ClanTagEncode(key.sk),
-    E.flatMap((sk) => DynamoDBDocumentService.query({
+    E.flatMap((sk) => DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
         IndexName                : 'GSI_ALL_CLANS',
         KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
@@ -100,8 +104,9 @@ export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
     )),
 );
 
+
 export const scanDiscordClans = () => pipe(
-    DynamoDBDocumentService.scan({
+    DynamoDBDocument.scan({
         TableName: process.env.DDB_OPERATIONS,
         IndexName: 'GSI_ALL_CLANS',
     }),
@@ -117,10 +122,11 @@ export const scanDiscordClans = () => pipe(
     )),
 );
 
+
 export const deleteDiscordClan = (key: CompKey<DClan>) => pipe(
     [ServerIdEncode(key.pk), ClanTagEncode(key.sk)],
     E.all,
-    E.flatMap(([pk, sk]) => DynamoDBDocumentService.delete({
+    E.flatMap(([pk, sk]) => DynamoDBDocument.delete({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
             pk,

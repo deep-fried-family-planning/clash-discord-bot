@@ -1,6 +1,7 @@
 variable "qual_account_id" {}
 variable "prod_account_id" {}
 
+
 locals {
   aws_region = "us-east-1"
 
