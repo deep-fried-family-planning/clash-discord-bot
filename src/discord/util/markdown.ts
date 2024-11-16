@@ -38,3 +38,5 @@ export const dNotA = () => `WIP`;
 
 export const dtRelative = (n: num = Date.now()) => `<t:${n}:R>`;
 export const dtFull = (n: num = Date.now()) => `<t:${n}:F>`;
+
+

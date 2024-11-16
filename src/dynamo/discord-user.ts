@@ -1,10 +1,9 @@
 import {NowId, UserId, UserIdEncode} from '#src/dynamo/common.ts';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
-export type DUser = S.Schema.Type<typeof DiscordUser>;
 
 export const DiscordUser = S.Struct({
     pk     : UserId,
@@ -19,15 +18,18 @@ export const DiscordUser = S.Struct({
     timezone: S.TimeZone,
     quiet   : S.optional(S.String),
 });
+export type DUser = S.Schema.Type<typeof DiscordUser>;
+
 
 export const DiscordUserDecode = S.decodeUnknown(DiscordUser);
 export const DiscordUserEncode = S.encodeUnknown(DiscordUser);
 export const DiscordUserEquivalence = S.equivalence(DiscordUser);
 
+
 export const putDiscordUser = (record: DUser) => pipe(
     DiscordUserEncode(record),
     E.flatMap((encoded) => pipe(
-        DynamoDBDocumentService.put({
+        DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
             Item     : encoded,
         }),
@@ -35,9 +37,10 @@ export const putDiscordUser = (record: DUser) => pipe(
     )),
 );
 
+
 export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
     UserIdEncode(key.pk),
-    E.flatMap((pk) => DynamoDBDocumentService.get({
+    E.flatMap((pk) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
             pk: pk,

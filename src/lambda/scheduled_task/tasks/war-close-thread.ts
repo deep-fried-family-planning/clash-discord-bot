@@ -1,7 +1,7 @@
 import {DT, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DiscordClan} from '#src/dynamo/discord-clan.ts';
 import {DiscordServer} from '#src/dynamo/discord-server.ts';
-import {SchedulerService} from '@effect-aws/client-scheduler';
+import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {ThreadId} from '#src/dynamo/common.ts';
@@ -11,7 +11,7 @@ export type TWarCloseThread = S.Schema.Type<typeof TaskWarCloseThread>;
 
 
 export const TaskWarCloseThread = S.Struct({
-    task: S.Literal('WarBattleThread'),
+    task: S.Literal('TaskWarCloseThread'),
     data: S.Struct({
         server  : DiscordServer,
         clan    : DiscordClan,
@@ -31,7 +31,7 @@ export const TaskWarCloseThreadDecode = S.decodeUnknown(TaskWarCloseThread);
 
 export const scheduleTaskWarCloseThread = (time: DT.Utc, event: TWarCloseThread) => pipe(
     TaskWarCloseThreadEncode(event),
-    E.flatMap((encoded) => SchedulerService.createSchedule({
+    E.flatMap((encoded) => Scheduler.createSchedule({
         GroupName            : `s-${event.data.clan.pk}-c-${event.data.clan.sk.replace('#', '')}`,
         FlexibleTimeWindow   : {Mode: 'OFF'},
         ActionAfterCompletion: 'DELETE',

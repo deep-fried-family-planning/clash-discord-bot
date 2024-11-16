@@ -11,4 +11,6 @@ export const DFFP_CLANS_ALIAS = {
     ezcwl         : '#2QUP9UPGY',
     ace           : '#2P8UCYQQ0',
     acemini       : '#2R8L9QQG2',
+    shit          : '#2RPLPCVLU',
+    shithits      : '#2RPLPCVLU',
 };

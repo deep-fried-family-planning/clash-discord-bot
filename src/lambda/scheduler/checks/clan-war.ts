@@ -1,9 +1,8 @@
 import {type DClan, putDiscordClan} from '#src/dynamo/discord-clan.ts';
 import type {DServer} from '#src/dynamo/discord-server.ts';
-import {CSL, DT, E} from '#src/internal/pure/effect.ts';
+import {CSL, DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
-import type {ClanWar} from 'clashofclans.js';
-import {SchedulerService} from '@effect-aws/client-scheduler';
+import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
 import {scheduleTaskWarBattleThread} from '#src/lambda/scheduled_task/tasks/war-battle-thread.ts';
@@ -14,7 +13,13 @@ import {updateWarCountdown} from '#src/lambda/scheduler/checks/update-war-countd
 export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
     const discord = yield * DiscordREST;
 
-    const wars = yield * Clashofclans.getWars(clan.sk).pipe(E.catchAll(() => E.succeed([] as ClanWar[])));
+    const wars = yield * pipe(
+        Clashofclans.getWars(clan.sk),
+        E.catchAll(() => Clashofclans.getCurrentWar(clan.sk).pipe(
+            E.map((w) => w ? [w] : []),
+            E.catchAll(() => E.succeed([])),
+        )),
+    );
 
     const cname = yield * updateWarCountdown(clan, wars);
 
@@ -28,15 +33,18 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         return;
     }
 
-    const group = yield * SchedulerService.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk}`}).pipe(E.catchAll(() => E.succeed({Name: undefined})));
+    const group = yield * pipe(
+        Scheduler.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`}),
+        E.catchTag('ResourceNotFoundException', () => E.succeed({Name: undefined})),
+    );
 
-    yield * CSL.log(group);
+    yield * CSL.log('new schedule group', group);
 
     if (!group.Name) {
-        const newgroup = yield * SchedulerService.createScheduleGroup({
-            Name: `s-${clan.pk}-c-${clan.sk}`,
+        const newgroup = yield * Scheduler.createScheduleGroup({
+            Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`,
         });
-        yield * CSL.log(newgroup.ScheduleGroupArn);
+        yield * CSL.log('new schedule group', newgroup.ScheduleGroupArn);
     }
 
     // events
@@ -71,7 +79,7 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
 
     yield * E.all([
         scheduleTaskWarBattleThread(yield * DT.make(prepWar.startTime), {
-            task: 'WarBattleThread',
+            task: 'TaskWarBattleThread',
             data: {
                 server,
                 clan,
@@ -84,7 +92,7 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
             },
         }),
         scheduleTaskWarCloseThread(yield * DT.make(prepWar.endTime), {
-            task: 'WarBattleThread',
+            task: 'TaskWarCloseThread',
             data: {
                 server,
                 clan,

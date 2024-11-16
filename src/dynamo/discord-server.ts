@@ -1,12 +1,11 @@
 import {Console} from 'effect';
 import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/common.ts';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
-export type DServer = S.Schema.Type<typeof DiscordServer>;
 
 export const DiscordServer = S.Struct({
     pk: ServerId,
@@ -34,15 +33,18 @@ export const DiscordServer = S.Struct({
     member: S.optional(RoleId),
     guest : S.optional(RoleId),
 });
+export type DServer = S.Schema.Type<typeof DiscordServer>;
 
-export const DiscordServerEquivalence = S.equivalence(DiscordServer);
+
 export const DiscordServerEncode = S.encodeUnknown(DiscordServer);
 export const DiscordServerDecode = S.decodeUnknown(DiscordServer);
+export const DiscordServerEquivalence = S.equivalence(DiscordServer);
+
 
 export const putDiscordServer = (record: DServer) => pipe(
     DiscordServerEncode(record),
     E.flatMap((encoded) => pipe(
-        DynamoDBDocumentService.put({
+        DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
             Item     : encoded,
         }),
@@ -50,9 +52,10 @@ export const putDiscordServer = (record: DServer) => pipe(
     )),
 );
 
+
 export const getDiscordServer = (key: CompKey<DServer>) => pipe(
     ServerIdEncode(key.pk),
-    E.flatMap((pk) => DynamoDBDocumentService.get({
+    E.flatMap((pk) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
             pk: pk,
@@ -72,8 +75,9 @@ export const getDiscordServer = (key: CompKey<DServer>) => pipe(
     )),
 );
 
+
 export const scanDiscordServers = () => pipe(
-    DynamoDBDocumentService.scan({
+    DynamoDBDocument.scan({
         TableName: process.env.DDB_OPERATIONS,
         IndexName: 'GSI_ALL_SERVERS',
     }),

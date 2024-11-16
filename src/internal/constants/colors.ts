@@ -7,7 +7,12 @@ export const enum COLOR {
     CLASH = '#FFEB88',
     QUAL = '#A5EF80',
     ORIGINAL = '#F5F0ED',
-    REDDENED_EARTH = '#9c6e63',
+
+    REDDENED_EARTH___ = '#9c6e63',
+    REDDENED_EARTH_IN = '#A8857A',
+    REDDENED_EARTH_CO = '#C3A497',
+    REDDENED_EARTH_LE = '#CFB4A8',
+    REDDENED_EARTH_WH = '#DBC7BD',
 }
 
 export const nColor = (c: COLOR) => Number.parseInt(c.replace('#', '0x'));

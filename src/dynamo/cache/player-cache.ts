@@ -10,7 +10,7 @@ const cache = E.gen(function* () {
     const all = pipe(
         players,
         reduceL({} as Record<string, DPlayer>, (acc, a) => {
-            acc[a.sk.split('p-')[1]] = a;
+            acc[a.sk] = a;
 
             return acc;
         }),

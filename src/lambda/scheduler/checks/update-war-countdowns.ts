@@ -9,6 +9,7 @@ export const nicknames = {
     'ClashTest Dummy': 'CTD',
     'DFFP Labs'      : 'Labs',
     'DFFP EZ CWL'    : 'EZCWL',
+    'DFFP Sh t Hits' : 'Shit Hits',
 } as const;
 
 

@@ -85,43 +85,43 @@ resource "aws_dynamodb_resource_policy" "operations" {
 
 
 
+# #
+# # DYNAMO: session
+# #
+# resource "aws_dynamodb_table" "session" {
+#   name = "${local.prefix}-session"
 #
-# DYNAMO: session
+#   read_capacity  = 1
+#   write_capacity = 1
 #
-resource "aws_dynamodb_table" "session" {
-  name = "${local.prefix}-session"
-
-  read_capacity  = 1
-  write_capacity = 1
-
-  hash_key  = "pk"
-  range_key = "sk"
-
-  attribute {
-    name = "pk"
-    type = "S"
-  }
-  attribute {
-    name = "sk"
-    type = "S"
-  }
-}
-
-
-data "aws_iam_policy_document" "session" {
-  statement {
-    effect    = "Allow"
-    actions   = ["dynamodb:*"]
-    resources = [aws_dynamodb_table.session.arn]
-    principals {
-      type        = "AWS"
-      identifiers = [local.account_id]
-    }
-  }
-}
-
-
-resource "aws_dynamodb_resource_policy" "session" {
-  resource_arn = aws_dynamodb_table.session.arn
-  policy       = data.aws_iam_policy_document.session.json
-}
+#   hash_key  = "pk"
+#   range_key = "sk"
+#
+#   attribute {
+#     name = "pk"
+#     type = "S"
+#   }
+#   attribute {
+#     name = "sk"
+#     type = "S"
+#   }
+# }
+#
+#
+# data "aws_iam_policy_document" "session" {
+#   statement {
+#     effect    = "Allow"
+#     actions   = ["dynamodb:*"]
+#     resources = [aws_dynamodb_table.session.arn]
+#     principals {
+#       type        = "AWS"
+#       identifiers = [local.account_id]
+#     }
+#   }
+# }
+#
+#
+# resource "aws_dynamodb_resource_policy" "session" {
+#   resource_arn = aws_dynamodb_table.session.arn
+#   policy       = data.aws_iam_policy_document.session.json
+# }

@@ -11,6 +11,8 @@ export type {
 
 export {
     InteractionType as IXT,
+    InteractionCallbackType as IXRT,
+
     ApplicationCommandType as IXST,
     ApplicationCommandOptionType as IXSOT,
 

@@ -1,12 +1,11 @@
 import {Console, Schema as S} from 'effect';
 import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/common.ts';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
-export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
 
 export const DiscordPlayer = S.Struct({
     pk: UserId,
@@ -29,16 +28,18 @@ export const DiscordPlayer = S.Struct({
     }),
     account_type: S.String,
 });
+export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
+
 
 export const DiscordPlayerDecode = S.decodeUnknown(DiscordPlayer);
 export const DiscordPlayerEncode = S.encodeUnknown(DiscordPlayer);
-
 export const DiscordPlayerEquivalence = S.equivalence(DiscordPlayer);
+
 
 export const putDiscordPlayer = (record: DPlayer) => pipe(
     DiscordPlayerEncode(record),
     E.flatMap((encoded) => pipe(
-        DynamoDBDocumentService.put({
+        DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
             Item     : encoded,
         }),
@@ -46,10 +47,11 @@ export const putDiscordPlayer = (record: DPlayer) => pipe(
     )),
 );
 
+
 export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
     [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
     E.all,
-    E.flatMap(([pk, sk]) => DynamoDBDocumentService.get({
+    E.flatMap(([pk, sk]) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
             pk,
@@ -69,9 +71,10 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
     )),
 );
 
+
 export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
     UserIdEncode(key.pk),
-    E.flatMap((pk) => DynamoDBDocumentService.query({
+    E.flatMap((pk) => DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
         KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
         ExpressionAttributeValues: {
@@ -91,9 +94,10 @@ export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
     )),
 );
 
+
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
     PlayerTagEncode(key.sk),
-    E.flatMap((sk) => DynamoDBDocumentService.query({
+    E.flatMap((sk) => DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
         IndexName                : 'GSI_ALL_PLAYERS',
         KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
@@ -113,8 +117,9 @@ export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
     )),
 );
 
+
 export const scanDiscordPlayers = () => pipe(
-    DynamoDBDocumentService.scan({
+    DynamoDBDocument.scan({
         TableName: process.env.DDB_OPERATIONS,
         IndexName: 'GSI_ALL_PLAYERS',
     }),
@@ -130,10 +135,11 @@ export const scanDiscordPlayers = () => pipe(
     )),
 );
 
+
 export const deleteDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
     [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
     E.all,
-    E.flatMap(([pk, sk]) => DynamoDBDocumentService.delete({
+    E.flatMap(([pk, sk]) => DynamoDBDocument.delete({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
             pk,

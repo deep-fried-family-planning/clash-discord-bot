@@ -6,7 +6,7 @@ import type {SQSEvent} from 'aws-lambda';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internal/constants/secrets.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/lambda/scheduled_task/tasks/war-battle-thread.ts';
@@ -35,7 +35,7 @@ const h = (event: SQSEvent) => pipe(
 
             const taskData = yield * decode(json);
 
-            yield * task(taskData);
+            yield * task(taskData as never);
         }),
         E.catchAll((err) => logDiscordError([err])),
         E.catchAllCause((e) => E.gen(function * () {
@@ -51,7 +51,7 @@ const h = (event: SQSEvent) => pipe(
 const LambdaLive = pipe(
     DiscordApi.Live,
     L.provideMerge(DiscordRESTMemoryLive),
-    L.provideMerge(DynamoDBDocumentService.defaultLayer),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(Clashofclans.Live),
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),

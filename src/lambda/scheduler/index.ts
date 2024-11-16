@@ -9,13 +9,13 @@ import {PlayerCache} from '#src/dynamo/cache/player-cache.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTMemoryLive, MemoryRateLimitStoreLive} from 'dfx';
-import {DynamoDBDocumentService} from '@effect-aws/lib-dynamodb';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internal/constants/secrets.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {SQSService} from '@effect-aws/client-sqs';
+import {SQS} from '@effect-aws/client-sqs';
 import {eachClan} from '#src/lambda/scheduler/checks/clan-war.ts';
-import {SchedulerService} from '@effect-aws/client-scheduler';
+import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 
 
@@ -63,9 +63,9 @@ const LambdaLive = pipe(
         ClanCache.Live,
     ),
     L.provideMerge(L.mergeAll(
-        DynamoDBDocumentService.defaultLayer,
-        SchedulerService.defaultLayer,
-        SQSService.defaultLayer,
+        DynamoDBDocument.defaultLayer,
+        Scheduler.defaultLayer,
+        SQS.defaultLayer,
     )),
     L.provideMerge(DiscordApi.Live),
     L.provideMerge(DiscordRESTMemoryLive),

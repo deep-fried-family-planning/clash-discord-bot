@@ -7,6 +7,8 @@ import {user, USER} from '#src/discord/ixs/link/user.ts';
 import {WA_LINKS, waLinks} from '#src/discord/ixs/war-analysis/wa-links.ts';
 import {WA_MIRRORS, waMirrors} from '#src/discord/ixs/war-analysis/wa-mirrors.ts';
 import {WA_SCOUT, waScout} from '#src/discord/ixs/war-analysis/wa-scout.ts';
+import {CACHE_BUST, cacheBust} from '#src/discord/ixs/util/cache-bust.ts';
+import {GIMME_DATA, gimmeData} from '#src/discord/ixs/util/gimme-data.ts';
 
 
 export const IXS_SPECS = {
@@ -19,6 +21,8 @@ export const IXS_SPECS = {
     WA_LINKS,
     WA_MIRRORS,
     WA_SCOUT,
+    CACHE_BUST,
+    GIMME_DATA,
 } as const;
 
 
@@ -32,4 +36,6 @@ export const IXS_LOOKUP = {
     [WA_LINKS.name]  : waLinks,
     [WA_MIRRORS.name]: waMirrors,
     [WA_SCOUT.name]  : waScout,
+    [CACHE_BUST.name]: cacheBust,
+    [GIMME_DATA.name]: gimmeData,
 } as const;
