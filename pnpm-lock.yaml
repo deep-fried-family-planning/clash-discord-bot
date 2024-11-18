@@ -54,11 +54,11 @@ importers:
         specifier: 1.0.2
         version: 1.0.2(@effect-aws/client-ssm@1.2.0(effect@3.10.15))(effect@3.10.15)
       '@effect/platform':
-        specifier: 0.69.22
-        version: 0.69.22(effect@3.10.15)
+        specifier: 0.69.24
+        version: 0.69.24(effect@3.10.15)
       '@effect/platform-node':
         specifier: 0.64.24
-        version: 0.64.24(@effect/platform@0.69.22(effect@3.10.15))(bufferutil@4.0.8)(effect@3.10.15)
+        version: 0.64.24(@effect/platform@0.69.24(effect@3.10.15))(bufferutil@4.0.8)(effect@3.10.15)
       '@hapi/boom':
         specifier: 10.0.1
         version: 10.0.1
@@ -76,7 +76,7 @@ importers:
         version: 1.11.13
       dfx:
         specifier: 0.106.0
-        version: 0.106.0(@effect/platform@0.69.22(effect@3.10.15))(effect@3.10.15)
+        version: 0.106.0(@effect/platform@0.69.24(effect@3.10.15))(effect@3.10.15)
       discord-interactions:
         specifier: 4.1.0
         version: 4.1.0
@@ -601,8 +601,8 @@ packages:
       '@effect/platform': ^0.69.22
       effect: ^3.10.15
 
-  '@effect/platform@0.69.22':
-    resolution: {integrity: sha512-z7K3BhV6sPVDuPlJYPR5bQQsXgQWm5NImZuY/jjjkssihxWZymBiyTvd2JGiGxwZFrYgmCySOBaQ7XvxSTLf1Q==}
+  '@effect/platform@0.69.24':
+    resolution: {integrity: sha512-SPQoIItSo6oFmCUcmnmEr9w+XH+IDOvgQI33kTw7Vjssm4ITfwx3BzMZl/M7Ozu9+g0IgE4SU/xRmW8YL3Z3BQ==}
     peerDependencies:
       effect: ^3.10.15
 
@@ -1667,6 +1667,7 @@ packages:
 
   acorn-import-assertions@1.9.0:
     resolution: {integrity: sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==}
+    deprecated: package has been renamed to acorn-import-attributes
     peerDependencies:
       acorn: ^8
 
@@ -4878,17 +4879,17 @@ snapshots:
       '@effect-aws/client-ssm': 1.2.0(effect@3.10.15)
       effect: 3.10.15
 
-  '@effect/platform-node-shared@0.19.23(@effect/platform@0.69.22(effect@3.10.15))(effect@3.10.15)':
+  '@effect/platform-node-shared@0.19.23(@effect/platform@0.69.24(effect@3.10.15))(effect@3.10.15)':
     dependencies:
-      '@effect/platform': 0.69.22(effect@3.10.15)
+      '@effect/platform': 0.69.24(effect@3.10.15)
       '@parcel/watcher': 2.5.0
       effect: 3.10.15
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.64.24(@effect/platform@0.69.22(effect@3.10.15))(bufferutil@4.0.8)(effect@3.10.15)':
+  '@effect/platform-node@0.64.24(@effect/platform@0.69.24(effect@3.10.15))(bufferutil@4.0.8)(effect@3.10.15)':
     dependencies:
-      '@effect/platform': 0.69.22(effect@3.10.15)
-      '@effect/platform-node-shared': 0.19.23(@effect/platform@0.69.22(effect@3.10.15))(effect@3.10.15)
+      '@effect/platform': 0.69.24(effect@3.10.15)
+      '@effect/platform-node-shared': 0.19.23(@effect/platform@0.69.24(effect@3.10.15))(effect@3.10.15)
       effect: 3.10.15
       mime: 3.0.0
       undici: 6.21.0
@@ -4897,7 +4898,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.69.22(effect@3.10.15)':
+  '@effect/platform@0.69.24(effect@3.10.15)':
     dependencies:
       effect: 3.10.15
       find-my-way-ts: 0.1.5
@@ -6572,9 +6573,9 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  dfx@0.106.0(@effect/platform@0.69.22(effect@3.10.15))(effect@3.10.15):
+  dfx@0.106.0(@effect/platform@0.69.24(effect@3.10.15))(effect@3.10.15):
     dependencies:
-      '@effect/platform': 0.69.22(effect@3.10.15)
+      '@effect/platform': 0.69.24(effect@3.10.15)
       effect: 3.10.15
     optionalDependencies:
       discord-verify: 1.2.0

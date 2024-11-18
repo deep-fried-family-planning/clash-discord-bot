@@ -45,7 +45,7 @@
     "@effect-aws/lib-dynamodb": "1.4.0",
     "@effect-aws/powertools-logger": "1.4.0",
     "@effect-aws/ssm": "1.0.2",
-    "@effect/platform": "0.69.22",
+    "@effect/platform": "0.69.24",
     "@effect/platform-node": "0.64.24",
     "@hapi/boom": "10.0.1",
     "@hapi/bourne": "3.0.0",
