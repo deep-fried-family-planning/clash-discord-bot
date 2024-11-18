@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.691.0",
-    "@aws-sdk/client-scheduler": "3.691.0",
+    "@aws-sdk/client-scheduler": "3.693.0",
     "@aws-sdk/client-sqs": "3.691.0",
     "@aws-sdk/lib-dynamodb": "3.691.0",
     "@discordjs/core": "2.0.0",
