@@ -1,4 +1,4 @@
-import {makeButton} from '#src/discord/ixc/components/make-components.ts';
+import {makeButton} from '#src/discord/ixc/components/make-button.ts';
 import {RDXK, RDXT} from '#src/discord/ixc/store/types.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 

@@ -1,5 +1,5 @@
-import {AXN} from '#src/discord/ixc/reducers/ax.ts';
-import {buildReducer} from '#src/discord/ixc/store/build-reducer.ts';
+import {AXN} from '#src/discord/ixc/reducers/actions.ts';
+import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
 import {BackButton, CloseButton, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
 import {TimezoneButton, TimezoneSelector} from '#src/discord/ixc/components/components.ts';
@@ -43,7 +43,7 @@ const startTimezone = buildReducer((state, action) => E.gen(function * () {
 }));
 
 const updateTimezone = buildReducer((state, action) => E.gen(function * () {
-    const selector = TimezoneSelector.fromMap(state.componentMap)!;
+    const selector = TimezoneSelector.fromMap(state.cmap)!;
     const selected = action.selected[0].value;
 
     const submitId = buildCustomId({
@@ -69,7 +69,7 @@ const updateTimezone = buildReducer((state, action) => E.gen(function * () {
 }));
 
 const submitTimezone = buildReducer((state, action) => E.gen(function * () {
-    const selector = TimezoneSelector.fromMap(state.componentMap)!;
+    const selector = TimezoneSelector.fromMap(state.cmap)!;
     const selected = selector.getDefaultValues().map((o) => o.value);
 
     yield * putDiscordUser({
@@ -100,7 +100,7 @@ const submitTimezone = buildReducer((state, action) => E.gen(function * () {
 }));
 
 
-export const userReducer = {
+export const reducerUser = {
     [AXN.OPEN_USER.predicate]      : openUser,
     [AXN.START_TIMEZONE.predicate] : startTimezone,
     [AXN.UPDATE_TIMEZONE.predicate]: updateTimezone,

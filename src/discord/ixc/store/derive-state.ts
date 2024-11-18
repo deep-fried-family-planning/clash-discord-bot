@@ -10,7 +10,8 @@ import type {Maybe} from '#src/internal/pure/types.ts';
 import {BackButton, CloseButton, ForwardButton, NavSelect, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
 import type {IxDcState} from '#src/discord/ixc/store/types.ts';
 import {inspect} from 'node:util';
-import {makeButtonFrom, makeSelectFrom} from '#src/discord/ixc/components/make-components.ts';
+import {makeButtonFrom} from '#src/discord/ixc/components/make-button.ts';
+import {makeSelectFrom} from '#src/discord/ixc/components/make-select.ts';
 
 
 export type ComponentMapItem<T extends Button | SelectMenu = Button | SelectMenu> = {id: ReturnType<typeof parseCustomId>; original: T};
@@ -62,8 +63,8 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         previous  : {
             embeds: ix.message!.embeds,
         },
-        componentMap: componentMap,
-        view        : {
+        cmap: componentMap,
+        view: {
             info     : ix.message?.embeds[0],
             selected : ix.message?.embeds[1],
             status   : ix.message?.embeds[2],
@@ -86,7 +87,7 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         },
     } as const satisfies IxDcState;
 
-    yield * CSL.debug('[CURRENTSTATE]', inspect(state, true, null));
+    yield * CSL.debug('[STATE]', inspect(state, true, null));
 
     return state;
 });

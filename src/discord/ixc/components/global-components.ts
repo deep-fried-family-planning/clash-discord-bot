@@ -1,6 +1,8 @@
-import {makeButton, makeSelect} from '#src/discord/ixc/components/make-components.ts';
+import {makeButton} from '#src/discord/ixc/components/make-button.ts';
 import {RDXK, RDXT} from '#src/discord/ixc/store/types.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
+import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
+
 
 export const CloseButton = makeButton({kind: RDXK.CLOSE, type: RDXT.CLOSE}, {
     label: 'Close',

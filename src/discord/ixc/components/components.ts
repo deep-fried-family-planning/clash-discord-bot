@@ -1,7 +1,8 @@
-import {makeButton, makeSelect} from '#src/discord/ixc/components/make-components.ts';
+import {makeButton} from '#src/discord/ixc/components/make-button.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
-import {AXN} from '#src/discord/ixc/reducers/ax.ts';
+import {AXN} from '#src/discord/ixc/reducers/actions.ts';
+import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 

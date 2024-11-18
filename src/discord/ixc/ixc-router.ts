@@ -1,15 +1,15 @@
-import {CSL, E} from '#src/internal/pure/effect.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import type {IxDc} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {DeepFryerUnknownError, SlashUserError} from '#src/internal/errors.ts';
 import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
-import {IXCD_ACTIONS} from '#src/discord/ixc/reducers/actions.ts';
+import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
 import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
-import {firstReducer} from '#src/discord/ixc/reducers/first.ts';
-import {AXN_FIRST} from '#src/discord/ixc/reducers/ax.ts';
+import {reducerFirst} from '#src/discord/ixc/reducers/reducer-first.ts';
+import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
@@ -25,35 +25,29 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
 
     const state = yield * deriveState(ix, ix.data as IxDc);
 
-    if (!state.user || (action.predicate in firstReducer)) {
-        const next = !(action.predicate in firstReducer)
-            ? yield * firstReducer[AXN_FIRST.FIRST_USER.predicate](state, action)
-            : yield * firstReducer[action.predicate](state, action);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!state.user || (action.predicate in reducerFirst)) {
+        const next = !(action.predicate in reducerFirst)
+            ? yield * reducerFirst[AXN.FIRST_USER.predicate](state, action)
+            : yield * reducerFirst[action.predicate](state, action);
 
         const message = yield * deriveView(next);
 
         if (action.id.params.kind === RDXK.ENTRY) {
-            yield * CSL.debug('[ENTRY]');
             return yield * DiscordApi.entryMenu(ix, message);
         }
-
-        yield * CSL.debug('[EDIT]');
         return yield * DiscordApi.editMenu(ix, message);
     }
 
-    if (!(action.predicate in IXCD_ACTIONS)) {
+    if (!(action.predicate in reducerAccounts)) {
         return yield * new SlashUserError({issue: 'Unknown Interaction'});
     }
 
-    const next = yield * IXCD_ACTIONS[action.predicate](state, action);
-
+    const next = yield * reducerAccounts[action.predicate](state, action);
     const message = yield * deriveView(next);
 
     if (action.id.params.kind === RDXK.ENTRY) {
-        yield * CSL.debug('[ENTRY]');
         return yield * DiscordApi.entryMenu(ix, message);
     }
-
-    yield * CSL.debug('[EDIT]');
     return yield * DiscordApi.editMenu(ix, message);
 });

@@ -9,8 +9,8 @@ import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 
 
 export const deriveView = (state: IxDcState) => E.gen(function * () {
-    yield * CSL.debug('[NEWSTATE]', inspect(state));
-    yield * CSL.debug('[PREVIEW]', inspect(state.view));
+    yield * CSL.debug('[STATE]', inspect(state));
+    yield * CSL.debug('[VIEW]', inspect(state.view));
 
     if (!state.view) {
         return {

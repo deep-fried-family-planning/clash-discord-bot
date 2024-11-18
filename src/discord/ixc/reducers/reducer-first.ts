@@ -1,15 +1,15 @@
-import {buildReducer} from '#src/discord/ixc/store/build-reducer.ts';
+import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
 import {E, pipe, S} from '#src/internal/pure/effect.ts';
 import {QuietEndSelector, QuietStartSelector, TimezoneSelector} from '#src/discord/ixc/components/components.ts';
 import {buildCustomId} from '#src/discord/ixc/store/id.ts';
-import {AXN, AXN_FIRST} from '#src/discord/ixc/reducers/ax.ts';
+import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
-import {BackButton, CloseButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
+import {CloseButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {flatMapL, mapL} from '#src/internal/pure/pure-list.ts';
 
 
-export const firstUser = buildReducer((state, action) => E.gen(function * () {
+export const firstUser = buildReducer((state) => E.gen(function * () {
     return {
         ...state,
         view: {
@@ -17,9 +17,9 @@ export const firstUser = buildReducer((state, action) => E.gen(function * () {
                 message: 'first time user detected',
             }),
             rows: [
-                [TimezoneSelector.as(AXN_FIRST.FIRST_UPDATE_TIMEZONE)],
-                [QuietStartSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_START)],
-                [QuietEndSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_END)],
+                [TimezoneSelector.as(AXN.FIRST_UPDATE_TIMEZONE)],
+                [QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START)],
+                [QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END)],
             ],
             close : CloseButton,
             submit: SubmitButton.as(AXN.NOOP, {disabled: true}),
@@ -31,9 +31,9 @@ export const firstUser = buildReducer((state, action) => E.gen(function * () {
 const firstUserUpdate = buildReducer((state, action) => E.gen(function * () {
     const selectors = pipe(
         [
-            TimezoneSelector.as(AXN_FIRST.FIRST_UPDATE_TIMEZONE).fromMap(state.componentMap)!,
-            QuietStartSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_START).fromMap(state.componentMap)!,
-            QuietEndSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_END).fromMap(state.componentMap)!,
+            TimezoneSelector.as(AXN.FIRST_UPDATE_TIMEZONE).fromMap(state.cmap)!,
+            QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START).fromMap(state.cmap)!,
+            QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END).fromMap(state.cmap)!,
         ],
         mapL((selector) => {
             if (selector.id.predicate === action.id.predicate) {
@@ -52,7 +52,7 @@ const firstUserUpdate = buildReducer((state, action) => E.gen(function * () {
     );
 
     const submitId = buildCustomId({
-        ...AXN_FIRST.FIRST_USER_SUBMIT.params,
+        ...AXN.FIRST_USER_SUBMIT.params,
         data: selected,
     });
 
@@ -81,9 +81,9 @@ const firstUserSubmit = buildReducer((state, action) => E.gen(function * () {
         quietEnd,
     ] = pipe(
         [
-            TimezoneSelector.as(AXN_FIRST.FIRST_UPDATE_TIMEZONE).fromMap(state.componentMap)!,
-            QuietStartSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_START).fromMap(state.componentMap)!,
-            QuietEndSelector.as(AXN_FIRST.FIRST_UPDATE_QUIET_END).fromMap(state.componentMap)!,
+            TimezoneSelector.as(AXN.FIRST_UPDATE_TIMEZONE).fromMap(state.cmap)!,
+            QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START).fromMap(state.cmap)!,
+            QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END).fromMap(state.cmap)!,
         ] as const,
         mapL((selector) => selector.getDefaultValues()),
     );
@@ -125,10 +125,10 @@ const firstUserSubmit = buildReducer((state, action) => E.gen(function * () {
 }));
 
 
-export const firstReducer = {
-    [AXN_FIRST.FIRST_USER.predicate]              : firstUser,
-    [AXN_FIRST.FIRST_UPDATE_TIMEZONE.predicate]   : firstUserUpdate,
-    [AXN_FIRST.FIRST_UPDATE_QUIET_START.predicate]: firstUserUpdate,
-    [AXN_FIRST.FIRST_UPDATE_QUIET_END.predicate]  : firstUserUpdate,
-    [AXN_FIRST.FIRST_USER_SUBMIT.predicate]       : firstUserSubmit,
+export const reducerFirst = {
+    [AXN.FIRST_USER.predicate]              : firstUser,
+    [AXN.FIRST_UPDATE_TIMEZONE.predicate]   : firstUserUpdate,
+    [AXN.FIRST_UPDATE_QUIET_START.predicate]: firstUserUpdate,
+    [AXN.FIRST_UPDATE_QUIET_END.predicate]  : firstUserUpdate,
+    [AXN.FIRST_USER_SUBMIT.predicate]       : firstUserSubmit,
 };

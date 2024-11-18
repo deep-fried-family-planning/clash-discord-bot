@@ -4,7 +4,7 @@ import {buildCustomId, parseCustomId} from '#src/discord/ixc/store/id.ts';
 import {IXCDELIM} from '#src/discord/ixc/store/types.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterKV, replaceKV} from '#src/internal/pure/pure-kv.ts';
-import {IXCD_ACTIONS} from '#src/discord/ixc/reducers/actions.ts';
+import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
 
 
 describe('parse routing', () => {
@@ -47,7 +47,7 @@ describe('parse routing', () => {
             }),
         );
 
-        console.log('actions', IXCD_ACTIONS);
+        console.log('actions', reducerAccounts);
 
         expect(defined).toMatchInlineSnapshot(`
           {

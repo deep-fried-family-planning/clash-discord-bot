@@ -6,12 +6,9 @@ import {emptyKV, keysKv} from '#src/internal/pure/pure-kv.ts';
 import type {RDXT} from '#src/discord/ixc/store/types.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ID_ROUTES, type Route, type RouteParams, DELIM} from '#src/discord/ixc/store/id-routes.ts';
-import {inspect} from 'node:util';
 
 
 export const parseCustomId = (custom_id: str) => {
-    console.debug('[parseCustomId]', custom_id);
-
     const route = ID_ROUTES.find((r) => r.pattern.test(custom_id));
 
     if (!route) {
@@ -37,8 +34,6 @@ export const parseCustomId = (custom_id: str) => {
         }),
     );
 
-    console.debug('[parseCustomId]: params', inspect(params, true, null));
-
     return {
         custom_id,
         template: route.template,
@@ -59,8 +54,6 @@ export const parseCustomId = (custom_id: str) => {
 
 
 export const buildCustomId = (params: RouteParams) => {
-    console.debug('[buildCustomId]', inspect(params, true, null));
-
     const redefined = {
         ...params,
         data: params.data?.map((d) => d.replaceAll(DELIM.RESERVED_FWDSLASH, DELIM.RESERVED_PIPE)).join(DELIM.DATA),
@@ -78,8 +71,6 @@ export const buildCustomId = (params: RouteParams) => {
         keysKv,
         (ks) => ID_ROUTES.find((r) => r.keys.length === ks.length && r.keys.every((k) => ks.includes(k))),
     );
-
-    console.debug('[buildCustomId]: route', inspect(route, true, null));
 
     return {
         custom_id    : inject(route!.template, defined as Omit<RouteParams, 'data'> & {data: string}),

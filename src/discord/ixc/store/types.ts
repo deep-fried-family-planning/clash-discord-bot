@@ -1,19 +1,12 @@
-import type {IxRE} from '#src/discord/util/discord.ts';
-import type {IxD, IxDc} from '#src/discord/util/discord.ts';
-import type {Embed, SelectMenu, Snowflake} from 'dfx/types';
+import type {Embed, Snowflake} from 'dfx/types';
 import type {DServer} from '#src/dynamo/discord-server.ts';
 import type {DUser} from '#src/dynamo/discord-user.ts';
-import type {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import type {MadeButton, MadeSelect} from '#src/discord/ixc/components/make-components.ts';
+import type {MadeButton} from '#src/discord/ixc/components/make-button.ts';
 import type {Route} from '#src/discord/ixc/store/id-routes.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-
-export type BaseCustomId = string;
-export type ViewName = string;
+import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
 
 
 export type IxDcAction = {
@@ -86,7 +79,7 @@ export const enum RDXT {
     FIRST_UPDATE_QUIET_START = 'FUQS',
     FIRST_UPDATE_QUIET_END = 'FUQE',
     FIRST_USER_SUBMIT = 'FUS',
-    FIRST_ACCOUNT = 'FIRST_ACCOUNT',
+    FIRST_ACCOUNT = 'FA',
 }
 
 
@@ -101,7 +94,7 @@ export type IxDcState = {
         embeds: Embed[];
     };
 
-    componentMap: Record<string, Maybe<ComponentMapItem>>;
+    cmap: Record<string, Maybe<ComponentMapItem>>;
 
     view?: {
         info?     : Embed | undefined;
@@ -115,39 +108,6 @@ export type IxDcState = {
         forward?  : MadeButton | undefined;
         close?    : MadeButton | undefined;
     };
-    // selected_player_tag: string;
-    // players            : {}[];
-    // selected_clan_tag  : string;
-    // clans              : {}[];
-    // selected_timezone  : string;
-    // timezones          : {}[];
 };
-
-
-export type IxDcUbiquitousButtonData = {
-    type   : string;
-    pointer: string;
-};
-
-
-export type IxDcButtonData = {
-    type  : string;
-    value : string;
-    values: string[];
-
-    // ACC:S|user_id-1234556|ptag-#1234
-    // ACC:NEW:S|user_id-1234556|ptag-#1234
-};
-
-
-export type IxDcSelectData = {
-    original: SelectMenu;
-};
-
-
-export type IxDeriveState = (ix: IxD, d: IxDc) => E.Effect<IxDcState, any, any>;
-export type IxDeriveAction = (ix: IxD, d: IxDc) => E.Effect<IxDcAction, any, any>;
-export type IxReducer = (s: IxDcState, a: IxDcAction) => E.Effect<IxDcState, any, any>;
-export type IxDispatch = (s: IxDcState, a: IxDcAction) => E.Effect<IxRE, any, any>;
 
 
