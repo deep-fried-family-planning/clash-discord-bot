@@ -69,8 +69,8 @@ importers:
         specifier: 4.0.8
         version: 4.0.8
       clashofclans.js:
-        specifier: 3.3.15
-        version: 3.3.15
+        specifier: 3.3.16
+        version: 3.3.16
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
@@ -1667,6 +1667,7 @@ packages:
 
   acorn-import-assertions@1.9.0:
     resolution: {integrity: sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==}
+    deprecated: package has been renamed to acorn-import-attributes
     peerDependencies:
       acorn: ^8
 
@@ -1865,8 +1866,8 @@ packages:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
 
-  clashofclans.js@3.3.15:
-    resolution: {integrity: sha512-QncOj9cOjngqNqTVfaSgjirWj2XeUAshW/VEFVPOKW0zRFuY7Hwg5eM3dlxktMwk6TQLB2FLIoPAlQ3rNic1FA==}
+  clashofclans.js@3.3.16:
+    resolution: {integrity: sha512-oUa4j1Ge2F5XVBugFecrbCYwI+sv1T6dtt1fXF0pw94WbefySwHrwkMl++o9iPk6lHrUwXOm7wr//Y25Db7GSw==}
     engines: {node: '>=18.x'}
 
   cli-cursor@3.1.0:
@@ -6379,7 +6380,7 @@ snapshots:
 
   chrome-trace-event@1.0.4: {}
 
-  clashofclans.js@3.3.15:
+  clashofclans.js@3.3.16:
     dependencies:
       undici: 5.28.4
 
