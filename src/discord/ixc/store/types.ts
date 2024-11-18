@@ -7,6 +7,7 @@ import type {Route} from '#src/discord/ixc/store/id-routes.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
+import type {IxDm} from '#src/discord/util/discord.ts';
 
 
 export type IxDcAction = {
@@ -17,6 +18,7 @@ export type IxDcAction = {
         value: str;
     }[];
     forward?: str | undefined;
+    original: IxDm;
 };
 
 
@@ -25,6 +27,8 @@ export type IxDcAction = {
  */
 export const enum RDXK {
     MODAL = 'M',
+    MODAL_SUBMIT = 'SM',
+    TEXT = 'T',
 
     ENTRY = 'ENTRY',
 
@@ -80,6 +84,9 @@ export const enum RDXT {
     FIRST_UPDATE_QUIET_END = 'FUQE',
     FIRST_USER_SUBMIT = 'FUS',
     FIRST_ACCOUNT = 'FA',
+
+    TAG = 'TAG',
+    API = 'API',
 }
 
 

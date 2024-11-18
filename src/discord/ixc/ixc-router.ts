@@ -1,5 +1,5 @@
 import {E} from '#src/internal/pure/effect.ts';
-import type {IxDc} from '#src/discord/util/discord.ts';
+import {type IxDc, MGF} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {DeepFryerUnknownError, SlashUserError} from '#src/internal/errors.ts';
@@ -48,6 +48,14 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
 
     if (action.id.params.kind === RDXK.ENTRY) {
         return yield * DiscordApi.entryMenu(ix, message);
+    }
+
+    if (action.id.params.kind === RDXK.MODAL_SUBMIT) {
+        yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
+        return yield * DiscordApi.createFollowupMessage(ix.application_id, ix.token, {
+            ...message,
+            flags: MGF.EPHEMERAL,
+        });
     }
     return yield * DiscordApi.editMenu(ix, message);
 });

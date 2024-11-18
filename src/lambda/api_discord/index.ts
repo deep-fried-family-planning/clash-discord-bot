@@ -9,8 +9,8 @@ import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {IxmLink} from '#src/discord/ixm/ixm-link.ts';
-import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {type IxD, IXRT} from '#src/discord/util/discord.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
@@ -42,16 +42,19 @@ const modal = (body: IxD) => E.gen(function * () {
         MessageBody: JSON.stringify(body),
     });
 
-    return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
+    //
+    // yield * DiscordApi.createInteractionResponse('', '', {
+    //     type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+    //
+    // });
+
+    return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
+        flags: MGF.EPHEMERAL,
+    }});
 });
 
 
 const component = (body: IxD) => E.gen(function * () {
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-        MessageBody: JSON.stringify(body),
-    });
-
     if ('custom_id' in body.data!) {
         if (body.data.custom_id.startsWith(`/k/${RDXK.MODAL}`)) {
             return r200({
@@ -60,12 +63,22 @@ const component = (body: IxD) => E.gen(function * () {
             });
         }
         else if (body.data.custom_id.startsWith(`/k/${RDXK.ENTRY}`)) {
+            yield * SQS.sendMessage({
+                QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+                MessageBody: JSON.stringify(body),
+            });
+
             return {
                 statusCode: 202,
                 body      : '',
             };
         }
     }
+
+    yield * SQS.sendMessage({
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+        MessageBody: JSON.stringify(body),
+    });
 
     return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
 });

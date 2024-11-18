@@ -43,6 +43,7 @@ export const deriveAction = (ix: IxD, d: IxDc) => E.gen(function * () {
         predicate: id.predicate,
         selected : values,
         forward  : id.params.forward,
+        original : d,
     } as const satisfies IxDcAction;
 
     yield * CSL.debug('[ACTION]', inspect(action, true, null));

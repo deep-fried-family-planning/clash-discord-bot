@@ -1,5 +1,5 @@
 import {parseCustomId} from '#src/discord/ixc/store/id.ts';
-import type {ActionRow, Button, SelectMenu} from 'dfx/types';
+import type {ActionRow, Button, SelectMenu, TextInput} from 'dfx/types';
 import {IXCT, type IxD, type IxDc} from '#src/discord/util/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {type DServer, getDiscordServer} from '#src/dynamo/discord-server.ts';
@@ -12,9 +12,10 @@ import type {IxDcState} from '#src/discord/ixc/store/types.ts';
 import {inspect} from 'node:util';
 import {makeButtonFrom} from '#src/discord/ixc/components/make-button.ts';
 import {makeSelectFrom} from '#src/discord/ixc/components/make-select.ts';
+import {makeTextFrom} from '#src/discord/ixc/components/make-text.ts';
 
 
-export type ComponentMapItem<T extends Button | SelectMenu = Button | SelectMenu> = {id: ReturnType<typeof parseCustomId>; original: T};
+export type ComponentMapItem<T extends Button | SelectMenu = Button | SelectMenu | TextInput> = {id: ReturnType<typeof parseCustomId>; original: T};
 
 
 export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
@@ -73,9 +74,10 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
                 middleRows,
                 mapL((cs) => pipe(
                     cs,
-                    mapL((c) => c.original.type === IXCT.BUTTON
-                        ? makeButtonFrom(c.original as Button)
-                        : makeSelectFrom(c.original as SelectMenu),
+                    mapL((c) =>
+                        c.original.type === IXCT.BUTTON ? makeButtonFrom(c.original as Button)
+                        : c.original.type === IXCT.TEXT_INPUT ? makeSelectFrom(c.original as SelectMenu)
+                        : makeTextFrom(c.original as TextInput),
                     ),
                 )),
             ),

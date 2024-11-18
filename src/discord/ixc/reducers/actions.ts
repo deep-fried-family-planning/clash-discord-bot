@@ -10,7 +10,10 @@ export const AXN = {
     START_LINKS: buildPredicate(RDXK.EDIT, RDXT.LINKS),
 
 
-    START_NEW_LINK: buildPredicate(RDXK.EDIT, RDXT.NEW_LINK),
+    START_NEW_LINK       : buildPredicate(RDXK.EDIT, RDXT.NEW_LINK),
+    UPDATE_NEW_LINK_TYPE : buildPredicate(RDXK.UPDATE, RDXT.NEW_LINK),
+    MODAL_NEW_LINK_OPEN  : buildPredicate(RDXK.MODAL, RDXT.NEW_LINK),
+    MODAL_NEW_LINK_SUBMIT: buildPredicate(RDXK.MODAL_SUBMIT, RDXT.NEW_LINK),
 
 
     START_ACCOUNTS: buildPredicate(RDXK.EDIT, RDXT.ACCOUNTS),
@@ -45,4 +48,8 @@ export const AXN = {
     NOOP1: buildPredicate(RDXK.NOOP, RDXT.NOOP1),
     NOOP2: buildPredicate(RDXK.NOOP, RDXT.NOOP2),
     NOOP3: buildPredicate(RDXK.NOOP, RDXT.NOOP3),
+
+
+    TAG: buildPredicate(RDXK.TEXT, RDXT.TAG),
+    API: buildPredicate(RDXK.TEXT, RDXT.API),
 } as const;

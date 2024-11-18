@@ -1,15 +1,16 @@
-import {E} from '#src/internal/pure/effect';
+import {E, ORD, pipe} from '#src/internal/pure/effect';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {BackButton, CloseButton, DeleteButton, ForwardButton, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
 import {AccountSelector, AccountTypeSelector, ChangeAccountTypeButton, DeleteAccountButton} from '#src/discord/ixc/components/components.ts';
 import {getDiscordPlayer, putDiscordPlayer, queryPlayersForUser} from '#src/dynamo/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
-import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
 import {buildCustomId} from '#src/discord/ixc/store/id.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
+import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
+import {Order} from 'effect';
 
 
 const startAccounts = buildReducer((state, action) => E.gen(function * () {
@@ -37,16 +38,17 @@ const startAccounts = buildReducer((state, action) => E.gen(function * () {
 
 
 const startSelectAccount = buildReducer((state, action) => E.gen(function * () {
-    const records = yield * queryPlayersForUser({pk: state.user_id});
-    const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
-
-    const lookup = players.reduce(
-        (acc, player) => {
-            acc[player.tag] = player;
-            return acc;
-        },
-        emptyKV<string, typeof players[number]>(),
+    const records = pipe(
+        yield * queryPlayersForUser({pk: state.user_id}),
+        sortWithL((r) => r.sk, Order.string),
     );
+
+    const players = pipe(
+        yield * Clashofclans.getPlayers(records.map((r) => r.sk)),
+        sortWithL((p) => p.tag, Order.string),
+    );
+
+    const together = zipL(records, players);
 
     const forwardId = AXN.UPDATE_SELECT_ACCOUNT.withForward({
         nextKind: action.id.params.nextKind!,
@@ -62,11 +64,19 @@ const startSelectAccount = buildReducer((state, action) => E.gen(function * () {
             }),
             rows: [
                 [AccountSelector.as(forwardId, {
-                    options: records.map((r) => ({
-                        label      : `${lookup[r.sk].name} (${r.account_type})`,
-                        description: `[th${lookup[r.sk].townHallLevel}]: ${r.sk}`,
-                        value      : lookup[r.sk].tag,
-                    })),
+                    options: pipe(
+                        together,
+                        sortByL(
+                            ORD.mapInput(ORD.string, ([r]) => r.account_type === 'main' ? '0' : r.account_type),
+                            ORD.mapInput(ORD.reverse(ORD.number), ([, p]) => p.townHallLevel),
+                            ORD.mapInput(ORD.string, ([, p]) => p.name),
+                            ORD.mapInput(ORD.string, ([r]) => r.sk),
+                        ),
+                        mapL(([r, p]) => ({
+                            label      : `[${r.account_type}/th${p.townHallLevel}]  ${p.name}`,
+                            description: `tag: ${p.tag}, verification_level: ${r.verification}`,
+                            value      : p.tag,
+                        }))),
                 })],
             ],
             close  : CloseButton,

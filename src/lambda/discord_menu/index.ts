@@ -20,7 +20,7 @@ const menu = (ix: IxD) => E.gen(function * () {
     yield * CSL.debug('[IxData]:', inspect(ix.data, true, null));
     yield * CSL.debug('[IxMessage]:', inspect(ix.message, true, null));
 
-    if (ix.type === IXT.MESSAGE_COMPONENT) {
+    if (ix.type === IXT.MESSAGE_COMPONENT || ix.type === IXT.MODAL_SUBMIT) {
         return yield * ixcRouter(ix);
     }
 }).pipe(

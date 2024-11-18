@@ -15,6 +15,8 @@ export {
     Brand as B,
     RateLimiter as RL,
     Metric as Metric,
+    Order as ORD,
+    Option as O,
     flow,
     pipe,
 } from 'effect';

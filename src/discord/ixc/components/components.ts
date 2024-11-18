@@ -3,11 +3,16 @@ import {IXCBS} from '#src/discord/util/discord.ts';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
+import {makeText} from '#src/discord/ixc/components/make-text.ts';
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 
 export const NewLinkButton = makeButton(AXN.START_NEW_LINK.params, {
     label: 'New Link',
+    style: IXCBS.SUCCESS,
+});
+export const LinkModalButton = makeButton(AXN.MODAL_NEW_LINK_OPEN.params, {
+    label: 'Open Link Modal',
     style: IXCBS.SUCCESS,
 });
 
@@ -18,7 +23,7 @@ export const AccountsButton = makeButton(AXN.START_ACCOUNTS.params, {
 });
 
 export const ChangeAccountTypeButton = makeButton(AXN.START_ACCOUNT_TYPE.params, {
-    label: 'Type',
+    label: 'Change Type',
     style: IXCBS.PRIMARY,
 });
 
@@ -72,3 +77,10 @@ export const QuietEndSelector = makeSelect(AXN.UPDATE_TIMEZONE.params, {
     options    : SELECT_TIMES as any,
 });
 
+
+export const TagText = makeText(AXN.TAG.params, {
+
+});
+export const ApiText = makeText(AXN.API.params, {
+
+});
