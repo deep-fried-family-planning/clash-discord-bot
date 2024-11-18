@@ -25,17 +25,42 @@ const menu = (ix: IxD) => E.gen(function * () {
     }
 }).pipe(
     E.catchAllCause((error) => E.gen(function * () {
+        yield * CSL.error('[CAUSE]');
+
         const e = Cause.prettyErrors(error);
 
         const userMessage = yield * logDiscordError(e);
 
-        yield * DiscordApi.createInteractionResponse(ix.id, ix.token, {
-            type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
+        yield * pipe(
+            DiscordApi.createInteractionResponse(ix.id, ix.token, {
+                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    ...userMessage,
+                    flags: MGF.EPHEMERAL,
+                },
+            }),
+            E.catchAllDefect(() => DiscordApi.editMenu(ix, {
                 ...userMessage,
-                flags: MGF.EPHEMERAL,
-            },
-        });
+            })),
+        );
+    })),
+    E.catchAllDefect((e) => E.gen(function * () {
+        yield * CSL.error('[DEFECT]');
+
+        const userMessage = yield * logDiscordError([e]);
+
+        yield * pipe(
+            DiscordApi.createInteractionResponse(ix.id, ix.token, {
+                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    ...userMessage,
+                    flags: MGF.EPHEMERAL,
+                },
+            }),
+            E.catchAllDefect(() => DiscordApi.editMenu(ix, {
+                ...userMessage,
+            })),
+        );
     })),
 );
 

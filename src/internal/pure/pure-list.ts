@@ -10,4 +10,7 @@ export {
     of as ofL,
     dedupe as dedupeL,
     contains as containsL,
+    partition as partitionL,
+    head as headL,
+    tail as tailL,
 } from 'effect/Array';

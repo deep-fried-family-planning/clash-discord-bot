@@ -1,7 +1,8 @@
-import {makeButton} from '#src/discord/ixc/make/components.ts';
+import {makeButton} from '#src/discord/ixc/old/make/components.ts';
 import {ButtonStyle} from 'dfx/types';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
-import {makeSingleSelectSubmit} from '#src/discord/ixc/make/single-select-submit.ts';
+import {makeSingleSelectSubmit} from '#src/discord/ixc/old/make/single-select-submit.ts';
+
 
 export const UserB = makeButton('UserButton', {
     label: 'User',

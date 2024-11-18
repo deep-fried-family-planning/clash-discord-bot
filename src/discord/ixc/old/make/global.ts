@@ -1,6 +1,6 @@
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {makeButton} from '#src/discord/ixc/make/components.ts';
+import {makeButton} from '#src/discord/ixc/old/make/components.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 
 

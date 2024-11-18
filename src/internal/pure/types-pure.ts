@@ -1,4 +1,7 @@
 export type num = number;
+export type str = string;
+export type und = undefined;
+export type nl = null;
 export type int = number;
 export type bool = boolean;
 export type n_bool = 0 | 1;

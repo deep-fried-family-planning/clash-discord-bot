@@ -66,6 +66,10 @@ const config = [
                     allowNumber : true,
                 }],
                 '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
+
+                // temp
+                '@typescript-eslint/no-unused-expressions'    : [0],
+                '@typescript-eslint/no-unsafe-enum-comparison': [0],
             },
         },
         {

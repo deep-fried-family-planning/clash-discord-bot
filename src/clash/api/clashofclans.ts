@@ -13,6 +13,7 @@ export class Clashofclans extends E.Tag('DeepFryerClash')<
             | 'getClan'
             | 'getPlayer'
             | 'getPlayers'
+            | 'getClanWar'
             | 'getWars'
             | 'getClans'
             | 'getCurrentWar'
@@ -64,6 +65,14 @@ export class Clashofclans extends E.Tag('DeepFryerClash')<
             getClans: (clanTag, options) => E
                 .tryPromise(
                     async () => await client.getClans(clanTag, options),
+                )
+                .pipe(
+                    E.catchAll(clashErrorFromUndefined),
+                ),
+
+            getClanWar: (clanTag, options) => E
+                .tryPromise(
+                    async () => await client.getClanWar(clanTag, options),
                 )
                 .pipe(
                     E.catchAll(clashErrorFromUndefined),

@@ -1,7 +1,7 @@
 import {UI} from 'dfx';
 import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import type {SelectOption} from 'dfx/types';
-import {type IXCEffect, stdNamespace} from '#src/discord/ixc/make/namespace.ts';
+import {type IXCEffect, stdNamespace} from '#src/discord/ixc/old/make/namespace.ts';
 
 
 export const makeButton = (

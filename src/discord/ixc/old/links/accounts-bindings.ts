@@ -1,12 +1,12 @@
-import {AccountsB, AccountsChangeTypeSSS, AccountsDeleteSSS} from '#src/discord/ixc/links/accounts-components.ts';
-import {E} from '#src/internal/pure/effect';
+import {AccountsB, AccountsChangeTypeSSS, AccountsDeleteSSS} from '#src/discord/ixc/old/links/accounts-components.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {UI} from 'dfx';
 import {queryPlayersForUser} from '#src/dynamo/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {IXCBS, type IxD, type IxDc} from '#src/discord/util/discord.ts';
-import {GlobalCloseB} from '#src/discord/ixc/make/global.ts';
+import {GlobalCloseB} from '#src/discord/ixc/old/make/global.ts';
 
 
 const populateAccounts = (ix: IxD, d: IxDc) => E.gen(function * () {

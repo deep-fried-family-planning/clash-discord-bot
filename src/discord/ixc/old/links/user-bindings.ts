@@ -1,11 +1,11 @@
-import {UserB, UserQhEndSSS, UserQhStartSSS, UserTzSSS} from '#src/discord/ixc/links/user-components.ts';
+import {UserB, UserQhEndSSS, UserQhStartSSS, UserTzSSS} from '#src/discord/ixc/old/links/user-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {UI} from 'dfx';
 import {getDiscordUser, putDiscordUser} from '#src/dynamo/discord-user.ts';
-import {parseStdDataId} from '#src/discord/ixc/make/namespace.ts';
+import {parseStdDataId} from '#src/discord/ixc/old/make/namespace.ts';
 import {DeepFryerUnknownError} from '#src/internal/errors.ts';
-import {GlobalCloseB} from '#src/discord/ixc/make/global.ts';
+import {GlobalCloseB} from '#src/discord/ixc/old/make/global.ts';
 
 
 export const UserBB = UserB.bind((ix, d, s) => E.gen(function * () {

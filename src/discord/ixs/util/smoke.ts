@@ -3,10 +3,10 @@ import {CSL, E} from '#src/internal/pure/effect.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {UI} from 'dfx';
-import {LinksEntryB} from '#src/discord/ixc/links/links-components.ts';
 import {OPTION_CLAN} from '#src/discord/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import {InfoEntryButton, LinksEntryButton, RosterEntryButton} from '#src/discord/ixc/components/entry-components.ts';
 
 
 export const SMOKE
@@ -39,7 +39,7 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     return {
         embeds    : [{description: JSON.stringify(data.data, null, 2)}],
         components: UI.grid([
-            [LinksEntryB.component],
+            [LinksEntryButton.component, InfoEntryButton.component, RosterEntryButton.component],
         ]),
     };
 });

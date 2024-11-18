@@ -1,6 +1,6 @@
-import {makeButton} from '#src/discord/ixc/make/components.ts';
+import {makeButton} from '#src/discord/ixc/old/make/components.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
-import {makeSingleSelectSubmit} from '#src/discord/ixc/make/single-select-submit.ts';
+import {makeSingleSelectSubmit} from '#src/discord/ixc/old/make/single-select-submit.ts';
 
 
 export const AccountsB = makeButton('AccountsB', {

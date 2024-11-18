@@ -8,8 +8,9 @@ import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {IXCBS, IXCT} from '#src/discord/util/discord.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
-import {GlobalCloseB} from '#src/discord/ixc/make/global.ts';
 import {UI} from 'dfx';
+import {CloseButton} from '#src/discord/ixc/components/global-components.ts';
+
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
     yield * Console.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
@@ -59,7 +60,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                     label: 'Support Server',
                     url  : 'https://discord.gg/KfpCtU2rwY',
                 },
-                GlobalCloseB.component,
+                CloseButton.component,
             ],
         ]),
     };

@@ -1,14 +1,14 @@
 import {UI} from 'dfx';
-import {makeButton, makeStringSelect} from '#src/discord/ixc/make/components.ts';
-import {type ExEff, type IXCEffect, stdData, stdNamespace} from '#src/discord/ixc/make/namespace.ts';
+import {makeButton, makeStringSelect} from '#src/discord/ixc/old/make/components.ts';
+import {type ExEff, type IXCEffect, stdData, stdNamespace} from '#src/discord/ixc/old/make/namespace.ts';
 import {IXCBS, type IxD, type IxDc} from '#src/discord/util/discord.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {Embed, SelectMenu} from 'dfx/types';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
-import {resolveSelectData} from '#src/discord/ixc/make/resolvers.ts';
-import {GlobalCloseB} from '#src/discord/ixc/make/global.ts';
+import {resolveSelectData} from '#src/discord/ixc/old/make/resolvers.ts';
+import {GlobalCloseB} from '#src/discord/ixc/old/make/global.ts';
 
 
 export const makeSingleSelectSubmit = (

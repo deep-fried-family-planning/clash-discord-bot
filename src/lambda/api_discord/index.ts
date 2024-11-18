@@ -13,6 +13,7 @@ import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
+import {RDXK} from '#src/discord/ixc/store/types.ts';
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({
@@ -52,13 +53,13 @@ const component = (body: IxD) => E.gen(function * () {
     });
 
     if ('custom_id' in body.data!) {
-        if (body.data.custom_id.startsWith('Modal')) {
+        if (body.data.custom_id.startsWith(`/k/${RDXK.MODAL}`)) {
             return r200({
                 type: IXRT.MODAL,
                 data: IxmLink,
             });
         }
-        else if (body.data.custom_id.startsWith('Entry')) {
+        else if (body.data.custom_id.startsWith(`/k/${RDXK.ENTRY}`)) {
             return {
                 statusCode: 202,
                 body      : '',
