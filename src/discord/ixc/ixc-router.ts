@@ -4,12 +4,12 @@ import type {IxD} from '#src/discord/util/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {DeepFryerUnknownError, SlashUserError} from '#src/internal/errors.ts';
 import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
-import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
 import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
 import {reducerFirst} from '#src/discord/ixc/reducers/reducer-first.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
+import {allReducers} from '#src/discord/ixc/reducers/all-reducers.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
@@ -39,11 +39,11 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
         return yield * DiscordApi.editMenu(ix, message);
     }
 
-    if (!(action.predicate in reducerAccounts)) {
+    if (!(action.predicate in allReducers)) {
         return yield * new SlashUserError({issue: 'Unknown Interaction'});
     }
 
-    const next = yield * reducerAccounts[action.predicate](state, action);
+    const next = yield * allReducers[action.predicate](state, action);
     const message = yield * deriveView(next);
 
     if (action.id.params.kind === RDXK.ENTRY) {
