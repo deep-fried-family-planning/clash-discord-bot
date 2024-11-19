@@ -23,8 +23,8 @@ export type RouteParams = Route['params'];
 
 export const enum DELIM {
     DATA = '&',
-    RESERVED_FWDSLASH = '/',
-    RESERVED_PIPE = '|',
+    SLASH = '/',
+    PIPE = '|',
 };
 
 

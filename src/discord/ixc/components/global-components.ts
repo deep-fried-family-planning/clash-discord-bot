@@ -4,32 +4,32 @@ import {IXCBS} from '#src/discord/util/discord.ts';
 import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
 
 
-export const CloseButton = makeButton({kind: RDXK.CLOSE, type: RDXT.CLOSE}, {
+export const CloseB = makeButton({kind: RDXK.CLOSE, type: RDXT.CLOSE}, {
     label: 'Close',
     style: IXCBS.SECONDARY,
 });
 
-export const BackButton = makeButton({kind: RDXK.BACK, type: RDXT.BACK}, {
+export const BackB = makeButton({kind: RDXK.BACK, type: RDXT.BACK}, {
     label: 'Back',
     style: IXCBS.SECONDARY,
 });
 
-export const NextButton = makeButton({kind: RDXK.NEXT, type: RDXT.NEXT}, {
+export const NextB = makeButton({kind: RDXK.NEXT, type: RDXT.NEXT}, {
     label: 'Next',
     style: IXCBS.PRIMARY,
 });
 
-export const ForwardButton = makeButton({kind: RDXK.FORWARD, type: RDXT.FORWARD}, {
+export const ForwardB = makeButton({kind: RDXK.FORWARD, type: RDXT.FORWARD}, {
     label: 'Next',
     style: IXCBS.PRIMARY,
 });
 
-export const SubmitButton = makeButton({kind: RDXK.SUBMIT, type: RDXT.SUBMIT}, {
+export const SubmitB = makeButton({kind: RDXK.SUBMIT, type: RDXT.SUBMIT}, {
     label: 'Submit',
     style: IXCBS.SUCCESS,
 });
 
-export const DeleteButton = makeButton({kind: RDXK.SUBMIT, type: RDXT.SUBMIT}, {
+export const DeleteB = makeButton({kind: RDXK.SUBMIT, type: RDXT.SUBMIT}, {
     label: 'Delete',
     style: IXCBS.DANGER,
 });

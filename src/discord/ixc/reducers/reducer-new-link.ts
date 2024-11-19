@@ -2,21 +2,23 @@ import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
-import {BackButton, CloseButton} from '#src/discord/ixc/components/global-components.ts';
-import {AccountTypeSelector, LinkModalButton} from '#src/discord/ixc/components/components.ts';
+import {BackB, CloseB} from '#src/discord/ixc/components/global-components.ts';
+import {AccountTypeS, LinkMB} from '#src/discord/ixc/components/components.ts';
 
 
 const actionNewLinks = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'actionNewLinks',
+            }),
             rows: [
-                [AccountTypeSelector.as(AXN.UPDATE_NEW_LINK_TYPE)],
+                [AccountTypeS.as(AXN.NEW_LINK_UPDATE)],
             ],
-            close  : CloseButton,
-            forward: LinkModalButton.as(AXN.NOOP, {disabled: true}),
-            back   : BackButton.as(AXN.START_LINKS),
+            close  : CloseB,
+            forward: LinkMB.as(AXN.NOOP, {disabled: true}),
+            back   : BackB.as(AXN.LINKS_OPEN),
         },
     };
 }));
@@ -28,13 +30,15 @@ const updateNewLinkType = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'updateNewLinkType',
+            }),
             rows: [
-                [AccountTypeSelector.as(AXN.UPDATE_NEW_LINK_TYPE).setDefaultValues([selected])],
+                [AccountTypeS.as(AXN.NEW_LINK_UPDATE).setDefaultValues([selected])],
             ],
-            close  : CloseButton,
-            forward: LinkModalButton.as(AXN.MODAL_NEW_LINK_OPEN, {disabled: false}),
-            back   : BackButton.as(AXN.START_LINKS),
+            close  : CloseB,
+            forward: LinkMB.as(AXN.NEW_LINK_MODAL_OPEN.withForward({forward: selected}), {disabled: false}),
+            back   : BackB.as(AXN.LINKS_OPEN),
         },
     };
 }));
@@ -44,14 +48,19 @@ const submitLinkModal = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info: jsonEmbed(action.original),
+            info: jsonEmbed({
+                type: 'submitLinkModal',
+            }),
+            status: jsonEmbed(action.original.components),
+            back  : BackB.as(AXN.LINKS_OPEN),
+            close : CloseB,
         },
     };
 }));
 
 
 export const reducerNewLink = {
-    [AXN.START_NEW_LINK.predicate]       : actionNewLinks,
-    [AXN.UPDATE_NEW_LINK_TYPE.predicate] : updateNewLinkType,
-    [AXN.MODAL_NEW_LINK_SUBMIT.predicate]: submitLinkModal,
+    [AXN.NEW_LINK_OPEN.predicate]        : actionNewLinks,
+    [AXN.NEW_LINK_UPDATE.predicate]      : updateNewLinkType,
+    [AXN.NEW_LINK_MODAL_SUBMIT.predicate]: submitLinkModal,
 };

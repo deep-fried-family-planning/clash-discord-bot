@@ -82,6 +82,29 @@ export const getDiscordClan = (key: CompKey<DClan>) => pipe(
 );
 
 
+export const queryDiscordClanForServer = (key: Pick<CompKey<DClan>, 'pk'>) => pipe(
+    ServerIdEncode(key.pk),
+    E.flatMap((pk) => DynamoDBDocument.query({
+        TableName                : process.env.DDB_OPERATIONS,
+        KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
+        ExpressionAttributeValues: {
+            ':pk': pk,
+            ':sk': 'c-',
+        },
+    })),
+    E.flatMap(({Items}) => pipe(
+        E.if(Boolean(Items), {
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordClanDecode(Item)))),
+            onFalse: () => E.succeed([] as const),
+        }),
+        E.flatMap((decoded) => pipe(
+            E.succeed(decoded),
+            E.tap(Console.log('[QUERY DDB]: clan decoded', decoded)),
+        )),
+    )),
+);
+
+
 export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
     ClanTagEncode(key.sk),
     E.flatMap((sk) => DynamoDBDocument.query({

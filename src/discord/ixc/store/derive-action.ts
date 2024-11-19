@@ -1,50 +1,50 @@
-import type {IxD, IxDc} from '#src/discord/util/discord.ts';
-import {CSL, E} from '#src/internal/pure/effect.ts';
-import type {RDXK} from '#src/discord/ixc/store/types.ts';
-import type {IxDcAction, IxDcState, RDXT} from '#src/discord/ixc/store/types.ts';
+import type {IxD, IxDc, IxDm} from '#src/discord/util/discord.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import type {IxAction} from '#src/discord/ixc/store/types.ts';
 import {parseCustomId} from '#src/discord/ixc/store/id.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inspect} from 'node:util';
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type {ActionRow, TextInput} from 'dfx/types';
+import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import type {Maybe} from '#src/internal/pure/types.ts';
+import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 
 
-export type IxDcReducerFn<T extends E.Effect<IxDcState, any, any>> = {
-    predicate: str;
-    kind     : str;
-    type     : str;
-    reducer  : (state: IxDcState, action: IxDcAction) => T;
-};
-
-
-export const bindAction = <T extends E.Effect<IxDcState, any, any>>(
-    kind: RDXK,
-    type: RDXT,
-    reducer: (state: IxDcState, action: IxDcAction) => T,
-) => ({
-    predicate: `${kind}/${type}`,
-    kind,
-    type,
-    reducer,
-} as const satisfies IxDcReducerFn<T>);
-
-
-export const deriveAction = (ix: IxD, d: IxDc) => E.gen(function * () {
+export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
     yield * CSL.debug('[CUSTOM_ID]', d.custom_id);
 
     const id = parseCustomId(d.custom_id);
 
-    const values = d.values?.map((d) => ({
-        type : 'string',
-        value: d as unknown as str,
-    })) ?? [];
+    const cmap = 'components' in d
+        ? pipe(
+            d.components as ActionRow[],
+            mapL((row) => pipe(row.components as TextInput[], mapL((c) => ({
+                id      : parseCustomId(c.custom_id),
+                original: c,
+            })))),
+            flatMapL((c) => c),
+            reduceL(emptyKV<string, Maybe<ComponentMapItem<TextInput>>>(), (cs, c) => {
+                cs[c.id.predicate] = c;
+                return cs;
+            }),
+        )
+        : undefined;
+
 
     const action = {
         id,
+        original : d as unknown as IxDm,
         predicate: id.predicate,
-        selected : values,
-        forward  : id.params.forward,
-        original : d,
-    } as const satisfies IxDcAction;
+        selected : 'values' in d
+            ? d.values.map((d) => ({
+                type : 'string',
+                value: d as unknown as str,
+            }))
+            : [],
+        forward: id.params.forward,
+        cmap,
+    } as const satisfies IxAction;
 
     yield * CSL.debug('[ACTION]', inspect(action, true, null));
 

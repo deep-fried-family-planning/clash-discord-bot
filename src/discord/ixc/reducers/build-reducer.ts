@@ -1,28 +1,39 @@
 import type {E} from '#src/internal/pure/effect.ts';
-import type {IxDcAction, IxDcState, RDXK, RDXT} from '#src/discord/ixc/store/types.ts';
+import type {IxAction, IxState, RDXK, RDXT} from '#src/discord/ixc/store/types.ts';
 import {buildCustomId} from '#src/discord/ixc/store/id.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 
-export const buildPredicate = (
+export const makeId = (
     kind: RDXK,
     type: RDXT,
+    ops?: Parameters<typeof buildCustomId>[0],
 ) => ({
-    ...buildCustomId({kind, type}),
+    ...buildCustomId({...ops, kind, type}),
     withForward: (f: {
-        nextKind: RDXK;
-        nextType: RDXT;
-        forward?: str;
+        nextKind?: RDXK | undefined;
+        nextType?: RDXT | undefined;
+        forward? : str | undefined;
     }) => buildCustomId({
         kind,
         type,
-        nextKind: f.nextKind,
-        nextType: f.nextType,
-        forward : f.forward,
+        nextKind: f.nextKind!,
+        nextType: f.nextType!,
+        forward : f.forward!,
     }),
+    get fwd() {
+        return (params: Parameters<typeof buildCustomId>[0]) => makeId(kind, type, {
+            ...params,
+            nextKind: params.kind,
+            nextType: params.type!,
+        });
+    },
 });
 
 
-export const buildReducer = <T extends E.Effect<IxDcState, any, any>>(
-    reducer: (state: IxDcState, action: IxDcAction) => T,
+export const buildReducer = <
+    T extends E.Effect<IxState, any, any>,
+>(
+    reducer: (s: IxState, ax: IxAction) => T,
 ) => reducer;

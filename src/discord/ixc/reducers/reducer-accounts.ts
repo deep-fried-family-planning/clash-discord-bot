@@ -1,7 +1,7 @@
 import {E, ORD, pipe} from '#src/internal/pure/effect';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
-import {BackButton, CloseButton, DeleteButton, ForwardButton, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
-import {AccountSelector, AccountTypeSelector, ChangeAccountTypeButton, DeleteAccountButton} from '#src/discord/ixc/components/components.ts';
+import {BackB, CloseB, DeleteB, ForwardB, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import {AccountS, AccountTypeS, ChangeAccountTypeButton, DeleteAccountButton} from '#src/discord/ixc/components/components.ts';
 import {getDiscordPlayer, putDiscordPlayer, queryPlayersForUser} from '#src/dynamo/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
@@ -17,21 +17,23 @@ const startAccounts = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'startAccounts',
+            }),
             rows: [
                 [
-                    ChangeAccountTypeButton.as(AXN.START_SELECT_ACCOUNT.withForward({
-                        nextKind: AXN.START_ACCOUNT_TYPE.params.kind,
-                        nextType: AXN.START_ACCOUNT_TYPE.params.type!,
+                    ChangeAccountTypeButton.as(AXN.ACCOUNTS_SELECT.withForward({
+                        nextKind: AXN.ACCOUNT_TYPE_OPEN.params.kind,
+                        nextType: AXN.ACCOUNT_TYPE_OPEN.params.type!,
                     })),
-                    DeleteAccountButton.as(AXN.START_SELECT_ACCOUNT.withForward({
-                        nextKind: AXN.START_DELETE_ACCOUNT.params.kind,
-                        nextType: AXN.START_DELETE_ACCOUNT.params.type!,
+                    DeleteAccountButton.as(AXN.ACCOUNTS_SELECT.withForward({
+                        nextKind: AXN.ACCOUNT_DELETE_OPEN.params.kind,
+                        nextType: AXN.ACCOUNT_DELETE_OPEN.params.type!,
                     })),
                 ],
             ],
-            close: CloseButton,
-            back : BackButton.as(AXN.START_LINKS),
+            close: CloseB,
+            back : BackB.as(AXN.LINKS_OPEN),
         },
     };
 }));
@@ -50,7 +52,7 @@ const startSelectAccount = buildReducer((state, action) => E.gen(function * () {
 
     const together = zipL(records, players);
 
-    const forwardId = AXN.UPDATE_SELECT_ACCOUNT.withForward({
+    const forwardId = AXN.ACCOUNTS_SELECT_UPDATE.withForward({
         nextKind: action.id.params.nextKind!,
         nextType: action.id.params.nextType!,
     });
@@ -58,12 +60,14 @@ const startSelectAccount = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'startSelectAccount',
+            }),
             selected: jsonEmbed({
                 playerTag: 'not selected',
             }),
             rows: [
-                [AccountSelector.as(forwardId, {
+                [AccountS.as(forwardId, {
                     options: pipe(
                         together,
                         sortByL(
@@ -76,19 +80,20 @@ const startSelectAccount = buildReducer((state, action) => E.gen(function * () {
                             label      : `[${r.account_type}/th${p.townHallLevel}]  ${p.name}`,
                             description: `tag: ${p.tag}, verification_level: ${r.verification}`,
                             value      : p.tag,
-                        }))),
+                        })),
+                    ),
                 })],
             ],
-            close  : CloseButton,
-            back   : BackButton.as(AXN.START_ACCOUNTS),
-            forward: ForwardButton.as(AXN.NOOP, {disabled: true}),
+            close  : CloseB,
+            back   : BackB.as(AXN.ACCOUNTS_OPEN),
+            forward: ForwardB.as(AXN.NOOP, {disabled: true}),
         },
     };
 }));
 
 
 const updateSelectAccount = buildReducer((state, action) => E.gen(function * () {
-    const selector = AccountSelector.fromMap(state.cmap)!;
+    const selector = AccountS.fromMap(state.cmap)!;
 
     const forward = buildCustomId({
         kind   : action.id.params.nextKind!,
@@ -99,7 +104,9 @@ const updateSelectAccount = buildReducer((state, action) => E.gen(function * () 
     return {
         ...state,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'updateSelectAccount',
+            }),
             selected: jsonEmbed({
                 playerTag: action.selected[0].value,
             }),
@@ -111,9 +118,9 @@ const updateSelectAccount = buildReducer((state, action) => E.gen(function * () 
                     })),
                 })],
             ],
-            close  : CloseButton,
-            back   : BackButton.as(AXN.START_ACCOUNTS),
-            forward: ForwardButton.as(forward, {disabled: false}),
+            close  : CloseB,
+            back   : BackB.as(AXN.ACCOUNTS_OPEN),
+            forward: ForwardB.as(forward, {disabled: false}),
         },
     };
 }));
@@ -127,40 +134,44 @@ const startAccountType = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'startAccountType',
+            }),
             selected: jsonEmbed({
                 playerTag,
                 accountType: record.account_type,
             }),
             rows: [
-                [AccountTypeSelector.as(AXN.UPDATE_ACCOUNT_TYPE, {
-                    options: AccountTypeSelector.options.options!.map((o) => ({
+                [AccountTypeS.as(AXN.ACCOUNT_TYPE_UPDATE, {
+                    options: AccountTypeS.options.options!.map((o) => ({
                         ...o,
                         value  : [playerTag, o.value].join(DELIM.DATA),
                         default: o.value === record.account_type,
                     })),
                 })],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.START_ACCOUNTS),
-            submit: SubmitButton.as(AXN.NOOP, {disabled: true}),
+            close : CloseB,
+            back  : BackB.as(AXN.ACCOUNTS_OPEN),
+            submit: SubmitB.as(AXN.NOOP, {disabled: true}),
         },
     };
 }));
 
 
 const updateAccountType = buildReducer((state, action) => E.gen(function * () {
-    const selector = AccountTypeSelector.fromMap(state.cmap)!;
+    const selector = AccountTypeS.fromMap(state.cmap)!;
 
     const submission = buildCustomId({
-        ...AXN.SUBMIT_ACCOUNT_TYPE.params,
+        ...AXN.ACCOUNT_TYPE_SUBMIT.params,
         data: [action.selected[0].value],
     });
 
     return {
         ...state,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'updateAccountType',
+            }),
             selected: jsonEmbed({
                 ...JSON.parse(state.view!.selected!.description!),
                 accountType: action.selected[0].value,
@@ -173,16 +184,16 @@ const updateAccountType = buildReducer((state, action) => E.gen(function * () {
                     })),
                 })],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.START_ACCOUNTS),
-            submit: SubmitButton.as(submission, {disabled: false}),
+            close : CloseB,
+            back  : BackB.as(AXN.ACCOUNTS_OPEN),
+            submit: SubmitB.as(submission, {disabled: false}),
         },
     };
 }));
 
 
 const submitAccountType = buildReducer((state, action) => E.gen(function * () {
-    const selector = AccountTypeSelector.fromMap(state.cmap)!;
+    const selector = AccountTypeS.fromMap(state.cmap)!;
 
     const [playerTag, accountType] = action.id.params.data!;
 
@@ -196,7 +207,9 @@ const submitAccountType = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'submitAccountType',
+            }),
             selected: state.view!.selected!,
             status  : jsonEmbed({
                 success: `${playerTag} updated to ${accountType}`,
@@ -204,10 +217,10 @@ const submitAccountType = buildReducer((state, action) => E.gen(function * () {
             rows: [
                 [selector.as(AXN.NOOP, {disabled: true})],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.START_ACCOUNTS),
-            submit: SubmitButton.as(AXN.NOOP1, {disabled: true}),
-            next  : NextButton.as(AXN.START_LINKS),
+            close : CloseB,
+            back  : BackB.as(AXN.ACCOUNTS_OPEN),
+            submit: SubmitB.as(AXN.NOOP1, {disabled: true}),
+            next  : NextB.as(AXN.LINKS_OPEN),
         },
     };
 }));
@@ -217,13 +230,15 @@ const startDeleteAccount = buildReducer((state, action) => E.gen(function * () {
     return {
         ...state,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'startDeleteAccount',
+            }),
             rows: [
-                [AccountTypeSelector.as(AXN.UPDATE_ACCOUNT_TYPE)],
+                [AccountTypeS.as(AXN.ACCOUNT_TYPE_UPDATE)],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.START_ACCOUNTS),
-            submit: DeleteButton.as(AXN.SUBMIT_ACCOUNT_TYPE, {disabled: true}),
+            close : CloseB,
+            back  : BackB.as(AXN.ACCOUNTS_OPEN),
+            submit: DeleteB.as(AXN.ACCOUNT_TYPE_SUBMIT, {disabled: true}),
         },
     };
 }));
@@ -235,7 +250,9 @@ const submitDeleteAccount = buildReducer((state, action) => E.gen(function * () 
     return {
         ...state,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'submitDeleteAccount',
+            }),
             rows: [
                 [selector.as(action.id, {
                     ...selector.component,
@@ -245,24 +262,24 @@ const submitDeleteAccount = buildReducer((state, action) => E.gen(function * () 
                     })),
                 })],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.START_ACCOUNTS),
-            submit: SubmitButton.as(AXN.SUBMIT_ACCOUNT_TYPE, {disabled: true}),
+            close : CloseB,
+            back  : BackB.as(AXN.ACCOUNTS_OPEN),
+            submit: SubmitB.as(AXN.ACCOUNT_TYPE_SUBMIT, {disabled: true}),
         },
     };
 }));
 
 
 export const reducerAccounts = {
-    [AXN.START_ACCOUNTS.predicate]: startAccounts,
+    [AXN.ACCOUNTS_OPEN.predicate]: startAccounts,
 
-    [AXN.START_SELECT_ACCOUNT.predicate] : startSelectAccount,
-    [AXN.UPDATE_SELECT_ACCOUNT.predicate]: updateSelectAccount,
+    [AXN.ACCOUNTS_SELECT.predicate]       : startSelectAccount,
+    [AXN.ACCOUNTS_SELECT_UPDATE.predicate]: updateSelectAccount,
 
-    [AXN.START_ACCOUNT_TYPE.predicate] : startAccountType,
-    [AXN.UPDATE_ACCOUNT_TYPE.predicate]: updateAccountType,
-    [AXN.SUBMIT_ACCOUNT_TYPE.predicate]: submitAccountType,
+    [AXN.ACCOUNT_TYPE_OPEN.predicate]  : startAccountType,
+    [AXN.ACCOUNT_TYPE_UPDATE.predicate]: updateAccountType,
+    [AXN.ACCOUNT_TYPE_SUBMIT.predicate]: submitAccountType,
 
-    [AXN.START_DELETE_ACCOUNT.predicate] : startDeleteAccount,
-    [AXN.SUBMIT_DELETE_ACCOUNT.predicate]: submitDeleteAccount,
+    [AXN.ACCOUNT_DELETE_OPEN.predicate]  : startDeleteAccount,
+    [AXN.ACCOUNT_DELETE_SUBMIT.predicate]: submitDeleteAccount,
 };

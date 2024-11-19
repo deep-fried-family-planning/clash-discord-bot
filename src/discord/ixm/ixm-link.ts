@@ -3,7 +3,7 @@ import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 
 export const IxmLink = {
     title     : 'Link Account',
-    custom_id : AXN.MODAL_NEW_LINK_SUBMIT.custom_id,
+    custom_id : AXN.NEW_LINK_MODAL_SUBMIT.custom_id,
     components: UI.singleColumn([
         UI.textInput({
             style      : Discord.TextInputStyle.SHORT,

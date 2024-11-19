@@ -9,7 +9,7 @@ import {IXCBS, IXCT} from '#src/discord/util/discord.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
 import {UI} from 'dfx';
-import {CloseButton} from '#src/discord/ixc/components/global-components.ts';
+import {CloseB} from '#src/discord/ixc/components/global-components.ts';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
@@ -60,7 +60,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                     label: 'Support Server',
                     url  : 'https://discord.gg/KfpCtU2rwY',
                 },
-                CloseButton.component,
+                CloseB.component,
             ],
         ]),
     };

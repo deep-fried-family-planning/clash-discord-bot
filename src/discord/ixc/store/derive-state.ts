@@ -1,21 +1,18 @@
 import {parseCustomId} from '#src/discord/ixc/store/id.ts';
 import type {ActionRow, Button, SelectMenu, TextInput} from 'dfx/types';
-import {IXCT, type IxD, type IxDc} from '#src/discord/util/discord.ts';
+import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import {type DServer, getDiscordServer} from '#src/dynamo/discord-server.ts';
-import {type DUser, getDiscordUser} from '#src/dynamo/discord-user.ts';
+import {getDiscordServer} from '#src/dynamo/discord-server.ts';
+import {getDiscordUser} from '#src/dynamo/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import {BackButton, CloseButton, ForwardButton, NavSelect, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
-import type {IxDcState} from '#src/discord/ixc/store/types.ts';
+import {BackB, CloseB, ForwardB, NavSelect, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import type {IxState} from '#src/discord/ixc/store/types.ts';
 import {inspect} from 'node:util';
-import {makeButtonFrom} from '#src/discord/ixc/components/make-button.ts';
-import {makeSelectFrom} from '#src/discord/ixc/components/make-select.ts';
-import {makeTextFrom} from '#src/discord/ixc/components/make-text.ts';
 
 
-export type ComponentMapItem<T extends Button | SelectMenu = Button | SelectMenu | TextInput> = {id: ReturnType<typeof parseCustomId>; original: T};
+export type ComponentMapItem<T extends Button | SelectMenu | TextInput = Button | SelectMenu | TextInput> = {id: ReturnType<typeof parseCustomId>; original: T};
 
 
 export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
@@ -41,11 +38,6 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         )),
     );
 
-
-    const [, ...restRows] = components;
-    const [, ...restReverseRows] = restRows.toReversed();
-    const middleRows = restReverseRows.toReversed();
-
     const componentMap = pipe(
         components,
         flatMapL((c) => c),
@@ -59,35 +51,21 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         server_id : ix.guild_id!,
         user_id   : ix.member!.user!.id,
         user_roles: ix.member!.roles,
-        user      : user as DUser,
-        server    : server as DServer,
-        previous  : {
-            embeds: ix.message!.embeds,
-        },
-        cmap: componentMap,
-        view: {
+        user      : user,
+        server    : server,
+        cmap      : componentMap,
+        view      : {
             info     : ix.message?.embeds[0],
             selected : ix.message?.embeds[1],
             status   : ix.message?.embeds[2],
             navigator: NavSelect.fromMap(componentMap),
-            rows     : pipe(
-                middleRows,
-                mapL((cs) => pipe(
-                    cs,
-                    mapL((c) =>
-                        c.original.type === IXCT.BUTTON ? makeButtonFrom(c.original as Button)
-                        : c.original.type === IXCT.TEXT_INPUT ? makeSelectFrom(c.original as SelectMenu)
-                        : makeTextFrom(c.original as TextInput),
-                    ),
-                )),
-            ),
-            back   : BackButton.fromMap(componentMap),
-            close  : CloseButton.fromMap(componentMap),
-            forward: ForwardButton.fromMap(componentMap),
-            next   : NextButton.fromMap(componentMap),
-            submit : SubmitButton.fromMap(componentMap),
+            back     : BackB.fromMap(componentMap),
+            close    : CloseB.fromMap(componentMap),
+            forward  : ForwardB.fromMap(componentMap),
+            next     : NextB.fromMap(componentMap),
+            submit   : SubmitB.fromMap(componentMap),
         },
-    } as const satisfies IxDcState;
+    } as const satisfies IxState;
 
     yield * CSL.debug('[STATE]', inspect(state, true, null));
 

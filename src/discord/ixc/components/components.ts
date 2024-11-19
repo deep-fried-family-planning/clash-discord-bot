@@ -7,31 +7,31 @@ import {makeText} from '#src/discord/ixc/components/make-text.ts';
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 
-export const NewLinkButton = makeButton(AXN.START_NEW_LINK.params, {
+export const NewLinkB = makeButton(AXN.NEW_LINK_OPEN.params, {
     label: 'New Link',
     style: IXCBS.SUCCESS,
 });
-export const LinkModalButton = makeButton(AXN.MODAL_NEW_LINK_OPEN.params, {
+export const LinkMB = makeButton(AXN.NEW_LINK_MODAL_OPEN.params, {
     label: 'Open Link Modal',
     style: IXCBS.SUCCESS,
 });
 
 
-export const AccountsButton = makeButton(AXN.START_ACCOUNTS.params, {
+export const AccountsB = makeButton(AXN.ACCOUNTS_OPEN.params, {
     label: 'Accounts',
     style: IXCBS.PRIMARY,
 });
 
-export const ChangeAccountTypeButton = makeButton(AXN.START_ACCOUNT_TYPE.params, {
+export const ChangeAccountTypeButton = makeButton(AXN.ACCOUNT_TYPE_OPEN.params, {
     label: 'Change Type',
     style: IXCBS.PRIMARY,
 });
 
-export const AccountSelector = makeSelect(AXN.UPDATE_SELECT_ACCOUNT.params, {
+export const AccountS = makeSelect(AXN.ACCOUNTS_SELECT_UPDATE.params, {
     placeholder: 'Select Account',
 });
 
-export const AccountTypeSelector = makeSelect(AXN.UPDATE_ACCOUNT_TYPE.params, {
+export const AccountTypeS = makeSelect(AXN.ACCOUNT_TYPE_UPDATE.params, {
     placeholder: 'Select Type',
     options    : [
         {label: 'main', value: 'main'},
@@ -46,41 +46,87 @@ export const AccountTypeSelector = makeSelect(AXN.UPDATE_ACCOUNT_TYPE.params, {
 });
 
 
-export const DeleteAccountButton = makeButton(AXN.START_ACCOUNT_TYPE.params, {
+export const DeleteAccountButton = makeButton(AXN.ACCOUNT_TYPE_OPEN.params, {
     label: 'Delete',
     style: IXCBS.DANGER,
 });
 
 
-export const UserButton = makeButton(AXN.OPEN_USER.params, {
+export const UserB = makeButton(AXN.USER_OPEN.params, {
     label: 'User',
     style: IXCBS.PRIMARY,
 });
 
-export const TimezoneButton = makeButton(AXN.START_TIMEZONE.params, {
+export const TimezoneButton = makeButton(AXN.USER_TIMEZONE_OPEN.params, {
     label: 'Timezone',
     style: IXCBS.PRIMARY,
 });
 
-export const TimezoneSelector = makeSelect(AXN.UPDATE_TIMEZONE.params, {
+export const TimezoneS = makeSelect(AXN.USER_TIMEZONE_UPDATE.params, {
     placeholder: 'Timezone',
     options    : SELECT_TIMEZONES as any,
 });
 
-export const QuietStartSelector = makeSelect(AXN.UPDATE_TIMEZONE.params, {
+export const QuietStartSelector = makeSelect(AXN.USER_TIMEZONE_UPDATE.params, {
     placeholder: 'Quiet (start)',
     options    : SELECT_TIMES as any,
 });
 
-export const QuietEndSelector = makeSelect(AXN.UPDATE_TIMEZONE.params, {
+export const QuietEndSelector = makeSelect(AXN.USER_TIMEZONE_UPDATE.params, {
     placeholder: 'Quiet (end)',
     options    : SELECT_TIMES as any,
 });
 
 
-export const TagText = makeText(AXN.TAG.params, {
+export const TagMT = makeText(AXN.TAG.params, {
 
 });
-export const ApiText = makeText(AXN.API.params, {
+export const ApiMT = makeText(AXN.API.params, {
 
 });
+
+
+export const ClansB = makeButton(AXN.CLANS_OPEN.params, {
+    label: 'Clans',
+    style: IXCBS.PRIMARY,
+});
+export const ClanSF = makeSelect(AXN.CLANS_FILTER.params, {
+    placeholder: 'Filter Clan Type',
+    options    : [{label: 'NOOP', value: 'NOOP'}],
+});
+export const ClanS = makeSelect(AXN.CLANS_SELECT.params, {
+    placeholder: 'Select Clan',
+});
+
+
+export const RosterJoinB = makeButton(AXN.ROSTER_JOIN_OPEN.params, {
+    label: 'Join',
+    style: IXCBS.PRIMARY,
+});
+export const RosterSF = makeSelect(AXN.ROSTER_SELECT_FILTER.params, {
+    placeholder: 'Filter Roster Type',
+    options    : [{label: 'NOOP', value: 'NOOP'}],
+});
+export const RosterS = makeSelect(AXN.ROSTER_SELECT_UPDATE.params, {
+    placeholder: 'Select Roster',
+    options    : [{label: 'NOOP', value: 'NOOP'}],
+});
+
+
+export const RosterAdminB = makeButton(AXN.ROSTER_ADMIN_OPEN.params, {
+    label: 'Roster Admin',
+    style: IXCBS.DANGER,
+});
+export const RosterCreateB = makeButton(AXN.ROSTER_CREATE.params, {
+    label: 'Create',
+    style: IXCBS.SUCCESS,
+});
+export const RosterEditB = makeButton(AXN.ROSTER_EDIT.params, {
+    label: 'Edit',
+    style: IXCBS.PRIMARY,
+});
+export const RosterDeleteB = makeButton(AXN.ROSTER_DELETE.params, {
+    label: 'Delete',
+    style: IXCBS.DANGER,
+});
+

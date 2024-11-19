@@ -14,6 +14,8 @@ import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {AXN} from '#src/discord/ixc/reducers/actions.ts';
+import {parseCustomId} from '#src/discord/ixc/store/id.ts';
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({
@@ -42,12 +44,6 @@ const modal = (body: IxD) => E.gen(function * () {
         MessageBody: JSON.stringify(body),
     });
 
-    //
-    // yield * DiscordApi.createInteractionResponse('', '', {
-    //     type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-    //
-    // });
-
     return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
         flags: MGF.EPHEMERAL,
     }});
@@ -56,10 +52,24 @@ const modal = (body: IxD) => E.gen(function * () {
 
 const component = (body: IxD) => E.gen(function * () {
     if ('custom_id' in body.data!) {
-        if (body.data.custom_id.startsWith(`/k/${RDXK.MODAL}`)) {
+        if (body.data.custom_id.startsWith(`/k/${RDXK.MODAL_OPEN}`)) {
+            yield * SQS.sendMessage({
+                QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+                MessageBody: JSON.stringify(body),
+            });
+
+            const id = parseCustomId(body.data.custom_id);
+
             return r200({
                 type: IXRT.MODAL,
-                data: IxmLink,
+                data: {
+                    ...IxmLink,
+                    custom_id: AXN.NEW_LINK_MODAL_SUBMIT.withForward({
+                        nextKind: AXN.NEW_LINK_MODAL_OPEN.params.kind,
+                        nextType: AXN.NEW_LINK_MODAL_OPEN.params.type!,
+                        forward : id.params.forward!,
+                    }).custom_id,
+                },
             });
         }
         else if (body.data.custom_id.startsWith(`/k/${RDXK.ENTRY}`)) {

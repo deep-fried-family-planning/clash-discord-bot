@@ -7,7 +7,7 @@ import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {TextInput} from 'dfx/types';
 
 
-export type makeText = ReturnType<typeof makeText>;
+export type MadeText = ReturnType<typeof makeText>;
 
 
 export const makeText = (
@@ -23,7 +23,7 @@ export const makeText = (
         component: UI.textInput({
             ...options,
             custom_id: id.custom_id,
-        }),
+        } as Parameters<typeof UI.textInput>[0]),
         as: (newId: Route, newOptions?: typeof options) => {
             return makeText(
                 newId.params,

@@ -33,11 +33,41 @@ export const makeButton = (
                 },
             );
         },
+        fwd: (newId: Route, forward?: string) => {
+            return makeButton(
+                {
+                    ...newId.params,
+                    ...id.params,
+                    nextKind: newId.params.kind,
+                    nextType: newId.params.type!,
+                    forward : forward,
+                },
+                options,
+            );
+        },
+        withFwd: (newId: Route, forward?: string, newOptions?: typeof options) => {
+            return makeButton(
+                {
+                    kind: newId.params.nextKind!,
+                    type: newId.params.nextType!,
+                    forward,
+                },
+                {
+                    ...options,
+                    ...newOptions,
+                },
+            );
+        },
         fromMap: (cMap: Record<str, Maybe<ComponentMapItem>>) => {
             const component = cMap[id.predicate];
 
             return component
-                ? makeButton(component.id.params, component.original, component.id)
+                ? makeButton(component.id.params, component.original as Button, component.id)
+                : undefined;
+        },
+        if: (condition: boolean) => {
+            return condition
+                ? makeButton(params, options, id)
                 : undefined;
         },
     };

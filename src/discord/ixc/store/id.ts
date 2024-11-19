@@ -41,7 +41,7 @@ export const parseCustomId = (custom_id: str) => {
             kind: params.kind as RDXK,
             type: params.type as RDXT,
             data: 'data' in params
-                ? params.data.split(DELIM.DATA).map((d) => d.replaceAll(DELIM.RESERVED_PIPE, DELIM.RESERVED_FWDSLASH))
+                ? params.data.split(DELIM.DATA).map((d) => d.replaceAll(DELIM.PIPE, DELIM.SLASH))
                 : [],
             nextKind: params.nextKind as RDXK,
             nextType: params.nextType as RDXT,
@@ -56,7 +56,7 @@ export const parseCustomId = (custom_id: str) => {
 export const buildCustomId = (params: RouteParams) => {
     const redefined = {
         ...params,
-        data: params.data?.map((d) => d.replaceAll(DELIM.RESERVED_FWDSLASH, DELIM.RESERVED_PIPE)).join(DELIM.DATA),
+        data: params.data?.map((d) => d.replaceAll(DELIM.SLASH, DELIM.PIPE)).join(DELIM.DATA),
     } as const;
 
     const defined = pipe(

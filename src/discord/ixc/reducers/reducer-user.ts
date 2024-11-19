@@ -1,87 +1,95 @@
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
-import {BackButton, CloseButton, NextButton, SubmitButton} from '#src/discord/ixc/components/global-components.ts';
-import {TimezoneButton, TimezoneSelector} from '#src/discord/ixc/components/components.ts';
+import {BackB, CloseB, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import {TimezoneButton, TimezoneS} from '#src/discord/ixc/components/components.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {buildCustomId} from '#src/discord/ixc/store/id.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 
 
-const openUser = buildReducer((state, action) => E.gen(function * () {
+const openUser = buildReducer((s, ax) => E.gen(function * () {
     return {
-        ...state,
+        ...s,
         view: {
-            info: jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'openUser',
+            }),
             rows: [
-                [TimezoneButton.as(AXN.START_TIMEZONE)],
+                [TimezoneButton.as(AXN.USER_TIMEZONE_OPEN)],
             ],
-            close: CloseButton,
-            back : BackButton.as(AXN.START_LINKS),
+            close: CloseB,
+            back : BackB.as(AXN.LINKS_OPEN),
         },
     };
 }));
 
-const startTimezone = buildReducer((state, action) => E.gen(function * () {
-    const selected = yield * S.encodeUnknown(S.TimeZone)(state.user.timezone);
+const startTimezone = buildReducer((s, ax) => E.gen(function * () {
+    const selected = yield * S.encodeUnknown(S.TimeZone)(s.user!.timezone);
 
     return {
-        ...state,
+        ...s,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'startTimezone',
+            }),
             selected: jsonEmbed({
                 timezone: selected,
             }),
             rows: [
-                [TimezoneSelector.as(AXN.UPDATE_TIMEZONE).setDefaultValues([selected])],
+                [TimezoneS.as(AXN.USER_TIMEZONE_UPDATE).setDefaultValues([selected])],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.OPEN_USER),
-            submit: SubmitButton.as(AXN.NOOP, {disabled: true}),
+            close : CloseB,
+            back  : BackB.as(AXN.USER_OPEN),
+            submit: SubmitB.as(AXN.NOOP, {disabled: true}),
         },
     };
 }));
 
-const updateTimezone = buildReducer((state, action) => E.gen(function * () {
-    const selector = TimezoneSelector.fromMap(state.cmap)!;
-    const selected = action.selected[0].value;
+const updateTimezone = buildReducer((s, ax) => E.gen(function * () {
+    const selector = TimezoneS.fromMap(s.cmap)!;
+    const selected = ax.selected[0].value;
 
     const submitId = buildCustomId({
-        ...AXN.SUBMIT_TIMEZONE.params,
+        ...AXN.USER_TIMEZONE_SUBMIT.params,
         data: [selected],
     });
 
     return {
-        ...state,
+        ...s,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'updateTimezone',
+            }),
             selected: jsonEmbed({
                 timezone: selected,
             }),
             rows: [
-                [selector.as(AXN.UPDATE_TIMEZONE).setDefaultValues([selected])],
+                [selector.as(AXN.USER_TIMEZONE_UPDATE).setDefaultValues([selected])],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.OPEN_USER),
-            submit: SubmitButton.as(submitId, {disabled: false}),
+            close : CloseB,
+            back  : BackB.as(AXN.USER_OPEN),
+            submit: SubmitB.as(submitId, {disabled: false}),
         },
     };
 }));
 
-const submitTimezone = buildReducer((state, action) => E.gen(function * () {
-    const selector = TimezoneSelector.fromMap(state.cmap)!;
+const submitTimezone = buildReducer((s, ax) => E.gen(function * () {
+    const selector = TimezoneS.fromMap(s.cmap)!;
     const selected = selector.getDefaultValues().map((o) => o.value);
 
     yield * putDiscordUser({
-        ...state.user,
+        ...s.user!,
         updated : new Date(Date.now()),
         timezone: yield * S.decodeUnknown(S.TimeZone)(selected[0]),
     });
 
     return {
-        ...state,
+        ...s,
         view: {
-            info    : jsonEmbed(action),
+            info: jsonEmbed({
+                type: 'submitTimezone',
+            }),
             selected: jsonEmbed({
                 timezone: selected[0],
             }),
@@ -91,18 +99,18 @@ const submitTimezone = buildReducer((state, action) => E.gen(function * () {
             rows: [
                 [selector.as(AXN.NOOP, {disabled: true})],
             ],
-            close : CloseButton,
-            back  : BackButton.as(AXN.OPEN_USER),
-            submit: SubmitButton.as(AXN.NOOP1, {disabled: true}),
-            next  : NextButton.as(AXN.START_LINKS),
+            close : CloseB,
+            back  : BackB.as(AXN.USER_OPEN),
+            submit: SubmitB.as(AXN.NOOP1, {disabled: true}),
+            next  : NextB.as(AXN.LINKS_OPEN),
         },
     };
 }));
 
 
 export const reducerUser = {
-    [AXN.OPEN_USER.predicate]      : openUser,
-    [AXN.START_TIMEZONE.predicate] : startTimezone,
-    [AXN.UPDATE_TIMEZONE.predicate]: updateTimezone,
-    [AXN.SUBMIT_TIMEZONE.predicate]: submitTimezone,
+    [AXN.USER_OPEN.predicate]           : openUser,
+    [AXN.USER_TIMEZONE_OPEN.predicate]  : startTimezone,
+    [AXN.USER_TIMEZONE_UPDATE.predicate]: updateTimezone,
+    [AXN.USER_TIMEZONE_SUBMIT.predicate]: submitTimezone,
 };

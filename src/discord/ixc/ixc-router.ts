@@ -1,10 +1,10 @@
 import {E} from '#src/internal/pure/effect.ts';
-import {type IxDc, MGF} from '#src/discord/util/discord.ts';
+import type {IxDc} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {DeepFryerUnknownError, SlashUserError} from '#src/internal/errors.ts';
 import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {type IxState, RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
 import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
 import {reducerFirst} from '#src/discord/ixc/reducers/reducer-first.ts';
@@ -18,20 +18,25 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
     }
 
     const action = yield * deriveAction(ix, ix.data as IxDc);
+    const state = yield * deriveState(ix, ix.data as IxDc);
 
-    if (action.id.params.kind === RDXK.CLOSE) {
+    if (action.id.params.kind === RDXK.CLOSE || action.id.params.kind === RDXK.MODAL_OPEN) {
         return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
     }
 
-    const state = yield * deriveState(ix, ix.data as IxDc);
+    if (action.id.params.kind === RDXK.MODAL_SUBMIT) {
+        const next = yield * allReducers[action.predicate]({} as IxState, action);
+        const message = yield * deriveView(next, action);
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        return yield * DiscordApi.editMenu(ix, message);
+    }
+
     if (!state.user || (action.predicate in reducerFirst)) {
         const next = !(action.predicate in reducerFirst)
             ? yield * reducerFirst[AXN.FIRST_USER.predicate](state, action)
             : yield * reducerFirst[action.predicate](state, action);
 
-        const message = yield * deriveView(next);
+        const message = yield * deriveView(next, action);
 
         if (action.id.params.kind === RDXK.ENTRY) {
             return yield * DiscordApi.entryMenu(ix, message);
@@ -44,18 +49,11 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
     }
 
     const next = yield * allReducers[action.predicate](state, action);
-    const message = yield * deriveView(next);
+    const message = yield * deriveView(next, action);
 
     if (action.id.params.kind === RDXK.ENTRY) {
         return yield * DiscordApi.entryMenu(ix, message);
     }
 
-    if (action.id.params.kind === RDXK.MODAL_SUBMIT) {
-        yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
-        return yield * DiscordApi.createFollowupMessage(ix.application_id, ix.token, {
-            ...message,
-            flags: MGF.EPHEMERAL,
-        });
-    }
     return yield * DiscordApi.editMenu(ix, message);
 });
