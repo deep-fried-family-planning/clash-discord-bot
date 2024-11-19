@@ -1,7 +1,6 @@
 import type {IxD, IxDc, IxDm} from '#src/discord/util/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import type {IxAction} from '#src/discord/ixc/store/types.ts';
-import {parseCustomId} from '#src/discord/ixc/store/id.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inspect} from 'node:util';
 import type {ActionRow, TextInput} from 'dfx/types';
@@ -9,6 +8,7 @@ import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
+import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
@@ -30,7 +30,6 @@ export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
             }),
         )
         : undefined;
-
 
     const action = {
         id,

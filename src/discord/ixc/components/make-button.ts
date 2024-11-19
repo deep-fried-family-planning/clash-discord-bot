@@ -1,10 +1,11 @@
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {UI} from 'dfx';
-import {buildCustomId, parseCustomId} from '#src/discord/ixc/store/id.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {Button} from 'dfx/types';
+import {buildCustomId} from '#src/discord/ixc/store/id-build.ts';
+import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 export type MadeButton = ReturnType<typeof makeButton>;
@@ -58,8 +59,8 @@ export const makeButton = (
                 },
             );
         },
-        fromMap: (cMap: Record<str, Maybe<ComponentMapItem>>) => {
-            const component = cMap[id.predicate];
+        fromMap: (cMap?: Record<str, Maybe<ComponentMapItem>>) => {
+            const component = cMap?.[id.predicate];
 
             return component
                 ? makeButton(component.id.params, component.original as Button, component.id)

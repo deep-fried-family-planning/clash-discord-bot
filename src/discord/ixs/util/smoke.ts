@@ -37,7 +37,7 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     // const clan = yield * getDiscordClan({pk: data.guild_id!, sk: clanTag});
 
     return {
-        embeds    : [{description: JSON.stringify(data.data, null, 2)}],
+        embeds    : [{description: 'smoke test info board'}],
         components: UI.grid([
             [LinkBE.component, InfoBE.component, RosterBE.component],
         ]),

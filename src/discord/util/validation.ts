@@ -1,9 +1,11 @@
 import type {IxD} from '#src/discord/util/discord.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {CSL, E} from '#src/internal/pure/effect.ts';
 import {getDiscordServer} from '#src/dynamo/discord-server.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 
 export const validateServer = (data: IxD) => E.gen(function* () {
+    yield * CSL.debug('[VALIDATE]:', data);
+
     if (!data.member) {
         return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
     }

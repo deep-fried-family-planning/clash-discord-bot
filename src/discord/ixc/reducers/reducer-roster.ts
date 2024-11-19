@@ -9,18 +9,14 @@ import {BackB, CloseB, NextB} from '#src/discord/ixc/components/global-component
 const joinRoster = buildReducer((s, ax) => E.gen(function * () {
     return {
         ...s,
-        view: {
-            info: jsonEmbed({
-                type: 'joinRoster',
-            }),
-            rows: [
-                [RosterSF.as(AXN.ROSTER_SELECT_FILTER, {disabled: true})],
-                [RosterS.as(AXN.ROSTER_SELECT_UPDATE, {disabled: true})],
-            ],
-            close: CloseB,
-            back : BackB.as(AXN.ROSTER_OPEN),
-            next : NextB.as(AXN.NOOP, {disabled: true}),
-        },
+        info: jsonEmbed({
+            type: 'joinRoster',
+        }),
+        row1 : [RosterSF.as(AXN.ROSTER_SELECT_FILTER)],
+        row2 : [RosterS.as(AXN.ROSTER_SELECT_UPDATE)],
+        close: CloseB,
+        back : BackB.as(AXN.ROSTER_OPEN),
+        next : NextB.as(AXN.NOOP, {disabled: true}),
     };
 }));
 
@@ -28,18 +24,14 @@ const joinRoster = buildReducer((s, ax) => E.gen(function * () {
 const openSelectRoster = buildReducer((s, ax) => E.gen(function * () {
     return {
         ...s,
-        view: {
-            info: jsonEmbed({
-                type: 'openSelectRoster',
-            }),
-            rows: [
-                [RosterSF.as(AXN.ROSTER_SELECT_FILTER)],
-                [RosterS.as(AXN.ROSTER_SELECT_UPDATE)],
-            ],
-            close: CloseB,
-            back : BackB.as(AXN.ROSTER_OPEN),
-            next : s.view?.next?.withFwd(ax.id, '', {disabled: true}),
-        },
+        info: jsonEmbed({
+            type: 'openSelectRoster',
+        }),
+        row1 : [RosterSF.as(AXN.ROSTER_SELECT_FILTER)],
+        row2 : [RosterS.as(AXN.ROSTER_SELECT_UPDATE)],
+        close: CloseB,
+        back : BackB.as(AXN.ROSTER_OPEN),
+        next : s.next?.withFwd(ax.id, '', {disabled: true}),
     };
 }));
 
@@ -47,18 +39,14 @@ const openSelectRoster = buildReducer((s, ax) => E.gen(function * () {
 const updateSelectRoster = buildReducer((s, ax) => E.gen(function * () {
     return {
         ...s,
-        view: {
-            info: jsonEmbed({
-                type: 'selectRoster',
-            }),
-            rows: [
-                [RosterSF.as(AXN.ROSTER_SELECT_FILTER, {disabled: true})],
-                [RosterS.as(AXN.ROSTER_SELECT_UPDATE, {disabled: true})],
-            ],
-            close: s.view?.close,
-            back : s.view?.back,
-            next : s.view?.next?.withFwd(ax.id, '', {disabled: false}),
-        },
+        info: jsonEmbed({
+            type: 'selectRoster',
+        }),
+        row1 : [RosterSF.as(AXN.ROSTER_SELECT_FILTER)],
+        row2 : [RosterS.as(AXN.ROSTER_SELECT_UPDATE)],
+        close: s.close,
+        back : s.back,
+        next : s.next?.withFwd(ax.id, '', {disabled: false}),
     };
 }));
 

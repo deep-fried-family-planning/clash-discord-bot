@@ -7,11 +7,13 @@ import type {Route} from '#src/discord/ixc/store/id-routes.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
+import type {IxD} from '#src/discord/util/discord.ts';
 import type {IxDm} from '#src/discord/util/discord.ts';
-import type {MadeText} from '#src/discord/ixc/components/make-text.ts';
 
 
 export type IxState = {
+    original: IxD;
+
     server_id : Snowflake;
     user_id   : Snowflake;
     user_roles: Snowflake[];
@@ -25,32 +27,18 @@ export type IxState = {
     error? : Embed | und;
     debug? : Embed | und;
 
-    cmap: Record<string, Maybe<ComponentMapItem>>;
+    cmap?: Record<string, Maybe<ComponentMapItem>>;
 
     navigate?: MadeSelect | undefined;
-    row1?    : (MadeButton | MadeSelect)[][];
-    row2?    : (MadeButton | MadeSelect)[][];
-    row3?    : (MadeButton | MadeSelect)[][];
+    row1?    : (MadeButton | MadeSelect | und)[];
+    row2?    : (MadeButton | MadeSelect | und)[];
+    row3?    : (MadeButton | MadeSelect | und)[];
     start?   : MadeSelect | undefined;
     back?    : MadeButton | undefined;
     submit?  : MadeButton | undefined;
     next?    : MadeButton | undefined;
+    forward? : MadeButton | undefined;
     close?   : MadeButton | undefined;
-
-    view?: {
-        info?    : Embed | undefined;
-        selected?: Embed | undefined;
-        status?  : Embed | undefined;
-
-
-        navigator?: MadeSelect | undefined;
-        rows?     : (MadeButton | MadeSelect | MadeText | undefined)[][];
-        back?     : MadeButton | undefined;
-        submit?   : MadeButton | undefined;
-        next?     : MadeButton | undefined;
-        forward?  : MadeButton | undefined;
-        close?    : MadeButton | undefined;
-    };
 };
 
 

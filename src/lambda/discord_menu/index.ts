@@ -39,7 +39,7 @@ const menu = (ix: IxD) => E.gen(function * () {
                     flags: MGF.EPHEMERAL,
                 },
             }),
-            E.catchAllDefect(() => DiscordApi.editMenu(ix, {
+            E.catchAllCause(() => DiscordApi.editMenu(ix, {
                 ...userMessage,
             })),
         );
@@ -57,7 +57,7 @@ const menu = (ix: IxD) => E.gen(function * () {
                     flags: MGF.EPHEMERAL,
                 },
             }),
-            E.catchAllDefect(() => DiscordApi.editMenu(ix, {
+            E.catchAllCause(() => DiscordApi.editMenu(ix, {
                 ...userMessage,
             })),
         );

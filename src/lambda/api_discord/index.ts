@@ -9,13 +9,13 @@ import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {IxmLink} from '#src/discord/ixm/ixm-link.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
-import {parseCustomId} from '#src/discord/ixc/store/id.ts';
+import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({

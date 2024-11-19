@@ -1,7 +1,7 @@
 import type {E} from '#src/internal/pure/effect.ts';
 import type {IxAction, IxState, RDXK, RDXT} from '#src/discord/ixc/store/types.ts';
-import {buildCustomId} from '#src/discord/ixc/store/id.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {buildCustomId} from '#src/discord/ixc/store/id-build.ts';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 

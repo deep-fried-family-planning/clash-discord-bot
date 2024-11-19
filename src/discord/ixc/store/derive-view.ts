@@ -11,31 +11,8 @@ import {dEmbed, jsonEmbed} from '#src/discord/util/embed.ts';
 
 export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
     yield * CSL.debug('[STATE]', inspect(s, true, null));
-    yield * CSL.debug('[VIEW]', inspect(s.view, true, null));
-
-    if (!s.view) {
-        return {
-            embeds: [{description: 'this should not happen'}],
-        } satisfies Partial<IxRE>;
-    }
 
     const embeds = [
-        dEmbed(COLOR.ORIGINAL, 'User Info',
-            `<@${s.user_id}>`,
-            `<@&${s.server?.admin}>`,
-        ),
-        s.view.info?.description ? {
-            ...s.view.info,
-            color: nColor(COLOR.INFO),
-        } : undefined,
-        s.view.selected ? {
-            ...s.view.selected,
-            color: nColor(COLOR.DEBUG),
-        } : undefined,
-        s.view.status ? {
-            ...s.view.status,
-            color: nColor(COLOR.SUCCESS),
-        } : undefined,
         {
             ...jsonEmbed({
                 id  : ax.id.custom_id,
@@ -44,28 +21,36 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             }),
             color: nColor(COLOR.DEBUG),
         },
+        dEmbed(COLOR.ORIGINAL, 'User Info',
+            `<@${s.user_id}>`,
+            `<@&${s.server?.admin}>`,
+        ),
+        s.info?.description ? {
+            ...s.info,
+            color: nColor(COLOR.INFO),
+        } : undefined,
+        s.select ? {
+            ...s.select,
+            color: nColor(COLOR.DEBUG),
+        } : undefined,
+        s.status ? {
+            ...s.status,
+            color: nColor(COLOR.SUCCESS),
+        } : undefined,
     ].filter(Boolean) as Embed[];
-
-    if (!embeds.length) {
-        return {
-            embeds: [{description: 'this should not happen'}],
-        } satisfies Partial<IxRE>;
-    }
 
     const components = pipe(
         [
+            [s.navigate?.component].filter(Boolean),
+            s.row1?.filter(Boolean).map((c) => c?.component),
+            s.row2?.filter(Boolean).map((c) => c?.component),
+            s.row3?.filter(Boolean).map((c) => c?.component),
             [
-                s.view.navigator?.component,
-            ].filter(Boolean),
-            s.view.rows?.[0]?.filter(Boolean).map((c) => c.component),
-            s.view.rows?.[1]?.filter(Boolean).map((c) => c.component),
-            s.view.rows?.[2]?.filter(Boolean).map((c) => c.component),
-            [
-                s.view.back?.component,
-                s.view.submit?.component,
-                s.view.next?.component,
-                s.view.forward?.component,
-                s.view.close?.component,
+                s.back?.component,
+                s.submit?.component,
+                s.next?.component,
+                s.forward?.component,
+                s.close?.component,
             ].filter(Boolean),
         ] as const,
         filterL((cs) => Boolean(cs?.length)),

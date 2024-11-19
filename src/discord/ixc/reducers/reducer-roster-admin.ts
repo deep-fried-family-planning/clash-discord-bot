@@ -9,20 +9,16 @@ import {BackB, CloseB} from '#src/discord/ixc/components/global-components.ts';
 const RosterOpen = buildReducer((s, ax) => E.gen(function * () {
     return {
         ...s,
-        view: {
-            info: jsonEmbed({
-                type: 'rosterAdmin',
-            }),
-            rows: [
-                [
-                    RosterCreateB.as(AXN.ROSTER_CREATE),
-                    RosterEditB.as(AXN.ROSTER_SELECT_OPEN).fwd(AXN.ROSTER_EDIT),
-                    RosterDeleteB.as(AXN.ROSTER_SELECT_OPEN).fwd(AXN.ROSTER_DELETE),
-                ],
-            ],
-            close: CloseB,
-            back : BackB.as(AXN.ROSTER_OPEN),
-        },
+        info: jsonEmbed({
+            type: 'rosterAdmin',
+        }),
+        row1: [
+            RosterCreateB.as(AXN.ROSTER_CREATE),
+            RosterEditB.as(AXN.ROSTER_SELECT_OPEN).fwd(AXN.ROSTER_EDIT),
+            RosterDeleteB.as(AXN.ROSTER_SELECT_OPEN).fwd(AXN.ROSTER_DELETE),
+        ],
+        close: CloseB,
+        back : BackB.as(AXN.ROSTER_OPEN),
     };
 }));
 

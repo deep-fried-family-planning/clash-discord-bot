@@ -1,10 +1,11 @@
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {UI} from 'dfx';
-import {buildCustomId, parseCustomId} from '#src/discord/ixc/store/id.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {TextInput} from 'dfx/types';
+import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
+import {buildCustomId} from '#src/discord/ixc/store/id-build.ts';
 
 
 export type MadeText = ReturnType<typeof makeText>;
@@ -33,8 +34,8 @@ export const makeText = (
                 },
             );
         },
-        fromMap: (cMap: Record<str, Maybe<ComponentMapItem>>) => {
-            const component = cMap[id.predicate];
+        fromMap: (cMap?: Record<str, Maybe<ComponentMapItem>>) => {
+            const component = cMap?.[id.predicate];
 
             return component
                 ? makeText(component.id.params, component.original as TextInput, component.id)
