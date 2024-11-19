@@ -9,10 +9,10 @@ import type {Maybe} from '#src/internal/pure/types.ts';
 import {BackB, CloseB, ForwardB, NavSelect, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import type {IxState} from '#src/discord/ixc/store/types.ts';
 import {inspect} from 'node:util';
-import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
+import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 
 
-export type ComponentMapItem<T extends Button | SelectMenu | TextInput = Button | SelectMenu | TextInput> = {id: ReturnType<typeof parseCustomId>; original: T};
+export type ComponentMapItem<T extends Button | SelectMenu | TextInput = Button | SelectMenu | TextInput> = {id: ReturnType<typeof fromId>; original: T};
 
 
 export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
@@ -32,7 +32,7 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
                 row.components as (Button | SelectMenu)[],
                 mapL((c) => {
                     return {
-                        id      : parseCustomId(c.custom_id!),
+                        id      : fromId(c.custom_id!),
                         original: c,
                     } as const;
                 }),

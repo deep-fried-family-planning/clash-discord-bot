@@ -6,9 +6,16 @@ import {reducerNewLink} from '#src/discord/ixc/reducers/reducer-new-link.ts';
 import {reducerClans} from '#src/discord/ixc/reducers/reducer-clans.ts';
 import {reducerRoster} from '#src/discord/ixc/reducers/reducer-roster.ts';
 import {reducerRosterAdmin} from '#src/discord/ixc/reducers/reducer-roster-admin.ts';
+import {reducerEntryMenu} from '#src/discord/ixc/reducers/reducer-entry-menu.ts';
+import {selectClanReducer} from '#src/discord/ixc/component-reducers/select-clan.ts';
+import {editUserReducer} from '#src/discord/ixc/component-reducers/edit-user.ts';
 
 
 export const allReducers = {
+
+    ...selectClanReducer,
+    ...editUserReducer,
+
     ...reducerFirst,
     ...reducerEntry,
     ...reducerNewLink,
@@ -17,4 +24,5 @@ export const allReducers = {
     ...reducerRoster,
     ...reducerRosterAdmin,
     ...reducerClans,
+    ...reducerEntryMenu,
 };

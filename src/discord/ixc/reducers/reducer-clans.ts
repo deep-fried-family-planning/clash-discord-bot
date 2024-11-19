@@ -1,4 +1,4 @@
-import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
+import {typeRx} from '#src/discord/ixc/reducers/type-rx.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
@@ -9,7 +9,7 @@ import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 
 
-const openClans = buildReducer((s, ax) => E.gen(function * () {
+const openClans = typeRx((s, ax) => E.gen(function * () {
     const records = pipe(
         yield * queryDiscordClanForServer({pk: s.server_id}),
         sortWithL((r) => r.sk, ORDS),
@@ -26,8 +26,8 @@ const openClans = buildReducer((s, ax) => E.gen(function * () {
         info: jsonEmbed({
             type: 'openClans',
         }),
-        row1: [ClanSF.as(AXN.CLANS_FILTER, {disabled: true})],
-        row2: [ClanS.as(AXN.CLANS_SELECT, {
+        sel1: ClanSF.as(AXN.CLANS_FILTER, {disabled: true}),
+        sel2: ClanS.as(AXN.CLANS_SELECT, {
             options: pipe(
                 together,
                 sortByL(
@@ -41,15 +41,14 @@ const openClans = buildReducer((s, ax) => E.gen(function * () {
                     value      : c.tag,
                 })),
             ),
-        })],
-        close  : CloseB,
+        }),
         back   : BackB.as(AXN.INFO_OPEN),
         forward: NextB.as(AXN.NOOP, {disabled: true}),
     };
 }));
 
 
-const selectClan = buildReducer((s, ax) => E.gen(function * () {
+const selectClan = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected[0].value;
 
     return {
@@ -60,9 +59,8 @@ const selectClan = buildReducer((s, ax) => E.gen(function * () {
         selected: jsonEmbed({
             clanTag: selected,
         }),
-        row1   : [ClanSF.as(AXN.CLANS_FILTER, {disabled: true})],
-        row2   : [ClanS.setDefaultValues([selected])],
-        close  : CloseB,
+        sel1   : ClanSF.as(AXN.CLANS_FILTER, {disabled: true}),
+        sel2   : ClanS.setDefaultValues([selected]),
         back   : BackB.as(AXN.INFO_OPEN),
         forward: NextB.as(AXN.NOOP, {disabled: true}),
     };
@@ -72,5 +70,4 @@ const selectClan = buildReducer((s, ax) => E.gen(function * () {
 export const reducerClans = {
     [AXN.CLANS_OPEN.predicate]  : openClans,
     [AXN.CLANS_SELECT.predicate]: selectClan,
-    [AXN.CLANS_FILTER.predicate]: selectClan,
 };

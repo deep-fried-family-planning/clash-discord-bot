@@ -1,12 +1,12 @@
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
-import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
+import {typeRx} from '#src/discord/ixc/reducers/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {RosterCreateB, RosterDeleteB, RosterEditB} from '#src/discord/ixc/components/components.ts';
 import {BackB, CloseB} from '#src/discord/ixc/components/global-components.ts';
 
 
-const RosterOpen = buildReducer((s, ax) => E.gen(function * () {
+const RosterOpen = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
         info: jsonEmbed({
@@ -23,33 +23,33 @@ const RosterOpen = buildReducer((s, ax) => E.gen(function * () {
 }));
 
 
-const rosterAdmin = buildReducer((s, ax) => E.gen(function * () {
+const rosterAdmin = typeRx((s, ax) => E.gen(function * () {
     return yield * RosterOpen(s, ax);
 }));
 
 
-const createRoster = buildReducer((s, ax) => E.gen(function * () {
+const createRoster = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
     };
 }));
 
 
-const submitCreateRoster = buildReducer((s, ax) => E.gen(function * () {
+const submitCreateRoster = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
     };
 }));
 
 
-const editRoster = buildReducer((s, ax) => E.gen(function * () {
+const editRoster = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
     };
 }));
 
 
-const deleteRoster = buildReducer((s, ax) => E.gen(function * () {
+const deleteRoster = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
     };

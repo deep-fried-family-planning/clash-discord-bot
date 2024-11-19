@@ -15,7 +15,7 @@ import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
-import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
+import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({
@@ -58,15 +58,15 @@ const component = (body: IxD) => E.gen(function * () {
                 MessageBody: JSON.stringify(body),
             });
 
-            const id = parseCustomId(body.data.custom_id);
+            const id = fromId(body.data.custom_id);
 
             return r200({
                 type: IXRT.MODAL,
                 data: {
                     ...IxmLink,
-                    custom_id: AXN.NEW_LINK_MODAL_SUBMIT.withForward({
-                        nextKind: AXN.NEW_LINK_MODAL_OPEN.params.kind,
-                        nextType: AXN.NEW_LINK_MODAL_OPEN.params.type!,
+                    custom_id: AXN.NLINK_MODAL_SUBMIT.withForward({
+                        nextKind: AXN.NLINK_MODAL_OPEN.params.kind,
+                        nextType: AXN.NLINK_MODAL_OPEN.params.type,
                         forward : id.params.forward!,
                     }).custom_id,
                 },

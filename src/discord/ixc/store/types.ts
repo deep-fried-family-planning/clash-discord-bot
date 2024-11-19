@@ -20,19 +20,23 @@ export type IxState = {
     server?   : DServer | undefined;
     user?     : DUser | undefined;
 
-    title? : str;
-    info?  : Embed | und;
-    select?: Embed | und;
-    status?: Embed | und;
-    error? : Embed | und;
-    debug? : Embed | und;
+    title?      : str;
+    description?: str;
+    info?       : Embed | und;
+    select?     : Embed | und;
+    status?     : Embed | und;
+    error?      : Embed | und;
+    debug?      : Embed | und;
 
     cmap?: Record<string, Maybe<ComponentMapItem>>;
 
     navigate?: MadeSelect | undefined;
-    row1?    : (MadeButton | MadeSelect | und)[];
-    row2?    : (MadeButton | MadeSelect | und)[];
-    row3?    : (MadeButton | MadeSelect | und)[];
+    row1?    : (MadeButton | und)[];
+    sel1?    : MadeSelect | und;
+    row2?    : (MadeButton | und)[];
+    sel2?    : MadeSelect | und;
+    row3?    : (MadeButton | und)[];
+    sel3?    : MadeSelect | und;
     start?   : MadeSelect | undefined;
     back?    : MadeButton | undefined;
     submit?  : MadeButton | undefined;
@@ -43,8 +47,7 @@ export type IxState = {
 
 
 export type IxAction = {
-    predicate: str;
-    id       : Route;
+    id      : Route;
     selected : {
         type : str;
         value: str;
@@ -59,76 +62,27 @@ export type IxAction = {
  * @summary Redux Kind (RDXK)
  */
 export const enum RDXK {
-    MODAL_OPEN = 'MO',
-    MODAL_SUBMIT = 'SM',
-    TEXT = 'T',
-    ADMIN = 'A',
-
-    ENTRY = 'EN',
-    OPEN = 'OP',
-    EDIT = 'ED',
-    CREATE = 'CR',
-
-    FIRST = 'FR',
-
-    START = 'ST',
-    UPDATE = 'UP',
-    FILTER = 'FL',
-
-    BACK = 'BK',
-    NEXT = 'NX',
-    FORWARD = 'FW',
-    CLOSE = 'CL',
-    SUBMIT = 'SU',
-    DELETE = 'DE',
-
-    SELECT = 'SE',
-    NAV = 'NV',
-    NOOP = 'NP',
-}
-
-
-/**
- * @summary Redux Type (RDXT)
- */
-export const enum RDXT {
-    LINKS = 'LINKS',
-    NEW_LINK = 'NEW_LINK',
-    ACCOUNTS = 'ACCOUNTS',
-    DELETE_ACCOUNT = 'DELETE_ACCOUNT',
-    ACCOUNT_TYPE = 'ACCOUNT_TYPE',
-    USER = 'USER',
-    TIMEZONE = 'TIMEZONE',
-    INFO = 'INFO',
-    ROSTER = 'ROSTER',
-    ROSTER_ADMIN = 'ROSTER_ADMIN',
-    ROSTER_JOIN = 'ROSTER_JOIN',
-
+    MODAL_OPEN = 'MODAL_OPEN',
+    MODAL_SUBMIT = 'MODAL_SUBMIT',
+    TEXT = 'TEXT',
+    ADMIN = 'ADMIN',
+    ENTRY = 'ENTRY',
+    INIT = 'INIT',
     OPEN = 'OPEN',
-
-    CLOSE = 'CLOSE',
+    EDIT = 'EDIT',
+    CREATE = 'CREATE',
+    FIRST = 'FIRST',
+    START = 'START',
+    UPDATE = 'UPDATE',
+    FILTER = 'FILTER',
     BACK = 'BACK',
     NEXT = 'NEXT',
     FORWARD = 'FORWARD',
+    CLOSE = 'CLOSE',
     SUBMIT = 'SUBMIT',
+    DELETE = 'DELETE',
+    SELECT = 'SELECT',
     NAV = 'NAV',
-
     NOOP = 'NOOP',
-    NOOP1 = 'NOOP1',
-    NOOP2 = 'NOOP2',
-    NOOP3 = 'NOOP3',
-
-    CLAN = 'CLAN',
-
-    FIRST_USER = 'FU',
-    FIRST_UPDATE_TIMEZONE = 'FUTZ',
-    FIRST_UPDATE_QUIET_START = 'FUQS',
-    FIRST_UPDATE_QUIET_END = 'FUQE',
-    FIRST_USER_SUBMIT = 'FUS',
-    FIRST_ACCOUNT = 'FA',
-
-    TAG = 'TAG',
-    API = 'API',
 }
-
 

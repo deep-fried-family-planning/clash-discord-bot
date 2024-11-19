@@ -4,19 +4,21 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {SelectMenu} from 'dfx/types';
-import {buildCustomId} from '#src/discord/ixc/store/id-build.ts';
-import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
+import {toId} from '#src/discord/ixc/store/id-build.ts';
+import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 export type MadeSelect = ReturnType<typeof makeSelect>;
 
 
 export const makeSelect = (
-    params: RouteParams,
+    params: RouteParams | Route,
     options: Partial<Parameters<typeof UI.select>[0]>,
     inId?: Route,
 ) => {
-    const id = inId ?? buildCustomId(params);
+    const id = 'predicate' in params
+        ? (inId ?? params)
+        : toId(params);
 
     return {
         id,
@@ -26,6 +28,15 @@ export const makeSelect = (
             options  : options.options ?? [],
             custom_id: id.custom_id,
         }),
+        values: options.options?.filter((o) => o.default).map((o) => o.value) ?? [],
+        with  : (newOptions: typeof options) => makeSelect(
+            params,
+            {
+                ...options,
+                ...newOptions,
+            },
+            id,
+        ),
         as: (newId: Route, newOptions?: typeof options) => {
             return makeSelect(
                 newId.params,
@@ -40,13 +51,10 @@ export const makeSelect = (
 
             return component
                 ? makeSelect(component.id.params, component.original, component.id)
-                : undefined;
+                : makeSelect(id, options, id);
         },
         getDefaultValues: () => {
             const returnable = options.options?.filter((o) => o.default) ?? [];
-
-            console.debug('[getDefaultValues]', options.options);
-            console.debug('[getDefaultValues]', returnable);
 
             return returnable;
         },
@@ -63,6 +71,16 @@ export const makeSelect = (
                 id,
             );
         },
+        setDefaultValuesIf: (predicate: str, values: string[]) =>
+            predicate === id.predicate
+                ? makeSelect(id, {
+                    ...options,
+                    options: options.options?.map((o) => ({
+                        ...o,
+                        default: values.includes(o.value),
+                    })) ?? [],
+                }, id)
+                : makeSelect(id, options, id),
     };
 };
 
@@ -71,7 +89,7 @@ export const makeSelectFrom = (
     component: SelectMenu,
 ) => {
     const {custom_id, ...restComponent} = component;
-    const id = parseCustomId(custom_id);
+    const id = fromId(custom_id);
 
     return makeSelect(id.params, restComponent);
 };

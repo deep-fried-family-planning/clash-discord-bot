@@ -6,7 +6,8 @@ import type {Embed} from 'dfx/types';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
-import {dEmbed, jsonEmbed} from '#src/discord/util/embed.ts';
+import {jsonEmbed} from '#src/discord/util/embed.ts';
+import {CloseB} from '#src/discord/ixc/components/global-components.ts';
 
 
 export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
@@ -14,43 +15,65 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
 
     const embeds = [
         {
+            color: nColor(COLOR.DEBUG),
+            title: 'Debug',
             ...jsonEmbed({
-                id  : ax.id.custom_id,
+                id           : ax.id.custom_id,
                 ...ax.id.params,
-                cmap: ax.cmap,
+                cmap         : ax.cmap,
+                selected     : ax.selected,
+                predicate    : ax.id.predicate,
+                nextPredicate: ax.id.nextPredicate,
+                backPredicate: ax.id.backPredicate,
             }),
-            color: nColor(COLOR.DEBUG),
         },
-        dEmbed(COLOR.ORIGINAL, 'User Info',
-            `<@${s.user_id}>`,
-            `<@&${s.server?.admin}>`,
-        ),
-        s.info?.description ? {
-            ...s.info,
-            color: nColor(COLOR.INFO),
+        // dEmbed(COLOR.ORIGINAL, 'User Info',
+        //     `<@${s.user_id}>`,
+        //     `<@&${s.server?.admin}>`,
+        // ),
+        s.title ? {
+            color      : nColor(COLOR.INFO),
+            title      : s.title,
+            description: s.description,
         } : undefined,
-        s.select ? {
-            ...s.select,
-            color: nColor(COLOR.DEBUG),
-        } : undefined,
+        s.info?.description
+            ? {
+                color: nColor(COLOR.INFO),
+                ...s.info,
+            }
+            : undefined,
+        s.select
+            ? {
+                color: nColor(COLOR.DEBUG),
+                ...s.select,
+            }
+            : undefined,
         s.status ? {
-            ...s.status,
             color: nColor(COLOR.SUCCESS),
-        } : undefined,
+            ...s.status,
+        }
+        : undefined,
     ].filter(Boolean) as Embed[];
 
     const components = pipe(
         [
             [s.navigate?.component].filter(Boolean),
+
             s.row1?.filter(Boolean).map((c) => c?.component),
+            [s.sel1?.component].filter(Boolean),
+
             s.row2?.filter(Boolean).map((c) => c?.component),
+            [s.sel2?.component].filter(Boolean),
+
             s.row3?.filter(Boolean).map((c) => c?.component),
+            [s.sel3?.component].filter(Boolean),
+
             [
                 s.back?.component,
                 s.submit?.component,
                 s.next?.component,
                 s.forward?.component,
-                s.close?.component,
+                s.close?.component ?? CloseB.component,
             ].filter(Boolean),
         ] as const,
         filterL((cs) => Boolean(cs?.length)),

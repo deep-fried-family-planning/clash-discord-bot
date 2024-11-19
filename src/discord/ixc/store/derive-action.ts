@@ -8,19 +8,19 @@ import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
-import {parseCustomId} from '#src/discord/ixc/store/id-parse.ts';
+import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
     yield * CSL.debug('[CUSTOM_ID]', d.custom_id);
 
-    const id = parseCustomId(d.custom_id);
+    const id = fromId(d.custom_id);
 
     const cmap = 'components' in d
         ? pipe(
             d.components as ActionRow[],
             mapL((row) => pipe(row.components as TextInput[], mapL((c) => ({
-                id      : parseCustomId(c.custom_id),
+                id      : fromId(c.custom_id),
                 original: c,
             })))),
             flatMapL((c) => c),
@@ -33,9 +33,8 @@ export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
 
     const action = {
         id,
-        original : d as unknown as IxDm,
-        predicate: id.predicate,
-        selected : 'values' in d
+        original: d as unknown as IxDm,
+        selected: 'values' in d
             ? d.values.map((d) => ({
                 type : 'string',
                 value: d as unknown as str,

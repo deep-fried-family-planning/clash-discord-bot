@@ -1,4 +1,4 @@
-import {buildReducer} from '#src/discord/ixc/reducers/build-reducer.ts';
+import {typeRx} from '#src/discord/ixc/reducers/type-rx.ts';
 import {E, pipe, S} from '#src/internal/pure/effect.ts';
 import {QuietEndSelector, QuietStartSelector, TimezoneS} from '#src/discord/ixc/components/components.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
@@ -6,30 +6,29 @@ import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {CloseB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {flatMapL, mapL} from '#src/internal/pure/pure-list.ts';
-import {buildCustomId} from '#src/discord/ixc/store/id-build.ts';
+import {toId} from '#src/discord/ixc/store/id-build.ts';
 
 
-export const firstUser = buildReducer((s) => E.gen(function * () {
+export const firstUser = typeRx((s) => E.gen(function * () {
     return {
         ...s,
         info: jsonEmbed({
             message: 'first time user detected',
         }),
-        row1  : [TimezoneS.as(AXN.FIRST_UPDATE_TIMEZONE)],
-        row2  : [QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START)],
-        row3  : [QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END)],
-        close : CloseB,
+        sel1  : TimezoneS.as(AXN.FU_TZ_UPDATE),
+        sel2  : QuietStartSelector.as(AXN.FU_QH_UPDATE),
+        sel3  : QuietEndSelector.as(AXN.FU_QE_UPDATE),
         submit: SubmitB.as(AXN.NOOP, {disabled: true}),
     };
 }));
 
 
-const firstUserUpdate = buildReducer((s, ax) => E.gen(function * () {
+const firstUserUpdate = typeRx((s, ax) => E.gen(function * () {
     const selectors = pipe(
         [
-            TimezoneS.as(AXN.FIRST_UPDATE_TIMEZONE).fromMap(s.cmap)!,
-            QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START).fromMap(s.cmap)!,
-            QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END).fromMap(s.cmap)!,
+            TimezoneS.as(AXN.FU_TZ_UPDATE).fromMap(s.cmap)!,
+            QuietStartSelector.as(AXN.FU_QH_UPDATE).fromMap(s.cmap)!,
+            QuietEndSelector.as(AXN.FU_QE_UPDATE).fromMap(s.cmap)!,
         ],
         mapL((selector) => {
             if (selector.id.predicate === ax.id.predicate) {
@@ -47,12 +46,10 @@ const firstUserUpdate = buildReducer((s, ax) => E.gen(function * () {
         )),
     );
 
-    const submitId = buildCustomId({
-        ...AXN.FIRST_USER_SUBMIT.params,
+    const submitId = toId({
+        ...AXN.FU_SUBMIT.params,
         data: selected,
     });
-
-    const returnable = pipe(selectors, mapL((s) => [s]));
 
     return {
         ...s,
@@ -64,25 +61,25 @@ const firstUserUpdate = buildReducer((s, ax) => E.gen(function * () {
             quietStart: selected[1],
             quietEnd  : selected[2],
         }),
-        row1  : returnable[0],
-        row2  : returnable[1],
-        row3  : returnable[2],
+        sel1  : selectors[0],
+        sel2  : selectors[1],
+        sel3  : selectors[2],
         close : CloseB,
         submit: SubmitB.as(submitId, {disabled: selected.length !== 3}),
     };
 }));
 
 
-const firstUserSubmit = buildReducer((s, ax) => E.gen(function * () {
+const firstUserSubmit = typeRx((s, ax) => E.gen(function * () {
     const [
         timezone,
         quietStart,
         quietEnd,
     ] = pipe(
         [
-            TimezoneS.as(AXN.FIRST_UPDATE_TIMEZONE).fromMap(s.cmap)!,
-            QuietStartSelector.as(AXN.FIRST_UPDATE_QUIET_START).fromMap(s.cmap)!,
-            QuietEndSelector.as(AXN.FIRST_UPDATE_QUIET_END).fromMap(s.cmap)!,
+            TimezoneS.as(AXN.FU_TZ_UPDATE).fromMap(s.cmap)!,
+            QuietStartSelector.as(AXN.FU_QH_UPDATE).fromMap(s.cmap)!,
+            QuietEndSelector.as(AXN.FU_QE_UPDATE).fromMap(s.cmap)!,
         ] as const,
         mapL((selector) => selector.getDefaultValues()),
     );
@@ -114,9 +111,9 @@ const firstUserSubmit = buildReducer((s, ax) => E.gen(function * () {
         status: jsonEmbed({
             success: `user record created with ${timezone[0].value} (${quietStart[0].value}-${quietEnd[0].value})`,
         }),
-        row1  : [TimezoneS.as(AXN.NOOP, {disabled: true})],
-        row2  : [QuietStartSelector.as(AXN.NOOP1, {disabled: true})],
-        row3  : [QuietEndSelector.as(AXN.NOOP2, {disabled: true})],
+        sel1  : TimezoneS.as(AXN.NOOP, {disabled: true}),
+        sel2  : QuietStartSelector.as(AXN.NOOP1, {disabled: true}),
+        sel3  : QuietEndSelector.as(AXN.NOOP2, {disabled: true}),
         close : CloseB,
         submit: SubmitB.as(AXN.NOOP3, {disabled: true}),
     };
@@ -124,9 +121,9 @@ const firstUserSubmit = buildReducer((s, ax) => E.gen(function * () {
 
 
 export const reducerFirst = {
-    [AXN.FIRST_USER.predicate]              : firstUser,
-    [AXN.FIRST_UPDATE_TIMEZONE.predicate]   : firstUserUpdate,
-    [AXN.FIRST_UPDATE_QUIET_START.predicate]: firstUserUpdate,
-    [AXN.FIRST_UPDATE_QUIET_END.predicate]  : firstUserUpdate,
-    [AXN.FIRST_USER_SUBMIT.predicate]       : firstUserSubmit,
+    [AXN.FU_OPEN.predicate]     : firstUser,
+    [AXN.FU_TZ_UPDATE.predicate]: firstUserUpdate,
+    [AXN.FU_QH_UPDATE.predicate]: firstUserUpdate,
+    [AXN.FU_QE_UPDATE.predicate]: firstUserUpdate,
+    [AXN.FU_SUBMIT.predicate]   : firstUserSubmit,
 };

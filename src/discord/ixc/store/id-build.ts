@@ -6,7 +6,7 @@ import {keysKv} from '#src/internal/pure/pure-kv.ts';
 import {inject} from 'regexparam';
 
 
-export const buildCustomId = (params: RouteParams) => {
+export const toId = (params: RouteParams) => {
     const redefined = {
         ...params,
         data: params.data?.map((d) => d.replaceAll(DELIM.SLASH, DELIM.PIPE)).join(DELIM.DATA),
@@ -31,5 +31,6 @@ export const buildCustomId = (params: RouteParams) => {
         params,
         predicate    : `${params.kind}/${params.type}`,
         nextPredicate: `${params.nextKind}/${params.nextType}`,
+        backPredicate: `${params.backKind}/${params.backType}`,
     } as const satisfies Route;
 };

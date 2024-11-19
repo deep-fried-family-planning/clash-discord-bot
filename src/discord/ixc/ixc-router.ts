@@ -2,7 +2,7 @@ import {E} from '#src/internal/pure/effect.ts';
 import type {IxDc} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {DeepFryerUnknownError, SlashUserError} from '#src/internal/errors.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
 import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
@@ -13,28 +13,18 @@ import {allReducers} from '#src/discord/ixc/reducers/all-reducers.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
-    if (!ix.data) {
-        return yield * new DeepFryerUnknownError({issue: 'Routing Error'});
-    }
-
-    const s = yield * deriveState(ix, ix.data as IxDc);
     const ax = yield * deriveAction(ix, ix.data as IxDc);
 
     if (ax.id.params.kind === RDXK.CLOSE || ax.id.params.kind === RDXK.MODAL_OPEN) {
         return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
     }
 
-    if (ax.id.params.kind === RDXK.MODAL_SUBMIT) {
-        const next = yield * allReducers[ax.predicate](s, ax);
-        const message = yield * deriveView(next, ax);
+    const s = yield * deriveState(ix, ix.data as IxDc);
 
-        return yield * DiscordApi.editMenu(ix, message);
-    }
-
-    if (!s.user || (ax.predicate in reducerFirst)) {
-        const next = !(ax.predicate in reducerFirst)
-            ? yield * reducerFirst[AXN.FIRST_USER.predicate](s, ax)
-            : yield * reducerFirst[ax.predicate](s, ax);
+    if (!s.user || (ax.id.predicate in reducerFirst)) {
+        const next = !(ax.id.predicate in reducerFirst)
+            ? yield * reducerFirst[AXN.FU_OPEN.predicate](s, ax)
+            : yield * reducerFirst[ax.id.predicate](s, ax);
 
         const message = yield * deriveView(next, ax);
 
@@ -44,11 +34,23 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
         return yield * DiscordApi.editMenu(ix, message);
     }
 
-    if (!(ax.predicate in allReducers)) {
+    if (ax.id.params.kind === RDXK.MODAL_SUBMIT) {
+        const next = yield * allReducers[ax.id.predicate](s, ax);
+        const message = yield * deriveView(next, ax);
+
+        return yield * DiscordApi.editMenu(ix, message);
+    }
+
+    const predicate
+        = ax.id.params.kind === RDXK.BACK ? ax.id.backPredicate
+        : ax.id.params.kind === RDXK.FORWARD ? ax.id.backPredicate
+        : ax.id.predicate;
+
+    if (!(predicate in allReducers)) {
         return yield * new SlashUserError({issue: 'Unknown Interaction'});
     }
 
-    const next = yield * allReducers[ax.predicate](s, ax);
+    const next = yield * allReducers[predicate](s, ax);
     const message = yield * deriveView(next, ax);
 
     if (ax.id.params.kind === RDXK.ENTRY) {
