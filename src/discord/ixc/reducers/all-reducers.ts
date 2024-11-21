@@ -12,14 +12,23 @@ import {editUserReducer} from '#src/discord/ixc/component-reducers/user-edit.ts'
 import {selectRosterReducer} from '#src/discord/ixc/component-reducers/roster-select.ts';
 import {signupRosterReducer} from '#src/discord/ixc/component-reducers/roster-signup.ts';
 import {clanViewerReducer} from '#src/discord/ixc/component-reducers/clan-viewer.ts';
+import {rosterManageReducer} from '#src/discord/ixc/component-reducers/roster-manage.ts';
+import {optoutRosterReducer} from '#src/discord/ixc/component-reducers/roster-opt-out.ts';
+import {rosterCreateReducer} from '#src/discord/ixc/component-reducers/roster-create.ts';
+import {embedEditorReducer} from '#src/discord/ixc/component-reducers/embed-editor.ts';
 
 
 export const allReducers = {
 
     ...clanSelectReducer,
     ...clanViewerReducer,
+    ...embedEditorReducer,
     ...selectRosterReducer,
     ...signupRosterReducer,
+    ...optoutRosterReducer,
+    ...rosterManageReducer,
+    ...rosterCreateReducer,
+
     ...editUserReducer,
 
     ...reducerFirst,

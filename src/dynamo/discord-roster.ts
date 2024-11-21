@@ -16,12 +16,18 @@ export const DiscordRoster = S.Struct({
     version      : S.Literal('1.0.0'),
     created      : S.Date,
     updated      : S.Date,
-    clan         : ClanTag,
-    roster_type  : S.Enums({
+
+    name       : S.String,
+    description: S.String,
+    roster_type: S.Enums({
         cwl     : 'cwl',
         war     : 'war',
         friendly: 'friendly',
     }),
+    search_time: S.DateTimeUtc,
+
+
+    clan: ClanTag,
 });
 
 

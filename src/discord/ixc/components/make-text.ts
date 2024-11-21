@@ -22,6 +22,7 @@ export const makeText = (
 
     return {
         id,
+        value    : options.value,
         options,
         component: UI.textInput({
             ...options,

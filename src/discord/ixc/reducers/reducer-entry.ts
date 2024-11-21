@@ -9,6 +9,9 @@ import {ViewClanB} from '#src/discord/ixc/component-reducers/clan-viewer.ts';
 import {UserB} from '#src/discord/ixc/component-reducers/user-edit.ts';
 import {SelectRosterB} from '#src/discord/ixc/component-reducers/roster-select.ts';
 import {SignupRosterB} from '#src/discord/ixc/component-reducers/roster-signup.ts';
+import {RosterManageB} from '#src/discord/ixc/component-reducers/roster-manage.ts';
+import {OptoutRosterB} from '#src/discord/ixc/component-reducers/roster-opt-out.ts';
+import {IXCBS} from '#src/discord/util/discord.ts';
 
 
 const entryLinks = typeRx((s, ax) => E.gen(function * () {
@@ -44,10 +47,14 @@ const openRoster = typeRx((s, ax) => E.gen(function * () {
         ...s,
         title: 'Rosters',
         row1 : [
-            SelectRosterB.fwd(SignupRosterB.id),
-            RosterAdminB
-                .if(s.user_roles.includes(s.server!.admin as snflk))
-                ?.as(AXN.ROSTER_ADMIN_OPEN),
+            SelectRosterB
+                .render(SignupRosterB.options)
+                .fwd(SignupRosterB.id),
+            SelectRosterB
+                .render(OptoutRosterB.options)
+                .fwd(OptoutRosterB.id),
+            RosterManageB
+                .if(s.user_roles.includes(s.server!.admin as snflk)),
         ],
     };
 }));

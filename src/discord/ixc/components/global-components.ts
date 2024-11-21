@@ -16,7 +16,7 @@ export const BackB = makeButton({kind: RDXK.BACK, type: 'T'}, {
     style: IXCBS.SECONDARY,
 });
 
-export const NextB = makeButton({kind: RDXK.NEXT}, {
+export const NextB = makeButton({kind: RDXK.NEXT, type: 'T'}, {
     label: 'Next',
     style: IXCBS.PRIMARY,
 });
@@ -26,13 +26,18 @@ export const ForwardB = makeButton({kind: RDXK.FORWARD, type: 'T'}, {
     style: IXCBS.PRIMARY,
 });
 
-export const SubmitB = makeButton({kind: RDXK.SUBMIT}, {
+export const SubmitB = makeButton({kind: RDXK.SUBMIT, type: 'T'}, {
     label: 'Submit',
     style: IXCBS.SUCCESS,
 });
 
-export const DeleteB = makeButton({kind: RDXK.SUBMIT}, {
+export const DeleteB = makeButton({kind: RDXK.SUBMIT, type: 'T'}, {
     label: 'Delete',
+    style: IXCBS.DANGER,
+});
+
+export const AdminB = makeButton({kind: RDXK.ADMIN, type: 'T'}, {
+    label: 'Admin',
     style: IXCBS.DANGER,
 });
 

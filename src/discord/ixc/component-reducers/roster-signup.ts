@@ -14,7 +14,7 @@ const axn = {
 
 
 export const SignupRosterB = PrimaryB.as(axn.SIGNUP_ROSTER_OPEN, {
-    label: 'User',
+    label: 'Signup',
 });
 
 const SelectAvailability = SingleS.as(axn.SIGNUP_ROSTER_AVAILABILITY_UPDATE, {

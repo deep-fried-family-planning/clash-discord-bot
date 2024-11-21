@@ -8,7 +8,7 @@ import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {IxmLink} from '#src/discord/ixm/ixm-link.ts';
+import {EMBED_EDTI_MODAL, IxmLink} from '#src/discord/ixm/ixm-link.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
@@ -16,6 +16,7 @@ import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
+import {EMBED_AXN} from '#src/discord/ixc/component-reducers/embed-editor.ts';
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({
@@ -57,6 +58,13 @@ const component = (body: IxD) => E.gen(function * () {
                 QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
                 MessageBody: JSON.stringify(body),
             });
+
+            if (EMBED_AXN.EMBED_EDITOR_MODAL_OPEN.custom_id === body.data.custom_id) {
+                return r200({
+                    type: IXRT.MODAL,
+                    data: EMBED_EDTI_MODAL,
+                });
+            }
 
             const id = fromId(body.data.custom_id);
 

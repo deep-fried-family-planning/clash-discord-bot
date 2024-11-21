@@ -1,5 +1,6 @@
 import {Discord, UI} from 'dfx';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
+import {EMBED_AXN} from '#src/discord/ixc/component-reducers/embed-editor.ts';
 
 export const IxmLink = {
     title     : 'Link Account',
@@ -27,9 +28,9 @@ export const IxmLink = {
 };
 
 
-export const Ixm = {
+export const EMBED_EDTI_MODAL = {
     title     : 'Link Account',
-    custom_id : AXN.NLINK_MODAL_SUBMIT.custom_id,
+    custom_id : EMBED_AXN.EMBED_EDITOR_MODAL_SUBMIT.custom_id,
     components: UI.singleColumn([
         UI.textInput({
             style      : Discord.TextInputStyle.SHORT,
@@ -38,7 +39,7 @@ export const Ixm = {
             placeholder: 'check in-game profile',
         }),
         UI.textInput({
-            style      : Discord.TextInputStyle.SHORT,
+            style      : Discord.TextInputStyle.PARAGRAPH,
             custom_id  : AXN.NLINK_API.custom_id,
             label      : 'API Token',
             placeholder: 'check in-game settings',
