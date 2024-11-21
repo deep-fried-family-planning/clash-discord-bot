@@ -56,10 +56,10 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         // info      : ix.message?.embeds[0],
         // select    : ix.message?.embeds[1],
         // status    : ix.message?.embeds[2],
-        navigate  : NavSelect.fromMap(componentMap),
+        // navigate  : NavSelect.fromMap(componentMap),
         back      : BackB.fromMap(componentMap),
         close     : CloseB.fromMap(componentMap),
-        forward   : ForwardB.fromMap(componentMap),
+        // forward   : ForwardB.fromMap(componentMap),
         next      : NextB.fromMap(componentMap),
         submit    : SubmitB.fromMap(componentMap),
     } as const satisfies IxState;

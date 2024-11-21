@@ -35,44 +35,48 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
 
 
 const axn = {
-    SELECT_CLAN_OPEN   : makeId(RDXK.INIT, 'CLAN'),
-    SELECT_CLAN_UPDATE : makeId(RDXK.UPDATE, 'CLAN'),
-    SELECT_CLAN_FORWARD: makeId(RDXK.FORWARD, 'CLAN'),
+    SELECT_CLAN_OPEN  : makeId(RDXK.INIT, 'CLAN'),
+    SELECT_CLAN_UPDATE: makeId(RDXK.UPDATE, 'CLAN'),
 };
 
 
 export const ClanB = PrimaryB.as(axn.SELECT_CLAN_OPEN, {label: 'Select Clan'});
 const ClanS = SingleS.as(axn.SELECT_CLAN_UPDATE, {placeholder: 'Select Clan'});
-const ClanFB = ForwardB.as(axn.SELECT_CLAN_FORWARD);
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
-    const initSelector
-        = ClanS.fromMap(s.cmap)
-        ?? ClanS.with({options: yield * getClans(s, ax)});
+    const selected = ax.selected.map((s) => s.value);
 
-    const Selector = ax.id.predicate === initSelector.id.predicate
-        ? initSelector.setDefaultValues(ax.selected.map((s) => s.value))
-        : initSelector;
+    let Clan = ClanS.fromMap(s.cmap);
+
+    if (axn.SELECT_CLAN_UPDATE.predicate === ax.id.predicate) {
+        Clan = Clan.render({
+            options: yield * getClans(s, ax),
+        });
+    }
+
+    Clan = Clan.setDefaultValuesIf(ax.id.predicate, selected);
 
     const Forward
-        = ClanFB.fromMap(s.cmap)
-        ?? ClanFB.forward(ax.id);
+        = ForwardB.fromMap(s.cmap)
+        ?? ForwardB.fwd(ax.id);
 
     return {
         ...s,
         title  : 'Select Clan',
-        sel1   : Selector,
-        forward: Forward.with({
-            disabled: Selector.values.length === 0,
-        }),
+        sel1   : Clan,
+        forward: Forward
+            .addForward(Clan.values[0])
+            .render({
+                disabled: Clan.values.length === 0,
+            }),
     };
 }));
 
 
-export const selectClanReducer = {
-    [ClanB.id.predicate] : view,
-    [ClanS.id.predicate] : view,
-    [ClanFB.id.predicate]: view,
+export const clanSelectReducer = {
+    [ClanB.id.predicate]: view,
+    [ClanS.id.predicate]: view,
 };
+
 

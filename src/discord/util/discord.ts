@@ -18,6 +18,7 @@ export {
 
     ComponentType as IXCT,
     ButtonStyle as IXCBS,
+    TextInputStyle as IXCTS,
 
     MessageFlag as MGF,
 } from 'dfx/types';

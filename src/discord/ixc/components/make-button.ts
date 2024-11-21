@@ -38,6 +38,8 @@ export const makeButton = (
             },
             options,
         ),
+
+
         forward: (newId: Route, forward?: string) => makeButton(
             {
                 kind    : id.params.kind,
@@ -48,7 +50,26 @@ export const makeButton = (
             },
             options,
         ),
-        with: (newOptions: typeof options) => makeButton(
+        fwd: (newId: Route, forward?: string) => makeButton(
+            {
+                ...newId.params,
+                ...id.params,
+                nextKind: newId.params.kind,
+                nextType: newId.params.type!,
+                forward : forward,
+            },
+            options,
+        ),
+        addForward: (forward: string) => makeButton(
+            {
+                ...id.params,
+                forward: forward,
+            },
+            options,
+        ),
+
+
+        render: (newOptions: typeof options) => makeButton(
             id,
             {
                 ...options,
@@ -67,16 +88,6 @@ export const makeButton = (
                 },
             );
         },
-        fwd: (newId: Route, forward?: string) => makeButton(
-            {
-                ...newId.params,
-                ...id.params,
-                nextKind: newId.params.kind,
-                nextType: newId.params.type!,
-                forward : forward,
-            },
-            options,
-        ),
         withFwd: (newId: Route, forward?: string, newOptions?: typeof options) => {
             return makeButton(
                 {
@@ -105,16 +116,6 @@ export const makeButton = (
                 : undefined;
         },
     };
-};
-
-
-export const makeButtonFrom = (
-    component: Button,
-) => {
-    const {custom_id, ...restComponent} = component;
-    const id = fromId(custom_id!);
-
-    return makeButton(id.params, restComponent);
 };
 
 

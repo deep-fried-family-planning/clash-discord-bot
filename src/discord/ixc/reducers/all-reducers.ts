@@ -7,13 +7,19 @@ import {reducerClans} from '#src/discord/ixc/reducers/reducer-clans.ts';
 import {reducerRoster} from '#src/discord/ixc/reducers/reducer-roster.ts';
 import {reducerRosterAdmin} from '#src/discord/ixc/reducers/reducer-roster-admin.ts';
 import {reducerEntryMenu} from '#src/discord/ixc/reducers/reducer-entry-menu.ts';
-import {selectClanReducer} from '#src/discord/ixc/component-reducers/select-clan.ts';
-import {editUserReducer} from '#src/discord/ixc/component-reducers/edit-user.ts';
+import {clanSelectReducer} from '#src/discord/ixc/component-reducers/clan-select.ts';
+import {editUserReducer} from '#src/discord/ixc/component-reducers/user-edit.ts';
+import {selectRosterReducer} from '#src/discord/ixc/component-reducers/roster-select.ts';
+import {signupRosterReducer} from '#src/discord/ixc/component-reducers/roster-signup.ts';
+import {clanViewerReducer} from '#src/discord/ixc/component-reducers/clan-viewer.ts';
 
 
 export const allReducers = {
 
-    ...selectClanReducer,
+    ...clanSelectReducer,
+    ...clanViewerReducer,
+    ...selectRosterReducer,
+    ...signupRosterReducer,
     ...editUserReducer,
 
     ...reducerFirst,
@@ -21,8 +27,6 @@ export const allReducers = {
     ...reducerNewLink,
     ...reducerAccounts,
     ...reducerUser,
-    ...reducerRoster,
-    ...reducerRosterAdmin,
     ...reducerClans,
     ...reducerEntryMenu,
 };

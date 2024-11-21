@@ -64,6 +64,7 @@ export type IxAction = {
 export const enum RDXK {
     MODAL_OPEN = 'MODAL_OPEN',
     MODAL_SUBMIT = 'MODAL_SUBMIT',
+    MODAL_TRANSMITTER = 'MODAL_TRANSMITTER',
     TEXT = 'TEXT',
     ADMIN = 'ADMIN',
     ENTRY = 'ENTRY',

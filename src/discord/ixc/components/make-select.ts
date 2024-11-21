@@ -3,9 +3,7 @@ import {UI} from 'dfx';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
-import type {SelectMenu} from 'dfx/types';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
-import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 
 
 export type MadeSelect = ReturnType<typeof makeSelect>;
@@ -29,7 +27,7 @@ export const makeSelect = (
             custom_id: id.custom_id,
         }),
         values: options.options?.filter((o) => o.default).map((o) => o.value) ?? [],
-        with  : (newOptions: typeof options) => makeSelect(
+        render: (newOptions: typeof options) => makeSelect(
             params,
             {
                 ...options,
@@ -82,14 +80,4 @@ export const makeSelect = (
                 }, id)
                 : makeSelect(id, options, id),
     };
-};
-
-
-export const makeSelectFrom = (
-    component: SelectMenu,
-) => {
-    const {custom_id, ...restComponent} = component;
-    const id = fromId(custom_id);
-
-    return makeSelect(id.params, restComponent);
 };

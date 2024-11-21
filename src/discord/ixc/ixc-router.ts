@@ -43,7 +43,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
 
     const predicate
         = ax.id.params.kind === RDXK.BACK ? ax.id.backPredicate
-        : ax.id.params.kind === RDXK.FORWARD ? ax.id.backPredicate
+        : ax.id.params.kind === RDXK.FORWARD ? ax.id.nextPredicate
         : ax.id.predicate;
 
     if (!(predicate in allReducers)) {

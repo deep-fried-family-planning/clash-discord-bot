@@ -1,11 +1,10 @@
-import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/reducers/type-rx.ts';
+import {typeRx, makeId} from '#src/discord/ixc/reducers/type-rx.ts';
 import {type IxState, RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
-import {E, pipe, S} from '#src/internal/pure/effect.ts';
+import {E, S} from '#src/internal/pure/effect.ts';
 import {QuietEndSelector, QuietStartSelector, TimezoneS} from '#src/discord/ixc/components/components.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
-import {concatL} from '#src/internal/pure/pure-list.ts';
 
 
 const saveUserRecord = (s: IxState, tz: string, qs: string, qe: string) => E.gen(function * () {
@@ -70,11 +69,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status: isSubmitting
             ? {description: `user record created with ${Timezone.values[0]} (${QuietStart.values[0]}-${QuietEnd.values[0]})`}
             : undefined,
-        sel1   : Timezone.with({disabled: isSubmitting}),
-        sel2   : QuietStart.with({disabled: isSubmitting}),
-        sel3   : QuietEnd.with({disabled: isSubmitting}),
-        submit : UserSubmitB.with({disabled: areAnyUnselected || isSubmitting}),
-        forward: Forward.with({disabled: areAnyUnselected || !isSubmitting}),
+        sel1   : Timezone.render({disabled: isSubmitting}),
+        sel2   : QuietStart.render({disabled: isSubmitting}),
+        sel3   : QuietEnd.render({disabled: isSubmitting}),
+        submit : UserSubmitB.render({disabled: areAnyUnselected || isSubmitting}),
+        forward: Forward.render({disabled: areAnyUnselected || !isSubmitting}),
     };
 }));
 
