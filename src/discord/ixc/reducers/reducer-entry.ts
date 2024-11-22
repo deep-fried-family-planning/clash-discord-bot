@@ -4,13 +4,13 @@ import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {AccountsB, NewLinkB, RosterAdminB} from '#src/discord/ixc/components/components.ts';
 import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import type {snflk} from '#src/discord/types.ts';
-import {ClanB} from '#src/discord/ixc/component-reducers/clan-select.ts';
-import {ViewClanB} from '#src/discord/ixc/component-reducers/clan-viewer.ts';
-import {UserB} from '#src/discord/ixc/component-reducers/user-edit.ts';
-import {SelectRosterB} from '#src/discord/ixc/component-reducers/roster-select.ts';
-import {SignupRosterB} from '#src/discord/ixc/component-reducers/roster-signup.ts';
-import {RosterManageB} from '#src/discord/ixc/component-reducers/roster-manage.ts';
-import {OptoutRosterB} from '#src/discord/ixc/component-reducers/roster-opt-out.ts';
+import {ClanB} from '#src/discord/ixc/view-reducers/clan-select.ts';
+import {ViewClanB} from '#src/discord/ixc/view-reducers/clan-viewer.ts';
+import {UserB} from '#src/discord/ixc/view-reducers/user-edit.ts';
+import {SelectRosterB} from '#src/discord/ixc/view-reducers/roster-select.ts';
+import {SignupRosterB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
+import {RosterManageB} from '#src/discord/ixc/view-reducers/roster-manage.ts';
+import {OptoutRosterB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 
 

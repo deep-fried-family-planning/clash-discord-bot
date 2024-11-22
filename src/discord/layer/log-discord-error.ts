@@ -59,11 +59,14 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                     label: 'Support Server',
                     url  : 'https://discord.gg/KfpCtU2rwY',
                 },
-                UI.button({
-                    type     : IXCBS.SECONDARY,
-                    label    : 'Close',
+            ],
+            [
+                {
+                    type     : IXCT.BUTTON,
+                    style    : IXCBS.SECONDARY,
                     custom_id: '/k/CLOSE/t/T',
-                }),
+                    label    : 'Close',
+                },
             ],
         ]),
     };

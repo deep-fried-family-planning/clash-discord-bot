@@ -7,32 +7,33 @@ import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
 import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
-import {reducerFirst} from '#src/discord/ixc/reducers/reducer-first.ts';
-import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {allReducers} from '#src/discord/ixc/reducers/all-reducers.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
     const ax = yield * deriveAction(ix, ix.data as IxDc);
 
-    if (ax.id.params.kind === RDXK.CLOSE || ax.id.params.kind === RDXK.MODAL_OPEN) {
+    if ([
+        RDXK.CLOSE,
+    ].includes(ax.id.params.kind)) {
         return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
     }
 
-    const s = yield * deriveState(ix, ix.data as IxDc);
-
-    if (!s.user || (ax.id.predicate in reducerFirst)) {
-        const next = !(ax.id.predicate in reducerFirst)
-            ? yield * reducerFirst[AXN.FU_OPEN.predicate](s, ax)
-            : yield * reducerFirst[ax.id.predicate](s, ax);
-
-        const message = yield * deriveView(next, ax);
-
-        if (ax.id.params.kind === RDXK.ENTRY) {
-            return yield * DiscordApi.entryMenu(ix, message);
-        }
-        return yield * DiscordApi.editMenu(ix, message);
+    if ([
+        RDXK.MODAL_OPEN,
+        RDXK.MODAL_OPEN_FORWARD,
+    ].includes(ax.id.params.kind)) {
+        return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
     }
+
+    if ([
+        RDXK.MODAL_SUBMIT,
+        RDXK.MODAL_SUBMIT_FORWARD,
+    ].includes(ax.id.params.kind)) {
+        yield * DiscordApi.deleteMessage(ix.channel_id!, ix.message?.interaction_metadata?.triggering_interaction_metadata?.interacted_message_id!);
+    }
+
+    const s = yield * deriveState(ix, ix.data as IxDc);
 
     if (ax.id.params.kind === RDXK.MODAL_SUBMIT) {
         const next = yield * allReducers[ax.id.predicate](s, ax);
@@ -44,6 +45,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
     const predicate
         = ax.id.params.kind === RDXK.BACK ? ax.id.backPredicate
         : ax.id.params.kind === RDXK.FORWARD ? ax.id.nextPredicate
+        : ax.id.params.kind === RDXK.MODAL_OPEN_FORWARD ? ax.id.nextPredicate
         : ax.id.predicate;
 
     if (!(predicate in allReducers)) {

@@ -8,15 +8,106 @@ import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {EMBED_EDTI_MODAL, IxmLink} from '#src/discord/ixm/ixm-link.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
-import {EMBED_AXN} from '#src/discord/ixc/component-reducers/embed-editor.ts';
+import type {MessageComponentDatum, ModalSubmitDatum} from 'dfx/types';
+import {
+    EDIT_EMBED_MODAL_OPEN,
+    EditEmbedColorT,
+    EditEmbedDescriptionT,
+    EditEmbedModal,
+    EditEmbedTitleT,
+} from '#src/discord/ixc/modals/edit-embed-modal.ts';
+import {LINK_ACCOUNT_MODAL_OPEN, LinkAccountModal} from '#src/discord/ixc/modals/link-account-modal.ts';
+import {UI} from 'dfx';
+import {toId} from '#src/discord/ixc/store/id-build.ts';
+import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
+import {sColor} from '#src/internal/constants/colors.ts';
+
+
+const modals = {
+    [LINK_ACCOUNT_MODAL_OPEN.predicate]  : LinkAccountModal,
+    [EDIT_EMBED_MODAL_OPEN.predicate]    : EditEmbedModal,
+    [EDIT_DATE_TIME_MODAL_OPEN.predicate]: EditDateTimeModal,
+};
+
+
+const component = (body: IxD) => E.gen(function * () {
+    const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
+    const id = fromId(data.custom_id);
+
+    if ([RDXK.MODAL_OPEN, RDXK.MODAL_SUBMIT_FORWARD].includes(id.params.kind)) {
+        const editor = body.message?.embeds.at(-1);
+
+        const curModal
+            = id.predicate === EDIT_EMBED_MODAL_OPEN.predicate ? {
+                ...EditEmbedModal,
+                components: UI.singleColumn([
+                    {
+                        ...EditEmbedTitleT.component,
+                        value: editor!.title!,
+                    },
+                    {
+                        ...EditEmbedColorT.component,
+                        value: sColor(editor!.color!),
+                    },
+                    {
+                        ...EditEmbedDescriptionT.component,
+                        value: editor!.description!,
+                    },
+                ]),
+            }
+            : modals[id.predicate];
+
+        const newId = fromId(curModal.custom_id);
+
+        yield * SQS.sendMessage({
+            QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+            MessageBody: JSON.stringify(body),
+        });
+
+        return r200({
+            type: IXRT.MODAL,
+            data: {
+                ...curModal,
+                custom_id: toId({
+                    kind    : newId.params.kind,
+                    type    : newId.params.type,
+                    nextKind: id.params.nextKind,
+                    nextType: id.params.nextType,
+                    forward : id.params.forward,
+                }).custom_id,
+            },
+        });
+    }
+
+    yield * SQS.sendMessage({
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+        MessageBody: JSON.stringify(body),
+    });
+
+    if (id.params.kind === RDXK.ENTRY) {
+        return {statusCode: 202, body: ''};
+    }
+
+    return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
+});
+
+
+const modal = (body: IxD) => E.gen(function * () {
+    yield * SQS.sendMessage({
+        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+        MessageBody: JSON.stringify(body),
+    });
+
+    return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
+        flags: MGF.EPHEMERAL,
+    }});
+});
 
 
 const respond = ({status, body}: {status: number; body: object | string}) => ({
@@ -37,68 +128,6 @@ const slashCmd = (body: IxD) => E.gen(function * () {
     });
 
     return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
-});
-
-const modal = (body: IxD) => E.gen(function * () {
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-        MessageBody: JSON.stringify(body),
-    });
-
-    return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
-        flags: MGF.EPHEMERAL,
-    }});
-});
-
-
-const component = (body: IxD) => E.gen(function * () {
-    if ('custom_id' in body.data!) {
-        if (body.data.custom_id.startsWith(`/k/${RDXK.MODAL_OPEN}`)) {
-            yield * SQS.sendMessage({
-                QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-                MessageBody: JSON.stringify(body),
-            });
-
-            if (EMBED_AXN.EMBED_EDITOR_MODAL_OPEN.custom_id === body.data.custom_id) {
-                return r200({
-                    type: IXRT.MODAL,
-                    data: EMBED_EDTI_MODAL,
-                });
-            }
-
-            const id = fromId(body.data.custom_id);
-
-            return r200({
-                type: IXRT.MODAL,
-                data: {
-                    ...IxmLink,
-                    custom_id: AXN.NLINK_MODAL_SUBMIT.withForward({
-                        nextKind: AXN.NLINK_MODAL_OPEN.params.kind,
-                        nextType: AXN.NLINK_MODAL_OPEN.params.type,
-                        forward : id.params.forward!,
-                    }).custom_id,
-                },
-            });
-        }
-        else if (body.data.custom_id.startsWith(`/k/${RDXK.ENTRY}`)) {
-            yield * SQS.sendMessage({
-                QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-                MessageBody: JSON.stringify(body),
-            });
-
-            return {
-                statusCode: 202,
-                body      : '',
-            };
-        }
-    }
-
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-        MessageBody: JSON.stringify(body),
-    });
-
-    return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
 });
 
 

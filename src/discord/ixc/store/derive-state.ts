@@ -6,7 +6,7 @@ import {getDiscordUser} from '#src/dynamo/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import {BackB, CloseB, ForwardB, NavSelect, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, CloseB, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import type {IxState} from '#src/discord/ixc/store/types.ts';
 import {inspect} from 'node:util';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
@@ -45,6 +45,8 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         )
         : undefined;
 
+    const editor = ix.message?.embeds.at(-1);
+
     const state = {
         original  : ix,
         server_id : ix.guild_id!,
@@ -53,15 +55,22 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         user      : user,
         server    : server,
         cmap      : componentMap!,
+        editor    : editor?.footer?.text === 'Editing' ? {
+            ...editor,
+            footer: {
+                ...editor,
+                text: 'Editing',
+            },
+        } : undefined,
         // info      : ix.message?.embeds[0],
         // select    : ix.message?.embeds[1],
         // status    : ix.message?.embeds[2],
         // navigate  : NavSelect.fromMap(componentMap),
-        back      : BackB.fromMap(componentMap),
-        close     : CloseB.fromMap(componentMap),
+        back  : BackB.fromMap(componentMap),
+        close : CloseB.fromMap(componentMap),
         // forward   : ForwardB.fromMap(componentMap),
-        next      : NextB.fromMap(componentMap),
-        submit    : SubmitB.fromMap(componentMap),
+        next  : NextB.fromMap(componentMap),
+        submit: SubmitB.fromMap(componentMap),
     } as const satisfies IxState;
 
     yield * CSL.debug('[STATE]', inspect(state, true, null));

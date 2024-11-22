@@ -6,8 +6,9 @@ import type {Embed} from 'dfx/types';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
-import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {CloseB} from '#src/discord/ixc/components/global-components.ts';
+import {embedIf} from '#src/discord/ixc/components/component-utils.ts';
+import {jsonEmbed} from '#src/discord/util/embed.ts';
 
 
 export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
@@ -20,7 +21,6 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             ...jsonEmbed({
                 id           : ax.id.custom_id,
                 ...ax.id.params,
-                cmap         : ax.cmap,
                 selected     : ax.selected,
                 predicate    : ax.id.predicate,
                 nextPredicate: ax.id.nextPredicate,
@@ -32,7 +32,7 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
         //     `<@&${s.server?.admin}>`,
         // ),
         s.title ? {
-            color      : nColor(COLOR.INFO),
+            color      : nColor(COLOR.ORIGINAL),
             title      : s.title,
             description: s.description,
         } : undefined,
@@ -53,6 +53,7 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             ...s.status,
         }
         : undefined,
+        embedIf(s.editor, s.editor!),
     ].filter(Boolean) as Embed[];
 
     const components = pipe(

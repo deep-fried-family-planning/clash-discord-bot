@@ -30,6 +30,8 @@ export type IxState = {
 
     cmap?: Record<string, Maybe<ComponentMapItem>>;
 
+    editor?: Embed | und;
+
     navigate?: MadeSelect | undefined;
     row1?    : (MadeButton | und)[];
     sel1?    : MadeSelect | und;
@@ -64,6 +66,8 @@ export type IxAction = {
 export const enum RDXK {
     MODAL_OPEN = 'MODAL_OPEN',
     MODAL_SUBMIT = 'MODAL_SUBMIT',
+    MODAL_OPEN_FORWARD = 'MODAL_OPEN_FORWARD',
+    MODAL_SUBMIT_FORWARD = 'MODAL_SUBMIT_FORWARD',
     MODAL_TRANSMITTER = 'MODAL_TRANSMITTER',
     TEXT = 'TEXT',
     ADMIN = 'ADMIN',

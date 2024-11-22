@@ -1,3 +1,5 @@
+import type {num, str} from '#src/internal/pure/types-pure.ts';
+
 export const enum COLOR {
     SUCCESS = '#80EF80',
     INFO = '#22B5C8',
@@ -16,3 +18,8 @@ export const enum COLOR {
 }
 
 export const nColor = (c: COLOR) => Number.parseInt(c.replace('#', '0x'));
+export const nAnyColor = (c: str) => Number.parseInt(c.replace('#', '0x'));
+
+export const sColor = (c: num) => {
+    return `#${c.toString(16)}`;
+};
