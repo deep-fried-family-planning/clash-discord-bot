@@ -41,11 +41,11 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
         editor: unset,
         status: unset,
 
-        sel1   : Type,
-        forward: TypeToModalB.withData(Type.values).render({
+        sel1  : Type,
+        back  : BackB.as(LinkB.id),
+        submit: TypeToModalB.withData(Type.values).render({
             disabled: Type.values.length === 0,
         }),
-        back: BackB.as(LinkB.id),
     };
 }));
 

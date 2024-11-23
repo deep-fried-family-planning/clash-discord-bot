@@ -1,11 +1,11 @@
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect';
-import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, NewB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {queryPlayersForUser} from '#src/dynamo/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {AccountViewerAdminB} from '#src/discord/ixc/view-reducers/account-viewer-admin.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
@@ -83,7 +83,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         back  : BackB.as(LinkB.id),
         submit: LinkAccountB.render({
-            label   : 'New',
+            label   : unset!,
+            emoji   : NewB.component.emoji!,
             disabled: !!Account.values.length,
         }),
         delete: AccountViewerAdminB.render({disabled: !Account.values.length}),

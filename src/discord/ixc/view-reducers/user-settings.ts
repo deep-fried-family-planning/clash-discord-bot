@@ -1,10 +1,5 @@
 import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
-import {
-    BackB, DeleteB, DeleteConfirmB,
-    ForwardB,
-    PrimaryB,
-    SingleS, SubmitB,
-} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
@@ -89,12 +84,17 @@ const view = typeRx((s, ax) => E.gen(function * () {
         // sel2: QuietStart.render({disabled: isSubmitting}),
         // sel3: QuietEnd.render({disabled: isSubmitting}),
 
-        back  : BackB.as(LinkB.id),
         submit: UserSubmitB.render({
             disabled: areAnyUnselected || isSubmitting,
         }),
-        delete: Delete.render({
-            disabled: true,
+        delete: (
+            !s.user ? unset
+            : Delete.render({
+                disabled: true,
+            })
+        ),
+        back: BackB.as(LinkB.id, {
+            disabled: !s.user || isSubmitting,
         }),
         forward: Forward.render({
             disabled: areAnyUnselected || !isSubmitting,

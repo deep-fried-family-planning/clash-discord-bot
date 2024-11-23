@@ -1,11 +1,4 @@
-import {
-    AdminB,
-    BackB,
-    DeleteB, DeleteConfirmB,
-    ForwardB,
-    SingleChannelS,
-    SingleS, SubmitB,
-} from '#src/discord/ixc/components/global-components.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleChannelS, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';

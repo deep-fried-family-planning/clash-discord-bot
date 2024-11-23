@@ -1,6 +1,6 @@
 import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {BackB, ForwardB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, NewB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {DT, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
@@ -34,7 +34,7 @@ const saveRoster = (type: string) => typeRxHelper((s, ax) => E.gen(function * ()
 }));
 
 
-export const RosterCreateB = SuccessB.as(makeId(RDXK.OPEN, 'RC'), {label: 'Create'});
+export const RosterCreateB = NewB.as(makeId(RDXK.OPEN, 'RC'));
 const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RC'));
 const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
     placeholder: 'Select Roster Type',
@@ -72,7 +72,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel1: Type,
         row3: [
             EmbedEditorB.fwd(RosterCreateB.id),
-            DateTimeEditorB.fwd(RosterCreateB.id),
+            DateTimeEditorB.fwd(RosterCreateB.id).render({
+                label: 'Search Date/Time',
+            }),
         ],
         back  : BackB.as(RosterViewerB.id),
         submit: Submit,

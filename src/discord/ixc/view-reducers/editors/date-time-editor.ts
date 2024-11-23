@@ -2,11 +2,7 @@ import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {
-    EDIT_DATE_TIME_MODAL_OPEN,
-    EDIT_DATE_TIME_MODAL_SUBMIT,
-    EditDateT, EditTimeT,
-} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
+import {EDIT_DATE_TIME_MODAL_OPEN, EDIT_DATE_TIME_MODAL_SUBMIT, EditDateT, EditTimeT} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
 

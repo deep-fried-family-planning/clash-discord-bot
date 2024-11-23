@@ -1,11 +1,4 @@
-import {
-    AdminB,
-    BackB,
-    DangerB, DeleteB, DeleteConfirmB,
-    SingleS,
-    SubmitB,
-    SuccessB,
-} from '#src/discord/ixc/components/global-components.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect';
@@ -15,6 +8,7 @@ import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components
 import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/date-time-editor.ts';
 import {ClanSelectB} from '#src/discord/ixc/view-reducers/old/clan-select.ts';
 import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
+import {rosterDelete} from '#src/dynamo/operations/roster.ts';
 
 
 export const RosterViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'RVA'), {
@@ -41,8 +35,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             ? {disabled: true}
             : {};
 
-    if (Delete.clicked(ax)) {
-
+    if (ConfirmDelete.clicked(ax)) {
+        yield * rosterDelete({pk: s.server_id, sk: Roster.values[0]});
     }
 
     return {
@@ -56,17 +50,21 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status:
             Submit.clicked(ax) ? asSuccess({description: 'Roster Edited'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
-            : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Not implemented yet...'})
+            : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Roster Deleted'})
             : unset,
 
         sel1: Roster.render({disabled: true}),
         sel2: Type.render(isEditDisabled),
         row3: [
             EmbedEditorB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
-            DateTimeEditorB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
+            DateTimeEditorB.fwd(RosterViewerAdminB.id).render({
+                ...isEditDisabled,
+                label: 'Search Date/Time',
+            }),
             ClanSelectB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
         ],
-        back  : BackB.backward(RosterViewerB.id),
+
+        back  : BackB.as(RosterViewerB.id),
         submit: Submit.render({
             disabled:
                 Submit.clicked(ax)
@@ -74,9 +72,14 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 || ConfirmDelete.clicked(ax)
                 || Type.values.length === 0,
         }),
-        delete: Delete.clicked(ax)
-            ? ConfirmDelete
-            : Delete,
+        delete:
+            (
+                Delete.clicked(ax)
+                    ? ConfirmDelete
+                    : Delete
+            ).render({
+                disabled: ConfirmDelete.clicked(ax),
+            }),
     };
 }));
 

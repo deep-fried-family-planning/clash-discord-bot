@@ -1,6 +1,6 @@
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {BackB, ForwardB, SingleChannelS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
@@ -15,9 +15,7 @@ const axn = {
 };
 
 
-export const LinkClanB = SuccessB.as(axn.LINK_CLAN_TYPE_OPEN, {
-    label: 'New',
-});
+export const LinkClanB = NewB.as(axn.LINK_CLAN_TYPE_OPEN);
 const ChannelS = SingleChannelS.as(axn.LINK_CLAN_TYPE_UPDATE, {
     placeholder: 'War Countdown Channel',
 });

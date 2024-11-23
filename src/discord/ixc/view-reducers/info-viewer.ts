@@ -6,7 +6,6 @@ import {unset} from '#src/discord/ixc/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {InfoViewerAdminB} from '#src/discord/ixc/view-reducers/info-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
-import {ServerViewerB} from '#src/discord/ixc/view-reducers/server-viewer.ts';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {

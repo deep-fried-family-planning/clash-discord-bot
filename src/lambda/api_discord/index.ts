@@ -25,11 +25,13 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
 import {Cause} from 'effect';
+import {LINK_ACCOUNT_BULK_MODAL_OPEN, LinkAccountBulkModal} from '#src/discord/ixc/modals/link-account-bulk-modal.ts';
 
 
 const modals = {
     [LINK_ACCOUNT_MODAL_OPEN.predicate]      : LinkAccountModal,
     [LINK_ACCOUNT_ADMIN_MODAL_OPEN.predicate]: LinkAccountAdminModal,
+    [LINK_ACCOUNT_BULK_MODAL_OPEN.predicate] : LinkAccountBulkModal,
     [LINK_CLAN_MODAL_OPEN.predicate]         : LinkClanModal,
     [EDIT_EMBED_MODAL_OPEN.predicate]        : EditEmbedModal,
     [EDIT_DATE_TIME_MODAL_OPEN.predicate]    : EditDateTimeModal,

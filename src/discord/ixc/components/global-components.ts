@@ -34,7 +34,6 @@ export const CloseB = makeButton({kind: RDXK.CLOSE, type: 'T'}, {
     },
     style: IXCBS.SECONDARY,
 });
-
 export const BackB = makeButton({kind: RDXK.BACK, type: 'T'}, {
     emoji: {
         id  : null,
@@ -42,15 +41,13 @@ export const BackB = makeButton({kind: RDXK.BACK, type: 'T'}, {
     },
     style: IXCBS.SECONDARY,
 });
-
 export const ForwardB = makeButton({kind: RDXK.FORWARD, type: 'T'}, {
     emoji: {
         id  : null,
         name: '➡️',
     },
-    style: IXCBS.PRIMARY,
+    style: IXCBS.SECONDARY,
 });
-
 export const SubmitB = makeButton({kind: RDXK.SUBMIT, type: 'T'}, {
     emoji: {
         id  : null,
@@ -58,12 +55,17 @@ export const SubmitB = makeButton({kind: RDXK.SUBMIT, type: 'T'}, {
     },
     style: IXCBS.SUCCESS,
 });
-
-export const NavSelect = makeSelect({kind: RDXK.NAV, type: 'T'}, {
-    placeholder: 'Navigate',
+export const EditB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
+    style: IXCBS.SUCCESS,
+    label: 'Edit',
 });
-
-
+export const NewB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
+    style: IXCBS.SUCCESS,
+    emoji: {
+        id  : null,
+        name: '🆕',
+    },
+});
 export const AdminB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
     style: IXCBS.DANGER,
     emoji: {
@@ -84,4 +86,9 @@ export const DeleteConfirmB = makeButton({kind: RDXK.DELETE, type: 'T'}, {
         id  : null,
         name: '👏',
     },
+});
+
+
+export const NavSelect = makeSelect({kind: RDXK.NAV, type: 'T'}, {
+    placeholder: 'Navigate',
 });

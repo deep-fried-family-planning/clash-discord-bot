@@ -1,12 +1,5 @@
 import {E} from '#src/internal/pure/effect';
-import {
-    AdminB,
-    BackB,
-    DangerB, DeleteB, DeleteConfirmB,
-    ForwardB,
-    SingleS,
-    SuccessB,
-} from '#src/discord/ixc/components/global-components.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/discord-player.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
@@ -36,7 +29,7 @@ const AccountTypeS = SingleS.as(makeId(RDXK.UPDATE, 'AVAT'), {
     placeholder: 'Select Account Type',
     options    : SELECT_ACCOUNT_TYPE,
 });
-const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'AVA'));
+const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'AVA'));
 const Delete = DeleteB.as(makeId(RDXK.DELETE, 'AVA'));
 const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'AVA'));
 
@@ -70,13 +63,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status:
             Submit.clicked(ax) ? asSuccess({description: 'Account Edited'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
-            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Not implemented yet...'})
+            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Account Deleted'})
             : undefined,
 
         sel1: Account.render({disabled: true}),
         sel2: AccountType.render({disabled: Submit.clicked(ax) || DeleteConfirm.clicked(ax)}),
-
-        back: BackB.as(AccountViewerB.id),
 
         submit: Submit.render({
             disabled:
@@ -90,11 +81,10 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 : Delete
         ).render({
             disabled:
-                !Submit.clicked(ax)
-                || DeleteConfirm.clicked(ax)
-                || AccountType.values.length === 0,
+                Submit.clicked(ax)
+                || DeleteConfirm.clicked(ax),
         }),
-
+        back   : BackB.as(AccountViewerB.id),
         forward: Forward.render({
             disabled: !Submit.clicked(ax) || !DeleteConfirm.clicked(ax),
         }),

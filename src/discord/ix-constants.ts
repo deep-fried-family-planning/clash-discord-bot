@@ -2,39 +2,123 @@ import type {CommandSpec} from '#src/discord/types.ts';
 
 
 export const SELECT_ACCOUNT_TYPE = [
-    {label: 'main', value: 'main'},
-    {label: 'alt', value: 'alt'},
-    {label: 'donation', value: 'donation'},
-    {label: 'war asset', value: 'war-asset'},
-    {label: 'clan capital', value: 'clan-capital'},
-    {label: 'strategic rush', value: 'strategic-rush'},
-    {label: 'hyper rush', value: 'hyper-rush'},
-    {label: 'admin parking', value: 'admin-parking'},
+    {
+        label      : 'Main',
+        value      : 'main',
+        description: 'Account you spend most of your time on',
+    },
+    {
+        label      : 'Alternative (alt)',
+        value      : 'alt',
+        description: 'Account you spend some time on',
+    },
+    {
+        label      : 'donation',
+        value      : 'donation',
+        description: 'Specialized only for donations',
+    },
+    {
+        label      : 'War Asset',
+        value      : 'war-asset',
+        description: 'Specialized only for wars',
+    },
+    {
+        label      : 'Clan Capital',
+        value      : 'clan-capital',
+        description: 'Only for extra clan capital raid weekend hits',
+    },
+    {
+        label      : 'Rushed',
+        value      : 'rush',
+        description: 'Rushed account without any priorities',
+    },
+    {
+        label      : 'strategic rush',
+        value      : 'strategic-rush',
+        description: 'Rushing for fastest time to *complete* max',
+    },
+    {
+        label      : 'hyper rush',
+        value      : 'hyper-rush',
+        description: 'Main or alt account with following specialized rush instructions',
+    },
+    {
+        label      : 'Admin Parking',
+        value      : 'admin-parking',
+        description: 'Main or alt account with following specialized rush instructions',
+    },
 ];
 
 
 export const SELECT_ROSTER_TYPE = [
-    {label: 'CWL', value: 'cwl'},
-    {label: 'CWL (at-large)', value: 'cwl-at-large'},
-    {label: 'War', value: 'war'},
-    {label: 'War (at-large)', value: 'war-at-large'},
-    {label: 'Friendly', value: 'friendly'},
-    {label: 'Friendly (at-large)', value: 'friendly-at-large'},
+    {
+        label      : 'CWL',
+        value      : 'cwl',
+        description: 'CWL roster for a specific clan',
+    },
+    {
+        label      : 'CWL (at-large)',
+        value      : 'cwl-at-large',
+        description: 'CWL roster to gauge an entire server',
+    },
+    {
+        label      : 'War',
+        value      : 'war',
+        description: 'War roster for a specific clan (normal matchmaking)',
+    },
+    {
+        label      : 'War (at-large)',
+        value      : 'war-at-large',
+        description: 'War roster to gauge an entire server (normal matchmaking)',
+    },
 ];
 
 
 export const SELECT_TIMEZONES = [
-    {label: 'America/New_York', value: 'America/New_York'},
-    {label: 'America/Chicago', value: 'America/Chicago'},
-    {label: 'America/Los_Angeles', value: 'America/Los_Angeles'},
-    {label: 'Asia/Calcutta', value: 'Asia/Calcutta'},
-    {label: 'Asia/Manila', value: 'Asia/Manila'},
-    {label: 'Europe/London', value: 'Europe/London'},
-    {label: 'Europe/Paris', value: 'Europe/Paris'},
-    {label: 'Asia/Riyadh', value: 'Asia/Riyadh'},
-    {label: 'Asia/Dubai', value: 'Asia/Dubai'},
-    {label: 'Africa/Johannesburg', value: 'Africa/Johannesburg'},
-    {label: 'Asia/Tokyo', value: 'Asia/Tokyo'},
+    {
+        label: 'America/New_York',
+        value: 'America/New_York',
+    },
+    {
+        label: 'America/Chicago',
+        value: 'America/Chicago',
+    },
+    {
+        label: 'America/Los_Angeles',
+        value: 'America/Los_Angeles',
+    },
+    {
+        label: 'Asia/Calcutta',
+        value: 'Asia/Calcutta',
+    },
+    {
+        label: 'Asia/Manila',
+        value: 'Asia/Manila',
+    },
+    {
+        label: 'Europe/London',
+        value: 'Europe/London',
+    },
+    {
+        label: 'Europe/Paris',
+        value: 'Europe/Paris',
+    },
+    {
+        label: 'Asia/Riyadh',
+        value: 'Asia/Riyadh',
+    },
+    {
+        label: 'Asia/Dubai',
+        value: 'Asia/Dubai',
+    },
+    {
+        label: 'Africa/Johannesburg',
+        value: 'Africa/Johannesburg',
+    },
+    {
+        label: 'Asia/Tokyo',
+        value: 'Asia/Tokyo',
+    },
 ];
 
 
