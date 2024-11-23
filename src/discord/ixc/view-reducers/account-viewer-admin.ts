@@ -18,7 +18,6 @@ const submit = (s: IxState, playerTag: str, accountType: str) => E.gen(function 
         account_type: accountType,
     });
 });
-
 const deletePlayer = (s: IxState, playerTag: str) => E.gen(function * () {
     yield * deleteDiscordPlayer({pk: s.user_id, sk: playerTag});
 });
@@ -72,7 +71,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
         submit: Submit.render({
             disabled:
                 Submit.clicked(ax)
-                || !DeleteConfirm.clicked(ax)
+                || Delete.clicked(ax)
+                || DeleteConfirm.clicked(ax)
                 || AccountType.values.length === 0,
         }),
         delete: (

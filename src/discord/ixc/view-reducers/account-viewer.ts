@@ -41,8 +41,8 @@ export const getPlayers = typeRxHelper((s, ax) => E.gen(function * () {
             ORD.mapInput(ORDS, ([r]) => r.sk),
         ),
         mapL(([r, p]) => ({
-            label      : `[${r.account_type}/th${p.townHallLevel}]  ${p.name}`,
-            description: `tag: ${p.tag}, verification_level: ${r.verification}`,
+            label      : `${p.name}  (${p.tag})`,
+            description: `[${r.account_type}/th${p.townHallLevel}], verification_level: ${r.verification}`,
             value      : p.tag,
         })),
     );

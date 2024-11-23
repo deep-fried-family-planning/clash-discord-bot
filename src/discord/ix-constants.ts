@@ -13,7 +13,7 @@ export const SELECT_ACCOUNT_TYPE = [
         description: 'Account you spend some time on',
     },
     {
-        label      : 'donation',
+        label      : 'Donation (dono)',
         value      : 'donation',
         description: 'Specialized only for donations',
     },
@@ -33,19 +33,19 @@ export const SELECT_ACCOUNT_TYPE = [
         description: 'Rushed account without any priorities',
     },
     {
-        label      : 'strategic rush',
+        label      : 'Strategic Rush',
         value      : 'strategic-rush',
         description: 'Rushing for fastest time to *complete* max',
     },
     {
-        label      : 'hyper rush',
+        label      : 'Hyper Rush',
         value      : 'hyper-rush',
         description: 'Main or alt account with following specialized rush instructions',
     },
     {
         label      : 'Admin Parking',
         value      : 'admin-parking',
-        description: 'Main or alt account with following specialized rush instructions',
+        description: 'Clan leader alt',
     },
 ];
 
