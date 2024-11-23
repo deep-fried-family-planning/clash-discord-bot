@@ -1,5 +1,12 @@
 import {E} from '#src/internal/pure/effect';
-import {BackB, DangerB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {
+    AdminB,
+    BackB,
+    DangerB, DeleteB, DeleteConfirmB,
+    ForwardB,
+    SingleS,
+    SuccessB,
+} from '#src/discord/ixc/components/global-components.ts';
 import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/discord-player.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
@@ -24,22 +31,14 @@ const deletePlayer = (s: IxState, playerTag: str) => E.gen(function * () {
 });
 
 
-export const AccountViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'AVA'), {
-    label: 'Edit',
-});
+export const AccountViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'AVA'));
 const AccountTypeS = SingleS.as(makeId(RDXK.UPDATE, 'AVAT'), {
     placeholder: 'Select Account Type',
     options    : SELECT_ACCOUNT_TYPE,
 });
-const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'AVA'), {
-    label: 'Submit',
-});
-const Delete = DangerB.as(makeId(RDXK.DELETE, 'AVA'), {
-    label: 'Delete',
-});
-const DeleteConfirm = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'AVA'), {
-    label: 'Confirm',
-});
+const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'AVA'));
+const Delete = DeleteB.as(makeId(RDXK.DELETE, 'AVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'AVA'));
 
 
 const view = typeRx((s, ax) => E.gen(function * () {

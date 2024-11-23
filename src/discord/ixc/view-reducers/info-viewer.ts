@@ -31,9 +31,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         delete: InfoViewerAdminB
             .if(s.user_roles.includes(s.server!.admin as snflk)),
-
-        forward: ServerViewerB
-            .if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 

@@ -5,7 +5,7 @@ import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/ixc/components/component-utils.ts';
 import {ServerViewerAdminB} from '#src/discord/ixc/view-reducers/server-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
-import {InfoViewerB} from '#src/discord/ixc/view-reducers/info-viewer.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 
 
 export const ServerViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'SV'), {
@@ -23,7 +23,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         viewer: unset,
         status: unset,
 
-        back: BackB.as(InfoViewerB.id),
+        back: BackB.as(OmbiBoardB.id),
 
         delete: ServerViewerAdminB
             .if(s.user_roles.includes(s.server!.admin as snflk)),

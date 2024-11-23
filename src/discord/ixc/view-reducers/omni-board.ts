@@ -13,6 +13,7 @@ import {unset} from '#src/discord/ixc/components/component-utils.ts';
 import {InfoViewerB} from '#src/discord/ixc/view-reducers/info-viewer.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {BotViewer} from '#src/discord/ixc/view-reducers/bot-viewer.ts';
+import {ServerViewerB} from '#src/discord/ixc/view-reducers/server-viewer.ts';
 
 
 const axn = {
@@ -52,6 +53,7 @@ const start = typeRx((s, ax) => E.gen(function * () {
         ],
 
         submit: LinkB,
+        delete: ServerViewerB.if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 

@@ -1,6 +1,6 @@
 import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {BackB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, ForwardB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {DT, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
@@ -35,9 +35,7 @@ const saveRoster = (type: string) => typeRxHelper((s, ax) => E.gen(function * ()
 
 
 export const RosterCreateB = SuccessB.as(makeId(RDXK.OPEN, 'RC'), {label: 'Create'});
-const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'RC'), {
-    label: 'Submit',
-});
+const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RC'));
 const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
     placeholder: 'Select Roster Type',
     options    : SELECT_ROSTER_TYPE,

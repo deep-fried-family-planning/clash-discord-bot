@@ -11,7 +11,7 @@ import {allReducers} from '#src/discord/ixc/view-reducers/all-reducers.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {UserB, userEditReducer} from '#src/discord/ixc/view-reducers/user-settings.ts';
-import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
@@ -61,7 +61,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
 
         const next = yield * allReducers[UserB.id.predicate](s, {
             ...ax,
-            id: UserB.fwd(OmbiBoardB.id).id,
+            id: UserB.fwd(LinkAccountB.id).id,
         });
         const message = yield * deriveView(next, ax);
 

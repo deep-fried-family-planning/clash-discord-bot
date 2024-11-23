@@ -1,10 +1,10 @@
 import {
+    AdminB,
     BackB,
-    DangerB,
+    DeleteB, DeleteConfirmB,
     ForwardB,
     SingleChannelS,
-    SingleS,
-    SuccessB,
+    SingleS, SubmitB,
 } from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
@@ -14,18 +14,11 @@ import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
-export const ClanViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'CVA'), {
-    label: 'Edit',
+export const ClanViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'CVA'), {
 });
-const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'CVA'), {
-    label: 'Submit',
-});
-const Delete = DangerB.as(makeId(RDXK.DELETE, 'CVA'), {
-    label: 'Delete',
-});
-const DeleteConfirm = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'CVA'), {
-    label: 'Confirm',
-});
+const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'CVA'));
+const Delete = DeleteB.as(makeId(RDXK.DELETE, 'CVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'CVA'));
 const ClanTypeS = SingleS.as(makeId(RDXK.UPDATE, 'CVAT'), {
     placeholder: 'Select Clan Type',
 });

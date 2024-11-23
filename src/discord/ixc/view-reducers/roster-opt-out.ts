@@ -1,6 +1,6 @@
 import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {BackB, DangerB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, DangerB, DeleteB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
@@ -22,7 +22,7 @@ const SelectAccounts = SingleS.as(axn.OPTOUT_ROSTER_ACCOUNTS_UPDATE, {
 });
 
 
-const SubmitSignup = DangerB.as(axn.OPTOUT_ROSTER_SUBMIT, {label: 'Opt Out'});
+const SubmitSignup = DeleteB.as(axn.OPTOUT_ROSTER_SUBMIT, {label: 'Opt Out'});
 
 
 const getSignupsByUser = typeRxHelper((s, ax) => E.gen(function * () {

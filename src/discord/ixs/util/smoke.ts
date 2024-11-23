@@ -38,7 +38,7 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     return {
         embeds: [{
             author: {
-                name: 'Omni Board',
+                name: 'DeepFryer Omni Board',
             },
             title      : 'Deep Fried Family Planning',
             description: 'The one board to rule them all',

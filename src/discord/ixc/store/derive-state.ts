@@ -104,7 +104,6 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         // select    : ix.message?.embeds[1],
         // status    : ix.message?.embeds[2],
         // navigate  : NavSelect.fromMap(componentMap),
-        close      : CloseB.fromMap(componentMap),
     } as const satisfies IxState;
 });
 

@@ -7,8 +7,12 @@ import {makeSelectChannel} from '#src/discord/ixc/components/make-select-channel
 import {makeSelectRole} from '#src/discord/ixc/components/make-select-role.ts';
 
 
-export const SuccessB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
-export const DangerB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});
+export const SuccessB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
+    style: IXCBS.SUCCESS,
+});
+export const DangerB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
+    style: IXCBS.DANGER,
+});
 export const PrimaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PRIMARY});
 export const SecondaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SECONDARY});
 export const LinkB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.LINK});
@@ -24,22 +28,34 @@ export const SingleUserS = makeSelectUser({kind: RDXK.NOOP, type: 'NOOP'}, {});
 
 
 export const CloseB = makeButton({kind: RDXK.CLOSE, type: 'T'}, {
-    label: 'Close',
+    emoji: {
+        id  : null,
+        name: '↩️',
+    },
     style: IXCBS.SECONDARY,
 });
 
 export const BackB = makeButton({kind: RDXK.BACK, type: 'T'}, {
-    label: 'Back',
+    emoji: {
+        id  : null,
+        name: '⬅️',
+    },
     style: IXCBS.SECONDARY,
 });
 
 export const ForwardB = makeButton({kind: RDXK.FORWARD, type: 'T'}, {
-    label: 'Next',
+    emoji: {
+        id  : null,
+        name: '➡️',
+    },
     style: IXCBS.PRIMARY,
 });
 
 export const SubmitB = makeButton({kind: RDXK.SUBMIT, type: 'T'}, {
-    label: 'Submit',
+    emoji: {
+        id  : null,
+        name: '✅',
+    },
     style: IXCBS.SUCCESS,
 });
 
@@ -48,3 +64,24 @@ export const NavSelect = makeSelect({kind: RDXK.NAV, type: 'T'}, {
 });
 
 
+export const AdminB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
+    style: IXCBS.DANGER,
+    emoji: {
+        id  : null,
+        name: '🔧',
+    },
+});
+export const DeleteB = makeButton({kind: RDXK.DELETE, type: 'T'}, {
+    style: IXCBS.DANGER,
+    emoji: {
+        id  : null,
+        name: '🪣',
+    },
+});
+export const DeleteConfirmB = makeButton({kind: RDXK.DELETE, type: 'T'}, {
+    style: IXCBS.DANGER,
+    emoji: {
+        id  : null,
+        name: '👏',
+    },
+});

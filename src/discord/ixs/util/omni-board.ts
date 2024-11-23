@@ -4,6 +4,8 @@ import {IXCBS, type IxD} from '#src/discord/util/discord.ts';
 import {UI} from 'dfx';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import {COLOR, nColor} from '#src/internal/constants/colors.ts';
+import {dLinesS} from '#src/discord/util/markdown.ts';
 
 
 export const OMNI_BOARD
@@ -27,11 +29,20 @@ export const omniBoard = (data: IxD, options: IxDS<typeof OMNI_BOARD>) => E.gen(
 
     return {
         embeds: [{
+            color : nColor(COLOR.ORIGINAL),
             author: {
                 name: 'DeepFryer Omni Board',
             },
             title      : 'Deep Fried Family Planning',
-            description: 'The one board to rule them all',
+            description: dLinesS(
+                'The one board to rule them all...',
+                '',
+                'Click "Start" to:',
+                '* Configure user settings',
+                '* Link Clash accounts or clans',
+                '* Signup for war or CWL rosters',
+                '* View DFFP info, rules, and more',
+            ),
         }],
         components: UI.grid([
             [UI.button({

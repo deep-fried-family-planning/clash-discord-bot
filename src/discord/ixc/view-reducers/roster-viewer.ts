@@ -88,8 +88,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         );
 
         viewer = {
-            title: roster.name,
-
+            title      : roster.name,
             description: `${roster.description}\n\n${dCodes(
                 dTable([
                     ['##', 'th', 'name', '1', '2', '3', '4', '5', '6', '7'],

@@ -8,7 +8,7 @@ import {IXCBS, IXCT} from '#src/discord/util/discord.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
 import {UI} from 'dfx';
-import {BackB} from '#src/discord/ixc/components/global-components.ts';
+import {SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 
 
@@ -65,7 +65,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 },
             ],
             [
-                BackB.as(OmbiBoardB.id, {
+                SuccessB.as(OmbiBoardB.id, {
                     label: 'Restart Omni Board',
                 }).component,
                 {

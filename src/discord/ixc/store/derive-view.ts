@@ -58,9 +58,9 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             [s.sel3?.component].filter(Boolean),
 
             [
-                s.back?.component,
                 s.submit?.component,
                 s.delete?.component,
+                s.back?.component,
                 s.next?.component,
                 s.forward?.component,
                 s.close?.component ?? CloseB.component,

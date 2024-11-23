@@ -84,7 +84,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         back  : BackB.as(LinkB.id),
         submit: LinkAccountB.render({
             label   : 'New',
-            disabled: Account.values.length === 0,
+            disabled: !!Account.values.length,
         }),
         delete: AccountViewerAdminB.render({disabled: !Account.values.length}),
     };
