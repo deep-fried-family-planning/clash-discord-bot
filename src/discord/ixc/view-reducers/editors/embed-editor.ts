@@ -1,25 +1,19 @@
-import {makeId, typeRx} from '#src/discord/ixc/reducers/type-rx.ts';
+import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
-import {E} from '#src/internal/pure/effect';
-import {
-    EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT,
-    EditEmbedDescriptionT,
-    EditEmbedTitleT,
-} from '#src/discord/ixc/modals/edit-embed-modal.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
 import {nAnyColor} from '#src/internal/constants/colors.ts';
+import {IXCBS} from '#src/discord/util/discord.ts';
+import {asEditor} from '#src/discord/ixc/components/component-utils.ts';
 
 
-export const EMBED_AXN = {
-    EMBED_EDITOR_OPEN: makeId(RDXK.OPEN, 'EMBED'),
-};
-
-
-export const EmbedEditorB = PrimaryB.as(EMBED_AXN.EMBED_EDITOR_OPEN, {
-    label: 'Edit Embed',
+export const EmbedEditorB = PrimaryB.as(makeId(RDXK.OPEN, 'EMBED'), {
+    label: 'Embed',
 });
 export const EditEmbedB = PrimaryB.as(EDIT_EMBED_MODAL_OPEN, {
-    label: 'Edit',
+    label: 'Modal',
+    style: IXCBS.SUCCESS,
 });
 
 
@@ -30,11 +24,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
-    nAnyColor;
+
     return {
         ...s,
         title : 'Embed Editor',
-        editor: {
+        editor: asEditor({
             title:
                 name?.value
                 ?? s.editor?.title
@@ -47,10 +41,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 color?.value ? nAnyColor(color.value)
                 : s.editor?.color ? s.editor.color
                 : 0,
-            footer: {
-                text: 'Editing',
-            },
-        },
+            timestamp: s.editor?.timestamp ?? new Date(Date.now()).toISOString(),
+        }),
         submit : EditEmbedB.fromMap(s.cmap) ?? EditEmbedB.forward(ax.id),
         forward: Forward.render({
             disabled: !name?.value && !description?.value,
@@ -60,7 +52,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 
 export const embedEditorReducer = {
-    [EMBED_AXN.EMBED_EDITOR_OPEN.predicate]: view,
-    [EDIT_EMBED_MODAL_OPEN.predicate]      : view,
-    [EDIT_EMBED_MODAL_SUBMIT.predicate]    : view,
+    [EmbedEditorB.id.predicate]        : view,
+    [EDIT_EMBED_MODAL_OPEN.predicate]  : view,
+    [EDIT_EMBED_MODAL_SUBMIT.predicate]: view,
 };

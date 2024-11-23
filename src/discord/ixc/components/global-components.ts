@@ -2,7 +2,6 @@ import {makeButton} from '#src/discord/ixc/components/make-button.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {IXCBS, IXCTS} from '#src/discord/util/discord.ts';
 import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
-import {AXN} from '#src/discord/ixc/reducers/actions.ts';
 import {makeText} from '#src/discord/ixc/components/make-text.ts';
 
 
@@ -53,11 +52,13 @@ export const ModalTransmitter = makeText({kind: RDXK.MODAL_TRANSMITTER, type: 'T
 });
 
 
-export const SuccessB = makeButton(AXN.NOOP, {style: IXCBS.SUCCESS});
-export const DangerB = makeButton(AXN.NOOP, {style: IXCBS.DANGER});
-export const PrimaryB = makeButton(AXN.NOOP, {style: IXCBS.PRIMARY});
-export const SecondaryB = makeButton(AXN.NOOP, {style: IXCBS.SECONDARY});
-export const LinkB = makeButton(AXN.NOOP, {style: IXCBS.LINK});
-export const PremiumB = makeButton(AXN.NOOP, {style: IXCBS.PREMIUM});
+export const SuccessB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
+export const DangerB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});
+export const PrimaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PRIMARY});
+export const SecondaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SECONDARY});
+export const LinkB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.LINK});
+export const PremiumB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PREMIUM});
 
-export const SingleS = makeSelect(AXN.NOOP, {options: [{value: 'INVALID', label: 'INVALID'}]});
+export const SingleS = makeSelect({kind: RDXK.NOOP, type: 'NOOP'}, {
+    options: [{value: 'INVALID', label: 'INVALID'}],
+    a});

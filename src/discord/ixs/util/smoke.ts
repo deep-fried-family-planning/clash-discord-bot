@@ -6,7 +6,7 @@ import {UI} from 'dfx';
 import {OPTION_CLAN} from '#src/discord/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {InfoBE, LinkBE, RosterBE} from '#src/discord/ixc/components/entry-components.ts';
+import {InfoEntryB} from '#src/discord/ixc/view-reducers/board-info.ts';
 
 
 export const SMOKE
@@ -39,7 +39,7 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     return {
         embeds    : [{description: 'smoke test info board'}],
         components: UI.grid([
-            [LinkBE.component, InfoBE.component, RosterBE.component],
+            [InfoEntryB.component],
         ]),
     };
 });

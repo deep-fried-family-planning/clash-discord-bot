@@ -1,6 +1,5 @@
 import type {IxD, IxDc, IxDm} from '#src/discord/util/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import type {IxAction} from '#src/discord/ixc/store/types.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inspect} from 'node:util';
 import type {ActionRow, TextInput} from 'dfx/types';
@@ -9,6 +8,19 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
+import type {Route} from '#src/discord/ixc/store/id-routes.ts';
+
+
+export type IxAction = {
+    id      : Route;
+    selected : {
+        type : str;
+        value: str;
+    }[];
+    forward?: str | undefined;
+    original: IxDm;
+    cmap?   : Record<string, Maybe<ComponentMapItem<TextInput>>> | undefined;
+};
 
 
 export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {

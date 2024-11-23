@@ -1,4 +1,3 @@
-import type {IxAction, IxState} from '#src/discord/ixc/store/types.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {inspect} from 'node:util';
 import type {IxRE} from '#src/discord/util/discord.ts';
@@ -8,25 +7,26 @@ import {UI} from 'dfx';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {CloseB} from '#src/discord/ixc/components/global-components.ts';
 import {embedIf} from '#src/discord/ixc/components/component-utils.ts';
-import {jsonEmbed} from '#src/discord/util/embed.ts';
+import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
 
 
 export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
     yield * CSL.debug('[STATE]', inspect(s, true, null));
 
     const embeds = [
-        {
-            color: nColor(COLOR.DEBUG),
-            title: 'Debug',
-            ...jsonEmbed({
-                id           : ax.id.custom_id,
-                ...ax.id.params,
-                selected     : ax.selected,
-                predicate    : ax.id.predicate,
-                nextPredicate: ax.id.nextPredicate,
-                backPredicate: ax.id.backPredicate,
-            }),
-        },
+        // {
+        //     color: nColor(COLOR.DEBUG),
+        //     title: 'Debug',
+        //     ...jsonEmbed({
+        //         id           : ax.id.custom_id,
+        //         ...ax.id.params,
+        //         selected     : ax.selected,
+        //         predicate    : ax.id.predicate,
+        //         nextPredicate: ax.id.nextPredicate,
+        //         backPredicate: ax.id.backPredicate,
+        //     }),
+        // },
         // dEmbed(COLOR.ORIGINAL, 'User Info',
         //     `<@${s.user_id}>`,
         //     `<@&${s.server?.admin}>`,
@@ -53,7 +53,9 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             ...s.status,
         }
         : undefined,
-        embedIf(s.editor, s.editor!),
+        embedIf(s.viewer, s.viewer),
+        embedIf(s.editor, s.editor),
+        embedIf(s.status, s.status),
     ].filter(Boolean) as Embed[];
 
     const components = pipe(
@@ -72,6 +74,7 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             [
                 s.back?.component,
                 s.submit?.component,
+                s.delete?.component,
                 s.next?.component,
                 s.forward?.component,
                 s.close?.component ?? CloseB.component,

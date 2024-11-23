@@ -7,30 +7,38 @@ import {deriveAction} from '#src/discord/ixc/store/derive-action.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {deriveState} from '#src/discord/ixc/store/derive-state.ts';
 import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
-import {allReducers} from '#src/discord/ixc/reducers/all-reducers.ts';
+import {allReducers} from '#src/discord/ixc/view-reducers/all-reducers.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
     const ax = yield * deriveAction(ix, ix.data as IxDc);
 
-    if ([
-        RDXK.CLOSE,
-    ].includes(ax.id.params.kind)) {
+    if ([RDXK.CLOSE].includes(ax.id.params.kind)) {
         return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
     }
 
-    if ([
-        RDXK.MODAL_OPEN,
-        RDXK.MODAL_OPEN_FORWARD,
-    ].includes(ax.id.params.kind)) {
-        return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
+    if ([RDXK.MODAL_OPEN, RDXK.MODAL_OPEN_FORWARD].includes(ax.id.params.kind)) {
+        return;
     }
 
-    if ([
-        RDXK.MODAL_SUBMIT,
-        RDXK.MODAL_SUBMIT_FORWARD,
-    ].includes(ax.id.params.kind)) {
-        yield * DiscordApi.deleteMessage(ix.channel_id!, ix.message?.interaction_metadata?.triggering_interaction_metadata?.interacted_message_id!);
+    if ([RDXK.MODAL_SUBMIT, RDXK.MODAL_SUBMIT_FORWARD].includes(ax.id.params.kind)) {
+        const token = yield * DynamoDBDocument.get({
+            TableName: process.env.DDB_OPERATIONS,
+            Key      : {
+                pk: `t-${ax.id.params.forward!}`,
+                sk: `t-${ax.id.params.forward!}`,
+            },
+        });
+        yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, token.Item!.token as str);
+        yield * DynamoDBDocument.delete({
+            TableName: process.env.DDB_OPERATIONS,
+            Key      : {
+                pk: `t-${ax.id.params.forward!}`,
+                sk: `t-${ax.id.params.forward!}`,
+            },
+        });
     }
 
     const s = yield * deriveState(ix, ix.data as IxDc);
@@ -45,7 +53,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
     const predicate
         = ax.id.params.kind === RDXK.BACK ? ax.id.backPredicate
         : ax.id.params.kind === RDXK.FORWARD ? ax.id.nextPredicate
-        : ax.id.params.kind === RDXK.MODAL_OPEN_FORWARD ? ax.id.nextPredicate
+        : ax.id.params.kind === RDXK.MODAL_SUBMIT_FORWARD ? ax.id.nextPredicate
         : ax.id.predicate;
 
     if (!(predicate in allReducers)) {

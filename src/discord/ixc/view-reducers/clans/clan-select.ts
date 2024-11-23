@@ -1,4 +1,4 @@
-import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/reducers/type-rx.ts';
+import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
@@ -35,12 +35,12 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
 
 
 const axn = {
-    SELECT_CLAN_OPEN  : makeId(RDXK.INIT, 'CLAN'),
+    SELECT_CLAN_OPEN  : makeId(RDXK.OPEN, 'CLAN'),
     SELECT_CLAN_UPDATE: makeId(RDXK.UPDATE, 'CLAN'),
 };
 
 
-export const ClanB = PrimaryB.as(axn.SELECT_CLAN_OPEN, {label: 'Select Clan'});
+export const ClanSelectB = PrimaryB.as(axn.SELECT_CLAN_OPEN, {label: 'Select Clan'});
 const ClanS = SingleS.as(axn.SELECT_CLAN_UPDATE, {placeholder: 'Select Clan'});
 
 
@@ -49,7 +49,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     let Clan = ClanS.fromMap(s.cmap);
 
-    if (axn.SELECT_CLAN_UPDATE.predicate === ax.id.predicate) {
+    if (axn.SELECT_CLAN_OPEN.predicate === ax.id.predicate) {
         Clan = Clan.render({
             options: yield * getClans(s, ax),
         });
@@ -59,7 +59,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     const Forward
         = ForwardB.fromMap(s.cmap)
-        ?? ForwardB.fwd(ax.id);
+        ?? ForwardB.forward(ax.id);
 
     return {
         ...s,
@@ -75,8 +75,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 
 export const clanSelectReducer = {
-    [ClanB.id.predicate]: view,
-    [ClanS.id.predicate]: view,
+    [ClanSelectB.id.predicate]: view,
+    [ClanS.id.predicate]      : view,
 };
 
 

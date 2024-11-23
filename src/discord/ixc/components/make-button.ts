@@ -5,7 +5,7 @@ import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {Button} from 'dfx/types';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
-import {fromId} from '#src/discord/ixc/store/id-parse.ts';
+import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
 
 
 export type MadeButton = ReturnType<typeof makeButton>;
@@ -29,12 +29,23 @@ export const makeButton = (
             custom_id: id.custom_id,
         }),
 
+        clicked: (ax: IxAction) => ax.id.predicate === id.predicate,
+
         backward: (newId: Route) => makeButton(
             {
                 kind    : id.params.kind,
                 type    : id.params.type!,
                 backKind: newId.params.nextKind!,
                 backType: newId.params.nextType!,
+            },
+            options,
+        ),
+
+
+        withData: (data: str[]) => makeButton(
+            {
+                ...id,
+                data,
             },
             options,
         ),
@@ -60,7 +71,7 @@ export const makeButton = (
             },
             options,
         ),
-        addForward: (forward: string) => makeButton(
+        addForward: (forward?: string) => makeButton(
             {
                 ...id.params,
                 forward: forward,
@@ -82,21 +93,6 @@ export const makeButton = (
         as: (newId: Route, newOptions?: typeof options) => {
             return makeButton(
                 newId.params,
-                {
-                    ...options,
-                    ...newOptions,
-                },
-            );
-        },
-        withFwd: (newId: Route, forward?: string, newOptions?: typeof options) => {
-            return makeButton(
-                {
-                    kind    : newId.params.nextKind!,
-                    type    : newId.params.nextType!,
-                    nextKind: id.params.nextKind!,
-                    nextType: id.params.nextKind!,
-                    forward,
-                },
                 {
                     ...options,
                     ...newOptions,

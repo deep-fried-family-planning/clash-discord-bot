@@ -4,8 +4,8 @@ import {toId} from '#src/discord/ixc/store/id-build.ts';
 import {makeText} from '#src/discord/ixc/components/make-text.ts';
 
 
-export const LINK_ACCOUNT_MODAL_OPEN = toId({kind: RDXK.MODAL_OPEN_FORWARD, type: 'LA'});
-export const LINK_ACCOUNT_MODAL_FORWARD = toId({kind: RDXK.MODAL_SUBMIT_FORWARD, type: 'LA'});
+export const LINK_ACCOUNT_MODAL_OPEN = toId({kind: RDXK.MODAL_OPEN, type: 'LA'});
+export const LINK_ACCOUNT_MODAL_SUBMIT = toId({kind: RDXK.MODAL_SUBMIT, type: 'LA'});
 
 
 export const PlayerTagT = makeText({kind: RDXK.TEXT, type: 'PT'}, {
@@ -22,7 +22,7 @@ export const ApiTokenT = makeText({kind: RDXK.TEXT, type: 'AT'}, {
 
 export const LinkAccountModal = {
     title     : 'Link Account',
-    custom_id : LINK_ACCOUNT_MODAL_FORWARD.custom_id,
+    custom_id : LINK_ACCOUNT_MODAL_SUBMIT.custom_id,
     components: UI.singleColumn([
         PlayerTagT.component,
         ApiTokenT.component,

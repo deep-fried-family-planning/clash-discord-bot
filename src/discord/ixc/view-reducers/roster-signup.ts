@@ -1,7 +1,8 @@
-import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/reducers/type-rx.ts';
+import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {ForwardB, PrimaryB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, ForwardB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import {RostersB} from '#src/discord/ixc/view-reducers/board-info.ts';
 
 
 const axn = {
@@ -13,7 +14,7 @@ const axn = {
 };
 
 
-export const SignupRosterB = PrimaryB.as(axn.SIGNUP_ROSTER_OPEN, {
+export const SignupRosterB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
     label: 'Signup',
 });
 
@@ -59,6 +60,15 @@ const getSignupsByUser = typeRxHelper((s, ax) => E.gen(function * () {
 }));
 
 
+const signupRoster = typeRxHelper((s, ax) => E.gen(function * () {
+    if (ax.id.predicate === axn.SIGNUP_ROSTER_SUBMIT.predicate) {
+        return true;
+    }
+
+    return false;
+}));
+
+
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
@@ -77,6 +87,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
+    const isSubmitting = yield * signupRoster(s, ax);
+
     return {
         ...s,
         title : 'Roster Signup',
@@ -85,16 +97,19 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel3  : Designation,
         submit: Submit.render({
             disabled:
-                Designation.values.length === 0
+                isSubmitting
+                || Designation.values.length === 0
                 || Availability.values.length === 0
                 || Accounts.values.length === 0,
         }),
         forward: Forward.render({
             disabled:
-                Designation.values.length === 0
+                !isSubmitting
+                || Designation.values.length === 0
                 || Availability.values.length === 0
                 || Accounts.values.length === 0,
         }),
+        back: BackB.as(RostersB.id),
     };
 }));
 

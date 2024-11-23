@@ -1,7 +1,8 @@
-import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/reducers/type-rx.ts';
+import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {DangerB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, DangerB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import {RostersB} from '#src/discord/ixc/view-reducers/board-info.ts';
 
 
 const axn = {
@@ -31,6 +32,15 @@ const getSignupsByUser = typeRxHelper((s, ax) => E.gen(function * () {
 }));
 
 
+const optoutRoster = typeRxHelper((s, ax) => E.gen(function * () {
+    if (axn.OPTOUT_ROSTER_SUBMIT.predicate === ax.id.predicate) {
+        return true;
+    }
+
+    return false;
+}));
+
+
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
@@ -47,18 +57,23 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
+    const isSubmitting = yield * optoutRoster(s, ax);
+
     return {
         ...s,
         title : 'Roster Opt Out',
         sel1  : Accounts,
         submit: Submit.render({
             disabled:
-                Accounts.values.length === 0,
+                isSubmitting
+                || Accounts.values.length === 0,
         }),
         forward: Forward.render({
             disabled:
-                Accounts.values.length === 0,
+                !isSubmitting
+                || Accounts.values.length === 0,
         }),
+        back: BackB.as(RostersB.id),
     };
 }));
 

@@ -12,7 +12,7 @@ export const SELECT_TIMEZONES = [
     {label: 'Asia/Dubai', value: 'Asia/Dubai'},
     {label: 'Africa/Johannesburg', value: 'Africa/Johannesburg'},
     {label: 'Asia/Tokyo', value: 'Asia/Tokyo'},
-] as const;
+];
 
 
 export const SELECT_TIMES = Array(24).fill(0).map((_, idx) => ({

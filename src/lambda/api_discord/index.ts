@@ -15,32 +15,29 @@ import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {MessageComponentDatum, ModalSubmitDatum} from 'dfx/types';
-import {
-    EDIT_EMBED_MODAL_OPEN,
-    EditEmbedColorT,
-    EditEmbedDescriptionT,
-    EditEmbedModal,
-    EditEmbedTitleT,
-} from '#src/discord/ixc/modals/edit-embed-modal.ts';
+import {EDIT_EMBED_MODAL_OPEN, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedModal, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
 import {LINK_ACCOUNT_MODAL_OPEN, LinkAccountModal} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {UI} from 'dfx';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
 import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
 import {sColor} from '#src/internal/constants/colors.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
 
 
 const modals = {
     [LINK_ACCOUNT_MODAL_OPEN.predicate]  : LinkAccountModal,
+    [LINK_CLAN_MODAL_OPEN.predicate]     : LinkClanModal,
     [EDIT_EMBED_MODAL_OPEN.predicate]    : EditEmbedModal,
     [EDIT_DATE_TIME_MODAL_OPEN.predicate]: EditDateTimeModal,
 };
-
+const modalKinds = [RDXK.MODAL_OPEN, RDXK.MODAL_OPEN_FORWARD];
 
 const component = (body: IxD) => E.gen(function * () {
     const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
     const id = fromId(data.custom_id);
 
-    if ([RDXK.MODAL_OPEN, RDXK.MODAL_SUBMIT_FORWARD].includes(id.params.kind)) {
+    if (modalKinds.includes(id.params.kind)) {
         const editor = body.message?.embeds.at(-1);
 
         const curModal
@@ -70,6 +67,15 @@ const component = (body: IxD) => E.gen(function * () {
             MessageBody: JSON.stringify(body),
         });
 
+        yield * DynamoDBDocument.put({
+            TableName: process.env.DDB_OPERATIONS,
+            Item     : {
+                pk   : `t-${body.id}`,
+                sk   : `t-${body.id}`,
+                token: body.token,
+            },
+        });
+
         return r200({
             type: IXRT.MODAL,
             data: {
@@ -79,7 +85,7 @@ const component = (body: IxD) => E.gen(function * () {
                     type    : newId.params.type,
                     nextKind: id.params.nextKind,
                     nextType: id.params.nextType,
-                    forward : id.params.forward,
+                    forward : body.id,
                 }).custom_id,
             },
         });
@@ -189,5 +195,6 @@ export const handler = makeLambda(h, makeLambdaLayer({
     ],
     aws: [
         SQS.defaultLayer,
+        DynamoDBDocument.defaultLayer,
     ],
 }));

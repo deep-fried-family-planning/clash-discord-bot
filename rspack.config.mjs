@@ -127,7 +127,7 @@ export default defineConfig({
         // new BundleAnalyzerPlugin.BundleAnalyzerPlugin({sourceType: 'module'}),
     ],
 
-    devtool: 'nosources-cheap-module-source-map',
+    devtool: 'nosources-cheap-source-map',
 
     performance: {hints: 'warning'},
 

@@ -1,4 +1,4 @@
-import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/reducers/type-rx.ts';
+import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
