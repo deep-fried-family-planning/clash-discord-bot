@@ -4,7 +4,7 @@ import {E, S} from '#src/internal/pure/effect.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';

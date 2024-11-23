@@ -6,7 +6,7 @@ import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {AccountViewerAdminB} from '#src/discord/ixc/view-reducers/account-viewer-admin.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
 

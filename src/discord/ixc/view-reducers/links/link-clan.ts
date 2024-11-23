@@ -5,7 +5,7 @@ import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 

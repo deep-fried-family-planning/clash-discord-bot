@@ -5,7 +5,7 @@ import {E} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {RosterSignupB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
 import {RosterOptOutB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
 import {RosterCreateB} from '#src/discord/ixc/view-reducers/roster-create.ts';

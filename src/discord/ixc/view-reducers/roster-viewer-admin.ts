@@ -6,7 +6,7 @@ import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-view
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {asConfirm, asEditor, asSuccess} from '#src/discord/ixc/components/component-utils.ts';
 import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/date-time-editor.ts';
-import {ClanSelectB} from '#src/discord/ixc/view-reducers/clans/clan-select.ts';
+import {ClanSelectB} from '#src/discord/ixc/view-reducers/old/clan-select.ts';
 
 
 export const RosterViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'RVA'), {

@@ -61,7 +61,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 }));
 
 
-export const selectRosterReducer = {
+export const rosterSelectReducer = {
     [SelectRosterB.id.predicate]: view,
     [RosterS.id.predicate]      : view,
 };
