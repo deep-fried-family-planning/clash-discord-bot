@@ -54,7 +54,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status:
             Submit.clicked(ax) ? asSuccess({description: 'Clan Edited'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
-            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Clan Deleted'})
+            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Not implemented yet...'})
             : undefined,
 
         navigate: Clan.render({disabled: true}),

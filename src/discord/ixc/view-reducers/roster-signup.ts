@@ -31,13 +31,13 @@ export const RosterSignupB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
 const SelectAvailability = SingleS.as(axn.SIGNUP_ROSTER_AVAILABILITY_UPDATE, {
     placeholder: 'Select Availability',
     options    : [
-        {label: 'Round 7', value: '6'},
-        {label: 'Round 6', value: '5'},
-        {label: 'Round 5', value: '4'},
-        {label: 'Round 4', value: '3'},
-        {label: 'Round 3', value: '2'},
-        {label: 'Round 2', value: '1'},
-        {label: 'Round 1', value: '0'},
+        {label: 'Round 1', value: '0', default: true},
+        {label: 'Round 2', value: '1', default: true},
+        {label: 'Round 3', value: '2', default: true},
+        {label: 'Round 4', value: '3', default: true},
+        {label: 'Round 5', value: '4', default: true},
+        {label: 'Round 6', value: '5', default: true},
+        {label: 'Round 7', value: '6', default: true},
     ],
     max_values: 7,
     min_values: 1,
@@ -137,19 +137,43 @@ const signupRoster = (
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
+    const Roster = RosterS.fromMap(s.cmap);
+
+    let Availability = SelectAvailability.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
     if (ax.id.predicate === axn.SIGNUP_ROSTER_OPEN.predicate) {
+        const roster = yield * rosterRead({
+            pk: s.server_id,
+            sk: Roster.values[0],
+        });
+
         Accounts = SelectAccounts.as(axn.SIGNUP_ROSTER_ACCOUNTS_UPDATE, {
             options: yield * getPlayers(s, ax),
         });
+        Availability = Availability.render({
+            options: Availability.options.options!.map((o, idx) => ({
+                ...o,
+                description: `approx. ${pipe(
+                    DT.unsafeMakeZoned(roster.search_time, {
+                        timeZone: s.user!.timezone,
+                    }),
+                    DT.addDuration(`${idx + 1} day`),
+                    DT.format({
+                        dateStyle: 'short',
+
+                        timeStyle: 'short',
+                        locale   : s.original.locale!,
+                    }),
+                )}`,
+            })),
+        });
     }
 
-    const Roster = RosterS.fromMap(s.cmap);
 
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
-    const Availability = SelectAvailability.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);

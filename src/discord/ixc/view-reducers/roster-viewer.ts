@@ -1,7 +1,7 @@
 import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {DT, E, pipe} from '#src/internal/pure/effect';
+import {DT, E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
@@ -13,6 +13,11 @@ import {rosterQueryByServer, rosterRead} from '#src/dynamo/operations/roster.ts'
 import type {Embed} from 'dfx/types';
 import type {und} from '#src/internal/pure/types-pure.ts';
 import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
+import {toEntries} from 'effect/Record';
+import {mapL, sortByL} from '#src/internal/pure/pure-list.ts';
+import {Clashofclans} from '#src/clash/api/clashofclans.ts';
+import {dTable} from '#src/discord/util/message-table.ts';
+import {dCodes, dLinesS} from '#src/discord/util/markdown.ts';
 
 
 const getRosters = typeRxHelper((s, ax) => E.gen(function * () {
@@ -59,17 +64,59 @@ const view = typeRx((s, ax) => E.gen(function * () {
             sk: Roster.values[0],
         });
 
-        const signups = yield * rosterSignupByRoster({pk: Roster.values[0]});
+        const rosterSignups = yield * rosterSignupByRoster({pk: Roster.values[0]});
+
+        const signups = rosterSignups.flatMap((s) => pipe(s.accounts, toEntries));
+
+        const players = pipe(
+            yield * Clashofclans.getPlayers(signups.map(([tag]) => tag)),
+            sortByL(
+                ORD.mapInput(ORDNR, (p) => p.townHallLevel),
+            ),
+        );
+
+
+        const signupsWithPlayers = pipe(
+            signups,
+            sortByL(
+                ORD.mapInput(ORDS, ([tag]) => tag),
+            ),
+            mapL(([tag, rounds], idx) => [tag, rounds, players[idx]] as const),
+            sortByL(
+                ORD.mapInput(ORDS, ([tag]) => tag),
+            ),
+        );
 
         viewer = {
-            title      : roster.name,
-            description: roster.description,
-            timestamp  : pipe(
+            title: roster.name,
+
+            description: `${roster.description}\n\n${dCodes(
+                dTable([
+                    ['##', 'th', 'name', '1', '2', '3', '4', '5', '6', '7'],
+                    ...pipe(
+                        signupsWithPlayers,
+                        mapL(([tag, rounds, player], idx) => [
+                            `${idx}`,
+                            `${player.townHallLevel}`,
+                            player.name,
+                            ...rounds.map((r) => r.availability ? r.designation === 'default' ? 'x' : 'd' : '_'),
+                        ]),
+                    ),
+                ]),
+            ).join('\n')}`,
+
+            timestamp: pipe(
                 roster.search_time,
                 DT.withDateUtc((d) => d.toISOString()),
             ),
+
             footer: {
-                text: JSON.stringify(signups),
+                text: dLinesS(
+                    'x - default attack group',
+                    'd - designated 2 star',
+                    '_ - unavailable for round',
+                    '',
+                ),
             },
         };
     }

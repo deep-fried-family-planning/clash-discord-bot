@@ -10,6 +10,8 @@ import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
 import {allReducers} from '#src/discord/ixc/view-reducers/all-reducers.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
+import {UserB, userEditReducer} from '#src/discord/ixc/view-reducers/user-edit.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
@@ -48,6 +50,24 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
     }
 
     s ??= yield * deriveState(ix, ix.data as IxDc);
+
+    if (!s.user) {
+        if (ax.id.predicate in userEditReducer) {
+            const next = yield * allReducers[ax.id.predicate](s, ax);
+            const message = yield * deriveView(next, ax);
+
+            return yield * DiscordApi.editMenu(ix, message);
+        }
+
+        const next = yield * allReducers[UserB.id.predicate](s, {
+            ...ax,
+            id: UserB.fwd(StartB.id).id,
+        });
+        const message = yield * deriveView(next, ax);
+
+        return yield * DiscordApi.entryMenu(ix, message);
+    }
+
 
     if (ax.id.params.kind === RDXK.MODAL_SUBMIT) {
         yield * CSL.debug(s);

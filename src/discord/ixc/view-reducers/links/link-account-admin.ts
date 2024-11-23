@@ -11,7 +11,7 @@ import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
 
 
 export const LinkAccountAdminB = DangerB.as(makeId(RDXK.OPEN, 'LAA'), {
-    label: 'Admin Link',
+    label: 'Admin',
 });
 const TypeToModalB = SuccessB.as(LINK_ACCOUNT_ADMIN_MODAL_OPEN, {
     label: 'Player Tag',

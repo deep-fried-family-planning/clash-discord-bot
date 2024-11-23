@@ -10,6 +10,7 @@ import {ClanViewerAdminB} from '#src/discord/ixc/view-reducers/clan-viewer-admin
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {LinkClanB} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
+import type {Embed} from 'dfx/types';
 
 
 const getClans = typeRxHelper((s, ax) => E.gen(function * () {
@@ -51,11 +52,24 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
     let Clan = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
+    let viewer: Embed | undefined = undefined;
+
+
     if (ax.id.predicate === ClanViewerB.id.predicate) {
         Clan = ClanViewerSelector.render({
             options: yield * getClans(s, ax),
         });
+
+        viewer = {
+            description: 'No Clan Selected',
+        };
     }
+    else {
+        viewer = {
+            description: Clan.values[0],
+        };
+    }
+
 
     return {
         ...s,
@@ -64,14 +78,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         viewer: asViewer(
             s.editor
-            ?? s.viewer
-            ?? Clan.values.length === 0
-                ? {
-                    description: 'No Clan Selected',
-                }
-                : {
-                    description: Clan.values[0],
-                },
+            ?? viewer,
         ),
         editor: unset,
         status: unset,

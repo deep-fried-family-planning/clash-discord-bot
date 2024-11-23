@@ -16,7 +16,7 @@ const axn = {
 
 
 export const LinkClanB = SuccessB.as(axn.LINK_CLAN_TYPE_OPEN, {
-    label: 'Link Clan',
+    label: 'Link',
 });
 const ChannelS = SingleChannelS.as(axn.LINK_CLAN_TYPE_UPDATE, {
     placeholder: 'War Countdown Channel',

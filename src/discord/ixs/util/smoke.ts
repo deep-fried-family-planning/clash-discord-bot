@@ -36,7 +36,16 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     // const clan = yield * getDiscordClan({pk: data.guild_id!, sk: clanTag});
 
     return {
-        embeds    : [{description: 'smoke test info board'}],
+        embeds: [{
+            author: {
+                name: 'Omni Board',
+            },
+            title      : 'Deep Fried Family Planning',
+            description: 'The one board to rule them all',
+            footer     : {
+                text: 'DeepFryer is made with ❤️ by DFFP.',
+            },
+        }],
         components: UI.grid([
             [UI.button({
                 style    : IXCBS.SUCCESS,

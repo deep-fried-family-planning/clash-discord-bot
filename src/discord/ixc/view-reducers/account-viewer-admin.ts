@@ -25,7 +25,7 @@ const deletePlayer = (s: IxState, playerTag: str) => E.gen(function * () {
 
 
 export const AccountViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'AVA'), {
-    label: 'Admin',
+    label: 'Edit',
 });
 const AccountTypeS = SingleS.as(makeId(RDXK.UPDATE, 'AVAT'), {
     placeholder: 'Select Account Type',
@@ -71,7 +71,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status:
             Submit.clicked(ax) ? asSuccess({description: 'Account Edited'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
-            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Account Deleted'})
+            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Not implemented yet...'})
             : undefined,
 
         sel1: Account.render({disabled: true}),

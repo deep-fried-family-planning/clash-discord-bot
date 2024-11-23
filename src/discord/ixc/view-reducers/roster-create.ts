@@ -76,11 +76,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             EmbedEditorB.fwd(RosterCreateB.id),
             DateTimeEditorB.fwd(RosterCreateB.id),
         ],
-        back   : BackB.as(RosterViewerB.id),
-        submit : Submit,
-        forward: RosterViewerB.render({
-            label: 'Rosters',
-        }),
+        back  : BackB.as(RosterViewerB.id),
+        submit: Submit,
     };
 }));
 

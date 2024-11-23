@@ -56,7 +56,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status:
             Submit.clicked(ax) ? asSuccess({description: 'Roster Edited'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
-            : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Roster Deleted'})
+            : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Not implemented yet...'})
             : undefined,
 
         sel1: Roster.render({disabled: true}),

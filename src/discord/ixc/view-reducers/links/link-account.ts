@@ -16,7 +16,7 @@ const axn = {
 
 
 export const LinkAccountB = SuccessB.as(axn.LINK_ACCOUNT_TYPE_OPEN, {
-    label: 'Link Account',
+    label: 'Link',
 });
 const TypeS = SingleS.as(axn.LINK_ACCOUNT_TYPE_UPDATE, {
     placeholder: 'Account Type',
