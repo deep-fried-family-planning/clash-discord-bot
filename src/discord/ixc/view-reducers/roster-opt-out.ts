@@ -2,17 +2,18 @@ import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, DangerB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {RostersB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
+import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
-    OPTOUT_ROSTER_OPEN           : makeId(RDXK.INIT, 'ROO'),
+    OPTOUT_ROSTER_OPEN           : makeId(RDXK.OPEN, 'ROO'),
     OPTOUT_ROSTER_ACCOUNTS_UPDATE: makeId(RDXK.UPDATE, 'ROO'),
     OPTOUT_ROSTER_SUBMIT         : makeId(RDXK.SUBMIT, 'ROO'),
 };
 
 
-export const OptoutRosterB = DangerB.as(axn.OPTOUT_ROSTER_OPEN, {
+export const RosterOptOutB = DangerB.as(axn.OPTOUT_ROSTER_OPEN, {
     label: 'Opt Out',
 });
 
@@ -52,6 +53,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
         });
     }
 
+    const Roster = RosterS.fromMap(s.cmap);
+
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
@@ -61,8 +64,16 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Roster Opt Out',
-        sel1  : Accounts,
+        title: 'Roster Opt Out',
+
+        status: Submit.clicked(ax)
+            ? asSuccess({description: 'Signed Up!'})
+            : undefined,
+
+        navigate: Roster.render({disabled: true}),
+        sel1    : Accounts,
+
+        back  : BackB.as(RosterViewerB.id),
         submit: Submit.render({
             disabled:
                 isSubmitting
@@ -73,13 +84,12 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 !isSubmitting
                 || Accounts.values.length === 0,
         }),
-        back: BackB.as(RostersB.id),
     };
 }));
 
 
-export const optoutRosterReducer = {
-    [OptoutRosterB.id.predicate] : view,
+export const rosterOptOutReducer = {
+    [RosterOptOutB.id.predicate] : view,
     [SelectAccounts.id.predicate]: view,
     [SubmitSignup.id.predicate]  : view,
 };

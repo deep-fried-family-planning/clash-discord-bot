@@ -36,23 +36,6 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
             title      : s.title,
             description: s.description,
         } : undefined,
-        s.info?.description
-            ? {
-                color: nColor(COLOR.INFO),
-                ...s.info,
-            }
-            : undefined,
-        s.select
-            ? {
-                color: nColor(COLOR.DEBUG),
-                ...s.select,
-            }
-            : undefined,
-        s.status ? {
-            color: nColor(COLOR.SUCCESS),
-            ...s.status,
-        }
-        : undefined,
         embedIf(s.viewer, s.viewer),
         embedIf(s.editor, s.editor),
         embedIf(s.status, s.status),

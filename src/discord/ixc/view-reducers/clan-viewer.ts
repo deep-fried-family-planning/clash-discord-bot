@@ -2,12 +2,14 @@ import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-compo
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {InfoB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/board-info.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {ClanViewerAdminB} from '#src/discord/ixc/view-reducers/clan-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
+import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {LinkClanB} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
 
 
 const getClans = typeRxHelper((s, ax) => E.gen(function * () {
@@ -37,24 +39,52 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
 }));
 
 
-export const ClanViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'VC'), {
+export const ClanViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'CV'), {
     label: 'Clans',
 });
-
-export const ClanViewerSelector = SingleS.as(makeId(RDXK.UPDATE, 'VC'), {
+export const ClanViewerSelector = SingleS.as(makeId(RDXK.UPDATE, 'CV'), {
     placeholder: 'Select Clan',
 });
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
+    const selected = ax.selected.map((v) => v.value);
+    let Clan = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+
+    if (ax.id.predicate === ClanViewerB.id.predicate) {
+        Clan = ClanViewerSelector.render({
+            options: yield * getClans(s, ax),
+        });
+    }
+
     return {
         ...s,
-        row1: [
+        title      : 'Clan',
+        description: unset,
 
+        viewer: asViewer(
+            s.editor
+            ?? s.viewer
+            ?? Clan.values.length === 0
+                ? {
+                    description: 'No Clan Selected',
+                }
+                : {
+                    description: Clan.values[0],
+                },
+        ),
+        editor: unset,
+        status: unset,
 
-            ClanViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
-        ],
-        back: BackB.as(InfoB.id),
+        sel1: Clan,
+
+        back  : BackB.as(StartB.id),
+        submit: LinkClanB
+            .if(s.user_roles.includes(s.server!.admin as snflk))
+            ?.render({disabled: !!Clan.values.length}),
+        delete: ClanViewerAdminB
+            .if(s.user_roles.includes(s.server!.admin as snflk))
+            ?.render({disabled: !Clan.values.length}),
     };
 }));
 

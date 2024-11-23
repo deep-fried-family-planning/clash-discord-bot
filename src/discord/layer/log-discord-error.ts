@@ -1,6 +1,5 @@
-import {CFG, E, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CFG, CSL, E, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/internal/constants/secrets.ts';
-import {Console} from 'effect';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -12,7 +11,7 @@ import {UI} from 'dfx';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
-    yield * Console.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
+    yield * CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
     const url = RDT.value(yield * CFG.redacted(REDACTED_DISCORD_ERROR_URL));
 

@@ -1,11 +1,12 @@
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {BackB, NextB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
-import {ClanManageB} from '#src/discord/ixc/view-reducers/clans/clan-manage.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -36,15 +37,22 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title: 'Link Clan',
-        sel1 : Countdown,
-        row2 : [
+        title      : 'Link Clan',
+        description: unset,
+
+        viewer: unset,
+        editor: unset,
+        status: unset,
+
+        sel1: Countdown,
+        row2: [
             EmbedEditorB.fwd(LinkClanB.id),
         ],
+
         forward: TypeToModalB.withData(Countdown.values).render({
             disabled: Countdown.values.length === 0,
         }),
-        back: BackB.as(ClanManageB.id),
+        back: BackB.as(LinkB.id),
     };
 }));
 
@@ -60,8 +68,13 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
         title      : 'Clan Linked',
-        description: message.embeds[0].description,
-        next       : NextB.as(ClanManageB.id),
+        description: unset,
+
+        viewer: unset,
+        editor: unset,
+        status: asSuccess(message.embeds[0]),
+
+        forward: ForwardB.as(LinkB.id),
     };
 }));
 

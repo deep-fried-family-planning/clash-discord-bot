@@ -23,15 +23,18 @@ import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal} from '#src/discord/ixc/mod
 import {sColor} from '#src/internal/constants/colors.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
+import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
 
 
 const modals = {
-    [LINK_ACCOUNT_MODAL_OPEN.predicate]  : LinkAccountModal,
-    [LINK_CLAN_MODAL_OPEN.predicate]     : LinkClanModal,
-    [EDIT_EMBED_MODAL_OPEN.predicate]    : EditEmbedModal,
-    [EDIT_DATE_TIME_MODAL_OPEN.predicate]: EditDateTimeModal,
+    [LINK_ACCOUNT_MODAL_OPEN.predicate]      : LinkAccountModal,
+    [LINK_ACCOUNT_ADMIN_MODAL_OPEN.predicate]: LinkAccountAdminModal,
+    [LINK_CLAN_MODAL_OPEN.predicate]         : LinkClanModal,
+    [EDIT_EMBED_MODAL_OPEN.predicate]        : EditEmbedModal,
+    [EDIT_DATE_TIME_MODAL_OPEN.predicate]    : EditDateTimeModal,
 };
 const modalKinds = [RDXK.MODAL_OPEN, RDXK.MODAL_OPEN_FORWARD];
+
 
 const component = (body: IxD) => E.gen(function * () {
     const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
@@ -62,18 +65,18 @@ const component = (body: IxD) => E.gen(function * () {
 
         const newId = fromId(curModal.custom_id);
 
-        yield * SQS.sendMessage({
-            QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-            MessageBody: JSON.stringify(body),
-        });
-
         yield * DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
             Item     : {
-                pk   : `t-${body.id}`,
-                sk   : `t-${body.id}`,
-                token: body.token,
+                pk      : `t-${body.id}`,
+                sk      : `t-${body.id}`,
+                token   : body.token,
+                bodyJSON: JSON.stringify(body),
             },
+        });
+        yield * SQS.sendMessage({
+            QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
+            MessageBody: JSON.stringify(body),
         });
 
         return r200({

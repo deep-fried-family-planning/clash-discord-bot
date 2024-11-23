@@ -1,10 +1,12 @@
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {BackB, NextB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {ApiTokenT, LINK_ACCOUNT_MODAL_SUBMIT, LINK_ACCOUNT_MODAL_OPEN, PlayerTagT} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
+import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
+import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -18,10 +20,7 @@ export const LinkAccountB = SuccessB.as(axn.LINK_ACCOUNT_TYPE_OPEN, {
 });
 const TypeS = SingleS.as(axn.LINK_ACCOUNT_TYPE_UPDATE, {
     placeholder: 'Account Type',
-    options    : [{
-        label: 'NOOP',
-        value: 'NOOP',
-    }],
+    options    : SELECT_ACCOUNT_TYPE,
 });
 const TypeToModalB = SuccessB.as(LINK_ACCOUNT_MODAL_OPEN, {
     label: 'Player Tag / API Token',
@@ -35,7 +34,13 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title  : 'Select Account Type',
+        title      : 'Select Account Type',
+        description: unset,
+
+        viewer: unset,
+        editor: unset,
+        status: unset,
+
         sel1   : Type,
         forward: TypeToModalB.withData(Type.values).render({
             disabled: Type.values.length === 0,
@@ -60,8 +65,13 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
         title      : 'Account Linked',
-        description: message.embeds[0].description,
-        next       : NextB.as(LinkB.id),
+        description: unset,
+
+        viewer: unset,
+        editor: unset,
+        status: asSuccess(message.embeds[0]),
+
+        forward: ForwardB.as(LinkB.id),
     };
 }));
 

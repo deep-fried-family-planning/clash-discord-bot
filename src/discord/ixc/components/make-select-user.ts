@@ -6,12 +6,12 @@ import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
 
 
-export type MadeSelect = ReturnType<typeof makeSelect>;
+export type MadeSelectUser = ReturnType<typeof makeSelectUser>;
 
 
-export const makeSelect = (
+export const makeSelectUser = (
     params: RouteParams | Route,
-    options: Partial<Parameters<typeof UI.select>[0]>,
+    options: Partial<Parameters<typeof UI.userSelect>[0]>,
     inId?: Route,
 ) => {
     const id = 'predicate' in params
@@ -21,13 +21,12 @@ export const makeSelect = (
     return {
         id,
         options,
-        component: UI.select({
+        component: UI.userSelect({
             ...options,
-            options  : options.options ?? [],
             custom_id: id.custom_id,
         }),
-        values: options.options?.filter((o) => o.default).map((o) => o.value) ?? [],
-        render: (newOptions: typeof options) => makeSelect(
+        values: options.default_values?.map((o) => o.id) ?? [],
+        render: (newOptions: typeof options) => makeSelectUser(
             params,
             {
                 ...options,
@@ -36,7 +35,7 @@ export const makeSelect = (
             id,
         ),
         as: (newId: Route, newOptions?: typeof options) => {
-            return makeSelect(
+            return makeSelectUser(
                 newId.params,
                 {
                     ...options,
@@ -48,18 +47,18 @@ export const makeSelect = (
             const component = cMap?.[id.predicate];
 
             return component
-                ? makeSelect(component.id.params, component.original, component.id)
-                : makeSelect(id, options, id);
+                ? makeSelectUser(component.id.params, component.original, component.id)
+                : makeSelectUser(id, options, id);
         },
         setDefaultValuesIf: (predicate: str, values: string[]) =>
             predicate === id.predicate
-                ? makeSelect(id, {
+                ? makeSelectUser(id, {
                     ...options,
-                    options: options.options?.map((o) => ({
-                        ...o,
-                        default: values.includes(o.value),
-                    })) ?? [],
+                    default_values: values.map((v) => ({
+                        id  : v as `${bigint}`,
+                        type: 'user',
+                    })),
                 }, id)
-                : makeSelect(id, options, id),
+                : makeSelectUser(id, options, id),
     };
 };

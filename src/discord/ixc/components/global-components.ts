@@ -1,8 +1,23 @@
 import {makeButton} from '#src/discord/ixc/components/make-button.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {IXCBS, IXCTS} from '#src/discord/util/discord.ts';
+import {IXCBS} from '#src/discord/util/discord.ts';
 import {makeSelect} from '#src/discord/ixc/components/make-select.ts';
-import {makeText} from '#src/discord/ixc/components/make-text.ts';
+import {makeSelectUser} from '#src/discord/ixc/components/make-select-user.ts';
+
+
+export const SuccessB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
+export const DangerB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});
+export const PrimaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PRIMARY});
+export const SecondaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SECONDARY});
+export const LinkB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.LINK});
+export const PremiumB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PREMIUM});
+
+
+export const SingleS = makeSelect({kind: RDXK.NOOP, type: 'NOOP'}, {
+    options: [{value: 'INVALID', label: 'INVALID'}],
+});
+export const SingleUserS = makeSelectUser({kind: RDXK.NOOP, type: 'NOOP'}, {
+});
 
 
 export const CloseB = makeButton({kind: RDXK.CLOSE, type: 'T'}, {
@@ -45,20 +60,3 @@ export const NavSelect = makeSelect({kind: RDXK.NAV, type: 'T'}, {
 });
 
 
-export const ModalTransmitter = makeText({kind: RDXK.MODAL_TRANSMITTER, type: 'T'}, {
-    label     : 'DO NOT TOUCH',
-    style     : IXCTS.SHORT,
-    max_length: 4000,
-});
-
-
-export const SuccessB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
-export const DangerB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});
-export const PrimaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PRIMARY});
-export const SecondaryB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.SECONDARY});
-export const LinkB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.LINK});
-export const PremiumB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {style: IXCBS.PREMIUM});
-
-export const SingleS = makeSelect({kind: RDXK.NOOP, type: 'NOOP'}, {
-    options: [{value: 'INVALID', label: 'INVALID'}],
-    a});

@@ -5,7 +5,7 @@ import {E} from '#src/internal/pure/effect.ts';
 import {EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
 import {nAnyColor} from '#src/internal/constants/colors.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
-import {asEditor} from '#src/discord/ixc/components/component-utils.ts';
+import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 export const EmbedEditorB = PrimaryB.as(makeId(RDXK.OPEN, 'EMBED'), {
@@ -27,7 +27,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Embed Editor',
+        title      : 'Embed Editor',
+        description: unset,
+
         editor: asEditor({
             title:
                 name?.value
@@ -43,6 +45,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 : 0,
             timestamp: s.editor?.timestamp ?? new Date(Date.now()).toISOString(),
         }),
+
         submit : EditEmbedB.fromMap(s.cmap) ?? EditEmbedB.forward(ax.id),
         forward: Forward.render({
             disabled: !name?.value && !description?.value,

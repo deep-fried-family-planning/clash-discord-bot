@@ -2,11 +2,12 @@ import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, ForwardB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {RostersB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
+import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
-    SIGNUP_ROSTER_OPEN               : makeId(RDXK.INIT, 'RS'),
+    SIGNUP_ROSTER_OPEN               : makeId(RDXK.OPEN, 'RS'),
     SIGNUP_ROSTER_AVAILABILITY_UPDATE: makeId(RDXK.UPDATE, 'RSA'),
     SIGNUP_ROSTER_ACCOUNTS_UPDATE    : makeId(RDXK.UPDATE, 'RSAC'),
     SIGNUP_ROSTER_DESIGNATION_UPDATE : makeId(RDXK.UPDATE, 'RSD'),
@@ -14,7 +15,7 @@ const axn = {
 };
 
 
-export const SignupRosterB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
+export const RosterSignupB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
     label: 'Signup',
 });
 
@@ -52,7 +53,7 @@ const SelectDesignation = SingleS.as(axn.SIGNUP_ROSTER_DESIGNATION_UPDATE, {
 const SubmitSignup = SubmitB.as(axn.SIGNUP_ROSTER_SUBMIT, {label: 'Signup'});
 
 
-const getSignupsByUser = typeRxHelper((s, ax) => E.gen(function * () {
+const getAccountsByUser = typeRxHelper((s, ax) => E.gen(function * () {
     return [{
         label: 'NOOP',
         value: 'NOOP',
@@ -76,9 +77,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     if (ax.id.predicate === axn.SIGNUP_ROSTER_OPEN.predicate) {
         Accounts = SelectAccounts.as(axn.SIGNUP_ROSTER_ACCOUNTS_UPDATE, {
-            options: yield * getSignupsByUser(s, ax),
+            options: yield * getAccountsByUser(s, ax),
         });
     }
+
+    const Roster = RosterS.fromMap(s.cmap);
 
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
@@ -91,10 +94,18 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Roster Signup',
-        sel1  : Accounts,
-        sel2  : Availability,
-        sel3  : Designation,
+        title   : 'Roster Signup',
+        navigate: Roster.render({disabled: true}),
+        sel1    : Accounts,
+        sel2    : Availability,
+        sel3    : Designation,
+
+        status:
+            Submit.clicked(ax)
+                ? asSuccess({description: 'Signed Up!'})
+                : undefined,
+
+        back  : BackB.as(RosterViewerB.id),
         submit: Submit.render({
             disabled:
                 isSubmitting
@@ -109,13 +120,12 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 || Availability.values.length === 0
                 || Accounts.values.length === 0,
         }),
-        back: BackB.as(RostersB.id),
     };
 }));
 
 
-export const signupRosterReducer = {
-    [SignupRosterB.id.predicate]     : view,
+export const rosterSignupReducer = {
+    [RosterSignupB.id.predicate]     : view,
     [SelectAccounts.id.predicate]    : view,
     [SelectAvailability.id.predicate]: view,
     [SelectDesignation.id.predicate] : view,

@@ -8,7 +8,7 @@ import {
     EditDateT, EditTimeT,
 } from '#src/discord/ixc/modals/edit-date-time-modal.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
-import {asEditor} from '#src/discord/ixc/components/component-utils.ts';
+import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -32,8 +32,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Date/Time Editor',
+        title      : 'Date/Time Editor',
+        description: unset,
+
         editor: asEditor({
+            ...s.editor,
             title      : s.editor!.title!,
             description: s.editor!.description!,
             color      : s.editor!.color!,

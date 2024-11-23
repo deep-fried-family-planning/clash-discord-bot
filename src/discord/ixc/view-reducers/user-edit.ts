@@ -7,6 +7,7 @@ import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/board-info.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const saveUserRecord = (s: IxState, tz: string, qs: string, qe: string) => E.gen(function * () {
@@ -71,38 +72,25 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Edit User Settings',
-        select: isSubmitting
-            ? jsonEmbed({
-                timezone  : Timezone.values[0],
-                quietStart: QuietStart.values[0],
-                quietEnd  : QuietEnd.values[0],
-            })
-            : undefined,
+        title      : 'Edit User Settings',
+        description: undefined,
+
         status: isSubmitting
-            ? {description: `user record created with ${Timezone.values[0]} (${QuietStart.values[0]}-${QuietEnd.values[0]})`}
+            ? asSuccess({description: `user record created with ${Timezone.values[0]} (${QuietStart.values[0]}-${QuietEnd.values[0]})`})
             : undefined,
-        sel1: Timezone.render({
-            disabled: isSubmitting,
-        }),
-        sel2: QuietStart.render({
-            disabled: isSubmitting,
-        }),
-        sel3: QuietEnd.render({
-            disabled: isSubmitting,
-        }),
-        submit: UserSubmitB.render({
-            disabled: areAnyUnselected || isSubmitting,
-        }),
-        forward: Forward.render({
-            disabled: areAnyUnselected || !isSubmitting,
-        }),
-        back: BackB.as(LinkB.id),
+
+        sel1: Timezone.render({disabled: isSubmitting}),
+        sel2: QuietStart.render({disabled: isSubmitting}),
+        sel3: QuietEnd.render({disabled: isSubmitting}),
+
+        back   : BackB.as(LinkB.id),
+        submit : UserSubmitB.render({disabled: areAnyUnselected || isSubmitting}),
+        forward: Forward.render({disabled: areAnyUnselected || !isSubmitting}),
     };
 }));
 
 
-export const editUserReducer = {
+export const userEditReducer = {
     [UserB.id.predicate]      : view,
     [UserTzS.id.predicate]    : view,
     [UserQsS.id.predicate]    : view,

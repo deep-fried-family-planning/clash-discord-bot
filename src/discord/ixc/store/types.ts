@@ -24,6 +24,7 @@ export const enum RDXK {
     CLOSE = 'CLOSE',
     SUBMIT = 'SUBMIT',
     DELETE = 'DELETE',
+    DELETE_CONFIRM = 'DELETE_CONFIRM',
     SELECT = 'SELECT',
     NAV = 'NAV',
     NOOP = 'NOOP',

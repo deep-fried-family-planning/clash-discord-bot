@@ -1,12 +1,11 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
-import type {IxD} from '#src/discord/util/discord.ts';
+import {IXCBS, type IxD} from '#src/discord/util/discord.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {UI} from 'dfx';
 import {OPTION_CLAN} from '#src/discord/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {InfoEntryB} from '#src/discord/ixc/view-reducers/board-info.ts';
 
 
 export const SMOKE
@@ -39,7 +38,11 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     return {
         embeds    : [{description: 'smoke test info board'}],
         components: UI.grid([
-            [InfoEntryB.component],
+            [UI.button({
+                style    : IXCBS.SUCCESS,
+                label    : 'Start',
+                custom_id: `/k/ENTRY/t/INFO`,
+            })],
         ]),
     };
 });

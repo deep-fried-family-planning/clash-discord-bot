@@ -1,5 +1,18 @@
 import type {CommandSpec} from '#src/discord/types.ts';
 
+
+export const SELECT_ACCOUNT_TYPE = [
+    {label: 'main', value: 'main'},
+    {label: 'alt', value: 'alt'},
+    {label: 'donation', value: 'donation'},
+    {label: 'war asset', value: 'war-asset'},
+    {label: 'clan capital', value: 'clan-capital'},
+    {label: 'strategic rush', value: 'strategic-rush'},
+    {label: 'hyper rush', value: 'hyper-rush'},
+    {label: 'admin parking', value: 'admin-parking'},
+];
+
+
 export const SELECT_TIMEZONES = [
     {label: 'America/New_York', value: 'America/New_York'},
     {label: 'America/Chicago', value: 'America/Chicago'},

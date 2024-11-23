@@ -1,19 +1,16 @@
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {BackB, PrimaryB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {SelectRosterB} from '#src/discord/ixc/view-reducers/rosters/roster-select.ts';
-import {SignupRosterB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
-import {OptoutRosterB} from '#src/discord/ixc/view-reducers/rosters/roster-opt-out.ts';
-import {RosterManageB} from '#src/discord/ixc/view-reducers/rosters/roster-manage.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {UserB} from './user-edit.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
-import {ClanSelectB} from '#src/discord/ixc/view-reducers/clans/clan-select.ts';
 import {ClanViewerB} from '#src/discord/ixc/view-reducers/clan-viewer.ts';
-import {ClanManageB} from '#src/discord/ixc/view-reducers/clans/clan-manage.ts';
-import {LinkAccountManageB} from '#src/discord/ixc/view-reducers/links/link-account-manage.ts';
+import {LinkAccountAdminB} from '#src/discord/ixc/view-reducers/links/link-account-admin.ts';
 import {LinkClanB} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
+import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
+import {AccountViewerB} from '#src/discord/ixc/view-reducers/account-viewer.ts';
+import {unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -22,10 +19,10 @@ const axn = {
 };
 
 
-export const InfoEntryB = SuccessB.as(axn.ENTRY, {
+export const StartEB = SuccessB.as(axn.ENTRY, {
     label: 'Start',
 });
-export const InfoB = SuccessB.as(axn.OPEN, {
+export const StartB = SuccessB.as(axn.OPEN, {
     label: 'Start',
 });
 
@@ -35,10 +32,15 @@ const start = typeRx((s, ax) => E.gen(function * () {
         ...s,
         title      : 'Start Page',
         description: `Welcome <@${s.user_id}>`,
-        row1       : [
+
+        viewer: unset,
+        editor: unset,
+        status: unset,
+
+        row1: [
             LinkB,
-            ClanSelectB.fwd(ClanViewerB.id),
-            RostersB,
+            ClanViewerB,
+            RosterViewerB,
         ],
     };
 }));
@@ -51,64 +53,26 @@ const link = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
         title      : 'Link',
-        description: `Welcome <@${s.user_id}>`,
-        row1       : [
+        description: undefined,
+
+        viewer: unset,
+        editor: unset,
+        status: unset,
+
+        row1: [
             LinkAccountB,
-            LinkAccountManageB.if(s.user_roles.includes(s.server!.admin as snflk)),
-            UserB.fwd(InfoEntryB.id),
+            AccountViewerB,
+            UserB.fwd(StartB.id),
         ],
-        row2: [
-            LinkClanB.if(s.user_roles.includes(s.server!.admin as snflk)),
-        ],
-        back: BackB.as(InfoB.id),
-    };
-}));
 
-
-export const ClansB = PrimaryB.as(makeId(RDXK.OPEN, 'CS'), {
-    label: 'Clans',
-});
-const clans = typeRx((s, ax) => E.gen(function * () {
-    return {
-        ...s,
-        title      : 'Clans',
-        description: `Welcome <@${s.user_id}>`,
-        row1       : [
-            LinkClanB,
-            ClanSelectB.fwd(ClanViewerB.id),
-        ],
-        back: BackB.as(InfoB.id),
-    };
-}));
-
-
-export const RostersB = PrimaryB.as(makeId(RDXK.OPEN, 'RS'), {
-    label: 'Rosters',
-});
-const rosters = typeRx((s, ax) => E.gen(function * () {
-    return {
-        ...s,
-        title      : 'Rosters',
-        description: `Welcome <@${s.user_id}>`,
-        row1       : [
-            SelectRosterB
-                .render(SignupRosterB.options)
-                .fwd(SignupRosterB.id),
-            SelectRosterB
-                .render(OptoutRosterB.options)
-                .fwd(OptoutRosterB.id),
-            RosterManageB
-                .if(s.user_roles.includes(s.server!.admin as snflk)),
-        ],
-        back: BackB.as(InfoB.id),
+        back  : BackB.as(StartB.id),
+        delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 
 
 export const infoBoardReducer = {
-    [InfoEntryB.id.predicate]: start,
-    [InfoB.id.predicate]     : start,
-    [LinkB.id.predicate]     : link,
-    [ClansB.id.predicate]    : clans,
-    [RostersB.id.predicate]  : rosters,
+    [StartEB.id.predicate]: start,
+    [StartB.id.predicate] : start,
+    [LinkB.id.predicate]  : link,
 };

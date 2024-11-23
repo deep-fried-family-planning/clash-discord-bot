@@ -1,26 +1,33 @@
-import {PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
+import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/board-info.ts';
+import {RosterSignupB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
+import {RosterOptOutB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
+import {RosterCreateB} from '#src/discord/ixc/view-reducers/roster-create.ts';
 
 
 export const RosterViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'RV'), {
     label: 'Rosters',
 });
-const RosterSelector = SingleS.as(makeId(RDXK.UPDATE, 'RV'), {
+export const RosterS = SingleS.as(makeId(RDXK.UPDATE, 'RV'), {
     placeholder: 'Select Roster',
 });
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
-    const Roster = RosterSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    const Roster = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     return {
         ...s,
+        title      : 'Rosters',
+        description: `Rosters for ${s.server_id}`,
+
         viewer: asViewer(
             s.editor
             ?? s.viewer
@@ -32,15 +39,27 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     description: 'No Roster Selected',
                 },
         ),
-        sel1: Roster,
+        editor: undefined,
+        status: undefined,
+
+        sel1: Roster.render({disabled: false}),
         row2: [
-            RosterViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
+            RosterSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
+            RosterOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
+
+            RosterViewerAdminB
+                .if(s.user_roles.includes(s.server!.admin as snflk))
+                ?.render({disabled: !Roster.values.length}),
         ],
+        back  : BackB.as(StartB.id),
+        submit: RosterCreateB
+            .if(s.user_roles.includes(s.server!.admin as snflk))
+            ?.if(Roster.values.length === 0),
     };
 }));
 
 
 export const rosterViewerReducer = {
-    [RosterViewerB.id.predicate] : view,
-    [RosterSelector.id.predicate]: view,
+    [RosterViewerB.id.predicate]: view,
+    [RosterS.id.predicate]      : view,
 };
