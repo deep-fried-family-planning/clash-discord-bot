@@ -14,20 +14,15 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/discord-roster-signup.ts';
 
 
-const axn = {
-    SIGNUP_ROSTER_OPEN               : makeId(RDXK.OPEN, 'RS'),
-    SIGNUP_ROSTER_AVAILABILITY_UPDATE: makeId(RDXK.UPDATE, 'RSA'),
-    SIGNUP_ROSTER_ACCOUNTS_UPDATE    : makeId(RDXK.UPDATE, 'RSAC'),
-    SIGNUP_ROSTER_DESIGNATION_UPDATE : makeId(RDXK.UPDATE, 'RSD'),
-    SIGNUP_ROSTER_SUBMIT             : makeId(RDXK.SUBMIT, 'RS'),
-};
-
-
-export const RosterSignupB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
+export const RosterSignupB = SuccessB.as(makeId(RDXK.OPEN, 'RS'), {
     label: 'Signup',
 });
+const SubmitSignup = SubmitB.as(makeId(RDXK.SUBMIT, 'RS'), {label: 'Signup'});
 
-const SelectAvailability = SingleS.as(axn.SIGNUP_ROSTER_AVAILABILITY_UPDATE, {
+const SelectAccounts = SingleS.as(makeId(RDXK.UPDATE, 'RSAC'), {
+    placeholder: 'Select Accounts',
+});
+const SelectAvailability = SingleS.as(makeId(RDXK.UPDATE, 'RSA'), {
     placeholder: 'Select Availability',
     options    : [
         {label: 'Round 1', value: '0', default: true},
@@ -40,33 +35,19 @@ const SelectAvailability = SingleS.as(axn.SIGNUP_ROSTER_AVAILABILITY_UPDATE, {
     ],
     max_values: 7,
     min_values: 1,
-},
-);
-
-const SelectAccounts = SingleS.as(axn.SIGNUP_ROSTER_ACCOUNTS_UPDATE, {
-    placeholder: 'Select Accounts',
 });
-
-const SelectDesignation = SingleS.as(axn.SIGNUP_ROSTER_DESIGNATION_UPDATE, {
+const SelectDesignation = SingleS.as(makeId(RDXK.UPDATE, 'RSD'), {
     placeholder: 'Select Designation',
     options    : [{
-        label: 'Default',
-        value: 'default',
+        label  : 'Default',
+        value  : 'default',
+        default: true,
     }, {
-        label: 'Designated 2 Star',
-        value: 'dts',
+        label      : 'Designated 2 Star',
+        value      : 'dts',
+        description: '2 star higher bases as a lower TH account',
     }],
 });
-
-const SubmitSignup = SubmitB.as(axn.SIGNUP_ROSTER_SUBMIT, {label: 'Signup'});
-
-
-const getAccountsByUser = typeRxHelper((s, ax) => E.gen(function * () {
-    return [{
-        label: 'NOOP',
-        value: 'NOOP',
-    }];
-}));
 
 
 const signupRoster = (
@@ -142,13 +123,13 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
-    if (ax.id.predicate === axn.SIGNUP_ROSTER_OPEN.predicate) {
+    if (ax.id.predicate === RosterSignupB.id.predicate) {
         const roster = yield * rosterRead({
             pk: s.server_id,
             sk: Roster.values[0],
         });
 
-        Accounts = SelectAccounts.as(axn.SIGNUP_ROSTER_ACCOUNTS_UPDATE, {
+        Accounts = SelectAccounts.render({
             options: yield * getPlayers(s, ax),
         });
         Availability = Availability.render({
@@ -168,8 +149,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
             })),
         });
     }
-
-
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
     const Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

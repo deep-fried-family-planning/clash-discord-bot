@@ -2,7 +2,7 @@ import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
-import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
+import {SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
@@ -35,21 +35,21 @@ const axn = {
 
 
 export const UserB = PrimaryB.as(axn.EDIT_USER_OPEN, {label: 'User'});
+const UserSubmitB = SubmitB.as(axn.EDIT_USER_SUBMIT);
+const Delete = DeleteB.as(makeId(RDXK.DELETE, 'U'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'U'));
 const UserTzS = SingleS.as(axn.EDIT_USER_TZ, {
     placeholder: 'Timezone',
     options    : SELECT_TIMEZONES,
 });
-const UserQsS = SingleS.as(axn.EDIT_USER_QS, {
-    placeholder: 'Quiet Start',
-    options    : SELECT_TIMES,
-});
-const UserQeS = SingleS.as(axn.EDIT_USER_QE, {
-    placeholder: 'Quiet End',
-    options    : SELECT_TIMES,
-});
-const UserSubmitB = SubmitB.as(axn.EDIT_USER_SUBMIT);
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'U'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'U'));
+// const UserQsS = SingleS.as(axn.EDIT_USER_QS, {
+//     placeholder: 'Quiet Start',
+//     options    : SELECT_TIMES,
+// });
+// const UserQeS = SingleS.as(axn.EDIT_USER_QE, {
+//     placeholder: 'Quiet End',
+//     options    : SELECT_TIMES,
+// });
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -104,10 +104,10 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 
 export const userEditReducer = {
-    [UserB.id.predicate]      : view,
-    [UserTzS.id.predicate]    : view,
-    [UserQsS.id.predicate]    : view,
-    [UserQeS.id.predicate]    : view,
-    [UserSubmitB.id.predicate]: view,
+    [UserB.id.predicate]        : view,
+    [UserSubmitB.id.predicate]  : view,
+    [Delete.id.predicate]       : view,
+    [DeleteConfirm.id.predicate]: view,
+    [UserTzS.id.predicate]      : view,
 };
 

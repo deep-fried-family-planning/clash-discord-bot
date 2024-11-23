@@ -6,8 +6,7 @@ import {unset} from '#src/discord/ixc/components/component-utils.ts';
 import {ServerViewerB} from '#src/discord/ixc/view-reducers/server-viewer.ts';
 
 
-export const ServerViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'SVA'), {
-});
+export const ServerViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'SVA'));
 
 
 const view = typeRx((s, ax) => E.gen(function * () {

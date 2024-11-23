@@ -89,4 +89,5 @@ export const rosterViewerAdminReducer = {
     [Submit.id.predicate]            : view,
     [Delete.id.predicate]            : view,
     [ConfirmDelete.id.predicate]     : view,
+    [TypeS.id.predicate]             : view,
 };

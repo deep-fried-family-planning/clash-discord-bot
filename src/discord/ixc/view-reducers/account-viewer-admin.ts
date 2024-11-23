@@ -96,4 +96,6 @@ export const accountViewerAdminReducer = {
     [AccountViewerAdminB.id.predicate]: view,
     [AccountTypeS.id.predicate]       : view,
     [Submit.id.predicate]             : view,
+    [Delete.id.predicate]             : view,
+    [DeleteConfirm.id.predicate]      : view,
 };

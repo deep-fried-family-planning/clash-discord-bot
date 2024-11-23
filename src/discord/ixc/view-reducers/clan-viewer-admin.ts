@@ -77,7 +77,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 export const clanViewerAdminReducer = {
     [ClanViewerAdminB.id.predicate]: view,
     [Submit.id.predicate]          : view,
-    [ClanTypeS.id.predicate]       : view,
     [Delete.id.predicate]          : view,
     [DeleteConfirm.id.predicate]   : view,
+    [ClanTypeS.id.predicate]       : view,
+    [CountdownS.id.predicate]      : view,
 };
