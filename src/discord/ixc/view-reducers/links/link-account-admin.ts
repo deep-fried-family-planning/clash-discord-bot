@@ -6,7 +6,7 @@ import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LINK_ACCOUNT_ADMIN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
-import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
 
 
@@ -33,7 +33,7 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Admin Account Link',
+        title      : 'Account Admin Link',
         description: unset,
 
         viewer: unset,
@@ -65,17 +65,36 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
         api_token   : 'admin',
         account_kind: Type.values[0],
         discord_user: User.values[0],
-    });
+    }).pipe(
+        E.catchTag('DeepFryerSlashUserError', (e) => E.succeed({
+            type  : 'ReturnableError',
+            embeds: [{
+                description: e.issue,
+            }],
+        })),
+        E.catchTag('DeepFryerClashError', (e) => E.succeed({
+            type  : 'ReturnableError',
+            embeds: [{
+                // @ts-expect-error clashperk lib types
+                description: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
+            }],
+        })),
+    );
 
     return {
         ...s,
-        title      : 'Account Admin Linked',
+        title      : 'Account Admin Link',
         description: unset,
 
         viewer: unset,
         editor: unset,
-        status: asSuccess(message.embeds[0]),
+        status: 'type' in message
+            ? asFailure(message.embeds[0])
+            : asSuccess(message.embeds[0]),
 
+        back: BackB.as(LinkAccountAdminB.id).render({
+            label: 'Link Again',
+        }),
         forward: ForwardB.as(LinkB.id),
     };
 }));

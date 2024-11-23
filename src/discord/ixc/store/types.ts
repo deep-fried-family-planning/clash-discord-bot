@@ -37,7 +37,7 @@ export const enum RDXK {
 export const enum FOOTER {
     VIEWING = 'Viewing',
     EDITING = 'Editing',
-    CONFIRM = 'Confirmation Required',
-    SUCCESS = 'Submission: Success',
-    FAILURE = 'Submission: Failure',
+    CONFIRM = 'Confirm',
+    SUCCESS = 'Success',
+    FAILURE = 'Failure',
 }

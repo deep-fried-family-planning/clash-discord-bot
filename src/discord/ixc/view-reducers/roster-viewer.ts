@@ -4,7 +4,7 @@ import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
-import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {RosterSignupB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
 import {RosterOptOutB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
@@ -26,7 +26,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
         title      : 'Rosters',
-        description: `Rosters for ${s.server_id}`,
+        description: unset,
 
         viewer: asViewer(
             s.editor
@@ -54,7 +54,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
         back  : BackB.as(StartB.id),
         submit: RosterCreateB
             .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.if(Roster.values.length === 0),
+            ?.render({
+                disabled: !!Roster.values.length,
+            }),
     };
 }));
 

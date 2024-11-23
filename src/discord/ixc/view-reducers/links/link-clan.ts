@@ -6,7 +6,7 @@ import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/disco
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
-import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -37,7 +37,7 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Link Clan',
+        title      : 'Clan Link',
         description: unset,
 
         viewer: unset,
@@ -63,17 +63,29 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
     const message = yield * clanfam(s.original, {
         clan     : tag?.component.value ?? '',
         countdown: ax.id.params.data![0],
-    });
+    }).pipe(
+        E.catchTag('DeepFryerSlashUserError', (e) => E.succeed({
+            type  : 'ReturnableError',
+            embeds: [{
+                description: e.issue,
+            }],
+        })),
+    );
 
     return {
         ...s,
-        title      : 'Clan Linked',
+        title      : 'Clan Link',
         description: unset,
 
         viewer: unset,
         editor: unset,
-        status: asSuccess(message.embeds[0]),
+        status: 'type' in message
+            ? asFailure(message.embeds[0])
+            : asSuccess(message.embeds[0]),
 
+        back: BackB.as(LinkClanB.id).render({
+            label: 'Link Again',
+        }),
         forward: ForwardB.as(LinkB.id),
     };
 }));

@@ -24,6 +24,7 @@ import {sColor} from '#src/internal/constants/colors.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
+import {Cause} from 'effect';
 
 
 const modals = {
@@ -179,6 +180,18 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
         return yield * router[body.type](body);
     }),
+    E.catchAllCause((error) => E.gen(function * () {
+        const e = Cause.prettyErrors(error);
+
+        yield * logDiscordError(e);
+
+        const boom = badImplementation();
+
+        return respond({
+            status: boom.output.statusCode,
+            body  : boom.output.payload,
+        });
+    })),
     E.catchAllDefect((defect) => E.gen(function * () {
         yield * logDiscordError([defect]).pipe(E.ignoreLogged);
 

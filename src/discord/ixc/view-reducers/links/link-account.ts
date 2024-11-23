@@ -6,7 +6,7 @@ import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
-import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -34,7 +34,7 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Select Account Type',
+        title      : 'Account Link',
         description: unset,
 
         viewer: unset,
@@ -60,17 +60,36 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
         api_token   : api?.component.value ?? '',
         account_kind: account_kind,
         discord_user: undefined,
-    });
+    }).pipe(
+        E.catchTag('DeepFryerSlashUserError', (e) => E.succeed({
+            type  : 'ReturnableError',
+            embeds: [{
+                description: e.issue,
+            }],
+        })),
+        E.catchTag('DeepFryerClashError', (e) => E.succeed({
+            type  : 'ReturnableError',
+            embeds: [{
+                // @ts-expect-error clashperk lib types
+                description: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
+            }],
+        })),
+    );
 
     return {
         ...s,
-        title      : 'Account Linked',
+        title      : 'Account Link',
         description: unset,
 
         viewer: unset,
         editor: unset,
-        status: asSuccess(message.embeds[0]),
+        status: 'type' in message
+            ? asFailure(message.embeds[0])
+            : asSuccess(message.embeds[0]),
 
+        back: BackB.as(LinkAccountB.id).render({
+            label: 'Link Again',
+        }),
         forward: ForwardB.as(LinkB.id),
     };
 }));

@@ -3,7 +3,7 @@ import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, DangerB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
-import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';
+import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const axn = {
@@ -64,7 +64,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title: 'Roster Opt Out',
+        title      : 'Roster Opt Out',
+        description: unset,
 
         status: Submit.clicked(ax)
             ? asSuccess({description: 'Signed Up!'})
