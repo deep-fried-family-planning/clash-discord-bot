@@ -28,7 +28,9 @@ const DateTimeEditB = PrimaryB.as(EDIT_DATE_TIME_MODAL_OPEN, {
 const view = typeRx((s, ax) => E.gen(function * () {
     const date = EditDateT.fromMap(ax.cmap);
     const time = EditTimeT.fromMap(ax.cmap);
-    const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
+    const Forward = ForwardB.forward(ax.id);
+
+    // todo parse date time values
 
     return {
         ...s,
@@ -54,6 +56,5 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 export const dateTimeEditorReducer = {
     [axn.EDIT_DATE_TIME_OPEN.predicate]    : view,
-    [EDIT_DATE_TIME_MODAL_OPEN.predicate]  : view,
     [EDIT_DATE_TIME_MODAL_SUBMIT.predicate]: view,
 };

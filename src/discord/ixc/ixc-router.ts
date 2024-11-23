@@ -31,6 +31,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
                 pk: `t-${ax.id.params.forward!}`,
                 sk: `t-${ax.id.params.forward!}`,
             },
+            ConsistentRead: true,
         });
         yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, modalState.Item!.token as str);
         yield * DynamoDBDocument.delete({

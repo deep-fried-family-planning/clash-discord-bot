@@ -28,4 +28,4 @@ export const ServerIdEncode = S.encodeUnknown(ServerId);
 export const UserIdEncode = S.encodeUnknown(UserId);
 export const ClanTagEncode = S.encodeUnknown(ClanTag);
 export const PlayerTagEncode = S.encodeUnknown(PlayerTag);
-export const RosterIdEncode = S.encodeUnknown(RosterId);
+export const encodeRosterId = S.encodeUnknown(RosterId);

@@ -6,13 +6,12 @@ import {type DUser, getDiscordUser} from '#src/dynamo/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import {BackB, CloseB, NextB, SubmitB} from '#src/discord/ixc/components/global-components.ts';
+import {CloseB} from '#src/discord/ixc/components/global-components.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
 import type {MadeButton} from '#src/discord/ixc/components/make-button.ts';
-import {FOOTER} from '#src/discord/ixc/store/types.ts';
-import {isEditor, isViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {isEditor, isStatus, isViewer} from '#src/discord/ixc/components/component-utils.ts';
 
 
 export type IxState = {
@@ -98,18 +97,12 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         description: firstEmbed?.description,
         viewer     : ix.message?.embeds.find(isViewer),
         editor     : ix.message?.embeds.find(isEditor),
-        status     : ix.message?.embeds.find(
-            (embed) => [FOOTER.CONFIRM, FOOTER.SUCCESS, FOOTER.FAILURE].includes(embed.footer?.text as FOOTER),
-        ),
+        status     : ix.message?.embeds.find(isStatus),
         // info      : ix.message?.embeds[0],
         // select    : ix.message?.embeds[1],
         // status    : ix.message?.embeds[2],
         // navigate  : NavSelect.fromMap(componentMap),
-        back  : BackB.fromMap(componentMap),
-        close : CloseB.fromMap(componentMap),
-        // forward   : ForwardB.fromMap(componentMap),
-        next  : NextB.fromMap(componentMap),
-        submit: SubmitB.fromMap(componentMap),
+        close      : CloseB.fromMap(componentMap),
     } as const satisfies IxState;
 });
 

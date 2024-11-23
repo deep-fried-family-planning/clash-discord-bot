@@ -36,6 +36,9 @@ export const asEditor = (embed?: Embed): Embed => {
 };
 
 
+export const isStatus = (embed?: Embed) => [FOOTER.CONFIRM, FOOTER.SUCCESS, FOOTER.FAILURE].includes(embed?.author?.name as FOOTER);
+
+
 export const asConfirm = (embed?: Embed): Embed => {
     return {
         ...embed,

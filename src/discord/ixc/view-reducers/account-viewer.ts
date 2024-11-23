@@ -19,7 +19,7 @@ export const AccountViewerAccountS = SingleS.as(makeId(RDXK.UPDATE, 'AVA'), {
 });
 
 
-const getPlayers = typeRxHelper((s, ax) => E.gen(function * () {
+export const getPlayers = typeRxHelper((s, ax) => E.gen(function * () {
     const records = pipe(
         yield * queryPlayersForUser({pk: s.user_id}),
         sortWithL((r) => r.sk, ORDS),

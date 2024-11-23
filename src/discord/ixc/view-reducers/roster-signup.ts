@@ -1,9 +1,18 @@
 import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, ForwardB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {getPlayers} from '#src/discord/ixc/view-reducers/account-viewer.ts';
+import {rosterSignupCreate, rosterSignupRead, rosterSignupUpdate} from '#src/dynamo/operations/roster-signup.ts';
+import type {bool, str} from '#src/internal/pure/types-pure.ts';
+import {rosterRead} from '#src/dynamo/operations/roster.ts';
+import {v4} from 'uuid';
+import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
+import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import type {DRosterSignup} from '#src/dynamo/discord-roster-signup.ts';
 
 
 const axn = {
@@ -22,13 +31,13 @@ export const RosterSignupB = SuccessB.as(axn.SIGNUP_ROSTER_OPEN, {
 const SelectAvailability = SingleS.as(axn.SIGNUP_ROSTER_AVAILABILITY_UPDATE, {
     placeholder: 'Select Availability',
     options    : [
-        {label: 'Round 7', value: 'r7'},
-        {label: 'Round 6', value: 'r6'},
-        {label: 'Round 5', value: 'r5'},
-        {label: 'Round 4', value: 'r4'},
-        {label: 'Round 3', value: 'r3'},
-        {label: 'Round 2', value: 'r2'},
-        {label: 'Round 1', value: 'r1'},
+        {label: 'Round 7', value: '6'},
+        {label: 'Round 6', value: '5'},
+        {label: 'Round 5', value: '4'},
+        {label: 'Round 4', value: '3'},
+        {label: 'Round 3', value: '2'},
+        {label: 'Round 2', value: '1'},
+        {label: 'Round 1', value: '0'},
     ],
     max_values: 7,
     min_values: 1,
@@ -46,7 +55,7 @@ const SelectDesignation = SingleS.as(axn.SIGNUP_ROSTER_DESIGNATION_UPDATE, {
         value: 'default',
     }, {
         label: 'Designated 2 Star',
-        value: 'dsg',
+        value: 'dts',
     }],
 });
 
@@ -61,13 +70,68 @@ const getAccountsByUser = typeRxHelper((s, ax) => E.gen(function * () {
 }));
 
 
-const signupRoster = typeRxHelper((s, ax) => E.gen(function * () {
-    if (ax.id.predicate === axn.SIGNUP_ROSTER_SUBMIT.predicate) {
-        return true;
+const signupRoster = (
+    userId: str,
+    rosterId: str,
+    designation: str,
+    rounds: str[],
+    tags: str[],
+) => E.gen(function * () {
+    const signup = yield * rosterSignupRead({
+        pk: rosterId,
+        sk: userId,
+    });
+
+    const roundsAvailable = pipe(
+        rounds,
+        reduceL(emptyKV<str, bool>(), (rs, r) => {
+            rs[r] = true;
+            return rs;
+        }),
+    );
+    const accounts = pipe(
+        tags,
+        reduceL(emptyKV<str, DRosterSignup['accounts'][str]>(), (ts, t) => {
+            ts[t] = pipe(
+                Array(7).fill(0),
+                mapL((_, idx) =>
+                    roundsAvailable[`${idx}`]
+                        ? {
+                            availability: true,
+                            designation : designation,
+                        }
+                        : {
+                            availability: false,
+                        },
+                ),
+            );
+            return ts;
+        }),
+    );
+
+    if (!signup) {
+        return yield * rosterSignupCreate({
+            type         : 'DiscordRosterSignup',
+            pk           : rosterId,
+            sk           : userId,
+            gsi_roster_id: rosterId,
+            gsi_user_id  : userId,
+            version      : '1.0.0',
+            created      : dtNow(),
+            updated      : dtNow(),
+            accounts     : accounts,
+        });
     }
 
-    return false;
-}));
+    yield * rosterSignupCreate({
+        ...signup,
+        accounts: {
+            ...signup.accounts,
+            ...accounts,
+        },
+        updated: dtNow(),
+    });
+});
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -77,7 +141,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     if (ax.id.predicate === axn.SIGNUP_ROSTER_OPEN.predicate) {
         Accounts = SelectAccounts.as(axn.SIGNUP_ROSTER_ACCOUNTS_UPDATE, {
-            options: yield * getAccountsByUser(s, ax),
+            options: yield * getPlayers(s, ax),
         });
     }
 
@@ -90,7 +154,16 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
-    const isSubmitting = yield * signupRoster(s, ax);
+
+    if (Submit.clicked(ax)) {
+        yield * signupRoster(
+            s.user_id,
+            Roster.values[0],
+            Designation.values[0],
+            Availability.values,
+            Accounts.values,
+        );
+    }
 
     return {
         ...s,
@@ -110,14 +183,14 @@ const view = typeRx((s, ax) => E.gen(function * () {
         back  : BackB.as(RosterViewerB.id),
         submit: Submit.render({
             disabled:
-                isSubmitting
+                Submit.clicked(ax)
                 || Designation.values.length === 0
                 || Availability.values.length === 0
                 || Accounts.values.length === 0,
         }),
         forward: Forward.render({
             disabled:
-                !isSubmitting
+                !Submit.clicked(ax)
                 || Designation.values.length === 0
                 || Availability.values.length === 0
                 || Accounts.values.length === 0,

@@ -13,6 +13,16 @@ export const SELECT_ACCOUNT_TYPE = [
 ];
 
 
+export const SELECT_ROSTER_TYPE = [
+    {label: 'CWL', value: 'cwl'},
+    {label: 'CWL (at-large)', value: 'cwl-at-large'},
+    {label: 'War', value: 'war'},
+    {label: 'War (at-large)', value: 'war-at-large'},
+    {label: 'Friendly', value: 'friendly'},
+    {label: 'Friendly (at-large)', value: 'friendly-at-large'},
+];
+
+
 export const SELECT_TIMEZONES = [
     {label: 'America/New_York', value: 'America/New_York'},
     {label: 'America/Chicago', value: 'America/Chicago'},

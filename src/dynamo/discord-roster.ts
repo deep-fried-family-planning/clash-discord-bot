@@ -8,26 +8,29 @@ export type DRosterKey = CompKey<DRoster>;
 
 
 export const DiscordRoster = S.Struct({
-    type         : S.Literal('DiscordRoster'),
-    pk           : ServerId,
-    sk           : RosterId,
-    gsi_server_id: ServerId,
-    gsi_clan_tag : ClanTag,
-    version      : S.Literal('1.0.0'),
-    created      : S.Date,
-    updated      : S.Date,
+    type: S.Literal('DiscordRoster'),
+    pk  : ServerId,
+    sk  : RosterId,
+
+    version: S.Literal('1.0.0'),
+    created: S.Date,
+    updated: S.Date,
 
     name       : S.String,
     description: S.String,
-    roster_type: S.Enums({
-        cwl     : 'cwl',
-        war     : 'war',
-        friendly: 'friendly',
-    }),
+    clan       : S.optional(ClanTag),
     search_time: S.DateTimeUtc,
-
-
-    clan: ClanTag,
+    roster_type: S.Enums({
+        cwl            : 'cwl',
+        cwlatlarge     : 'cwl-at-large',
+        war            : 'war',
+        waratlarge     : 'war-at-large',
+        friendly       : 'friendly',
+        friendlyatlarge: 'friendly-at-large',
+    }),
 });
 
+
+export const decodeDiscordRoster = S.decodeUnknown(DiscordRoster);
+export const encodeDiscordRoster = S.encodeUnknown(DiscordRoster);
 

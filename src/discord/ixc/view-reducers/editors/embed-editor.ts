@@ -1,7 +1,7 @@
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {CSL, E} from '#src/internal/pure/effect.ts';
 import {EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
 import {nAnyColor} from '#src/internal/constants/colors.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
@@ -22,8 +22,10 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const description = EditEmbedDescriptionT.fromMap(ax.cmap);
     const color = EditEmbedColorT.fromMap(ax.cmap);
 
+    yield * CSL.debug('ax', ax.id.custom_id);
+    yield * CSL.debug('state', ax.id.custom_id);
 
-    const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
+    const Forward = ForwardB.forward(ax.id);
 
     return {
         ...s,
@@ -56,6 +58,5 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 export const embedEditorReducer = {
     [EmbedEditorB.id.predicate]        : view,
-    [EDIT_EMBED_MODAL_OPEN.predicate]  : view,
     [EDIT_EMBED_MODAL_SUBMIT.predicate]: view,
 };

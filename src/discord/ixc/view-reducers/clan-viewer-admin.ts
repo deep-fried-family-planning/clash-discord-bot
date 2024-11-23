@@ -1,4 +1,11 @@
-import {BackB, DangerB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {
+    BackB,
+    DangerB,
+    ForwardB,
+    SingleChannelS,
+    SingleS,
+    SuccessB,
+} from '#src/discord/ixc/components/global-components.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -19,8 +26,11 @@ const Delete = DangerB.as(makeId(RDXK.DELETE, 'CVA'), {
 const DeleteConfirm = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'CVA'), {
     label: 'Delete',
 });
-const ClanTypeS = SingleS.as(makeId(RDXK.UPDATE, 'CVA'), {
+const ClanTypeS = SingleS.as(makeId(RDXK.UPDATE, 'CVAT'), {
     placeholder: 'Select Clan Type',
+});
+const CountdownS = SingleChannelS.as(makeId(RDXK.UPDATE, 'CVAC'), {
+    placeholder: 'War Countdown Channel',
 });
 
 
@@ -28,7 +38,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const ClanType = ClanTypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-
+    const Countdown = CountdownS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Clan = ClanViewerSelector.fromMap(s.cmap);
 
     return {
@@ -47,9 +57,10 @@ const view = typeRx((s, ax) => E.gen(function * () {
             : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Clan Deleted'})
             : undefined,
 
-        sel1: Clan.render({disabled: true}),
-        sel2: ClanType,
-        row3: [
+        navigate: Clan.render({disabled: true}),
+        sel1    : ClanType,
+        sel2    : Countdown,
+        row3    : [
             EmbedEditorB.fwd(ClanViewerAdminB.id),
         ],
 
@@ -58,7 +69,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             disabled:
                 !Submit.clicked(ax)
                 || !DeleteConfirm.clicked(ax)
-                || ClanType.values.length === 0,
+                || ClanType.values.length === 0
+                || Countdown.values.length === 0,
         }),
         delete: (
             Delete.clicked(ax)
@@ -68,7 +80,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             disabled:
                 !Submit.clicked(ax)
                 || DeleteConfirm.clicked(ax)
-                || ClanType.values.length === 0,
+                || ClanType.values.length === 0
+                || Countdown.values.length === 0,
         }),
         forward: ForwardB.fwd(ClanViewerB.id),
     };
