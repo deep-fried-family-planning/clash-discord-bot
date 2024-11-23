@@ -28,13 +28,10 @@ export const omniBoard = (data: IxD, options: IxDS<typeof OMNI_BOARD>) => E.gen(
     return {
         embeds: [{
             author: {
-                name: 'Omni Board',
+                name: 'DeepFryer Omni Board',
             },
             title      : 'Deep Fried Family Planning',
             description: 'The one board to rule them all',
-            footer     : {
-                text: 'DeepFryer is made with ❤️ by DFFP.',
-            },
         }],
         components: UI.grid([
             [UI.button({

@@ -51,6 +51,9 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 `If you don't think your input caused this error, send this link to the support server:`,
                 `-# <https://discord.com/channels/1283847240061947964/${log.channel_id}/${log.id}>`,
             ),
+            footer: {
+                text: 'Made with ❤️ by NotStr8DontH8 and DFFP.',
+            },
         }],
         components: UI.grid([
             [
