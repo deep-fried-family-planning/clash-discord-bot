@@ -33,6 +33,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         description: unset,
 
         editor: asEditor({
+            ...s.editor,
             title:
                 name?.value
                 ?? s.editor?.title
@@ -45,7 +46,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 color?.value ? nAnyColor(color.value)
                 : s.editor?.color ? s.editor.color
                 : 0,
-            timestamp: s.editor?.timestamp ?? new Date(Date.now()).toISOString(),
         }),
 
         submit : EditEmbedB.fromMap(s.cmap) ?? EditEmbedB.forward(ax.id),

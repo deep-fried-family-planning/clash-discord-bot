@@ -19,7 +19,11 @@ import {EDIT_EMBED_MODAL_OPEN, EditEmbedColorT, EditEmbedDescriptionT, EditEmbed
 import {LINK_ACCOUNT_MODAL_OPEN, LinkAccountModal} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {UI} from 'dfx';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
-import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
+import {
+    EDIT_DATE_TIME_MODAL_OPEN,
+    EditDateTimeModal,
+    EditEpochT,
+} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
 import {sColor} from '#src/internal/constants/colors.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
@@ -61,6 +65,15 @@ const component = (body: IxD) => E.gen(function * () {
                     {
                         ...EditEmbedDescriptionT.component,
                         value: editor!.description!,
+                    },
+                ]),
+            }
+            : id.predicate === EDIT_EMBED_MODAL_OPEN.predicate ? {
+                ...EditDateTimeModal,
+                components: UI.singleColumn([
+                    {
+                        ...EditEpochT.component,
+                        value: editor?.timestamp ? `${new Date(editor.timestamp).getTime()}` : `${Date.now()}`,
                     },
                 ]),
             }

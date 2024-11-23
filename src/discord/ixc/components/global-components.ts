@@ -70,7 +70,7 @@ export const AdminB = makeButton({kind: RDXK.NOOP, type: 'NOOP'}, {
     style: IXCBS.DANGER,
     emoji: {
         id  : null,
-        name: '🔧',
+        name: '🔓',
     },
 });
 export const DeleteB = makeButton({kind: RDXK.DELETE, type: 'T'}, {

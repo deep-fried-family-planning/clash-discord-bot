@@ -1,5 +1,5 @@
 import {E} from '#src/internal/pure/effect.ts';
-import {type DRoster, type DRosterKey, encodeDiscordRoster} from '#src/dynamo/discord-roster.ts';
+import type {DRoster, DRosterKey} from '#src/dynamo/discord-roster.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {encodeInfoId, ServerIdEncode} from '#src/dynamo/common.ts';
 import {decodeDiscordInfo, type DInfo, type DInfoKey, encodeDiscordInfo} from '#src/dynamo/discord-info.ts';
@@ -40,12 +40,12 @@ export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function 
         },
     });
 
-    return yield * E.all(items.Items!.map((i) => encodeDiscordInfo(i)));
+    return yield * E.all(items.Items!.map((i) => decodeDiscordInfo(i)));
 });
 
 
 export const infoUpdate = (info: DRoster) => E.gen(function * () {
-    const encoded = yield * encodeDiscordRoster(info);
+    const encoded = yield * encodeDiscordInfo(info);
 
     const item = yield * DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,

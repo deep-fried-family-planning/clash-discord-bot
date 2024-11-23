@@ -6,9 +6,15 @@ import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {InfoViewerB} from '#src/discord/ixc/view-reducers/info-viewer.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import type {SelectOption} from 'dfx/types';
+import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
+import {infoCreate} from '#src/dynamo/operations/info.ts';
+import {v4} from 'uuid';
+import type {DInfo} from '#src/dynamo/discord-info.ts';
+import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
 
 
-const getPositions = (others: SelectOption[] = []) => [
+export const getPositions = (others: SelectOption[] = []) => [
     {
         label      : 'First',
         value      : 'first',
@@ -45,14 +51,28 @@ const AfterS = SingleS.as(makeId(RDXK.UPDATE, 'IVCPA'), {
     options: getPositions(),
 });
 
-const view = typeRx((s, ax) => E.gen(function * () {
+
+const view = (s: IxState, ax: IxAction) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Kind = KindS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const After = AfterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
-    if (Submit.clicked(ax)) {
 
+    if (Submit.clicked(ax)) {
+        yield * infoCreate({
+            type   : 'DiscordInfo',
+            pk     : s.server_id,
+            sk     : v4(),
+            version: '1.0.0',
+            created: dtNow(),
+            updated: dtNow(),
+            kind   : Kind.values[0] as DInfo['kind'],
+            after  : After.values[0],
+            name   : s.editor!.title!,
+            desc   : s.editor!.description!,
+            color  : s.editor!.color ?? 0,
+        });
     }
 
     return {
@@ -60,29 +80,44 @@ const view = typeRx((s, ax) => E.gen(function * () {
         title      : 'New Info Page',
         description: unset,
 
-        editor: asEditor(
-            s.editor
+        editor: asEditor({
+            ...s.editor
             ?? {
                 title      : 'New Info Embed',
                 description: 'New Info Description',
             },
-        ),
+            footer: {
+                text: 'last updated',
+            },
+            timestamp: dtNowIso(),
+        }),
         viewer: unset,
         status: unset,
 
-        sel1: Kind,
-        sel2: After,
+        sel1: Kind.render({
+            disabled:
+                Submit.clicked(ax),
+        }),
+        sel2: After.render({
+            disabled:
+                Submit.clicked(ax),
+        }),
         row3: [
-            EmbedEditorB.fwd(InfoViewerCreatorB.id),
+            EmbedEditorB.fwd(InfoViewerCreatorB.id).render({
+                disabled:
+                    Submit.clicked(ax),
+            }),
         ],
 
         submit: Submit.render({
             disabled:
-                Submit.clicked(ax),
+                Submit.clicked(ax)
+                || !Kind.values.length
+                || !After.values.length,
         }),
         back: BackB.as(InfoViewerB.id),
     };
-}));
+});
 
 
 export const infoViewerCreatorReducer = {

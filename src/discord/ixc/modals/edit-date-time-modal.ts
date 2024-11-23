@@ -9,23 +9,13 @@ export const EDIT_DATE_TIME_MODAL_OPEN = toId({kind: RDXK.MODAL_OPEN, type: 'EDT
 export const EDIT_DATE_TIME_MODAL_SUBMIT = toId({kind: RDXK.MODAL_SUBMIT, type: 'EDT'});
 
 
-export const EditDateT = makeText({
+export const EditEpochT = makeText({
     kind: RDXK.TEXT,
-    type: 'EDT',
+    type: 'EDE',
 }, {
-    label      : 'Edit Date',
+    label      : 'Edit Epoch',
     style      : IXCTS.SHORT,
-    placeholder: 'yyyy-mm-dd',
-});
-
-
-export const EditTimeT = makeText({
-    kind: RDXK.TEXT,
-    type: 'EDD',
-}, {
-    label      : 'Edit Time',
-    style      : IXCTS.SHORT,
-    placeholder: 'hh:mm',
+    placeholder: 'epoch timestamp',
 });
 
 
@@ -33,7 +23,6 @@ export const EditDateTimeModal = {
     title     : 'Edit Date Time',
     custom_id : EDIT_DATE_TIME_MODAL_SUBMIT.custom_id,
     components: UI.singleColumn([
-        EditDateT.component,
-        EditTimeT.component,
+        EditEpochT.component,
     ]),
 };

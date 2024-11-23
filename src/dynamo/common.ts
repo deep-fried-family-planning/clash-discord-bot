@@ -16,7 +16,7 @@ export const UserId = startsId('u-', 'UserId');
 export const ClanTag = startsId('c-', 'ClanTag');
 export const PlayerTag = startsId('p-', 'PlayerTag');
 export const RosterId = startsId('r-', 'RosterId');
-export const InfoId = startsId('i', 'InfoId');
+export const InfoId = startsId('i-', 'InfoId');
 
 export const NowId = S.Literal('now');
 export const ChannelId = S.String;

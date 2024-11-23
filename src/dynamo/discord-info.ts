@@ -1,5 +1,5 @@
 import {S} from '#src/internal/pure/effect.ts';
-import {ClanTag, InfoId, ServerId} from '#src/dynamo/common.ts';
+import {InfoId, ServerId} from '#src/dynamo/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 
@@ -8,13 +8,10 @@ export type DInfoKey = CompKey<DInfo>;
 
 
 export const DiscordInfo = S.Struct({
-    type: S.Literal('DiscordClan'),
+    type: S.Literal('DiscordInfo'),
 
     pk: ServerId,
     sk: InfoId,
-
-    gsi_server_id: ServerId,
-    gsi_clan_tag : ClanTag,
 
     version: S.Literal('1.0.0'),
     created: S.Date,
@@ -24,9 +21,11 @@ export const DiscordInfo = S.Struct({
         about: 'about',
         guide: 'guide',
         rule : 'rule',
-    }),
-    name : S.String.pipe(S.optionalWith({default: () => ''})),
-    desc : S.String.pipe(S.optionalWith({default: () => ''})),
+    } as const),
+    after: InfoId,
+    name : S.String,
+    desc : S.String,
+    color: S.Number,
     image: S.optional(S.String),
 });
 
