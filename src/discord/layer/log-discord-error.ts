@@ -9,7 +9,7 @@ import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
 import {UI} from 'dfx';
 import {BackB} from '#src/discord/ixc/components/global-components.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
@@ -62,7 +62,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 },
             ],
             [
-                BackB.as(StartB.id, {
+                BackB.as(OmbiBoardB.id, {
                     label: 'Restart Omni Board',
                 }).component,
                 {

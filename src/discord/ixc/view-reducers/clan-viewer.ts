@@ -2,7 +2,7 @@ import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-compo
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
@@ -81,7 +81,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         sel1: Clan,
 
-        back  : BackB.as(StartB.id),
+        back  : BackB.as(OmbiBoardB.id),
         submit: LinkClanB
             .if(s.user_roles.includes(s.server!.admin as snflk))
             ?.render({disabled: !!Clan.values.length}),

@@ -9,6 +9,7 @@ import {WA_MIRRORS, waMirrors} from '#src/discord/ixs/war-analysis/wa-mirrors.ts
 import {WA_SCOUT, waScout} from '#src/discord/ixs/war-analysis/wa-scout.ts';
 import {CACHE_BUST, cacheBust} from '#src/discord/ixs/util/cache-bust.ts';
 import {GIMME_DATA, gimmeData} from '#src/discord/ixs/util/gimme-data.ts';
+import {OMNI_BOARD, omniBoard} from '#src/discord/ixs/util/omni-board.ts';
 
 
 export const IXS_SPECS = {
@@ -23,6 +24,7 @@ export const IXS_SPECS = {
     WA_SCOUT,
     CACHE_BUST,
     GIMME_DATA,
+    OMNI_BOARD,
 } as const;
 
 
@@ -38,4 +40,5 @@ export const IXS_LOOKUP = {
     [WA_SCOUT.name]  : waScout,
     [CACHE_BUST.name]: cacheBust,
     [GIMME_DATA.name]: gimmeData,
+    [OMNI_BOARD.name]: omniBoard,
 } as const;

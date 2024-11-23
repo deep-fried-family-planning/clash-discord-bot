@@ -3,7 +3,7 @@ import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/ixc/components/component-utils.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 
 
 export const BotViewer = PrimaryB.as(makeId(RDXK.OPEN, 'BV'), {
@@ -21,7 +21,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         viewer: unset,
         status: unset,
 
-        back: BackB.as(StartB.id),
+        back: BackB.as(OmbiBoardB.id),
     };
 }));
 

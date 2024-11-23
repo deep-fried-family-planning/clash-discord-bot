@@ -3,7 +3,7 @@ import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/ixc/components/component-utils.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {InfoViewerAdminB} from '#src/discord/ixc/view-reducers/info-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {ServerViewerB} from '#src/discord/ixc/view-reducers/server-viewer.ts';
@@ -26,7 +26,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         viewer: unset,
         status: unset,
 
-        back: BackB.as(StartB.id),
+        back: BackB.as(OmbiBoardB.id),
 
 
         delete: InfoViewerAdminB

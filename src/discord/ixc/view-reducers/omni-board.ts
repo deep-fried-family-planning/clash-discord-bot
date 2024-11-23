@@ -21,10 +21,10 @@ const axn = {
 };
 
 
-export const StartEB = SuccessB.as(axn.ENTRY, {
+export const OmbiBoardEB = SuccessB.as(axn.ENTRY, {
     label: 'Start',
 });
-export const StartB = SuccessB.as(axn.OPEN, {
+export const OmbiBoardB = SuccessB.as(axn.OPEN, {
     label: 'Start',
 });
 
@@ -72,17 +72,17 @@ const link = typeRx((s, ax) => E.gen(function * () {
         row1: [
             LinkAccountB,
             AccountViewerB,
-            UserB.fwd(StartB.id),
+            UserB.fwd(OmbiBoardB.id),
         ],
 
-        back  : BackB.as(StartB.id),
+        back  : BackB.as(OmbiBoardB.id),
         delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 
 
 export const infoBoardReducer = {
-    [StartEB.id.predicate]: start,
-    [StartB.id.predicate] : start,
-    [LinkB.id.predicate]  : link,
+    [OmbiBoardEB.id.predicate]: start,
+    [OmbiBoardB.id.predicate] : start,
+    [LinkB.id.predicate]      : link,
 };
