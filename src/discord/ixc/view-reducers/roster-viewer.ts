@@ -5,7 +5,7 @@ import {DT, E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {RosterSignupB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
 import {RosterOptOutB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
 import {RosterCreateB} from '#src/discord/ixc/view-reducers/roster-create.ts';
@@ -139,9 +139,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
         row2: [
             RosterSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
             RosterOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
-            RosterViewerAdminB
-                .if(s.user_roles.includes(s.server!.admin as snflk))
-                ?.render({disabled: !Roster.values.length}),
         ],
         back  : BackB.as(StartB.id),
         submit: RosterCreateB
@@ -149,6 +146,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
             ?.render({
                 disabled: !!Roster.values.length,
             }),
+        delete: RosterViewerAdminB
+            .if(s.user_roles.includes(s.server!.admin as snflk))
+            ?.render({disabled: !Roster.values.length}),
     };
 }));
 

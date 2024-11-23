@@ -155,14 +155,13 @@ const view = typeRx((s, ax) => E.gen(function * () {
         Availability = Availability.render({
             options: Availability.options.options!.map((o, idx) => ({
                 ...o,
-                description: `approx. ${pipe(
+                description: `war start approx: ${pipe(
                     DT.unsafeMakeZoned(roster.search_time, {
                         timeZone: s.user!.timezone,
                     }),
                     DT.addDuration(`${idx + 1} day`),
                     DT.format({
                         dateStyle: 'short',
-
                         timeStyle: 'short',
                         locale   : s.original.locale!,
                     }),

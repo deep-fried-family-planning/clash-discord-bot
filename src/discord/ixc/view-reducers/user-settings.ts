@@ -1,13 +1,12 @@
 import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, ForwardB, PrimaryB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
-import {jsonEmbed} from '#src/discord/util/embed.ts';
 import {putDiscordUser} from '#src/dynamo/discord-user.ts';
 import {SELECT_TIMES, SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {asSuccess} from '#src/discord/ixc/components/component-utils.ts';
+import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
 const saveUserRecord = (s: IxState, tz: string, qs: string, qe: string) => E.gen(function * () {
@@ -49,6 +48,8 @@ const UserQeS = SingleS.as(axn.EDIT_USER_QE, {
     options    : SELECT_TIMES,
 });
 const UserSubmitB = SuccessB.as(axn.EDIT_USER_SUBMIT, {label: 'Submit'});
+const Delete = SuccessB.as(makeId(RDXK.DELETE, 'U'), {label: 'Delete'});
+const DeleteConfirm = SuccessB.as(makeId(RDXK.DELETE_CONFIRM, 'U'), {label: 'Delete'});
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -72,8 +73,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Edit User Settings',
-        description: undefined,
+        title      : 'User Settings',
+        description: unset,
 
         status: isSubmitting
             ? asSuccess({description: `user record created with ${Timezone.values[0]} (${QuietStart.values[0]}-${QuietEnd.values[0]})`})
@@ -83,9 +84,16 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel2: QuietStart.render({disabled: isSubmitting}),
         sel3: QuietEnd.render({disabled: isSubmitting}),
 
-        back   : BackB.as(LinkB.id),
-        submit : UserSubmitB.render({disabled: areAnyUnselected || isSubmitting}),
-        forward: Forward.render({disabled: areAnyUnselected || !isSubmitting}),
+        back  : BackB.as(LinkB.id),
+        submit: UserSubmitB.render({
+            disabled: areAnyUnselected || isSubmitting,
+        }),
+        delete: Delete.render({
+            disabled: true,
+        }),
+        forward: Forward.render({
+            disabled: areAnyUnselected || !isSubmitting,
+        }),
     };
 }));
 

@@ -16,6 +16,7 @@ export const UserId = startsId('u-', 'UserId');
 export const ClanTag = startsId('c-', 'ClanTag');
 export const PlayerTag = startsId('p-', 'PlayerTag');
 export const RosterId = startsId('r-', 'RosterId');
+export const InfoId = startsId('i', 'InfoId');
 
 export const NowId = S.Literal('now');
 export const ChannelId = S.String;
@@ -29,3 +30,4 @@ export const UserIdEncode = S.encodeUnknown(UserId);
 export const ClanTagEncode = S.encodeUnknown(ClanTag);
 export const PlayerTagEncode = S.encodeUnknown(PlayerTag);
 export const encodeRosterId = S.encodeUnknown(RosterId);
+export const encodeInfoId = S.encodeUnknown(InfoId);

@@ -10,8 +10,8 @@ import {deriveView} from '#src/discord/ixc/store/derive-view.ts';
 import {allReducers} from '#src/discord/ixc/view-reducers/all-reducers.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
-import {UserB, userEditReducer} from '#src/discord/ixc/view-reducers/user-edit.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {UserB, userEditReducer} from '#src/discord/ixc/view-reducers/user-settings.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {

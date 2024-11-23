@@ -20,6 +20,7 @@ export const DiscordPlayer = S.Struct({
     gsi_user_id   : UserId,
     gsi_player_tag: PlayerTag,
 
+    alias       : S.String.pipe(S.optionalWith({default: () => ''})),
     verification: S.Enums({
         none     : 0,
         admin    : 1,

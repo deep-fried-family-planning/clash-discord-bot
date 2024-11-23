@@ -11,7 +11,7 @@ import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
 
 
 export const RosterViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'RVA'), {
-    label: 'Admin',
+    label: 'Edit',
 });
 const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'RVA'), {
     label: 'Submit',
@@ -20,7 +20,7 @@ const Delete = DangerB.as(makeId(RDXK.DELETE, 'RVA'), {
     label: 'Delete',
 });
 const ConfirmDelete = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'RVA'), {
-    label: 'Confirm Delete',
+    label: 'Confirm',
 });
 const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
     placeholder: 'Select Roster Type',

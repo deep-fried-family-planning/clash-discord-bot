@@ -5,6 +5,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const DiscordClan = S.Struct({
@@ -27,6 +28,11 @@ export const DiscordClan = S.Struct({
         leader   : 3,
         developer: 4,
     }).pipe(S.optionalWith({default: () => 0})),
+
+    name : S.String.pipe(S.optionalWith({default: () => ''})),
+    alias: S.String.pipe(S.optionalWith({default: () => ''})),
+    desc : S.String.pipe(S.optionalWith({default: () => ''})),
+    uses : S.Array(S.String).pipe(S.optionalWith({default: () => [] as str[]})),
 
     thread_prep    : ThreadId,
     prep_opponent  : ClanTag,

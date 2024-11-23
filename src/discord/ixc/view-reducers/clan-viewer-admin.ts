@@ -15,7 +15,7 @@ import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components
 
 
 export const ClanViewerAdminB = DangerB.as(makeId(RDXK.OPEN, 'CVA'), {
-    label: 'Admin',
+    label: 'Edit',
 });
 const Submit = SuccessB.as(makeId(RDXK.SUBMIT, 'CVA'), {
     label: 'Submit',
@@ -24,7 +24,7 @@ const Delete = DangerB.as(makeId(RDXK.DELETE, 'CVA'), {
     label: 'Delete',
 });
 const DeleteConfirm = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'CVA'), {
-    label: 'Delete',
+    label: 'Confirm',
 });
 const ClanTypeS = SingleS.as(makeId(RDXK.UPDATE, 'CVAT'), {
     placeholder: 'Select Clan Type',

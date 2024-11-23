@@ -2,7 +2,7 @@ import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {ApiTokenT, LINK_ACCOUNT_MODAL_SUBMIT, LINK_ACCOUNT_MODAL_OPEN, PlayerTagT} from '#src/discord/ixc/modals/link-account-modal.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
@@ -88,7 +88,9 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
             : asSuccess(message.embeds[0]),
 
         back: BackB.as(LinkAccountB.id).render({
-            label: 'Link Again',
+            label: 'type' in message
+                ? 'Try Again'
+                : 'Link',
         }),
         forward: ForwardB.as(LinkB.id),
     };

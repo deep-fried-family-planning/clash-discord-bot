@@ -2,7 +2,7 @@ import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-compo
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {StartB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {StartB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
@@ -64,11 +64,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
             description: 'No Clan Selected',
         };
     }
-    else {
-        viewer = {
-            description: Clan.values[0],
-        };
-    }
 
 
     return {
@@ -78,7 +73,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         viewer: asViewer(
             s.editor
-            ?? viewer,
+            ?? viewer
+            ?? s.viewer,
         ),
         editor: unset,
         status: unset,

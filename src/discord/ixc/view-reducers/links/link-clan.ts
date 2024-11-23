@@ -5,7 +5,7 @@ import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
-import {LinkB} from '#src/discord/ixc/view-reducers/info-board.ts';
+import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 
 
@@ -16,7 +16,7 @@ const axn = {
 
 
 export const LinkClanB = SuccessB.as(axn.LINK_CLAN_TYPE_OPEN, {
-    label: 'Link',
+    label: 'New',
 });
 const ChannelS = SingleChannelS.as(axn.LINK_CLAN_TYPE_UPDATE, {
     placeholder: 'War Countdown Channel',
@@ -82,8 +82,10 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
             ? asFailure(message.embeds[0])
             : asSuccess(message.embeds[0]),
 
-        back: BackB.as(LinkClanB.id).render({
-            label: 'Link Again',
+        back: SuccessB.as(LinkClanB.id).render({
+            label: 'type' in message
+                ? 'Try Again'
+                : 'Link',
         }),
         forward: ForwardB.as(LinkB.id),
     };

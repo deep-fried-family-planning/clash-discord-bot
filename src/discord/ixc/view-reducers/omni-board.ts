@@ -3,14 +3,16 @@ import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {snflk} from '#src/discord/types.ts';
-import {UserB} from './user-edit.ts';
+import {UserB} from './user-settings.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
 import {ClanViewerB} from '#src/discord/ixc/view-reducers/clan-viewer.ts';
 import {LinkAccountAdminB} from '#src/discord/ixc/view-reducers/links/link-account-admin.ts';
-import {LinkClanB} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
 import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {AccountViewerB} from '#src/discord/ixc/view-reducers/account-viewer.ts';
 import {unset} from '#src/discord/ixc/components/component-utils.ts';
+import {InfoViewerB} from '#src/discord/ixc/view-reducers/info-viewer.ts';
+import {dLinesS} from '#src/discord/util/markdown.ts';
+import {BotViewer} from '#src/discord/ixc/view-reducers/bot-viewer.ts';
 
 
 const axn = {
@@ -30,18 +32,26 @@ export const StartB = SuccessB.as(axn.OPEN, {
 const start = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
-        title      : 'Start Page',
-        description: `Welcome <@${s.user_id}>`,
+        title:
+            (s.server?.alias ? s.server.alias : unset)
+            ?? 'Start',
+        description: dLinesS(
+            `Hello <@${s.user_id}>`,
+            `Admin View: ${s.user_roles.includes(s.server?.admin as snflk)}`,
+        ),
 
         viewer: unset,
         editor: unset,
         status: unset,
 
         row1: [
-            LinkB,
+            InfoViewerB,
             ClanViewerB,
             RosterViewerB,
+            BotViewer,
         ],
+
+        submit: LinkB,
     };
 }));
 

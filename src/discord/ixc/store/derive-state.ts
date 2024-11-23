@@ -23,6 +23,7 @@ export type IxState = {
     server?   : DServer | undefined;
     user?     : DUser | undefined;
 
+    type?       : str | und;
     title?      : str | und;
     description?: str | und;
     info?       : Embed | und;
@@ -93,6 +94,7 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         user       : user,
         server     : server,
         cmap       : componentMap!,
+        type       : firstEmbed?.author?.name,
         title      : firstEmbed?.title,
         description: firstEmbed?.description,
         viewer     : ix.message?.embeds.find(isViewer),

@@ -38,7 +38,7 @@ const Delete = DangerB.as(makeId(RDXK.DELETE, 'AVA'), {
     label: 'Delete',
 });
 const DeleteConfirm = DangerB.as(makeId(RDXK.DELETE_CONFIRM, 'AVA'), {
-    label: 'Confirm Delete',
+    label: 'Confirm',
 });
 
 
@@ -96,7 +96,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 || AccountType.values.length === 0,
         }),
 
-        forward: Forward.render({disabled: !Submit.clicked(ax) || !DeleteConfirm.clicked(ax)}),
+        forward: Forward.render({
+            disabled: !Submit.clicked(ax) || !DeleteConfirm.clicked(ax),
+        }),
     };
 }));
 
