@@ -71,7 +71,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         submit: Submit.render({
             disabled:
-                !Submit.clicked(ax)
+                Submit.clicked(ax)
                 || !DeleteConfirm.clicked(ax)
                 || AccountType.values.length === 0,
         }),
