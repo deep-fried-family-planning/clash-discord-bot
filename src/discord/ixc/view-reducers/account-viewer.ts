@@ -35,14 +35,14 @@ export const getPlayers = typeRxHelper((s, ax) => E.gen(function * () {
     return pipe(
         together,
         sortByL(
-            ORD.mapInput(ORDS, ([r]) => r.account_type === 'main' ? '0' : r.account_type),
+            ORD.mapInput(ORDS, ([r]) => r.account_type === 'main' ? '0' : r.account_type === 'admin-parking' ? 'ZZZ' : r.account_type),
             ORD.mapInput(ORDNR, ([, p]) => p.townHallLevel),
             ORD.mapInput(ORDS, ([, p]) => p.name),
             ORD.mapInput(ORDS, ([r]) => r.sk),
         ),
         mapL(([r, p]) => ({
             label      : `${p.name}  (${p.tag})`,
-            description: `[${r.account_type}/th${p.townHallLevel}], verification_level: ${r.verification}`,
+            description: `[${r.account_type}] [th${p.townHallLevel}]`,
             value      : p.tag,
         })),
     );
@@ -54,7 +54,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     let Account = AccountViewerAccountS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
-    if (AccountViewerB.clicked(ax) && !Account.component.disabled) {
+    if (AccountViewerB.clicked(ax)) {
         Account = AccountViewerAccountS.render({
             options: yield * getPlayers(s, ax),
         });

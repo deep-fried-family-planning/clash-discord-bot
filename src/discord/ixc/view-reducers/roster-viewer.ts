@@ -6,9 +6,9 @@ import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-a
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
-import {RosterSignupB} from '#src/discord/ixc/view-reducers/roster-signup.ts';
-import {RosterOptOutB} from '#src/discord/ixc/view-reducers/roster-opt-out.ts';
-import {RosterCreateB} from '#src/discord/ixc/view-reducers/roster-create.ts';
+import {RosterViewerSignupB} from '#src/discord/ixc/view-reducers/roster-viewer-signup.ts';
+import {RosterViewerOptOutB} from '#src/discord/ixc/view-reducers/roster-viewer-opt-out.ts';
+import {RosterViewerCreatorB} from '#src/discord/ixc/view-reducers/roster-viewer-creator.ts';
 import {rosterQueryByServer, rosterRead} from '#src/dynamo/operations/roster.ts';
 import type {Embed} from 'dfx/types';
 import type {und} from '#src/internal/pure/types-pure.ts';
@@ -136,11 +136,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         sel1: Roster.render({disabled: false}),
         row2: [
-            RosterSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
-            RosterOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
+            RosterViewerSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
+            RosterViewerOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
         ],
         back  : BackB.as(OmbiBoardB.id),
-        submit: RosterCreateB
+        submit: RosterViewerCreatorB
             .if(s.user_roles.includes(s.server!.admin as snflk))
             ?.render({
                 disabled: !!Roster.values.length,

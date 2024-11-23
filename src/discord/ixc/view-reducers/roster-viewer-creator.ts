@@ -34,7 +34,7 @@ const saveRoster = (type: string) => typeRxHelper((s, ax) => E.gen(function * ()
 }));
 
 
-export const RosterCreateB = NewB.as(makeId(RDXK.OPEN, 'RC'));
+export const RosterViewerCreatorB = NewB.as(makeId(RDXK.OPEN, 'RC'));
 const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RC'));
 const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
     placeholder: 'Select Roster Type',
@@ -71,8 +71,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         sel1: Type,
         row3: [
-            EmbedEditorB.fwd(RosterCreateB.id),
-            DateTimeEditorB.fwd(RosterCreateB.id).render({
+            EmbedEditorB.fwd(RosterViewerCreatorB.id),
+            DateTimeEditorB.fwd(RosterViewerCreatorB.id).render({
                 label: 'Search Date/Time',
             }),
         ],
@@ -82,9 +82,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
 }));
 
 
-export const rosterCreateReducer = {
-    [RosterCreateB.id.predicate]: view,
-    [Submit.id.predicate]       : view,
-    [TypeS.id.predicate]        : view,
+export const rosterViewerCreatorReducer = {
+    [RosterViewerCreatorB.id.predicate]: view,
+    [Submit.id.predicate]              : view,
+    [TypeS.id.predicate]               : view,
 };
 

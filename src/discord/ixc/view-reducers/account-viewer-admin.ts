@@ -51,7 +51,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Account',
+        title      : 'Edit Account',
         description: undefined,
 
         viewer: undefined,

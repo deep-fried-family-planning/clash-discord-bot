@@ -14,7 +14,7 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/discord-roster-signup.ts';
 
 
-export const RosterSignupB = SuccessB.as(makeId(RDXK.OPEN, 'RS'), {
+export const RosterViewerSignupB = SuccessB.as(makeId(RDXK.OPEN, 'RS'), {
     label: 'Signup',
 });
 const SubmitSignup = SubmitB.as(makeId(RDXK.SUBMIT, 'RS'), {label: 'Signup'});
@@ -123,7 +123,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
-    if (ax.id.predicate === RosterSignupB.id.predicate) {
+    if (ax.id.predicate === RosterViewerSignupB.id.predicate) {
         const roster = yield * rosterRead({
             pk: s.server_id,
             sk: Roster.values[0],
@@ -200,11 +200,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 }));
 
 
-export const rosterSignupReducer = {
-    [RosterSignupB.id.predicate]     : view,
-    [SelectAccounts.id.predicate]    : view,
-    [SelectAvailability.id.predicate]: view,
-    [SelectDesignation.id.predicate] : view,
-    [SubmitSignup.id.predicate]      : view,
+export const rosterViewerSignupReducer = {
+    [RosterViewerSignupB.id.predicate]: view,
+    [SelectAccounts.id.predicate]     : view,
+    [SelectAvailability.id.predicate] : view,
+    [SelectDesignation.id.predicate]  : view,
+    [SubmitSignup.id.predicate]       : view,
 };
 

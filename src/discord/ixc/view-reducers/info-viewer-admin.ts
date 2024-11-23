@@ -13,7 +13,7 @@ export const InfoViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'IVA'), {
 const view = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
-        title      : 'Info',
+        title      : 'Edit Info Page',
         description: unset,
 
         editor: unset,

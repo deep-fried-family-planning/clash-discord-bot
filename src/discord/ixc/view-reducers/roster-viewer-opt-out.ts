@@ -1,45 +1,25 @@
-import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
+import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, DangerB, DeleteB, ForwardB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {getPlayers} from '#src/discord/ixc/view-reducers/account-viewer.ts';
 
 
-const axn = {
-    OPTOUT_ROSTER_OPEN           : makeId(RDXK.OPEN, 'ROO'),
-    OPTOUT_ROSTER_ACCOUNTS_UPDATE: makeId(RDXK.UPDATE, 'ROO'),
-    OPTOUT_ROSTER_SUBMIT         : makeId(RDXK.SUBMIT, 'ROO'),
-};
-
-
-export const RosterOptOutB = DangerB.as(axn.OPTOUT_ROSTER_OPEN, {
+export const RosterViewerOptOutB = DangerB.as(makeId(RDXK.OPEN, 'ROO'), {
     label: 'Opt Out',
 });
 
-const SelectAccounts = SingleS.as(axn.OPTOUT_ROSTER_ACCOUNTS_UPDATE, {
+const SelectAccounts = SingleS.as(makeId(RDXK.UPDATE, 'ROO'), {
     placeholder: 'Select Accounts',
 });
+const Delete = DeleteB.as(makeId(RDXK.DELETE, 'ROO'));
 
 
-const SubmitSignup = DeleteB.as(axn.OPTOUT_ROSTER_SUBMIT, {label: 'Opt Out'});
-
-
-const getSignupsByUser = typeRxHelper((s, ax) => E.gen(function * () {
-    return [{
-        label: 'NOOP',
-        value: 'NOOP',
-    }];
-}));
-
-
-const optoutRoster = typeRxHelper((s, ax) => E.gen(function * () {
-    if (axn.OPTOUT_ROSTER_SUBMIT.predicate === ax.id.predicate) {
-        return true;
-    }
-
+const getSignupsByUser = (serverId: string, rosterId: string, userId: string) => E.gen(function * () {
     return false;
-}));
+});
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -47,9 +27,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
-    if (ax.id.predicate === axn.OPTOUT_ROSTER_OPEN.predicate) {
-        Accounts = SelectAccounts.as(axn.OPTOUT_ROSTER_ACCOUNTS_UPDATE, {
-            options: yield * getSignupsByUser(s, ax),
+    if (RosterViewerOptOutB.clicked(ax)) {
+        Accounts = SelectAccounts.render({
+            options: yield * getPlayers(s, ax),
         });
     }
 
@@ -57,10 +37,14 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
-    const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
+    const Submit = Delete.fromMap(s.cmap) ?? Delete;
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
-    const isSubmitting = yield * optoutRoster(s, ax);
+    const isSubmitting = yield * getSignupsByUser(
+        s.server_id,
+        Roster.values[0],
+        s.user_id,
+    );
 
     return {
         ...s,
@@ -68,7 +52,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         description: unset,
 
         status: Submit.clicked(ax)
-            ? asSuccess({description: 'Signed Up!'})
+            ? asSuccess({description: 'Signups deleted'})
             : undefined,
 
         navigate: Roster.render({disabled: true}),
@@ -89,9 +73,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
 }));
 
 
-export const rosterOptOutReducer = {
-    [RosterOptOutB.id.predicate] : view,
-    [SelectAccounts.id.predicate]: view,
-    [SubmitSignup.id.predicate]  : view,
+export const rosterViewerOptOutReducer = {
+    [RosterViewerOptOutB.id.predicate]: view,
+    [SelectAccounts.id.predicate]     : view,
+    [Delete.id.predicate]             : view,
 };
 
