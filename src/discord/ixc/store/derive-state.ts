@@ -1,8 +1,8 @@
 import type {ActionRow, Button, Embed, SelectMenu, Snowflake, TextInput} from 'dfx/types';
 import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {type DServer, getDiscordServer} from '#src/dynamo/discord-server.ts';
-import {type DUser, getDiscordUser} from '#src/dynamo/discord-user.ts';
+import {type DServer, getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {type DUser, getDiscordUser} from '#src/dynamo/schema/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';

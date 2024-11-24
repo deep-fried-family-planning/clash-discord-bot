@@ -9,7 +9,7 @@ import type {SelectOption} from 'dfx/types';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {infoCreate} from '#src/dynamo/operations/info.ts';
 import {v4} from 'uuid';
-import type {DInfo} from '#src/dynamo/discord-info.ts';
+import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
 

@@ -1,5 +1,5 @@
 import {Console, Schema as S} from 'effect';
-import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/common.ts';
+import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/schema/common.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {mapL} from '#src/internal/pure/pure-list.ts';

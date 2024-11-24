@@ -1,6 +1,6 @@
 import {E} from '#src/internal/pure/effect';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
-import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/discord-player.ts';
+import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';

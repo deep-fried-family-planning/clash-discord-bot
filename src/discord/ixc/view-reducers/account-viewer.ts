@@ -1,6 +1,6 @@
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect';
 import {BackB, NewB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
-import {queryPlayersForUser} from '#src/dynamo/discord-player.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';

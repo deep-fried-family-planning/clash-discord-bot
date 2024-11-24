@@ -11,7 +11,7 @@ import {rosterRead} from '#src/dynamo/operations/roster.ts';
 import {dtNow} from '#src/discord/util/markdown.ts';
 import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import type {DRosterSignup} from '#src/dynamo/discord-roster-signup.ts';
+import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 
 
 export const RosterViewerSignupB = SuccessB.as(makeId(RDXK.OPEN, 'RS'), {

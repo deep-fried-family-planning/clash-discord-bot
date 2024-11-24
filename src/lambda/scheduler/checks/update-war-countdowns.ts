@@ -1,6 +1,6 @@
 import type {ClanWar} from 'clashofclans.js';
 import {E} from '#src/internal/pure/effect.ts';
-import type {DClan} from '#src/dynamo/discord-clan.ts';
+import type {DClan} from '#src/dynamo/schema/discord-clan.ts';
 import {DiscordREST} from 'dfx';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 

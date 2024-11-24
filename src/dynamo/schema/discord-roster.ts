@@ -1,5 +1,5 @@
 import {Schema as S} from 'effect';
-import {ClanTag, RosterId, ServerId} from '#src/dynamo/common.ts';
+import {ClanTag, RosterId, ServerId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 

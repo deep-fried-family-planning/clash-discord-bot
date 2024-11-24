@@ -1,5 +1,5 @@
 import {Console, Schema as S} from 'effect';
-import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/common.ts';
+import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';

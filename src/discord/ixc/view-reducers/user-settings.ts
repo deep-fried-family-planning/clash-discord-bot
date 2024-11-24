@@ -1,7 +1,7 @@
 import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
-import {putDiscordUser} from '#src/dynamo/discord-user.ts';
+import {putDiscordUser} from '#src/dynamo/schema/discord-user.ts';
 import {SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';

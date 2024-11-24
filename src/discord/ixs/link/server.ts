@@ -1,6 +1,6 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {putDiscordServer} from '#src/dynamo/discord-server.ts';
+import {putDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import type {IxD} from '#src/discord/util/discord.ts';

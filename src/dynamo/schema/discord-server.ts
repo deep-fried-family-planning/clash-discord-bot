@@ -1,5 +1,5 @@
 import {Console} from 'effect';
-import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/common.ts';
+import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';

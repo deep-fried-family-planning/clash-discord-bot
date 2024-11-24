@@ -1,7 +1,7 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {E, pipe, S} from '#src/internal/pure/effect.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
-import {getDiscordUser, putDiscordUser} from '#src/dynamo/discord-user.ts';
+import {getDiscordUser, putDiscordUser} from '#src/dynamo/schema/discord-user.ts';
 import {omit} from 'effect/Struct';
 import {OPTION_TZ} from '#src/discord/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';

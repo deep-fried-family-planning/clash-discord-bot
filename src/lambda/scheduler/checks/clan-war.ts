@@ -1,5 +1,5 @@
-import {type DClan, putDiscordClan} from '#src/dynamo/discord-clan.ts';
-import type {DServer} from '#src/dynamo/discord-server.ts';
+import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {CSL, DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';

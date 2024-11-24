@@ -3,7 +3,7 @@ import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
-import {queryDiscordClanForServer} from '#src/dynamo/discord-clan.ts';
+import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {ClanViewerAdminB} from '#src/discord/ixc/view-reducers/clan-viewer-admin.ts';

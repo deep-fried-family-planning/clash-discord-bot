@@ -1,4 +1,4 @@
-import {NowId, UserId, UserIdEncode} from '#src/dynamo/common.ts';
+import {NowId, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DynamoError} from '#src/internal/errors.ts';

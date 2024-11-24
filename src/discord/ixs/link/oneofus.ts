@@ -1,7 +1,7 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {deleteDiscordPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/discord-player.ts';
-import type {DPlayer} from '#src/dynamo/discord-player.ts';
+import {deleteDiscordPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
+import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';

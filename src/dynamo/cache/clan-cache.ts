@@ -1,4 +1,4 @@
-import {getDiscordClan, scanDiscordClans} from '#src/dynamo/discord-clan.ts';
+import {getDiscordClan, scanDiscordClans} from '#src/dynamo/schema/discord-clan.ts';
 import {C, CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {EA} from '#src/internal/types.ts';
