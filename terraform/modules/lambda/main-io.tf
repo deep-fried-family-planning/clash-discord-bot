@@ -9,6 +9,7 @@ variable "sqs_source_arns" { default = null }
 variable "sqs_delay_s" { default = 1 }
 variable "sqs_retries" { default = 2 }
 variable "acc_id" {}
+variable "assert_hash" {default = true}
 
 data "archive_file" "source_code" {
   type        = "zip"

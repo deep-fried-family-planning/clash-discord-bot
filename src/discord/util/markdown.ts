@@ -40,3 +40,5 @@ export const dtRelative = (n: num = Date.now()) => `<t:${n}:R>`;
 export const dtFull = (n: num = Date.now()) => `<t:${n}:F>`;
 
 
+export const dtNow = () => new Date(Date.now());
+export const dtNowIso = () => new Date(Date.now()).toISOString();

@@ -1,10 +1,10 @@
 import {DT, E, pipe, S} from '#src/internal/pure/effect.ts';
-import {DiscordClan} from '#src/dynamo/discord-clan.ts';
-import {DiscordServer} from '#src/dynamo/discord-server.ts';
+import {DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import {DiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
-import {ThreadId} from '#src/dynamo/common.ts';
+import {ThreadId} from '#src/dynamo/schema/common.ts';
 
 
 export type TWarCloseThread = S.Schema.Type<typeof TaskWarCloseThread>;

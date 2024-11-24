@@ -1,7 +1,7 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
-import {getDiscordClan, putDiscordClan} from '#src/dynamo/discord-clan.ts';
+import {getDiscordClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {OPTION_CLAN} from '#src/discord/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';

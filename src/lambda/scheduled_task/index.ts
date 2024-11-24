@@ -16,8 +16,8 @@ import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 
 
 const lookup = {
-    WarBattleThread: [TaskWarBattleThreadDecode, taskWarBattleThread],
-    WarCloseThread : [TaskWarCloseThreadDecode, taskWarCloseThread],
+    TaskWarBattleThread: [TaskWarBattleThreadDecode, taskWarBattleThread],
+    TaskWarCloseThread : [TaskWarCloseThreadDecode, taskWarCloseThread],
 } as const;
 
 

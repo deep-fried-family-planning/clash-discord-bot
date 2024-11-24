@@ -39,6 +39,11 @@ resource "aws_dynamodb_table" "operations" {
     type = "S"
   }
 
+  attribute {
+    name = "gsi_roster_id"
+    type = "S"
+  }
+
   global_secondary_index {
     name            = "GSI_ALL_SERVERS"
     hash_key        = "gsi_all_server_id"
@@ -62,6 +67,22 @@ resource "aws_dynamodb_table" "operations" {
     read_capacity   = 1
     write_capacity  = 1
   }
+  global_secondary_index {
+    name            = "GSI_USER_ROSTER_SIGNUPS"
+    hash_key        = "gsi_user_id"
+    range_key       = "gsi_roster_id"
+    projection_type = "ALL"
+    read_capacity   = 1
+    write_capacity  = 1
+  }
+#   global_secondary_index {
+#     name            = "GSI_PLAYER_ROSTER_SIGNUPS"
+#     hash_key        = "gsi_player_tag"
+#     range_key       = "gsi_roster_id"
+#     projection_type = "ALL"
+#     read_capacity   = 1
+#     write_capacity  = 1
+#   }
 }
 
 

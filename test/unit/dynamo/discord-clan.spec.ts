@@ -1,6 +1,6 @@
 import {it} from '@effect/vitest';
 import {E} from '#src/internal/pure/effect.ts';
-import {type DClan, DiscordClanDecode} from '#src/dynamo/discord-clan.ts';
+import {type DClan, DiscordClanDecode} from '#src/dynamo/schema/discord-clan.ts';
 
 describe('DiscordClan', () => {
     let testdata: Partial<DClan>;

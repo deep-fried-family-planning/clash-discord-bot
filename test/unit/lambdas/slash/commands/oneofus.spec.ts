@@ -4,7 +4,7 @@ import {afterAll, beforeAll, describe, vi} from 'vitest';
 import {E} from '#src/internal/pure/effect.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {Client} from 'clashofclans.js';
-import {DiscordServer, DiscordServerEncode} from '#src/dynamo/discord-server.ts';
+import {DiscordServer, DiscordServerEncode} from '#src/dynamo/schema/discord-server.ts';
 
 
 /* eslint-disable */

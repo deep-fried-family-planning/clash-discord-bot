@@ -1,18 +1,162 @@
 import type {CommandSpec} from '#src/discord/types.ts';
 
+
+export const SELECT_ACCOUNT_TYPE = [
+    {
+        label      : 'Main',
+        value      : 'main',
+        description: 'Account you spend most of your time on',
+    },
+    {
+        label      : 'Alternative (alt)',
+        value      : 'alt',
+        description: 'Account you spend some time on',
+    },
+    {
+        label      : 'Donation (dono)',
+        value      : 'donation',
+        description: 'Specialized only for donations',
+    },
+    {
+        label      : 'War Asset',
+        value      : 'war-asset',
+        description: 'Specialized only for wars',
+    },
+    {
+        label      : 'Clan Capital',
+        value      : 'clan-capital',
+        description: 'Only for extra clan capital raid weekend hits',
+    },
+    {
+        label      : 'Rushed',
+        value      : 'rush',
+        description: 'Rushed account without any priorities',
+    },
+    {
+        label      : 'Strategic Rush',
+        value      : 'strategic-rush',
+        description: 'Rushing for fastest time to *complete* max',
+    },
+    {
+        label      : 'Hyper Rush',
+        value      : 'hyper-rush',
+        description: 'Main or alt account with following specialized rush instructions',
+    },
+    {
+        label      : 'Admin Parking',
+        value      : 'admin-parking',
+        description: 'Clan leader alt',
+    },
+];
+
+
+export const SELECT_INFO_KIND = [
+    {
+        label: 'About',
+        value: 'about',
+    },
+    {
+        label: 'Server Guide',
+        value: 'guide',
+    },
+    {
+        label: 'Rules',
+        value: 'rule',
+    },
+];
+
+
+export const SELECT_ROSTER_TYPE = [
+    {
+        label      : 'CWL',
+        value      : 'cwl',
+        description: 'CWL roster for a specific clan',
+    },
+    {
+        label      : 'CWL (at-large)',
+        value      : 'cwl-at-large',
+        description: 'CWL roster to gauge an entire server',
+    },
+    {
+        label      : 'War',
+        value      : 'war',
+        description: 'War roster for a specific clan (normal matchmaking)',
+    },
+    {
+        label      : 'War (at-large)',
+        value      : 'war-at-large',
+        description: 'War roster to gauge an entire server (normal matchmaking)',
+    },
+];
+
+
 export const SELECT_TIMEZONES = [
-    {label: 'America/New_York', value: 'America/New_York'},
-    {label: 'America/Chicago', value: 'America/Chicago'},
-    {label: 'America/Los_Angeles', value: 'America/Los_Angeles'},
-    {label: 'Asia/Calcutta', value: 'Asia/Calcutta'},
-    {label: 'Asia/Manila', value: 'Asia/Manila'},
-    {label: 'Europe/London', value: 'Europe/London'},
-    {label: 'Europe/Paris', value: 'Europe/Paris'},
-    {label: 'Asia/Riyadh', value: 'Asia/Riyadh'},
-    {label: 'Asia/Dubai', value: 'Asia/Dubai'},
-    {label: 'Africa/Johannesburg', value: 'Africa/Johannesburg'},
-    {label: 'Asia/Tokyo', value: 'Asia/Tokyo'},
-] as const;
+    {
+        label: 'America/New_York',
+        value: 'America/New_York',
+    },
+    {
+        label: 'America/Chicago',
+        value: 'America/Chicago',
+    },
+    {
+        label: 'America/Los_Angeles',
+        value: 'America/Los_Angeles',
+    },
+    {
+        label: 'Asia/Calcutta',
+        value: 'Asia/Calcutta',
+    },
+    {
+        label: 'Asia/Manila',
+        value: 'Asia/Manila',
+    },
+    {
+        label: 'Europe/London',
+        value: 'Europe/London',
+    },
+    {
+        label: 'Europe/Paris',
+        value: 'Europe/Paris',
+    },
+    {
+        label: 'Asia/Riyadh',
+        value: 'Asia/Riyadh',
+    },
+    {
+        label: 'Asia/Dubai',
+        value: 'Asia/Dubai',
+    },
+    {
+        label: 'Africa/Johannesburg',
+        value: 'Africa/Johannesburg',
+    },
+    {
+        label: 'Asia/Tokyo',
+        value: 'Asia/Tokyo',
+    },
+    {
+        label: 'America/Argentina/Buenos_Aires',
+        value: 'America/Argentina/Buenos_Aires',
+    },
+    {
+        label: 'America/Santiago',
+        value: 'America/Santiago',
+    },
+    {
+        label: 'Asia/Baghdad',
+        value: 'Asia/Baghdad',
+    },
+    {
+        label: 'Pacific/Honolulu',
+        value: 'Pacific/Honolulu',
+    },
+    {
+        label      : 'Asia/Gaza',
+        value      : 'Asia/Gaza',
+        description: 'Free Palestine',
+    },
+];
 
 
 export const SELECT_TIMES = Array(24).fill(0).map((_, idx) => ({

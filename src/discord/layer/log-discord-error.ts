@@ -1,6 +1,5 @@
-import {CFG, E, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CFG, CSL, E, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {REDACTED_DISCORD_ERROR_URL} from '#src/internal/constants/secrets.ts';
-import {Console} from 'effect';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -8,11 +7,13 @@ import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {IXCBS, IXCT} from '#src/discord/util/discord.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
-import {GlobalCloseB} from '#src/discord/ixc/make/global.ts';
 import {UI} from 'dfx';
+import {SuccessB} from '#src/discord/ixc/components/global-components.ts';
+import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
-    yield * Console.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
+    yield * CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
     const url = RDT.value(yield * CFG.redacted(REDACTED_DISCORD_ERROR_URL));
 
@@ -50,6 +51,9 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 `If you don't think your input caused this error, send this link to the support server:`,
                 `-# <https://discord.com/channels/1283847240061947964/${log.channel_id}/${log.id}>`,
             ),
+            footer: {
+                text: 'Made with ❤️ by NotStr8DontH8 and DFFP.',
+            },
         }],
         components: UI.grid([
             [
@@ -59,7 +63,17 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                     label: 'Support Server',
                     url  : 'https://discord.gg/KfpCtU2rwY',
                 },
-                GlobalCloseB.component,
+            ],
+            [
+                SuccessB.as(OmbiBoardB.id, {
+                    label: 'Restart Omni Board',
+                }).component,
+                {
+                    type     : IXCT.BUTTON,
+                    style    : IXCBS.SECONDARY,
+                    custom_id: '/k/CLOSE/t/T',
+                    label    : 'Close',
+                },
             ],
         ]),
     };

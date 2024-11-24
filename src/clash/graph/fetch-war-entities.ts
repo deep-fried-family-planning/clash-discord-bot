@@ -1,129 +1,59 @@
-import {concatL, filterL, flattenL, mapL} from '#src/internal/pure/pure-list.ts';
-import type {Clan, ClanWar} from 'clashofclans.js';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import type {ClanWarLeagueGroup} from 'clashofclans.js';
+import type {Clan, ClanWar, Player} from 'clashofclans.js';
+import {E} from '#src/internal/pure/effect.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import type {SharedOptions} from '#src/discord/types.ts';
 
+type Kinda = {options: SharedOptions; currentWar: ClanWar[]; current: {clans: Clan[]; cwl: ClanWarLeagueGroup; players: Player[]; wars: ClanWar[]}};
+
 export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
-    const clan = yield * Clashofclans.getClan(ops.cid1);
+    const cwl = yield * Clashofclans.getClanWarLeagueGroup(ops.cid1).pipe(E.catchAll(() => E.succeed(null)));
 
-    if (clan.warLeague?.id !== 48000000) {
-        try {
-            const cwl = yield * Clashofclans.getClanWarLeagueGroup(ops.cid1);
-
-            if (cwl.state === 'ended') {
-                const players = yield * E.promise(async () => await clan.fetchMembers());
-                const war = yield * Clashofclans.getCurrentWar(ops.cid1);
-
-                if (!war || war.isWarEnded) {
-                    return {
-                        options   : ops,
-                        currentWar: [] as ClanWar[],
-                        current   : {
-                            clans: [] as Clan[],
-                            cwl,
-                            players,
-                            wars : [] as ClanWar[],
-                        },
-                    };
-                }
-
-                const warClan = yield * Clashofclans.getClan(war.opponent.tag);
-                const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
-
-                return {
-                    options   : ops,
-                    currentWar: [war],
-                    current   : {
-                        clans  : [clan, warClan],
-                        players: pipe(players, concatL(warPlayers)),
-                        wars   : [war],
-                    },
-                };
-            }
-
-            const cids = pipe(cwl.clans, mapL((c) => c.tag));
-            const clans = yield * Clashofclans.getClans(cids);
-            const wars = yield * E.promise(async () => await cwl.getWars());
-            const refWars = yield * E.promise(async () => await cwl.getWars(ops.cid1));
-            const players = yield * pipe(
-                cwl.clans,
-                mapL((c) => E.promise(async () => await c.fetchMembers())),
-                E.allWith({concurrency: 'unbounded'}),
-            );
-
-            const currentWar = pipe(
-                refWars,
-                filterL((w) => w.isPreparationDay),
-            );
-
-            return {
-                options: ops,
-                current: {
-                    clans,
-                    wars,
-                    players: flattenL(players),
-                },
-                currentWar,
-            };
-        }
-
-        catch (_) {
-            const players = yield * E.promise(async () => await clan.fetchMembers());
-            const war = yield * Clashofclans.getCurrentWar(ops.cid1);
-
-            if (!war || war.isWarEnded) {
-                return {
-                    options   : ops,
-                    currentWar: [] as ClanWar[],
-                    current   : {
-                        clans: [] as Clan[],
-                        players,
-                        wars : [] as ClanWar[],
-                    },
-                };
-            }
-
-            const warClan = yield * Clashofclans.getClan(war.opponent.tag);
-            const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
-
-            return {
-                options   : ops,
-                currentWar: [war],
-                current   : {
-                    clans  : [clan, warClan],
-                    players: pipe(players, concatL(warPlayers)),
-                    wars   : [war],
-                },
-            };
-        }
-    }
-
-    const players = yield * E.promise(async () => await clan.fetchMembers());
-    const war = yield * Clashofclans.getCurrentWar(ops.cid1);
-
-    if (!war || war.isWarEnded) {
-        return {
-            options   : ops,
-            currentWar: [] as ClanWar[],
-            current   : {
-                clans: [] as Clan[],
-                players,
-                wars : [] as ClanWar[],
-            },
-        };
-    }
-
-    const warClan = yield * Clashofclans.getClan(war.opponent.tag);
-    const warPlayers = yield * E.promise(async () => await warClan.fetchMembers());
-
-    return {
+    const returnable = {
         options   : ops,
-        currentWar: [war],
+        currentWar: [],
         current   : {
-            clans  : [clan, warClan],
-            players: pipe(players, concatL(warPlayers)),
-            wars   : [war],
+            clans  : [],
+            cwl,
+            players: [],
+            wars   : [],
         },
-    };
+    } as Kinda;
+
+
+    if (cwl) {
+        const wars = yield * Clashofclans.getWars(ops.cid1);
+        const cwars = wars.filter((w) => w.state !== 'notInWar');
+
+        returnable.currentWar = cwars;
+        returnable.current.wars = cwars;
+        returnable.current.players = yield * Clashofclans.getPlayers([
+            ...cwars.map((c) => [
+                ...c.clan.members.map((m) => m.tag),
+                ...c.opponent.members.map((m) => m.tag),
+            ]),
+        ].flat());
+        returnable.current.clans = yield * Clashofclans.getClans([
+            ops.cid1,
+            ...cwars.map((c) => c.opponent.tag),
+        ].flat());
+    }
+    else {
+        const war = yield * Clashofclans.getClanWar(ops.cid1);
+
+        if (war.state !== 'notInWar') {
+            returnable.currentWar = [war];
+            returnable.current.wars = [war];
+            returnable.current.players = yield * Clashofclans.getPlayers([
+                ...war.clan.members.map((m) => m.tag),
+                ...war.opponent.members.map((m) => m.tag),
+            ]);
+            returnable.current.clans = yield * Clashofclans.getClans([
+                ops.cid1,
+                war.opponent.tag,
+            ]);
+        }
+    }
+
+    return returnable;
 });

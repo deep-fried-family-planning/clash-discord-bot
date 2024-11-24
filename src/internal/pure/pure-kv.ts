@@ -6,6 +6,8 @@ import {
     map as mapKV,
     size as sizeKV,
     empty as emptyKV,
+    keys as keysKv,
+    replace as replaceKV,
 } from 'effect/Record';
 import {flow} from '#src/internal/pure/effect.ts';
 
@@ -14,6 +16,8 @@ export {
     filterKV,
     sizeKV,
     emptyKV,
+    keysKv,
+    replaceKV,
 };
 
 export const reduceKV = reduce;

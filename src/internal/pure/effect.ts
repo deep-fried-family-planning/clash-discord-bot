@@ -1,3 +1,5 @@
+import {Order} from 'effect';
+
 export {
     Effect as E,
     Console as CSL,
@@ -15,6 +17,14 @@ export {
     Brand as B,
     RateLimiter as RL,
     Metric as Metric,
+    Order as ORD,
+    Option as O,
     flow,
     pipe,
 } from 'effect';
+
+
+export const ORDS = Order.string;
+export const ORDSR = Order.reverse(Order.string);
+export const ORDN = Order.number;
+export const ORDNR = Order.reverse(Order.number);
