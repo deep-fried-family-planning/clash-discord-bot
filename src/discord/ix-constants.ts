@@ -151,6 +151,11 @@ export const SELECT_TIMEZONES = [
         label: 'Pacific/Honolulu',
         value: 'Pacific/Honolulu',
     },
+    {
+        label      : 'Asia/Gaza',
+        value      : 'Asia/Gaza',
+        description: 'Free Palestine',
+    },
 ];
 
 
