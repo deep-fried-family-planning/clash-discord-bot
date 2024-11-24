@@ -1,13 +1,7 @@
 import {E} from '#src/internal/pure/effect.ts';
-import {decodeDiscordRoster} from '#src/dynamo/discord-roster.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {encodeRosterId, UserIdEncode} from '#src/dynamo/common.ts';
-import {
-    decodeDiscordRosterSignup,
-    type DRosterSignup,
-    type DRosterSignupKey,
-    encodeDiscordRosterSignup,
-} from '#src/dynamo/discord-roster-signup.ts';
+import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/discord-roster-signup.ts';
 import {dtNowIso} from '#src/discord/util/markdown.ts';
 
 

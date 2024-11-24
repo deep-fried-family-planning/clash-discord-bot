@@ -1,7 +1,5 @@
 import {S} from '#src/internal/pure/effect.ts';
-import type {Embed} from 'dfx/types';
 
-type temp = Embed;
 
 export const SelectedEmbed = S.Struct({
     type: S.optional(S.Enums({

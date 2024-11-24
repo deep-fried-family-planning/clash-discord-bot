@@ -18,6 +18,7 @@ import {mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {dTable} from '#src/discord/util/message-table.ts';
 import {dCodes, dLinesS} from '#src/discord/util/markdown.ts';
+import {RosterOverviewB} from '#src/discord/ixc/view-reducers/roster-overview.ts';
 
 
 const getRosters = typeRxHelper((s, ax) => E.gen(function * () {
@@ -46,11 +47,16 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         Roster = RosterS
             .render({
-                options: rosters.map((r) => ({
-                    label      : r.name,
-                    value      : r.sk,
-                    description: r.roster_type,
-                })),
+                options: rosters.length
+                    ? rosters.map((r) => ({
+                        label      : r.name,
+                        value      : r.sk,
+                        description: r.roster_type,
+                    }))
+                    : [{
+                        label: 'Unavailable',
+                        value: 'Unavailable',
+                    }],
             });
 
         viewer = {
@@ -134,10 +140,13 @@ const view = typeRx((s, ax) => E.gen(function * () {
         editor: undefined,
         status: undefined,
 
-        sel1: Roster.render({disabled: false}),
+        sel1: Roster.render({
+            disabled: Roster.values[0] === 'Unavailable',
+        }),
         row2: [
             RosterViewerSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
             RosterViewerOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
+            RosterOverviewB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
         ],
         back  : BackB.as(OmbiBoardB.id),
         submit: RosterViewerCreatorB

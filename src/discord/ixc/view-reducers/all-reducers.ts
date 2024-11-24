@@ -22,6 +22,7 @@ import {infoViewerReducer} from '#src/discord/ixc/view-reducers/info-viewer.ts';
 import {infoViewerAdminReducer} from '#src/discord/ixc/view-reducers/info-viewer-admin.ts';
 import {botViewerReducer} from '#src/discord/ixc/view-reducers/bot-viewer.ts';
 import {infoViewerCreatorReducer} from '#src/discord/ixc/view-reducers/info-viewer-creator.ts';
+import {rosterOverviewReducer} from '#src/discord/ixc/view-reducers/roster-overview.ts';
 
 
 export const allReducers = {
@@ -45,6 +46,7 @@ export const allReducers = {
     ...infoViewerAdminReducer,
     ...infoViewerCreatorReducer,
 
+    ...rosterOverviewReducer,
     ...rosterViewerOptOutReducer,
     ...rosterViewerSignupReducer,
     ...rosterViewerReducer,
@@ -52,7 +54,6 @@ export const allReducers = {
     ...rosterViewerCreatorReducer,
 
     ...infoBoardReducer,
-
 
     ...serverViewerReducer,
     ...serverViewerAdminReducer,
