@@ -12,22 +12,6 @@ import {GIMME_DATA, gimmeData} from '#src/discord/ixs/util/gimme-data.ts';
 import {OMNI_BOARD, omniBoard} from '#src/discord/ixs/util/omni-board.ts';
 
 
-export const IXS_SPECS = {
-    CLAN_FAM,
-    ONE_OF_US,
-    SERVER,
-    SMOKE,
-    TIME,
-    USER,
-    WA_LINKS,
-    WA_MIRRORS,
-    WA_SCOUT,
-    CACHE_BUST,
-    GIMME_DATA,
-    OMNI_BOARD,
-} as const;
-
-
 export const IXS_LOOKUP = {
     [CLAN_FAM.name]  : clanfam,
     [ONE_OF_US.name] : oneofus,

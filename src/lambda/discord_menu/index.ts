@@ -13,6 +13,7 @@ import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {ixcRouter} from '#src/discord/ixc/ixc-router.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 const menu = (ix: IxD) => E.gen(function * () {
@@ -106,15 +107,11 @@ const menu = (ix: IxD) => E.gen(function * () {
 );
 
 
-const h = (event: SQSEvent) => pipe(
-    event.Records,
-    mapL((r) => {
-        const json = JSON.parse(r.body) as IxD;
+const h = (event: IxD) => E.gen(function * () {
+    yield * CSL.debug(inspect(event, true, null));
 
-        return menu(json);
-    }),
-    E.all,
-);
+    yield * menu(event);
+});
 
 
 export const handler = makeLambda(h, makeLambdaLayer({

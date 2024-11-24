@@ -3,8 +3,7 @@ import {badImplementation} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {makeLambda} from '@effect-aws/lambda';
-import {CFG, CSL, E, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {invokeCount, showMetric} from '#src/internal/metrics.ts';
+import {CFG, E, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
@@ -19,17 +18,14 @@ import {EDIT_EMBED_MODAL_OPEN, EditEmbedColorT, EditEmbedDescriptionT, EditEmbed
 import {LINK_ACCOUNT_MODAL_OPEN, LinkAccountModal} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {UI} from 'dfx';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
-import {
-    EDIT_DATE_TIME_MODAL_OPEN,
-    EditDateTimeModal,
-    EditEpochT,
-} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
+import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal, EditEpochT} from '#src/discord/ixc/modals/edit-date-time-modal.ts';
 import {sColor} from '#src/internal/constants/colors.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
 import {Cause} from 'effect';
 import {LINK_ACCOUNT_BULK_MODAL_OPEN, LinkAccountBulkModal} from '#src/discord/ixc/modals/link-account-bulk-modal.ts';
+import {Lambda} from '@effect-aws/client-lambda';
 
 
 const modals = {
@@ -53,29 +49,23 @@ const component = (body: IxD) => E.gen(function * () {
         const curModal
             = id.predicate === EDIT_EMBED_MODAL_OPEN.predicate ? {
                 ...EditEmbedModal,
-                components: UI.singleColumn([
-                    {
-                        ...EditEmbedTitleT.component,
-                        value: editor!.title!,
-                    },
-                    {
-                        ...EditEmbedColorT.component,
-                        value: sColor(editor!.color!),
-                    },
-                    {
-                        ...EditEmbedDescriptionT.component,
-                        value: editor!.description!,
-                    },
-                ]),
+                components: UI.singleColumn([{
+                    ...EditEmbedTitleT.component,
+                    value: editor!.title!,
+                }, {
+                    ...EditEmbedColorT.component,
+                    value: sColor(editor!.color!),
+                }, {
+                    ...EditEmbedDescriptionT.component,
+                    value: editor!.description!,
+                }]),
             }
-            : id.predicate === EDIT_EMBED_MODAL_OPEN.predicate ? {
+            : id.predicate === EDIT_DATE_TIME_MODAL_OPEN.predicate ? {
                 ...EditDateTimeModal,
-                components: UI.singleColumn([
-                    {
-                        ...EditEpochT.component,
-                        value: editor?.timestamp ? `${new Date(editor.timestamp).getTime()}` : `${Date.now()}`,
-                    },
-                ]),
+                components: UI.singleColumn([{
+                    ...EditEpochT.component,
+                    value: editor?.timestamp ? `${new Date(editor.timestamp).getTime()}` : `${Date.now()}`,
+                }]),
             }
             : modals[id.predicate];
 
@@ -90,9 +80,11 @@ const component = (body: IxD) => E.gen(function * () {
                 bodyJSON: JSON.stringify(body),
             },
         });
-        yield * SQS.sendMessage({
-            QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-            MessageBody: JSON.stringify(body),
+
+        yield * Lambda.invoke({
+            FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
+            InvocationType: 'Event',
+            Payload       : JSON.stringify(body),
         });
 
         return r200({
@@ -110,9 +102,10 @@ const component = (body: IxD) => E.gen(function * () {
         });
     }
 
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-        MessageBody: JSON.stringify(body),
+    yield * Lambda.invoke({
+        FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
+        InvocationType: 'Event',
+        Payload       : JSON.stringify(body),
     });
 
     if (id.params.kind === RDXK.ENTRY) {
@@ -124,9 +117,10 @@ const component = (body: IxD) => E.gen(function * () {
 
 
 const modal = (body: IxD) => E.gen(function * () {
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_MENU,
-        MessageBody: JSON.stringify(body),
+    yield * Lambda.invoke({
+        FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
+        InvocationType: 'Event',
+        Payload       : JSON.stringify(body),
     });
 
     return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
@@ -167,9 +161,6 @@ const router = {
 
 const h = (req: APIGatewayProxyEventBase<null>) => pipe(
     E.gen(function * () {
-        yield * showMetric(invokeCount);
-        yield * CSL.debug('DiscordIngress', req);
-
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;
 
@@ -227,5 +218,6 @@ export const handler = makeLambda(h, makeLambdaLayer({
     aws: [
         SQS.defaultLayer,
         DynamoDBDocument.defaultLayer,
+        Lambda.defaultLayer,
     ],
 }));

@@ -84,24 +84,15 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel2: Info.render({
             disabled:
                 !Kind.values.length
-                || Info.values[0] === 'Unavailable',
+                || Info.component.options![0].value === 'Unavailable',
         }),
 
-        submit: InfoViewerCreatorB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({
-                disabled:
-                    !!Kind.values.length
-                    || !!Info.values.length,
-            }),
-
-        delete: InfoViewerAdminB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({
-                disabled:
-                    !Kind.values.length
-                    || !Info.values.length,
-            }),
+        submit:
+            (!Kind.values.length && !Info.values.length)
+                ? InfoViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk))
+                : InfoViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))?.render({
+                    disabled: !Info.values.length,
+                }),
     };
 }));
 

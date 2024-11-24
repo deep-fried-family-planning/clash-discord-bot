@@ -7,11 +7,11 @@ module "lambda_api_discord" {
   prefix             = local.prefix
   fn_name            = "api_discord"
   custom_policy_json = data.aws_iam_policy_document.lambda_api_discord.json
-  memory             = 128
+  memory             = 256
   timeout            = 300
   fn_env = merge(local.lambda_env, {
     SQS_URL_DISCORD_SLASH = module.discord_slash.fn_sqs_url
-    SQS_URL_DISCORD_MENU  = module.discord_menu.fn_sqs_url
+    LAMBDA_ARN_DISCORD_MENU = module.discord_menu.fn_arn
   })
 }
 

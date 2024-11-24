@@ -81,13 +81,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         sel1: Clan,
 
-        back  : BackB.as(OmbiBoardB.id),
-        submit: LinkClanB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({disabled: !!Clan.values.length}),
-        delete: ClanViewerAdminB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({disabled: !Clan.values.length}),
+        back: BackB.as(OmbiBoardB.id),
+        submit:
+            !Clan.values.length
+                ? LinkClanB.if(s.user_roles.includes(s.server!.admin as snflk))
+                : ClanViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 

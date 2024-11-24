@@ -10,10 +10,6 @@ module "discord_menu" {
   memory             = 1024
   timeout            = 300
   fn_env             = merge(local.lambda_env, {})
-  sqs                = true
-  sqs_source_arns    = [module.lambda_api_discord.fn_arn]
-  sqs_retries = 1
-  sqs_delay_s = 0
 }
 
 
