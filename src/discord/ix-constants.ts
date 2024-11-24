@@ -135,6 +135,22 @@ export const SELECT_TIMEZONES = [
         label: 'Asia/Tokyo',
         value: 'Asia/Tokyo',
     },
+    {
+        label: 'America/Argentina/Buenos_Aires',
+        value: 'America/Argentina/Buenos_Aires',
+    },
+    {
+        label: 'America/Santiago',
+        value: 'America/Santiago',
+    },
+    {
+        label: 'Asia/Baghdad',
+        value: 'Asia/Baghdad',
+    },
+    {
+        label: 'Pacific/Honolulu',
+        value: 'Pacific/Honolulu',
+    },
 ];
 
 
