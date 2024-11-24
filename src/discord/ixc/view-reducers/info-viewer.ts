@@ -10,6 +10,7 @@ import {InfoViewerCreatorB} from '#src/discord/ixc/view-reducers/info-viewer-cre
 import {infoQueryByServer, infoRead} from '#src/dynamo/operations/info.ts';
 import {filterL, mapL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
+import {SELECT_INFO_KIND} from '#src/discord/ix-constants.ts';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {
@@ -17,26 +18,14 @@ export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {
 });
 export const KindNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVK'), {
     placeholder: 'Select Kind',
-    options    : [
-        {
-            label: 'about',
-            value: 'about',
-        },
-        {
-            label: 'guide',
-            value: 'guide',
-        },
-        {
-            label: 'rule',
-            value: 'rule',
-        },
-    ],
+    options    : SELECT_INFO_KIND,
 });
-const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'));
+export const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'));
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
+
 
     const Kind = KindNavS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     let Info = InfoNavS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -92,7 +81,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
         back: BackB.as(OmbiBoardB.id),
 
         sel1: Kind.render({disabled: false}),
-        sel2: Info.render({disabled: !Kind.values.length}),
+        sel2: Info.render({
+            disabled:
+                !Kind.values.length
+                || Info.values[0] === 'Unavailable',
+        }),
 
         submit: InfoViewerCreatorB
             .if(s.user_roles.includes(s.server!.admin as snflk))

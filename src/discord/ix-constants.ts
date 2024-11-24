@@ -50,6 +50,22 @@ export const SELECT_ACCOUNT_TYPE = [
 ];
 
 
+export const SELECT_INFO_KIND = [
+    {
+        label: 'About',
+        value: 'about',
+    },
+    {
+        label: 'Server Guide',
+        value: 'guide',
+    },
+    {
+        label: 'Rules',
+        value: 'rule',
+    },
+];
+
+
 export const SELECT_ROSTER_TYPE = [
     {
         label      : 'CWL',
