@@ -81,13 +81,16 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
         sel1: Account.render({disabled: false}),
 
-        back  : BackB.as(LinkB.id),
-        submit: LinkAccountB.render({
-            label   : unset!,
-            emoji   : NewB.component.emoji!,
-            disabled: !!Account.values.length,
-        }),
-        delete: AccountViewerAdminB.render({disabled: !Account.values.length}),
+        back: BackB.as(LinkB.id),
+
+
+        submit:
+            !Account.values.length
+                ? LinkAccountB.render({
+                    label: unset!,
+                    emoji: NewB.component.emoji!,
+                })
+                : AccountViewerAdminB,
     };
 }));
 

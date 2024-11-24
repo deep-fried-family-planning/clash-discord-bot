@@ -137,26 +137,22 @@ const view = typeRx((s, ax) => E.gen(function * () {
             ?? viewer
             ?? s.viewer,
         ),
-        editor: undefined,
-        status: undefined,
+        editor: unset,
+        status: unset,
 
         sel1: Roster.render({
-            disabled: Roster.values[0] === 'Unavailable',
+            disabled: Roster.component.options![0].value === 'Unavailable',
         }),
         row2: [
             RosterViewerSignupB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
             RosterViewerOptOutB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
             RosterOverviewB.render({disabled: !Roster.values.length}).fwd(RosterViewerB.id),
         ],
-        back  : BackB.as(OmbiBoardB.id),
-        submit: RosterViewerCreatorB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({
-                disabled: !!Roster.values.length,
-            }),
-        delete: RosterViewerAdminB
-            .if(s.user_roles.includes(s.server!.admin as snflk))
-            ?.render({disabled: !Roster.values.length}),
+        back: BackB.as(OmbiBoardB.id),
+        submit:
+            Roster.values.length
+                ? RosterViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))
+                : RosterViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk)),
     };
 }));
 

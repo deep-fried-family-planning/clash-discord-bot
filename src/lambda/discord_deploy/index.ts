@@ -8,12 +8,39 @@ import {REDACTED_DISCORD_APP_ID} from '#src/internal/constants/secrets.ts';
 import {DiscordREST} from 'dfx';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {IXS_SPECS} from '#src/discord/ixs/ixs.ts';
 import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
+import {CLAN_FAM} from '#src/discord/ixs/link/clanfam.ts';
+import {ONE_OF_US} from '#src/discord/ixs/link/oneofus.ts';
+import {SERVER} from '#src/discord/ixs/link/server.ts';
+import {SMOKE} from '#src/discord/ixs/util/smoke.ts';
+import {TIME} from '#src/discord/ixs/util/time.ts';
+import {USER} from '#src/discord/ixs/link/user.ts';
+import {WA_LINKS} from '#src/discord/ixs/war-analysis/wa-links.ts';
+import {WA_MIRRORS} from '#src/discord/ixs/war-analysis/wa-mirrors.ts';
+import {WA_SCOUT} from '#src/discord/ixs/war-analysis/wa-scout.ts';
+import {CACHE_BUST} from '#src/discord/ixs/util/cache-bust.ts';
+import {GIMME_DATA} from '#src/discord/ixs/util/gimme-data.ts';
+import {OMNI_BOARD} from '#src/discord/ixs/util/omni-board.ts';
+
+
+const specs = {
+    CLAN_FAM,
+    ONE_OF_US,
+    SERVER,
+    SMOKE,
+    TIME,
+    USER,
+    WA_LINKS,
+    WA_MIRRORS,
+    WA_SCOUT,
+    CACHE_BUST,
+    GIMME_DATA,
+    OMNI_BOARD,
+};
 
 
 type Sorted = {required?: boolean};
@@ -50,7 +77,7 @@ const h = () => E.gen(function* () {
     const globalCommands = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
 
     const commands = pipe(
-        IXS_SPECS satisfies {[k in string]: CommandSpec},
+        specs satisfies {[k in string]: CommandSpec},
         mapEntries((v, k) => [k, specToREST(v)]),
         toEntries,
     );
