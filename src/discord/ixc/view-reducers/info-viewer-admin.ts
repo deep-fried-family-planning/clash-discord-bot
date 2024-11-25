@@ -100,6 +100,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
             updated: dtNow(),
             embed  : s.editor!,
         });
+        yield * MenuCache.embedInvalidate(fields.EmbedId.value);
     }
 
 
@@ -116,9 +117,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
         }),
         viewer: unset,
         status:
-            Submit.clicked(ax) ? asSuccess({description: 'Info Embed Edited'})
+            Submit.clicked(ax) ? asSuccess({description: 'Info Embed Edited. Changes may take up to 10 minutes to appear.'})
             : Delete.clicked(ax) ? asConfirm({description: 'Are you sure you want to delete this embed?'})
-            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Info Embed Deleted'})
+            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Info Embed Deleted. Changes may take up to 10 minutes to appear.'})
             : unset,
 
         sel1: Kind.render({

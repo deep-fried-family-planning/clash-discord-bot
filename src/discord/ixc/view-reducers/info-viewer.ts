@@ -14,6 +14,7 @@ import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/discord/ix-constants.ts';
 import {viewInfoEmbed} from '#src/discord/ixc/views/info-embed.ts';
 import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {fromReferenceFields} from '#src/discord/ixc/views/util.ts';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {
@@ -31,7 +32,9 @@ export const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'), {
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
 
-    const Kind = KindNavS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    const Kind = KindNavS.fromMap(s.cmap)
+        .setDefaultValuesIf(ax.id.predicate, selected);
+
     let Info = InfoNavS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     if (Kind.id.predicate === ax.id.predicate) {
