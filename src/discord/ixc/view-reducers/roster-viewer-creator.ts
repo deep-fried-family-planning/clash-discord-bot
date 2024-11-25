@@ -1,26 +1,37 @@
 import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {BackB, NewB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
-import {DT, E, pipe, S} from '#src/internal/pure/effect.ts';
+import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
-import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/date-time-editor.ts';
-import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
+import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/embed-date-time-editor.ts';
+import {SELECT_POSITIONS, SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {rosterCreate} from '#src/dynamo/operations/roster.ts';
 import {v4} from 'uuid';
+import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
+import type {num} from '#src/internal/pure/types-pure.ts';
+import type {Embed} from 'dfx/types';
 
 
-const saveRoster = (type: string) => typeRxHelper((s, ax) => E.gen(function * () {
+const saveRoster = (type: string, order: num, embed?: Embed) => typeRxHelper((s, ax) => E.gen(function * () {
+    const rosterId = v4();
+    const embedId = v4();
+
     yield * rosterCreate({
         type: 'DiscordRoster',
         pk  : s.server_id,
-        sk  : v4(),
+        sk  : rosterId,
 
         version: '1.0.0',
         created: dtNow(),
         updated: dtNow(),
+
+        embed_id      : embedId,
+        selector_order: order,
+        selector_label: s.editor?.title,
+        selector_desc : type,
 
         name       : s.editor?.title ?? '',
         description: s.editor?.description ?? '',
@@ -31,14 +42,40 @@ const saveRoster = (type: string) => typeRxHelper((s, ax) => E.gen(function * ()
         ),
         roster_type: type,
     });
+
+    const {type: embed_type, ...restEmbed} = embed ?? {};
+
+    yield * discordEmbedCreate({
+        type        : 'DiscordEmbed',
+        pk          : embedId,
+        sk          : 'now',
+        gsi_embed_id: embedId,
+
+        version: '1.0.0',
+        created: dtNow(),
+        updated: dtNow(),
+
+        original_type     : 'DiscordRoster',
+        original_pk       : s.server_id,
+        original_sk       : rosterId,
+        original_server_id: s.server_id,
+        original_user_id  : s.user_id,
+
+        embed_type: embed_type,
+        ...restEmbed,
+    });
 }));
 
 
-export const RosterViewerCreatorB = NewB.as(makeId(RDXK.OPEN, 'RC'));
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RC'));
-const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
+export const RosterViewerCreatorB = NewB.as(makeId(RDXK.OPEN, 'RVC'));
+const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RVC'));
+const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RVCT'), {
     placeholder: 'Select Roster Type',
     options    : SELECT_ROSTER_TYPE,
+});
+const PositionS = SingleS.as(makeId(RDXK.UPDATE, 'RVCP'), {
+    placeholder: 'Selector Position',
+    options    : SELECT_POSITIONS,
 });
 
 
@@ -46,9 +83,10 @@ const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    const Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     if (Submit.clicked(ax)) {
-        yield * saveRoster(Type.values[0])(s, ax);
+        yield * saveRoster(Type.values[0], parseInt(Position.values[0]))(s, ax);
     }
 
     return {
@@ -69,15 +107,32 @@ const view = typeRx((s, ax) => E.gen(function * () {
             ? asSuccess({description: 'Roster Created'})
             : unset,
 
-        sel1: Type,
+        sel1: Type.render({
+            disabled:
+                Submit.clicked(ax),
+        }),
+        sel2: Position.render({
+            disabled:
+                Submit.clicked(ax),
+        }),
         row3: [
-            EmbedEditorB.fwd(RosterViewerCreatorB.id),
+            EmbedEditorB.fwd(RosterViewerCreatorB.id).render({
+                disabled:
+                    Submit.clicked(ax),
+            }),
             DateTimeEditorB.fwd(RosterViewerCreatorB.id).render({
                 label: 'Search Date/Time',
+                disabled:
+                    Submit.clicked(ax),
             }),
         ],
         back  : BackB.as(RosterViewerB.id),
-        submit: Submit,
+        submit: Submit.render({
+            disabled:
+                Submit.clicked(ax)
+                || !Position.values.length
+                || !Type.values.length,
+        }),
     };
 }));
 

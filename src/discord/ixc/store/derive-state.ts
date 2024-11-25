@@ -1,17 +1,17 @@
 import type {ActionRow, Button, Embed, SelectMenu, Snowflake, TextInput} from 'dfx/types';
 import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {type DServer, getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
-import {type DUser, getDiscordUser} from '#src/dynamo/schema/discord-user.ts';
+import type {DServer} from '#src/dynamo/schema/discord-server.ts';
+import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import {CloseB} from '#src/discord/ixc/components/global-components.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
 import type {MadeButton} from '#src/discord/ixc/components/make-button.ts';
 import {isEditor, isStatus, isViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 
 
 export type IxState = {
@@ -56,11 +56,12 @@ export type IxState = {
 
 export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
     const [server, user] = yield * pipe(
-        E.all([
-            getDiscordServer({pk: ix.guild_id!, sk: 'now'}),
-            getDiscordUser({pk: ix.member!.user!.id}),
-        ], {concurrency: 'unbounded'}),
-        E.catchAll(() => E.succeed([undefined, undefined])),
+        [
+            MenuCache.serverRead(ix.guild_id!),
+            MenuCache.userRead(ix.member?.user?.id ?? ix.user!.id),
+        ] as const,
+        E.allWith(),
+        E.catchTag('DeepFryerDynamoError', () => E.succeed([undefined, undefined])),
     );
 
 

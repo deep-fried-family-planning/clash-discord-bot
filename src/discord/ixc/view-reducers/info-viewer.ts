@@ -7,20 +7,25 @@ import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {InfoViewerAdminB} from '#src/discord/ixc/view-reducers/info-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {InfoViewerCreatorB} from '#src/discord/ixc/view-reducers/info-viewer-creator.ts';
-import {infoQueryByServer, infoRead} from '#src/dynamo/operations/info.ts';
+import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {filterL, mapL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
-import {SELECT_INFO_KIND} from '#src/discord/ix-constants.ts';
+import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/discord/ix-constants.ts';
+import {discordEmbedRead} from '#src/dynamo/operations/embed.ts';
+import {viewInfoEmbed} from '#src/discord/ixc/views/info-embed.ts';
+import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {
     label: 'Info',
 });
 export const KindNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVK'), {
-    placeholder: 'Select Kind',
+    placeholder: 'Select Info Kind',
     options    : SELECT_INFO_KIND,
 });
-export const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'));
+export const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'), {
+    placeholder: 'Select Info Embed',
+});
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -36,8 +41,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
             yield * infoQueryByServer({pk: s.server_id}),
             filterL((i) => i.kind === Kind.values[0]),
             mapL((i) => ({
-                label: i.name,
-                value: i.sk,
+                label      : i.selector_label ?? i.name!,
+                description: i.selector_desc!,
+                value      : [i.sk, i.embed_id!].join(DELIM.DATA),
             })),
         );
 
@@ -45,25 +51,19 @@ const view = typeRx((s, ax) => E.gen(function * () {
             options: infos.length
                 ? infos
                 : [{
-                    label: 'Unavailable',
-                    value: 'Unavailable',
+                    label: UNAVAILABLE,
+                    value: UNAVAILABLE,
                 }],
         });
     }
 
     let viewer: Embed | undefined;
     if (Info.id.predicate === ax.id.predicate) {
-        const info = yield * infoRead({pk: s.server_id, sk: Info.values[0]});
+        const [infoId, embedId] = Info.values[0].split(DELIM.DATA);
 
-        viewer = asViewer({
-            color      : info.color,
-            title      : info.name,
-            description: info.desc,
-            footer     : {
-                text: 'last updated',
-            },
-            timestamp: info.updated.toISOString(),
-        });
+        const embed = yield * discordEmbedRead(embedId);
+
+        viewer = asViewer(viewInfoEmbed(embed));
     }
 
 
@@ -84,7 +84,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel2: Info.render({
             disabled:
                 !Kind.values.length
-                || Info.component.options![0].value === 'Unavailable',
+                || Info.component.options![0].value === UNAVAILABLE,
         }),
 
         submit:

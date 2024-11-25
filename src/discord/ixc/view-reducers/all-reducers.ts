@@ -6,7 +6,7 @@ import {rosterViewerSignupReducer} from '#src/discord/ixc/view-reducers/roster-v
 import {clanViewerReducer} from '#src/discord/ixc/view-reducers/clan-viewer.ts';
 import {rosterViewerOptOutReducer} from '#src/discord/ixc/view-reducers/roster-viewer-opt-out.ts';
 import {embedEditorReducer} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
-import {dateTimeEditorReducer} from '#src/discord/ixc/view-reducers/editors/date-time-editor.ts';
+import {dateTimeEditorReducer} from '#src/discord/ixc/view-reducers/editors/embed-date-time-editor.ts';
 import {infoBoardReducer} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {linkClanReducer} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
 import {linkAccountAdminReducer} from '#src/discord/ixc/view-reducers/links/link-account-admin.ts';
@@ -23,6 +23,7 @@ import {infoViewerAdminReducer} from '#src/discord/ixc/view-reducers/info-viewer
 import {botViewerReducer} from '#src/discord/ixc/view-reducers/bot-viewer.ts';
 import {infoViewerCreatorReducer} from '#src/discord/ixc/view-reducers/info-viewer-creator.ts';
 import {rosterOverviewReducer} from '#src/discord/ixc/view-reducers/roster-overview.ts';
+import {botViewerDevReducer} from '#src/discord/ixc/view-reducers/bot-viewer-dev.ts';
 
 
 export const allReducers = {
@@ -38,6 +39,7 @@ export const allReducers = {
     ...accountViewerAdminReducer,
 
     ...botViewerReducer,
+    ...botViewerDevReducer,
 
     ...clanViewerReducer,
     ...clanViewerAdminReducer,

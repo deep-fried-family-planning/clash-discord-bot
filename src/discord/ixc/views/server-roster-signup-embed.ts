@@ -31,7 +31,7 @@ export const viewServerRosterSignupEmbed = (
     );
 
     return {
-        title      : roster.name,
+        title      : roster.name!,
         description: dCodes(
             dTable([
                 ['##', 'th', 'name', '1234567'],

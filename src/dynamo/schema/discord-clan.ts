@@ -1,5 +1,5 @@
 import {Console, Schema as S} from 'effect';
-import {ClanTag, ClanTagEncode, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/schema/common.ts';
+import {ClanTag, ClanTagEncode, EmbedId, ServerId, ServerIdEncode, ThreadId} from '#src/dynamo/schema/common.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -20,6 +20,8 @@ export const DiscordClan = S.Struct({
     version: S.Literal('1.0.0'),
     created: S.Date,
     updated: S.Date,
+
+    embed_id: S.optional(EmbedId),
 
     verification: S.Enums({
         admin    : 0,

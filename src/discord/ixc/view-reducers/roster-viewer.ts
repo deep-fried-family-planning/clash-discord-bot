@@ -70,8 +70,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
 
         viewer = {
-            title      : roster.name,
-            description: roster.description,
+            title      : roster.name!,
+            description: roster.description!,
             footer     : {
                 text: dLinesS(
                     `Users signed up: ${rosterSignups.length}`,

@@ -1,5 +1,5 @@
 import {Schema as S} from 'effect';
-import {ClanTag, RosterId, ServerId} from '#src/dynamo/schema/common.ts';
+import {ClanTag, EmbedId, RosterId, ServerId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 
@@ -16,9 +16,11 @@ export const DiscordRoster = S.Struct({
     created: S.Date,
     updated: S.Date,
 
-    name       : S.String,
-    description: S.String,
-    clan       : S.optional(ClanTag),
+    embed_id      : S.optional(EmbedId),
+    selector_label: S.optional(S.String),
+    selector_desc : S.optional(S.String),
+    selector_order: S.optional(S.Number),
+
     search_time: S.DateTimeUtc,
     roster_type: S.Enums({
         cwl            : 'cwl',
@@ -28,6 +30,11 @@ export const DiscordRoster = S.Struct({
         friendly       : 'friendly',
         friendlyatlarge: 'friendly-at-large',
     }),
+    clan: S.optional(ClanTag),
+
+    // deprecated
+    name       : S.optional(S.String),
+    description: S.optional(S.String),
 });
 
 

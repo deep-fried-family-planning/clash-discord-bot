@@ -88,13 +88,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
-
     if (DeleteConfirm.clicked(ax)) {
         yield * deleteSignup(s, Roster.values[0], Accounts.values[0]);
     }
-
-    // const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
-
 
     return {
         ...s,
@@ -126,11 +122,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     Accounts.values.length === 0,
             }),
         back: BackB.as(RosterViewerB.id),
-        // forward: Forward.render({
-        //     disabled:
-        //         !isSubmitting
-        //         || Accounts.values.length === 0,
-        // }),
     };
 }));
 

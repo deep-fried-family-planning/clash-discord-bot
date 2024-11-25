@@ -24,8 +24,6 @@ export type IxAction = {
 
 
 export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
-    yield * CSL.debug('[CUSTOM_ID]', d.custom_id);
-
     const id = fromId(d.custom_id);
 
     const cmap = 'components' in d

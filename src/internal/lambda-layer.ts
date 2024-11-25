@@ -5,17 +5,21 @@ import type {Layer} from 'effect/Layer';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 
-export const makeLambdaLayer = <T extends [Layer<never, any, any>, ...Array<Layer<never, any, any>>]>(
+export const makeLambdaLayer = <
+    T extends [Layer<never, any, any>, ...Array<Layer<never, any, any>>],
+    T2 extends [Layer<never, any, any>, ...Array<Layer<never, any, any>>],
+    T3 extends [Layer<never, any, any>, ...Array<Layer<never, any, any>>],
+>(
     layers: {
         caches?: T;
-        apis?  : T;
-        aws?   : T;
+        apis?  : T2;
+        aws?   : T3;
     },
 ) => {
     const {
         caches = [L.empty] as unknown as T,
-        apis = [L.empty] as unknown as T,
-        aws = [L.empty] as unknown as T,
+        apis = [L.empty] as unknown as T2,
+        aws = [L.empty] as unknown as T3,
     } = layers;
 
 

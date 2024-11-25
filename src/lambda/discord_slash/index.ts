@@ -1,5 +1,5 @@
 import {makeLambda} from '@effect-aws/lambda';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {Clashking} from '#src/clash/api/clashking.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -58,6 +58,8 @@ const h = (event: SQSEvent) => pipe(
 
 
 export const handler = makeLambda(h, makeLambdaLayer({
+    caches: [L.empty],
+
     apis: [
         Clashofclans.Live,
         Clashking.Live,

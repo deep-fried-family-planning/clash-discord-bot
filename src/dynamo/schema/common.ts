@@ -11,19 +11,23 @@ const startsId = <T extends string>(start: string, brand: T) => S.transform(
     },
 );
 
+
 export const ServerId = startsId('s-', 'ServerId');
 export const UserId = startsId('u-', 'UserId');
-export const ClanTag = startsId('c-', 'ClanTag');
-export const PlayerTag = startsId('p-', 'PlayerTag');
-export const RosterId = startsId('r-', 'RosterId');
-export const InfoId = startsId('i-', 'InfoId');
-
-export const NowId = S.Literal('now');
 export const ChannelId = S.String;
 export const RoleId = S.String;
 export const ThreadId = S.String;
 export const MessageId = S.String;
 export const ForumTagId = S.String;
+
+export const ClanTag = startsId('c-', 'ClanTag');
+export const PlayerTag = startsId('p-', 'PlayerTag');
+
+export const NowId = S.Literal('now');
+export const RosterId = startsId('r-', 'RosterId');
+export const InfoId = startsId('i-', 'InfoId');
+export const EmbedId = startsId('e-', 'InfoId');
+
 
 export const ServerIdEncode = S.encodeUnknown(ServerId);
 export const UserIdEncode = S.encodeUnknown(UserId);
@@ -31,3 +35,4 @@ export const ClanTagEncode = S.encodeUnknown(ClanTag);
 export const PlayerTagEncode = S.encodeUnknown(PlayerTag);
 export const encodeRosterId = S.encodeUnknown(RosterId);
 export const encodeInfoId = S.encodeUnknown(InfoId);
+export const encodeEmbedId = S.encodeUnknown(EmbedId);

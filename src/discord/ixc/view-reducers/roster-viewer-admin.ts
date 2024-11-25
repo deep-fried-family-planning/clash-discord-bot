@@ -5,7 +5,7 @@ import {E} from '#src/internal/pure/effect';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
-import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/date-time-editor.ts';
+import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/embed-date-time-editor.ts';
 import {ClanSelectB} from '#src/discord/ixc/view-reducers/old/clan-select.ts';
 import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
 import {rosterDelete} from '#src/dynamo/operations/roster.ts';
@@ -53,9 +53,9 @@ const view = typeRx((s, ax) => E.gen(function * () {
             : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Roster Deleted'})
             : unset,
 
-        sel1: Roster.render({disabled: true}),
-        sel2: Type.render(isEditDisabled),
-        row3: [
+        navigate: Roster.render({disabled: true}),
+        sel2    : Type.render(isEditDisabled),
+        row3    : [
             EmbedEditorB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
             DateTimeEditorB.fwd(RosterViewerAdminB.id).render({
                 ...isEditDisabled,

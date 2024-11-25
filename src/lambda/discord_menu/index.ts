@@ -1,30 +1,19 @@
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import type {SQSEvent} from 'aws-lambda';
-import {IXT, MGF} from '#src/discord/util/discord.ts';
+import {MGF} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
 import {Cause} from 'effect';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {Discord} from 'dfx';
-import {inspect} from 'node:util';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {ixcRouter} from '#src/discord/ixc/ixc-router.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 
 
-const menu = (ix: IxD) => E.gen(function * () {
-    yield * CSL.debug('[CompIx]:', ix);
-    yield * CSL.debug('[IxData]:', inspect(ix.data, true, null));
-    yield * CSL.debug('[IxMessage]:', inspect(ix.message, true, null));
-
-    if (ix.type === IXT.MESSAGE_COMPONENT || ix.type === IXT.MODAL_SUBMIT) {
-        return yield * ixcRouter(ix);
-    }
-}).pipe(
+const menu = (ix: IxD) => ixcRouter(ix).pipe(
     E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
         yield * CSL.error('[USER]');
         const userMessage = yield * logDiscordError([e]);
@@ -107,14 +96,10 @@ const menu = (ix: IxD) => E.gen(function * () {
 );
 
 
-const h = (event: IxD) => E.gen(function * () {
-    yield * CSL.debug(inspect(event, true, null));
-
-    yield * menu(event);
-});
-
-
-export const handler = makeLambda(h, makeLambdaLayer({
+export const handler = makeLambda(menu, makeLambdaLayer({
+    caches: [
+        MenuCache.Live,
+    ],
     apis: [
         Clashofclans.Live,
         DiscordLayerLive,

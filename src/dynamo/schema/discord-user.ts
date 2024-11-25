@@ -1,4 +1,4 @@
-import {NowId, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
+import {EmbedId, NowId, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DynamoError} from '#src/internal/errors.ts';
@@ -15,8 +15,11 @@ export const DiscordUser = S.Struct({
 
     gsi_all_user_id: UserId,
 
+    embed_id: S.optional(EmbedId),
+
     timezone: S.TimeZone,
-    quiet   : S.optional(S.String),
+
+    quiet: S.optional(S.String),
 });
 export type DUser = S.Schema.Type<typeof DiscordUser>;
 

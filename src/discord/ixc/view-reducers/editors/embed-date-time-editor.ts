@@ -22,8 +22,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Date/Time Editor',
-        description: unset,
+        title: 'Date/Time Editor',
 
         editor: asEditor({
             ...s.editor,

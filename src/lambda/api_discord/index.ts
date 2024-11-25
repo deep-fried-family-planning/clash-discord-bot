@@ -3,7 +3,7 @@ import {badImplementation} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {makeLambda} from '@effect-aws/lambda';
-import {CFG, E, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
@@ -212,6 +212,8 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
 
 export const handler = makeLambda(h, makeLambdaLayer({
+    caches: [L.empty],
+
     apis: [
         DiscordLayerLive,
     ],

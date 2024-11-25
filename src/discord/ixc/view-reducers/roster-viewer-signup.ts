@@ -230,13 +230,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 }),
 
         back: BackB.as(RosterViewerB.id),
-        // forward: Forward.render({
-        //     disabled:
-        //         !Submit.clicked(ax)
-        //         || Designation.values.length === 0
-        //         || Availability.values.length === 0
-        //         || Accounts.values.length === 0,
-        // }),
     };
 }));
 

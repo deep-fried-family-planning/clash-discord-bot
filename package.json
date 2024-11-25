@@ -25,7 +25,7 @@
     "apply": "terraform -chdir=terraform apply .plan.tfplan",
     "reset": "rm -rf **/node_modules **/dist **/*.tfplan **/*.lock.hcl **/.terraform",
     "sendit": "pnpm run build && pnpm run plan && pnpm run apply",
-    "teehee": "pnpm run sendit",
+    "teehee": "pnpm run types && pnpm run sendit",
     "commitlint": "commitlint --edit",
     "prepare": "husky"
   },

@@ -6,7 +6,7 @@ import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
 
 
-export type MadeSelectUser = ReturnType<typeof makeSelectRole>;
+export type MadeSelectRole = ReturnType<typeof makeSelectRole>;
 
 
 export const makeSelectRole = (

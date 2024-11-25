@@ -12,6 +12,8 @@ export const infoCreate = (info: DInfo) => E.gen(function * () {
         TableName: process.env.DDB_OPERATIONS,
         Item     : encoded,
     });
+
+    return encoded;
 });
 
 

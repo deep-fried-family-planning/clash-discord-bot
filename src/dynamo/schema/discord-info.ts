@@ -1,5 +1,5 @@
 import {S} from '#src/internal/pure/effect.ts';
-import {InfoId, ServerId} from '#src/dynamo/schema/common.ts';
+import {EmbedId, InfoId, ServerId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 
@@ -17,15 +17,23 @@ export const DiscordInfo = S.Struct({
     created: S.Date,
     updated: S.Date,
 
+    embed_id      : S.optional(EmbedId),
+    selector_label: S.optional(S.String),
+    selector_desc : S.optional(S.String),
+    selector_order: S.optional(S.Number),
+
     kind: S.Enums({
+        omni : 'omni',
         about: 'about',
         guide: 'guide',
         rule : 'rule',
     } as const),
-    after: InfoId,
-    name : S.String,
-    desc : S.String,
-    color: S.Number,
+
+
+    after: S.optional(S.String),
+    name : S.optional(S.String),
+    desc : S.optional(S.String),
+    color: S.optional(S.Number),
     image: S.optional(S.String),
 });
 

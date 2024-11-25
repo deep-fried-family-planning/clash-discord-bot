@@ -1,5 +1,5 @@
 import {Console} from 'effect';
-import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode} from '#src/dynamo/schema/common.ts';
+import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode, EmbedId, MessageId} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -8,15 +8,21 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 
 export const DiscordServer = S.Struct({
+    type: S.Literal('DiscordServer'),
+
     pk: ServerId,
     sk: NowId,
 
-    type   : S.Literal('DiscordServer'),
     version: S.Literal('1.0.0'),
     created: S.Date,
     updated: S.Date,
 
     gsi_all_server_id: ServerId,
+
+    embed_id: S.optional(EmbedId),
+
+    omni_channel_id: S.optional(ChannelId),
+    omni_message_id: S.optional(MessageId),
 
     name : S.String.pipe(S.optionalWith({default: () => ''})),
     alias: S.String.pipe(S.optionalWith({default: () => ''})),

@@ -1,5 +1,5 @@
 import {makeLambda} from '@effect-aws/lambda';
-import {CFG, E, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
@@ -107,7 +107,9 @@ const h = () => E.gen(function* () {
 
 
 export const handler = makeLambda(h, makeLambdaLayer({
-    apis: [
+    caches: [L.empty],
+    apis  : [
         DiscordLayerLive,
     ],
+    aws: [L.empty],
 }));

@@ -1,5 +1,5 @@
 import {Console, Schema as S} from 'effect';
-import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
+import {EmbedId, PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -20,13 +20,17 @@ export const DiscordPlayer = S.Struct({
     gsi_user_id   : UserId,
     gsi_player_tag: PlayerTag,
 
-    alias       : S.String.pipe(S.optionalWith({default: () => ''})),
+    embed_id: S.optional(EmbedId),
+
+    alias: S.String.pipe(S.optionalWith({default: () => ''})),
+
     verification: S.Enums({
         none     : 0,
         admin    : 1,
         token    : 2,
         developer: 3,
     }),
+
     account_type: S.String,
 });
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;

@@ -7,9 +7,10 @@ import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 
 
-const saveUserRecord = (s: IxState, tz: string, qs: string, qe: string) => E.gen(function * () {
+const saveUserRecord = (s: IxState, tz: string) => E.gen(function * () {
     yield * putDiscordUser({
         type           : 'DiscordUser',
         pk             : s.user_id,
@@ -20,55 +21,34 @@ const saveUserRecord = (s: IxState, tz: string, qs: string, qe: string) => E.gen
         ...s.user,
         updated        : new Date(Date.now()),
         timezone       : yield * S.decodeUnknown(S.TimeZone)(tz),
-        quiet          : `${qs}-${qe}`,
     });
 });
 
 
-const axn = {
-    EDIT_USER_OPEN  : makeId(RDXK.OPEN, 'U'),
-    EDIT_USER_TZ    : makeId(RDXK.UPDATE, 'UTZ'),
-    EDIT_USER_QS    : makeId(RDXK.UPDATE, 'UQS'),
-    EDIT_USER_QE    : makeId(RDXK.UPDATE, 'UQE'),
-    EDIT_USER_SUBMIT: makeId(RDXK.SUBMIT, 'U'),
-};
-
-
-export const UserB = PrimaryB.as(axn.EDIT_USER_OPEN, {label: 'User'});
-const UserSubmitB = SubmitB.as(axn.EDIT_USER_SUBMIT);
+export const UserB = PrimaryB.as(makeId(RDXK.OPEN, 'U'), {label: 'User'});
+const UserSubmitB = SubmitB.as(makeId(RDXK.SUBMIT, 'U'));
 const Delete = DeleteB.as(makeId(RDXK.DELETE, 'U'));
 const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'U'));
-const UserTzS = SingleS.as(axn.EDIT_USER_TZ, {
+const UserTzS = SingleS.as(makeId(RDXK.UPDATE, 'UTZ'), {
     placeholder: 'Timezone',
     options    : SELECT_TIMEZONES,
 });
-// const UserQsS = SingleS.as(axn.EDIT_USER_QS, {
-//     placeholder: 'Quiet Start',
-//     options    : SELECT_TIMES,
-// });
-// const UserQeS = SingleS.as(axn.EDIT_USER_QE, {
-//     placeholder: 'Quiet End',
-//     options    : SELECT_TIMES,
-// });
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Timezone = UserTzS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-    // const QuietStart = UserQsS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-    // const QuietEnd = UserQeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
     const areAnyUnselected
         = Timezone.values.length === 0;
-        // || QuietStart.values.length === 0
-        // || QuietEnd.values.length === 0;
 
-    const isSubmitting = ax.id.predicate === axn.EDIT_USER_SUBMIT.predicate;
+    const isSubmitting = UserSubmitB.clicked(ax);
 
     if (isSubmitting) {
-        yield * saveUserRecord(s, Timezone.values[0], '', '' /* QuietStart.values[0], QuietEnd.values[0] */);
+        yield * saveUserRecord(s, Timezone.values[0]);
+        yield * MenuCache.userInvalidate(s.user_id);
     }
 
     return {
@@ -76,13 +56,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
         title      : 'User Settings',
         description: unset,
 
-        status: isSubmitting
-            ? asSuccess({description: `user record created with ${Timezone.values[0]}`}) // (${QuietStart.values[0]}-${QuietEnd.values[0]})
+        status: UserSubmitB.clicked(ax)
+            ? asSuccess({description: `user record created with ${Timezone.values[0]}`})
             : undefined,
 
         sel1: Timezone.render({disabled: isSubmitting}),
-        // sel2: QuietStart.render({disabled: isSubmitting}),
-        // sel3: QuietEnd.render({disabled: isSubmitting}),
 
         submit: UserSubmitB.render({
             disabled: areAnyUnselected || isSubmitting,

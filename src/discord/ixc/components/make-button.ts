@@ -28,6 +28,7 @@ export const makeButton = (
             ...options,
             custom_id: id.custom_id,
         }),
+        values: [id.custom_id],
 
         clicked: (ax: IxAction) => ax.id.predicate === id.predicate,
 
