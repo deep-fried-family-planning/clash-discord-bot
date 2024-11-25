@@ -222,3 +222,28 @@ export const OPTION_LIMIT = {
         description: 'limit wars ingested by stats model (ex. only 50 wars) (warning: slow)',
     },
 } as const satisfies CommandSpec['options'];
+
+
+export const ROSTER_ROUNDS = [
+    {label: 'Round 1', value: '0', default: true},
+    {label: 'Round 2', value: '1', default: true},
+    {label: 'Round 3', value: '2', default: true},
+    {label: 'Round 4', value: '3', default: true},
+    {label: 'Round 5', value: '4', default: true},
+    {label: 'Round 6', value: '5', default: true},
+    {label: 'Round 7', value: '6', default: true},
+];
+
+
+export const ROSTER_DESIGNATIONS = [{
+    label  : 'Default',
+    value  : 'default',
+    default: true,
+}, {
+    label      : 'Designated 2 Star',
+    value      : 'dts',
+    description: '2 star higher bases as a lower TH account',
+}];
+
+
+export const UNAVAILABLE = 'Unavailable';

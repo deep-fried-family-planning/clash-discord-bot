@@ -1,5 +1,5 @@
 import {Schema as S} from 'effect';
-import {PlayerTag, RosterId, UserId} from '#src/dynamo/schema/common.ts';
+import {RosterId, UserId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 

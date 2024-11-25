@@ -3,12 +3,14 @@ import {BackB, NewB, PrimaryB, SingleS} from '#src/discord/ixc/components/global
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
-import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {AccountViewerAdminB} from '#src/discord/ixc/view-reducers/account-viewer-admin.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
+import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import {viewUserPlayerOptions} from '#src/discord/ixc/views/user-player-options.ts';
 
 
 export const AccountViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'AV'), {
@@ -19,34 +21,13 @@ export const AccountViewerAccountS = SingleS.as(makeId(RDXK.UPDATE, 'AVA'), {
 });
 
 
-export const getPlayers = typeRxHelper((s, ax) => E.gen(function * () {
-    const records = pipe(
-        yield * queryPlayersForUser({pk: s.user_id}),
-        sortWithL((r) => r.sk, ORDS),
-    );
+export const getPlayers = (s: IxState) => E.gen(function * () {
+    const records = yield * queryPlayersForUser({pk: s.user_id});
 
-    const players = pipe(
-        yield * Clashofclans.getPlayers(records.map((r) => r.sk)),
-        sortWithL((p) => p.tag, ORDS),
-    );
+    const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
 
-    const together = zipL(records, players);
-
-    return pipe(
-        together,
-        sortByL(
-            ORD.mapInput(ORDS, ([r]) => r.account_type === 'main' ? '0' : r.account_type === 'admin-parking' ? 'ZZZ' : r.account_type),
-            ORD.mapInput(ORDNR, ([, p]) => p.townHallLevel),
-            ORD.mapInput(ORDS, ([, p]) => p.name),
-            ORD.mapInput(ORDS, ([r]) => r.sk),
-        ),
-        mapL(([r, p]) => ({
-            label      : `${p.name}  (${p.tag})`,
-            description: `[${r.account_type}] [th${p.townHallLevel}]`,
-            value      : p.tag,
-        })),
-    );
-}));
+    return viewUserPlayerOptions(records, players);
+});
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
@@ -56,7 +37,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     if (AccountViewerB.clicked(ax)) {
         Account = AccountViewerAccountS.render({
-            options: yield * getPlayers(s, ax),
+            options: yield * getPlayers(s),
         });
     }
 
