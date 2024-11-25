@@ -7,7 +7,7 @@ import {pipe} from '#src/internal/pure/effect.ts';
 import {reduceL} from '#src/internal/pure/pure-list';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
 export const encodePersist = (
@@ -30,7 +30,7 @@ export const decodePersist = (components?: str) => components
 
 export const extractPersist = (
     decodedPersist: Record<str, str[]>,
-    ax: IxAction,
+    ax: Ax,
     made: (MadeSelect | MadeButton | MadeSelectChannel | MadeSelectUser | MadeSelectRole),
 ) => {
     if (ax.id.predicate === made.id.predicate) {

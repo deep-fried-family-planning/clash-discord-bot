@@ -1,9 +1,11 @@
-import {BackB, DangerB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {BackB, DangerB} from '#src/discord/ixc/components/global-components.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/ixc/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
 export const DEVS = [
@@ -12,12 +14,12 @@ export const DEVS = [
 ];
 
 
-export const BotViewerDevB = DangerB.as(makeId(RDXK.OPEN, 'BVD'), {
+export const BotViewerDevB = DangerB.as(makeId(RK_OPEN, 'BVD'), {
     label: 'Dev',
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     return {
         ...s,
         title      : 'Secret',
@@ -28,8 +30,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
         status: unset,
 
         back: BackB.as(OmbiBoardB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const botViewerDevReducer = {

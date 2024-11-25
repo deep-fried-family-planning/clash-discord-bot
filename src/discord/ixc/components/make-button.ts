@@ -5,7 +5,7 @@ import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {Button} from 'dfx/types';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
-import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
 export type MadeButton = ReturnType<typeof makeButton>;
@@ -30,18 +30,7 @@ export const makeButton = (
         }),
         values: [id.custom_id],
 
-        clicked: (ax: IxAction) => ax.id.predicate === id.predicate,
-
-        backward: (newId: Route) => makeButton(
-            {
-                kind    : id.params.kind,
-                type    : id.params.type!,
-                backKind: newId.params.nextKind!,
-                backType: newId.params.nextType!,
-            },
-            options,
-        ),
-
+        clicked: (ax: Ax) => ax.id.predicate === id.predicate,
 
         withData: (data: str[]) => makeButton(
             {

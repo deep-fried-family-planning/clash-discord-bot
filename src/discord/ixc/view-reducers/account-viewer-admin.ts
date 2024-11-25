@@ -1,16 +1,19 @@
 import {E} from '#src/internal/pure/effect';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {asConfirm, asEditor, asSuccess} from '#src/discord/ixc/components/component-utils.ts';
 import {AccountViewerAccountS, AccountViewerB} from '#src/discord/ixc/view-reducers/account-viewer.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/internal/constants/label.ts';
 
 
-const submit = (s: IxState, playerTag: str, accountType: str) => E.gen(function * () {
+const submit = (s: St, playerTag: str, accountType: str) => E.gen(function * () {
     const record = yield * getDiscordPlayer({pk: s.user_id, sk: playerTag});
     yield * putDiscordPlayer({
         ...record,
@@ -18,22 +21,22 @@ const submit = (s: IxState, playerTag: str, accountType: str) => E.gen(function 
         account_type: accountType,
     });
 });
-const deletePlayer = (s: IxState, playerTag: str) => E.gen(function * () {
+const deletePlayer = (s: St, playerTag: str) => E.gen(function * () {
     yield * deleteDiscordPlayer({pk: s.user_id, sk: playerTag});
 });
 
 
-export const AccountViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'AVA'));
-const AccountTypeS = SingleS.as(makeId(RDXK.UPDATE, 'AVAT'), {
-    placeholder: 'Select Account Type',
+export const AccountViewerAdminB = AdminB.as(makeId(RK_OPEN, 'AVA'));
+const AccountTypeS = SingleS.as(makeId(RK_UPDATE, 'AVAT'), {
+    placeholder: PLACEHOLDER_ACCOUNT_TYPE,
     options    : SELECT_ACCOUNT_TYPE,
 });
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'AVA'));
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'AVA'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'AVA'));
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'AVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'AVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'AVA'));
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Account = AccountViewerAccountS.fromMap(s.cmap);
@@ -51,7 +54,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Edit Account',
+        title      : LABEL_TITLE_EDIT_ACCOUNT,
         description: undefined,
 
         viewer: undefined,
@@ -88,8 +91,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
         forward: Forward.render({
             disabled: !Submit.clicked(ax) || !DeleteConfirm.clicked(ax),
         }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const accountViewerAdminReducer = {

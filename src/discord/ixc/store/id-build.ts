@@ -1,15 +1,17 @@
-import {DELIM, ID_ROUTES, type Route, type RouteParams} from '#src/discord/ixc/store/id-routes.ts';
+import {ID_ROUTES, type Route, type RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {keysKv} from '#src/internal/pure/pure-kv.ts';
 import {inject} from 'regexparam';
+import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/internal/constants/delim.ts';
+import {idPredicate} from '#src/discord/ixc/store/id.ts';
 
 
-export const toId = (params: RouteParams) => {
+export const toId = (params: RouteParams): Route => {
     const redefined = {
         ...params,
-        data: params.data?.map((d) => d.replaceAll(DELIM.SLASH, DELIM.PIPE)).join(DELIM.DATA),
+        data: params.data?.map((d) => d.replaceAll(DELIM_SLASH, DELIM_PIPE)).join(DELIM_DATA),
     } as const;
 
     const defined = pipe(
@@ -29,8 +31,8 @@ export const toId = (params: RouteParams) => {
         custom_id    : inject(route!.template, defined as Omit<RouteParams, 'data'> & {data: string}),
         template     : route!.template,
         params,
-        predicate    : `${params.kind}/${params.type}`,
-        nextPredicate: `${params.nextKind}/${params.nextType}`,
-        backPredicate: `${params.backKind}/${params.backType}`,
+        predicate    : idPredicate(params.kind, params.type),
+        nextPredicate: idPredicate(params.nextKind, params.nextType),
+        backPredicate: idPredicate(params.backKind, params.backType),
     } as const satisfies Route;
 };

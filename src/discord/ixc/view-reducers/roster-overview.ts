@@ -1,8 +1,7 @@
 import {BackB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
 import {makeId} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
-import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {rosterRead} from '#src/dynamo/operations/roster.ts';
@@ -11,14 +10,16 @@ import {toEntries} from 'effect/Record';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asViewer} from '#src/discord/ixc/components/component-utils.ts';
 import {viewServerRosterSignupEmbed} from '#src/discord/ixc/views/server-roster-signup-embed.ts';
+import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/internal/constants/label.ts';
 
 
-export const RosterOverviewB = PrimaryB.as(makeId(RDXK.OPEN, 'RO'), {
-    label: 'Overview',
+export const RosterOverviewB = PrimaryB.as(makeId(RK_OPEN, 'RO'), {
+    label: LABEL_OVERVIEW,
 });
 
 
-const view = (s: IxState, ax: IxAction) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const Roster = RosterS.fromMap(s.cmap);
 
     const roster = yield * rosterRead({
@@ -34,7 +35,7 @@ const view = (s: IxState, ax: IxAction) => E.gen(function * () {
 
     return {
         ...s,
-        title : 'Roster Overview',
+        title : LABEL_TITLE_ROSTER_OVERVIEW,
         viewer: asViewer(
             viewServerRosterSignupEmbed(roster, signups, players),
         ),

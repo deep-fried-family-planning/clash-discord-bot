@@ -1,16 +1,17 @@
-import {Discord, UI} from 'dfx';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {UI} from 'dfx';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
 import {makeText} from '#src/discord/ixc/components/make-text.ts';
+import {RK_MODAL_OPEN, RK_MODAL_SUBMIT, RK_TEXT} from '#src/internal/constants/route-kind.ts';
+import {IXCTS} from '#src/discord/util/discord.ts';
 
 
-export const LINK_CLAN_MODAL_OPEN = toId({kind: RDXK.MODAL_OPEN, type: 'LC'});
-export const LINK_CLAN_MODAL_SUBMIT = toId({kind: RDXK.MODAL_SUBMIT, type: 'LC'});
+export const LINK_CLAN_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'LC'});
+export const LINK_CLAN_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LC'});
 
 
-export const ClanTagT = makeText({kind: RDXK.TEXT, type: 'CT'}, {
+export const ClanTagT = makeText({kind: RK_TEXT, type: 'CT'}, {
     label      : 'Clan Tag',
-    style      : Discord.TextInputStyle.SHORT,
+    style      : IXCTS.SHORT,
     placeholder: 'check in-game clan profile',
 });
 

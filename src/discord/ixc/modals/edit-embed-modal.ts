@@ -1,16 +1,16 @@
 import {makeText} from '#src/discord/ixc/components/make-text.ts';
 import {IXCTS} from '#src/discord/util/discord.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {UI} from 'dfx';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
+import {RK_MODAL_OPEN, RK_MODAL_SUBMIT, RK_TEXT} from '#src/internal/constants/route-kind.ts';
 
 
-export const EDIT_EMBED_MODAL_OPEN = toId({kind: RDXK.MODAL_OPEN, type: 'EE'});
-export const EDIT_EMBED_MODAL_SUBMIT = toId({kind: RDXK.MODAL_SUBMIT, type: 'EE'});
+export const EDIT_EMBED_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'EE'});
+export const EDIT_EMBED_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'EE'});
 
 
 export const EditEmbedTitleT = makeText({
-    kind: RDXK.TEXT,
+    kind: RK_TEXT,
     type: 'EET',
 }, {
     label      : 'Edit Title',
@@ -20,7 +20,7 @@ export const EditEmbedTitleT = makeText({
 
 
 export const EditEmbedDescriptionT = makeText({
-    kind: RDXK.TEXT,
+    kind: RK_TEXT,
     type: 'EED',
 }, {
     label      : 'Edit Description',
@@ -30,7 +30,7 @@ export const EditEmbedDescriptionT = makeText({
 
 
 export const EditEmbedColorT = makeText({
-    kind: RDXK.TEXT,
+    kind: RK_TEXT,
     type: 'EEC',
 }, {
     label      : 'Edit Color',

@@ -170,10 +170,72 @@ export const OPTION_TZ = {
         type       : 3,
         name       : 'tz',
         description: 'timezone',
-        choices    : SELECT_TIMEZONES.map((tz) => ({
-            name : tz.label,
-            value: tz.value,
-        })),
+        choices    : [
+            {
+                name : 'America/New_York',
+                value: 'America/New_York',
+            },
+            {
+                name : 'America/Chicago',
+                value: 'America/Chicago',
+            },
+            {
+                name : 'America/Los_Angeles',
+                value: 'America/Los_Angeles',
+            },
+            {
+                name : 'Asia/Calcutta',
+                value: 'Asia/Calcutta',
+            },
+            {
+                name : 'Asia/Manila',
+                value: 'Asia/Manila',
+            },
+            {
+                name : 'Europe/London',
+                value: 'Europe/London',
+            },
+            {
+                name : 'Europe/Paris',
+                value: 'Europe/Paris',
+            },
+            {
+                name : 'Asia/Riyadh',
+                value: 'Asia/Riyadh',
+            },
+            {
+                name : 'Asia/Dubai',
+                value: 'Asia/Dubai',
+            },
+            {
+                name : 'Africa/Johannesburg',
+                value: 'Africa/Johannesburg',
+            },
+            {
+                name : 'Asia/Tokyo',
+                value: 'Asia/Tokyo',
+            },
+            {
+                name : 'America/Argentina/Buenos_Aires',
+                value: 'America/Argentina/Buenos_Aires',
+            },
+            {
+                name : 'America/Santiago',
+                value: 'America/Santiago',
+            },
+            {
+                name : 'Asia/Baghdad',
+                value: 'Asia/Baghdad',
+            },
+            {
+                name : 'Pacific/Honolulu',
+                value: 'Pacific/Honolulu',
+            },
+            {
+                name : 'Asia/Gaza',
+                value: 'Asia/Gaza',
+            },
+        ],
     },
 } as const satisfies CommandSpec['options'];
 
@@ -276,3 +338,13 @@ export const SELECT_POSITIONS = [
     {value: '24', label: '24'},
     {value: '25', label: '25'},
 ];
+
+
+export const DELIM = {
+    DATA: '&',
+};
+
+
+export const FOOTER = {
+
+};

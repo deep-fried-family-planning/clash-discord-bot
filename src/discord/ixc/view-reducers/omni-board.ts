@@ -1,5 +1,4 @@
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {snflk} from '#src/discord/types.ts';
@@ -15,23 +14,27 @@ import {dLinesS} from '#src/discord/util/markdown.ts';
 import {BotViewer} from '#src/discord/ixc/view-reducers/bot-viewer.ts';
 import {ServerViewerB} from '#src/discord/ixc/view-reducers/server-viewer.ts';
 import {BotViewerDevB, DEVS} from '#src/discord/ixc/view-reducers/bot-viewer-dev.ts';
+import {RK_ENTRY, RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/internal/constants/label.ts';
 
 
 const axn = {
-    ENTRY: makeId(RDXK.ENTRY, 'INFO'),
-    OPEN : makeId(RDXK.OPEN, 'INFO'),
+    ENTRY: makeId(RK_ENTRY, 'INFO'),
+    OPEN : makeId(RK_OPEN, 'INFO'),
 };
 
 
 export const OmbiBoardEB = SuccessB.as(axn.ENTRY, {
-    label: 'Start',
+    label: LABEL_START,
 });
 export const OmbiBoardB = SuccessB.as(axn.OPEN, {
-    label: 'Start',
+    label: LABEL_START,
 });
 
 
-const start = typeRx((s, ax) => E.gen(function * () {
+const start = (s: St, ax: Ax) => E.gen(function * () {
     return {
         ...s,
         title:
@@ -56,17 +59,17 @@ const start = typeRx((s, ax) => E.gen(function * () {
         submit: LinkB,
         delete: ServerViewerB.if(s.user_roles.includes(s.server!.admin as snflk)),
         back  : BotViewerDevB.if(DEVS.includes(s.user_id)),
-    };
-}));
-
-
-export const LinkB = SuccessB.as(makeId(RDXK.OPEN, 'LINK'), {
-    label: 'Link',
+    } satisfies St;
 });
-const link = typeRx((s, ax) => E.gen(function * () {
+
+
+export const LinkB = SuccessB.as(makeId(RK_OPEN, 'LINK'), {
+    label: LABEL_LINK,
+});
+const link = (s: St, ax: Ax) => E.gen(function * () {
     return {
         ...s,
-        title      : 'Link',
+        title      : LABEL_TITLE_LINK,
         description: undefined,
 
         viewer: unset,
@@ -81,8 +84,8 @@ const link = typeRx((s, ax) => E.gen(function * () {
 
         back  : BackB.as(OmbiBoardB.id),
         delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const infoBoardReducer = {

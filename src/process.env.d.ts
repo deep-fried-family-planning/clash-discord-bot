@@ -1,6 +1,8 @@
 declare namespace NodeJS {
     interface ProcessEnv {
         LAMBDA_ENV             : string;
+        LAMBDA_ENV_LOWER       : string;
+        LAMBDA_ENV_UPPER       : string;
         LAMBDA_ROLE_ARN        : string;
         DDB_OPERATIONS         : string;
         SQS_URL_DISCORD_MENU   : string;

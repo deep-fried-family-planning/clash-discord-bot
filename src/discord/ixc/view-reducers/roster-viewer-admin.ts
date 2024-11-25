@@ -1,6 +1,5 @@
 import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
@@ -9,20 +8,24 @@ import {DateTimeEditorB} from '#src/discord/ixc/view-reducers/editors/embed-date
 import {ClanSelectB} from '#src/discord/ixc/view-reducers/old/clan-select.ts';
 import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
 import {rosterDelete} from '#src/dynamo/operations/roster.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {PLACEHOLDER_ROSTER_TYPE} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_ROSTER_ADMIN} from '#src/internal/constants/label.ts';
 
 
-export const RosterViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'RVA'), {
-});
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RVA'));
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'RVA'));
-const ConfirmDelete = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'RVA'));
-const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RCT'), {
-    placeholder: 'Select Roster Type',
+export const RosterViewerAdminB = AdminB.as(makeId(RK_OPEN, 'RVA'));
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'RVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'RVA'));
+const ConfirmDelete = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVA'));
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'RCT'), {
+    placeholder: PLACEHOLDER_ROSTER_TYPE,
     options    : SELECT_ROSTER_TYPE,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Roster = RosterS.fromMap(s.cmap);
@@ -42,7 +45,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
     return {
         ...s,
 
-        title      : 'Roster Admin',
+        title      : LABEL_TITLE_ROSTER_ADMIN,
         description: unset,
 
         viewer: unset,
@@ -80,8 +83,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             ).render({
                 disabled: ConfirmDelete.clicked(ax),
             }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const rosterViewerAdminReducer = {

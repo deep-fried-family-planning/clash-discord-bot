@@ -1,31 +1,35 @@
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, DangerB, ForwardB, SingleS, SingleUserS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {PlayerTagT} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LINK_ACCOUNT_ADMIN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-account-admin-modal.ts';
 import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_ADMIN_LINK, LABEL_LINK, LABEL_PLAYER_TAG, LABEL_TITLE_ADMIN_LINK, LABEL_TRY_AGAIN} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_ACCOUNT_TYPE, PLACEHOLDER_SELECT_USER} from '#src/internal/constants/placeholder.ts';
 
 
-export const LinkAccountAdminB = DangerB.as(makeId(RDXK.OPEN, 'LAA'), {
-    label: 'Admin Link',
+export const LinkAccountAdminB = DangerB.as(makeId(RK_OPEN, 'LAA'), {
+    label: LABEL_ADMIN_LINK,
 });
 const TypeToModalB = SuccessB.as(LINK_ACCOUNT_ADMIN_MODAL_OPEN, {
-    label: 'Player Tag',
+    label: LABEL_PLAYER_TAG,
 });
-const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'LAAT'), {
-    placeholder: 'Account Type',
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'LAAT'), {
+    placeholder: PLACEHOLDER_ACCOUNT_TYPE,
     options    : SELECT_ACCOUNT_TYPE,
 });
-const UserS = SingleUserS.as(makeId(RDXK.UPDATE, 'LAAU'), {
-    placeholder: 'Select User',
+const UserS = SingleUserS.as(makeId(RK_UPDATE, 'LAAU'), {
+    placeholder: PLACEHOLDER_SELECT_USER,
 });
 
 
-const view1 = typeRx((s, ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -33,7 +37,7 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Account Admin Link',
+        title      : LABEL_TITLE_ADMIN_LINK,
         description: unset,
 
         viewer: unset,
@@ -49,14 +53,12 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
                 || User.values.length === 0,
         }),
         back: BackB.as(LinkB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
-const view2 = typeRx((s, ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function * () {
     const tag = PlayerTagT.fromMap(ax.cmap);
-    // const account_kind = ax.id.params.data![0];
-
     const Type = TypeS.fromMap(s.cmap);
     const User = UserS.fromMap(s.cmap);
 
@@ -83,7 +85,7 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Account Admin Link',
+        title      : LABEL_TITLE_ADMIN_LINK,
         description: unset,
 
         viewer: unset,
@@ -94,12 +96,12 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
 
         back: SuccessB.as(LinkAccountAdminB.id).render({
             label: 'type' in message
-                ? 'Try Again'
-                : 'Link',
+                ? LABEL_TRY_AGAIN
+                : LABEL_LINK,
         }),
         forward: ForwardB.as(LinkB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const linkAccountAdminReducer = {

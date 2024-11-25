@@ -1,37 +1,35 @@
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/ixc/modals/link-clan-modal.ts';
 import {clanfam} from '#src/discord/ixs/link/clanfam.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_CLAN_LINK, LABEL_CLAN_TAG} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_WAR_COUNTDOWN} from '#src/internal/constants/placeholder.ts';
 
 
-const axn = {
-    LINK_CLAN_TYPE_OPEN  : makeId(RDXK.OPEN, 'LCT'),
-    LINK_CLAN_TYPE_UPDATE: makeId(RDXK.UPDATE, 'LCT'),
-};
-
-
-export const LinkClanB = NewB.as(axn.LINK_CLAN_TYPE_OPEN);
-const ChannelS = SingleChannelS.as(axn.LINK_CLAN_TYPE_UPDATE, {
-    placeholder: 'War Countdown Channel',
+export const LinkClanB = NewB.as(makeId(RK_OPEN, 'LCT'));
+const ChannelS = SingleChannelS.as(makeId(RK_UPDATE, 'LCT'), {
+    placeholder: PLACEHOLDER_WAR_COUNTDOWN,
 });
 const TypeToModalB = SuccessB.as(LINK_CLAN_MODAL_OPEN, {
-    label: 'Clan Tag',
+    label: LABEL_CLAN_TAG,
 });
 
 
-const view1 = typeRx((s, ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Countdown = ChannelS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     return {
         ...s,
-        title      : 'Clan Link',
+        title      : LABEL_CLAN_LINK,
         description: unset,
 
         viewer: unset,
@@ -47,11 +45,11 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
             disabled: Countdown.values.length === 0,
         }),
         back: BackB.as(LinkB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
-const view2 = typeRx((s, ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function * () {
     const tag = ClanTagT.fromMap(ax.cmap);
 
     const Countdown = ChannelS.fromMap(s.cmap);
@@ -86,8 +84,8 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
                 : 'Link',
         }),
         forward: ForwardB.as(LinkB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const linkClanReducer = {

@@ -1,27 +1,30 @@
-import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect';
+import {E} from '#src/internal/pure/effect';
 import {BackB, NewB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
-import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {AccountViewerAdminB} from '#src/discord/ixc/view-reducers/account-viewer-admin.ts';
 import {LinkAccountB} from '#src/discord/ixc/view-reducers/links/link-account.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
 import {viewUserPlayerOptions} from '#src/discord/ixc/views/user-player-options.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/constants/placeholder.ts';
+import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/constants/description.ts';
 
 
-export const AccountViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'AV'), {
-    label: 'Accounts',
+export const AccountViewerB = PrimaryB.as(makeId(RK_OPEN, 'AV'), {
+    label: LABEL_ACCOUNTS,
 });
-export const AccountViewerAccountS = SingleS.as(makeId(RDXK.UPDATE, 'AVA'), {
-    placeholder: 'Select Account',
+export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
+    placeholder: PLACEHOLDER_SELECT_ACCOUNT,
 });
 
 
-export const getPlayers = (s: IxState) => E.gen(function * () {
+export const getPlayers = (s: St) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: s.user_id});
 
     const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
@@ -30,7 +33,7 @@ export const getPlayers = (s: IxState) => E.gen(function * () {
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     let Account = AccountViewerAccountS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -43,7 +46,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Your Accounts',
+        title      : LABEL_YOUR_ACCOUNTS,
         description: undefined,
 
         viewer: asViewer(
@@ -54,7 +57,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     title: Account.values[0],
                 }
                 : {
-                    description: 'No Account Selected',
+                    description: DESC_NO_ACCOUNT_SELECTED,
                 },
         ),
         editor: undefined,
@@ -72,12 +75,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     emoji: NewB.component.emoji!,
                 })
                 : AccountViewerAdminB,
-    };
-}));
+    } satisfies St;
+});
 
 
 export const accountViewerReducer = {
     [AccountViewerB.id.predicate]       : view,
-    [AccountViewerAccountS.id.predicate]: view,
     [AccountViewerAccountS.id.predicate]: view,
 };

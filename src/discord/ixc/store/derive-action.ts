@@ -11,7 +11,7 @@ import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {Route} from '#src/discord/ixc/store/id-routes.ts';
 
 
-export type IxAction = {
+export type Ax = {
     id      : Route;
     selected : {
         type : str;
@@ -23,7 +23,7 @@ export type IxAction = {
 };
 
 
-export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
+export const deriveAction = (ix: IxD, d: IxDc | IxDm) => {
     const id = fromId(d.custom_id);
 
     const cmap = 'components' in d
@@ -41,7 +41,7 @@ export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
         )
         : undefined;
 
-    const action = {
+    return {
         id,
         original: d as unknown as IxDm,
         selected: 'values' in d
@@ -52,11 +52,7 @@ export const deriveAction = (ix: IxD, d: IxDc | IxDm) => E.gen(function * () {
             : [],
         forward: id.params.forward,
         cmap,
-    } as const satisfies IxAction;
-
-    yield * CSL.debug('[ACTION]', inspect(action, true, null));
-
-    return action;
-});
+    } as const satisfies Ax;
+};
 
 

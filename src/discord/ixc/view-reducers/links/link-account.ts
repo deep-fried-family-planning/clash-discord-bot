@@ -1,40 +1,37 @@
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, ForwardB, SingleS, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {ApiTokenT, LINK_ACCOUNT_MODAL_SUBMIT, LINK_ACCOUNT_MODAL_OPEN, PlayerTagT} from '#src/discord/ixc/modals/link-account-modal.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
 import {asFailure, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_ACCOUNT_LINK, LABEL_ACCOUNT_TYPE, LABEL_LINK, LABEL_PLAYER_TAG_API_TOKEN, LABEL_TRY_AGAIN} from '#src/internal/constants/label.ts';
 
 
-const axn = {
-    LINK_ACCOUNT_TYPE_OPEN  : makeId(RDXK.OPEN, 'SPTO'),
-    LINK_ACCOUNT_TYPE_UPDATE: makeId(RDXK.UPDATE, 'SPTU'),
-};
-
-
-export const LinkAccountB = SuccessB.as(axn.LINK_ACCOUNT_TYPE_OPEN, {
-    label: 'Link',
+export const LinkAccountB = SuccessB.as(makeId(RK_OPEN, 'SPTO'), {
+    label: LABEL_LINK,
 });
-const TypeS = SingleS.as(axn.LINK_ACCOUNT_TYPE_UPDATE, {
-    placeholder: 'Account Type',
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'SPTU'), {
+    placeholder: LABEL_ACCOUNT_TYPE,
     options    : SELECT_ACCOUNT_TYPE,
 });
 const TypeToModalB = SuccessB.as(LINK_ACCOUNT_MODAL_OPEN, {
-    label: 'Player Tag / API Token',
+    label: LABEL_PLAYER_TAG_API_TOKEN,
 });
 
 
-const view1 = typeRx((s, ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     return {
         ...s,
-        title      : 'Account Link',
+        title      : LABEL_ACCOUNT_LINK,
         description: unset,
 
         viewer: unset,
@@ -46,11 +43,11 @@ const view1 = typeRx((s, ax) => E.gen(function * () {
         submit: TypeToModalB.withData(Type.values).render({
             disabled: Type.values.length === 0,
         }),
-    };
-}));
+    } satisfies St;
+});
 
 
-const view2 = typeRx((s, ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function * () {
     const tag = PlayerTagT.fromMap(ax.cmap);
     const api = ApiTokenT.fromMap(ax.cmap);
     const account_kind = ax.id.params.data![0];
@@ -78,7 +75,7 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Account Link',
+        title      : LABEL_ACCOUNT_LINK,
         description: unset,
 
         viewer: unset,
@@ -89,12 +86,12 @@ const view2 = typeRx((s, ax) => E.gen(function * () {
 
         back: BackB.as(LinkAccountB.id).render({
             label: 'type' in message
-                ? 'Try Again'
-                : 'Link',
+                ? LABEL_TRY_AGAIN
+                : LABEL_LINK,
         }),
         forward: ForwardB.as(LinkB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const linkAccountReducer = {

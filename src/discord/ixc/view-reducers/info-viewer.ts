@@ -1,6 +1,5 @@
 import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
@@ -12,24 +11,28 @@ import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
 import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/discord/ix-constants.ts';
 import {viewInfoEmbed} from '#src/discord/ixc/views/info-embed.ts';
-import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {fromReferenceFields} from '#src/discord/ixc/views/util.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {DELIM_DATA} from '#src/internal/constants/delim.ts';
+import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/internal/constants/placeholder.ts';
 
 
-export const InfoViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'IV'), {
-    label: 'Info',
+export const InfoViewerB = PrimaryB.as(makeId(RK_OPEN, 'IV'), {
+    label: LABEL_INFO,
 });
-export const KindNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVK'), {
-    placeholder: 'Select Info Kind',
+export const KindNavS = SingleS.as(makeId(RK_UPDATE, 'IVK'), {
+    placeholder: PLACEHOLDER_INFO_KIND,
     options    : SELECT_INFO_KIND,
 });
-export const InfoNavS = SingleS.as(makeId(RDXK.UPDATE, 'IVI'), {
-    placeholder: 'Select Info Embed',
+export const InfoNavS = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
+    placeholder: PLACEHOLDER_INFO_EMBED,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
 
     const Kind = KindNavS.fromMap(s.cmap)
@@ -49,7 +52,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
             mapL((i) => ({
                 label      : i.selector_label ?? i.name!,
                 description: i.selector_desc!,
-                value      : [i.sk, i.embed_id!].join(DELIM.DATA),
+                value      : [i.sk, i.embed_id!].join(DELIM_DATA),
             })),
         );
 
@@ -66,7 +69,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
     let viewer: Embed | undefined;
 
     if (Info.id.predicate === ax.id.predicate) {
-        const [infoId, embedId] = Info.values[0].split(DELIM.DATA);
+        const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
 
         const embed = yield * MenuCache.embedRead(embedId);
 
@@ -76,7 +79,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Info',
+        title      : LABEL_TITLE_INFO,
         description: unset,
         system     : unset,
 
@@ -101,8 +104,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 : InfoViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))?.render({
                     disabled: !Info.values.length,
                 }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const infoViewerReducer = {

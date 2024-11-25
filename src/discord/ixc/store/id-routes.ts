@@ -1,17 +1,16 @@
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {parse} from 'regexparam';
-import type {RDXK} from '#src/discord/ixc/store/types.ts';
 
 
 export type Route = {
     custom_id: str;
     template : str;
     params: {
-        kind     : RDXK;
+        kind     : str;
         type?    : str | und;
-        nextKind?: RDXK | und;
+        nextKind?: str | und;
         nextType?: str | und;
-        backKind?: RDXK;
+        backKind?: str;
         backType?: str | und;
         forward? : str | und;
         data?    : str[];
@@ -21,13 +20,6 @@ export type Route = {
     backPredicate: str;
 };
 export type RouteParams = Route['params'];
-
-
-export const enum DELIM {
-    DATA = '&',
-    SLASH = '/',
-    PIPE = '|',
-};
 
 
 const templates = [

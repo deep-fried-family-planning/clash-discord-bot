@@ -1,17 +1,19 @@
-import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
-import {putDiscordUser} from '#src/dynamo/schema/discord-user.ts';
 import {SELECT_TIMEZONES} from '#src/discord/ix-constants.ts';
 import {LinkB} from '#src/discord/ixc/view-reducers/omni-board.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
-import {asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import {asSuccess, isClicked, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind';
+import {RK_SUBMIT} from '#src/internal/constants/route-kind.ts';
+import {userCreate, userDelete} from '#src/dynamo/operations/user.ts';
 
 
-const saveUserRecord = (s: IxState, tz: string) => E.gen(function * () {
-    yield * putDiscordUser({
+const saveUserRecord = (s: St, tz: string) => E.gen(function * () {
+    yield * userCreate({
         type           : 'DiscordUser',
         pk             : s.user_id,
         sk             : 'now',
@@ -25,29 +27,48 @@ const saveUserRecord = (s: IxState, tz: string) => E.gen(function * () {
 });
 
 
-export const UserB = PrimaryB.as(makeId(RDXK.OPEN, 'U'), {label: 'User'});
-const UserSubmitB = SubmitB.as(makeId(RDXK.SUBMIT, 'U'));
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'U'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'U'));
-const UserTzS = SingleS.as(makeId(RDXK.UPDATE, 'UTZ'), {
+export const UserB = PrimaryB.as(makeId(RK_OPEN, 'U'), {label: 'User'});
+const UserSubmitB = SubmitB.as(makeId(RK_SUBMIT, 'U'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'U'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'U'));
+const UserTzS = SingleS.as(makeId(RK_UPDATE, 'UTZ'), {
     placeholder: 'Timezone',
     options    : SELECT_TIMEZONES,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
-    const Timezone = UserTzS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    let Timezone = UserTzS
+        .fromMap(s.cmap)
+        .setDefaultValuesIf(ax.id.predicate, selected);
+
+    if (isClicked(UserB, ax)) {
+        const tz = yield * S.encodeUnknown(S.TimeZone)(s.user?.timezone).pipe(E.catchAll(() => E.succeed('')));
+
+        Timezone = Timezone.render({
+            options: Timezone.component.options!.map((i) => i.value === tz ? {
+                ...i,
+                default: true,
+            } : i),
+        });
+    }
+
     const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
     const areAnyUnselected
         = Timezone.values.length === 0;
 
-    const isSubmitting = UserSubmitB.clicked(ax);
+    const isSubmitting = isClicked(UserSubmitB, ax);
 
-    if (isSubmitting) {
+    if (isClicked(UserSubmitB, ax)) {
         yield * saveUserRecord(s, Timezone.values[0]);
+        yield * MenuCache.userInvalidate(s.user_id);
+    }
+
+    if (isClicked(DeleteConfirm, ax)) {
+        yield * userDelete(s.user_id);
         yield * MenuCache.userInvalidate(s.user_id);
     }
 
@@ -63,22 +84,26 @@ const view = typeRx((s, ax) => E.gen(function * () {
         sel1: Timezone.render({disabled: isSubmitting}),
 
         submit: UserSubmitB.render({
-            disabled: areAnyUnselected || isSubmitting,
+            disabled: areAnyUnselected || isSubmitting || DeleteConfirm.clicked(ax) || Delete.clicked(ax) || UserB.clicked(ax),
         }),
-        delete: (
+        delete:
             !s.user ? unset
-            : Delete.render({
+            : Delete.clicked(ax) ? DeleteConfirm
+            : DeleteConfirm.clicked(ax) ? DeleteConfirm.render({
                 disabled: true,
             })
-        ),
+            : Delete.render({
+                disabled: isSubmitting,
+            }),
+
         back: BackB.as(LinkB.id, {
-            disabled: !s.user || isSubmitting,
+            disabled: !s.user || isSubmitting || DeleteConfirm.clicked(ax),
         }),
         forward: Forward.render({
             disabled: areAnyUnselected || !isSubmitting,
         }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const userEditReducer = {

@@ -1,6 +1,5 @@
 import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {InfoNavS, InfoViewerB, KindNavS} from '#src/discord/ixc/view-reducers/info-viewer.ts';
@@ -8,28 +7,33 @@ import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {SELECT_INFO_KIND, SELECT_POSITIONS, UNAVAILABLE} from '#src/discord/ix-constants.ts';
-import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
 import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
 import {fromReferenceFields, toReferenceFields} from '#src/discord/ixc/views/util.ts';
 import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {DELIM_DATA} from '#src/internal/constants/delim.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_EDIT_INFO} from '#src/internal/constants/label.ts';
 
 
-export const InfoViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'IVA'));
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'IVA'));
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'IVA'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'IVA'));
-const KindS = SingleS.as(makeId(RDXK.UPDATE, 'IVAK'), {
-    placeholder: 'Select Info Kind',
+export const InfoViewerAdminB = AdminB.as(makeId(RK_OPEN, 'IVA'));
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'IVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'IVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'IVA'));
+const KindS = SingleS.as(makeId(RK_UPDATE, 'IVAK'), {
+    placeholder: PLACEHOLDER_INFO_KIND,
     options    : SELECT_INFO_KIND,
 });
-const PositionS = SingleS.as(makeId(RDXK.UPDATE, 'IVAP'), {
-    placeholder: 'Select Position',
+const PositionS = SingleS.as(makeId(RK_UPDATE, 'IVAP'), {
+    placeholder: PLACEHOLDER_POSITION,
     options    : SELECT_POSITIONS,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const fields = fromReferenceFields(s.system);
 
     fields.InfoKind ??= {
@@ -39,12 +43,12 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     fields.InfoId ??= {
         name : 'InfoId',
-        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM.DATA)[0],
+        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM_DATA)[0],
     };
 
     fields.EmbedId ??= {
         name : 'EmbedId',
-        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM.DATA)[1],
+        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM_DATA)[1],
     };
 
     let Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
@@ -106,7 +110,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Edit Info Page',
+        title      : LABEL_TITLE_EDIT_INFO,
         description: unset,
         system     : toReferenceFields(fields),
 
@@ -162,8 +166,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     || DeleteConfirm.clicked(ax),
             }),
         back: BackB.as(InfoViewerB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const infoViewerAdminReducer = {

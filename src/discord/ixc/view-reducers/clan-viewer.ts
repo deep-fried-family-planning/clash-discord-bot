@@ -1,6 +1,5 @@
 import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {OmbiBoardB} from '#src/discord/ixc/view-reducers/omni-board.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
@@ -11,9 +10,12 @@ import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {LinkClanB} from '#src/discord/ixc/view-reducers/links/link-clan.ts';
 import type {Embed} from 'dfx/types';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
 
 
-const getClans = typeRxHelper((s, ax) => E.gen(function * () {
+const getClans = (s: St, ax: Ax) => E.gen(function * () {
     const records = pipe(
         yield * queryDiscordClanForServer({pk: s.server_id}),
         sortWithL((r) => r.sk, ORDS),
@@ -37,18 +39,18 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
             value      : c.tag,
         })),
     );
-}));
+});
 
 
-export const ClanViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'CV'), {
+export const ClanViewerB = PrimaryB.as(makeId(RK_OPEN, 'CV'), {
     label: 'Clans',
 });
-export const ClanViewerSelector = SingleS.as(makeId(RDXK.UPDATE, 'CV'), {
+export const ClanViewerSelector = SingleS.as(makeId(RK_UPDATE, 'CV'), {
     placeholder: 'Select Clan',
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
     let Clan = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
@@ -86,8 +88,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             !Clan.values.length
                 ? LinkClanB.if(s.user_roles.includes(s.server!.admin as snflk))
                 : ClanViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const clanViewerReducer = {

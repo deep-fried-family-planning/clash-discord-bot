@@ -1,5 +1,4 @@
-import {typeRx, makeId, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, NewB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
@@ -13,9 +12,14 @@ import {v4} from 'uuid';
 import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_CREATE_ROSTER} from '#src/internal/constants/label.ts';
 
 
-const saveRoster = (type: string, order: num, embed?: Embed) => typeRxHelper((s, ax) => E.gen(function * () {
+const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function * () {
     const rosterId = v4();
     const embedId = v4();
 
@@ -62,34 +66,34 @@ const saveRoster = (type: string, order: num, embed?: Embed) => typeRxHelper((s,
 
         embed: embed!,
     });
-}));
+});
 
 
-export const RosterViewerCreatorB = NewB.as(makeId(RDXK.OPEN, 'RVC'));
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'RVC'));
-const TypeS = SingleS.as(makeId(RDXK.UPDATE, 'RVCT'), {
-    placeholder: 'Select Roster Type',
+export const RosterViewerCreatorB = NewB.as(makeId(RK_OPEN, 'RVC'));
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'RVC'));
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'RVCT'), {
+    placeholder: PLACEHOLDER_ROSTER_TYPE,
     options    : SELECT_ROSTER_TYPE,
 });
-const PositionS = SingleS.as(makeId(RDXK.UPDATE, 'RVCP'), {
-    placeholder: 'Selector Position',
+const PositionS = SingleS.as(makeId(RK_UPDATE, 'RVCP'), {
+    placeholder: PLACEHOLDER_POSITION,
     options    : SELECT_POSITIONS,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     if (Submit.clicked(ax)) {
-        yield * saveRoster(Type.values[0], parseInt(Position.values[0]))(s, ax);
+        yield * saveRoster(s, Type.values[0], parseInt(Position.values[0]));
     }
 
     return {
         ...s,
-        title      : 'Create Roster',
+        title      : LABEL_TITLE_CREATE_ROSTER,
         description: unset,
 
         viewer: unset,
@@ -132,7 +136,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 || !Type.values.length,
         }),
     };
-}));
+});
 
 
 export const rosterViewerCreatorReducer = {

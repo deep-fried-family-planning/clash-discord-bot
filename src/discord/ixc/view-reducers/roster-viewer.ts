@@ -1,6 +1,5 @@
 import {BackB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx, typeRxHelper} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E, pipe} from '#src/internal/pure/effect';
 import {RosterViewerAdminB} from '#src/discord/ixc/view-reducers/roster-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
@@ -18,31 +17,36 @@ import {dLinesS} from '#src/discord/util/markdown.ts';
 import {RosterOverviewB} from '#src/discord/ixc/view-reducers/roster-overview.ts';
 import {UNAVAILABLE} from '#src/discord/ix-constants.ts';
 import {viewServerRosterOptions} from '#src/discord/ixc/views/server-roster-options.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {LABEL_ROSTERS, LABEL_TITLE_ROSTERS} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_ROSTER} from '#src/internal/constants/placeholder.ts';
 
 
-const getRosters = typeRxHelper((s, ax) => E.gen(function * () {
+const getRosters = (s: St) => E.gen(function * () {
     const rosters = yield * rosterQueryByServer({pk: s.server_id});
 
     return rosters;
-}));
-
-
-export const RosterViewerB = PrimaryB.as(makeId(RDXK.OPEN, 'RV'), {
-    label: 'Rosters',
-});
-export const RosterS = SingleS.as(makeId(RDXK.UPDATE, 'RV'), {
-    placeholder: 'Select Roster',
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+export const RosterViewerB = PrimaryB.as(makeId(RK_OPEN, 'RV'), {
+    label: LABEL_ROSTERS,
+});
+export const RosterS = SingleS.as(makeId(RK_UPDATE, 'RV'), {
+    placeholder: PLACEHOLDER_ROSTER,
+});
+
+
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
     let Roster = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     let viewer: Embed | und;
 
     if (RosterViewerB.clicked(ax) && !Roster.values.length) {
-        const rosters = yield * getRosters(s, ax);
+        const rosters = yield * getRosters(s);
 
         Roster = RosterS
             .render({
@@ -83,7 +87,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Rosters',
+        title      : LABEL_TITLE_ROSTERS,
         description: unset,
 
         viewer: asViewer(
@@ -105,8 +109,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             Roster.values.length
                 ? RosterViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))
                 : RosterViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk)),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const rosterViewerReducer = {

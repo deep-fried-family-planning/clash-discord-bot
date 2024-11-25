@@ -1,26 +1,30 @@
 import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleChannelS, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {ClanViewerB, ClanViewerSelector} from '#src/discord/ixc/view-reducers/clan-viewer.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {PLACEHOLDER_CLAN_TYPE, PLACEHOLDER_WAR_COUNTDOWN} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_ADMIN_CLAN} from '#src/internal/constants/label.ts';
 
 
-export const ClanViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'CVA'), {
+export const ClanViewerAdminB = AdminB.as(makeId(RK_OPEN, 'CVA'), {
 });
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'CVA'));
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'CVA'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'CVA'));
-const ClanTypeS = SingleS.as(makeId(RDXK.UPDATE, 'CVAT'), {
-    placeholder: 'Select Clan Type',
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'CVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'CVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'CVA'));
+const ClanTypeS = SingleS.as(makeId(RK_UPDATE, 'CVAT'), {
+    placeholder: PLACEHOLDER_CLAN_TYPE,
 });
-const CountdownS = SingleChannelS.as(makeId(RDXK.UPDATE, 'CVAC'), {
-    placeholder: 'War Countdown Channel',
+const CountdownS = SingleChannelS.as(makeId(RK_UPDATE, 'CVAC'), {
+    placeholder: PLACEHOLDER_WAR_COUNTDOWN,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const ClanType = ClanTypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -29,7 +33,7 @@ const view = typeRx((s, ax) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'Admin Clan',
+        title      : LABEL_TITLE_ADMIN_CLAN,
         description: unset,
 
         viewer: unset,
@@ -70,8 +74,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 || Countdown.values.length === 0,
         }),
         forward: ForwardB.fwd(ClanViewerB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const clanViewerAdminReducer = {

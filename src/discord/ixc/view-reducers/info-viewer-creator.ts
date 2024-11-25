@@ -1,6 +1,5 @@
 import {BackB, NewB, SingleS, SubmitB} from '#src/discord/ixc/components/global-components.ts';
 import {makeId} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {InfoViewerB} from '#src/discord/ixc/view-reducers/info-viewer.ts';
@@ -10,15 +9,18 @@ import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {infoCreate} from '#src/dynamo/operations/info.ts';
 import {v4} from 'uuid';
 import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
-import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
 import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/discord/ix-constants.ts';
 import {decodePersist, encodePersist, extractPersist} from '#src/discord/ixc/components/persistor.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/internal/constants/placeholder.ts';
+import {LABEL_TITLE_NEW_INFO} from '#src/internal/constants/label.ts';
 
 
-const createInfoEmbed = (s: IxState, kind: str, order: num, embed?: Embed) => E.gen(function * () {
+const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(function * () {
     const embedId = v4();
     const infoId = v4();
 
@@ -56,19 +58,19 @@ const createInfoEmbed = (s: IxState, kind: str, order: num, embed?: Embed) => E.
 });
 
 
-export const InfoViewerCreatorB = NewB.as(makeId(RDXK.OPEN, 'IVC'));
-const Submit = SubmitB.as(makeId(RDXK.SUBMIT, 'IVC'));
-const KindS = SingleS.as(makeId(RDXK.UPDATE, 'IVCK'), {
-    placeholder: 'Info Kind',
+export const InfoViewerCreatorB = NewB.as(makeId(RK_OPEN, 'IVC'));
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'IVC'));
+const KindS = SingleS.as(makeId(RK_UPDATE, 'IVCK'), {
+    placeholder: PLACEHOLDER_INFO_KIND,
     options    : SELECT_INFO_KIND,
 });
-const PositionS = SingleS.as(makeId(RDXK.UPDATE, 'ICVP'), {
-    placeholder: 'Selector Position',
+const PositionS = SingleS.as(makeId(RK_UPDATE, 'ICVP'), {
+    placeholder: PLACEHOLDER_POSITION,
     options    : SELECT_POSITIONS,
 });
 
 
-const view = (s: IxState, ax: IxAction) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const persisted = decodePersist(s.description);
 
     const Kind = KindS.fromMap(s.cmap).setDefaultValuesIf(KindS.id.predicate, extractPersist(persisted, ax, KindS));
@@ -80,7 +82,7 @@ const view = (s: IxState, ax: IxAction) => E.gen(function * () {
 
     return {
         ...s,
-        title      : 'New Info Page',
+        title      : LABEL_TITLE_NEW_INFO,
         description: encodePersist(
             Kind,
             Position,

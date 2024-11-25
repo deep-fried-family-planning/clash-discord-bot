@@ -1,5 +1,5 @@
-const ENV = process.env.LAMBDA_ENV.toUpperCase();
-const env = process.env.LAMBDA_ENV;
+const ENV = process.env.LAMBDA_ENV_UPPER;
+const env = process.env.LAMBDA_ENV_LOWER;
 
 export const REDACTED_DISCORD_BOT_TOKEN = `/DFFP/${ENV}/DISCORD_BOT_TOKEN`;
 export const REDACTED_DISCORD_APP_ID = `/DFFP/${ENV}/DISCORD_APP_ID`;

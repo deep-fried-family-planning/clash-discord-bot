@@ -1,5 +1,5 @@
-import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
+
 import {BackB, SingleS, SubmitB, SuccessB} from '#src/discord/ixc/components/global-components.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
@@ -12,15 +12,17 @@ import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS, UNAVAILABLE} from '#src/discord/ix-constants.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {viewUserPlayerOptions} from '#src/discord/ixc/views/user-player-options.ts';
 import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import type {SelectOption} from 'dfx/types';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
-const getAccounts = (s: IxState, rosterId: str) => E.gen(function * () {
+const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: s.user_id});
     const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
 
@@ -46,7 +48,7 @@ const getAccounts = (s: IxState, rosterId: str) => E.gen(function * () {
 });
 
 
-const approximateRoundStartTimes = (s: IxState, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimes = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
     ...o,
     description: `war start approx: ${pipe(
         DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
@@ -124,26 +126,26 @@ const signupRoster = (
 });
 
 
-export const RosterViewerSignupB = SuccessB.as(makeId(RDXK.OPEN, 'RVSU'), {
+export const RosterViewerSignupB = SuccessB.as(makeId(RK_OPEN, 'RVSU'), {
     label: 'Signup',
 });
-const SubmitSignup = SubmitB.as(makeId(RDXK.SUBMIT, 'RVSU'), {label: 'Signup'});
+const SubmitSignup = SubmitB.as(makeId(RK_SUBMIT, 'RVSU'), {label: 'Signup'});
 
-const SelectAccounts = SingleS.as(makeId(RDXK.UPDATE, 'RVSUAC'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAC'), {
     placeholder: 'Select Accounts',
 });
-const SelectAvailability = SingleS.as(makeId(RDXK.UPDATE, 'RVSUAV'), {
+const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAV'), {
     placeholder: 'Select Availability',
     options    : ROSTER_ROUNDS,
     max_values : ROSTER_ROUNDS.length,
 });
-const SelectDesignation = SingleS.as(makeId(RDXK.UPDATE, 'RVSUD'), {
+const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUD'), {
     placeholder: 'Select Designation',
     options    : ROSTER_DESIGNATIONS,
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Roster = RosterS.fromMap(s.cmap);
@@ -230,8 +232,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                 }),
 
         back: BackB.as(RosterViewerB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const rosterViewerSignupReducer = {

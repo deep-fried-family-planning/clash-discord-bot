@@ -1,14 +1,16 @@
-import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {ForwardB, PrimaryB} from '#src/discord/ixc/components/global-components.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
 import {EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
 import {nAnyColor} from '#src/internal/constants/colors.ts';
 import {IXCBS} from '#src/discord/util/discord.ts';
 import {asEditor} from '#src/discord/ixc/components/component-utils.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
+import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
 
 
-export const EmbedEditorB = PrimaryB.as(makeId(RDXK.OPEN, 'EMBED'), {
+export const EmbedEditorB = PrimaryB.as(makeId(RK_OPEN, 'EMBED'), {
     label: 'Embed',
 });
 export const EditEmbedB = PrimaryB.as(EDIT_EMBED_MODAL_OPEN, {
@@ -17,7 +19,7 @@ export const EditEmbedB = PrimaryB.as(EDIT_EMBED_MODAL_OPEN, {
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const name = EditEmbedTitleT.fromMap(ax.cmap);
     const description = EditEmbedDescriptionT.fromMap(ax.cmap);
     const color = EditEmbedColorT.fromMap(ax.cmap);
@@ -51,8 +53,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
         forward: Forward.render({
             disabled: !name?.value && !description?.value,
         }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const embedEditorReducer = {

@@ -1,4 +1,4 @@
-import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
+import type {CommandSpec, snflk} from '#src/discord/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {IXCBS, type IxD} from '#src/discord/util/discord.ts';
 import {UI} from 'dfx';
@@ -20,7 +20,7 @@ export const OMNI_BOARD
 /**
  * @desc [SLASH /omni-board]
  */
-export const omniBoard = (data: IxD, options: IxDS<typeof OMNI_BOARD>) => E.gen(function * () {
+export const omniBoard = (data: IxD) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
     if (!user.roles.includes(server.admin as snflk)) {

@@ -1,10 +1,9 @@
-import {typeRx, makeId} from '#src/discord/ixc/store/type-rx.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/ixc/view-reducers/roster-viewer.ts';
 import {asConfirm, asSuccess, asViewer, unset} from '#src/discord/ixc/components/component-utils.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
@@ -14,9 +13,11 @@ import {filterL} from '#src/internal/pure/pure-list.ts';
 import {UNAVAILABLE} from '#src/discord/ix-constants.ts';
 import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterKV} from '#src/internal/pure/pure-kv.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
-const getAccounts = (s: IxState, rosterId: str) => E.gen(function * () {
+const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: s.user_id});
     const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
 
@@ -42,7 +43,7 @@ const getAccounts = (s: IxState, rosterId: str) => E.gen(function * () {
 });
 
 
-const deleteSignup = (s: IxState, rosterId: str, tag: str) => E.gen(function * () {
+const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function * () {
     const signup = yield * rosterSignupRead({pk: rosterId, sk: s.user_id});
 
     yield * rosterSignupCreate({
@@ -56,18 +57,18 @@ const deleteSignup = (s: IxState, rosterId: str, tag: str) => E.gen(function * (
 });
 
 
-export const RosterViewerOptOutB = DangerB.as(makeId(RDXK.OPEN, 'RVOO'), {
+export const RosterViewerOptOutB = DangerB.as(makeId(RK_OPEN, 'RVOO'), {
     label: 'Opt Out',
 });
 
-const SelectAccounts = SingleS.as(makeId(RDXK.UPDATE, 'RVOO'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVOO'), {
     placeholder: 'Select Accounts',
 });
-const Delete = DeleteB.as(makeId(RDXK.DELETE, 'RVOO'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RDXK.DELETE_CONFIRM, 'RVOO'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'RVOO'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOO'));
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     const Roster = RosterS.fromMap(s.cmap);
@@ -122,8 +123,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
                     Accounts.values.length === 0,
             }),
         back: BackB.as(RosterViewerB.id),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const rosterViewerOptOutReducer = {

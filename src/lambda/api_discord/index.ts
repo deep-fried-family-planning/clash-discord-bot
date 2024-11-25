@@ -7,11 +7,10 @@ import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/internal/constants/secrets.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/discord/util/discord.ts';
 import {IXT} from '#src/discord/util/discord.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {MessageComponentDatum, ModalSubmitDatum} from 'dfx/types';
 import {EDIT_EMBED_MODAL_OPEN, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedModal, EditEmbedTitleT} from '#src/discord/ixc/modals/edit-embed-modal.ts';
@@ -26,6 +25,7 @@ import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord
 import {Cause} from 'effect';
 import {LINK_ACCOUNT_BULK_MODAL_OPEN, LinkAccountBulkModal} from '#src/discord/ixc/modals/link-account-bulk-modal.ts';
 import {Lambda} from '@effect-aws/client-lambda';
+import {RK_CLOSE, RK_ENTRY, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD} from '#src/internal/constants/route-kind.ts';
 
 
 const modals = {
@@ -36,12 +36,20 @@ const modals = {
     [EDIT_EMBED_MODAL_OPEN.predicate]        : EditEmbedModal,
     [EDIT_DATE_TIME_MODAL_OPEN.predicate]    : EditDateTimeModal,
 };
-const modalKinds = [RDXK.MODAL_OPEN, RDXK.MODAL_OPEN_FORWARD];
+const modalKinds = [RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD];
 
 
 const component = (body: IxD) => E.gen(function * () {
     const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
     const id = fromId(data.custom_id);
+
+
+    if (id.params.kind === RK_CLOSE) {
+        yield * DiscordApi.createInteractionResponse(body.id, body.token, {type: IXRT.DEFERRED_UPDATE_MESSAGE});
+        yield * DiscordApi.deleteOriginalInteractionResponse(body.application_id, body.token);
+        return r200('');
+    }
+
 
     if (modalKinds.includes(id.params.kind)) {
         const editor = body.message?.embeds.at(-1);
@@ -108,8 +116,13 @@ const component = (body: IxD) => E.gen(function * () {
         Payload       : JSON.stringify(body),
     });
 
-    if (id.params.kind === RDXK.ENTRY) {
-        return {statusCode: 202, body: ''};
+    if (id.params.kind === RK_ENTRY) {
+        return r200({
+            type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+                flags: MGF.EPHEMERAL,
+            },
+        });
     }
 
     return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
@@ -123,9 +136,12 @@ const modal = (body: IxD) => E.gen(function * () {
         Payload       : JSON.stringify(body),
     });
 
-    return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {
-        flags: MGF.EPHEMERAL,
-    }});
+    return r200({
+        type: IXRT.DEFERRED_UPDATE_MESSAGE,
+        data: {
+            flags: MGF.EPHEMERAL,
+        }},
+    );
 });
 
 

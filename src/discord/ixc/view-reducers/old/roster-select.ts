@@ -1,28 +1,24 @@
-import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
+import {RK_INIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
-const getRosters = typeRxHelper((s, ax) => E.gen(function * () {
+const getRosters = () => E.gen(function * () {
     return [{
         value: 'NOOP',
         label: 'NOOP',
     }];
-}));
+});
 
 
-const axn = {
-    SELECT_ROSTER_OPEN  : makeId(RDXK.INIT, 'SER'),
-    SELECT_ROSTER_UPDATE: makeId(RDXK.UPDATE, 'SER'),
-};
-
-
-export const SelectRosterB = PrimaryB.as(axn.SELECT_ROSTER_OPEN, {
+export const SelectRosterB = PrimaryB.as(makeId(RK_INIT, 'SER'), {
     label: 'Select Roster',
 });
 
-const RosterS = SingleS.as(axn.SELECT_ROSTER_UPDATE, {
+const RosterS = SingleS.as(makeId(RK_UPDATE, 'SER'), {
     placeholder: 'Select Roster',
     options    : [{
         value: 'NOOP',
@@ -31,14 +27,14 @@ const RosterS = SingleS.as(axn.SELECT_ROSTER_UPDATE, {
 });
 
 
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     let Roster = RosterS.fromMap(s.cmap);
 
-    if (ax.id.predicate === axn.SELECT_ROSTER_OPEN.predicate) {
+    if (SelectRosterB.clicked(ax)) {
         Roster = Roster.render({
-            options: yield * getRosters(s, ax),
+            options: yield * getRosters(),
         });
     }
 
@@ -57,8 +53,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             .render({
                 disabled: Roster.values.length === 0,
             }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const rosterSelectReducer = {

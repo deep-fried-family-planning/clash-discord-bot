@@ -4,7 +4,6 @@ import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/ixc/store/derive-state.ts';
 import type {Route, RouteParams} from '#src/discord/ixc/store/id-routes.ts';
 import type {TextInput} from 'dfx/types';
-import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import {toId} from '#src/discord/ixc/store/id-build.ts';
 
 
@@ -46,15 +45,4 @@ export const makeText = (
         },
     };
 };
-
-
-export const makeTextFrom = (
-    component: TextInput,
-) => {
-    const {custom_id, ...restComponent} = component;
-    const id = fromId(custom_id);
-
-    return makeText(id.params, restComponent);
-};
-
 

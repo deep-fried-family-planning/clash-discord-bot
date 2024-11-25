@@ -1,13 +1,15 @@
-import {typeRx, typeRxHelper, makeId} from '#src/discord/ixc/store/type-rx.ts';
+import {makeId} from '#src/discord/ixc/store/type-rx.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/ixc/components/global-components.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import type {Ax} from '#src/discord/ixc/store/derive-action.ts';
 
 
-const getClans = typeRxHelper((s, ax) => E.gen(function * () {
+const getClans = (s: St) => E.gen(function * () {
     const records = pipe(
         yield * queryDiscordClanForServer({pk: s.server_id}),
         sortWithL((r) => r.sk, ORDS),
@@ -21,9 +23,9 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
     return pipe(
         zipL(records, clans),
         sortByL(
-            ORD.mapInput(ORDNR, ([r, c]) => c.level),
-            ORD.mapInput(ORDS, ([r, c]) => c.name),
-            ORD.mapInput(ORDS, ([r, c]) => r.sk),
+            ORD.mapInput(ORDNR, ([, c]) => c.level),
+            ORD.mapInput(ORDS, ([, c]) => c.name),
+            ORD.mapInput(ORDS, ([r]) => r.sk),
         ),
         mapL(([r, c]) => ({
             label      : `[lvl${c.level}]  ${c.name}`,
@@ -31,27 +33,21 @@ const getClans = typeRxHelper((s, ax) => E.gen(function * () {
             value      : c.tag,
         })),
     );
-}));
+});
 
 
-const axn = {
-    SELECT_CLAN_OPEN  : makeId(RDXK.OPEN, 'CLAN'),
-    SELECT_CLAN_UPDATE: makeId(RDXK.UPDATE, 'CLAN'),
-};
+export const ClanSelectB = PrimaryB.as(makeId(RK_OPEN, 'CLAN'), {label: 'Select Clan'});
+const ClanS = SingleS.as(makeId(RK_UPDATE, 'CLAN'), {placeholder: 'Select Clan'});
 
 
-export const ClanSelectB = PrimaryB.as(axn.SELECT_CLAN_OPEN, {label: 'Select Clan'});
-const ClanS = SingleS.as(axn.SELECT_CLAN_UPDATE, {placeholder: 'Select Clan'});
-
-
-const view = typeRx((s, ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
     let Clan = ClanS.fromMap(s.cmap);
 
-    if (axn.SELECT_CLAN_OPEN.predicate === ax.id.predicate) {
+    if (ClanSelectB.clicked(ax)) {
         Clan = Clan.render({
-            options: yield * getClans(s, ax),
+            options: yield * getClans(s),
         });
     }
 
@@ -70,8 +66,8 @@ const view = typeRx((s, ax) => E.gen(function * () {
             .render({
                 disabled: Clan.values.length === 0,
             }),
-    };
-}));
+    } satisfies St;
+});
 
 
 export const clanSelectReducer = {

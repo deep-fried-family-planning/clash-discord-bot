@@ -37,6 +37,8 @@ locals {
 
   lambda_env = {
     LAMBDA_ENV     = local.env
+    LAMBDA_ENV_UPPER = upper(local.env)
+    LAMBDA_ENV_LOWER = lower(local.env)
     LAMBDA_PREFIX  = local.prefix
     DDB_OPERATIONS = aws_dynamodb_table.operations.name
   }

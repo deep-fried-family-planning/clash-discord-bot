@@ -10,11 +10,11 @@ import {fromId} from '#src/discord/ixc/store/id-parse.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {MadeSelect} from '#src/discord/ixc/components/make-select.ts';
 import type {MadeButton} from '#src/discord/ixc/components/make-button.ts';
-import {isEditor, isStatus, isViewer} from '#src/discord/ixc/components/component-utils.ts';
+import {isEditor, isStatus, isSystem, isViewer} from '#src/discord/ixc/components/component-utils.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 
 
-export type IxState = {
+export type St = {
     original: IxD;
 
     server_id : Snowflake;
@@ -22,6 +22,8 @@ export type IxState = {
     user_roles: Snowflake[];
     server?   : DServer | undefined;
     user?     : DUser | undefined;
+
+    reference: Record<str, str>;
 
     system?     : EmbedField[] | und;
     type?       : str | und;
@@ -55,7 +57,7 @@ export type IxState = {
 };
 
 
-export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
+export const deriveState = (ix: IxD) => E.gen(function * () {
     const [server, user] = yield * pipe(
         [
             MenuCache.serverRead(ix.guild_id!),
@@ -64,7 +66,6 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         E.allWith(),
         E.catchTag('DeepFryerDynamoError', () => E.succeed([undefined, undefined])),
     );
-
 
     const componentMap = ('components' in (ix.message ?? {}))
         ? pipe(
@@ -86,28 +87,35 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         )
         : undefined;
 
-    const firstEmbed = ix.message?.embeds.at(0);
+    const system = ix.message?.embeds.find(isSystem);
 
     return {
-        original   : ix,
-        server_id  : ix.guild_id!,
-        user_id    : ix.member!.user!.id,
-        user_roles : ix.member!.roles,
-        user       : user,
-        server     : server,
-        cmap       : componentMap!,
-        system     : firstEmbed?.fields,
-        type       : firstEmbed?.author?.name,
-        title      : firstEmbed?.title,
-        description: firstEmbed?.description,
-        viewer     : ix.message?.embeds.find(isViewer),
-        editor     : ix.message?.embeds.find(isEditor),
-        status     : ix.message?.embeds.find(isStatus),
-        // info      : ix.message?.embeds[0],
-        // select    : ix.message?.embeds[1],
-        // status    : ix.message?.embeds[2],
-        // navigate  : NavSelect.fromMap(componentMap),
-    } as const satisfies IxState;
+        original  : ix,
+        server_id : ix.guild_id!,
+        user_id   : ix.member!.user!.id,
+        user_roles: ix.member!.roles,
+        user      : user,
+        server    : server,
+
+        reference: pipe(
+            system?.fields ?? [],
+            reduceL(emptyKV<str, str>(), (cs, c) => {
+                cs[c.name] = c.value;
+                return cs;
+            }),
+        ),
+
+        cmap: componentMap!,
+
+        system     : system?.fields,
+        type       : system?.author?.name,
+        title      : system?.title,
+        description: system?.description,
+
+        viewer: ix.message?.embeds.find(isViewer),
+        editor: ix.message?.embeds.find(isEditor),
+        status: ix.message?.embeds.find(isStatus),
+    } as const satisfies St;
 });
 
 

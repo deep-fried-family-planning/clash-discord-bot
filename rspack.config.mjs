@@ -20,7 +20,7 @@ export default defineConfig({
         layers          : true,
         outputModule    : true,
         topLevelAwait   : true,
-        futureDefaults  : true,
+        futureDefaults  : false,
         lazyCompilation : false,
         css             : false,
         asyncWebAssembly: false,
@@ -62,10 +62,6 @@ export default defineConfig({
         extensions: ['...', '.ts'],
     },
 
-    node: {
-        global: false,
-    },
-
     externalsPresets: {
         node: true,
     },
@@ -103,7 +99,7 @@ export default defineConfig({
     },
 
     optimization: {
-        minimizer: [new TerserPlugin()],
+        // minimizer: [new TerserPlugin()],
     },
 
     plugins: [
@@ -127,8 +123,8 @@ export default defineConfig({
         // new BundleAnalyzerPlugin.BundleAnalyzerPlugin({sourceType: 'module'}),
     ],
 
-    devtool: 'source-map',
-
+    devtool    : 'source-map',
+    // devtool    : false,
     performance: {hints: 'warning'},
 
     stats: {

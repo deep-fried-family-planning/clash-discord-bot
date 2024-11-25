@@ -1,45 +1,22 @@
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import {inspect} from 'node:util';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {IxRE} from '#src/discord/util/discord.ts';
 import type {Embed} from 'dfx/types';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
-import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {CloseB} from '#src/discord/ixc/components/global-components.ts';
-import {embedIf} from '#src/discord/ixc/components/component-utils.ts';
-import type {IxState} from '#src/discord/ixc/store/derive-state.ts';
-import type {IxAction} from '#src/discord/ixc/store/derive-action.ts';
+import {asSystem, embedIf} from '#src/discord/ixc/components/component-utils.ts';
+import type {St} from '#src/discord/ixc/store/derive-state.ts';
 
 
-export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
-    yield * CSL.debug('[STATE]', inspect(s, true, null));
-
+export const deriveView = (s: St) => {
     const embeds = [
-        // {
-        //     color: nColor(COLOR.DEBUG),
-        //     title: 'Debug',
-        //     ...jsonEmbed({
-        //         id           : ax.id.custom_id,
-        //         ...ax.id.params,
-        //         selected     : ax.selected,
-        //         predicate    : ax.id.predicate,
-        //         nextPredicate: ax.id.nextPredicate,
-        //         backPredicate: ax.id.backPredicate,
-        //     }),
-        // },
-        // dEmbed(COLOR.ORIGINAL, 'User Info',
-        //     `<@${s.user_id}>`,
-        //     `<@&${s.server?.admin}>`,
-        // ),
-        s.title ? {
-            fields: s.system,
-            color : nColor(COLOR.ORIGINAL),
-            author: {
-                name: s.type ?? 'DeepFryer Omni Board',
-            },
-            title      : s.title,
-            description: s.description,
-        } : undefined,
+        s.title
+            ? asSystem({
+                fields     : s.system!,
+                title      : s.title,
+                description: s.description!,
+            })
+            : undefined,
         embedIf(s.viewer, s.viewer),
         embedIf(s.editor, s.editor),
         embedIf(s.status, s.status),
@@ -64,28 +41,21 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
                 s.back?.component,
                 s.next?.component,
                 s.forward?.component,
-                s.close?.component ?? CloseB.component,
+                CloseB.component,
             ].filter(Boolean),
         ] as const,
         filterL((cs) => Boolean(cs?.length)),
     );
 
     if (!components.length) {
-        const view = {
+        return {
             embeds: embeds,
         } satisfies Partial<IxRE>;
-
-        yield * CSL.debug('[VIEW]', inspect(view, true, null));
-
-        return view;
     }
 
-    const view = {
+
+    return {
         embeds    : embeds,
         components: UI.grid(components as UI.UIComponent[][]),
     } satisfies Partial<IxRE>;
-
-    yield * CSL.debug('[VIEW]', inspect(view, true, null));
-
-    return view;
-});
+};
