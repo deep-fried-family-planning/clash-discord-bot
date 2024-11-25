@@ -68,7 +68,6 @@ const view = typeRx((s, ax) => E.gen(function * () {
         const rosterSignups = yield * rosterSignupByRoster({pk: Roster.values[0]});
         const signups = rosterSignups.flatMap((s) => pipe(s.accounts, toEntries));
 
-
         viewer = {
             title      : roster.name!,
             description: roster.description!,

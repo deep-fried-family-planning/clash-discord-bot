@@ -1,4 +1,4 @@
-import type {ActionRow, Button, Embed, SelectMenu, Snowflake, TextInput} from 'dfx/types';
+import type {ActionRow, Button, Embed, EmbedField, SelectMenu, Snowflake, TextInput} from 'dfx/types';
 import type {IxD, IxDc} from '#src/discord/util/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
@@ -23,6 +23,7 @@ export type IxState = {
     server?   : DServer | undefined;
     user?     : DUser | undefined;
 
+    system?     : EmbedField[] | und;
     type?       : str | und;
     title?      : str | und;
     description?: str | und;
@@ -95,6 +96,7 @@ export const deriveState = (ix: IxD, d: IxDc) => E.gen(function * () {
         user       : user,
         server     : server,
         cmap       : componentMap!,
+        system     : firstEmbed?.fields,
         type       : firstEmbed?.author?.name,
         title      : firstEmbed?.title,
         description: firstEmbed?.description,

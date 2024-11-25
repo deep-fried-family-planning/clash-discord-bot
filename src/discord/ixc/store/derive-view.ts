@@ -32,6 +32,7 @@ export const deriveView = (s: IxState, ax: IxAction) => E.gen(function * () {
         //     `<@&${s.server?.admin}>`,
         // ),
         s.title ? {
+            fields: s.system,
             color : nColor(COLOR.ORIGINAL),
             author: {
                 name: s.type ?? 'DeepFryer Omni Board',

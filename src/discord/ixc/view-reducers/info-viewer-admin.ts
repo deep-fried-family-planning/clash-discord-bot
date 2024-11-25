@@ -2,15 +2,17 @@ import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/dis
 import {makeId, typeRx} from '#src/discord/ixc/store/type-rx.ts';
 import {RDXK} from '#src/discord/ixc/store/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {asEditor, unset} from '#src/discord/ixc/components/component-utils.ts';
+import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/ixc/components/component-utils.ts';
 import {InfoNavS, InfoViewerB, KindNavS} from '#src/discord/ixc/view-reducers/info-viewer.ts';
-import {infoDelete} from '#src/dynamo/operations/info.ts';
-import {dtNowIso} from '#src/discord/util/markdown.ts';
+import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
+import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {EmbedEditorB} from '#src/discord/ixc/view-reducers/editors/embed-editor.ts';
-import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/discord/ix-constants.ts';
-import {decodePersist, encodePersist, extractPersist} from '#src/discord/ixc/components/persistor.ts';
+import {SELECT_INFO_KIND, SELECT_POSITIONS, UNAVAILABLE} from '#src/discord/ix-constants.ts';
 import {DELIM} from '#src/discord/ixc/store/id-routes.ts';
-import {discordEmbedDelete} from '#src/dynamo/operations/embed.ts';
+import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
+import {fromReferenceFields, toReferenceFields} from '#src/discord/ixc/views/util.ts';
+import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 
 
 export const InfoViewerAdminB = AdminB.as(makeId(RDXK.OPEN, 'IVA'));
@@ -28,37 +30,84 @@ const PositionS = SingleS.as(makeId(RDXK.UPDATE, 'IVAP'), {
 
 
 const view = typeRx((s, ax) => E.gen(function * () {
-    const persisted = decodePersist(s.description);
+    const fields = fromReferenceFields(s.system);
 
-    const infoEmbedId = extractPersist(persisted, ax, InfoNavS.fromMap(s.cmap));
-    const kind = extractPersist(persisted, ax, KindNavS.fromMap(s.cmap));
-    const position = extractPersist(persisted, ax, PositionS);
+    fields.InfoKind ??= {
+        name : 'InfoKind',
+        value: KindNavS.fromMap(s.cmap).values[0],
+    };
 
-    const Kind = KindS.fromMap(s.cmap).setDefaultValuesIf(KindS.id.predicate, kind);
+    fields.InfoId ??= {
+        name : 'InfoId',
+        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM.DATA)[0],
+    };
 
-    const Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(PositionS.id.predicate, position);
+    fields.EmbedId ??= {
+        name : 'EmbedId',
+        value: InfoNavS.fromMap(s.cmap).values[0].split(DELIM.DATA)[1],
+    };
+
+    let Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
+    let Kind = KindS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
+
+
+    if (ax.id.predicate === InfoViewerAdminB.id.predicate || ax.id.nextPredicate === InfoViewerAdminB.id.predicate) {
+        const info = yield * infoRead({pk: s.server_id, sk: fields.InfoId.value});
+
+        fields.Position ??= {
+            name : 'Position',
+            value: `${info.selector_order ?? UNAVAILABLE}`,
+        };
+
+        Position = Position.setDefaultValuesIf(Position.id.predicate, [`${info.selector_order ?? '25'}`]);
+        Kind = Kind.setDefaultValuesIf(Kind.id.predicate, [fields.InfoKind.value]);
+    }
+
+    if (ax.id.predicate === Position.id.predicate) {
+        fields.Position = {
+            name : 'Position',
+            value: Position.values[0],
+        };
+    }
+
+    if (ax.id.predicate === Kind.id.predicate) {
+        fields.InfoKind = {
+            name : 'InfoKind',
+            value: Kind.values[0],
+        };
+    }
 
     if (DeleteConfirm.clicked(ax)) {
-        const [infoId, embedId] = infoEmbedId[0].split(DELIM.DATA);
-
-        yield * infoDelete({pk: s.server_id, sk: infoId});
-        yield * discordEmbedDelete(embedId);
+        yield * infoDelete({pk: s.server_id, sk: fields.InfoId.value});
+        yield * discordEmbedDelete(fields.EmbedId.value);
+        yield * MenuCache.embedInvalidate(fields.EmbedId.value);
     }
+
+
+    if (Submit.clicked(ax)) {
+        const info = yield * infoRead({pk: s.server_id, sk: fields.InfoId.value});
+        const embed = yield * discordEmbedRead(fields.EmbedId.value);
+
+        yield * infoCreate({
+            ...info,
+            updated       : dtNow(),
+            kind          : fields.InfoKind.value as DInfo['kind'],
+            selector_order: parseInt(fields.Position!.value),
+            selector_label: embed.embed.title,
+        });
+        yield * discordEmbedCreate({
+            ...embed,
+            updated: dtNow(),
+            embed  : s.editor!,
+        });
+    }
+
 
     return {
         ...s,
         title      : 'Edit Info Page',
-        description: encodePersist(
-            KindNavS.setDefaultValuesIf(KindNavS.id.predicate, kind),
-            InfoNavS.render({
-                options: infoEmbedId.map((i) => ({
-                    label  : '',
-                    value  : i,
-                    default: true,
-                })),
-            }),
-            Position,
-        ),
+        description: unset,
+        system     : toReferenceFields(fields),
 
         editor: asEditor({
             ...s.viewer,
@@ -66,7 +115,11 @@ const view = typeRx((s, ax) => E.gen(function * () {
             timestamp: dtNowIso(),
         }),
         viewer: unset,
-        status: unset,
+        status:
+            Submit.clicked(ax) ? asSuccess({description: 'Info Embed Edited'})
+            : Delete.clicked(ax) ? asConfirm({description: 'Are you sure you want to delete this embed?'})
+            : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Info Embed Deleted'})
+            : unset,
 
         sel1: Kind.render({
             disabled:
@@ -82,12 +135,18 @@ const view = typeRx((s, ax) => E.gen(function * () {
         }),
 
         row3: [
-            EmbedEditorB.fwd(InfoViewerAdminB.id),
+            EmbedEditorB.fwd(InfoViewerAdminB.id).render({
+                disabled:
+                    Delete.clicked(ax)
+                    || DeleteConfirm.clicked(ax)
+                    || Submit.clicked(ax),
+            }),
         ],
 
         submit: Submit.render({
             disabled:
-                Delete.clicked(ax)
+                Submit.clicked(ax)
+                || Delete.clicked(ax)
                 || DeleteConfirm.clicked(ax)
                 || !Kind.values.length
                 || !Position.values.length,

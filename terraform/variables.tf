@@ -17,7 +17,7 @@ locals {
 
   capacity = {
     qual = [1, 1]
-    prod = [5, 5]
+    prod = [8, 8]
   }[local.env]
 
   deploy_role = "arn:aws:iam::${local.account_id}:role/initial-terraform"

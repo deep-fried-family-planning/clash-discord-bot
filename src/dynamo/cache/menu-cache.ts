@@ -6,6 +6,8 @@ import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {userRead} from '#src/dynamo/operations/user.ts';
 import {serverRead} from '#src/dynamo/operations/server.ts';
+import type {DEmbed} from '#src/dynamo/schema/discord-embed.ts';
+import {discordEmbedRead} from '#src/dynamo/operations/embed.ts';
 
 
 const users = C.make({
@@ -22,11 +24,22 @@ const servers = C.make({
 });
 
 
+const embeds = C.make({
+    capacity  : 100,
+    timeToLive: '10 minutes',
+    lookup    : (embedId: CompKey<DEmbed>['pk']) => discordEmbedRead(embedId),
+});
+
+
 const program = E.gen(function* () {
     const server = yield * servers;
     const user = yield * users;
+    const embed = yield * embeds;
 
     return {
+        embedRead       : (...p: Parameters<typeof embed.get>) => embed.get(...p),
+        embedSet        : (...p: Parameters<typeof embed.set>) => embed.set(...p),
+        embedInvalidate : (...p: Parameters<typeof embed.invalidate>) => embed.invalidate(...p),
         serverRead      : (...p: Parameters<typeof server.get>) => server.get(...p),
         serverSet       : (...p: Parameters<typeof server.set>) => server.set(...p),
         serverInvalidate: (...p: Parameters<typeof server.invalidate>) => server.invalidate(...p),

@@ -3,31 +3,8 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {EmbedId, NowId, ServerId, UserId} from '#src/dynamo/schema/common.ts';
 
 
-export type DEmbed = S.Schema.Type<typeof DiscordEmbed>;
-export type DEmbedKey = CompKey<DEmbed>;
-
-
-export const DiscordEmbed = S.Struct({
-    type: S.Literal('DiscordEmbed'),
-
-    pk: EmbedId,
-    sk: NowId,
-
-    gsi_embed_id: EmbedId,
-
-    version: S.Literal('1.0.0'),
-    created: S.Date,
-    updated: S.Date,
-
-    original_type     : S.String,
-    original_pk       : S.String,
-    original_sk       : S.String,
-    original_server_id: ServerId,
-    original_user_id  : UserId,
-
-
-    // Discord API Embed
-    embed_type: S.optional(S.Enums({
+const DiscordApiEmbed = S.Struct({
+    type: S.optional(S.Enums({
         RICH       : 'rich',
         IMAGE      : 'image',
         VIDEO      : 'video',
@@ -82,7 +59,38 @@ export const DiscordEmbed = S.Struct({
 });
 
 
+export type DApiEmbed = S.Schema.Type<typeof DiscordApiEmbed>;
+export const equalDiscordApiEmbed = S.equivalence(DiscordApiEmbed);
+
+
+export type DEmbed = S.Schema.Type<typeof DiscordEmbed>;
+export type DEmbedKey = CompKey<DEmbed>;
+
+
+export const DiscordEmbed = S.Struct({
+    type: S.Literal('DiscordEmbed'),
+
+    pk: EmbedId,
+    sk: NowId,
+
+    gsi_embed_id: EmbedId,
+
+    version: S.Literal('1.0.0'),
+    created: S.Date,
+    updated: S.Date,
+
+    original_type     : S.String,
+    original_pk       : S.String,
+    original_sk       : S.String,
+    original_server_id: ServerId,
+    original_user_id  : UserId,
+
+    embed: DiscordApiEmbed,
+});
+
+
 export const encodeDiscordEmbed = S.encodeUnknown(DiscordEmbed);
 export const decodeDiscordEmbed = S.decodeUnknown(DiscordEmbed);
+export const equalDiscordEmbed = S.equivalence(DiscordEmbed);
 
 

@@ -43,7 +43,6 @@ const saveRoster = (type: string, order: num, embed?: Embed) => typeRxHelper((s,
         roster_type: type,
     });
 
-    const {type: embed_type, ...restEmbed} = embed ?? {};
 
     yield * discordEmbedCreate({
         type        : 'DiscordEmbed',
@@ -61,8 +60,7 @@ const saveRoster = (type: string, order: num, embed?: Embed) => typeRxHelper((s,
         original_server_id: s.server_id,
         original_user_id  : s.user_id,
 
-        embed_type: embed_type,
-        ...restEmbed,
+        embed: embed!,
     });
 }));
 

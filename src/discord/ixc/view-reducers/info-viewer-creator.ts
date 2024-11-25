@@ -22,8 +22,6 @@ const createInfoEmbed = (s: IxState, kind: str, order: num, embed?: Embed) => E.
     const embedId = v4();
     const infoId = v4();
 
-    const {type, ...restEmbed} = embed ?? {};
-
     yield * discordEmbedCreate({
         type        : 'DiscordEmbed',
         pk          : embedId,
@@ -40,8 +38,7 @@ const createInfoEmbed = (s: IxState, kind: str, order: num, embed?: Embed) => E.
         original_server_id: s.server_id,
         original_user_id  : s.user_id,
 
-        embed_type: type,
-        ...restEmbed,
+        embed: embed!,
     });
 
     yield * infoCreate({
@@ -118,12 +115,17 @@ const view = (s: IxState, ax: IxAction) => E.gen(function * () {
             }),
         ],
 
-        submit: Submit.render({
-            disabled:
-                Submit.clicked(ax)
-                || !Kind.values.length
-                || !Position.values.length,
-        }),
+        submit:
+            Submit.clicked(ax)
+                ? Submit.as(InfoViewerCreatorB.id).render({
+                    label: 'Create Another Info Page',
+                })
+                : Submit.render({
+                    disabled:
+                        !Kind.values.length
+                        || !Position.values.length,
+                }),
+
         back: BackB.as(InfoViewerB.id),
     };
 });
