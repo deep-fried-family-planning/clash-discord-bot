@@ -1,6 +1,5 @@
 import {makeId} from '#src/discord/store/type-rx.ts';
-
-import {BackB, SingleS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
+import {BackB, SingleS, SingleUserS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
@@ -20,15 +19,16 @@ import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import type {SelectOption} from 'dfx/types';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
+import {REF_ROSTER_ID} from '#src/internal/constants/reference.ts';
 
 
-const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
-    const records = yield * queryPlayersForUser({pk: s.user_id});
+const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function * () {
+    const records = yield * queryPlayersForUser({pk: userId});
     const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
 
     const signup = yield * rosterSignupRead({
         pk: rosterId,
-        sk: s.user_id,
+        sk: userId,
     });
 
     if (!signup) {
@@ -126,40 +126,51 @@ const signupRoster = (
 });
 
 
-export const RosterViewerSignupB = SuccessB.as(makeId(RK_OPEN, 'RVSU'), {
-    label: 'Signup',
+export const RosterViewerSignupAdminB = SuccessB.as(makeId(RK_OPEN, 'RVSUA'), {
+    label: 'Admin Signup',
 });
-const SubmitSignup = SubmitB.as(makeId(RK_SUBMIT, 'RVSU'), {label: 'Signup'});
+const SubmitSignup = SubmitB.as(makeId(RK_SUBMIT, 'RVSUA'), {label: 'Signup'});
 
-const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAC'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAAC'), {
     placeholder: 'Select Accounts',
 });
-const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAV'), {
+const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAAV'), {
     placeholder: 'Select Availability',
     options    : ROSTER_ROUNDS,
     max_values : ROSTER_ROUNDS.length,
 });
-const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUD'), {
+const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUAD'), {
     placeholder: 'Select Designation',
     options    : ROSTER_DESIGNATIONS,
 });
+const UserS = SingleUserS.as(makeId(RK_UPDATE, 'RVSUAU'));
 
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
-    const Roster = RosterS.fromMap(s.cmap);
+    const User = UserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+
+    let roster_id = '';
+
+    if (RosterViewerSignupAdminB.clicked(ax)) {
+        const Roster = RosterS.fromMap(s.cmap);
+
+        roster_id = Roster.values[0];
+    }
+    else {
+        roster_id = s.reference[REF_ROSTER_ID];
+    }
 
     let Availability = SelectAvailability.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
-    if (RosterViewerSignupB.clicked(ax)) {
+    if (User.id.predicate === ax.id.predicate) {
         const roster = yield * rosterRead({
             pk: s.server_id,
-            sk: Roster.values[0],
+            sk: roster_id,
         });
-        const accounts = yield * getAccounts(s, Roster.values[0]);
+        const accounts = yield * getAccountsByUser(User.values[0], roster_id);
 
         Accounts = SelectAccounts.render({
             options: accounts.length
@@ -177,31 +188,31 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 
     const Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
-    // const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
-
 
     if (Submit.clicked(ax)) {
         yield * signupRoster(
-            s.user_id,
-            Roster.values[0],
+            User.values[0],
+            roster_id,
             Designation.values[0],
             Availability.values,
             Accounts.values,
         );
     }
 
-
     return {
         ...s,
         title      : 'Roster Signup',
         description: unset,
+        reference  : {
+            [REF_ROSTER_ID]: roster_id,
+        },
 
         viewer: asViewer({
             ...s.viewer,
             footer: unset!,
         }),
 
-        navigate: Roster.render({disabled: true}),
+        navigate: User,
         sel1    : Accounts.render({
             disabled:
                 Accounts.component.options![0].value === UNAVAILABLE
@@ -221,7 +232,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 
         submit:
             Submit.clicked(ax)
-                ? RosterViewerSignupB.render({
+                ? RosterViewerSignupAdminB.render({
                     label: 'Signup Another Account',
                 })
                 : Submit.render({
@@ -236,11 +247,12 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 });
 
 
-export const rosterViewerSignupReducer = {
-    [RosterViewerSignupB.id.predicate]: view,
-    [SelectAccounts.id.predicate]     : view,
-    [SelectAvailability.id.predicate] : view,
-    [SelectDesignation.id.predicate]  : view,
-    [SubmitSignup.id.predicate]       : view,
+export const rosterViewerSignupAdminReducer = {
+    [RosterViewerSignupAdminB.id.predicate]: view,
+    [UserS.id.predicate]                   : view,
+    [SelectAccounts.id.predicate]          : view,
+    [SelectAvailability.id.predicate]      : view,
+    [SelectDesignation.id.predicate]       : view,
+    [SubmitSignup.id.predicate]            : view,
 };
 

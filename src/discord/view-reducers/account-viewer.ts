@@ -8,7 +8,7 @@ import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
 import {AccountViewerAdminB} from '#src/discord/view-reducers/account-viewer-admin.ts';
 import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
-import {viewUserPlayerOptions} from '#src/discord/components/views/user-player-options.ts';
+import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/internal/constants/label.ts';

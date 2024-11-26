@@ -1,18 +1,26 @@
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {pipe} from '#src/internal/pure/effect.ts';
 import type {IxRE} from '#src/discord/util/discord.ts';
 import type {Embed} from 'dfx/types';
-import {filterL} from '#src/internal/pure/pure-list.ts';
+import {dedupeWithL, filterL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
 import {CloseB} from '#src/discord/components/global-components.ts';
 import {asSystem, embedIf} from '#src/discord/components/component-utils.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
+import {toReferenceFieldssssss} from '#src/discord/views/util.ts';
+import {equalField} from '#src/dynamo/schema/discord-embed.ts';
 
 
 export const deriveView = (s: St) => {
     const embeds = [
         s.title
             ? asSystem({
-                fields     : s.system!,
+                fields: pipe(
+                    [
+                        ...s.system ?? [],
+                        ...toReferenceFieldssssss(s.reference),
+                    ],
+                    dedupeWithL(equalField),
+                ),
                 title      : s.title,
                 description: s.description!,
             })

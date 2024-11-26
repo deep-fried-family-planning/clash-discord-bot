@@ -1,5 +1,5 @@
 import {makeId} from '#src/discord/store/type-rx.ts';
-import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS} from '#src/discord/components/global-components.ts';
+import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS, SingleUserS} from '#src/discord/components/global-components.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asConfirm, asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
@@ -17,13 +17,13 @@ import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/internal/co
 import type {Ax} from '#src/discord/store/derive-action.ts';
 
 
-const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
-    const records = yield * queryPlayersForUser({pk: s.user_id});
+const getSignupsForUser = (userId: str, rosterId: str) => E.gen(function * () {
+    const records = yield * queryPlayersForUser({pk: userId});
     const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
 
     const signup = yield * rosterSignupRead({
         pk: rosterId,
-        sk: s.user_id,
+        sk: userId,
     });
 
     if (!signup) {
@@ -43,8 +43,8 @@ const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
 });
 
 
-const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function * () {
-    const signup = yield * rosterSignupRead({pk: rosterId, sk: s.user_id});
+const deleteSignup = (userId: str, rosterId: str, tag: str) => E.gen(function * () {
+    const signup = yield * rosterSignupRead({pk: rosterId, sk: userId});
 
     yield * rosterSignupCreate({
         ...signup!,
@@ -57,25 +57,26 @@ const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function * () {
 });
 
 
-export const RosterViewerOptOutB = DangerB.as(makeId(RK_OPEN, 'RVOO'), {
-    label: 'Opt Out',
+export const RosterViewerOptOutAdminB = DangerB.as(makeId(RK_OPEN, 'RVOOA'), {
+    label: 'Admin Opt Out',
 });
 
-const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVOO'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVOOAA'), {
     placeholder: 'Select Accounts',
 });
-const Delete = DeleteB.as(makeId(RK_DELETE, 'RVOO'));
-const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOO'));
-
+const Delete = DeleteB.as(makeId(RK_DELETE, 'RVOOA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOOA'));
+const UserS = SingleUserS.as(makeId(RK_UPDATE, 'RVOOAU'));
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((s) => s.value);
 
+    const User = UserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Roster = RosterS.fromMap(s.cmap);
     let Accounts = SelectAccounts.fromMap(s.cmap);
 
-    if (RosterViewerOptOutB.clicked(ax)) {
-        const accounts = yield * getAccounts(s, Roster.values[0]);
+    if (User.id.predicate === ax.id.predicate) {
+        const accounts = yield * getSignupsForUser(User.values[0], Roster.values[0]);
 
         Accounts = SelectAccounts.render({
             options: accounts.length
@@ -90,12 +91,12 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
     if (DeleteConfirm.clicked(ax)) {
-        yield * deleteSignup(s, Roster.values[0], Accounts.values[0]);
+        yield * deleteSignup(User.values[0], Roster.values[0], Accounts.values[0]);
     }
 
     return {
         ...s,
-        title      : 'Roster Opt Out',
+        title      : 'Roster Opt Out Admin',
         description: unset,
 
         viewer: asViewer({
@@ -108,14 +109,15 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
             : DeleteConfirm.clicked(ax) ? asSuccess({description: 'Signup deleted'})
             : undefined,
 
-        navigate: Roster.render({disabled: true}),
-        sel1    : Accounts.render({
+        navigate: User,
+        sel1    : Roster.render({disabled: true}),
+        sel2    : Accounts.render({
             disabled: Accounts.component.options![0].value === UNAVAILABLE,
         }),
 
         submit:
             Delete.clicked(ax) ? DeleteConfirm
-            : DeleteConfirm.clicked(ax) ? RosterViewerOptOutB.render({
+            : DeleteConfirm.clicked(ax) ? RosterViewerOptOutAdminB.render({
                 label: 'Opt Out Another Account',
             })
             : Delete.render({
@@ -127,10 +129,11 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 });
 
 
-export const rosterViewerOptOutReducer = {
-    [RosterViewerOptOutB.id.predicate]: view,
-    [SelectAccounts.id.predicate]     : view,
-    [Delete.id.predicate]             : view,
-    [DeleteConfirm.id.predicate]      : view,
+export const rosterViewerOptOutAdminReducer = {
+    [RosterViewerOptOutAdminB.id.predicate]: view,
+    [UserS.id.predicate]                   : view,
+    [SelectAccounts.id.predicate]          : view,
+    [Delete.id.predicate]                  : view,
+    [DeleteConfirm.id.predicate]           : view,
 };
 

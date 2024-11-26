@@ -24,6 +24,9 @@ import {botViewerReducer} from '#src/discord/view-reducers/bot-viewer.ts';
 import {infoViewerCreatorReducer} from '#src/discord/view-reducers/info-viewer-creator.ts';
 import {rosterOverviewReducer} from '#src/discord/view-reducers/roster-overview.ts';
 import {botViewerDevReducer} from '#src/discord/view-reducers/bot-viewer-dev.ts';
+import {directoryViewerReducer} from '#src/discord/view-reducers/directory-viewer.ts';
+import {rosterViewerOptOutAdminReducer} from '#src/discord/view-reducers/roster-viewer-opt-out-admin.ts';
+import {rosterViewerSignupAdminReducer} from '#src/discord/view-reducers/roster-viewer-signup-admin.ts';
 
 
 export const allReducers = {
@@ -44,13 +47,20 @@ export const allReducers = {
     ...clanViewerReducer,
     ...clanViewerAdminReducer,
 
+    ...directoryViewerReducer,
+
     ...infoViewerReducer,
     ...infoViewerAdminReducer,
     ...infoViewerCreatorReducer,
 
     ...rosterOverviewReducer,
+
     ...rosterViewerOptOutReducer,
+    ...rosterViewerOptOutAdminReducer,
+
     ...rosterViewerSignupReducer,
+    ...rosterViewerSignupAdminReducer,
+
     ...rosterViewerReducer,
     ...rosterViewerAdminReducer,
     ...rosterViewerCreatorReducer,

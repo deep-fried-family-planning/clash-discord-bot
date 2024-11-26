@@ -9,7 +9,7 @@ import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
 import {toEntries} from 'effect/Record';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asViewer} from '#src/discord/components/component-utils.ts';
-import {viewServerRosterSignupEmbed} from '#src/discord/components/views/server-roster-signup-embed.ts';
+import {viewServerRosterSignupEmbed} from '#src/discord/views/server-roster-signup-embed.ts';
 import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
 import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/internal/constants/label.ts';
 

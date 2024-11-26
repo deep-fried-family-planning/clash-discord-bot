@@ -11,7 +11,7 @@ resource "aws_dynamodb_table" "operations" {
   range_key = "sk"
 
   ttl {
-    attribute_name = "ttl"
+#     attribute_name = "ttl"
     enabled        = false
   }
 

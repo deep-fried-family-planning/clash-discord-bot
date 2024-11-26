@@ -8,6 +8,7 @@ import {dLinesS} from '#src/discord/util/markdown.ts';
 import {COLOR, nColor} from '#src/internal/constants/colors.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
 
 
 export const ONE_OF_US
@@ -55,8 +56,10 @@ export const ONE_OF_US
 /**
  * @desc [SLASH /oneofus]
  */
-export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>) => E.gen(function * () {
-    const [server, user] = yield * validateServer(data);
+export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E.gen(function * () {
+    const [server, user] = s
+        ? [s.server!, s.original.member!]
+        : yield * validateServer(data);
 
     const tag = yield * Clashofclans.validateTag(options.player_tag);
 

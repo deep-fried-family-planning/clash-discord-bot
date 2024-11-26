@@ -3,6 +3,13 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {EmbedId, NowId, ServerId, UserId} from '#src/dynamo/schema/common.ts';
 
 
+export const equalField = S.equivalence(S.Struct({
+    name  : S.String,
+    value : S.String,
+    inline: S.optional(S.Boolean),
+}));
+
+
 const DiscordApiEmbed = S.Struct({
     type: S.optional(S.Enums({
         RICH       : 'rich',

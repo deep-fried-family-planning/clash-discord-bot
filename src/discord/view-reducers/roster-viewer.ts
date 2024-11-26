@@ -16,12 +16,15 @@ import {toEntries} from 'effect/Record';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {RosterOverviewB} from '#src/discord/view-reducers/roster-overview.ts';
 import {UNAVAILABLE} from '#src/discord/ix-constants.ts';
-import {viewServerRosterOptions} from '#src/discord/components/views/server-roster-options.ts';
+import {viewServerRosterOptions} from '#src/discord/views/server-roster-options.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_ROSTERS, LABEL_TITLE_ROSTERS} from '#src/internal/constants/label.ts';
 import {PLACEHOLDER_ROSTER} from '#src/internal/constants/placeholder.ts';
+import {RosterViewerSignupAdminB} from '#src/discord/view-reducers/roster-viewer-signup-admin.ts';
+import {isAdmin} from '#src/discord/views/util.ts';
+import {RosterViewerOptOutAdminB} from '#src/discord/view-reducers/roster-viewer-opt-out-admin.ts';
 
 
 const getRosters = (s: St) => E.gen(function * () {
@@ -90,6 +93,9 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         title      : LABEL_TITLE_ROSTERS,
         description: unset,
 
+        reference: {},
+        system   : unset,
+
         viewer: asViewer(
             viewer,
         ),
@@ -103,6 +109,8 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
             RosterViewerSignupB.render({disabled: !Roster.values.length}),
             RosterViewerOptOutB.render({disabled: !Roster.values.length}),
             RosterOverviewB.render({disabled: !Roster.values.length}),
+            RosterViewerSignupAdminB.if(isAdmin(s))?.render({disabled: !Roster.values.length}),
+            RosterViewerOptOutAdminB.if(isAdmin(s))?.render({disabled: !Roster.values.length}),
         ],
         back: BackB.as(OmbiBoardB.id),
         submit:

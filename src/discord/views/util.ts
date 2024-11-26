@@ -21,6 +21,20 @@ export const toReferenceFields = (fields: Record<str, EmbedField | und>) => pipe
 );
 
 
+export const toReferenceFieldssssss = (fields: Record<str, str | und>) => pipe(
+    fields,
+    reduceKV([] as EmbedField[], (fs, f, n) => {
+        if (f) {
+            fs.push({
+                name : n.trim(),
+                value: f.trim(),
+            });
+        }
+        return fs;
+    }),
+);
+
+
 export const fromReferenceFields = (fields?: EmbedField[]) => fields
     ? pipe(
         fields,

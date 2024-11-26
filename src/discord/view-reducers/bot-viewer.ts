@@ -8,6 +8,7 @@ import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {LABEL_TITLE_ABOUT_DEEPFRYER} from '#src/internal/constants/label.ts';
+import {DirectoryViewerB} from '#src/discord/view-reducers/directory-viewer.ts';
 
 
 export const BotViewer = PrimaryB.as(makeId(RK_OPEN, 'BV'), {
@@ -24,6 +25,10 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         editor: unset,
         viewer: unset,
         status: unset,
+
+        row1: [
+            DirectoryViewerB,
+        ],
 
         back  : BackB.as(OmbiBoardB.id),
         delete: BotViewerDevB.if(DEVS.includes(s.user_id)),

@@ -19,6 +19,7 @@ export {
     Metric as Metric,
     Order as ORD,
     Option as O,
+    Equal as EQ,
     flow,
     pipe,
 } from 'effect';
