@@ -1,10 +1,11 @@
 import {Console} from 'effect';
-import {NowId, ChannelId, RoleId, ServerId, ServerIdEncode, EmbedId, MessageId} from '#src/dynamo/schema/common.ts';
+import {NowId, ChannelId, RoleId, ServerId, EmbedId, MessageId} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const DiscordServer = S.Struct({
@@ -46,13 +47,12 @@ export const DiscordServer = S.Struct({
 export type DServer = S.Schema.Type<typeof DiscordServer>;
 
 
-export const DiscordServerEncode = S.encodeUnknown(DiscordServer);
-export const DiscordServerDecode = S.decodeUnknown(DiscordServer);
-export const DiscordServerEquivalence = S.equivalence(DiscordServer);
+export const encodeDiscordServer = S.encodeUnknown(DiscordServer);
+export const decodeDiscordServer = S.decodeUnknown(DiscordServer);
 
 
 export const putDiscordServer = (record: DServer) => pipe(
-    DiscordServerEncode(record),
+    encodeDiscordServer(record),
     E.flatMap((encoded) => pipe(
         DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
@@ -64,7 +64,7 @@ export const putDiscordServer = (record: DServer) => pipe(
 
 
 export const getDiscordServer = (key: CompKey<DServer>) => pipe(
-    ServerIdEncode(key.pk),
+    encodeServerId(key.pk),
     E.flatMap((pk) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
@@ -75,7 +75,7 @@ export const getDiscordServer = (key: CompKey<DServer>) => pipe(
     })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
-            onTrue : () => DiscordServerDecode(Item),
+            onTrue : () => decodeDiscordServer(Item),
             onFalse: () => new DynamoError({message: 'NotFound: DiscordServer'}),
         }),
         E.flatMap((decoded) => pipe(
@@ -93,7 +93,7 @@ export const scanDiscordServers = () => pipe(
     }),
     E.flatMap(({Items}) => pipe(
         E.if(Boolean(Items), {
-            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordServerDecode(Item)))),
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => decodeDiscordServer(Item)))),
             onFalse: () => E.succeed([]),
         }),
         E.flatMap((decoded) => pipe(

@@ -8,7 +8,7 @@ import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {Discord} from 'dfx';
 import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {ixcRouter} from '#src/discord/ixc/ixc-router.ts';
+import {ixcRouter} from '#src/discord/ixc-router.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 

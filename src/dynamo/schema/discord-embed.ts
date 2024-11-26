@@ -91,6 +91,5 @@ export const DiscordEmbed = S.Struct({
 
 export const encodeDiscordEmbed = S.encodeUnknown(DiscordEmbed);
 export const decodeDiscordEmbed = S.decodeUnknown(DiscordEmbed);
-export const equalDiscordEmbed = S.equivalence(DiscordEmbed);
 
 

@@ -13,18 +13,18 @@ import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
-import {CLAN_FAM} from '#src/discord/ixs/link/clanfam.ts';
-import {ONE_OF_US} from '#src/discord/ixs/link/oneofus.ts';
-import {SERVER} from '#src/discord/ixs/link/server.ts';
-import {SMOKE} from '#src/discord/ixs/util/smoke.ts';
-import {TIME} from '#src/discord/ixs/util/time.ts';
-import {USER} from '#src/discord/ixs/link/user.ts';
-import {WA_LINKS} from '#src/discord/ixs/war-analysis/wa-links.ts';
-import {WA_MIRRORS} from '#src/discord/ixs/war-analysis/wa-mirrors.ts';
-import {WA_SCOUT} from '#src/discord/ixs/war-analysis/wa-scout.ts';
-import {CACHE_BUST} from '#src/discord/ixs/util/cache-bust.ts';
-import {GIMME_DATA} from '#src/discord/ixs/util/gimme-data.ts';
-import {OMNI_BOARD} from '#src/discord/ixs/util/omni-board.ts';
+import {CLAN_FAM} from '#src/discord/commands/link/clanfam.ts';
+import {ONE_OF_US} from '#src/discord/commands/link/oneofus.ts';
+import {SERVER} from '#src/discord/commands/link/server.ts';
+import {SMOKE} from '#src/discord/commands/util/smoke.ts';
+import {TIME} from '#src/discord/commands/util/time.ts';
+import {USER} from '#src/discord/commands/link/user.ts';
+import {WA_LINKS} from '#src/discord/commands/war-analysis/wa-links.ts';
+import {WA_MIRRORS} from '#src/discord/commands/war-analysis/wa-mirrors.ts';
+import {WA_SCOUT} from '#src/discord/commands/war-analysis/wa-scout.ts';
+import {CACHE_BUST} from '#src/discord/commands/util/cache-bust.ts';
+import {GIMME_DATA} from '#src/discord/commands/util/gimme-data.ts';
+import {OMNI_BOARD} from '#src/discord/commands/util/omni-board.ts';
 
 
 const specs = {

@@ -5,7 +5,6 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 
 export type DRosterSignup = S.Schema.Type<typeof DiscordRosterSignup>;
 export type DRosterSignupKey = CompKey<DRosterSignup>;
-export type DRosterSignupHK = CompKey<DRosterSignup>['pk'];
 
 
 export const DiscordRosterSignup = S.Struct({

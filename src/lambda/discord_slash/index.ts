@@ -12,7 +12,7 @@ import type {IxRE} from '#src/discord/util/discord.ts';
 import type {IxD} from '#src/discord/util/discord.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {Cause} from 'effect';
-import {ixsRouter} from '#src/discord/ixs/ixs-router.ts';
+import {ixsRouter} from '#src/discord/ixs-router.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 
 

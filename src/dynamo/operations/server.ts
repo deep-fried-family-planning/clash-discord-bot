@@ -1,13 +1,13 @@
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {ServerIdEncode} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {DynamoError} from '#src/internal/errors.ts';
-import {DiscordServerDecode} from '#src/dynamo/schema/discord-server.ts';
+import {decodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const serverRead = (server: str) => E.gen(function * () {
-    const serverId = yield * ServerIdEncode(server);
+    const serverId = yield * encodeServerId(server);
 
     const item = yield * DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
@@ -21,5 +21,5 @@ export const serverRead = (server: str) => E.gen(function * () {
         return yield * new DynamoError({message: '[DiscordServer]: Not found'});
     }
 
-    return yield * DiscordServerDecode(item.Item);
+    return yield * decodeDiscordServer(item.Item);
 });

@@ -10,6 +10,11 @@ resource "aws_dynamodb_table" "operations" {
   hash_key  = "pk"
   range_key = "sk"
 
+  ttl {
+    attribute_name = "ttl"
+    enabled        = false
+  }
+
   attribute {
     name = "pk"
     type = "S"

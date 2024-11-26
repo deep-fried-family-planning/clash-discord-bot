@@ -1,8 +1,8 @@
 import {decodeDiscordEmbed, type DEmbed, type DEmbedKey, encodeDiscordEmbed} from '#src/dynamo/schema/discord-embed.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {encodeEmbedId} from '#src/dynamo/schema/common.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {encodeEmbedId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const discordEmbedCreate = (embed: DEmbed) => E.gen(function * () {
