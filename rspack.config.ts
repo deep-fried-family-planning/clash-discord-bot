@@ -36,39 +36,12 @@ export default defineConfig({
     },
 
     entry: {
-        'ix_api/index': {
-            import: 'src/ix_api.ts',
-        },
-        'ix_menu/index': {
-            import: 'src/ix_menu.ts',
-        },
-        'ix_slash/index': {
-            import: 'src/ix_slash.ts',
-        },
-        'ix_menu_close/index': {
-            import: 'src/ix_menu_close.ts',
-        },
-        'poll/index': {
-            import: 'src/poll.ts',
-        },
-        'task/index': {
-            import: 'src/task.ts',
-        },
-        'api_discord/index': {
-            import: 'src/ix_api.ts',
-        },
-        'discord_menu/index': {
-            import: 'src/ix_menu.ts',
-        },
-        'discord_slash/index': {
-            import: 'src/ix_slash.ts',
-        },
-        'scheduler/index': {
-            import: 'src/poll.ts',
-        },
-        'scheduled_task/index': {
-            import: 'src/task.ts',
-        },
+        'ix_api/index'       : {import: 'src/ix_api.ts'},
+        'ix_menu/index'      : {import: 'src/ix_menu.ts'},
+        'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
+        'ix_slash/index'     : {import: 'src/ix_slash.ts'},
+        'poll/index'         : {import: 'src/poll.ts'},
+        'task/index'         : {import: 'src/task.ts'},
     },
 
     output: {
