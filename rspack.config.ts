@@ -2,50 +2,86 @@ import {defineConfig} from '@rspack/cli';
 import TerserPlugin from 'terser-webpack-plugin';
 // import {rspack} from '@rspack/core';
 import {resolve} from 'node:path';
-// import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
+import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
 
-const targets = ['node >= 20.12'];
+
+const RsDoctor = new RsdoctorRspackPlugin({
+    mode    : 'normal',
+    supports: {
+        parseBundle: true,
+        // generateTileGraph: true,
+    },
+    features: {
+        resolver   : true,
+        loader     : true,
+        plugins    : true,
+        bundle     : true,
+        treeShaking: true,
+    },
+});
+
+
+const targets = ['node >= 22.11'];
 
 export default defineConfig({
     mode  : 'production',
-    target: 'node20.12',
+    target: ['node22.11', 'es2022'],
     //
     // hashFunction: 'md5',
     // hashDigestLength: 20,
 
     experiments: {
-        // layers          : true,
-        outputModule  : true,
-        topLevelAwait : true,
-        futureDefaults: true,
-        cache         : true,
+        outputModule : true,
+        topLevelAwait: true,
     },
 
     entry: {
-        'ix_api/index'       : 'src/ix_api.ts',
-        'ix_menu/index'      : 'src/ix_menu.ts',
-        'ix_slash/index'     : 'src/ix_slash.ts',
-        'ix_menu_close/index': 'src/ix_menu_close.ts',
-        'poll/index'         : 'src/poll.ts',
-        'task/index'         : 'src/task.ts',
-
-        'api_discord/index'   : 'src/ix_api.ts',
-        'discord_menu/index'  : 'src/ix_menu.ts',
-        'discord_slash/index' : 'src/ix_slash.ts',
-        'scheduler/index'     : 'src/poll.ts',
-        'scheduled_task/index': 'src/task.ts',
+        'ix_api/index': {
+            import: 'src/ix_api.ts',
+        },
+        'ix_menu/index': {
+            import: 'src/ix_menu.ts',
+        },
+        'ix_slash/index': {
+            import: 'src/ix_slash.ts',
+        },
+        'ix_menu_close/index': {
+            import: 'src/ix_menu_close.ts',
+        },
+        'poll/index': {
+            import: 'src/poll.ts',
+        },
+        'task/index': {
+            import: 'src/task.ts',
+        },
+        'api_discord/index': {
+            import: 'src/ix_api.ts',
+        },
+        'discord_menu/index': {
+            import: 'src/ix_menu.ts',
+        },
+        'discord_slash/index': {
+            import: 'src/ix_slash.ts',
+        },
+        'scheduler/index': {
+            import: 'src/poll.ts',
+        },
+        'scheduled_task/index': {
+            import: 'src/task.ts',
+        },
     },
 
     output: {
-        module                       : true,
-        environment                  : {module: true},
-        library                      : {type: 'module'},
+        module     : true,
+        environment: {
+            module: true,
+        },
+        library: {
+            type: 'module',
+        },
         strictModuleErrorHandling    : true,
         strictModuleExceptionHandling: true,
-        compareBeforeEmit            : true,
-        asyncChunks                  : false,
         clean                        : true,
-        chunkLoading                 : 'import',
     },
 
     externalsType   : 'module',
@@ -62,19 +98,18 @@ export default defineConfig({
             configFile: resolve(import.meta.dirname, 'tsconfig.json'),
             references: 'auto',
         },
-        extensions: ['.ts', '...', '.ts'],
+        extensions: ['...', '.ts'],
     },
 
 
     module: {
-        parser: {
-            'javascript/auto': {
-                requireDynamic     : false,
-                importDynamic      : true,
-                exprContextCritical: true,
-                overrideStrict     : 'strict',
-            },
-        },
+        // parser: {
+        //     'javascript/auto': {
+        //         requireDynamic     : false,
+        //         importDynamic      : false,
+        //         exprContextCritical: true,
+        //     },
+        // },
 
         rules: [{
             test   : /\.js$/,
@@ -108,34 +143,14 @@ export default defineConfig({
     },
 
     plugins: [
-        // new RsdoctorRspackPlugin({
-        //     mode    : 'normal',
-        //     supports: {
-        //         parseBundle      : true,
-        //         generateTileGraph: true,
-        //     },
-        //     reportCodeType: {
-        //         writeDataJson: true,
-        //     },
-        //     features: {
-        //         resolver   : true,
-        //         loader     : true,
-        //         plugins    : true,
-        //         bundle     : true,
-        //         treeShaking: true,
-        //     },
-        // }),
-        // new BundleAnalyzerPlugin.BundleAnalyzerPlugin({sourceType: 'module'}),
-    ],
+        // RsDoctor,
+    ].filter(Boolean),
 
     optimization: {
-        // minimizer      : [new TerserPlugin()],
-        splitChunks    : false,
-        realContentHash: true,
+        // minimizer: [new TerserPlugin()],
     },
 
-    cache  : true,
-    devtool: 'nosources-cheap-module-source-map',
+    devtool: 'source-map',
 
     performance: {hints: false},
     stats      : {
@@ -144,9 +159,7 @@ export default defineConfig({
         performance : true,
         children    : true,
         timings     : true,
-        hash        : true,
         builtAt     : true,
-        cached      : true,
         loggingTrace: true,
         runtime     : true,
     },

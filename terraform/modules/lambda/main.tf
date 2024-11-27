@@ -4,9 +4,20 @@ locals {
 
 
 data "archive_file" "source_code" {
-  type        = "zip"
-  source_dir  = "../${path.root}/dist/${var.fn_name}"
+  type             = "zip"
+  output_file_mode = "0666"
+  #   source_dir       = "../${path.root}/dist/${var.fn_name}"
   output_path = "${path.root}/.terraform/${var.fn_name}.zip"
+
+  source {
+    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs")
+    filename = "index.mjs"
+  }
+
+  source {
+    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs.map")
+    filename = "index.mjs.map"
+  }
 }
 
 
@@ -15,7 +26,7 @@ resource "aws_lambda_function" "main" {
   role          = aws_iam_role.execution_role.arn
 
   filename         = data.archive_file.source_code.output_path
-  source_code_hash = data.archive_file.source_code.output_sha256
+  source_code_hash = data.archive_file.source_code.output_base64sha256
   handler          = "index.handler"
 
   architectures = ["arm64"]

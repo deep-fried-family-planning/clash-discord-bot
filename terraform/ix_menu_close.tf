@@ -6,15 +6,15 @@ module "ix_menu_close" {
   custom_policy_json = data.aws_iam_policy_document.ix_menu_close.json
   memory             = 128
   timeout            = 10
-  fn_env             = merge(local.lambda_env, {
+  fn_env = merge(local.lambda_env, {
 
   })
 }
 
 resource "aws_lambda_function_event_invoke_config" "ix_menu_close" {
-  function_name = module.ix_menu_close.fn_arn
-  maximum_event_age_in_seconds = 30
-  maximum_retry_attempts = 1
+  function_name                = module.ix_menu_close.fn_arn
+  maximum_event_age_in_seconds = 60
+  maximum_retry_attempts       = 0
 }
 
 data "aws_iam_policy_document" "ix_menu_close" {

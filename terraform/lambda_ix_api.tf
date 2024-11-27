@@ -5,7 +5,7 @@ module "ix_api" {
   fn_name            = "ix_api"
   custom_policy_json = data.aws_iam_policy_document.ix_api.json
   memory             = 256
-  timeout            = 5
+  timeout            = 3
   fn_env = merge(local.lambda_env, {
     LAMBDA_ARN_IX_MENU  = module.ix_menu.fn_arn
     LAMBDA_ARN_IX_SLASH = module.ix_slash.fn_arn

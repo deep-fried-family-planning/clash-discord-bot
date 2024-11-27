@@ -12,6 +12,20 @@ module "task" {
 }
 
 
+module "task_queue" {
+  source = "./modules/sqs"
+
+  prefix      = local.prefix
+  fn_name     = module.task.fn_name
+  timeout     = module.task.fn_timeout
+  sqs_retries = 10
+  sqs_source_arns = [
+    module.poll.fn_arn,
+    module.poll.fn_role_arn
+  ]
+}
+
+
 data "aws_iam_policy_document" "task" {
   statement {
     effect = "Allow"
@@ -26,18 +40,4 @@ data "aws_iam_policy_document" "task" {
     actions   = ["*"]
     resources = ["*"]
   }
-}
-
-
-module "task_queue" {
-  source = "./modules/sqs"
-
-  prefix      = local.prefix
-  fn_name     = module.task.fn_name
-  timeout     = module.task.fn_timeout
-  sqs_retries = 10
-  sqs_source_arns = [
-    module.poll.fn_arn,
-    module.poll.fn_role_arn
-  ]
 }
