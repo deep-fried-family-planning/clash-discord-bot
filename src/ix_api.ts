@@ -43,12 +43,13 @@ const modalKinds = [RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD];
 const component = (body: IxD) => E.gen(function * () {
     const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
     const id = fromId(data.custom_id);
-
-
     if (id.params.kind === RK_CLOSE) {
-        yield * DiscordApi.createInteractionResponse(body.id, body.token, {type: IXRT.DEFERRED_UPDATE_MESSAGE});
-        yield * DiscordApi.deleteOriginalInteractionResponse(body.application_id, body.token);
-        return r200('');
+        yield * Lambda.invoke({
+            FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU_DELETE,
+            InvocationType: 'Event',
+            Payload       : JSON.stringify(body),
+        });
+        return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE}); ;
     }
 
 

@@ -11,6 +11,8 @@ declare namespace NodeJS {
         SQS_ARN_SCHEDULED_TASK : string;
         LAMBDA_ARN_DISCORD_MENU: string;
 
+        LAMBDA_ARN_DISCORD_MENU_DELETE: string;
+
         AWS_LAMBDA_FUNCTION_NAME  : string;
         AWS_REGION                : string;
         AWS_LAMBDA_LOG_GROUP_NAME : string;

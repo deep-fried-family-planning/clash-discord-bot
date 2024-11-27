@@ -10,6 +10,8 @@ module "ix_api" {
     LAMBDA_ARN_IX_MENU  = module.ix_menu.fn_arn
     LAMBDA_ARN_IX_SLASH = module.ix_slash.fn_arn
 
+    LAMBDA_ARN_DISCORD_MENU_DELETE = module.ix_menu_close.fn_arn
+
     LAMBDA_ARN_DISCORD_MENU = module.ix_menu.fn_arn
   })
 }
