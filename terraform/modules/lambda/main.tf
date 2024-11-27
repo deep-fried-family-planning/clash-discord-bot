@@ -19,7 +19,7 @@ resource "aws_lambda_function" "main" {
   handler          = "index.handler"
 
   architectures = ["arm64"]
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs22.x"
   memory_size   = var.memory
   timeout       = var.timeout
 

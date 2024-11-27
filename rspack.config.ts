@@ -16,8 +16,9 @@ export default defineConfig({
     experiments: {
         // layers          : true,
         outputModule  : true,
-        // topLevelAwait : true,
-        futureDefaults: false,
+        topLevelAwait : true,
+        futureDefaults: true,
+        cache         : true,
     },
 
     entry: {
@@ -61,7 +62,7 @@ export default defineConfig({
             configFile: resolve(import.meta.dirname, 'tsconfig.json'),
             references: 'auto',
         },
-        extensions: ['...', '.ts'],
+        extensions: ['.ts', '...', '.ts'],
     },
 
 
@@ -128,17 +129,17 @@ export default defineConfig({
     ],
 
     optimization: {
-        minimizer      : [new TerserPlugin()],
+        // minimizer      : [new TerserPlugin()],
         splitChunks    : false,
-        realContentHash: false,
+        realContentHash: true,
     },
 
     cache  : true,
     devtool: 'nosources-cheap-module-source-map',
 
-    performance: {hints: 'warning'},
+    performance: {hints: false},
     stats      : {
-        preset      : 'errors-warnings',
+        preset      : 'errors-only',
         entrypoints : true,
         performance : true,
         children    : true,

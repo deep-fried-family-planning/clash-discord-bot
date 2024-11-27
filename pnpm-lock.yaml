@@ -8,18 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@aws-sdk/client-dynamodb':
-        specifier: 3.699.0
-        version: 3.699.0
-      '@aws-sdk/client-scheduler':
-        specifier: 3.699.0
-        version: 3.699.0
-      '@aws-sdk/client-sqs':
-        specifier: 3.699.0
-        version: 3.699.0
-      '@aws-sdk/lib-dynamodb':
-        specifier: 3.699.0
-        version: 3.699.0(@aws-sdk/client-dynamodb@3.699.0)
       '@effect-aws/client-dynamodb':
         specifier: 1.5.0
         version: 1.5.0(effect@3.10.17)

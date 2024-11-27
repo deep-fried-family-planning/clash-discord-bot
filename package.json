@@ -12,7 +12,7 @@
   "type": "module",
   "scripts": {
     "types": "tsc --project tsconfig.check.json --noEmit",
-    "build": "rspack build --mode production",
+    "build": "NODE_OPTIONS=--experimental-transform-types rspack build -c rspack.config.ts",
     "coverage": "vitest --coverage",
     "lint": "eslint . --quiet",
     "fixlint": "eslint . --fix",
@@ -31,10 +31,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "3.699.0",
-    "@aws-sdk/client-scheduler": "3.699.0",
-    "@aws-sdk/client-sqs": "3.699.0",
-    "@aws-sdk/lib-dynamodb": "3.699.0",
     "@effect-aws/client-dynamodb": "1.5.0",
     "@effect-aws/client-eventbridge": "1.6.0",
     "@effect-aws/client-lambda": "1.6.0",
