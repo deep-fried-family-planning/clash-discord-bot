@@ -12,7 +12,7 @@
   "type": "module",
   "scripts": {
     "types": "tsc --project tsconfig.check.json --noEmit",
-    "build": "NODE_OPTIONS=--experimental-transform-types rspack build -c rspack.config.ts",
+    "build": "rspack build -c rspack.config.ts",
     "coverage": "vitest --coverage",
     "lint": "eslint . --quiet",
     "fixlint": "eslint . --fix",
