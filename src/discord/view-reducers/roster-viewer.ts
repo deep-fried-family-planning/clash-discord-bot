@@ -48,7 +48,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 
     let viewer: Embed | und;
 
-    if (RosterViewerB.clicked(ax) && !Roster.values.length) {
+    if (RosterViewerB.clicked(ax)) {
         const rosters = yield * getRosters(s);
 
         Roster = RosterS
