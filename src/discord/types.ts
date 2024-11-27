@@ -8,50 +8,52 @@ export type OverrideOptions<T, O> = Omit<T, 'options'> & {options: O};
 type KV<V> = Record<string, V>;
 
 
-// Aliases
-type GetOptionData<T extends ApplicationCommandOptionType> =
-    T extends APIApplicationCommandInteractionDataBasicOption['type']
-        ? Extract<APIApplicationCommandInteractionDataBasicOption, {type: T}>['value']
-        : Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
-
-type DataSubGroup = APIApplicationCommandInteractionDataSubcommandGroupOption;
-type DataSubCmd = APIApplicationCommandInteractionDataSubcommandOption;
-
-
+// // Aliases
+// type GetOptionData<T extends ApplicationCommandOptionType> =
+//     T extends APIApplicationCommandInteractionDataBasicOption['type']
+//         ? Extract<APIApplicationCommandInteractionDataBasicOption, {type: T}>['value']
+//         : Extract<APIApplicationCommandInteractionDataOption, {type: T}>;
 //
-// Spec types
+// type DataSubGroup = APIApplicationCommandInteractionDataSubcommandGroupOption;
+// type DataSubCmd = APIApplicationCommandInteractionDataSubcommandOption;
 //
-type SpecOptionBasic = APIApplicationCommandBasicOption;
-type SpecOptionSubGroup = APIApplicationCommandSubcommandGroupOption;
-type SpecOptionSubCmd = APIApplicationCommandSubcommandOption;
+//
+// //
+// // Spec types
+// //
+// type SpecOptionBasic = APIApplicationCommandBasicOption;
+// type SpecOptionSubGroup = APIApplicationCommandSubcommandGroupOption;
+// type SpecOptionSubCmd = APIApplicationCommandSubcommandOption;
+//
+// type thing = OverrideOptions<RESTPostAPIChatInputApplicationCommandsJSONBody, Record<string,
+//     SpecOptionBasic
+//     | SubCommandSpec
+//     | SubGroupSpec
+// >>;
 
 
-export type CommandSpec = OverrideOptions<RESTPostAPIChatInputApplicationCommandsJSONBody, Record<string,
-    SpecOptionBasic
-    | SubCommandSpec
-    | SubGroupSpec
->>;
-export type SubGroupSpec = OverrideOptions<SpecOptionSubGroup, Record<string, SubCommandSpec>>;
-export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, SpecOptionBasic>>;
+export type CommandSpec = any
+// export type SubGroupSpec = OverrideOptions<SpecOptionSubGroup, Record<string, SubCommandSpec>>;
+// export type SubCommandSpec = OverrideOptions<SpecOptionSubCmd, Record<string, SpecOptionBasic>>;
 
 
 //
 // Data
 //
-export type OptionData<T extends CommandSpec['options']>
-    = T extends KV<SpecOptionBasic> ? {
-        [k in keyof T]: T[k] extends {required: true} ? GetOptionData<T[k]['type']> : (GetOptionData<T[k]['type']> | undefined);
-    }
-    : T extends KV<SpecOptionSubCmd> ? {
-        [k in keyof T]: OverrideOptions<DataSubCmd, OptionData<T[k]['options']>>
-    }
-    : T extends KV<SpecOptionSubCmd> ? {
-        [k in keyof T]: OverrideOptions<DataSubGroup, OptionData<T[k]['options']>>
-    }
-    : never;
+// export type OptionData<T extends CommandSpec['options']>
+//     = T extends KV<SpecOptionBasic> ? {
+//         [k in keyof T]: T[k] extends {required: true} ? GetOptionData<T[k]['type']> : (GetOptionData<T[k]['type']> | undefined);
+//     }
+//     : T extends KV<SpecOptionSubCmd> ? {
+//         [k in keyof T]: OverrideOptions<DataSubCmd, OptionData<T[k]['options']>>
+//     }
+//     : T extends KV<SpecOptionSubCmd> ? {
+//         [k in keyof T]: OverrideOptions<DataSubGroup, OptionData<T[k]['options']>>
+//     }
+//     : never;
 
 
-export type IxDS<T extends CommandSpec> = OptionData<T['options']>;
+export type IxDS<T extends CommandSpec> = any;//OptionData<T['options']>
 
 
 export type SharedOptions = {
