@@ -1,6 +1,6 @@
 import {CSL, E} from '#src/internal/pure/effect.ts';
-import type {IxDc} from '#src/discord/util/discord.ts';
-import type {IxD} from '#src/discord/util/discord.ts';
+import type {IxDc} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {deriveAction} from '#src/discord/store/derive-action.ts';
@@ -11,7 +11,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {UserB, userEditReducer} from '#src/discord/view-reducers/user-settings.ts';
 import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
-import {RK_BACK, RK_CLOSE, RK_ENTRY, RK_FORWARD, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD, RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD} from '#src/internal/constants/route-kind.ts';
+import {RK_BACK, RK_CLOSE, RK_ENTRY, RK_FORWARD, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD, RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD} from '#src/constants/route-kind.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {

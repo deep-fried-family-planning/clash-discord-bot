@@ -1,5 +1,5 @@
 import type {CommandSpec, IxDS} from '#src/discord/types.ts';
-import {type IxD, IXSOT} from '#src/discord/util/discord.ts';
+import {type IxD, IXSOT} from '#src/internal/discord.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';

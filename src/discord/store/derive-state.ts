@@ -1,5 +1,5 @@
 import type {ActionRow, Button, Embed, EmbedField, SelectMenu, Snowflake, TextInput} from 'dfx/types';
-import type {IxD} from '#src/discord/util/discord.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import type {DUser} from '#src/dynamo/schema/discord-user.ts';

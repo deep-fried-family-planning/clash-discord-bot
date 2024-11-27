@@ -1,5 +1,5 @@
 import {pipe} from '#src/internal/pure/effect.ts';
-import type {IxRE} from '#src/discord/util/discord.ts';
+import type {IxRE} from '#src/internal/discord.ts';
 import type {Embed} from 'dfx/types';
 import {dedupeWithL, filterL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';

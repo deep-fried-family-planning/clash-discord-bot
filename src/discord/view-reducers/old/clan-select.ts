@@ -3,9 +3,9 @@ import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 
 
@@ -16,7 +16,7 @@ const getClans = (s: St) => E.gen(function * () {
     );
 
     const clans = pipe(
-        yield * Clashofclans.getClans(records.map((r) => r.sk)),
+        yield * ClashOfClans.getClans(records.map((r) => r.sk)),
         sortWithL((c) => c.tag, ORDS),
     );
 

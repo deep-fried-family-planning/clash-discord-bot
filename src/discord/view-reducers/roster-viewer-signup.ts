@@ -1,5 +1,4 @@
 import {makeId} from '#src/discord/store/type-rx.ts';
-
 import {BackB, SingleS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
@@ -11,14 +10,13 @@ import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS, UNAVAILABLE} from '#src/discord/ix-constants.ts';
+import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
 import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import type {SelectOption} from 'dfx/types';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import { ClashCache } from '#src/clash/layers/clash-cash';
 

@@ -1,14 +1,14 @@
 import {E} from '#src/internal/pure/effect.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {deleteDiscordPlayer, type DPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const bulk = (intag: str, user: str) => E.gen(function * () {
-    const tag = yield * Clashofclans.validateTag(intag);
+    const tag = yield * ClashOfClans.validateTag(intag);
 
-    const coc_player = yield * Clashofclans.getPlayer(tag);
+    const coc_player = yield * ClashOfClans.getPlayer(tag);
 
     const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${tag}`});
 

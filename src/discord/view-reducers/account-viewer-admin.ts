@@ -6,11 +6,11 @@ import type {St} from '#src/discord/store/derive-state.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {asConfirm, asEditor, asSuccess} from '#src/discord/components/component-utils.ts';
 import {AccountViewerAccountS, AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
-import {SELECT_ACCOUNT_TYPE} from '#src/discord/ix-constants.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/internal/constants/placeholder.ts';
-import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/constants/placeholder.ts';
+import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/constants/label.ts';
 
 
 const submit = (s: St, playerTag: str, accountType: str) => E.gen(function * () {

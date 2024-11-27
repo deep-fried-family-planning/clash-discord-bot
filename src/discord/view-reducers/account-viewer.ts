@@ -1,7 +1,6 @@
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, NewB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {makeId} from '#src/discord/store/type-rx.ts';
 import {asViewer, unset} from '#src/discord/components/component-utils.ts';
 import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
@@ -9,13 +8,12 @@ import {AccountViewerAdminB} from '#src/discord/view-reducers/account-viewer-adm
 import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/internal/constants/label.ts';
-import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/constants/placeholder.ts';
-import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/constants/description.ts';
+import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/constants/label.ts';
+import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
+import {DESC_NO_ACCOUNT_SELECTED} from '#src/constants/description.ts';
 import { ClashCache } from '#src/clash/layers/clash-cash';
-
 
 export const AccountViewerB = PrimaryB.as(makeId(RK_OPEN, 'AV'), {
     label: LABEL_ACCOUNTS,
@@ -27,7 +25,6 @@ export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
 
 export const getPlayers = (s: St) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: s.user_id});
-
     const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
     return viewUserPlayerOptions(records, players);

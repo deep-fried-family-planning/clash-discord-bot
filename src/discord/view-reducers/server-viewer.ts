@@ -6,7 +6,7 @@ import {unset} from '#src/discord/components/component-utils.ts';
 import {ServerViewerAdminB} from '#src/discord/view-reducers/server-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
-import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 

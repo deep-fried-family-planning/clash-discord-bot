@@ -6,13 +6,13 @@ import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
 import {DateTimeEditorB} from '#src/discord/view-reducers/editors/embed-date-time-editor.ts';
 import {ClanSelectB} from '#src/discord/view-reducers/old/clan-select.ts';
-import {SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
+import {SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.ts';
 import {rosterDelete} from '#src/dynamo/operations/roster.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_ROSTER_TYPE} from '#src/internal/constants/placeholder.ts';
-import {LABEL_TITLE_ROSTER_ADMIN} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
+import {LABEL_TITLE_ROSTER_ADMIN} from '#src/constants/label.ts';
 
 
 export const RosterViewerAdminB = AdminB.as(makeId(RK_OPEN, 'RVA'));

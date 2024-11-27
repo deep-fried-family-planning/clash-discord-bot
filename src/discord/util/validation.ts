@@ -1,4 +1,4 @@
-import type {IxD} from '#src/discord/util/discord.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';

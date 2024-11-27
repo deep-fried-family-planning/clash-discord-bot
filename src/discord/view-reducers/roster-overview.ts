@@ -3,16 +3,15 @@ import {makeId} from '#src/discord/store/type-rx.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {rosterRead} from '#src/dynamo/operations/roster.ts';
 import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
 import {toEntries} from 'effect/Record';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asViewer} from '#src/discord/components/component-utils.ts';
 import {viewServerRosterSignupEmbed} from '#src/discord/views/server-roster-signup-embed.ts';
-import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
-import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/internal/constants/label.ts';
 import {ClashCache} from "#src/clash/layers/clash-cash.ts";
+import {RK_OPEN} from '#src/constants/route-kind.ts';
+import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/constants/label.ts';
 
 
 export const RosterOverviewB = PrimaryB.as(makeId(RK_OPEN, 'RO'), {

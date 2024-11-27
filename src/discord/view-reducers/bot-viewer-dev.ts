@@ -4,7 +4,7 @@ import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
-import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 
 

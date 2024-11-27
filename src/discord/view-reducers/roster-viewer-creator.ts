@@ -5,7 +5,7 @@ import {RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
 import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
 import {DateTimeEditorB} from '#src/discord/view-reducers/editors/embed-date-time-editor.ts';
-import {SELECT_POSITIONS, SELECT_ROSTER_TYPE} from '#src/discord/ix-constants.ts';
+import {SELECT_POSITIONS, SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.ts';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {rosterCreate} from '#src/dynamo/operations/roster.ts';
 import {v4} from 'uuid';
@@ -13,10 +13,10 @@ import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
 import type {St} from '#src/discord/store/derive-state.ts';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/internal/constants/placeholder.ts';
-import {LABEL_TITLE_CREATE_ROSTER} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
+import {LABEL_TITLE_CREATE_ROSTER} from '#src/constants/label.ts';
 
 
 const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function * () {

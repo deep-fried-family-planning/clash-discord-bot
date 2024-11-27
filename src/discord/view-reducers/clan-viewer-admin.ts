@@ -4,11 +4,11 @@ import {E} from '#src/internal/pure/effect.ts';
 import {ClanViewerB, ClanViewerSelector} from '#src/discord/view-reducers/clan-viewer.ts';
 import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_CLAN_TYPE, PLACEHOLDER_WAR_COUNTDOWN} from '#src/internal/constants/placeholder.ts';
-import {LABEL_TITLE_ADMIN_CLAN} from '#src/internal/constants/label.ts';
+import {PLACEHOLDER_CLAN_TYPE, PLACEHOLDER_WAR_COUNTDOWN} from '#src/constants/placeholder.ts';
+import {LABEL_TITLE_ADMIN_CLAN} from '#src/constants/label.ts';
 
 
 export const ClanViewerAdminB = AdminB.as(makeId(RK_OPEN, 'CVA'), {

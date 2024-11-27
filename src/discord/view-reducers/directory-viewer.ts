@@ -1,15 +1,14 @@
 import {E} from '#src/internal/pure/effect.ts';
 import {BackB, PrimaryB, SingleS, SingleUserS} from '#src/discord/components/global-components.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {makeId} from '#src/discord/store/type-rx.ts';
 import {asViewer} from '#src/discord/components/component-utils.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/constants/placeholder.ts';
-import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/constants/description.ts';
+import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
+import {DESC_NO_ACCOUNT_SELECTED} from '#src/constants/description.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {BotViewerDevB} from '#src/discord/view-reducers/bot-viewer-dev.ts';
 import {ClashCache} from "#src/clash/layers/clash-cash.ts";

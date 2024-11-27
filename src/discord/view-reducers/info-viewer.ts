@@ -9,15 +9,15 @@ import {InfoViewerCreatorB} from '#src/discord/view-reducers/info-viewer-creator
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
-import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/discord/ix-constants.ts';
+import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {viewInfoEmbed} from '#src/discord/views/info-embed.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {DELIM_DATA} from '#src/internal/constants/delim.ts';
-import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/internal/constants/label.ts';
-import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/internal/constants/placeholder.ts';
+import {DELIM_DATA} from '#src/constants/delim.ts';
+import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/constants/label.ts';
+import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/constants/placeholder.ts';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RK_OPEN, 'IV'), {

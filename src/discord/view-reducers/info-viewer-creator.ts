@@ -13,11 +13,11 @@ import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
-import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/discord/ix-constants.ts';
+import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/constants/ix-constants.ts';
 import {decodePersist, encodePersist, extractPersist} from '#src/discord/components/persistor.ts';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
-import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/internal/constants/placeholder.ts';
-import {LABEL_TITLE_NEW_INFO} from '#src/internal/constants/label.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
+import {LABEL_TITLE_NEW_INFO} from '#src/constants/label.ts';
 
 
 const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(function * () {

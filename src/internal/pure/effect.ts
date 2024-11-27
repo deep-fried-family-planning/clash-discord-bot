@@ -25,6 +25,15 @@ export {
 } from 'effect';
 
 
+export {
+    pipe as p,
+    flow as f,
+} from 'effect';
+
+
+export {gen as g} from 'effect/Effect';
+
+
 export const ORDS = Order.string;
 export const ORDSR = Order.reverse(Order.string);
 export const ORDN = Order.number;

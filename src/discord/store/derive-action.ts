@@ -1,4 +1,4 @@
-import type {IxD, IxDc, IxDm} from '#src/discord/util/discord.ts';
+import type {IxD, IxDc, IxDm} from '#src/internal/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inspect} from 'node:util';

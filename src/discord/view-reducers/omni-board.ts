@@ -14,10 +14,10 @@ import {dLinesS} from '#src/discord/util/markdown.ts';
 import {BotViewer} from '#src/discord/view-reducers/bot-viewer.ts';
 import {ServerViewerB} from '#src/discord/view-reducers/server-viewer.ts';
 import {BotViewerDevB, DEVS} from '#src/discord/view-reducers/bot-viewer-dev.ts';
-import {RK_ENTRY, RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import {RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/internal/constants/label.ts';
+import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/constants/label.ts';
 
 
 const axn = {

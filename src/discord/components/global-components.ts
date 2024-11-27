@@ -1,12 +1,12 @@
 import {makeButton} from '#src/discord/components/make-button.ts';
-import {IXCBS} from '#src/discord/util/discord.ts';
+import {IXCBS} from '#src/internal/discord.ts';
 import {makeSelect} from '#src/discord/components/make-select.ts';
 import {makeSelectUser} from '#src/discord/components/make-select-user.ts';
 import {makeSelectChannel} from '#src/discord/components/make-select-channel.ts';
 import {makeSelectRole} from '#src/discord/components/make-select-role.ts';
-import {RK_BACK, RK_CLOSE, RK_DELETE, RK_FORWARD, RK_NAV, RK_NOOP, RK_SUBMIT} from '#src/internal/constants/route-kind.ts';
-import {EMOJI_ADMIN, EMOJI_BACK, EMOJI_CLOSE, EMOJI_DELETE, EMOJI_DELETE_CONFIRM, EMOJI_NEW, EMOJI_NEXT, EMOJI_SUBMIT} from '#src/internal/constants/emoji.ts';
-import {OPTION_UNAVAILABLE} from '#src/internal/constants/select-options.ts';
+import {RK_BACK, RK_CLOSE, RK_DELETE, RK_FORWARD, RK_NAV, RK_NOOP, RK_SUBMIT} from '#src/constants/route-kind.ts';
+import {EMOJI_ADMIN, EMOJI_BACK, EMOJI_CLOSE, EMOJI_DELETE, EMOJI_DELETE_CONFIRM, EMOJI_NEW, EMOJI_NEXT, EMOJI_SUBMIT} from '#src/constants/emoji.ts';
+import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
 
 
 export const SuccessB = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});

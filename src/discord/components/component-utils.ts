@@ -1,7 +1,7 @@
 import type {bool, str, und} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
-import {COLOR, nColor} from '#src/internal/constants/colors.ts';
-import {AUTHOR_CONFIRM, AUTHOR_EDITING, AUTHOR_FAILURE, AUTHOR_OMNI_BOARD, AUTHOR_SUCCESS, AUTHOR_VIEWING} from '#src/internal/constants/author.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import {AUTHOR_CONFIRM, AUTHOR_EDITING, AUTHOR_FAILURE, AUTHOR_OMNI_BOARD, AUTHOR_SUCCESS, AUTHOR_VIEWING} from '#src/constants/author.ts';
 import type {Route} from '#src/discord/store/id-routes.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 

@@ -1,5 +1,5 @@
 import {CSL, E} from '#src/internal/pure/effect.ts';
-import type {IxD, IxDs} from '#src/discord/util/discord.ts';
+import type {IxD, IxDs} from '#src/internal/discord.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {IXS_LOOKUP} from '#src/discord/ixs.ts';
 import {nameOptions} from '#src/discord/ixs-utils.ts';

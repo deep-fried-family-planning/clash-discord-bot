@@ -1,7 +1,7 @@
 import {makeId} from '#src/discord/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
-import {RK_INIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_INIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 

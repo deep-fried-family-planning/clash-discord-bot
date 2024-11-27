@@ -6,14 +6,13 @@ import {asConfirm, asSuccess, asViewer, unset} from '#src/discord/components/com
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
 import {filterL} from '#src/internal/pure/pure-list.ts';
-import {UNAVAILABLE} from '#src/discord/ix-constants.ts';
+import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterKV} from '#src/internal/pure/pure-kv.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import { ClashCache } from '#src/clash/layers/clash-cash';
 

@@ -4,7 +4,7 @@ import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {keysKv} from '#src/internal/pure/pure-kv.ts';
 import {inject} from 'regexparam';
-import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/internal/constants/delim.ts';
+import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/constants/delim.ts';
 import {idPredicate} from '#src/discord/store/id.ts';
 
 

@@ -4,7 +4,7 @@ import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClanViewerAdminB} from '#src/discord/view-reducers/clan-viewer-admin.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {asViewer, unset} from '#src/discord/components/component-utils.ts';
@@ -12,7 +12,7 @@ import {LinkClanB} from '#src/discord/view-reducers/links/link-clan.ts';
 import type {Embed} from 'dfx/types';
 import type {St} from '#src/discord/store/derive-state.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 
 
 const getClans = (s: St, ax: Ax) => E.gen(function * () {
@@ -22,7 +22,7 @@ const getClans = (s: St, ax: Ax) => E.gen(function * () {
     );
 
     const clans = pipe(
-        yield * Clashofclans.getClans(records.map((r) => r.sk)),
+        yield * ClashOfClans.getClans(records.map((r) => r.sk)),
         sortWithL((c) => c.tag, ORDS),
     );
 

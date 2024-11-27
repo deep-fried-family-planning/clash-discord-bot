@@ -3,8 +3,8 @@ import {ID_ROUTES, type Route} from '#src/discord/store/id-routes.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import {RK_CLOSE} from '#src/internal/constants/route-kind.ts';
-import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/internal/constants/delim.ts';
+import {RK_CLOSE} from '#src/constants/route-kind.ts';
+import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/constants/delim.ts';
 import {idPredicate} from '#src/discord/store/id.ts';
 
 

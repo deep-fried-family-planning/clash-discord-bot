@@ -4,10 +4,10 @@ import {E} from '#src/internal/pure/effect.ts';
 import {unset} from '#src/discord/components/component-utils.ts';
 import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
 import {BotViewerDevB, DEVS} from '#src/discord/view-reducers/bot-viewer-dev.ts';
-import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
+import {RK_OPEN} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
-import {LABEL_TITLE_ABOUT_DEEPFRYER} from '#src/internal/constants/label.ts';
+import {LABEL_TITLE_ABOUT_DEEPFRYER} from '#src/constants/label.ts';
 import {DirectoryViewerB} from '#src/discord/view-reducers/directory-viewer.ts';
 
 
