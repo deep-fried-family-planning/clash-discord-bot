@@ -1,6 +1,9 @@
 {
     "extends"        : ["./tsconfig.json"],
-    "include"        : ["."],
+    "include"        : [
+        "./**/*",
+        "src/process.env.d.ts"
+    ],
     "compilerOptions": {
         "allowJs": true
     }

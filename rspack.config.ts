@@ -1,13 +1,7 @@
-// @ts-check
-
 import {defineConfig} from '@rspack/cli';
 import TerserPlugin from 'terser-webpack-plugin';
 // import {rspack} from '@rspack/core';
-import {readdir} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {pipe} from 'effect';
-import {reduce, map, filter} from 'effect/Array';
-
 // import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
 
 const targets = ['node >= 20.12'];
@@ -15,40 +9,48 @@ const targets = ['node >= 20.12'];
 export default defineConfig({
     mode  : 'production',
     target: 'node20.12',
+    //
+    // hashFunction: 'md5',
+    // hashDigestLength: 20,
 
     experiments: {
-        layers          : true,
-        outputModule    : true,
-        topLevelAwait   : true,
-        futureDefaults  : false,
-        lazyCompilation : false,
-        css             : false,
-        asyncWebAssembly: false,
-        rspackFuture    : {
-            bundlerInfo: {
-                force: false,
-            },
-        },
+        // layers          : true,
+        outputModule  : true,
+        // topLevelAwait : true,
+        futureDefaults: false,
     },
 
-    entry: pipe(
-        await readdir('src/lambda', {withFileTypes: true, recursive: true}),
-        filter((l) => l.name === 'index.ts'),
-        map((l) => resolve(l.parentPath, l.name).replace(import.meta.dirname, '').replaceAll('\\', '/')),
-        reduce({}, (ls, l) => (ls[l.replace('/src/lambda/', '').replace('.ts', '')] = l) && ls),
-    ),
+    entry: {
+        'ix_api/index'       : 'src/ix_api.ts',
+        'ix_menu/index'      : 'src/ix_menu.ts',
+        'ix_slash/index'     : 'src/ix_slash.ts',
+        'ix_menu_close/index': 'src/ix_menu_close.ts',
+        'poll/index'         : 'src/poll.ts',
+        'task/index'         : 'src/task.ts',
+
+        'api_discord/index'   : 'src/ix_api.ts',
+        'discord_menu/index'  : 'src/ix_menu.ts',
+        'discord_slash/index' : 'src/ix_slash.ts',
+        'scheduler/index'     : 'src/poll.ts',
+        'scheduled_task/index': 'src/task.ts',
+    },
 
     output: {
         module                       : true,
-        scriptType                   : 'module',
         environment                  : {module: true},
         library                      : {type: 'module'},
         strictModuleErrorHandling    : true,
         strictModuleExceptionHandling: true,
         compareBeforeEmit            : true,
+        asyncChunks                  : false,
+        clean                        : true,
+        chunkLoading                 : 'import',
     },
 
-    // externalsType: 'module',
+    externalsType   : 'module',
+    externalsPresets: {
+        node: true,
+    },
     externals: [
         /@aws-sdk./,
         // 'undici',
@@ -62,15 +64,21 @@ export default defineConfig({
         extensions: ['...', '.ts'],
     },
 
-    externalsPresets: {
-        node: true,
-    },
 
     module: {
+        parser: {
+            'javascript/auto': {
+                requireDynamic     : false,
+                importDynamic      : true,
+                exprContextCritical: true,
+                overrideStrict     : 'strict',
+            },
+        },
+
         rules: [{
-            test: /\.js$/,
-            // exclude: /node_modules/,
-            use : [{
+            test   : /\.js$/,
+            exclude: /node_modules/,
+            use    : [{
                 loader : 'builtin:swc-loader',
                 options: {
                     jsc: {
@@ -98,10 +106,6 @@ export default defineConfig({
         }],
     },
 
-    optimization: {
-        // minimizer: [new TerserPlugin()],
-    },
-
     plugins: [
         // new RsdoctorRspackPlugin({
         //     mode    : 'normal',
@@ -123,15 +127,26 @@ export default defineConfig({
         // new BundleAnalyzerPlugin.BundleAnalyzerPlugin({sourceType: 'module'}),
     ],
 
-    devtool    : 'source-map',
-    // devtool    : false,
-    performance: {hints: 'warning'},
+    optimization: {
+        minimizer      : [new TerserPlugin()],
+        splitChunks    : false,
+        realContentHash: false,
+    },
 
-    stats: {
-        preset     : 'errors-only',
-        entrypoints: true,
-        performance: true,
-        children   : true,
-        timings    : true,
+    cache  : true,
+    devtool: 'nosources-cheap-module-source-map',
+
+    performance: {hints: 'warning'},
+    stats      : {
+        preset      : 'errors-warnings',
+        entrypoints : true,
+        performance : true,
+        children    : true,
+        timings     : true,
+        hash        : true,
+        builtAt     : true,
+        cached      : true,
+        loggingTrace: true,
+        runtime     : true,
     },
 });

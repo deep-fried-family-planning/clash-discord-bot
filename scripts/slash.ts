@@ -115,3 +115,5 @@ const live = pipe(
 );
 
 export const handler = makeLambda(h, live);
+
+await handler({}, {} as never);

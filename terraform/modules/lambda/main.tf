@@ -1,7 +1,14 @@
 locals {
-  #   fn_name = replace(var.fn_name, "_", "-")
   fn_name = replace(var.fn_name, "_", "-")
 }
+
+
+data "archive_file" "source_code" {
+  type        = "zip"
+  source_dir  = "../${path.root}/dist/${var.fn_name}"
+  output_path = "${path.root}/.terraform/${var.fn_name}.zip"
+}
+
 
 resource "aws_lambda_function" "main" {
   function_name = "${var.prefix}-${local.fn_name}"
@@ -32,16 +39,4 @@ resource "aws_lambda_function" "main" {
   }
 }
 
-resource "aws_lambda_permission" "sqs" {
-  count         = var.sqs == true ? 1 : 0
-  function_name = aws_lambda_function.main.arn
-  action        = "lambda:InvokeFunction"
-  principal     = "sqs.amazonaws.com"
-  source_arn    = aws_sqs_queue.sqs[0].arn
-}
 
-resource "aws_lambda_event_source_mapping" "sqs" {
-  count            = var.sqs == true ? 1 : 0
-  function_name    = aws_lambda_function.main.arn
-  event_source_arn = aws_sqs_queue.sqs[0].arn
-}

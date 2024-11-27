@@ -21,7 +21,15 @@ const config = [
     },
     ...tseslint.config(
         {
-            files  : ['**/*.ts', '**/*.mjs', '**/*.js'],
+            files: [
+                '**/*.ts',
+                '**/*.d.ts',
+                '**/*.mjs',
+                '**/*.js',
+                '**/*.ts',
+                '**/*.mjs',
+                '**/*.js',
+            ],
             extends: [
                 eslint.configs.recommended,
                 tseslint.configs.eslintRecommended,

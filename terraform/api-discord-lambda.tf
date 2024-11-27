@@ -1,6 +1,3 @@
-#
-# api-discord
-#
 module "lambda_api_discord" {
   source             = "./modules/lambda"
   acc_id             = local.account_id
@@ -10,8 +7,8 @@ module "lambda_api_discord" {
   memory             = 256
   timeout            = 300
   fn_env = merge(local.lambda_env, {
-    SQS_URL_DISCORD_SLASH = module.discord_slash.fn_sqs_url
-    LAMBDA_ARN_DISCORD_MENU = module.discord_menu.fn_arn
+    SQS_URL_DISCORD_SLASH   = ""
+    LAMBDA_ARN_DISCORD_MENU = ""
   })
 }
 
