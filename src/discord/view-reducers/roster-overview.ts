@@ -12,6 +12,7 @@ import {asViewer} from '#src/discord/components/component-utils.ts';
 import {viewServerRosterSignupEmbed} from '#src/discord/views/server-roster-signup-embed.ts';
 import {RK_OPEN} from '#src/internal/constants/route-kind.ts';
 import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/internal/constants/label.ts';
+import {ClashCache} from "#src/clash/layers/clash-cash.ts";
 
 
 export const RosterOverviewB = PrimaryB.as(makeId(RK_OPEN, 'RO'), {
@@ -30,7 +31,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
     const rosterSignups = yield * rosterSignupByRoster({pk: Roster.values[0]});
     const signups = rosterSignups.flatMap((s) => pipe(s.accounts, toEntries));
 
-    const players = yield * Clashofclans.getPlayers(signups.map(([tag]) => tag));
+    const players = yield * ClashCache.getPlayers(signups.map(([tag]) => tag));
 
 
     return {

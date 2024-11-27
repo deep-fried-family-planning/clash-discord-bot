@@ -20,11 +20,12 @@ import type {SelectOption} from 'dfx/types';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {REF_ROSTER_ID} from '#src/internal/constants/reference.ts';
+import { ClashCache } from '#src/clash/layers/clash-cash';
 
 
 const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: userId});
-    const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
+    const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
     const signup = yield * rosterSignupRead({
         pk: rosterId,

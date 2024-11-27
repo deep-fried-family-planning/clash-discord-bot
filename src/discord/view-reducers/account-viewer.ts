@@ -14,6 +14,7 @@ import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/internal/constants/label.ts';
 import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/constants/placeholder.ts';
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/constants/description.ts';
+import { ClashCache } from '#src/clash/layers/clash-cash';
 
 
 export const AccountViewerB = PrimaryB.as(makeId(RK_OPEN, 'AV'), {
@@ -27,7 +28,7 @@ export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
 export const getPlayers = (s: St) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: s.user_id});
 
-    const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
+    const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
     return viewUserPlayerOptions(records, players);
 });

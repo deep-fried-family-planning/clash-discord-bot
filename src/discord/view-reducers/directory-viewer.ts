@@ -12,6 +12,7 @@ import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/constants/placeholder.ts
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/constants/description.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {BotViewerDevB} from '#src/discord/view-reducers/bot-viewer-dev.ts';
+import {ClashCache} from "#src/clash/layers/clash-cash.ts";
 
 
 export const DirectoryViewerB = PrimaryB.as(makeId(RK_OPEN, 'DV'), {
@@ -28,7 +29,7 @@ export const DirectoryViewerUserS = SingleUserS.as(makeId(RK_UPDATE, 'DVU'), {
 export const getPlayers = (user: str) => E.gen(function * () {
     const records = yield * queryPlayersForUser({pk: user});
 
-    const players = yield * Clashofclans.getPlayers(records.map((r) => r.sk));
+    const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
     return viewUserPlayerOptions(records, players);
 });

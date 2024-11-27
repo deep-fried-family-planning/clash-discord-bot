@@ -11,6 +11,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {ixcRouter} from '#src/discord/ixc-router.ts';
 import {makeLambdaLayer} from '#src/internal/lambda-layer.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 
 
 const menu = (ix: IxD) => ixcRouter(ix).pipe(
@@ -99,6 +100,7 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
 export const handler = makeLambda(menu, makeLambdaLayer({
     caches: [
         MenuCache.Live,
+        ClashCache.Live,
     ],
     apis: [
         Clashofclans.Live,
