@@ -26,7 +26,7 @@ resource "aws_lambda_permission" "ix_api_post" {
   function_name = module.ix_api.fn_name
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:${local.aws_region}:${local.account_id}:${aws_api_gateway_rest_api.api_discord.id}/*/${aws_api_gateway_method.api_discord_post.http_method}${aws_api_gateway_resource.api_discord.path}"
+  source_arn    = "arn:aws:execute-api:${local.aws_region}:${local.account_id}:${aws_api_gateway_rest_api.webhook.id}/*/${aws_api_gateway_method.ix_post.http_method}${aws_api_gateway_resource.ix.path}"
 }
 
 data "aws_iam_policy_document" "ix_api" {

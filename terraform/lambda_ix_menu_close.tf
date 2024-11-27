@@ -4,8 +4,8 @@ module "ix_menu_close" {
   prefix             = local.prefix
   fn_name            = "ix_menu_close"
   custom_policy_json = data.aws_iam_policy_document.ix_menu_close.json
-  memory             = 128
-  timeout            = 10
+  memory             = 256
+  timeout            = 3
   fn_env = merge(local.lambda_env, {
 
   })
