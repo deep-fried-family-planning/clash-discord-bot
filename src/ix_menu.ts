@@ -13,8 +13,8 @@ import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {ClashOfClans} from "#src/clash/clashofclans.ts";
-import {ClashKing} from "#src/clash/clashking.ts";
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ClashKing} from '#src/clash/clashking.ts';
 
 
 const menu = (ix: IxD) => ixcRouter(ix).pipe(
@@ -102,8 +102,8 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
 
 const live = pipe(
     ClashCache.Live,
+    L.provideMerge(MenuCache.Live),
     L.provideMerge(L.mergeAll(
-        MenuCache.Live,
         ClashOfClans.Live,
         ClashKing.Live,
         DiscordLayerLive,

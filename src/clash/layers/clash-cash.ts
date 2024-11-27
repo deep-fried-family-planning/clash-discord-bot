@@ -1,14 +1,14 @@
 import {Cache} from 'effect';
 import {E, L} from '#src/internal/pure/effect.ts';
-import {Clashofclans} from '#src/clash/api/clashofclans.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EA} from '#src/internal/types.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 
 const cache = Cache.make({
     capacity  : 100,
     timeToLive: '1 hour',
     lookup    : (playerTag: str) => E.gen(function * () {
-        const player = yield * Clashofclans.getPlayer(playerTag);
+        const player = yield * ClashOfClans.getPlayer(playerTag);
 
         return player;
     }),
@@ -30,7 +30,7 @@ const program = E.gen(function* () {
                     outTags.push(player);
                 }
             }
-            const playerData = yield * Clashofclans.getPlayers(outTags);
+            const playerData = yield * ClashOfClans.getPlayers(outTags);
             for (const data of playerData) {
                 yield * clash.set(data.tag, data);
             }
