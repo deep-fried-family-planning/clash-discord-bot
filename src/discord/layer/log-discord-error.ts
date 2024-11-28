@@ -1,5 +1,4 @@
-import {CFG, CSL, E, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {REDACTED_DISCORD_ERROR_URL} from '#src/constants/secrets.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -14,7 +13,7 @@ import {RK_CLOSE, RK_OPEN} from '#src/constants/route-kind.ts';
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
     yield * CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
-    const url = RDT.value(yield * CFG.redacted(REDACTED_DISCORD_ERROR_URL));
+    const url = process.env.DFFP_DISCORD_ERROR_URL;
 
     const [token, id] = url.split('/').reverse();
 

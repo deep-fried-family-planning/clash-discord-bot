@@ -3,11 +3,10 @@ import {badImplementation} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {makeLambda} from '@effect-aws/lambda';
-import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {REDACTED_DISCORD_PUBLIC_KEY} from '#src/constants/secrets.ts';
+import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/internal/discord.ts';
 import {IXT} from '#src/internal/discord.ts';
 import {fromId} from '#src/discord/store/id-parse.ts';
@@ -182,13 +181,11 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
         const signature = req.headers['x-signature-ed25519']!;
         const timestamp = req.headers['x-signature-timestamp']!;
 
-        const publicKey = RDT.value(yield * CFG.redacted(REDACTED_DISCORD_PUBLIC_KEY));
-
         const isVerified = yield * E.tryPromise(() => verifyKey(
             Buffer.from(req.body!),
             signature,
             timestamp,
-            publicKey,
+            process.env.DFFP_DISCORD_PUBLIC_KEY,
         ));
 
         if (!isVerified) {

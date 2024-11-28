@@ -1,6 +1,5 @@
 import {Client} from 'clashofclans.js';
-import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {REDACTED_COC_KEY} from '#src/constants/secrets.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type ClashperkError, SlashUserError} from '#src/internal/errors.ts';
 import {clashErrorFromUndefined} from '#src/internal/errors.ts';
 
@@ -24,11 +23,9 @@ type ClashClient = {
 
 
 const program = E.gen(function* () {
-    const apiKey = RDT.value(yield * CFG.redacted(REDACTED_COC_KEY));
-
     const client = new Client({
         baseURL: 'https://cocproxy.royaleapi.dev',
-        keys   : [apiKey],
+        keys   : [process.env.DFFP_COC_KEY],
     });
 
     return {
