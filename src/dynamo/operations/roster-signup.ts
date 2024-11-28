@@ -1,8 +1,8 @@
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {encodeRosterId, UserIdEncode} from '#src/dynamo/schema/common.ts';
 import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 import {dtNowIso} from '#src/discord/util/markdown.ts';
+import {encodeRosterId, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function * () {
@@ -17,7 +17,7 @@ export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function * ()
 
 export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function * () {
     const pk = yield * encodeRosterId(signup.pk);
-    const sk = yield * UserIdEncode(signup.sk);
+    const sk = yield * encodeUserId(signup.sk);
 
     const item = yield * DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
@@ -75,7 +75,7 @@ export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function * ()
 
 export const rosterSignupDelete = (signup: DRosterSignupKey) => E.gen(function * () {
     const pk = yield * encodeRosterId(signup.pk);
-    const sk = yield * UserIdEncode(signup.sk);
+    const sk = yield * encodeUserId(signup.sk);
 
     yield * DynamoDBDocument.delete({
         TableName: process.env.DDB_OPERATIONS,

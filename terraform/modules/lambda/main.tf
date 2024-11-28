@@ -1,18 +1,36 @@
 locals {
-  #   fn_name = replace(var.fn_name, "_", "-")
   fn_name = replace(var.fn_name, "_", "-")
 }
+
+
+data "archive_file" "source_code" {
+  type             = "zip"
+  output_file_mode = "0666"
+  #   source_dir       = "../${path.root}/dist/${var.fn_name}"
+  output_path = "${path.root}/.terraform/${var.fn_name}.zip"
+
+  source {
+    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs")
+    filename = "index.mjs"
+  }
+
+  source {
+    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs.map")
+    filename = "index.mjs.map"
+  }
+}
+
 
 resource "aws_lambda_function" "main" {
   function_name = "${var.prefix}-${local.fn_name}"
   role          = aws_iam_role.execution_role.arn
 
   filename         = data.archive_file.source_code.output_path
-  source_code_hash = data.archive_file.source_code.output_sha256
+  source_code_hash = data.archive_file.source_code.output_base64sha256
   handler          = "index.handler"
 
   architectures = ["arm64"]
-  runtime       = "nodejs20.x"
+  runtime       = "nodejs22.x"
   memory_size   = var.memory
   timeout       = var.timeout
 
@@ -32,16 +50,4 @@ resource "aws_lambda_function" "main" {
   }
 }
 
-resource "aws_lambda_permission" "sqs" {
-  count         = var.sqs == true ? 1 : 0
-  function_name = aws_lambda_function.main.arn
-  action        = "lambda:InvokeFunction"
-  principal     = "sqs.amazonaws.com"
-  source_arn    = aws_sqs_queue.sqs[0].arn
-}
 
-resource "aws_lambda_event_source_mapping" "sqs" {
-  count            = var.sqs == true ? 1 : 0
-  function_name    = aws_lambda_function.main.arn
-  event_source_arn = aws_sqs_queue.sqs[0].arn
-}

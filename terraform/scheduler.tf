@@ -13,7 +13,7 @@ resource "aws_scheduler_schedule" "schedule" {
     mode = "OFF"
   }
   target {
-    arn      = module.lambda_scheduler.fn_arn
+    arn      = module.poll.fn_arn
     role_arn = aws_iam_role.schedule_role.arn
   }
 }
@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "schedule_policy" {
   statement {
     effect    = "Allow"
     actions   = ["*"]
-    resources = [module.lambda_scheduler.fn_arn]
+    resources = [module.poll.fn_arn]
   }
 }
 

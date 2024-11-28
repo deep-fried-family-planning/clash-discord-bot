@@ -1,10 +1,11 @@
 import {Console, Schema as S} from 'effect';
-import {PlayerTag, PlayerTagEncode, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
+import {EmbedId, PlayerTag, UserId} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {encodePlayerTag, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const DiscordPlayer = S.Struct({
@@ -20,25 +21,28 @@ export const DiscordPlayer = S.Struct({
     gsi_user_id   : UserId,
     gsi_player_tag: PlayerTag,
 
-    alias       : S.String.pipe(S.optionalWith({default: () => ''})),
+    embed_id: S.optional(EmbedId),
+
+    alias: S.optional(S.String),
+
     verification: S.Enums({
         none     : 0,
         admin    : 1,
         token    : 2,
         developer: 3,
     }),
+
     account_type: S.String,
 });
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
 
 
-export const DiscordPlayerDecode = S.decodeUnknown(DiscordPlayer);
-export const DiscordPlayerEncode = S.encodeUnknown(DiscordPlayer);
-export const DiscordPlayerEquivalence = S.equivalence(DiscordPlayer);
+export const decodeDiscordPlayer = S.decodeUnknown(DiscordPlayer);
+export const encodeDiscordPlayer = S.encodeUnknown(DiscordPlayer);
 
 
 export const putDiscordPlayer = (record: DPlayer) => pipe(
-    DiscordPlayerEncode(record),
+    encodeDiscordPlayer(record),
     E.flatMap((encoded) => pipe(
         DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
@@ -50,7 +54,7 @@ export const putDiscordPlayer = (record: DPlayer) => pipe(
 
 
 export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
+    [encodeUserId(key.pk), encodePlayerTag(key.sk)],
     E.all,
     E.flatMap(([pk, sk]) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
@@ -62,7 +66,7 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
     })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
-            onTrue : () => DiscordPlayerDecode(Item),
+            onTrue : () => decodeDiscordPlayer(Item),
             onFalse: () => new DynamoError({message: 'NotFound: DiscordPlayer'}),
         }),
         E.flatMap((decoded) => pipe(
@@ -74,7 +78,7 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
 
 
 export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
-    UserIdEncode(key.pk),
+    encodeUserId(key.pk),
     E.flatMap((pk) => DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
         KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
@@ -85,7 +89,7 @@ export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
     })),
     E.flatMap(({Items}) => pipe(
         E.if(Boolean(Items), {
-            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => decodeDiscordPlayer(Item)))),
             onFalse: () => E.succeed([] as DPlayer[]),
         }),
         E.flatMap((decoded) => pipe(
@@ -97,7 +101,7 @@ export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
 
 
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
-    PlayerTagEncode(key.sk),
+    encodePlayerTag(key.sk),
     E.flatMap((sk) => DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
         IndexName                : 'GSI_ALL_PLAYERS',
@@ -108,7 +112,7 @@ export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
     })),
     E.flatMap(({Items}) => pipe(
         E.if(Boolean(Items), {
-            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => decodeDiscordPlayer(Item)))),
             onFalse: () => E.succeed([undefined] as const),
         }),
         E.flatMap((decoded) => pipe(
@@ -126,7 +130,7 @@ export const scanDiscordPlayers = () => pipe(
     }),
     E.flatMap(({Items}) => pipe(
         E.if(Boolean(Items), {
-            onTrue : () => E.all(pipe(Items!, mapL((Item) => DiscordPlayerDecode(Item)))),
+            onTrue : () => E.all(pipe(Items!, mapL((Item) => decodeDiscordPlayer(Item)))),
             onFalse: () => E.succeed([] as DPlayer[]),
         }),
         E.flatMap((decoded) => pipe(
@@ -138,7 +142,7 @@ export const scanDiscordPlayers = () => pipe(
 
 
 export const deleteDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
-    [UserIdEncode(key.pk), PlayerTagEncode(key.sk)],
+    [encodeUserId(key.pk), encodePlayerTag(key.sk)],
     E.all,
     E.flatMap(([pk, sk]) => DynamoDBDocument.delete({
         TableName: process.env.DDB_OPERATIONS,

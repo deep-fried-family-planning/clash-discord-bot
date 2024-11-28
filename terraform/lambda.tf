@@ -1,131 +1,36 @@
-#
-# LAMBDA: discord_menu
-#
-module "discord_menu" {
-  source             = "./modules/lambda"
-  acc_id             = local.account_id
-  prefix             = local.prefix
-  fn_name            = "discord_menu"
-  custom_policy_json = data.aws_iam_policy_document.lambda_discord_menu.json
-  memory             = 1024
-  timeout            = 300
-  fn_env             = merge(local.lambda_env, {})
+locals {
+  lambda_env = merge(
+    { for k, v in local.ssm_names : k => data.aws_ssm_parameter.ssm_param[k].value },
+    {
+      LAMBDA_ENV       = local.env
+      LAMBDA_ENV_UPPER = upper(local.env)
+      LAMBDA_ENV_LOWER = lower(local.env)
+      LAMBDA_PREFIX    = local.prefix
+      DDB_OPERATIONS   = aws_dynamodb_table.operations.name
+    }
+  )
 }
 
-
-data "aws_iam_policy_document" "lambda_discord_menu" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
-  statement {
-    effect    = "Allow"
-    actions   = ["*"]
-    resources = ["*"]
-  }
-}
-
-
-
+# resource "aws_lambda_layer_version" "layer" {
+#     layer_name = "${local.prefix}-layer"
+#     filename = file("../${path.root}/dist/${var.fn_name}/index.mjs")
 #
-# LAMBDA: discord_slash
+#     compatible_architectures = ["arm64"]
+#     compatible_runtimes = ["nodejs22.x"]
+# }
+
+# resource "null_resource" "main" {
+#     triggers = {
+#         updated_at = timestamp()
+#     }
 #
-module "discord_slash" {
-  source             = "./modules/lambda"
-  acc_id             = local.account_id
-  prefix             = local.prefix
-  fn_name            = "discord_slash"
-  custom_policy_json = data.aws_iam_policy_document.lambda_slash.json
-  memory             = 1024
-  timeout            = 300
-  fn_env             = merge(local.lambda_env, {})
-  sqs                = true
-  sqs_source_arns    = [module.lambda_api_discord.fn_arn]
-}
-
-
-data "aws_iam_policy_document" "lambda_slash" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
-  statement {
-    effect    = "Allow"
-    actions   = ["*"]
-    resources = ["*"]
-  }
-}
-
-
-
-#
-# LAMBDA: scheduled_task
-#
-module "lambda_scheduled_task" {
-  source = "./modules/lambda"
-
-  acc_id             = local.account_id
-  custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
-  fn_env             = local.lambda_env
-  fn_name            = "scheduled_task"
-  memory             = 512
-  prefix             = local.prefix
-  timeout            = 300
-  sqs                = true
-  sqs_source_arns = [
-    module.lambda_scheduler.fn_arn,
-    module.lambda_scheduler.fn_role_arn
-  ]
-}
-
-
-
-#
-# LAMBDA: scheduler
-#
-module "lambda_scheduler" {
-  source             = "./modules/lambda"
-  acc_id             = local.account_id
-  prefix             = local.prefix
-  fn_name            = "scheduler"
-  custom_policy_json = data.aws_iam_policy_document.lambda_scheduler.json
-  memory             = 1024
-  timeout            = 300
-  fn_env = merge(local.lambda_env, {
-    SQS_URL_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_url
-    SQS_ARN_SCHEDULED_TASK = module.lambda_scheduled_task.fn_sqs_arn
-  })
-}
-
-
-resource "aws_lambda_function_event_invoke_config" "example" {
-  function_name                = module.lambda_scheduler.fn_name
-  maximum_event_age_in_seconds = 300
-  maximum_retry_attempts       = 0
-}
-
-
-data "aws_iam_policy_document" "lambda_scheduler" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-    ]
-    resources = ["arn:aws:logs:*:*:*"]
-  }
-  // todo IAM security
-  statement {
-    effect    = "Allow"
-    actions   = ["*"]
-    resources = ["*"]
-  }
-}
+#     provisioner "local-exec" {
+#         working_dir = "../${path.root}"
+#         command = <<EOF
+#         pnpm i
+#         rm -rf terraform/.terraform/node_modules
+#         mkdir -p terraform/.terraform/node_modules
+#         cp -r node_modules terraform/.terraform/node_modules
+# 	    EOF
+#     }
+# }
