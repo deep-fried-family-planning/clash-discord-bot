@@ -10,7 +10,6 @@ concurrency:
 
 jobs:
 
-
   verify:
     name:    verify
     runs-on: ubuntu-latest
@@ -52,7 +51,11 @@ jobs:
 
       - run:  echo "${{ steps.changed.outputs.any_changed == 'true' }}"
       - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
-        run:  echo "todo - terraform CICD credentials"
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: 'us-east-1'
+          aws-access-key-id: ${{ env.DFFP_KEY_ID }}
+          aws-secret-access-key: ${{ env.DFFP_KEY }}
       - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -65,3 +68,7 @@ jobs:
         run: terraform -chdir terraform init
       - if: ${{ steps.changed.outputs.any_changed == 'true' }}
         run: terraform -chdir terraform validate
+      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
+        run: terraform -chdir terraform plan -var-file .secret.tfvars -out .plan.tfplan
+      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
+        run: terraform -chdir terraform apply .plan.tfplan

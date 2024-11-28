@@ -31,9 +31,21 @@ jobs:
     name:    qual
     needs:   [build]
     runs-on: ubuntu-latest
+    env:
+      DFFP_KEY_ID: ${{ secret.AWS_ACCESS_KEY_ID }}
+      DFFP_KEY: ${{ secret.AWS_ACCESS_KEY_ID }}
     steps:
       - uses: actions/checkout@v4
-      - run:  echo "todo - terraform CICD credentials"
+        with:
+          fetch-depth: 2
+      - uses: tj-actions/changed-files@v45
+        id:   qual-action
+        with:
+          files: |
+            terraform/**
+            *.tf
+
+
 
   regression:
     name:    regression test
