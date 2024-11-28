@@ -2,9 +2,9 @@ import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
 import {afterAll, beforeAll, describe, vi} from 'vitest';
 import {E} from '#src/internal/pure/effect.ts';
-import {oneofus} from '#src/discord/ixs/link/oneofus.ts';
+import {oneofus} from '#src/discord/commands/oneofus.ts';
 import {Client} from 'clashofclans.js';
-import {DiscordServer, DiscordServerEncode} from '#src/dynamo/schema/discord-server.ts';
+import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 
 
 /* eslint-disable */
@@ -83,7 +83,7 @@ describe('[SLASH /oneofus]: player/discord account linking', () => {
         beforeAll(async () => {
             await dynamoDB.put({
                 TableName: 'qual-dffp-clash-discord-bot-operations',
-                Item     : E.runSync(DiscordServerEncode(DiscordServer.make({
+                Item     : E.runSync(encodeDiscordServer(DiscordServer.make({
                     pk           : 's-123',
                     sk           : 'now',
                     type         : 'DiscordServer',

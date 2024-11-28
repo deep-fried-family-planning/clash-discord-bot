@@ -1,8 +1,9 @@
-import {NowId, UserId, UserIdEncode} from '#src/dynamo/schema/common.ts';
+import {EmbedId, NowId, UserId} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const DiscordUser = S.Struct({
@@ -15,19 +16,21 @@ export const DiscordUser = S.Struct({
 
     gsi_all_user_id: UserId,
 
+    embed_id: S.optional(EmbedId),
+
     timezone: S.TimeZone,
-    quiet   : S.optional(S.String),
+
+    quiet: S.optional(S.String),
 });
 export type DUser = S.Schema.Type<typeof DiscordUser>;
 
 
-export const DiscordUserDecode = S.decodeUnknown(DiscordUser);
-export const DiscordUserEncode = S.encodeUnknown(DiscordUser);
-export const DiscordUserEquivalence = S.equivalence(DiscordUser);
+export const decodeDiscordUser = S.decodeUnknown(DiscordUser);
+export const encodeDiscordUser = S.encodeUnknown(DiscordUser);
 
 
 export const putDiscordUser = (record: DUser) => pipe(
-    DiscordUserEncode(record),
+    encodeDiscordUser(record),
     E.flatMap((encoded) => pipe(
         DynamoDBDocument.put({
             TableName: process.env.DDB_OPERATIONS,
@@ -39,7 +42,7 @@ export const putDiscordUser = (record: DUser) => pipe(
 
 
 export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
-    UserIdEncode(key.pk),
+    encodeUserId(key.pk),
     E.flatMap((pk) => DynamoDBDocument.get({
         TableName: process.env.DDB_OPERATIONS,
         Key      : {
@@ -49,7 +52,7 @@ export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
     })),
     E.flatMap(({Item}) => pipe(
         E.if(Boolean(Item), {
-            onTrue : () => DiscordUserDecode(Item),
+            onTrue : () => decodeDiscordUser(Item),
             onFalse: () => new DynamoError({message: 'NotFound: DiscordUser'}),
         }),
         E.flatMap((decoded) => pipe(

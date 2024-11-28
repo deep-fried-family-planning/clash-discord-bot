@@ -1,6 +1,8 @@
 declare namespace NodeJS {
     interface ProcessEnv {
         LAMBDA_ENV             : string;
+        LAMBDA_ENV_LOWER       : string;
+        LAMBDA_ENV_UPPER       : string;
         LAMBDA_ROLE_ARN        : string;
         DDB_OPERATIONS         : string;
         SQS_URL_DISCORD_MENU   : string;
@@ -8,6 +10,8 @@ declare namespace NodeJS {
         SQS_URL_SCHEDULED_TASK : string;
         SQS_ARN_SCHEDULED_TASK : string;
         LAMBDA_ARN_DISCORD_MENU: string;
+
+        LAMBDA_ARN_DISCORD_MENU_DELETE: string;
 
         AWS_LAMBDA_FUNCTION_NAME  : string;
         AWS_REGION                : string;

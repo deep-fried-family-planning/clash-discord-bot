@@ -1,6 +1,6 @@
 import {it} from '@effect/vitest';
 import {E} from '#src/internal/pure/effect.ts';
-import {type DClan, DiscordClanDecode} from '#src/dynamo/schema/discord-clan.ts';
+import {type DClan, decodeDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 
 describe('DiscordClan', () => {
     let testdata: Partial<DClan>;
@@ -29,7 +29,7 @@ describe('DiscordClan', () => {
         });
 
         it.effect('when decoding to latest', () => E.gen(function * () {
-            const result = yield * DiscordClanDecode(testdata);
+            const result = yield * decodeDiscordClan(testdata);
 
             expect(result).toMatchInlineSnapshot(`
               {
@@ -52,7 +52,7 @@ describe('DiscordClan', () => {
         }));
 
         it.effect('when encoding to latest', () => E.gen(function * () {
-            const result = yield * DiscordClanDecode(testdata);
+            const result = yield * decodeDiscordClan(testdata);
 
             expect(result).toMatchInlineSnapshot(`
               {

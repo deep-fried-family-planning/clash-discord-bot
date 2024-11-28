@@ -9,6 +9,7 @@ export {
     zip as zipL,
     of as ofL,
     dedupe as dedupeL,
+    dedupeWith as dedupeWithL,
     contains as containsL,
     partition as partitionL,
     head as headL,

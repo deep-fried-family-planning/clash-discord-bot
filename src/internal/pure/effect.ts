@@ -19,9 +19,19 @@ export {
     Metric as Metric,
     Order as ORD,
     Option as O,
+    Equal as EQ,
     flow,
     pipe,
 } from 'effect';
+
+
+export {
+    pipe as p,
+    flow as f,
+} from 'effect';
+
+
+export {gen as g} from 'effect/Effect';
 
 
 export const ORDS = Order.string;

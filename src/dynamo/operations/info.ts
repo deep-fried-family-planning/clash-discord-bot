@@ -1,8 +1,8 @@
 import {E} from '#src/internal/pure/effect.ts';
 import type {DRoster, DRosterKey} from '#src/dynamo/schema/discord-roster.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {encodeInfoId, ServerIdEncode} from '#src/dynamo/schema/common.ts';
 import {decodeDiscordInfo, type DInfo, type DInfoKey, encodeDiscordInfo} from '#src/dynamo/schema/discord-info.ts';
+import {encodeInfoId, encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const infoCreate = (info: DInfo) => E.gen(function * () {
@@ -12,11 +12,13 @@ export const infoCreate = (info: DInfo) => E.gen(function * () {
         TableName: process.env.DDB_OPERATIONS,
         Item     : encoded,
     });
+
+    return encoded;
 });
 
 
 export const infoRead = (info: DInfoKey) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(info.pk);
+    const pk = yield * encodeServerId(info.pk);
     const sk = yield * encodeInfoId(info.sk);
 
     const item = yield * DynamoDBDocument.get({
@@ -29,7 +31,7 @@ export const infoRead = (info: DInfoKey) => E.gen(function * () {
 
 
 export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(info.pk);
+    const pk = yield * encodeServerId(info.pk);
 
     const items = yield * DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
@@ -66,7 +68,7 @@ export const infoUpdate = (info: DRoster) => E.gen(function * () {
 
 
 export const infoDelete = (info: DRosterKey) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(info.pk);
+    const pk = yield * encodeServerId(info.pk);
     const sk = yield * encodeInfoId(info.sk);
 
     yield * DynamoDBDocument.delete({

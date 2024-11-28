@@ -1,6 +1,3 @@
-#
-# api-discord
-#
 module "lambda_api_discord" {
   source             = "./modules/lambda"
   acc_id             = local.account_id
@@ -8,10 +5,14 @@ module "lambda_api_discord" {
   fn_name            = "api_discord"
   custom_policy_json = data.aws_iam_policy_document.lambda_api_discord.json
   memory             = 256
-  timeout            = 300
+  timeout            = 3
   fn_env = merge(local.lambda_env, {
-    SQS_URL_DISCORD_SLASH = module.discord_slash.fn_sqs_url
-    LAMBDA_ARN_DISCORD_MENU = module.discord_menu.fn_arn
+    LAMBDA_ARN_IX_MENU  = module.ix_menu.fn_arn
+    LAMBDA_ARN_IX_SLASH = module.ix_slash.fn_arn
+
+    LAMBDA_ARN_DISCORD_MENU_DELETE = module.ix_menu_close.fn_arn
+
+    LAMBDA_ARN_DISCORD_MENU = module.ix_menu.fn_arn
   })
 }
 

@@ -3,11 +3,11 @@ import type {DiscordRESTError} from 'dfx/DiscordREST';
 import {DiscordREST} from 'dfx/DiscordREST';
 import type {EA} from '#src/internal/types.ts';
 import {Discord, DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
-import {type IxR, type IxRE, type IxD, MGF} from '#src/discord/util/discord.ts';
+import {type IxR, type IxRE, type IxD, MGF} from '#src/internal/discord.ts';
 import type {ResponseError} from '@effect/platform/HttpClientError';
 import type {Message} from 'dfx/types';
 import {NodeHttpClient} from '@effect/platform-node';
-import {REDACTED_DISCORD_BOT_TOKEN} from '#src/internal/constants/secrets.ts';
+import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
 
 
 type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof DiscordREST.Service[T]>;

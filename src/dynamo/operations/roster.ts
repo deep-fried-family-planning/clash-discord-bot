@@ -1,7 +1,7 @@
 import {E} from '#src/internal/pure/effect.ts';
 import {decodeDiscordRoster, type DRoster, type DRosterKey, encodeDiscordRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {encodeRosterId, ServerIdEncode} from '#src/dynamo/schema/common.ts';
+import {encodeRosterId, encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
 
 
 export const rosterCreate = (roster: DRoster) => E.gen(function * () {
@@ -15,7 +15,7 @@ export const rosterCreate = (roster: DRoster) => E.gen(function * () {
 
 
 export const rosterRead = (roster: DRosterKey) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(roster.pk);
+    const pk = yield * encodeServerId(roster.pk);
     const sk = yield * encodeRosterId(roster.sk);
 
     const item = yield * DynamoDBDocument.get({
@@ -28,7 +28,7 @@ export const rosterRead = (roster: DRosterKey) => E.gen(function * () {
 
 
 export const rosterQueryByServer = (roster: Pick<DRosterKey, 'pk'>) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(roster.pk);
+    const pk = yield * encodeServerId(roster.pk);
 
     const items = yield * DynamoDBDocument.query({
         TableName                : process.env.DDB_OPERATIONS,
@@ -65,7 +65,7 @@ export const rosterUpdate = (roster: DRoster) => E.gen(function * () {
 
 
 export const rosterDelete = (roster: DRosterKey) => E.gen(function * () {
-    const pk = yield * ServerIdEncode(roster.pk);
+    const pk = yield * encodeServerId(roster.pk);
     const sk = yield * encodeRosterId(roster.sk);
 
     yield * DynamoDBDocument.delete({
