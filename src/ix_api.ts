@@ -25,7 +25,6 @@ import {LINK_ACCOUNT_BULK_MODAL_OPEN, LinkAccountBulkModal} from '#src/discord/m
 import {Lambda} from '@effect-aws/client-lambda';
 import {RK_CLOSE, RK_ENTRY, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD} from '#src/constants/route-kind.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
-import {fromParameterStore} from '@effect-aws/ssm';
 
 
 const modals = {
@@ -228,13 +227,10 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
 const live = pipe(
     DiscordLayerLive,
-    L.provideMerge(L.mergeAll(
-        Scheduler.defaultLayer,
-        Lambda.defaultLayer,
-        SQS.defaultLayer,
-        DynamoDBDocument.defaultLayer,
-    )),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
+    L.provideMerge(Scheduler.defaultLayer),
+    L.provideMerge(Lambda.defaultLayer),
+    L.provideMerge(SQS.defaultLayer),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),

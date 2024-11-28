@@ -3,6 +3,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 // import {rspack} from '@rspack/core';
 import {resolve} from 'node:path';
 import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
+import type {SwcLoaderOptions} from '@rspack/core';
 
 
 const RsDoctor = new RsdoctorRspackPlugin({
@@ -24,13 +25,7 @@ const RsDoctor = new RsdoctorRspackPlugin({
 const targets = ['node >= 22.11'];
 
 export default defineConfig({
-    mode  : 'production',
-    target: ['node22.11', 'es2022'],
-
-    experiments: {
-        outputModule : true,
-        topLevelAwait: true,
-    },
+    mode: 'development',
 
     entry: {
         'api_discord/index'  : {import: 'src/ix_api.ts'},
@@ -43,16 +38,20 @@ export default defineConfig({
         'task/index'         : {import: 'src/task.ts'},
     },
 
-    output: {
-        module                       : true,
-        environment                  : {module: true},
-        library                      : {type: 'module'},
-        strictModuleErrorHandling    : true,
-        strictModuleExceptionHandling: true,
-        clean                        : true,
+    experiments: {
+        outputModule : true,
+        topLevelAwait: true,
     },
 
-    externalsType   : 'module',
+    target: ['node22.11'],
+    output: {
+        chunkFormat : 'module',
+        chunkLoading: 'import',
+        library     : {
+            type: 'module',
+        },
+    },
+
     externalsPresets: {node: true},
     externals       : [
         /@aws-sdk./,
@@ -67,46 +66,76 @@ export default defineConfig({
         extensions: ['...', '.ts'],
     },
 
-
-    module: {
-        rules: [{
-            test   : /\.js$/,
-            exclude: /node_modules/,
-            use    : [{
-                loader : 'builtin:swc-loader',
-                options: {
-                    jsc: {
-                        parser: {
-                            syntax: 'ecmascript',
-                        },
-                    },
-                    env: {targets},
-                },
-            }],
-        }, {
-            test   : /\.ts$/,
-            exclude: /node_modules/,
-            use    : [{
-                loader : 'builtin:swc-loader',
-                options: {
-                    jsc: {
-                        parser: {
-                            syntax: 'typescript',
-                        },
-                    },
-                    env: {targets},
-                },
-            }],
-        }],
-    },
-
     plugins: [
         // RsDoctor,
     ].filter(Boolean),
 
     optimization: {
         // minimizer: [new TerserPlugin()],
+        mangleExports: false,
     },
+
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                use : {
+                    loader : 'builtin:swc-loader',
+                    options: {
+                        minify  : true,
+                        isModule: true,
+                        module  : {
+                            type         : 'nodenext',
+                            importInterop: 'none',
+
+                        },
+                        jsc: {
+                            target   : 'esnext',
+                            transform: {
+                                optimizer: {
+                                    simplify: true,
+                                },
+                            },
+                            parser: {
+                                syntax: 'typescript',
+                            },
+                        },
+                    } satisfies SwcLoaderOptions,
+                },
+            },
+        ],
+
+        // rules: [{
+        //     test   : /\.js$/,
+        //     exclude: /node_modules/,
+        //     use    : [{
+        //         loader : 'builtin:swc-loader',
+        //         options: {
+        //             jsc: {
+        //                 parser: {
+        //                     syntax: 'ecmascript',
+        //                 },
+        //             },
+        //             env: {targets},
+        //         },
+        //     }],
+        // }, {
+        //     test   : /\.ts$/,
+        //     exclude: /node_modules/,
+        //     use    : [{
+        //         loader : 'builtin:swc-loader',
+        //         options: {
+        //             jsc: {
+        //                 parser: {
+        //                     syntax: 'typescript',
+        //                 },
+        //             },
+        //             env: {targets},
+        //         },
+        //     }],
+        // }],
+    },
+
 
     devtool: 'source-map',
 

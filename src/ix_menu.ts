@@ -12,7 +12,6 @@ import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
-import {fromParameterStore} from '@effect-aws/ssm';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
 
@@ -103,15 +102,12 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
 const live = pipe(
     ClashCache.Live,
     L.provideMerge(MenuCache.Live),
-    L.provideMerge(L.mergeAll(
-        ClashOfClans.Live,
-        ClashKing.Live,
-        DiscordLayerLive,
-        Scheduler.defaultLayer,
-        SQS.defaultLayer,
-        DynamoDBDocument.defaultLayer,
-    )),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
+    L.provideMerge(ClashOfClans.Live),
+    L.provideMerge(ClashKing.Live),
+    L.provideMerge(DiscordLayerLive),
+    L.provideMerge(Scheduler.defaultLayer),
+    L.provideMerge(SQS.defaultLayer),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),

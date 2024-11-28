@@ -71,7 +71,6 @@ const specToREST = (spec: CommandSpec) => ({
 const h = () => E.gen(function* () {
     yield * invokeCount(showMetric(invokeCount));
 
-
     const discord = yield * DiscordREST;
     const APP_ID = yield * CFG.redacted(REDACTED_DISCORD_APP_ID);
 
