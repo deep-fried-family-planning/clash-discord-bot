@@ -1,9 +1,15 @@
 declare namespace NodeJS {
     interface ProcessEnv {
-        LAMBDA_ENV             : string;
-        LAMBDA_ENV_LOWER       : string;
-        LAMBDA_ENV_UPPER       : string;
-        LAMBDA_ROLE_ARN        : string;
+        LAMBDA_ENV      : string;
+        LAMBDA_ENV_LOWER: string;
+        LAMBDA_ENV_UPPER: string;
+        LAMBDA_ROLE_ARN : string;
+
+        DFFP_DISCORD_BOT_TOKEN : string;
+        DFFP_DISCORD_PUBLIC_KEY: string;
+        DFFP_DISCORD_ERROR_URL : string;
+        DFFP_COC_KEY           : string;
+
         DDB_OPERATIONS         : string;
         SQS_URL_DISCORD_MENU   : string;
         SQS_URL_DISCORD_SLASH  : string;

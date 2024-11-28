@@ -1,11 +1,4 @@
 terraform {
-  required_version = "1.9.1"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.78.0"
-    }
-  }
   backend "s3" {
     region               = "us-east-1"
     bucket               = "tfstate-dffp"
@@ -34,12 +27,5 @@ provider "aws" {
 
 locals {
   prefix = "${local.env}-${local.org}-${local.service_name}"
-
-  lambda_env = {
-    LAMBDA_ENV       = local.env
-    LAMBDA_ENV_UPPER = upper(local.env)
-    LAMBDA_ENV_LOWER = lower(local.env)
-    LAMBDA_PREFIX    = local.prefix
-    DDB_OPERATIONS   = aws_dynamodb_table.operations.name
-  }
+  ENV    = upper(terraform.workspace)
 }

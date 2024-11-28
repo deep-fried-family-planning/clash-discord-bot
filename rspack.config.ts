@@ -26,9 +26,6 @@ const targets = ['node >= 22.11'];
 export default defineConfig({
     mode  : 'production',
     target: ['node22.11', 'es2022'],
-    //
-    // hashFunction: 'md5',
-    // hashDigestLength: 20,
 
     experiments: {
         outputModule : true,
@@ -36,6 +33,8 @@ export default defineConfig({
     },
 
     entry: {
+        'api_discord/index'  : {import: 'src/ix_api.ts'},
+        'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
         'ix_api/index'       : {import: 'src/ix_api.ts'},
         'ix_menu/index'      : {import: 'src/ix_menu.ts'},
         'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
@@ -45,23 +44,17 @@ export default defineConfig({
     },
 
     output: {
-        module     : true,
-        environment: {
-            module: true,
-        },
-        library: {
-            type: 'module',
-        },
+        module                       : true,
+        environment                  : {module: true},
+        library                      : {type: 'module'},
         strictModuleErrorHandling    : true,
         strictModuleExceptionHandling: true,
         clean                        : true,
     },
 
     externalsType   : 'module',
-    externalsPresets: {
-        node: true,
-    },
-    externals: [
+    externalsPresets: {node: true},
+    externals       : [
         /@aws-sdk./,
         // 'undici',
     ],
@@ -76,14 +69,6 @@ export default defineConfig({
 
 
     module: {
-        // parser: {
-        //     'javascript/auto': {
-        //         requireDynamic     : false,
-        //         importDynamic      : false,
-        //         exprContextCritical: true,
-        //     },
-        // },
-
         rules: [{
             test   : /\.js$/,
             exclude: /node_modules/,
@@ -125,7 +110,7 @@ export default defineConfig({
 
     devtool: 'source-map',
 
-    performance: {hints: false},
+    performance: {hints: 'warning'},
     stats      : {
         preset      : 'errors-only',
         entrypoints : true,
