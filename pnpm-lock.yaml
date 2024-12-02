@@ -39,11 +39,11 @@ importers:
         specifier: 1.0.2
         version: 1.0.2(@effect-aws/client-ssm@1.2.0(effect@3.10.19))(effect@3.10.19)
       '@effect/platform':
-        specifier: 0.69.28
-        version: 0.69.28(effect@3.10.19)
+        specifier: 0.69.31
+        version: 0.69.31(effect@3.10.19)
       '@effect/platform-node':
         specifier: 0.64.30
-        version: 0.64.30(@effect/platform@0.69.28(effect@3.10.19))(bufferutil@4.0.8)(effect@3.10.19)
+        version: 0.64.30(@effect/platform@0.69.31(effect@3.10.19))(bufferutil@4.0.8)(effect@3.10.19)
       '@hapi/boom':
         specifier: 10.0.1
         version: 10.0.1
@@ -61,7 +61,7 @@ importers:
         version: 1.11.13
       dfx:
         specifier: 0.106.0
-        version: 0.106.0(@effect/platform@0.69.28(effect@3.10.19))(effect@3.10.19)
+        version: 0.106.0(@effect/platform@0.69.31(effect@3.10.19))(effect@3.10.19)
       discord-interactions:
         specifier: 4.1.0
         version: 4.1.0
@@ -536,23 +536,11 @@ packages:
       '@effect-aws/client-ssm': ^1.0.0
       effect: '>=3.0.0 <4.0.0'
 
-  '@effect/platform-node-shared@0.19.27':
-    resolution: {integrity: sha512-QoqTyTVvvH6/XNW06L0R9r9t0ds7iroiCOq8PJdf+tOx5D3/W/StT7FTpaTJg6yFm07MJ6fIC/GqEMd+WwwTGg==}
-    peerDependencies:
-      '@effect/platform': ^0.69.26
-      effect: ^3.10.17
-
   '@effect/platform-node-shared@0.19.29':
     resolution: {integrity: sha512-XEBlQf3VMJQ7NjoKk22lFWPMefCEe3OesGxPbork6BeXxlBDa1e0PWHWNjjILVi3n0r1+4/VEb34eWJetzxGAg==}
     peerDependencies:
       '@effect/platform': ^0.69.28
       effect: ^3.10.19
-
-  '@effect/platform-node@0.64.28':
-    resolution: {integrity: sha512-QsgrKJ+fIh6xQCKDcFwOwkRVPvs04J9PHESaOkCRur72zMsFZIDU/Ye/gVGUmaRok71ZoptQGb+lXGsjim8aRQ==}
-    peerDependencies:
-      '@effect/platform': ^0.69.26
-      effect: ^3.10.17
 
   '@effect/platform-node@0.64.30':
     resolution: {integrity: sha512-/nnb/+5LLq6uDRMrF4ntXXDAreRwmaC726azX1p350egF8yAyQy+cPoXn5eS2XGmGKYs5LQ67JrC1l/gUr4Vug==}
@@ -560,21 +548,10 @@ packages:
       '@effect/platform': ^0.69.28
       effect: ^3.10.19
 
-  '@effect/platform@0.69.26':
-    resolution: {integrity: sha512-psL2z526o5SCGyD8m3I5/YTNvoOZkAeAz7e7adbnxNPcJBBLD5TFZ2s7UlkUk38ndyu/ICy584QuU43ayzBZSg==}
-    peerDependencies:
-      effect: ^3.10.17
-
-  '@effect/platform@0.69.28':
-    resolution: {integrity: sha512-/myt3etpu7IPqhUSSp7/DZFBTVAiAyAVqiHTxzXZZqFa1xJ/l/44Rvb/cAhaHNe8WADfqhrC0ALzY4MrVJbMzw==}
+  '@effect/platform@0.69.31':
+    resolution: {integrity: sha512-a4JQHieGF/kxH8ZSfEpVrxbdX9haAKFyoOQT5tXiiWoXSgvm+iQ/41FhXqwkWeMddh0hbYJmvmkEljcXUuxWcQ==}
     peerDependencies:
       effect: ^3.10.19
-
-  '@effect/vitest@0.13.17':
-    resolution: {integrity: sha512-ZOwLBkp8d7CCvBECb9Ajgmx09ZIUxB00H9KhdlIhY26KpZhqqiOi4lFCzhCszTToPEFtldTkcJ0AVSU7p5x/ng==}
-    peerDependencies:
-      effect: ^3.10.17
-      vitest: ^2.0.5
 
   '@effect/vitest@0.13.19':
     resolution: {integrity: sha512-5Tixz44IuH+TgXk2WJFEXhdz2IlhrUfxdSagzqKr7qVERZceYvCYka2W+JCgf8pgajNX91fu24vjB0YjTFKNOQ==}
@@ -1434,9 +1411,6 @@ packages:
   '@types/node-forge@1.3.11':
     resolution: {integrity: sha512-FQx220y22OKNTqaByeBGqHWYz4cl94tpcxeFdvBo3wjG6XPBuZ0BNgNZRV5J5TFmmcsJ4IzsLkmGRiQbnYsBEQ==}
 
-  '@types/node@22.10.0':
-    resolution: {integrity: sha512-XC70cRZVElFHfIUB40FgZOBbgJYFKKMa5nb9lxcwYstFG/Mi+/Y0bGS+rs6Dmhmkpq4pnNiLiuZAbc02YCOnmA==}
-
   '@types/node@22.10.1':
     resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
 
@@ -1636,6 +1610,7 @@ packages:
 
   acorn-import-assertions@1.9.0:
     resolution: {integrity: sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==}
+    deprecated: package has been renamed to acorn-import-attributes
     peerDependencies:
       acorn: ^8
 
@@ -1830,10 +1805,6 @@ packages:
   chrome-trace-event@1.0.4:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
-
-  clashofclans.js@3.3.18:
-    resolution: {integrity: sha512-Q9ag/e23xSOUigntfa2x5sr0qCnZ9yNMfnzYlrtc+yFChXyoh5sBIOOSoo/vsxTPQqEiOet6rUREY6SAdFZj8Q==}
-    engines: {node: '>=18.x'}
 
   clashofclans.js@3.3.19:
     resolution: {integrity: sha512-Yar4btPldirucwxgMFrdKHmpfvdB+u3wq/IMgbu7zgjW89G0zjMlF/mZjWoIi8GTvMhi93sVEuRC/FP4ZLcWrA==}
@@ -2087,14 +2058,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.10.17:
-    resolution: {integrity: sha512-OSLs3KTcN71166IJne5H2IRT9nh8VPMs4/iCU1JNY0QSr7KrEQl/xPjeNBuPvGsH+erzuM5moSJ0XjAO5qSZJw==}
-
   effect@3.10.19:
     resolution: {integrity: sha512-Bc+unZVpHQ/0QkydshNk97OjDXT17Y1M4rBjDZaEPjD6YmlcZxhadEo325OfdPQKWCKEHTdRGtX8/bfQ0RLTIw==}
-
-  electron-to-chromium@1.5.65:
-    resolution: {integrity: sha512-PWVzBjghx7/wop6n22vS2MLU8tKGd4Q91aCEGhG/TYmW6PP5OcSXcdnxTe1NNt0T66N8D6jxh4kC8UsdzOGaIw==}
 
   electron-to-chromium@1.5.66:
     resolution: {integrity: sha512-pI2QF6+i+zjPbqRzJwkMvtvkdI7MjVbSh2g8dlMguDJIXEPw+kwasS1Jl+YGPEBfGVxsVgGUratAKymPdPo2vQ==}
@@ -3243,9 +3208,6 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-
-  shell-quote@1.8.1:
-    resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
 
   shell-quote@1.8.2:
     resolution: {integrity: sha512-AzqKpGKjrj7EM6rKVQEPpB288oCfnrEIuyoT9cyF4nmGa7V8Zk6f7RRqYisX8X9m+Q7bd632aZW4ky7EhbQztA==}
@@ -4633,19 +4595,6 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@commitlint/cli@19.6.0(@types/node@22.10.0)(typescript@5.7.2)':
-    dependencies:
-      '@commitlint/format': 19.5.0
-      '@commitlint/lint': 19.6.0
-      '@commitlint/load': 19.5.0(@types/node@22.10.0)(typescript@5.7.2)
-      '@commitlint/read': 19.5.0
-      '@commitlint/types': 19.5.0
-      tinyexec: 0.3.1
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@types/node'
-      - typescript
-
   '@commitlint/cli@19.6.0(@types/node@22.10.1)(typescript@5.7.2)':
     dependencies:
       '@commitlint/format': 19.5.0
@@ -4696,22 +4645,6 @@ snapshots:
       '@commitlint/parse': 19.5.0
       '@commitlint/rules': 19.6.0
       '@commitlint/types': 19.5.0
-
-  '@commitlint/load@19.5.0(@types/node@22.10.0)(typescript@5.7.2)':
-    dependencies:
-      '@commitlint/config-validator': 19.5.0
-      '@commitlint/execute-rule': 19.5.0
-      '@commitlint/resolve-extends': 19.5.0
-      '@commitlint/types': 19.5.0
-      chalk: 5.3.0
-      cosmiconfig: 9.0.0(typescript@5.7.2)
-      cosmiconfig-typescript-loader: 5.1.0(@types/node@22.10.0)(cosmiconfig@9.0.0(typescript@5.7.2))(typescript@5.7.2)
-      lodash.isplainobject: 4.0.6
-      lodash.merge: 4.6.2
-      lodash.uniq: 4.5.0
-    transitivePeerDependencies:
-      - '@types/node'
-      - typescript
 
   '@commitlint/load@19.5.0(@types/node@22.10.1)(typescript@5.7.2)':
     dependencies:
@@ -4774,24 +4707,10 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect-aws/client-dynamodb@1.5.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.699.0
-      effect: 3.10.17
-    transitivePeerDependencies:
-      - aws-crt
-
   '@effect-aws/client-dynamodb@1.5.0(effect@3.10.19)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.699.0
       effect: 3.10.19
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-eventbridge@1.6.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-eventbridge': 3.699.0
-      effect: 3.10.17
     transitivePeerDependencies:
       - aws-crt
 
@@ -4802,24 +4721,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-lambda@1.6.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-lambda': 3.699.0
-      effect: 3.10.17
-    transitivePeerDependencies:
-      - aws-crt
-
   '@effect-aws/client-lambda@1.6.0(effect@3.10.19)':
     dependencies:
       '@aws-sdk/client-lambda': 3.699.0
       effect: 3.10.19
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-scheduler@1.1.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-scheduler': 3.699.0
-      effect: 3.10.17
     transitivePeerDependencies:
       - aws-crt
 
@@ -4830,24 +4735,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-sqs@1.6.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-sqs': 3.699.0
-      effect: 3.10.17
-    transitivePeerDependencies:
-      - aws-crt
-
   '@effect-aws/client-sqs@1.6.0(effect@3.10.19)':
     dependencies:
       '@aws-sdk/client-sqs': 3.699.0
       effect: 3.10.19
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-ssm@1.2.0(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-ssm': 3.699.0
-      effect: 3.10.17
     transitivePeerDependencies:
       - aws-crt
 
@@ -4858,22 +4749,9 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/lambda@1.2.0(effect@3.10.17)':
-    dependencies:
-      effect: 3.10.17
-
   '@effect-aws/lambda@1.2.0(effect@3.10.19)':
     dependencies:
       effect: 3.10.19
-
-  '@effect-aws/lib-dynamodb@1.4.0(@effect-aws/client-dynamodb@1.5.0(effect@3.10.17))(effect@3.10.17)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.699.0
-      '@aws-sdk/lib-dynamodb': 3.699.0(@aws-sdk/client-dynamodb@3.699.0)
-      '@effect-aws/client-dynamodb': 1.5.0(effect@3.10.17)
-      effect: 3.10.17
-    transitivePeerDependencies:
-      - aws-crt
 
   '@effect-aws/lib-dynamodb@1.4.0(@effect-aws/client-dynamodb@1.5.0(effect@3.10.19))(effect@3.10.19)':
     dependencies:
@@ -4884,56 +4762,27 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/powertools-logger@1.4.0(@aws-lambda-powertools/logger@2.11.0)(effect@3.10.17)':
-    dependencies:
-      '@aws-lambda-powertools/logger': 2.11.0
-      effect: 3.10.17
-
   '@effect-aws/powertools-logger@1.4.0(@aws-lambda-powertools/logger@2.11.0)(effect@3.10.19)':
     dependencies:
       '@aws-lambda-powertools/logger': 2.11.0
       effect: 3.10.19
-
-  '@effect-aws/ssm@1.0.2(@effect-aws/client-ssm@1.2.0(effect@3.10.17))(effect@3.10.17)':
-    dependencies:
-      '@effect-aws/client-ssm': 1.2.0(effect@3.10.17)
-      effect: 3.10.17
 
   '@effect-aws/ssm@1.0.2(@effect-aws/client-ssm@1.2.0(effect@3.10.19))(effect@3.10.19)':
     dependencies:
       '@effect-aws/client-ssm': 1.2.0(effect@3.10.19)
       effect: 3.10.19
 
-  '@effect/platform-node-shared@0.19.27(@effect/platform@0.69.26(effect@3.10.17))(effect@3.10.17)':
+  '@effect/platform-node-shared@0.19.29(@effect/platform@0.69.31(effect@3.10.19))(effect@3.10.19)':
     dependencies:
-      '@effect/platform': 0.69.26(effect@3.10.17)
-      '@parcel/watcher': 2.5.0
-      effect: 3.10.17
-      multipasta: 0.2.5
-
-  '@effect/platform-node-shared@0.19.29(@effect/platform@0.69.28(effect@3.10.19))(effect@3.10.19)':
-    dependencies:
-      '@effect/platform': 0.69.28(effect@3.10.19)
+      '@effect/platform': 0.69.31(effect@3.10.19)
       '@parcel/watcher': 2.5.0
       effect: 3.10.19
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.64.28(@effect/platform@0.69.26(effect@3.10.17))(bufferutil@4.0.8)(effect@3.10.17)':
+  '@effect/platform-node@0.64.30(@effect/platform@0.69.31(effect@3.10.19))(bufferutil@4.0.8)(effect@3.10.19)':
     dependencies:
-      '@effect/platform': 0.69.26(effect@3.10.17)
-      '@effect/platform-node-shared': 0.19.27(@effect/platform@0.69.26(effect@3.10.17))(effect@3.10.17)
-      effect: 3.10.17
-      mime: 3.0.0
-      undici: 6.21.0
-      ws: 8.18.0(bufferutil@4.0.8)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@effect/platform-node@0.64.30(@effect/platform@0.69.28(effect@3.10.19))(bufferutil@4.0.8)(effect@3.10.19)':
-    dependencies:
-      '@effect/platform': 0.69.28(effect@3.10.19)
-      '@effect/platform-node-shared': 0.19.29(@effect/platform@0.69.28(effect@3.10.19))(effect@3.10.19)
+      '@effect/platform': 0.69.31(effect@3.10.19)
+      '@effect/platform-node-shared': 0.19.29(@effect/platform@0.69.31(effect@3.10.19))(effect@3.10.19)
       effect: 3.10.19
       mime: 3.0.0
       undici: 6.21.0
@@ -4942,22 +4791,11 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.69.26(effect@3.10.17)':
-    dependencies:
-      effect: 3.10.17
-      find-my-way-ts: 0.1.5
-      multipasta: 0.2.5
-
-  '@effect/platform@0.69.28(effect@3.10.19)':
+  '@effect/platform@0.69.31(effect@3.10.19)':
     dependencies:
       effect: 3.10.19
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
-
-  '@effect/vitest@0.13.17(effect@3.10.17)(vitest@2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0))':
-    dependencies:
-      effect: 3.10.17
-      vitest: 2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
 
   '@effect/vitest@0.13.19(effect@3.10.19)(vitest@2.1.6(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0))':
     dependencies:
@@ -5948,10 +5786,6 @@ snapshots:
     dependencies:
       '@types/node': 22.10.1
 
-  '@types/node@22.10.0':
-    dependencies:
-      undici-types: 6.20.0
-
   '@types/node@22.10.1':
     dependencies:
       undici-types: 6.20.0
@@ -6079,22 +5913,6 @@ snapshots:
       '@typescript-eslint/types': 8.16.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitest/coverage-istanbul@2.1.6(vitest@2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0))':
-    dependencies:
-      '@istanbuljs/schema': 0.1.3
-      debug: 4.3.7
-      istanbul-lib-coverage: 3.2.2
-      istanbul-lib-instrument: 6.0.3
-      istanbul-lib-report: 3.0.1
-      istanbul-lib-source-maps: 5.0.6
-      istanbul-reports: 3.1.7
-      magicast: 0.3.5
-      test-exclude: 7.0.1
-      tinyrainbow: 1.2.0
-      vitest: 2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
-    transitivePeerDependencies:
-      - supports-color
-
   '@vitest/coverage-istanbul@2.1.6(vitest@2.1.6(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0))':
     dependencies:
       '@istanbuljs/schema': 0.1.3
@@ -6117,14 +5935,6 @@ snapshots:
       '@vitest/utils': 2.1.6
       chai: 5.1.2
       tinyrainbow: 1.2.0
-
-  '@vitest/mocker@2.1.6(vite@6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0))':
-    dependencies:
-      '@vitest/spy': 2.1.6
-      estree-walker: 3.0.3
-      magic-string: 0.30.14
-    optionalDependencies:
-      vite: 6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
 
   '@vitest/mocker@2.1.6(vite@6.0.1(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0))':
     dependencies:
@@ -6457,10 +6267,6 @@ snapshots:
 
   chrome-trace-event@1.0.4: {}
 
-  clashofclans.js@3.3.18:
-    dependencies:
-      undici: 5.28.4
-
   clashofclans.js@3.3.19:
     dependencies:
       undici: 5.28.4
@@ -6571,13 +6377,6 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig-typescript-loader@5.1.0(@types/node@22.10.0)(cosmiconfig@9.0.0(typescript@5.7.2))(typescript@5.7.2):
-    dependencies:
-      '@types/node': 22.10.0
-      cosmiconfig: 9.0.0(typescript@5.7.2)
-      jiti: 1.21.6
-      typescript: 5.7.2
-
   cosmiconfig-typescript-loader@5.1.0(@types/node@22.10.1)(cosmiconfig@9.0.0(typescript@5.7.2))(typescript@5.7.2):
     dependencies:
       '@types/node': 22.10.1
@@ -6659,16 +6458,9 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  dfx@0.106.0(@effect/platform@0.69.26(effect@3.10.17))(effect@3.10.17):
+  dfx@0.106.0(@effect/platform@0.69.31(effect@3.10.19))(effect@3.10.19):
     dependencies:
-      '@effect/platform': 0.69.26(effect@3.10.17)
-      effect: 3.10.17
-    optionalDependencies:
-      discord-verify: 1.2.0
-
-  dfx@0.106.0(@effect/platform@0.69.28(effect@3.10.19))(effect@3.10.19):
-    dependencies:
-      '@effect/platform': 0.69.28(effect@3.10.19)
+      '@effect/platform': 0.69.31(effect@3.10.19)
       effect: 3.10.19
     optionalDependencies:
       discord-verify: 1.2.0
@@ -6694,15 +6486,9 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.10.17:
-    dependencies:
-      fast-check: 3.23.1
-
   effect@3.10.19:
     dependencies:
       fast-check: 3.23.1
-
-  electron-to-chromium@1.5.65: {}
 
   electron-to-chromium@1.5.66: {}
 
@@ -7869,8 +7655,6 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shell-quote@1.8.1: {}
-
   shell-quote@1.8.2: {}
 
   side-channel@1.0.6:
@@ -8158,27 +7942,6 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite-node@2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.7
-      es-module-lexer: 1.5.4
-      pathe: 1.1.2
-      vite: 6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
-    transitivePeerDependencies:
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
   vite-node@2.1.6(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0):
     dependencies:
       cac: 6.7.14
@@ -8200,17 +7963,6 @@ snapshots:
       - tsx
       - yaml
 
-  vite-tsconfig-paths@5.1.3(typescript@5.7.2)(vite@6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)):
-    dependencies:
-      debug: 4.3.7
-      globrex: 0.1.2
-      tsconfck: 3.1.4(typescript@5.7.2)
-    optionalDependencies:
-      vite: 6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
   vite-tsconfig-paths@5.1.3(typescript@5.7.2)(vite@6.0.1(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0)):
     dependencies:
       debug: 4.3.7
@@ -8222,17 +7974,6 @@ snapshots:
       - supports-color
       - typescript
 
-  vite@6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0):
-    dependencies:
-      esbuild: 0.24.0
-      postcss: 8.4.49
-      rollup: 4.27.4
-    optionalDependencies:
-      '@types/node': 22.10.0
-      fsevents: 2.3.3
-      jiti: 2.4.0
-      terser: 5.36.0
-
   vite@6.0.1(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0):
     dependencies:
       esbuild: 0.24.0
@@ -8243,44 +7984,6 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.4.0
       terser: 5.36.0
-
-  vitest@2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0):
-    dependencies:
-      '@vitest/expect': 2.1.6
-      '@vitest/mocker': 2.1.6(vite@6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0))
-      '@vitest/pretty-format': 2.1.6
-      '@vitest/runner': 2.1.6
-      '@vitest/snapshot': 2.1.6
-      '@vitest/spy': 2.1.6
-      '@vitest/utils': 2.1.6
-      chai: 5.1.2
-      debug: 4.3.7
-      expect-type: 1.1.0
-      magic-string: 0.30.14
-      pathe: 1.1.2
-      std-env: 3.8.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.1
-      tinypool: 1.0.2
-      tinyrainbow: 1.2.0
-      vite: 6.0.1(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
-      vite-node: 2.1.6(@types/node@22.10.0)(jiti@2.4.0)(terser@5.36.0)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 22.10.0
-    transitivePeerDependencies:
-      - jiti
-      - less
-      - lightningcss
-      - msw
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
 
   vitest@2.1.6(@types/node@22.10.1)(jiti@2.4.0)(terser@5.36.0):
     dependencies:
