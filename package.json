@@ -61,7 +61,7 @@
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
     "@effect/vitest": "0.13.19",
-    "@eslint/js": "9.15.0",
+    "@eslint/js": "9.16.0",
     "@rsdoctor/cli": "0.4.9",
     "@rsdoctor/rspack-plugin": "0.4.9",
     "@rspack/cli": "1.1.4",
