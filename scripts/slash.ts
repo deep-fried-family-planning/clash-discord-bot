@@ -4,14 +4,14 @@ import {mapEntries, toEntries} from 'effect/Record';
 import {map} from 'effect/Array';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
-import {REDACTED_DISCORD_APP_ID} from '#src/constants/secrets.ts';
-import {DiscordREST} from 'dfx';
+import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
-import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {CLAN_FAM} from '#src/discord/commands/clanfam.ts';
 import {ONE_OF_US} from '#src/discord/commands/oneofus.ts';
 import {SERVER} from '#src/discord/commands/server.ts';
@@ -25,6 +25,7 @@ import {CACHE_BUST} from '#src/discord/commands/cache-bust.ts';
 import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';
 import {OMNI_BOARD} from '#src/discord/commands/omni-board.ts';
 import {fromParameterStore} from '@effect-aws/ssm';
+import {NodeHttpClient} from '@effect/platform-node';
 
 
 const specs = {
@@ -40,7 +41,7 @@ const specs = {
     CACHE_BUST,
     GIMME_DATA,
     OMNI_BOARD,
-};
+} as const;
 
 
 type Sorted = {required?: boolean};
@@ -106,7 +107,10 @@ const h = () => E.gen(function* () {
 );
 
 const live = pipe(
-    DiscordLayerLive,
+    DiscordApi.Live,
+    L.provideMerge(DiscordRESTMemoryLive),
+    L.provide(NodeHttpClient.layerUndici),
+    L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
     L.provideMerge(L.setConfigProvider(fromParameterStore())),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),

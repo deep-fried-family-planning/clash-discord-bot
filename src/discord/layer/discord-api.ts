@@ -1,4 +1,4 @@
-import {CFG, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
 import {DiscordREST} from 'dfx/DiscordREST';
 import type {EA} from '#src/internal/types.ts';
@@ -7,7 +7,6 @@ import {type IxR, type IxRE, type IxD, MGF} from '#src/internal/discord.ts';
 import type {ResponseError} from '@effect/platform/HttpClientError';
 import type {Message} from 'dfx/types';
 import {NodeHttpClient} from '@effect/platform-node';
-import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
 
 
 type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof DiscordREST.Service[T]>;
@@ -54,5 +53,5 @@ export const DiscordLayerLive = pipe(
     DiscordApi.Live,
     L.provideMerge(DiscordRESTMemoryLive),
     L.provide(NodeHttpClient.layerUndici),
-    L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+    L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
 );

@@ -4,7 +4,7 @@ module "ix_menu" {
   prefix             = local.prefix
   fn_name            = "ix_menu"
   custom_policy_json = data.aws_iam_policy_document.ix_menu.json
-  memory             = 256
+  memory             = 512
   timeout            = 15
   fn_env = merge(local.lambda_env, {
 

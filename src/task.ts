@@ -1,9 +1,8 @@
-import {CFG, CSL, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import type {SQSEvent} from 'aws-lambda';
-import {REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -54,7 +53,7 @@ const LambdaLive = pipe(
     L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(ClashOfClans.Live),
     L.provideMerge(NodeHttpClient.layerUndici),
-    L.provideMerge(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+    L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
     L.provideMerge(L.setConfigProvider(fromParameterStore())),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
