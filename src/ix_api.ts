@@ -48,7 +48,7 @@ const component = (body: IxD) => E.gen(function * () {
             InvocationType: 'Event',
             Payload       : JSON.stringify(body),
         });
-        return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE}); ;
+        return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
     }
 
 
