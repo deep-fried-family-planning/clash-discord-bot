@@ -17,6 +17,7 @@ import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
 import {LABEL_TITLE_CREATE_ROSTER} from '#src/constants/label.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 
 
 const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function * () {
@@ -44,7 +45,7 @@ const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(fun
             DT.unsafeMake(s.editor!.timestamp!),
             DT.withDate(DT.unsafeFromDate),
         ),
-        roster_type: type,
+        roster_type: type as DRoster['roster_type'],
     });
 
 
@@ -88,7 +89,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
     const Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     if (Submit.clicked(ax)) {
-        yield * saveRoster(s, Type.values[0], parseInt(Position.values[0]));
+        yield * saveRoster(s, Type.values[0], parseInt(Position.values[0]), s.editor);
     }
 
     return {
@@ -142,6 +143,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 export const rosterViewerCreatorReducer = {
     [RosterViewerCreatorB.id.predicate]: view,
     [Submit.id.predicate]              : view,
+    [PositionS.id.predicate]           : view,
     [TypeS.id.predicate]               : view,
 };
 

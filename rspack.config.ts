@@ -2,8 +2,12 @@ import {defineConfig} from '@rspack/cli';
 import TerserPlugin from 'terser-webpack-plugin';
 // import {rspack} from '@rspack/core';
 import {resolve} from 'node:path';
+import {execSync} from 'node:child_process';
 import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
-
+import {toEntries} from 'effect/Record';
+import {pipe} from 'effect';
+import {map as mapL} from 'effect/Array';
+import {readFile} from 'node:fs/promises';
 
 const RsDoctor = new RsdoctorRspackPlugin({
     mode    : 'normal',
@@ -23,6 +27,36 @@ const RsDoctor = new RsdoctorRspackPlugin({
 
 const targets = ['node >= 22.11'];
 
+
+const entries = {
+    'api_discord/index'  : {import: 'src/ix_api.ts'},
+    'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
+    'ix_api/index'       : {import: 'src/ix_api.ts'},
+    'ix_menu/index'      : {import: 'src/ix_menu.ts'},
+    'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
+    'ix_slash/index'     : {import: 'src/ix_slash.ts'},
+    'poll/index'         : {import: 'src/poll.ts'},
+    'task/index'         : {import: 'src/task.ts'},
+};
+
+
+if (process.env.BUILD_ENV !== 'prod') {
+    await Promise.all(
+        pipe(
+            entries,
+            toEntries,
+            mapL(([outName]) => outName.replace('index', '')),
+        ).map(async (outName) => {
+            try {
+                await readFile(`dist/${outName}/index.mjs.map`);
+            }
+            catch (e) {
+                execSync(`touch dist/${outName}/index.mjs.map`);
+            }
+        }),
+    );
+}
+
 export default defineConfig({
     mode  : 'production',
     target: ['node22.11', 'es2022'],
@@ -32,16 +66,7 @@ export default defineConfig({
         topLevelAwait: true,
     },
 
-    entry: {
-        'api_discord/index'  : {import: 'src/ix_api.ts'},
-        'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
-        'ix_api/index'       : {import: 'src/ix_api.ts'},
-        'ix_menu/index'      : {import: 'src/ix_menu.ts'},
-        'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
-        'ix_slash/index'     : {import: 'src/ix_slash.ts'},
-        'poll/index'         : {import: 'src/poll.ts'},
-        'task/index'         : {import: 'src/task.ts'},
-    },
+    entry: entries,
 
     output: {
         module                       : true,
@@ -49,7 +74,8 @@ export default defineConfig({
         library                      : {type: 'module'},
         strictModuleErrorHandling    : true,
         strictModuleExceptionHandling: true,
-        clean                        : true,
+        // clean                        : true,
+        compareBeforeEmit            : true,
     },
 
     externalsType   : 'module',
@@ -108,7 +134,7 @@ export default defineConfig({
         // minimizer: [new TerserPlugin()],
     },
 
-    devtool: 'source-map',
+    devtool: process.env.BUILD_ENV === 'prod' ? 'source-map' : false,
 
     performance: {hints: 'warning'},
     stats      : {

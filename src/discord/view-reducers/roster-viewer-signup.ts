@@ -1,6 +1,6 @@
 import {makeId} from '#src/discord/store/type-rx.ts';
 import {BackB, SingleS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
-import {DT, E, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
 import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
@@ -10,7 +10,7 @@ import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS, UNAVAILABLE} from '#src/constants/ix-constants.ts';
+import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, ROSTER_ROUNDS_ODCWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
@@ -18,7 +18,8 @@ import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import type {SelectOption} from 'dfx/types';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import { ClashCache } from '#src/clash/layers/clash-cash';
+import {ClashCache} from '#src/clash/layers/clash-cash';
+import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
 
 
 const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
@@ -47,11 +48,23 @@ const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
 });
 
 
-const approximateRoundStartTimes = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
     ...o,
     description: `war start approx: ${pipe(
         DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
         DT.addDuration(`${idx + 1} day`),
+        DT.format({
+            dateStyle: 'short',
+            timeStyle: 'short',
+            locale   : s.original.locale!,
+        }),
+    )}`,
+});
+const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+    ...o,
+    description: `war start approx: ${pipe(
+        DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
+        DT.addDuration(`${(idx + 1) * 2} day`),
         DT.format({
             dateStyle: 'short',
             timeStyle: 'short',
@@ -68,6 +81,8 @@ const signupRoster = (
     rounds: str[],
     tags: str[],
 ) => E.gen(function * () {
+    yield * CSL.debug('selected', userId, rosterId, designation, rounds, tags);
+
     const signup = yield * rosterSignupRead({
         pk: rosterId,
         sk: userId,
@@ -89,7 +104,9 @@ const signupRoster = (
                     roundsAvailable[`${idx}`]
                         ? {
                             availability: true,
-                            designation : designation,
+                            designation : designation === UNAVAILABLE
+                                ? 'default'
+                                : designation,
                         }
                         : {
                             availability: false,
@@ -135,8 +152,7 @@ const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAC'), {
 });
 const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAV'), {
     placeholder: 'Select Availability',
-    options    : ROSTER_ROUNDS,
-    max_values : ROSTER_ROUNDS.length,
+    options    : ROSTER_ROUNDS_CWL,
 });
 const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUD'), {
     placeholder: 'Select Designation',
@@ -149,16 +165,27 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 
     const Roster = RosterS.fromMap(s.cmap);
 
-    let Availability = SelectAvailability.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+
+    const roster = yield * rosterRead({
+        pk: s.server_id,
+        sk: Roster.values[0],
+    });
+
+    // const roster = yield * rosterRead({pk: s.server_id, sk: Roster.values[0]});
+
+    let Availability = SelectAvailability
+        .fromMap(s.cmap)
+        .setDefaultValuesIf(ax.id.predicate, selected);
 
     let Accounts = SelectAccounts.fromMap(s.cmap);
+    let Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
     if (RosterViewerSignupB.clicked(ax)) {
-        const roster = yield * rosterRead({
-            pk: s.server_id,
-            sk: Roster.values[0],
-        });
         const accounts = yield * getAccounts(s, Roster.values[0]);
+
+        const availabilityOptions = roster.roster_type === 'cwl' ? ROSTER_ROUNDS_CWL.map(approximateRoundStartTimesCWL(s, roster))
+            : roster.roster_type === 'odcwl' ? ROSTER_ROUNDS_ODCWL.map(approximateRoundStartTimesODCWL(s, roster))
+            : OPTION_UNAVAILABLE;
 
         Accounts = SelectAccounts.render({
             options: accounts.length
@@ -169,12 +196,19 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
                 }],
         });
         Availability = Availability.render({
-            options: Availability.options.options!.map(approximateRoundStartTimes(s, roster)),
+            disabled  : !['cwl', 'odcwl'].includes(roster.roster_type),
+            options   : availabilityOptions,
+            max_values: availabilityOptions.length,
+        });
+        Designation = Designation.render({
+            disabled: roster.roster_type !== 'cwl',
+            options:
+                roster.roster_type === 'cwl' ? ROSTER_DESIGNATIONS
+                : OPTION_UNAVAILABLE,
         });
     }
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
-    const Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
     const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
     // const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
@@ -207,10 +241,10 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
                 || Submit.clicked(ax),
         }),
         sel2: Availability.render({
-            disabled: Submit.clicked(ax),
+            disabled: Submit.clicked(ax) || Availability.options.options?.length === 1,
         }),
         sel3: Designation.render({
-            disabled: Submit.clicked(ax),
+            disabled: Submit.clicked(ax) || Designation.options.options?.length === 1,
         }),
 
         status:

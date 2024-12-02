@@ -87,6 +87,11 @@ export const SELECT_ROSTER_TYPE = [
         value      : 'war-at-large',
         description: 'War roster to gauge an entire server (normal matchmaking)',
     },
+    {
+        label      : 'ODCWL',
+        value      : 'odcwl',
+        description: '[O]re [D]uring [CWL] (wars for 2x ore during Clan War League)',
+    },
 ];
 
 
@@ -286,7 +291,7 @@ export const OPTION_LIMIT = {
 } as const satisfies CommandSpec['options'];
 
 
-export const ROSTER_ROUNDS = [
+export const ROSTER_ROUNDS_CWL = [
     {label: 'Round 1', value: '0', default: true},
     {label: 'Round 2', value: '1', default: true},
     {label: 'Round 3', value: '2', default: true},
@@ -294,6 +299,11 @@ export const ROSTER_ROUNDS = [
     {label: 'Round 5', value: '4', default: true},
     {label: 'Round 6', value: '5', default: true},
     {label: 'Round 7', value: '6', default: true},
+];
+export const ROSTER_ROUNDS_ODCWL = [
+    {label: 'ODCWL 1', value: '0', default: true},
+    {label: 'ODCWL 2', value: '1', default: true},
+    {label: 'ODCWL 3', value: '2', default: true},
 ];
 
 

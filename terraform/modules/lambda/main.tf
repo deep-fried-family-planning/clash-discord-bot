@@ -1,6 +1,14 @@
 locals {
   fn_name = replace(var.fn_name, "_", "-")
+
+  source_map_filename = "../${path.root}/dist/${var.fn_name}/index.mjs.map"
+  source_map_file     = try(file(local.source_map_filename), null)
 }
+
+# data "local_file" "source_map" {
+#   filename = local.source_map_filename
+# }
+
 
 
 data "archive_file" "source_code" {
@@ -15,7 +23,7 @@ data "archive_file" "source_code" {
   }
 
   source {
-    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs.map")
+    content  = local.source_map_file
     filename = "index.mjs.map"
   }
 }
