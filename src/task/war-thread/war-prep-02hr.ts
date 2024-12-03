@@ -8,7 +8,7 @@ import {COLOR, nColor} from '#src/constants/colors.ts';
 export const WarPrep02hr = makeTask('WarPrep02hr', (data, war) => g(function * () {
     yield * DiscordApi.createMessage(data.thread, {
         content: dLinesS(
-            dHdr1(`${data.clanName} | Prep ends ${dtRel(war.battle.startTime.getTime())}`),
+            dHdr1(`${data.clanName} | Prep ends ${dtRel(war.prep.startTime.getTime())}`),
 
             dHdr3(dmRole(TEMP_ROLES.staff)),
             '* [CWL only] Enemy war roster selection may have changed since last update.',
