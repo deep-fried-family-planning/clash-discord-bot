@@ -1,7 +1,7 @@
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {makeTask} from '#src/task/war-thread/common.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {dCrss, dHdr1, dLinesS, dmUser, dSubH} from '#src/discord/util/markdown.ts';
+import {dCrss, dHdr1, dLinesS, dmUser, dSubH, dtRel} from '#src/discord/util/markdown.ts';
 import {filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
 import type {ClanWarAttack} from 'clashofclans.js';
@@ -31,7 +31,7 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
     );
     yield * DiscordApi.createMessage(data.thread, {
         content: dLinesS(
-            dHdr1(`${data.clanName} | Battle [T-12:00]`),
+            dHdr1(`${data.clanName} | Battle ${dtRel(war.battle.endTime.getTime())}`),
             dSubH('strikethrough = did all hits'),
             ...pipe(
                 p,
