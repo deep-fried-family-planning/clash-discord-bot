@@ -42,6 +42,12 @@ const entries = {
 
 
 if (process.env.BUILD_ENV !== 'prod') {
+    try {
+        execSync(`mkdir dist`);
+    }
+    catch (e) {
+
+    }
     await Promise.all(
         pipe(
             entries,
@@ -52,8 +58,12 @@ if (process.env.BUILD_ENV !== 'prod') {
                 await readFile(`dist/${outName}/index.mjs.map`);
             }
             catch (e) {
-                // execSync(`mkdir dist`);
-                // execSync(`mkdir dist/${outName}`);
+                try {
+                    execSync(`mkdir dist/${outName}`);
+                }
+                catch (e) {
+
+                }
                 execSync(`touch dist/${outName}/index.mjs.map`);
             }
         }),
