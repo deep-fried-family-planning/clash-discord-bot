@@ -43,6 +43,7 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
                 }),
             ),
         ),
+        // @ts-expect-error dfx types slightly wrong
         allowed_mentions: {
             users: pipe(
                 p,
