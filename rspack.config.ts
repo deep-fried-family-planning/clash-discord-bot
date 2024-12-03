@@ -62,9 +62,8 @@ if (process.env.BUILD_ENV !== 'prod') {
                     execSync(`mkdir dist/${outName}`);
                 }
                 catch (e) {
-
+                    execSync(`touch dist/${outName}/index.mjs.map`);
                 }
-                execSync(`touch dist/${outName}/index.mjs.map`);
             }
         }),
     );
