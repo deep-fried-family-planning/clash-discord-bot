@@ -73,7 +73,7 @@ export const getTaskWars = (data: typeof WarThreadData.Type) => g(function * () 
 
     return {
         prep    : entities.current.wars.find((w) => w.state === 'preparation')!,
-        battle  : entities.current.wars.find((w) => w.state !== 'inWar')!,
+        battle  : entities.current.wars.find((w) => w.state === 'inWar')!,
         finished: entities.current.wars.find((w) => w.state === 'notInWar') ?? entities.current.wars.find((w) => w.state !== 'inWar')!,
         original: entities,
     };
