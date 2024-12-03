@@ -62,7 +62,7 @@ export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function *
 });
 
 
-const messageEmbedScout = (scout: ReturnType<typeof describeScout>) => {
+export const messageEmbedScout = (scout: ReturnType<typeof describeScout>) => {
     return dLines([
         dHdr3(`War Log Analysis n=${scout.wars.length} wars`),
         pipe(dTable([
@@ -83,6 +83,7 @@ const messageEmbedScout = (scout: ReturnType<typeof describeScout>) => {
         ]), mapL(dSubC)),
         dBold('war operations'),
         pipe(dTable([
+            ['th17 hit rate', nPrct(scout.th17hr), ''],
             ['th16 hit rate', nPrct(scout.th16hr), ''],
             ['3 star attempts', nNatr(scout.hitsAttempt.length / scout.wars.length), nPrct((scout.hitsAttempt.length) / scout.hitsPossible)],
             ['hits missed', nNatr((scout.hitsPossible - scout.attacks.length) / scout.wars.length), nPrct((scout.hitsPossible - scout.attacks.length) / scout.hitsPossible)],

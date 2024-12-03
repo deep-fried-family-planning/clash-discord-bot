@@ -36,8 +36,8 @@ export const NA = 'N/A';
 
 export const dNotA = () => `WIP`;
 
-export const dtRelative = (n: num = Date.now()) => `<t:${n / 1000}:R>`;
-export const dtFull = (n: num = Date.now()) => `<t:${n / 1000}:F>`;
+export const dtRel = (n: num = Date.now()) => `<t:${n / 1000}:R>`;
+export const dtFul = (n: num = Date.now()) => `<t:${n / 1000}:F>`;
 
 
 export const dtNow = () => new Date(Date.now());

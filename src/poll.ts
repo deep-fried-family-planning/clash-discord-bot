@@ -14,6 +14,7 @@ import {eachClan} from '#src/poll/clan-war.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {toEntries} from 'effect/Record';
+import {ClashKing} from '#src/clash/clashking.ts';
 
 
 // todo this lambda is annoying asl, fullstack test
@@ -54,6 +55,7 @@ export const h = () => E.gen(function* () {
 
 export const LambdaLive = pipe(
     L.mergeAll(
+        ClashKing.Live,
         ClashOfClans.Live,
         ServerCache.Live,
         PlayerCache.Live,

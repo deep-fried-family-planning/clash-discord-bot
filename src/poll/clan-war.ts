@@ -7,7 +7,6 @@ import {DiscordREST} from 'dfx';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
 import {updateWarCountdown} from '#src/poll/update-war-countdowns.ts';
 import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
-import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
 import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
@@ -21,7 +20,10 @@ import {WarBattle06hr} from '#src/task/war-thread/war-battle-06hr.ts';
 import {WarBattle02hr} from '#src/task/war-thread/war-battle-02hr.ts';
 import {WarBattle01hr} from '#src/task/war-thread/war-battle-01hr.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dHdr3, dLinesS, dtFull, dtRelative} from '#src/discord/util/markdown.ts';
+import {dHdr1, dHdr3, dLinesS, dSubH, dtFul, dtRel} from '#src/discord/util/markdown.ts';
+import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
+import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
+import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 
 
 export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
@@ -61,36 +63,59 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
         yield * CSL.log('new schedule group', newgroup.ScheduleGroupArn);
     }
 
+    const graph = yield * buildGraphModel({
+        cid1       : clan.sk,
+        exhaustive : false,
+        from       : 1,
+        to         : 50,
+        limit      : 50,
+        showCurrent: false,
+        showN      : false,
+    });
+    const scout = describeScout(graph);
+
     const thread = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
         name   : `🛠️│${prepWar.clan.name}`,
         // @ts-expect-error dfx types need to be fixed
         message: {
             content: `${prepWar.clan.name} vs. ${prepWar.opponent.name}`,
             embeds : [{
-                color : nColor(COLOR.ORIGINAL),
-                author: {
-                    name    : '',
-                    icon_url: prepWar.clan.badge.large,
-                },
+                color    : nColor(COLOR.ORIGINAL),
                 thumbnail: {
-                    url: prepWar.opponent.badge.large,
+                    url   : prepWar.clan.badge.large,
+                    height: 256,
+                    width : 256,
                 },
-                title: `${prepWar.type.toUpperCase()}: ${prepWar.clan.name} vs. ${prepWar.opponent.name}`,
-
                 description: dLinesS(
-                    `-# open clan name links below to open in-game`,
-                    dHdr3(`[${prepWar.clan.name}](${prepWar.clan.shareLink}) vs [${prepWar.opponent.name}](${prepWar.opponent.shareLink})`),
-                    `prep: ${dtFull(prepWar.preparationStartTime.getTime())}`,
-                    `prep: ${dtRelative(prepWar.preparationStartTime.getTime())}`,
-                    `battle: ${dtFull(prepWar.startTime.getTime())}`,
-                    `battle: ${dtRelative(prepWar.startTime.getTime())}`,
-                    `end: ${dtFull(prepWar.endTime.getTime())}`,
-                    `end: ${dtRelative(prepWar.endTime.getTime())}`,
+                    dHdr1(`[${prepWar.clan.name}](${prepWar.clan.shareLink})`),
+                    dSubH('click clan name to open in-game'),
                 ),
-                footer: {
-                    text: 'battle day ending',
+            }, {
+                color    : nColor(COLOR.ERROR),
+                thumbnail: {
+                    url   : prepWar.opponent.badge.large,
+                    height: 256,
+                    width : 256,
                 },
-                timestamp: prepWar.endTime.toISOString(),
+                description: dLinesS(
+                    dHdr1(`vs [${prepWar.opponent.name}](${prepWar.opponent.shareLink})`),
+                    dSubH('click clan name to open in-game'),
+
+                    dHdr3('Preparation'),
+                    dtFul(prepWar.preparationStartTime.getTime()),
+                    dtRel(prepWar.preparationStartTime.getTime()),
+
+                    dHdr3('Battle'),
+                    dtFul(prepWar.startTime.getTime()),
+                    dtRel(prepWar.startTime.getTime()),
+
+                    dHdr3('End'),
+                    dtFul(prepWar.endTime.getTime()),
+                    dtRel(prepWar.endTime.getTime()),
+                ),
+            }, {
+                color      : nColor(COLOR.INFO),
+                description: messageEmbedScout(scout).join(''),
             }],
         },
         auto_archive_duration: 1440,
