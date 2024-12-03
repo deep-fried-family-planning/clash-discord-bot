@@ -62,9 +62,9 @@ const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOpti
 });
 const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
     ...o,
-    description: `war start approx: ${pipe(
+    description: `war search approx: ${pipe(
         DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
-        DT.addDuration(`${(idx + 1) * 2} day`),
+        DT.addDuration(`${idx * 2} day`),
         DT.format({
             dateStyle: 'short',
             timeStyle: 'short',
@@ -183,7 +183,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
     if (RosterViewerSignupB.clicked(ax)) {
         const accounts = yield * getAccounts(s, Roster.values[0]);
 
-        const availabilityOptions = roster.roster_type === 'cwl' ? ROSTER_ROUNDS_CWL.map(approximateRoundStartTimesCWL(s, roster))
+        const availabilityOptions = ['cwl', 'cwl-at-large'].includes(roster.roster_type) ? ROSTER_ROUNDS_CWL.map(approximateRoundStartTimesCWL(s, roster))
             : roster.roster_type === 'odcwl' ? ROSTER_ROUNDS_ODCWL.map(approximateRoundStartTimesODCWL(s, roster))
             : OPTION_UNAVAILABLE;
 
@@ -196,14 +196,14 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
                 }],
         });
         Availability = Availability.render({
-            disabled  : !['cwl', 'odcwl'].includes(roster.roster_type),
+            disabled  : !['cwl', 'cwl-at-large', 'odcwl'].includes(roster.roster_type),
             options   : availabilityOptions,
             max_values: availabilityOptions.length,
         });
         Designation = Designation.render({
-            disabled: roster.roster_type !== 'cwl',
+            disabled: !['cwl', 'cwl-at-large'].includes(roster.roster_type),
             options:
-                roster.roster_type === 'cwl' ? ROSTER_DESIGNATIONS
+                ['cwl', 'cwl-at-large'].includes(roster.roster_type) ? ROSTER_DESIGNATIONS
                 : OPTION_UNAVAILABLE,
         });
     }

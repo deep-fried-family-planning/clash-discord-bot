@@ -27,6 +27,8 @@ const RsDoctor = new RsdoctorRspackPlugin({
 
 const targets = ['node >= 22.11'];
 
+console.debug('BUILD_ENV', process.env.BUILD_ENV);
+
 
 const entries = {
     'api_discord/index'  : {import: 'src/ix_api.ts'},
