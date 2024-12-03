@@ -52,7 +52,7 @@ if (process.env.BUILD_ENV !== 'prod') {
         pipe(
             entries,
             toEntries,
-            mapL(([outName]) => outName.replace('index', '')),
+            mapL(([outName]) => outName.replace('/index', '')),
         ).map(async (outName) => {
             try {
                 await readFile(`dist/${outName}/index.mjs.map`);
