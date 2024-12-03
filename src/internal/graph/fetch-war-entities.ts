@@ -1,8 +1,9 @@
 import type {ClanWarLeagueGroup} from 'clashofclans.js';
 import type {Clan, ClanWar, Player} from 'clashofclans.js';
-import {E} from '#src/internal/pure/effect.ts';
+import {E, g} from '#src/internal/pure/effect.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import type {SharedOptions} from '#src/discord/types.ts';
+import type {WarThreadData} from '#src/task/war-thread/common.ts';
 
 type Kinda = {options: SharedOptions; currentWar: ClanWar[]; current: {clans: Clan[]; cwl: ClanWarLeagueGroup; players: Player[]; wars: ClanWar[]}};
 
@@ -56,4 +57,24 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
     }
 
     return returnable;
+});
+
+
+export const getTaskWars = (data: typeof WarThreadData.Type) => g(function * () {
+    const entities = yield * fetchWarEntities({
+        cid1       : data.clan.sk,
+        exhaustive : false,
+        from       : 0,
+        limit      : 50,
+        showCurrent: false,
+        showN      : false,
+        to         : 50,
+    });
+
+    return {
+        prep    : entities.current.wars.find((w) => w.state === 'preparation')!,
+        battle  : entities.current.wars.find((w) => w.state !== 'inWar')!,
+        finished: entities.current.wars.find((w) => w.state === 'notInWar') ?? entities.current.wars.find((w) => w.state !== 'inWar')!,
+        original: entities,
+    };
 });

@@ -1,13 +1,14 @@
 import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
-import {CSL, DT, E, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
-import {scheduleTaskWarBattleThread} from '#src/task/war-thread/war-battle-thread.ts';
-import {scheduleTaskWarCloseThread} from '#src/task/war-thread/war-close-thread.ts';
 import {updateWarCountdown} from '#src/poll/update-war-countdowns.ts';
+import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
+import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
+import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 
 
 export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
@@ -47,19 +48,6 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         yield * CSL.log('new schedule group', newgroup.ScheduleGroupArn);
     }
 
-    // events
-    // immediate - create a war prep thread
-    // immediate - thread message for war managers
-    // 12 hrs - war manager reminder
-    // 24 hrs - change war prep -> battle day thread
-    // 24 hrs - do ur hits
-    // 30 hrs - eval war
-    // 36 hrs - do ur hits
-    // 36 hrs - eval war
-    // 42 hrs - eval war
-    // 46 hrs - srsly do ur hits
-    // 48 hrs - close battle day thread + results
-
     const thread = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
         name   : `🛠️│${prepWar.clan.name}`,
         // @ts-expect-error dfx types need to be fixed
@@ -78,31 +66,8 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
     yield * ClanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
 
     yield * E.all([
-        scheduleTaskWarBattleThread(yield * DT.make(prepWar.startTime), {
-            task: 'TaskWarBattleThread',
-            data: {
-                server,
-                clan,
-                clanName: cname,
-                opponent: {
-                    name: prepWar.clan.name,
-                    tag : prepWar.clan.tag,
-                },
-                thread: thread.id,
-            },
-        }),
-        scheduleTaskWarCloseThread(yield * DT.make(prepWar.endTime), {
-            task: 'TaskWarCloseThread',
-            data: {
-                server,
-                clan,
-                clanName: cname,
-                opponent: {
-                    name: prepWar.clan.name,
-                    tag : prepWar.clan.tag,
-                },
-                thread: thread.id,
-            },
-        }),
+        WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread),
+        WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread),
+        WarBattle00hr.send(prepWar.startTime, '24 hour', server, clan, prepWar, thread),
     ]);
 });

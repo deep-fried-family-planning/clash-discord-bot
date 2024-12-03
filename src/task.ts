@@ -1,23 +1,29 @@
-import {CSL, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CSL, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import type {SQSEvent} from 'aws-lambda';
-import {NodeHttpClient} from '@effect/platform-node';
-import {fromParameterStore} from '@effect-aws/ssm';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/task/war-thread/war-battle-thread.ts';
-import {taskWarCloseThread, TaskWarCloseThreadDecode} from '#src/task/war-thread/war-close-thread.ts';
+import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
+import {fromEntries} from 'effect/Record';
+import {inspect} from 'node:util';
+import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 
 
-const lookup = {
-    TaskWarBattleThread: [TaskWarBattleThreadDecode, taskWarBattleThread],
-    TaskWarCloseThread : [TaskWarCloseThreadDecode, taskWarCloseThread],
-} as const;
+const lookup = pipe(
+    [
+        WarPrep24hr,
+
+        WarBattle24Hr,
+        WarBattle00hr,
+    ] as const,
+    mapL((t) => [t.predicate, t.evaluator] as const),
+    fromEntries,
+);
 
 
 const h = (event: SQSEvent) => pipe(
@@ -27,14 +33,10 @@ const h = (event: SQSEvent) => pipe(
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const json = JSON.parse(r.body);
 
-            yield * CSL.debug('ScheduledTask', json);
+            yield * CSL.debug('ScheduledTask', inspect(json, true, null));
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            const [decode, task] = lookup[json.task as keyof typeof lookup];
-
-            const taskData = yield * decode(json);
-
-            yield * task(taskData as never);
+            yield * lookup[json.name as keyof typeof lookup](json);
         }),
         E.catchAll((err) => logDiscordError([err])),
         E.catchAllCause((e) => E.gen(function * () {
@@ -46,15 +48,18 @@ const h = (event: SQSEvent) => pipe(
     E.allWith({concurrency: 5}),
 );
 
+// reduceL(emptyKV<
+//     str,
+//     (task: unknown) => TaskEffect
+// >(), (ts, t) => {
+//     ts[t.predicate] = t.evaluator;
+//     return ts;
+// }),
 
 const LambdaLive = pipe(
-    DiscordApi.Live,
-    L.provideMerge(DiscordRESTMemoryLive),
+    DiscordLayerLive,
     L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(ClashOfClans.Live),
-    L.provideMerge(NodeHttpClient.layerUndici),
-    L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 

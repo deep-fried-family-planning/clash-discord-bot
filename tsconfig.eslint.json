@@ -2,7 +2,7 @@
     "extends"        : ["./tsconfig.json"],
     "include"        : [
         "./**/*",
-        "src/process.env.d.ts"
+      "src/aws.env.d.ts"
     ],
     "compilerOptions": {
         "allowJs": true

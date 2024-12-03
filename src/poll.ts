@@ -1,21 +1,18 @@
-import {E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import {Cause, Console, Layer} from 'effect';
+import {Cause, Console} from 'effect';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
 import {ServerCache} from '#src/dynamo/cache/server-cache.ts';
 import {PlayerCache} from '#src/dynamo/cache/player-cache.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordConfig, DiscordRESTMemoryLive, MemoryRateLimitStoreLive} from 'dfx';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {NodeHttpClient} from '@effect/platform-node';
-import {fromParameterStore} from '@effect-aws/ssm';
 import {SQS} from '@effect-aws/client-sqs';
 import {eachClan} from '#src/poll/clan-war.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 
 
 // todo this lambda is annoying asl, fullstack test
@@ -66,12 +63,7 @@ const LambdaLive = pipe(
         Scheduler.defaultLayer,
         SQS.defaultLayer,
     )),
-    L.provideMerge(DiscordApi.Live),
-    L.provideMerge(DiscordRESTMemoryLive),
-    L.provideMerge(MemoryRateLimitStoreLive),
-    L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
-    L.provideMerge(NodeHttpClient.layerUndici),
-    L.provideMerge(Layer.setConfigProvider(fromParameterStore())),
+    L.provideMerge(DiscordLayerLive),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 
