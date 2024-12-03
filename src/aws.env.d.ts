@@ -10,13 +10,15 @@ declare namespace NodeJS {
         DFFP_DISCORD_ERROR_URL : string;
         DFFP_COC_KEY           : string;
 
-        DDB_OPERATIONS         : string;
-        SQS_URL_DISCORD_MENU   : string;
-        SQS_URL_DISCORD_SLASH  : string;
-        SQS_URL_SCHEDULED_TASK : string;
-        SQS_ARN_SCHEDULED_TASK : string;
-        LAMBDA_ARN_DISCORD_MENU: string;
+        DDB_OPERATIONS        : string;
+        SQS_URL_DISCORD_MENU  : string;
+        SQS_URL_DISCORD_SLASH : string;
+        SQS_URL_SCHEDULED_TASK: string;
+        SQS_ARN_SCHEDULED_TASK: string;
+        LAMBDA_ARN_IX_SLASH   : string;
+        LAMBDA_ARN_IX_MENU    : string;
 
+        LAMBDA_ARN_DISCORD_MENU       : string;
         LAMBDA_ARN_DISCORD_MENU_DELETE: string;
 
         AWS_LAMBDA_FUNCTION_NAME  : string;

@@ -6,7 +6,6 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {SQS} from '@effect-aws/client-sqs';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import type {SQSEvent} from 'aws-lambda';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {IxRE} from '#src/internal/discord.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -50,10 +49,8 @@ const slash = (ix: IxD) => E.gen(function * () {
 );
 
 
-const h = (event: SQSEvent) => pipe(
-    event.Records,
-    mapL((record) => slash(JSON.parse(record.body) as IxD)),
-    E.all,
+const h = (event: IxD) => pipe(
+    slash(event),
 );
 
 

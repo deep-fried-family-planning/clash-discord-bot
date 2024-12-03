@@ -1,5 +1,5 @@
 import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import type {num, url} from '#src/internal/pure/types-pure.ts';
+import type {num, str, url} from '#src/internal/pure/types-pure.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 
 export const dUndr = (s: string) => `__${s}__`;
@@ -36,9 +36,13 @@ export const NA = 'N/A';
 
 export const dNotA = () => `WIP`;
 
-export const dtRelative = (n: num = Date.now()) => `<t:${n}:R>`;
-export const dtFull = (n: num = Date.now()) => `<t:${n}:F>`;
+export const dtRel = (n: num = Date.now()) => `<t:${n / 1000}:R>`;
+export const dtFul = (n: num = Date.now()) => `<t:${n / 1000}:F>`;
 
 
 export const dtNow = () => new Date(Date.now());
 export const dtNowIso = () => new Date(Date.now()).toISOString();
+
+
+export const dmUser = (u: str) => `<@${u}>`;
+export const dmRole = (r: str) => `<@&${r}>`;

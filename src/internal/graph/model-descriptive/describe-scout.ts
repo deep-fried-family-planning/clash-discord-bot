@@ -121,6 +121,14 @@ export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
     const averageWarSize = pipe(warsizes, mean, (n) => n / 5, Math.round, (n) => Math.trunc(n * 5));
     const medianWarSize = median(warsizes);
 
+    const th17hr = pipe(
+        attacks,
+        filterL((a) => a.attacker.data.th_lvl === 17 && a.defender.data.th_lvl === 17 && a.data.ore1 === 0),
+        mapL((a) => a.data.stars === 3
+            ? 1
+            : 0),
+        mean,
+    );
     const th16hr = pipe(
         attacks,
         filterL((a) => a.attacker.data.th_lvl === 16 && a.defender.data.th_lvl === 16 && a.data.ore1 === 0),
@@ -140,6 +148,7 @@ export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
             draws : record[2],
         },
         th16hr,
+        th17hr,
         trojanHorseIndex,
         sequenceIndex,
         similarityIndex,

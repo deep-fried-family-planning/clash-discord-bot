@@ -1,9 +1,9 @@
 import type {ClanWar} from 'clashofclans.js';
 import {E} from '#src/internal/pure/effect.ts';
 import type {DClan} from '#src/dynamo/schema/discord-clan.ts';
-import {DiscordREST} from 'dfx';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 
 
 export const nicknames = {
@@ -28,10 +28,8 @@ export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(fun
         ? nicknames[apiClan.name as keyof typeof nicknames]
         : apiClan.name;
 
-    const discord = yield * DiscordREST;
-
     if (apiWars.length === 0) {
-        yield * discord.modifyChannel(clan.countdown, {
+        yield * DiscordApi.modifyChannel(clan.countdown, {
             name: `💤│${cname}`,
         });
     }
@@ -43,16 +41,16 @@ export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(fun
             const time = new Date(apiWar.startTime.getTime() - Date.now());
             const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-            yield * discord.modifyChannel(clan.countdown, channel_names.prep(cname, timeleft));
+            yield * DiscordApi.modifyChannel(clan.countdown, channel_names.prep(cname, timeleft));
         }
         else if (apiWar.isBattleDay) {
             const time = new Date(apiWar.endTime.getTime() - Date.now());
             const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-            yield * discord.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
+            yield * DiscordApi.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
         }
         else {
-            yield * discord.modifyChannel(clan.countdown, channel_names.none(cname));
+            yield * DiscordApi.modifyChannel(clan.countdown, channel_names.none(cname));
         }
     }
     else if (apiWars.length === 2) {
@@ -61,7 +59,7 @@ export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(fun
         const time = new Date(apiWar.endTime.getTime() - Date.now());
         const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-        yield * discord.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
+        yield * DiscordApi.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
     }
 
     return cname;

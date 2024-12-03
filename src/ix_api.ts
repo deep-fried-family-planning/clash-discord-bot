@@ -158,9 +158,10 @@ const ping = (body: IxD) => E.succeed(r200({type: body.type}));
 const autocomplete = (body: IxD) => E.succeed(r202({type: body.type}));
 
 const slashCmd = (body: IxD) => E.gen(function * () {
-    yield * SQS.sendMessage({
-        QueueUrl   : process.env.SQS_URL_DISCORD_SLASH,
-        MessageBody: JSON.stringify(body),
+    yield * Lambda.invoke({
+        FunctionName  : process.env.LAMBDA_ARN_IX_SLASH,
+        InvocationType: 'Event',
+        Payload       : JSON.stringify(body),
     });
 
     return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
