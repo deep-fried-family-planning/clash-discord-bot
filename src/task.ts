@@ -8,8 +8,8 @@ import {fromParameterStore} from '@effect-aws/ssm';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/task/war-battle-thread.ts';
-import {taskWarCloseThread, TaskWarCloseThreadDecode} from '#src/task/war-close-thread.ts';
+import {taskWarBattleThread, TaskWarBattleThreadDecode} from '#src/task/war-thread/war-battle-thread.ts';
+import {taskWarCloseThread, TaskWarCloseThreadDecode} from '#src/task/war-thread/war-close-thread.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 

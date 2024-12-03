@@ -5,8 +5,8 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
-import {scheduleTaskWarBattleThread} from '#src/task/war-battle-thread.ts';
-import {scheduleTaskWarCloseThread} from '#src/task/war-close-thread.ts';
+import {scheduleTaskWarBattleThread} from '#src/task/war-thread/war-battle-thread.ts';
+import {scheduleTaskWarCloseThread} from '#src/task/war-thread/war-close-thread.ts';
 import {updateWarCountdown} from '#src/poll/update-war-countdowns.ts';
 
 
