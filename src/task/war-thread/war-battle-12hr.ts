@@ -44,21 +44,18 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
             ),
         ),
         allowed_mentions: {
-            parse: [AllowedMentionType.USER_MENTIONS],
             users: pipe(
                 p,
                 filterL((p) => {
                     if (p[0].tag in hits && hits[p[0].tag].length === maxHits) {
-                        return true;
+                        return false;
                     }
-                    return false;
+                    return true;
                 }),
                 mapL((p) => {
                     return data.links[p[0].tag] as snflk;
                 }),
             ),
-            roles       : [],
-            replied_user: false,
         },
     });
 }));
