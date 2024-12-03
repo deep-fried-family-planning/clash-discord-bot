@@ -94,6 +94,6 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
         WarBattle06hr.send(prepWar.preparationStartTime, '30 second', server, clan, prepWar, thread, links),
         WarBattle02hr.send(prepWar.preparationStartTime, '35 second', server, clan, prepWar, thread, links),
         WarBattle01hr.send(prepWar.preparationStartTime, '40 second', server, clan, prepWar, thread, links),
-        WarBattle00hr.send(prepWar.preparationStartTime, '45 second', server, clan, prepWar, thread, links),
+        WarBattle00hr.send(prepWar.preparationStartTime, '5 minute', server, clan, prepWar, thread, links),
     ]);
 });
