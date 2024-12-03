@@ -9,9 +9,13 @@ import {updateWarCountdown} from '#src/poll/update-war-countdowns.ts';
 import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
 import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
 import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
+import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {reduceL} from '#src/internal/pure/pure-list.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
+export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
     const discord = yield * DiscordREST;
 
     const wars = yield * pipe(
@@ -22,7 +26,7 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         )),
     );
 
-    const cname = yield * updateWarCountdown(clan, wars);
+    yield * E.timeout(updateWarCountdown(clan, wars), '5 second').pipe(E.ignore);
 
     const prepWar = wars.find((w) => w.isPreparationDay);
 
@@ -30,9 +34,9 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
         return;
     }
 
-    if (clan.prep_opponent === prepWar.opponent.tag) {
-        return;
-    }
+    // if (clan.prep_opponent === prepWar.opponent.tag) {
+    //     return;
+    // }
 
     const group = yield * pipe(
         Scheduler.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`}),
@@ -65,9 +69,17 @@ export const eachClan = (server: DServer, clan: DClan) => E.gen(function * () {
 
     yield * ClanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
 
+    const links = pipe(
+        players,
+        reduceL(emptyKV<str, str>(), (ps, p) => {
+            ps[p.sk] = p.pk;
+            return ps;
+        }),
+    );
+
     yield * E.all([
-        WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread),
-        WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread),
-        WarBattle00hr.send(prepWar.startTime, '24 hour', server, clan, prepWar, thread),
+        WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
+        WarBattle24Hr.send(prepWar.preparationStartTime, '15 second', server, clan, prepWar, thread, links),
+        WarBattle00hr.send(prepWar.preparationStartTime, '30 second', server, clan, prepWar, thread, links),
     ]);
 });

@@ -13,6 +13,7 @@ import {SQS} from '@effect-aws/client-sqs';
 import {eachClan} from '#src/poll/clan-war.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {toEntries} from 'effect/Record';
 
 
 // todo this lambda is annoying asl, fullstack test
@@ -37,7 +38,7 @@ const h = () => E.gen(function* () {
                 const server = yield * ServerCache.get(pk);
                 const clan = yield * ClanCache.get(k);
 
-                yield * eachClan(server, clan);
+                yield * eachClan(server, clan, pipe(players, toEntries, mapL(([, p]) => p)));
             }),
             E.catchAll((err) => logDiscordError([err])),
             E.catchAllCause((e) => E.gen(function * () {

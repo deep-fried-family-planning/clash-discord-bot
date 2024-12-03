@@ -31,6 +31,10 @@ export const WarThreadData = S.Struct({
         tag : S.String,
     }),
     thread: ThreadId,
+    links : S.Record({
+        key  : S.String,
+        value: S.String,
+    }),
 });
 
 
@@ -62,6 +66,7 @@ export const makeTask = <
             clan: DClan,
             war: ClanWar,
             thread: Channel,
+            links: Record<str, str>,
         ) => g(function * () {
             const encoded = yield * encode({
                 name: name,
@@ -74,6 +79,7 @@ export const makeTask = <
                         tag : war.opponent.tag,
                     },
                     thread: thread.id,
+                    links,
                 },
             });
 
@@ -86,7 +92,7 @@ export const makeTask = <
             );
 
             yield * Scheduler.createSchedule({
-                GroupName            : `s-${encoded.data.clan.pk}-c-${encoded.data.clan.sk.replace('#', '')}`,
+                GroupName            : `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
                 FlexibleTimeWindow   : {Mode: 'OFF'},
                 ActionAfterCompletion: 'DELETE',
                 Name                 : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
