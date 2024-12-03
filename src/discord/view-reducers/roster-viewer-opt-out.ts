@@ -14,7 +14,7 @@ import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterKV} from '#src/internal/pure/pure-kv.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import { ClashCache } from '#src/clash/layers/clash-cash';
+import {ClashCache} from '#src/clash/layers/clash-cash';
 
 
 const getAccounts = (s: St, rosterId: str) => E.gen(function * () {

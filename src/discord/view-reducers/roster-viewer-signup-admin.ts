@@ -10,7 +10,7 @@ import {dtNow} from '#src/discord/util/markdown.ts';
 import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS, UNAVAILABLE} from '#src/constants/ix-constants.ts';
+import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
@@ -18,7 +18,7 @@ import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import type {SelectOption} from 'dfx/types';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
-import { ClashCache } from '#src/clash/layers/clash-cash';
+import {ClashCache} from '#src/clash/layers/clash-cash';
 import {REF_ROSTER_ID} from '#src/constants/reference.ts';
 
 
@@ -48,11 +48,23 @@ const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function * () {
 });
 
 
-const approximateRoundStartTimes = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
     ...o,
     description: `war start approx: ${pipe(
         DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
         DT.addDuration(`${idx + 1} day`),
+        DT.format({
+            dateStyle: 'short',
+            timeStyle: 'short',
+            locale   : s.original.locale!,
+        }),
+    )}`,
+});
+const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+    ...o,
+    description: `war start approx: ${pipe(
+        DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
+        DT.addDuration(`${idx + 2} day`),
         DT.format({
             dateStyle: 'short',
             timeStyle: 'short',
@@ -136,8 +148,8 @@ const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAAC'), {
 });
 const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAAV'), {
     placeholder: 'Select Availability',
-    options    : ROSTER_ROUNDS,
-    max_values : ROSTER_ROUNDS.length,
+    options    : ROSTER_ROUNDS_CWL,
+    max_values : ROSTER_ROUNDS_CWL.length,
 });
 const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUAD'), {
     placeholder: 'Select Designation',
@@ -181,7 +193,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
                 }],
         });
         Availability = Availability.render({
-            options: Availability.options.options!.map(approximateRoundStartTimes(s, roster)),
+            options: Availability.options.options!.map(approximateRoundStartTimesCWL(s, roster)),
         });
     }
     Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);

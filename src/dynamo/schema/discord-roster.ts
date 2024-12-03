@@ -27,9 +27,11 @@ export const DiscordRoster = S.Struct({
         cwlatlarge     : 'cwl-at-large',
         war            : 'war',
         waratlarge     : 'war-at-large',
+        odcwl          : 'odcwl',
+        odcwlatlarge   : 'odcwl-at-large',
         friendly       : 'friendly',
         friendlyatlarge: 'friendly-at-large',
-    }),
+    } as const),
     clan: S.optional(ClanTag),
 
     // deprecated

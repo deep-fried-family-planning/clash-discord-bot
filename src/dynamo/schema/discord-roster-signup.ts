@@ -28,7 +28,6 @@ export const DiscordRosterSignup = S.Struct({
                 dts    : 'dts', // designated 2 star
             })),
         })).pipe(
-            S.minItems(7),
             S.maxItems(7),
         ),
     }),
