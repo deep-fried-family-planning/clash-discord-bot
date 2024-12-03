@@ -19,6 +19,7 @@ export const TEMP_ROLES = {
     staff      : '1266214350339969127',
     colead     : '1208867535131381840',
     coleadtrial: '1269059230955077674',
+    donator    : '1254791225022615623',
 };
 
 
@@ -83,10 +84,22 @@ export const makeTask = <
                 },
             });
 
-            const time = pipe(
+            const maybeTime = pipe(
                 fromTime,
                 DT.unsafeMake,
                 DT.addDuration(withDuration),
+            );
+
+            const resolvedTime = DT.isFuture(maybeTime)
+                ? maybeTime
+                : pipe(
+                    new Date(Date.now()),
+                    DT.unsafeMake,
+                    DT.addDuration('1 minute'),
+                );
+
+            const time = pipe(
+                resolvedTime,
                 DT.formatIso,
                 (iso) => iso.replace(/\..+Z/, ''),
             );

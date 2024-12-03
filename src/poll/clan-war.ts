@@ -24,6 +24,7 @@ import {dHdr1, dHdr3, dLinesS, dSubH, dtFul, dtRel} from '#src/discord/util/mark
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
+import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
 
 
 export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
@@ -89,6 +90,18 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
                 description: dLinesS(
                     dHdr1(`[${prepWar.clan.name}](${prepWar.clan.shareLink})`),
                     dSubH('click clan name to open in-game'),
+
+                    dHdr3('Preparation'),
+                    dSubH(dtFul(prepWar.preparationStartTime.getTime())),
+                    dSubH(dtRel(prepWar.preparationStartTime.getTime())),
+
+                    dHdr3('Battle'),
+                    dSubH(dtFul(prepWar.startTime.getTime())),
+                    dSubH(dtRel(prepWar.startTime.getTime())),
+
+                    dHdr3('End'),
+                    dSubH(dtFul(prepWar.endTime.getTime())),
+                    dSubH(dtRel(prepWar.endTime.getTime())),
                 ),
             }, {
                 color    : nColor(COLOR.ERROR),
@@ -100,21 +113,9 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
                 description: dLinesS(
                     dHdr1(`vs [${prepWar.opponent.name}](${prepWar.opponent.shareLink})`),
                     dSubH('click clan name to open in-game'),
-
-                    dHdr3('Preparation'),
-                    dtFul(prepWar.preparationStartTime.getTime()),
-                    dtRel(prepWar.preparationStartTime.getTime()),
-
-                    dHdr3('Battle'),
-                    dtFul(prepWar.startTime.getTime()),
-                    dtRel(prepWar.startTime.getTime()),
-
-                    dHdr3('End'),
-                    dtFul(prepWar.endTime.getTime()),
-                    dtRel(prepWar.endTime.getTime()),
                 ),
             }, {
-                color      : nColor(COLOR.INFO),
+                color      : nColor(COLOR.ERROR),
                 description: messageEmbedScout(scout).join(''),
             }],
         },
@@ -140,15 +141,17 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
     const now = new Date(Date.now());
 
     yield * E.all([
-        WarPrep24hr.send(now, '0 hour', server, clan, prepWar, thread, links),
-        WarPrep12hr.send(now, '5 second', server, clan, prepWar, thread, links),
-        WarPrep06hr.send(now, '10 second', server, clan, prepWar, thread, links),
-        WarPrep02hr.send(now, '15 second', server, clan, prepWar, thread, links),
-        // WarBattle24Hr.send(now, '20 second', server, clan, prepWar, thread, links),
-        WarBattle12hr.send(now, '25 second', server, clan, prepWar, thread, links),
-        WarBattle06hr.send(now, '30 second', server, clan, prepWar, thread, links),
-        WarBattle02hr.send(now, '35 second', server, clan, prepWar, thread, links),
-        WarBattle01hr.send(now, '40 second', server, clan, prepWar, thread, links),
-        WarBattle00hr.send(now, '90 second', server, clan, prepWar, thread, links),
+        WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
+        WarPrep12hr.send(prepWar.preparationStartTime, '12 hour', server, clan, prepWar, thread, links),
+        WarPrep06hr.send(prepWar.preparationStartTime, '18 hour', server, clan, prepWar, thread, links),
+        WarPrep02hr.send(prepWar.preparationStartTime, '22 hour', server, clan, prepWar, thread, links),
+
+        WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread, links),
+        WarBattle12hr.send(prepWar.startTime, '12 hour', server, clan, prepWar, thread, links),
+        WarBattle06hr.send(prepWar.startTime, '18 hour', server, clan, prepWar, thread, links),
+        WarBattle02hr.send(prepWar.startTime, '22 hour', server, clan, prepWar, thread, links),
+        WarBattle01hr.send(prepWar.startTime, '23 hour', server, clan, prepWar, thread, links),
+
+        WarBattle00hr.send(prepWar.endTime, '0 hour', server, clan, prepWar, thread, links),
     ]);
 });

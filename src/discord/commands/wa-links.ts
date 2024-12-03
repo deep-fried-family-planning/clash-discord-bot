@@ -60,8 +60,37 @@ export const waLinksEmbed = (war: ClanWar, from: num) => {
         color      : nColor(COLOR.INFO),
         description: pipe(
             [
-                dHdr3(`${war.clan.name} vs. ${war.opponent.name}`),
+                dHdr3(`Current Enemy War Roster: ${war.opponent.name}`),
                 dLink('click to open opponent clan in-game', war.opponent.shareLink),
+                dEmpL(),
+            ],
+            concatL(pipe(
+                [['wr', 'th', 'tag', 'name/link']],
+                concatL(pipe(opponentMembers, mapL((m, idx) =>
+                    [nNatT(idx + from), nNatT(m.townHallLevel), m.tag, dCode(dBold(dLink(m.name, m.shareLink)))],
+                ))),
+                dTable,
+                mapL(dCode),
+            )),
+            concatL([dSubH('click the highlighted names to open in-game')]),
+            mapL(dLine),
+        ).join(''),
+    };
+};
+
+
+export const ourRosterEmbed = (war: ClanWar, from: num) => {
+    const opponentMembers = pipe(
+        war.clan.members,
+        sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition))),
+    );
+
+    return {
+        color      : nColor(COLOR.INFO),
+        description: pipe(
+            [
+                dHdr3(`Our Current War Roster: ${war.clan.name}`),
+                dLink('click to open our clan in-game', war.opponent.shareLink),
                 dEmpL(),
             ],
             concatL(pipe(
