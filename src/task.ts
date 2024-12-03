@@ -12,13 +12,27 @@ import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
 import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
 import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
+import {WarBattle12hr} from '#src/task/war-thread/war-battle-12hr.ts';
+import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
+import {WarPrep06hr} from '#src/task/war-thread/war-prep-06hr.ts';
+import {WarPrep02hr} from '#src/task/war-thread/war-prep-02hr.ts';
+import {WarBattle06hr} from '#src/task/war-thread/war-battle-06hr.ts';
+import {WarBattle02hr} from '#src/task/war-thread/war-battle-02hr.ts';
+import {WarBattle01hr} from '#src/task/war-thread/war-battle-01hr.ts';
 
 
 const lookup = pipe(
     [
         WarPrep24hr,
+        WarPrep12hr,
+        WarPrep06hr,
+        WarPrep02hr,
 
         WarBattle24Hr,
+        WarBattle12hr,
+        WarBattle06hr,
+        WarBattle02hr,
+        WarBattle01hr,
         WarBattle00hr,
     ] as const,
     mapL((t) => [t.predicate, t.evaluator] as const),

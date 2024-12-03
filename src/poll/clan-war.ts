@@ -13,6 +13,13 @@ import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {WarBattle12hr} from '#src/task/war-thread/war-battle-12hr.ts';
+import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
+import {WarPrep06hr} from '#src/task/war-thread/war-prep-06hr.ts';
+import {WarPrep02hr} from '#src/task/war-thread/war-prep-02hr.ts';
+import {WarBattle06hr} from '#src/task/war-thread/war-battle-06hr.ts';
+import {WarBattle02hr} from '#src/task/war-thread/war-battle-02hr.ts';
+import {WarBattle01hr} from '#src/task/war-thread/war-battle-01hr.ts';
 
 
 export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
@@ -79,7 +86,14 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
 
     yield * E.all([
         WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
-        WarBattle24Hr.send(prepWar.preparationStartTime, '15 second', server, clan, prepWar, thread, links),
-        WarBattle00hr.send(prepWar.preparationStartTime, '30 second', server, clan, prepWar, thread, links),
+        WarPrep12hr.send(prepWar.preparationStartTime, '5 hour', server, clan, prepWar, thread, links),
+        WarPrep06hr.send(prepWar.preparationStartTime, '10 hour', server, clan, prepWar, thread, links),
+        WarPrep02hr.send(prepWar.preparationStartTime, '15 hour', server, clan, prepWar, thread, links),
+        WarBattle24Hr.send(prepWar.preparationStartTime, '20 second', server, clan, prepWar, thread, links),
+        WarBattle12hr.send(prepWar.preparationStartTime, '25 second', server, clan, prepWar, thread, links),
+        WarBattle06hr.send(prepWar.preparationStartTime, '30 second', server, clan, prepWar, thread, links),
+        WarBattle02hr.send(prepWar.preparationStartTime, '35 second', server, clan, prepWar, thread, links),
+        WarBattle01hr.send(prepWar.preparationStartTime, '40 second', server, clan, prepWar, thread, links),
+        WarBattle00hr.send(prepWar.preparationStartTime, '45 second', server, clan, prepWar, thread, links),
     ]);
 });

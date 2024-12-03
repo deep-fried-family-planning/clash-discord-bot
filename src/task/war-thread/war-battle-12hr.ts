@@ -7,19 +7,10 @@ import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 
 
-export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function * () {
-    yield * DiscordApi.modifyChannel(data.thread, {
-        name: `🗡│${data.clanName}`,
-    });
-
+export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function * () {
     yield * DiscordApi.createMessage(data.thread, {
         content: dLinesS(
-            '[BATTLE][T-24:00]: Roster',
-            ...pipe(
-                war.battle.clan.members,
-                sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition))),
-                mapL((m) => `1. ${dmUser(data.links[m.tag])} (${m.name})`),
-            ),
+            '[BATTLE][T-12:00]',
         ),
     });
 }));

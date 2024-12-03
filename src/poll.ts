@@ -17,7 +17,7 @@ import {toEntries} from 'effect/Record';
 
 
 // todo this lambda is annoying asl, fullstack test
-const h = () => E.gen(function* () {
+export const h = () => E.gen(function* () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
@@ -52,7 +52,7 @@ const h = () => E.gen(function* () {
 });
 
 
-const LambdaLive = pipe(
+export const LambdaLive = pipe(
     L.mergeAll(
         ClashOfClans.Live,
         ServerCache.Live,

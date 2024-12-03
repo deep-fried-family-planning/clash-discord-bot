@@ -31,7 +31,6 @@ console.debug('BUILD_ENV', process.env.BUILD_ENV);
 
 
 const entries = {
-    'api_discord/index'  : {import: 'src/ix_api.ts'},
     'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
     'ix_api/index'       : {import: 'src/ix_api.ts'},
     'ix_menu/index'      : {import: 'src/ix_menu.ts'},
