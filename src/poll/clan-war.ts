@@ -38,7 +38,7 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
         )),
     );
 
-    yield * E.timeout(updateWarCountdown(clan, wars), '5 second').pipe(E.ignore);
+    yield * E.timeout(updateWarCountdown(clan, wars), '15 second').pipe(E.ignore);
 
     const prepWar = wars.find((w) => w.isPreparationDay);
 
