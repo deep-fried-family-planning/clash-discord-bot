@@ -6,6 +6,7 @@ import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const CACHE_BUST
@@ -45,4 +46,19 @@ export const cacheBust = (data: IxD, options: IxDS<typeof CACHE_BUST>) => E.gen(
     return {
         embeds: [{description: 'cache bussin dun cache busted'}],
     };
+});
+
+
+export const bust = (cid: str) => E.gen(function * () {
+    const clanTag = getAliasTag(cid);
+
+    yield * CSL.debug(clanTag);
+
+    const clan = yield * getDiscordClan({pk: '1287829383544963154', sk: clanTag});
+
+    yield * putDiscordClan({
+        ...clan,
+        prep_opponent  : '',
+        battle_opponent: '',
+    });
 });

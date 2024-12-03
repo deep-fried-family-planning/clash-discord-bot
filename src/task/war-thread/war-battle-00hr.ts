@@ -1,13 +1,13 @@
 import {E} from '#src/internal/pure/effect.ts';
 import {makeTask} from '#src/task/war-thread/common.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {dLinesS} from '#src/discord/util/markdown.ts';
+import {dHdr1, dLinesS} from '#src/discord/util/markdown.ts';
 
 
 export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(function * () {
     yield * DiscordApi.createMessage(data.thread, {
         content: dLinesS(
-            '[FINAL]',
+            dHdr1(`${data.clanName} | Final`),
             `war ended in ${war.finished.status}`,
         ),
     });

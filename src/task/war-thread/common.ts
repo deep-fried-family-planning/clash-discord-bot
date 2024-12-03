@@ -73,7 +73,7 @@ export const makeTask = <
                 data: {
                     server,
                     clan,
-                    clanName: clan.name,
+                    clanName: war.clan.name,
                     opponent: {
                         name: war.opponent.name,
                         tag : war.opponent.tag,
@@ -92,16 +92,19 @@ export const makeTask = <
             );
 
             yield * Scheduler.createSchedule({
-                GroupName            : `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
-                FlexibleTimeWindow   : {Mode: 'OFF'},
-                ActionAfterCompletion: 'DELETE',
-                Name                 : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
-                ScheduleExpression   : `at(${time})`,
-                Target               : {
+                GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
+                Name     : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
+
+                ScheduleExpression: `at(${time})`,
+                FlexibleTimeWindow: {Mode: 'OFF'},
+
+                Target: {
                     Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
                     RoleArn: process.env.LAMBDA_ROLE_ARN,
                     Input  : JSON.stringify(encoded),
                 },
+
+                ActionAfterCompletion: 'DELETE',
             });
         }),
 

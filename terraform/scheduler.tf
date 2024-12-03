@@ -7,7 +7,7 @@ resource "aws_scheduler_schedule" "schedule" {
   name       = "${local.prefix}-schedule"
   group_name = aws_scheduler_schedule_group.schedule_group.name
 
-  schedule_expression = "rate(5 minutes)"
+  schedule_expression = "rate(15 minutes)"
 
   flexible_time_window {
     mode = "OFF"
