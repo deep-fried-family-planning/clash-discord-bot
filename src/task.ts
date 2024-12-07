@@ -49,8 +49,8 @@ const h = (event: SQSEvent) => pipe(
 
             yield * CSL.debug('ScheduledTask', inspect(json, true, null));
 
-            if (json.type) {
-                DiscordApi.createMessage(json.channel_id, {
+            if (json.type === 'remind me') {
+                yield * DiscordApi.createMessage(json.channel_id, {
                     content: `<@${json.user_id}> reminder - ${json.message_url}`,
                 });
             }
