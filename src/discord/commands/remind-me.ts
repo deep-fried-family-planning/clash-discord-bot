@@ -3,7 +3,7 @@ import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
 import {dTable} from '#src/discord/util/message-table.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {dCodes, dLines} from '#src/discord/util/markdown.ts';
+import {dCodes, dLines, dtRel} from '#src/discord/util/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import type {CommandSpec, IxDS} from '#src/discord/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -49,7 +49,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
         (iso) => iso.replace(/\..+Z/, ''),
     );
     yield * Scheduler.createSchedule({
-        Name: `remind-me-user${ix.member!.user!.id}`,
+        Name: `remind-me-user${ix.member!.user!.id}-${time}`,
 
         ScheduleExpression        : `at(${time})`,
         FlexibleTimeWindow        : {Mode: 'OFF'},
@@ -62,7 +62,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
                 message_url: ops.message_url,
                 user_id    : ix.member!.user!.id,
                 type       : 'remind me',
-                channel_id : '1287829383544963157',
+                channel_id : ix.channel_id,
             }),
         },
 
@@ -76,7 +76,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
     return {
         embeds: [{
             color      : nColor(COLOR.ORIGINAL),
-            description: pipe(`Reminder created at ${user_time / 1000}`),
+            description: pipe(`Reminder created at ${dtRel(user_time)}`),
         }],
     };
 });
