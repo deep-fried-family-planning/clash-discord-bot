@@ -14,6 +14,7 @@ import {WA_SCOUT, waScout} from '#src/discord/commands/wa-scout.ts';
 import {CACHE_BUST, cacheBust} from '#src/discord/commands/cache-bust.ts';
 import {GIMME_DATA, gimmeData} from '#src/discord/commands/gimme-data.ts';
 import {OMNI_BOARD, omniBoard} from '#src/discord/commands/omni-board.ts';
+import {remind_me, REMINDME} from '#src/discord/commands/remind-me.ts';
 
 
 const IXS_LOOKUP = {
@@ -29,6 +30,7 @@ const IXS_LOOKUP = {
     [CACHE_BUST.name]: cacheBust,
     [GIMME_DATA.name]: gimmeData,
     [OMNI_BOARD.name]: omniBoard,
+    [REMINDME.name]  : remind_me,
 } as const;
 
 

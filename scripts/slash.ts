@@ -26,6 +26,7 @@ import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';
 import {OMNI_BOARD} from '#src/discord/commands/omni-board.ts';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {NodeHttpClient} from '@effect/platform-node';
+import {REMINDME} from '#src/discord/commands/remind-me.ts';
 
 
 const specs = {
@@ -41,6 +42,7 @@ const specs = {
     CACHE_BUST,
     GIMME_DATA,
     OMNI_BOARD,
+    REMINDME,
 } as const;
 
 

@@ -20,7 +20,9 @@ module "task_queue" {
   sqs_retries = 5
   sqs_source_arns = [
     module.poll.fn_arn,
-    module.poll.fn_role_arn
+    module.poll.fn_role_arn,
+    module.ix_slash.fn_role_arn,
+    module.ix_slash.fn_arn,
   ]
 }
 
