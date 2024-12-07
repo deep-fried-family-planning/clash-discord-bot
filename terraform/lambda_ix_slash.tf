@@ -7,7 +7,7 @@ module "ix_slash" {
   memory             = 1024
   timeout            = 300
   fn_env = merge(local.lambda_env, {
-
+    SQS_ARN_SCHEDULED_TASK = module.task_queue.fn_sqs_arn
   })
 }
 

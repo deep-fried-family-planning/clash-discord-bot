@@ -7,7 +7,7 @@ import {Cause} from 'effect';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
 import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
@@ -48,6 +48,12 @@ const h = (event: SQSEvent) => pipe(
             const json = JSON.parse(r.body);
 
             yield * CSL.debug('ScheduledTask', inspect(json, true, null));
+
+            if (json.type === 'remind me') {
+                yield * DiscordApi.createMessage(json.channel_id, {
+                    content: `<@${json.user_id}> reminder - ${json.message_url}`,
+                });
+            }
 
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             yield * lookup[json.name as keyof typeof lookup](json);
