@@ -90,7 +90,7 @@ export const makeTask = <
                 DT.addDuration(withDuration),
             );
 
-            const resolvedTime = DT.isFuture(maybeTime)
+            const resolvedTime = (yield * DT.isFuture(maybeTime))
                 ? maybeTime
                 : pipe(
                     new Date(Date.now()),
@@ -108,8 +108,9 @@ export const makeTask = <
                 GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
                 Name     : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
 
-                ScheduleExpression: `at(${time})`,
-                FlexibleTimeWindow: {Mode: 'OFF'},
+                ScheduleExpression        : `at(${time})`,
+                FlexibleTimeWindow        : {Mode: 'OFF'},
+                ScheduleExpressionTimezone: 'America/New_York',
 
                 Target: {
                     Arn    : process.env.SQS_ARN_SCHEDULED_TASK,

@@ -99,6 +99,7 @@ export default defineConfig({
     externalsPresets: {node: true},
     externals       : [
         /@aws-sdk./,
+        /@discordjs./,
         // 'undici',
     ],
 

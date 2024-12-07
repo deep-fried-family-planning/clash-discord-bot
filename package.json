@@ -60,6 +60,7 @@
   "devDependencies": {
     "@commitlint/cli": "19.6.0",
     "@commitlint/config-conventional": "19.6.0",
+    "@discordjs/core": "2.0.0",
     "@effect/vitest": "0.14.2",
     "@eslint/js": "9.16.0",
     "@rsdoctor/cli": "0.4.9",

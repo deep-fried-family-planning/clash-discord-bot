@@ -138,19 +138,17 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
         }),
     );
 
-    const now = new Date(Date.now());
-
     yield * E.all([
         WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
         WarPrep12hr.send(prepWar.preparationStartTime, '12 hour', server, clan, prepWar, thread, links),
-        WarPrep06hr.send(prepWar.preparationStartTime, '18 hour', server, clan, prepWar, thread, links),
-        WarPrep02hr.send(prepWar.preparationStartTime, '22 hour', server, clan, prepWar, thread, links),
+        // WarPrep06hr.send(prepWar.preparationStartTime, '18 hour', server, clan, prepWar, thread, links),
+        // WarPrep02hr.send(prepWar.preparationStartTime, '22 hour', server, clan, prepWar, thread, links),
 
         WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread, links),
-        WarBattle12hr.send(prepWar.startTime, '12 hour', server, clan, prepWar, thread, links),
-        WarBattle06hr.send(prepWar.startTime, '18 hour', server, clan, prepWar, thread, links),
-        WarBattle02hr.send(prepWar.startTime, '22 hour', server, clan, prepWar, thread, links),
-        WarBattle01hr.send(prepWar.startTime, '23 hour', server, clan, prepWar, thread, links),
+        // WarBattle12hr.send(prepWar.startTime, '12 hour', server, clan, prepWar, thread, links),
+        // WarBattle06hr.send(prepWar.startTime, '18 hour', server, clan, prepWar, thread, links),
+        // WarBattle02hr.send(prepWar.startTime, '22 hour', server, clan, prepWar, thread, links),
+        // WarBattle01hr.send(prepWar.startTime, '23 hour', server, clan, prepWar, thread, links),
 
         WarBattle00hr.send(prepWar.endTime, '0 hour', server, clan, prepWar, thread, links),
     ]);

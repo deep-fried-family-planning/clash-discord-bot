@@ -7,31 +7,31 @@ import {COLOR, nColor} from '#src/constants/colors.ts';
 
 
 export const WarPrep06hr = makeTask('WarPrep06hr', (data, war) => g(function * () {
-    yield * DiscordApi.createMessage(data.thread, {
-        content: dLinesS(
-            dHdr1(`${data.clanName} | Prep ends ${dtRel(war.prep.startTime.getTime())}`),
-
-            dHdr3(dmRole(TEMP_ROLES.staff)),
-            '* [CWL only] Please review the CWL roster selection and make changes accordingly.',
-
-            dHdr3(dmRole(TEMP_ROLES.warmanager)),
-            '* Reminder to check army camps/spells/siege of enemy ranks #1-10.',
-            '* Report troop/spell comps or send screenshots.',
-            '* Reminder to notify the clan if any defensive CC is empty.',
-        ),
-        embeds: [
-            {
-                ...ourRosterEmbed(war.prep, 1),
-                color: nColor(COLOR.INFO),
-            },
-        ],
-    });
-    yield * DiscordApi.createMessage(data.thread, {
-        embeds: [
-            {
-                ...waLinksEmbed(war.prep, 1),
-                color: nColor(COLOR.ERROR),
-            },
-        ],
-    });
+    // yield * DiscordApi.createMessage(data.thread, {
+    //     content: dLinesS(
+    //         dHdr1(`${data.clanName} | Prep ends ${dtRel(war.prep.startTime.getTime())}`),
+    //
+    //         dHdr3(dmRole(TEMP_ROLES.staff)),
+    //         '* [CWL only] Please review the CWL roster selection and make changes accordingly.',
+    //
+    //         dHdr3(dmRole(TEMP_ROLES.warmanager)),
+    //         '* Reminder to check army camps/spells/siege of enemy ranks #1-10.',
+    //         '* Report troop/spell comps or send screenshots.',
+    //         '* Reminder to notify the clan if any defensive CC is empty.',
+    //     ),
+    //     embeds: [
+    //         {
+    //             ...ourRosterEmbed(war.prep, 1),
+    //             color: nColor(COLOR.INFO),
+    //         },
+    //     ],
+    // });
+    // yield * DiscordApi.createMessage(data.thread, {
+    //     embeds: [
+    //         {
+    //             ...waLinksEmbed(war.prep, 1),
+    //             color: nColor(COLOR.ERROR),
+    //         },
+    //     ],
+    // });
 }));
