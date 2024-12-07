@@ -43,13 +43,13 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
     yield * validateServer(ix);
 
     const time = pipe(
-        yield * DateTime.nowInCurrentZone,
+        yield * DateTime.now,
         DateTime.addDuration(`${ops.hours_ahead} hour`),
         DateTime.formatIso,
         (iso) => iso.replace(/\..+Z/, ''),
     );
     yield * Scheduler.createSchedule({
-        Name: `remind-me-user${ix.member!.user!.id}-${time}`,
+        Name: `remind-me-user${ix.member!.user!.id}-${Date.now()}`,
 
         ScheduleExpression        : `at(${time})`,
         FlexibleTimeWindow        : {Mode: 'OFF'},
