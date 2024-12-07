@@ -6,6 +6,7 @@ export const dUndr = (s: string) => `__${s}__`;
 export const dCrss = (s: string) => `~~${s}~~`;
 export const dItlc = (s: string) => `*${s}*`;
 export const dBold = (s: string) => `**${s}**`;
+export const dSpoi = (s: string) => `||${s}||`;
 
 export const dHdr1 = (s: string) => `# ${s}`;
 export const dHdr2 = (s: string) => `## ${s}`;
