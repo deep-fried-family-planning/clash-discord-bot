@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
 import {dTable} from '#src/discord/util/message-table.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {dCodes, dLines, dtRel} from '#src/discord/util/markdown.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import type {CommandSpec, IxDS} from '#src/discord/types.ts';
@@ -43,9 +43,10 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
     yield * validateServer(ix);
 
     const time = pipe(
-        yield * DateTime.now,
-        DateTime.addDuration(`${ops.hours_ahead} hour`),
-        DateTime.formatIso,
+        new Date(Date.now()),
+        DT.unsafeMake,
+        DT.addDuration(`${ops.hours_ahead} hour`),
+        DT.formatIso,
         (iso) => iso.replace(/\..+Z/, ''),
     );
     yield * Scheduler.createSchedule({
