@@ -110,7 +110,7 @@ export const makeTask = <
 
                 ScheduleExpression        : `at(${time})`,
                 FlexibleTimeWindow        : {Mode: 'OFF'},
-                ScheduleExpressionTimezone: 'America/New_York',
+                ScheduleExpressionTimezone: 'Etc/Zulu',
 
                 Target: {
                     Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
