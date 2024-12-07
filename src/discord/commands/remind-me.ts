@@ -54,7 +54,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
 
         ScheduleExpression        : `at(${time})`,
         FlexibleTimeWindow        : {Mode: 'OFF'},
-        ScheduleExpressionTimezone: 'America/New_York',
+        ScheduleExpressionTimezone: 'Factory',
 
         Target: {
             Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
