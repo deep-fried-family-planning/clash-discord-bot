@@ -22,16 +22,19 @@ export {
     Equal as EQ,
     flow,
     pipe,
-} from 'effect';
-
-
-export {
     pipe as p,
     flow as f,
 } from 'effect';
 
 
-export {gen as g} from 'effect/Effect';
+export {
+    gen as g,
+} from 'effect/Effect';
+
+
+export {
+
+};
 
 
 export const ORDS = Order.string;

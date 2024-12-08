@@ -16,4 +16,6 @@ export {
     tail as tailL,
     sortWith as sortWithL,
     sortBy as sortByL,
+    join as joinL,
 } from 'effect/Array';
+
