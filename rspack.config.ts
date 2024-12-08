@@ -152,7 +152,7 @@ export default defineConfig({
         // minimizer: [new TerserPlugin()],
     },
 
-    devtool: process.env.BUILD_ENV === 'prod' ? 'source-map' : false,
+    devtool: 'source-map',
 
     performance: {hints: 'warning'},
     stats      : {

@@ -5,26 +5,20 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
-import {updateWarCountdown} from '#src/poll/update-war-countdowns.ts';
+import {updateWarCountdown} from '#src/poll/clan-war-countdown.ts';
 import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
 import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {WarBattle12hr} from '#src/task/war-thread/war-battle-12hr.ts';
 import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
-import {WarPrep06hr} from '#src/task/war-thread/war-prep-06hr.ts';
-import {WarPrep02hr} from '#src/task/war-thread/war-prep-02hr.ts';
-import {WarBattle06hr} from '#src/task/war-thread/war-battle-06hr.ts';
-import {WarBattle02hr} from '#src/task/war-thread/war-battle-02hr.ts';
-import {WarBattle01hr} from '#src/task/war-thread/war-battle-01hr.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dHdr1, dHdr3, dLinesS, dSubH, dtFul, dtRel} from '#src/discord/util/markdown.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
+import {MD} from '#src/internal/pure/pure';
 
 
 export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
@@ -87,21 +81,21 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
                     height: 256,
                     width : 256,
                 },
-                description: dLinesS(
-                    dHdr1(`[${prepWar.clan.name}](${prepWar.clan.shareLink})`),
-                    dSubH('click clan name to open in-game'),
-
-                    dHdr3('Preparation'),
-                    dSubH(dtFul(prepWar.preparationStartTime.getTime())),
-                    dSubH(dtRel(prepWar.preparationStartTime.getTime())),
-
-                    dHdr3('Battle'),
-                    dSubH(dtFul(prepWar.startTime.getTime())),
-                    dSubH(dtRel(prepWar.startTime.getTime())),
-
-                    dHdr3('End'),
-                    dSubH(dtFul(prepWar.endTime.getTime())),
-                    dSubH(dtRel(prepWar.endTime.getTime())),
+                description: MD.content(
+                    MD.h1(MD.mask(prepWar.clan.name, prepWar.clan.shareLink)),
+                    MD.sh('click clan name to open in-game'),
+                    MD.empty,
+                    MD.h3('Preparation'),
+                    MD.sh_tR(prepWar.preparationStartTime.getTime()),
+                    MD.sh_tR(prepWar.preparationStartTime.getTime()),
+                    MD.empty,
+                    MD.h3('Battle'),
+                    MD.sh_tR(prepWar.startTime.getTime()),
+                    MD.sh_tR(prepWar.startTime.getTime()),
+                    MD.empty,
+                    MD.h3('End'),
+                    MD.sh_tR(prepWar.endTime.getTime()),
+                    MD.sh_tR(prepWar.endTime.getTime()),
                 ),
             }, {
                 color    : nColor(COLOR.ERROR),
@@ -110,9 +104,9 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
                     height: 256,
                     width : 256,
                 },
-                description: dLinesS(
-                    dHdr1(`vs [${prepWar.opponent.name}](${prepWar.opponent.shareLink})`),
-                    dSubH('click clan name to open in-game'),
+                description: MD.content(
+                    MD.h1(`vs ${MD.mask(prepWar.opponent.name, prepWar.opponent.shareLink)}`),
+                    MD.sh('click clan name to open in-game'),
                 ),
             }, {
                 color      : nColor(COLOR.ERROR),
@@ -150,6 +144,6 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
         // WarBattle02hr.send(prepWar.startTime, '22 hour', server, clan, prepWar, thread, links),
         // WarBattle01hr.send(prepWar.startTime, '23 hour', server, clan, prepWar, thread, links),
 
-        WarBattle00hr.send(prepWar.endTime, '0 hour', server, clan, prepWar, thread, links),
+        WarBattle00hr.send(prepWar.endTime, '1 hour', server, clan, prepWar, thread, links),
     ]);
 });

@@ -20,21 +20,28 @@ export {
     Order as ORD,
     Option as O,
     Equal as EQ,
-    flow,
+
+    Cron,
+
     pipe,
+    pipe as p,
+    flow,
+    flow as f,
+
 } from 'effect';
 
 
 export {
-    pipe as p,
-    flow as f,
-} from 'effect';
+    gen as g,
 
-
-export {gen as g} from 'effect/Effect';
+} from 'effect/Effect';
 
 
 export const ORDS = Order.string;
 export const ORDSR = Order.reverse(Order.string);
 export const ORDN = Order.number;
 export const ORDNR = Order.reverse(Order.number);
+
+
+export * as Ar from 'effect/Array'; // collection array
+export * as Kv from 'effect/Record'; // collection key-value

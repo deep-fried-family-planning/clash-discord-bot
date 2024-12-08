@@ -3,12 +3,10 @@ resource "aws_scheduler_schedule_group" "schedule_group" {
 }
 
 
-resource "aws_scheduler_schedule" "schedule" {
-  name       = "${local.prefix}-schedule"
-  group_name = aws_scheduler_schedule_group.schedule_group.name
-
+resource "aws_scheduler_schedule" "clash_general" {
+  name                = "${local.prefix}-clash-general"
+  group_name          = aws_scheduler_schedule_group.schedule_group.name
   schedule_expression = "rate(5 minutes)"
-
   flexible_time_window {
     mode = "OFF"
   }
@@ -34,13 +32,11 @@ data "aws_iam_policy_document" "schedule_role" {
   }
 }
 
-
 resource "aws_iam_role" "schedule_role" {
   name               = "schedule-role"
   path               = "/${local.prefix}/"
   assume_role_policy = data.aws_iam_policy_document.schedule_role.json
 }
-
 
 data "aws_iam_policy_document" "schedule_policy" {
   statement {
@@ -50,13 +46,11 @@ data "aws_iam_policy_document" "schedule_policy" {
   }
 }
 
-
 resource "aws_iam_policy" "schedule_policy" {
   name   = "schedule-policy"
   path   = "/${local.prefix}/"
   policy = data.aws_iam_policy_document.schedule_policy.json
 }
-
 
 resource "aws_iam_role_policy_attachment" "schedule_policy" {
   role       = aws_iam_role.schedule_role.name
