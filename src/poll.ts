@@ -1,8 +1,8 @@
-import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import {Cause, Console} from 'effect';
+import {Cause} from 'effect';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
 import {ServerCache} from '#src/dynamo/cache/server-cache.ts';
 import {PlayerCache} from '#src/dynamo/cache/player-cache.ts';
@@ -15,16 +15,43 @@ import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {toEntries} from 'effect/Record';
 import {ClashKing} from '#src/clash/clashking.ts';
+import {serverRaid} from '#src/poll/server-raid.ts';
+
+
+const raidWeekend = Cron.make({
+    days    : [],
+    hours   : [],
+    minutes : [],
+    months  : [],
+    weekdays: [5, 6, 7, 0],
+});
 
 
 // todo this lambda is annoying asl, fullstack test
-export const h = () => E.gen(function* () {
+export const h = () => E.gen(function * () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
-    const players = yield * PlayerCache.all();
+    const now = yield * DT.now;
+    const isRaidWeekend = Cron.match(raidWeekend, now);
 
-    yield * Console.log(players);
+    if (isRaidWeekend) {
+        yield * pipe(
+            yield * ServerCache.values,
+            mapL((server) => pipe(
+                serverRaid(server),
+                E.catchAll((err) => logDiscordError([err])),
+                E.catchAllCause((e) => E.gen(function * () {
+                    const error = Cause.prettyErrors(e);
+
+                    yield * logDiscordError([error]);
+                })),
+            )),
+            E.allWith({concurrency: 5}),
+        );
+    }
+
+    const players = yield * PlayerCache.all();
 
     yield * pipe(yield * ClanCache.keys,
         reduceL(new Set<`${string}/${string}`>(), (set, k) => {

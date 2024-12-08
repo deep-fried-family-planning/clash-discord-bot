@@ -14,25 +14,28 @@ import {inspect} from 'node:util';
 import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 import {WarBattle12hr} from '#src/task/war-thread/war-battle-12hr.ts';
 import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
-import {WarPrep06hr} from '#src/task/war-thread/war-prep-06hr.ts';
-import {WarPrep02hr} from '#src/task/war-thread/war-prep-02hr.ts';
-import {WarBattle06hr} from '#src/task/war-thread/war-battle-06hr.ts';
-import {WarBattle02hr} from '#src/task/war-thread/war-battle-02hr.ts';
-import {WarBattle01hr} from '#src/task/war-thread/war-battle-01hr.ts';
+import {SetInviteOnly} from '#src/task/raid-thread/set-invite-only.ts';
+import {SetOpen} from '#src/task/raid-thread/set-open.ts';
+
+
+const newLookup = {
+    [SetInviteOnly.id]: SetInviteOnly.evaluator,
+    [SetOpen.id]      : SetOpen.evaluator,
+};
 
 
 const lookup = pipe(
     [
         WarPrep24hr,
         WarPrep12hr,
-        WarPrep06hr,
-        WarPrep02hr,
+        // WarPrep06hr,
+        // WarPrep02hr,
 
         WarBattle24Hr,
         WarBattle12hr,
-        WarBattle06hr,
-        WarBattle02hr,
-        WarBattle01hr,
+        // WarBattle06hr,
+        // WarBattle02hr,
+        // WarBattle01hr,
         WarBattle00hr,
     ] as const,
     mapL((t) => [t.predicate, t.evaluator] as const),
@@ -55,6 +58,10 @@ const h = (event: SQSEvent) => pipe(
                 });
             }
 
+            if (json.id in newLookup) {
+                yield * newLookup[json.id](json.data);
+            }
+
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             yield * lookup[json.name as keyof typeof lookup](json);
         }),
@@ -68,13 +75,6 @@ const h = (event: SQSEvent) => pipe(
     E.allWith({concurrency: 5}),
 );
 
-// reduceL(emptyKV<
-//     str,
-//     (task: unknown) => TaskEffect
-// >(), (ts, t) => {
-//     ts[t.predicate] = t.evaluator;
-//     return ts;
-// }),
 
 const LambdaLive = pipe(
     DiscordLayerLive,

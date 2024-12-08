@@ -1,5 +1,5 @@
 import {Console} from 'effect';
-import {NowId, ChannelId, RoleId, ServerId, EmbedId, MessageId} from '#src/dynamo/schema/common.ts';
+import {NowId, ChannelId, RoleId, ServerId, EmbedId, MessageId, ThreadId} from '#src/dynamo/schema/common.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {E, S, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -39,6 +39,8 @@ export const DiscordServer = S.Struct({
     staff        : S.optional(ChannelId),
     forum        : S.optional(ChannelId),
     errors       : S.optional(ChannelId),
+
+    raids: S.optional(ThreadId),
 
     admin : RoleId,
     member: S.optional(RoleId),

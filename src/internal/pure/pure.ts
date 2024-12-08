@@ -12,3 +12,6 @@ export {
 };
 
 export const orderHits = fromCompare<DispatchedHit>((h1, h2) => OrdN(h1.order, h2.order));
+
+
+export * as MD from '#src/internal/pure/markdown.ts'; // discord flavored markdown
