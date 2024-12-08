@@ -1,4 +1,4 @@
-import {Cron, DT, E, g, pipe} from '#src/internal/pure/effect.ts';
+import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
 import {type DServer, putDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {DiscordREST} from 'dfx/DiscordREST';
 import {MD} from '#src/internal/pure/pure';
@@ -15,7 +15,6 @@ const raidWeekendDone = Cron.make({
     minutes : [],
     months  : [],
     weekdays: [1, 2, 3],
-    tz      : DT.zoneMakeLocal(),
 });
 
 
@@ -26,14 +25,16 @@ export const serverRaid = (server: DServer) => g(function * () {
         return;
     }
 
+    const server_id = yield * encodeServerId(server.pk);
+
     const group = yield * pipe(
-        Scheduler.getScheduleGroup({Name: yield * encodeServerId(server.pk)}),
+        Scheduler.getScheduleGroup({Name: server_id}),
         E.catchTag('ResourceNotFoundException', () => E.succeed({Name: undefined})),
     );
 
     if (!group.Name) {
         yield * Scheduler.createScheduleGroup({
-            Name: yield * encodeServerId(server.pk),
+            Name: server_id,
         });
     }
 
@@ -66,7 +67,7 @@ export const serverRaid = (server: DServer) => g(function * () {
         start: now,
         after: '0 hour',
         data : {
-            server: server,
+            server: updated,
         },
     });
 
@@ -75,10 +76,10 @@ export const serverRaid = (server: DServer) => g(function * () {
     yield * SetOpen.send({
         group: yield * encodeServerId(server.pk),
         name : 'SetOpen',
-        start: now,
+        start: doneTime,
         after: '0 hour',
         data : {
-            server: server,
+            server: updated,
         },
     });
 });

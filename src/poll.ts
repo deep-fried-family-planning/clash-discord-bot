@@ -1,4 +1,4 @@
-import {Ar, Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {mapL, reduceL} from '#src/internal/pure/pure-list.ts';
@@ -24,7 +24,6 @@ const raidWeekend = Cron.make({
     minutes : [],
     months  : [],
     weekdays: [5, 6, 7, 0],
-    tz      : DT.zoneMakeLocal(),
 });
 
 
@@ -33,20 +32,26 @@ export const h = () => E.gen(function * () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
 
-    const players = yield * PlayerCache.all();
-    const servers = yield * ServerCache.values;
-
     const now = yield * DT.now;
     const isRaidWeekend = Cron.match(raidWeekend, now);
 
-
     if (isRaidWeekend) {
         yield * pipe(
-            servers,
-            Ar.map((server) => serverRaid(server)),
-            E.allWith({concurrency: 'unbounded'}),
+            yield * ServerCache.values,
+            mapL((server) => pipe(
+                serverRaid(server),
+                E.catchAll((err) => logDiscordError([err])),
+                E.catchAllCause((e) => E.gen(function * () {
+                    const error = Cause.prettyErrors(e);
+
+                    yield * logDiscordError([error]);
+                })),
+            )),
+            E.allWith({concurrency: 5}),
         );
     }
+
+    const players = yield * PlayerCache.all();
 
     yield * pipe(yield * ClanCache.keys,
         reduceL(new Set<`${string}/${string}`>(), (set, k) => {
@@ -70,7 +75,7 @@ export const h = () => E.gen(function * () {
                 yield * logDiscordError([error]);
             })),
         )),
-        E.allWith({concurrency: 'unbounded'}),
+        E.allWith({concurrency: 5}),
     );
 });
 
