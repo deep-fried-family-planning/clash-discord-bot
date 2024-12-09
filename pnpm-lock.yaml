@@ -105,6 +105,9 @@ importers:
       '@hapi/hapi':
         specifier: 21.3.12
         version: 21.3.12
+      '@hapi/nes':
+        specifier: 14.0.0
+        version: 14.0.0(bufferutil@4.0.8)
       '@rsdoctor/cli':
         specifier: 0.4.11
         version: 0.4.11(@rspack/core@1.1.5)(bufferutil@4.0.8)(webpack@5.97.1)
@@ -986,6 +989,10 @@ packages:
 
   '@hapi/mimos@7.0.1':
     resolution: {integrity: sha512-b79V+BrG0gJ9zcRx1VGcCI6r6GEzzZUgiGEJVoq5gwzuB2Ig9Cax8dUuBauQCFKvl2YWSWyOc8mZ8HDaJOtkew==}
+
+  '@hapi/nes@14.0.0':
+    resolution: {integrity: sha512-5CQvPEoW4mPAvbbFgs4m+UipQlHXUkbnF8pyi8hE2lto8O3KI5FcM90L0B79pLJweLuIy6gRiJqNwP2Ze6ggLg==}
+    engines: {node: '>=18.0.0'}
 
   '@hapi/nigel@5.0.1':
     resolution: {integrity: sha512-uv3dtYuB4IsNaha+tigWmN8mQw/O9Qzl5U26Gm4ZcJVtDdB1AVJOwX3X5wOX+A07qzpEZnOMBAm8jjSqGsU6Nw==}
@@ -5564,6 +5571,21 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.7
       mime-db: 1.53.0
+
+  '@hapi/nes@14.0.0(bufferutil@4.0.8)':
+    dependencies:
+      '@hapi/boom': 10.0.1
+      '@hapi/bounce': 3.0.2
+      '@hapi/call': 9.0.1
+      '@hapi/cryptiles': 6.0.1
+      '@hapi/hoek': 11.0.7
+      '@hapi/iron': 7.0.1
+      '@hapi/teamwork': 6.0.0
+      '@hapi/validate': 2.0.1
+      ws: 8.18.0(bufferutil@4.0.8)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   '@hapi/nigel@5.0.1':
     dependencies:

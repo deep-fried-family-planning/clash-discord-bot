@@ -11,7 +11,8 @@
   "packageManager": "pnpm@9.12.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec tsx dev/ws-dev-server.ts",
+    "dev-proxy":  "tsx dev/ws-proxy.ts",
+    "dev": "nodemon --exec tsx dev/ws-client.ts",
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "rspack build -c rspack.config.ts --mode production",
     "coverage": "vitest --coverage",
@@ -66,6 +67,7 @@
     "@effect/vitest": "0.14.3",
     "@eslint/js": "9.16.0",
     "@hapi/hapi": "21.3.12",
+    "@hapi/nes": "14.0.0",
     "@rsdoctor/cli": "0.4.11",
     "@rsdoctor/rspack-plugin": "0.4.11",
     "@rspack/cli": "1.1.5",
