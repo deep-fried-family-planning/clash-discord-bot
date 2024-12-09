@@ -4,6 +4,7 @@ import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {WebSocket} from 'ws';
 import {fromParameterStore} from '@effect-aws/ssm';
 import Nes from '@hapi/nes';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 const wss = await pipe(
@@ -54,7 +55,7 @@ server.subscription('/dev');
 await server.start();
 
 socket.onmessage = (event) => {
-    console.log('Received message', JSON.parse(event.data));
+    console.log('Received message', JSON.parse(event.data as str));
     server.publish('/dev', event.data);
 };
 

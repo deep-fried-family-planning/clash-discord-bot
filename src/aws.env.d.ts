@@ -4,6 +4,7 @@ declare namespace NodeJS {
         LAMBDA_ENV_LOWER: string;
         LAMBDA_ENV_UPPER: string;
         LAMBDA_ROLE_ARN : string;
+        LAMBDA_LOCAL    : string;
 
         DFFP_DISCORD_BOT_TOKEN : string;
         DFFP_DISCORD_PUBLIC_KEY: string;
@@ -11,6 +12,8 @@ declare namespace NodeJS {
         DFFP_DISCORD_DEBUG_URL : string;
         DFFP_COC_KEY           : string;
 
+
+        APIGW_DEV_WS          : string;
         DDB_OPERATIONS        : string;
         SQS_URL_DISCORD_MENU  : string;
         SQS_URL_DISCORD_SLASH : string;

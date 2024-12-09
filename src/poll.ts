@@ -16,6 +16,8 @@ import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {toEntries} from 'effect/Record';
 import {ClashKing} from '#src/clash/clashking.ts';
 import {serverRaid} from '#src/poll/server-raid.ts';
+import {wsBypass} from '../dev/ws-bypass.ts';
+import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 
 
 const raidWeekend = Cron.make({
@@ -31,6 +33,10 @@ const raidWeekend = Cron.make({
 export const h = () => E.gen(function * () {
     yield * invokeCount(E.succeed(''));
     yield * showMetric(invokeCount);
+
+    if (yield * wsBypass('poll', {}, E.void)) {
+        return;
+    }
 
     const now = yield * DT.now;
     const isRaidWeekend = Cron.match(raidWeekend, now);
@@ -82,17 +88,18 @@ export const h = () => E.gen(function * () {
 
 export const LambdaLive = pipe(
     L.mergeAll(
-        ClashKing.Live,
-        ClashOfClans.Live,
         ServerCache.Live,
         PlayerCache.Live,
         ClanCache.Live,
     ),
-    L.provideMerge(L.mergeAll(
-        DynamoDBDocument.defaultLayer,
-        Scheduler.defaultLayer,
-        SQS.defaultLayer,
-    )),
+    L.provideMerge(ClashKing.Live),
+    L.provideMerge(ClashOfClans.Live),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
+    L.provideMerge(Scheduler.defaultLayer),
+    L.provideMerge(SQS.defaultLayer),
+    L.provideMerge(ApiGatewayManagementApi.layer({
+        endpoint: process.env.APIGW_DEV_WS,
+    })),
     L.provideMerge(DiscordLayerLive),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );

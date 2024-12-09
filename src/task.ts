@@ -1,4 +1,4 @@
-import {CSL, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, E, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import type {SQSEvent} from 'aws-lambda';
@@ -16,6 +16,8 @@ import {WarBattle12hr} from '#src/task/war-thread/war-battle-12hr.ts';
 import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
 import {SetInviteOnly} from '#src/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/task/raid-thread/set-open.ts';
+import {wsBypass} from '../dev/ws-bypass.ts';
+import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 
 
 const newLookup = {
@@ -43,43 +45,56 @@ const lookup = pipe(
 );
 
 
-const h = (event: SQSEvent) => pipe(
-    event.Records,
-    mapL((r) => pipe(
-        E.gen(function * () {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const json = JSON.parse(r.body);
+const h = (event: SQSEvent) => g(function * () {
+    if (yield * wsBypass('task', event, E.void)) {
+        return;
+    }
 
-            yield * CSL.debug('ScheduledTask', inspect(json, true, null));
+    yield * pipe(
+        event.Records,
+        mapL((r) => pipe(
+            E.gen(function * () {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const json = JSON.parse(r.body);
 
-            if (json.type === 'remind me') {
-                yield * DiscordApi.createMessage(json.channel_id, {
-                    content: `<@${json.user_id}> reminder - ${json.message_url}`,
-                });
-            }
+                yield * CSL.debug('ScheduledTask', inspect(json, true, null));
 
-            if (json.id in newLookup) {
-                yield * newLookup[json.id](json.data);
-            }
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                if (json.type === 'remind me') {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+                    yield * DiscordApi.createMessage(json.channel_id, {
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                        content: `<@${json.user_id}> reminder - ${json.message_url}`,
+                    });
+                }
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            yield * lookup[json.name as keyof typeof lookup](json);
-        }),
-        E.catchAll((err) => logDiscordError([err])),
-        E.catchAllCause((e) => E.gen(function * () {
-            const error = Cause.prettyErrors(e);
+                if (json.id in newLookup) {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                    yield * newLookup[json.id](json.data);
+                }
 
-            yield * logDiscordError([error]);
-        })),
-    )),
-    E.allWith({concurrency: 5}),
-);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                yield * lookup[json.name as keyof typeof lookup](json);
+            }),
+            E.catchAll((err) => logDiscordError([err])),
+            E.catchAllCause((e) => E.gen(function * () {
+                const error = Cause.prettyErrors(e);
+
+                yield * logDiscordError([error]);
+            })),
+        )),
+        E.allWith({concurrency: 5}),
+    );
+});
 
 
 const LambdaLive = pipe(
     DiscordLayerLive,
-    L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(ClashOfClans.Live),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
+    L.provideMerge(ApiGatewayManagementApi.layer({
+        endpoint: process.env.APIGW_DEV_WS,
+    })),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 

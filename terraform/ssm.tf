@@ -5,6 +5,7 @@ locals {
     DFFP_DISCORD_ERROR_URL  = "/DFFP/${local.ENV}/DISCORD_ERROR_URL"
     DFFP_DISCORD_DEBUG_URL  = "/DFFP/${local.ENV}/DISCORD_DEBUG_URL"
     DFFP_COC_KEY            = "/DFFP/${local.ENV}/COC_KEY"
+    APIGW_DEV_WS            = "/dffp/${local.env}/dev_ws_apigw"
   }
 }
 

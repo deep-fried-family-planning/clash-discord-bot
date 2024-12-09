@@ -7,9 +7,7 @@ module "dev_ws" {
   custom_policy_json = data.aws_iam_policy_document.dev_ws.json
   memory             = 256
   timeout            = 3
-  fn_env = merge(local.lambda_env, {
-    EXECUTE_API_ENDPOINT = replace(aws_apigatewayv2_stage.dev_websocket[0].invoke_url, "wss://", "https://")
-  })
+  fn_env             = merge(local.lambda_env, {})
 }
 
 resource "aws_lambda_function_event_invoke_config" "dev_ws" {

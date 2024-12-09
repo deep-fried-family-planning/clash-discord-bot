@@ -6,13 +6,11 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {SQS} from '@effect-aws/client-sqs';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {IxRE} from '#src/internal/discord.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import {Cause} from 'effect';
 import {ixsRouter} from '#src/discord/ixs-router.ts';
-import {fromParameterStore} from '@effect-aws/ssm';
 
 
 const slash = (ix: IxD) => E.gen(function * () {
@@ -56,14 +54,11 @@ const h = (event: IxD) => pipe(
 
 export const handler = makeLambda(h, pipe(
     DiscordLayerLive,
-    L.provideMerge(L.mergeAll(
-        ClashOfClans.Live,
-        ClashKing.Live,
-        Scheduler.defaultLayer,
-        SQS.defaultLayer,
-        DynamoDBDocument.defaultLayer,
-    )),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
+    L.provideMerge(ClashOfClans.Live),
+    L.provideMerge(ClashKing.Live),
+    L.provideMerge(Scheduler.defaultLayer),
+    L.provideMerge(SQS.defaultLayer),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),

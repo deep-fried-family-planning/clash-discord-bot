@@ -12,7 +12,6 @@ import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
-import {fromParameterStore} from '@effect-aws/ssm';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
 
@@ -111,7 +110,6 @@ const live = pipe(
         SQS.defaultLayer,
         DynamoDBDocument.defaultLayer,
     )),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),

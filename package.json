@@ -11,7 +11,7 @@
   "packageManager": "pnpm@9.12.0",
   "type": "module",
   "scripts": {
-    "dev-proxy":  "tsx dev/ws-proxy.ts",
+    "proxy": "tsx dev/ws-proxy.ts",
     "dev": "nodemon --exec tsx dev/ws-client.ts",
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "rspack build -c rspack.config.ts --mode production",
@@ -33,7 +33,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-apigatewaymanagementapi": "3.699.0",
+    "@effect-aws/client-api-gateway-management-api": "1.5.0",
     "@effect-aws/client-dynamodb": "1.5.0",
     "@effect-aws/client-eventbridge": "1.6.0",
     "@effect-aws/client-lambda": "1.6.0",

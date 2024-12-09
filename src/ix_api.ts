@@ -3,10 +3,10 @@ import {badImplementation} from '@hapi/boom';
 import {unauthorized} from '@hapi/boom';
 import {verifyKey} from 'discord-interactions';
 import {makeLambda} from '@effect-aws/lambda';
-import {DT, E, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {SQS} from '@effect-aws/client-sqs';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {type IxD, IXRT, MGF} from '#src/internal/discord.ts';
 import {IXT} from '#src/internal/discord.ts';
 import {fromId} from '#src/discord/store/id-parse.ts';
@@ -16,7 +16,7 @@ import {LINK_ACCOUNT_MODAL_OPEN, LinkAccountModal} from '#src/discord/modals/lin
 import {UI} from 'dfx';
 import {toId} from '#src/discord/store/id-build.ts';
 import {EDIT_DATE_TIME_MODAL_OPEN, EditDateTimeModal, EditEpochT} from '#src/discord/modals/edit-date-time-modal.ts';
-import {COLOR, nColor, sColor} from '#src/constants/colors.ts';
+import {sColor} from '#src/constants/colors.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {LINK_CLAN_MODAL_OPEN, LinkClanModal} from '#src/discord/modals/link-clan-modal.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LinkAccountAdminModal} from '#src/discord/modals/link-account-admin-modal.ts';
@@ -25,55 +25,9 @@ import {LINK_ACCOUNT_BULK_MODAL_OPEN, LinkAccountBulkModal} from '#src/discord/m
 import {Lambda} from '@effect-aws/client-lambda';
 import {RK_CLOSE, RK_ENTRY, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD} from '#src/constants/route-kind.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
-import {fromParameterStore} from '@effect-aws/ssm';
-import {ApiGatewayManagementApi} from '@aws-sdk/client-apigatewaymanagementapi';
-import type {WsCtx} from '#src/dev_ws.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {MD} from './internal/pure/pure';
+import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
+import {wsBypass} from '../dev/ws-bypass.ts';
 
-
-const sendIx = (data: str) => g(function * () {
-    if (process.env.LAMBDA_ENV === 'prod') {
-        return true;
-    }
-
-    const ws = yield * DynamoDBDocument.get({
-        TableName: process.env.DDB_OPERATIONS,
-        Key      : {
-            pk: 'dev_ws',
-            sk: 'now',
-        },
-    });
-
-    if (!ws.Item) {
-        return true;
-    }
-
-    const [token, id] = process.env.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
-
-    yield * DiscordApi.executeWebhookJson(id, token, {
-        embeds: [{
-            color      : nColor(COLOR.SUCCESS),
-            title      : process.env.AWS_LAMBDA_FUNCTION_NAME,
-            description: MD.content(
-                JSON.stringify(ws, null, 2),
-            ),
-        }],
-    });
-
-    const wsctx = ws.Item.context as WsCtx;
-
-    const apigw = new ApiGatewayManagementApi({
-        endpoint: `https://${wsctx.domainName}/${wsctx.stage}`,
-    });
-
-    yield * E.promise(() => apigw.postToConnection({
-        ConnectionId: wsctx.connectionId,
-        Data        : data,
-    }));
-
-    return false;
-});
 
 const modals = {
     [LINK_ACCOUNT_MODAL_OPEN.predicate]      : LinkAccountModal,
@@ -91,16 +45,15 @@ const component = (body: IxD) => E.gen(function * () {
     const id = fromId(data.custom_id);
 
     if (id.params.kind === RK_CLOSE) {
-        const nowdata = JSON.stringify(body);
-        const shouldInvoke = yield * sendIx(nowdata);
-
-        if (shouldInvoke) {
-            yield * Lambda.invoke({
+        yield * wsBypass(
+            'ix_menu_close',
+            body,
+            Lambda.invoke({
                 FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU_DELETE,
                 InvocationType: 'Event',
-                Payload       : nowdata,
-            });
-        }
+                Payload       : JSON.stringify(body),
+            }),
+        );
 
         return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
     }
@@ -144,16 +97,15 @@ const component = (body: IxD) => E.gen(function * () {
             },
         });
 
-        const nowdata = JSON.stringify(body);
-        const shouldInvoke = yield * sendIx(nowdata);
-
-        if (shouldInvoke) {
-            yield * Lambda.invoke({
+        yield * wsBypass(
+            'ix_menu',
+            body,
+            Lambda.invoke({
                 FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
                 InvocationType: 'Event',
-                Payload       : nowdata,
-            });
-        }
+                Payload       : JSON.stringify(body),
+            }),
+        );
 
         return r200({
             type: IXRT.MODAL,
@@ -170,16 +122,15 @@ const component = (body: IxD) => E.gen(function * () {
         });
     }
 
-    const nowdata = JSON.stringify(body);
-    const shouldInvoke = yield * sendIx(nowdata);
-
-    if (shouldInvoke) {
-        yield * Lambda.invoke({
+    yield * wsBypass(
+        'ix_menu',
+        body,
+        Lambda.invoke({
             FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
             InvocationType: 'Event',
-            Payload       : nowdata,
-        });
-    }
+            Payload       : JSON.stringify(body),
+        }),
+    );
 
     if (id.params.kind === RK_ENTRY) {
         return r200({
@@ -195,16 +146,15 @@ const component = (body: IxD) => E.gen(function * () {
 
 
 const modal = (body: IxD) => E.gen(function * () {
-    const nowdata = JSON.stringify(body);
-    const shouldInvoke = yield * sendIx(nowdata);
-
-    if (shouldInvoke) {
-        yield * Lambda.invoke({
+    yield * wsBypass(
+        'ix_menu',
+        body,
+        Lambda.invoke({
             FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
             InvocationType: 'Event',
-            Payload       : nowdata,
-        });
-    }
+            Payload       : JSON.stringify(body),
+        }),
+    );
 
     return r200({
         type: IXRT.DEFERRED_UPDATE_MESSAGE,
@@ -227,16 +177,15 @@ const ping = (body: IxD) => E.succeed(r200({type: body.type}));
 const autocomplete = (body: IxD) => E.succeed(r202({type: body.type}));
 
 const slashCmd = (body: IxD) => E.gen(function * () {
-    const nowdata = JSON.stringify(body);
-    const shouldInvoke = yield * sendIx(nowdata);
-
-    if (shouldInvoke) {
-        yield * Lambda.invoke({
+    yield * wsBypass(
+        'ix_menu',
+        body,
+        Lambda.invoke({
             FunctionName  : process.env.LAMBDA_ARN_IX_SLASH,
             InvocationType: 'Event',
-            Payload       : nowdata,
-        });
-    }
+            Payload       : JSON.stringify(body),
+        }),
+    );
 
     return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
 });
@@ -303,13 +252,13 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
 const live = pipe(
     DiscordLayerLive,
-    L.provideMerge(L.mergeAll(
-        Scheduler.defaultLayer,
-        Lambda.defaultLayer,
-        SQS.defaultLayer,
-        DynamoDBDocument.defaultLayer,
-    )),
-    L.provideMerge(L.setConfigProvider(fromParameterStore())),
+    L.provideMerge(Scheduler.defaultLayer),
+    L.provideMerge(SQS.defaultLayer),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
+    L.provideMerge(Lambda.defaultLayer),
+    L.provideMerge(ApiGatewayManagementApi.layer({
+        endpoint: process.env.APIGW_DEV_WS,
+    })),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
     L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
