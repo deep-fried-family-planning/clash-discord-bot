@@ -4,6 +4,7 @@ import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {WebSocket} from 'ws';
 import {fromParameterStore} from '@effect-aws/ssm';
 import {handler} from '#src/ix_menu.ts';
+import Nes from '@hapi/nes';
 
 
 const wss = await pipe(
@@ -61,8 +62,20 @@ socket.send(JSON.stringify({
 
 
 const server = hapi.server({
-    port: 3000,
     host: 'localhost',
+    port: 3000,
+});
+await server.register(Nes);
+
+server.route({
+    method: 'GET',
+    path  : '/h',
+    config: {
+        id     : 'hello',
+        handler: (request, h) => {
+            return 'world!';
+        },
+    },
 });
 
 await server.start();
