@@ -8,6 +8,7 @@ declare namespace NodeJS {
         DFFP_DISCORD_BOT_TOKEN : string;
         DFFP_DISCORD_PUBLIC_KEY: string;
         DFFP_DISCORD_ERROR_URL : string;
+        DFFP_DISCORD_DEBUG_URL : string;
         DFFP_COC_KEY           : string;
 
         DDB_OPERATIONS        : string;

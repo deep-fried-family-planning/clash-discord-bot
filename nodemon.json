@@ -1,0 +1,10 @@
+{
+    "verbose": true,
+    "delay": 3000,
+    "ignore": [
+        "**/test/**",
+        "**/docs/**"
+    ],
+    "ext": ".ts",
+    "watch": ["src"]
+}

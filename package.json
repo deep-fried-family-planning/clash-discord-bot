@@ -11,6 +11,7 @@
   "packageManager": "pnpm@9.12.0",
   "type": "module",
   "scripts": {
+    "dev": "nodemon --exec tsx dev/ws-dev-server.ts",
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "rspack build -c rspack.config.ts --mode production",
     "coverage": "vitest --coverage",
@@ -31,6 +32,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "3.699.0",
     "@effect-aws/client-dynamodb": "1.5.0",
     "@effect-aws/client-eventbridge": "1.6.0",
     "@effect-aws/client-lambda": "1.6.0",
@@ -63,6 +65,7 @@
     "@discordjs/core": "2.0.0",
     "@effect/vitest": "0.14.3",
     "@eslint/js": "9.16.0",
+    "@hapi/hapi": "21.3.12",
     "@rsdoctor/cli": "0.4.11",
     "@rsdoctor/rspack-plugin": "0.4.11",
     "@rspack/cli": "1.1.5",
@@ -72,13 +75,17 @@
     "@types/eslint__js": "8.42.3",
     "@types/string-similarity": "4.0.2",
     "@types/uuid": "10.0.0",
+    "@types/ws": "8.5.13",
     "@vitest/coverage-istanbul": "2.1.8",
     "husky": "9.1.7",
+    "nodemon": "3.1.7",
     "terser-webpack-plugin": "5.3.10",
+    "ts-node": "10.9.2",
     "tsx": "4.19.2",
     "typescript": "5.7.2",
     "typescript-eslint": "8.17.0",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "2.1.8"
+    "vitest": "2.1.8",
+    "ws": "8.18.0"
   }
 }
