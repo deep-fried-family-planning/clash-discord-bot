@@ -63,8 +63,8 @@ importers:
         specifier: 1.11.13
         version: 1.11.13
       dfx:
-        specifier: 0.107.2
-        version: 0.107.2(@effect/platform@0.70.4(effect@3.11.3))(effect@3.11.3)
+        specifier: 0.107.5
+        version: 0.107.5(@effect/platform@0.70.4(effect@3.11.3))(effect@3.11.3)
       discord-interactions:
         specifier: 4.1.0
         version: 4.1.0
@@ -1921,6 +1921,7 @@ packages:
 
   acorn-import-assertions@1.9.0:
     resolution: {integrity: sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==}
+    deprecated: package has been renamed to acorn-import-attributes
     peerDependencies:
       acorn: ^8
 
@@ -2356,8 +2357,8 @@ packages:
   detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
 
-  dfx@0.107.2:
-    resolution: {integrity: sha512-H5h7W78fiV4yCqKB9AZzH8KaTW4Y/OnJd7MLSz7TRQWVrugq3rj545CadVppdIJgYrCH5x2cbHznOoIiCOUQNQ==}
+  dfx@0.107.5:
+    resolution: {integrity: sha512-5iWjI9l3livOX8BVzBN5rXVvPkaRawxtbI6eobvCRiw8ekv2PEaCfu4Q8BZbT5Q1zlwkgDR4JvjtJXfhIwW0Cw==}
     peerDependencies:
       '@effect/platform': ^0.70
       effect: ^3.11
@@ -7227,7 +7228,7 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  dfx@0.107.2(@effect/platform@0.70.4(effect@3.11.3))(effect@3.11.3):
+  dfx@0.107.5(@effect/platform@0.70.4(effect@3.11.3))(effect@3.11.3):
     dependencies:
       '@effect/platform': 0.70.4(effect@3.11.3)
       effect: 3.11.3
