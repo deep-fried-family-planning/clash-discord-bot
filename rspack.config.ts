@@ -32,6 +32,7 @@ console.debug('BUILD_ENV', process.env.BUILD_ENV);
 
 const entries = {
     'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
+    'dev_ws/index'       : {import: 'src/dev_ws.ts'},
     'ix_api/index'       : {import: 'src/ix_api.ts'},
     'ix_menu/index'      : {import: 'src/ix_menu.ts'},
     'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
