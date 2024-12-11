@@ -27,7 +27,7 @@ const program = E.gen(function* () {
             E.tryPromise(async () => {
                 const data = await api<{items: CK_Player_PreviousHits[]}>({
                     method: 'GET',
-                    path  : `/player/${encodeURIComponent(pid)}/warhits`,
+                    stage : `/player/${encodeURIComponent(pid)}/warhits`,
                     query : {
                         timestamp_start: 0,
                         timestamp_end  : 2527625513,
@@ -46,7 +46,7 @@ const program = E.gen(function* () {
             E.tryPromise(async () => {
                 const data = await api<CK_War[]>({
                     method: 'GET',
-                    path  : `/war/${encodeURIComponent(cid)}/previous`,
+                    stage : `/war/${encodeURIComponent(cid)}/previous`,
                     query : {
                         timestamp_start: 0,
                         timestamp_end  : 9999999999,

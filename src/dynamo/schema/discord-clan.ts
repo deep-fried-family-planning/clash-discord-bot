@@ -32,10 +32,10 @@ export const DiscordClan = S.Struct({
         developer: 4,
     }).pipe(S.optionalWith({default: () => 0})),
 
-    name : S.String.pipe(S.optionalWith({default: () => ''})),
-    alias: S.String.pipe(S.optionalWith({default: () => ''})),
-    desc : S.String.pipe(S.optionalWith({default: () => ''})),
-    uses : S.Array(S.String).pipe(S.optionalWith({default: () => [] as str[]})),
+    name  : S.String.pipe(S.optionalWith({default: () => ''})),
+    config: S.String.pipe(S.optionalWith({default: () => ''})),
+    desc  : S.String.pipe(S.optionalWith({default: () => ''})),
+    uses  : S.Array(S.String).pipe(S.optionalWith({default: () => [] as str[]})),
 
     thread_prep    : ThreadId,
     prep_opponent  : ClanTag,

@@ -21,8 +21,8 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
         return yield * new SlashUserError({issue: 'no current war found'});
     }
 
-    const cids = pipe(entities.current.clans, mapL((c) => c.tag));
-    const pids = pipe(entities.current.players, mapL((p) => p.tag));
+    const cids = pipe(entities.slice.clans, mapL((c) => c.tag));
+    const pids = pipe(entities.slice.players, mapL((p) => p.tag));
 
     const warCalls = pipe(
         cids,
@@ -46,7 +46,7 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
     );
 
     const currentWar = pipe(
-        entities.current.wars,
+        entities.slice.wars,
         findFirst((w) => !w.isWarEnded && !(w.isCWL && w.isBattleDay) && [w.clan.tag, w.opponent.tag].includes(ops.cid1)),
         Option.getOrUndefined,
     )!;
@@ -57,7 +57,7 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
 
     return {
         model: pipe(
-            ingestCkToModel(previousWars, entities.current.players, previousWarsByPlayer),
+            ingestCkToModel(previousWars, entities.slice.players, previousWarsByPlayer),
             deriveModel,
             accumulateWarData,
             optimizeGraphModel,
@@ -70,7 +70,7 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
         opponentMembers: pipe(opponent.members, sortMapPosition),
         currentWar,
         opponentClans  : pipe(
-            entities.current.wars,
+            entities.slice.wars,
             filterL((w) => !w.isWarEnded && w.isPreparationDay),
             mapL((w) => w.clan),
         ),

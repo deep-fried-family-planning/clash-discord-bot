@@ -11,7 +11,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {UserB, userEditReducer} from '#src/discord/view-reducers/user-settings.ts';
 import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
-import {RK_BACK, RK_CLOSE, RK_ENTRY, RK_FORWARD, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD, RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD} from '#src/constants/route-kind.ts';
+import {RK_BACK, RK_CLOSE, RK_FORWARD, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD, RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD} from '#src/constants/route-kind.ts';
 
 
 export const ixcRouter = (ix: IxD) => E.gen(function * () {
@@ -47,10 +47,10 @@ export const ixcRouter = (ix: IxD) => E.gen(function * () {
 
         const json = JSON.parse(modalState.Item!.bodyJSON as str) as IxD;
 
-        s = yield * deriveState(json);
+        s = yield * deriveState(json, ax);
     }
 
-    s ??= yield * deriveState(ix);
+    s ??= yield * deriveState(ix, ax);
 
     if (!s.user) {
         if (ax.id.predicate in userEditReducer) {

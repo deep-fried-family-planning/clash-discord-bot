@@ -33,12 +33,8 @@ export const InfoNavS = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
 
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
-    const selected = ax.selected.map((v) => v.value);
-
-    let Kind = KindNavS.fromMap(s.cmap)
-        .setDefaultValuesIf(ax.id.predicate, selected);
-
-    let Info = InfoNavS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    let Kind = KindNavS.fromMap(s.cmap);
+    let Info = InfoNavS.fromMap(s.cmap);
 
     if (isClicked(InfoViewerB, ax)) {
         Kind = Kind.render({
@@ -128,6 +124,10 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         reference  : {},
         system     : unset,
 
+        // button: DC.button({
+        //     id: '//////',
+        // }),
+
         editor: unset,
         viewer: viewer ?? {
             description: 'Select Kind/Info',
@@ -144,7 +144,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         }),
 
         submit:
-            (!Kind.values.length && !Info.values.length)
+            (!Kind.values.length || !Info.values.length)
                 ? InfoViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk))
                 : InfoViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))?.render({
                     disabled: !Info.values.length,

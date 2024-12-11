@@ -71,7 +71,7 @@ const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOp
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
     const selected = ax.selected.map((v) => v.value);
-    let Roster = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+    let Roster = RosterS.fromMap(s.cmap);
 
     let viewer: Embed | und;
 

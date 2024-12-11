@@ -97,7 +97,7 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
         updated        : new Date(Date.now()),
         gsi_server_id  : data.guild_id!,
         gsi_clan_tag   : clanTag,
-        alias          : '',
+        config         : '',
         name           : clan.name,
         desc           : clan.description,
         uses           : [],

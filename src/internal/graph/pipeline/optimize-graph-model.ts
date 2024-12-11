@@ -92,8 +92,8 @@ export const optimizeGraphModel = (data: GraphModel['data']): GraphModel => {
         clans,
         players,
         hits,
-        current: {
-            players: pipe(data.current.players, reduceL({} as IDKV<Player>, (acc, p) => {
+        slice: {
+            players: pipe(data.slice.players, reduceL({} as IDKV<Player>, (acc, p) => {
                 acc[p.tag] = p;
                 return acc;
             })),

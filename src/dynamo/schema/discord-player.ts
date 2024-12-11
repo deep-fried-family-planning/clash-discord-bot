@@ -23,7 +23,7 @@ export const DiscordPlayer = S.Struct({
 
     embed_id: S.optional(EmbedId),
 
-    alias: S.optional(S.String),
+    config: S.optional(S.String),
 
     verification: S.Enums({
         none     : 0,

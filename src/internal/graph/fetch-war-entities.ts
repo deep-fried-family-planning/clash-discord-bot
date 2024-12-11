@@ -13,7 +13,7 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
     const returnable = {
         options   : ops,
         currentWar: [],
-        current   : {
+        slice     : {
             clans  : [],
             cwl,
             players: [],
@@ -27,14 +27,14 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
         const cwars = wars.filter((w) => w.state !== 'notInWar');
 
         returnable.currentWar = cwars;
-        returnable.current.wars = cwars;
-        returnable.current.players = yield * ClashOfClans.getPlayers([
+        returnable.slice.wars = cwars;
+        returnable.slice.players = yield * ClashOfClans.getPlayers([
             ...cwars.map((c) => [
                 ...c.clan.members.map((m) => m.tag),
                 ...c.opponent.members.map((m) => m.tag),
             ]),
         ].flat());
-        returnable.current.clans = yield * ClashOfClans.getClans([
+        returnable.slice.clans = yield * ClashOfClans.getClans([
             ops.cid1,
             ...cwars.map((c) => c.opponent.tag),
         ].flat());
@@ -44,12 +44,12 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
 
         if (war.state !== 'notInWar') {
             returnable.currentWar = [war];
-            returnable.current.wars = [war];
-            returnable.current.players = yield * ClashOfClans.getPlayers([
+            returnable.slice.wars = [war];
+            returnable.slice.players = yield * ClashOfClans.getPlayers([
                 ...war.clan.members.map((m) => m.tag),
                 ...war.opponent.members.map((m) => m.tag),
             ]);
-            returnable.current.clans = yield * ClashOfClans.getClans([
+            returnable.slice.clans = yield * ClashOfClans.getClans([
                 ops.cid1,
                 war.opponent.tag,
             ]);
@@ -72,9 +72,9 @@ export const getTaskWars = (data: typeof WarThreadData.Type) => g(function * () 
     });
 
     return {
-        prep    : entities.current.wars.find((w) => w.state === 'preparation')!,
-        battle  : entities.current.wars.find((w) => w.state === 'inWar')!,
-        finished: entities.current.wars.find((w) => w.state === 'notInWar') ?? entities.current.wars.find((w) => w.state !== 'inWar')!,
+        prep    : entities.slice.wars.find((w) => w.state === 'preparation')!,
+        battle  : entities.slice.wars.find((w) => w.state === 'inWar')!,
+        finished: entities.slice.wars.find((w) => w.state === 'notInWar') ?? entities.slice.wars.find((w) => w.state !== 'inWar')!,
         original: entities,
     };
 });

@@ -71,7 +71,7 @@ export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(functio
         updated          : new Date(Date.now()),
         gsi_all_server_id: data.guild_id!,
         polling          : true,
-        alias            : '',
+        config           : '',
         name             : '',
         desc             : '',
     });

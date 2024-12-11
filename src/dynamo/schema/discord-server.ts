@@ -25,9 +25,9 @@ export const DiscordServer = S.Struct({
     omni_channel_id: S.optional(ChannelId),
     omni_message_id: S.optional(MessageId),
 
-    name : S.String.pipe(S.optionalWith({default: () => ''})),
-    alias: S.String.pipe(S.optionalWith({default: () => ''})),
-    desc : S.String.pipe(S.optionalWith({default: () => ''})),
+    name  : S.String.pipe(S.optionalWith({default: () => ''})),
+    config: S.String.pipe(S.optionalWith({default: () => ''})),
+    desc  : S.String.pipe(S.optionalWith({default: () => ''})),
 
     polling : S.Boolean,
     timezone: S.optional(S.TimeZone),

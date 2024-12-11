@@ -173,7 +173,7 @@ const makeDiscordPlayer
         version       : '1.0.0',
         created       : new Date(Date.now()),
         updated       : new Date(Date.now()),
-        alias         : '',
+        config        : '',
         gsi_user_id   : userId,
         gsi_player_tag: playerTag,
         verification  : verification,

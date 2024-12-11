@@ -1,6 +1,6 @@
 import type {ActionRow, Button, Embed, EmbedField, SelectMenu, Snowflake, TextInput} from 'dfx/types';
 import type {IxD} from '#src/internal/discord.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {Ar, E, f, Kv, p, pipe} from '#src/internal/pure/effect.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
@@ -14,6 +14,8 @@ import {isEditor, isStatus, isSystem, isViewer} from '#src/discord/components/co
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {ME} from '#src/scratch/secret.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import {Discord} from 'dfx';
 
 
 export type St = {
@@ -59,7 +61,16 @@ export type St = {
 };
 
 
-export const deriveState = (ix: IxD) => E.gen(function * () {
+const toComponentMap = f(
+    (rows: ActionRow[]) => rows,
+    Ar.map((row) => row.components as (Button | SelectMenu)[]),
+    Ar.flatten,
+    Kv.fromIterableWith((c) => [c.custom_id!, c]),
+
+);
+
+
+export const deriveState = (ix: IxD, ax: Ax) => E.gen(function * () {
     const [server, user] = yield * pipe(
         [
             MenuCache.serverRead(ix.guild_id!),
@@ -83,7 +94,24 @@ export const deriveState = (ix: IxD) => E.gen(function * () {
             )),
             flatMapL((c) => c),
             reduceL(emptyKV<string, Maybe<ComponentMapItem>>(), (cs, c) => {
-                cs[c.id.predicate] = c;
+                if (ax.id.predicate === c.id.predicate) {
+                    if (c.original.type === Discord.ComponentType.STRING_SELECT) {
+                        cs[c.id.predicate] = {
+                            ...c,
+                            original: {
+                                ...c.original,
+                                options: (c.original as SelectMenu).options?.map((o) => ({
+                                    ...o,
+                                    default: ax.selected.map((s) => s.value).includes(o.value),
+                                })),
+                            } as any,
+                        };
+                    }
+                }
+                else {
+                    cs[c.id.predicate] = c;
+                }
+
                 return cs;
             }),
         )
