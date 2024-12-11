@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 import type {str} from '#src/internal/pure/types-pure.ts';
-import type {E} from '#src/internal/pure/effect.ts';
+import {CSL, type E} from '#src/internal/pure/effect.ts';
 import {g} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {WsCtx} from './dev_ws.ts';
@@ -22,6 +22,7 @@ export const wsBypass = <
     nonbypass: Nonbypass,
 ) => g(function * () {
     if (process.env.LAMBDA_ENV === 'prod' || process.env.LAMBDA_LOCAL === 'true') {
+        yield * nonbypass;
         return false;
     }
 
