@@ -12,3 +12,5 @@ node_modules
 locals.tf
 terraform.tfstate.d
 .secret.tfvars
+test/unit/scratch
+src/scratch

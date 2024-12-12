@@ -1,5 +1,5 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
-import {E, pipe, S} from '#src/internal/pure/effect.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {getDiscordUser, putDiscordUser} from '#src/dynamo/schema/discord-user.ts';
 import {omit} from 'effect/Struct';
@@ -22,7 +22,7 @@ export const USER
             quiet_hours_start: {
                 type       : 3,
                 name       : 'quiet_hours_start',
-                description: 'hours not to be pinged',
+                description: '[deprecated] hours not to be pinged',
                 choices    : Array(24).fill(0).map((_, idx) => ({
                     name : `${idx.toString().padStart(2, '0')}:00`,
                     value: `${idx.toString().padStart(2, '0')}:00`,
@@ -31,7 +31,7 @@ export const USER
             quiet_hours_end: {
                 type       : 3,
                 name       : 'quiet_hours_end',
-                description: 'hours not to be pinged',
+                description: '[deprecated] hours not to be pinged',
                 choices    : Array(24).fill(0).map((_, idx) => ({
                     name : `${idx.toString().padStart(2, '0')}:00`,
                     value: `${idx.toString().padStart(2, '0')}:00`,
@@ -40,7 +40,7 @@ export const USER
             discord_user: {
                 type       : 6,
                 name       : 'discord_user',
-                description: '[admin_role] discord user to update',
+                description: '[ADMIN_ONLY] configure a different discord user',
             },
         },
     } as const satisfies CommandSpec;

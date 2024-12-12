@@ -1,8 +1,20 @@
 import {S} from '#src/internal/pure/effect.ts';
-import {AllianceId, ClanTag, EmbedId, InfoId, PlayerTag, RosterId, ServerId, ServerUserRefId, UserId} from '#src/dynamo/schema/common.ts';
+import {
+    AllianceId,
+    ClanTag,
+    EmbedId,
+    InfoId,
+    NowId,
+    PlayerTag,
+    RosterId,
+    ServerId,
+    ServerUserRefId,
+    UserId,
+} from '#src/dynamo/schema/common.ts';
 
 
 export const encodeServerId = S.encodeUnknown(ServerId);
+export const encodeNowId = S.encodeUnknown(NowId);
 export const encodeUserId = S.encodeUnknown(UserId);
 export const encodeClanTag = S.encodeUnknown(ClanTag);
 export const encodePlayerTag = S.encodeUnknown(PlayerTag);

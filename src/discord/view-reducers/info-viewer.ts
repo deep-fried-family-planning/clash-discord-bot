@@ -111,11 +111,13 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
     let viewer: Embed | undefined;
 
     if (Info.id.predicate === ax.id.predicate || Kind.id.predicate === ax.id.predicate || isClicked(InfoViewerB, ax)) {
-        const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
+        if (Info.values[0] !== UNAVAILABLE) {
+            const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
 
-        const embed = yield * MenuCache.embedRead(embedId);
+            const embed = yield * MenuCache.embedRead(embedId);
 
-        viewer = asViewer(viewInfoEmbed(embed));
+            viewer = asViewer(viewInfoEmbed(embed));
+        }
     }
 
 

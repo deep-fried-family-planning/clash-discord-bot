@@ -61,12 +61,12 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 },
             ],
             [
-                {
-                    type     : IXCT.BUTTON,
-                    style    : IXCBS.SUCCESS,
-                    label    : 'Restart',
-                    custom_id: `/k/${RK_OPEN}/t/INFO`,
-                },
+                // {
+                //     type     : IXCT.BUTTON,
+                //     style    : IXCBS.SUCCESS,
+                //     label    : 'Restart',
+                //     custom_id: `/k/${RK_OPEN}/t/INFO`,
+                // },
                 {
                     type     : IXCT.BUTTON,
                     style    : IXCBS.SECONDARY,

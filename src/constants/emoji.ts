@@ -1,3 +1,5 @@
+import type {str} from '#src/internal/pure/types-pure.ts';
+
 export const EMOJI_CLAP = {
     id  : null,
     name: '👏',
@@ -59,3 +61,19 @@ export const EMOJI_DELETE_CONFIRM_CONFIRM = EMOJI_CLAP;
 export const EMOJI_BACK = EMOJI_LEFT_ARROW;
 export const EMOJI_NEXT = EMOJI_RIGHT_ARROW;
 export const EMOJI_CLOSE = EMOJI_CLOCKWISE_DOWN_ARROW;
+
+
+export const EMOJI_WAR_NONE = {
+    id  : null,
+    name: '💤',
+};
+
+export const EMOJI_WAR_PREP = {
+    id  : null,
+    name: '🛠️',
+};
+
+export const EMOJI_WAR_BATTLE = {
+    id  : null,
+    name: '🗡',
+};

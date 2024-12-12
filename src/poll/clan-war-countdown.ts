@@ -7,10 +7,20 @@ import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 
 
 export const nicknames = {
-    'ClashTest Dummy': 'CTD',
-    'DFFP Labs'      : 'Labs',
-    'DFFP EZ CWL'    : 'EZCWL',
-    'DFFP Sh t Hits' : 'Shit Hits',
+    '#2GR2G0PGG': 'DFFP',
+    '#2YVCYUCCP': 'CTD',
+    '#2GYYRUULL': 'Labs',
+    '#2QUP9UPGY': 'EZCWL',
+    '#2RPLPCVLU': 'Shit Hits',
+
+    '#2LV9C2208': 'SA',
+    '#2QLQ9CY0J': '2SA',
+    '#2QRGLVCL9': '1SA',
+    '#2LJYUYCUC': '3SA',
+    '#2Q9R80GCU': 'AH',
+    '#2RVRCL9PQ': 'Nano',
+    '#2RG0GYPC0': 'Micro',
+    '#2GQGRVURP': 'Sudo',
 } as const;
 
 
@@ -24,8 +34,8 @@ const channel_names = {
 export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(function* () {
     const apiClan = yield * ClashOfClans.getClan(clan.sk);
 
-    const cname = apiClan.name in nicknames
-        ? nicknames[apiClan.name as keyof typeof nicknames]
+    const cname = apiClan.tag in nicknames
+        ? nicknames[apiClan.tag as keyof typeof nicknames]
         : apiClan.name;
 
     if (apiWars.length === 0) {

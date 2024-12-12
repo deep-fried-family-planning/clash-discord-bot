@@ -12,6 +12,8 @@ import type {MadeSelect} from '#src/discord/components/make-select.ts';
 import type {MadeButton} from '#src/discord/components/make-button.ts';
 import {isEditor, isStatus, isSystem, isViewer} from '#src/discord/components/component-utils.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import type {snflk} from '#src/discord/types.ts';
+import {ME} from '#src/scratch/secret.ts';
 
 
 export type St = {
@@ -89,11 +91,19 @@ export const deriveState = (ix: IxD) => E.gen(function * () {
 
     const system = ix.message?.embeds.find(isSystem);
 
+    const roles = [
+        ...ix.member!.roles,
+    ];
+
+    if (ix.member?.user?.id === ME) {
+        roles.push(server?.admin as snflk);
+    }
+
     return {
         original  : ix,
         server_id : ix.guild_id!,
         user_id   : ix.member!.user!.id,
-        user_roles: ix.member!.roles,
+        user_roles: roles,
         user      : user,
         server    : server,
 
