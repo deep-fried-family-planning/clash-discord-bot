@@ -40,7 +40,7 @@ export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPr
                 toEntries,
                 mapL(([, w]) => w),
             ),
-            slice: {
+            current: {
                 players: players,
             },
         });
@@ -50,7 +50,7 @@ export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPr
 
     return attachModelId({
         wars,
-        slice: {
+        current: {
             players: [],
         },
     });

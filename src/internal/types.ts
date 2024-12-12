@@ -21,3 +21,8 @@ export type CA<T> = T extends Context.Tag<infer _, infer A>
 export type LA<T> = T extends L.Layer<infer A, infer _, infer __>
     ? A
     : never;
+
+
+export type AnyE<T> = T extends E.Effect<infer A, infer _, infer __>
+    ? E.Effect<A, any, any>
+    : E.Effect<T, any, any>;

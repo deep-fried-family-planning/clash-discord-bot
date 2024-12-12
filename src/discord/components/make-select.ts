@@ -27,6 +27,8 @@ export const makeSelect = (
             custom_id: id.custom_id,
         }),
         values: options.options?.filter((o) => o.default).map((o) => o.value) ?? [],
+
+
         render: (newOptions: typeof options) => makeSelect(
             params,
             {

@@ -18,7 +18,7 @@ export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
         jsonBody?: B;
         form?    : {[key: string]: string};
     }) => {
-        const url = new URL(`${baseUrl}${ops.stage}`);
+        const url = new URL(`${baseUrl}${ops.path}`);
 
         if (ops.query) {
             for (const key in ops.query) {
@@ -49,14 +49,14 @@ export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
             req.headers.set('Content-Type', 'application/json');
         }
 
-        console.log(`[${url.hostname}][${ops.method} ${ops.stage}]:`, {
+        console.log(`[${url.hostname}][${ops.method} ${ops.path}]:`, {
             headers: req.headers,
             body   : ops.body ?? ops.body,
         });
 
         const resp = await fetch(req);
 
-        console.log(`[${url.hostname}][${ops.method} ${ops.stage}]: ${resp.status} ${resp.statusText}`, {
+        console.log(`[${url.hostname}][${ops.method} ${ops.path}]: ${resp.status} ${resp.statusText}`, {
             headers: resp.headers,
         });
 

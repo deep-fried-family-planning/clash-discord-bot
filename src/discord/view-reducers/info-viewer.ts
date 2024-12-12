@@ -33,7 +33,12 @@ export const InfoNavS = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
 
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
-    let Kind = KindNavS.fromMap(s.cmap);
+    let Kind = KindNavS
+        .fromMap(s.cmap)
+        .initialize(InfoViewerB.id.predicate, options)
+        .initialize();
+
+
     let Info = InfoNavS.fromMap(s.cmap);
 
     if (isClicked(InfoViewerB, ax)) {
@@ -106,8 +111,12 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
 
     let viewer: Embed | undefined;
 
-    if (Info.id.predicate === ax.id.predicate || Kind.id.predicate === ax.id.predicate || isClicked(InfoViewerB, ax)) {
-        if (Info.values[0] !== UNAVAILABLE) {
+    if (
+        Info.id.predicate === ax.id.predicate
+        || Kind.id.predicate === ax.id.predicate
+        || isClicked(InfoViewerB, ax)
+    ) {
+        if (!Info.options.options?.map((o) => o.value).includes(UNAVAILABLE)) {
             const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
 
             const embed = yield * MenuCache.embedRead(embedId);
@@ -131,6 +140,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         editor: unset,
         viewer: viewer ?? {
             description: 'Select Kind/Info',
+            embedId    : '',
         },
         status: unset,
 
@@ -143,12 +153,16 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
                 || Info.component.options![0].value === UNAVAILABLE,
         }),
 
-        submit:
-            (!Kind.values.length || !Info.values.length)
-                ? InfoViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk))
-                : InfoViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))?.render({
-                    disabled: !Info.values.length,
-                }),
+        submit: InfoViewerCreatorB
+            .render({
+                disabled: !Kind.values.length,
+            })
+            .if(s.user_roles.includes(s.server!.admin as snflk)),
+
+        delete: InfoViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk))?.render({
+            disabled: !Info.values.length,
+        }),
+
     } satisfies St;
 });
 

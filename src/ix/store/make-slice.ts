@@ -1,82 +1,109 @@
-import {E, Kv, p, pipe} from '#src/internal/pure/effect.ts';
+import {E, L} from '#src/internal/pure/effect.ts';
+import {Kv, p, pipe, S} from '#src/internal/pure/effect.ts';
 import {g} from '#src/internal/pure/effect.ts';
+import type {num, str} from '#src/internal/pure/types-pure';
+import type {Protocol} from '#src/ix/enum/enums.ts';
 import {Current} from '#src/ix/enum/enums.ts';
 import type {Sc, ScAction, ScConfig, ScInit, ScK} from '#src/ix/store/make-slice-types.ts';
+import type {AnyE, EA} from '#src/internal/types.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {makeLambda} from '@effect-aws/lambda';
+import type {Message} from 'dfx/types';
+import type {Sx, Tx} from '#src/ix/store/types.ts';
 
 
-export const makeSliceConfig = <
-    K extends ScK,
-    C extends ScConfig<K>,
+export const makeSliceConfiguration = <
+    Initial extends {
+        [k in str]: {
+            scope     : str;
+            protocols?: [typeof Protocol[keyof typeof Protocol]];
+        }
+    },
+    Initializer extends E.Effect<
+        {
+            [k in keyof Initial]: unknown
+        },
+        any,
+        any
+    >,
+    Actions extends {
+        [k in keyof Initial]: (state: Sx, sliceState: EA<Initializer>) => AnyE<Initializer>
+    },
+    View extends (s: Sx, sliceState: EA<Initializer>) => Tx,
 >(
-    config: C,
-) => config;
-
-
-export const makeSliceInit = <
-    K extends ScK,
-    C extends ScConfig<K>,
-    S extends Sc<K>,
-    I extends ScInit<K, S>,
->(
-    activate: I,
-) => (
-    config: C,
-) => ({
-    activate,
-    config,
-} as const);
-
-
-export const makeSlice = <
-    K extends ScK,
-    C extends ScConfig<K>,
-    S extends Sc<K>,
-    A extends ScAction<K, S>,
-    I extends ScInit<K, S>,
->(
-    actions: A,
-) => (
-    input: {
-        activate: I;
-        config  : C;
+    config: {
+        namespace   : str;
+        initialState: Initial;
+        initializer : (s: unknown) => Initializer;
+        actions     : Actions;
+        view        : View;
     },
 ) => {
-    return {
-        initialize: input.activate,
-        slice     : input.config.slice,
-        actions   : p(
-            actions,
-            Kv.mapKeys((k) => `${input.config.slice}/${k}`),
-        ),
-    } as const;
+    return config;
 };
 
 
-const things = pipe(
-    makeSliceConfig({
-        slice: Current.ROSTER,
-        alias: {
-            accounts    : 'a',
-            availability: 'av',
+const example = makeSliceConfiguration({
+    namespace   : 'example',
+    initialState: {
+        accounts: {
+            scope    : 'a',
+            protocols: ['cmap'],
         },
+        availability: {
+            scope    : 'av',
+            protocols: ['cmap'],
+        },
+    },
+    initializer: (s: unknown) => E.succeed({
+        accounts    : '',
+        availability: '',
     }),
-    makeSliceInit((sx, sc) => g(function * () {
-        return {
-            ...sc,
-            accounts: {
-                options: [],
-                values : [],
-            },
-            availability: {
-                options: [],
-                values : [],
-            },
-        };
-    })),
-    makeSlice({
-        accounts: (sx, sc) => g(function * () {
+    actions: {
+        accounts: (s, sc) => g(function * () {
+            yield * ClashOfClans.getClans([]);
+            const thing = sc.availability;
             return sc;
         }),
-        a: (sx, sc) => E.succeed(sc),
-    }),
-);
+        availability: (s, sc) => g(function * () {
+            yield * DynamoDBDocument.get({});
+            return sc;
+        }),
+    },
+    view: (s, sc) => {
+        if (sc.admin) {
+            return {
+
+            };
+        }
+
+
+        return {
+            embeds: [],
+            grid  : [
+                {
+                    onClick: this.actions.availability,
+                },
+            ],
+        };
+    },
+});
+
+
+const ex2 = () => g(function * () {
+    yield * example.actions['availability']({}, {
+        accounts    : '',
+        availability: '',
+    });
+    yield * example.actions['accounts']({}, {
+        accounts    : '',
+        availability: '',
+    });
+});
+
+makeLambda(ex2, pipe(
+    L.empty,
+    L.provideMerge(ClashOfClans.Live),
+    L.provideMerge(DynamoDBDocument.defaultLayer),
+));

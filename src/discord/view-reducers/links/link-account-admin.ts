@@ -78,7 +78,7 @@ const view2 = (s: St, ax: Ax) => E.gen(function * () {
             type  : 'ReturnableError',
             embeds: [{
                 // @ts-expect-error clashperk lib types
-                description: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.stage as string)}`,
+                description: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
             }],
         })),
     );
