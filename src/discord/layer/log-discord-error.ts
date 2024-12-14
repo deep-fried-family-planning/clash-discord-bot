@@ -7,7 +7,8 @@ import {IXCBS, IXCT} from '#src/internal/discord.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
 import {UI} from 'dfx';
-import {RK_CLOSE, RK_OPEN} from '#src/constants/route-kind.ts';
+import {RK_CLOSE, RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
+import {CxId} from '#src/ix/id/cx-id.ts';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
@@ -41,6 +42,9 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
 
     return {
         embeds: [{
+            author: {
+                name: 'Unrecoverable Error',
+            },
             color      : nColor(COLOR.ERROR),
             title      : 'Unknown Error',
             description: dLinesS(
@@ -61,12 +65,24 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                 },
             ],
             [
-                // {
-                //     type     : IXCT.BUTTON,
-                //     style    : IXCBS.SUCCESS,
-                //     label    : 'Restart',
-                //     custom_id: `/k/${RK_OPEN}/t/INFO`,
-                // },
+                {
+                    type     : IXCT.BUTTON,
+                    style    : IXCBS.SUCCESS,
+                    label    : 'Restart',
+                    custom_id: CxId.build({
+                        origin   : 'test',
+                        slice    : 'test',
+                        action   : 'test',
+                        ctype    : 'test',
+                        cmode    : 'test',
+                        row      : 'test',
+                        col      : 'test',
+                        view     : 'test',
+                        modifiers: RK_ENTRY,
+                        // modifiers: 'modifiers*',
+                    }),
+                    // custom_id: `/k/${RK_OPEN}/t/INFO`,
+                },
                 {
                     type     : IXCT.BUTTON,
                     style    : IXCBS.SECONDARY,

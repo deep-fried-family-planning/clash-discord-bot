@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 
+
 import {Ar, Kv, p, pipe} from '#src/internal/pure/effect.ts';
 import {inject as routeInject, parse as routeParse} from 'regexparam';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {num, str} from '#src/internal/pure/types-pure.ts';
 import {ParamsError} from '#src/ix/id/params-error.ts';
 
 
@@ -30,8 +31,9 @@ export const parse = <P extends ParamsBase>(routes: str[]) => {
 
         if (!parser) {
             throw new ParamsError({
-                title  : 'No Implementation',
-                message: 'You interacted with a message that is either outdated or not fully implemented.',
+                title  : 'RoutingParse',
+                message: '[No Implementation] You interacted with a message that is either outdated or not fully implemented.',
+                params : id,
             });
         }
 
@@ -39,8 +41,9 @@ export const parse = <P extends ParamsBase>(routes: str[]) => {
 
         if (!parsed) {
             throw new ParamsError({
-                title  : 'Bad Implementation',
-                message: 'Someone wrote some bad code...',
+                title  : 'RoutingParse',
+                message: '[Bad Implementation] Someone wrote some bad code...',
+                params : id,
             });
         }
 
@@ -55,7 +58,7 @@ export const parse = <P extends ParamsBase>(routes: str[]) => {
                     return ps;
                 },
             ),
-        ) as P;
+        ) as {[k in keyof P]: str};
     };
 };
 
@@ -63,7 +66,7 @@ export const parse = <P extends ParamsBase>(routes: str[]) => {
 export const build = <P extends ParamsBase>(routes: str[]) => {
     const routeParsers = routes.map(makeParser);
 
-    return (p: P) => {
+    return (p: {[k in str]: str}) => {
         const defined = pipe(p, Kv.filter((v) => !!v));
         const keys = Kv.keys(defined);
 
@@ -74,8 +77,9 @@ export const build = <P extends ParamsBase>(routes: str[]) => {
 
         if (!parser) {
             throw new ParamsError({
-                title  : 'No Implementation',
-                message: 'You interacted with a message that is either outdated or not fully implemented.',
+                title  : 'RoutingBuild',
+                message: '[No Implementation] You interacted with a message that is either outdated or not fully implemented.',
+                params : p,
             });
         }
 
@@ -84,9 +88,17 @@ export const build = <P extends ParamsBase>(routes: str[]) => {
 };
 
 
-export const set = <P extends ParamsBase, T extends keyof P = keyof P>(a: T, b: P[T]) => (c: P) => {
-    c[a] = b;
-    return c;
+export const set = <
+    P extends ParamsBase,
+>(
+    a: keyof P, b: P[typeof a] | str | num,
+) => (
+    c: {[k in keyof P]: str | num},
+) => {
+    const ope = {...c};
+
+    ope[a] = b;
+    return ope as {[k in keyof P]: str};
 };
 
 

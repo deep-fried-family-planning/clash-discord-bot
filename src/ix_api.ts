@@ -42,9 +42,29 @@ const modalKinds = [RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD];
 
 const component = (body: IxD) => E.gen(function * () {
     const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
+
     const id = fromId(data.custom_id);
 
     if (id.params.kind === RK_CLOSE) {
+        if (data.custom_id.includes(RK_ENTRY)) {
+            yield * wsBypass(
+                'ix_menu',
+                body,
+                Lambda.invoke({
+                    FunctionName  : process.env.LAMBDA_ARN_DISCORD_MENU,
+                    InvocationType: 'Event',
+                    Payload       : JSON.stringify(body),
+                }),
+            );
+
+            return r200({
+                type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+                data: {
+                    flags: MGF.EPHEMERAL,
+                },
+            });
+        }
+
         yield * wsBypass(
             'ix_menu_close',
             body,
@@ -178,7 +198,7 @@ const autocomplete = (body: IxD) => E.succeed(r202({type: body.type}));
 
 const slashCmd = (body: IxD) => E.gen(function * () {
     yield * wsBypass(
-        'ix_menu',
+        'ix_slash',
         body,
         Lambda.invoke({
             FunctionName  : process.env.LAMBDA_ARN_IX_SLASH,

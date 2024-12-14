@@ -4,6 +4,9 @@ import type {IxD} from '#src/internal/discord.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import {UI} from 'dfx';
+import {CxId} from '#src/ix/id/cx-id.ts';
+import {RK_ENTRY} from '#src/constants/route-kind.ts';
 
 
 export const SMOKE
@@ -30,13 +33,26 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
     return {
         embeds: [{
             author: {
-                name: 'DeepFryer Omni Board',
+                name: 'Dev Omni',
             },
-            title      : 'Deep Fried Family Planning',
+            title      : 'Dev',
             description: 'The one board to rule them all',
-            footer     : {
-                text: 'DeepFryer is made with ❤️ by DFFP.',
-            },
         }],
+        components: UI.grid([
+            [UI.button({
+                label    : 'Dev Mode',
+                custom_id: CxId.build({
+                    origin   : 'test',
+                    slice    : 'test',
+                    action   : 'test',
+                    ctype    : 'test',
+                    cmode    : 'test',
+                    row      : 'test',
+                    col      : 'test',
+                    view     : 'test',
+                    modifiers: RK_ENTRY,
+                }),
+            })],
+        ]),
     };
 });

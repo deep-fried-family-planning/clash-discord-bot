@@ -1,4 +1,4 @@
-import {ID_ROUTES, type Route, type RouteParams} from '#src/discord/store/id-routes.ts';
+import {ID_ROUTES, type Route, type RouteParams, type V2Params} from '#src/discord/store/id-routes.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

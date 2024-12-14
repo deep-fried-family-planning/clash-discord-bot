@@ -49,7 +49,9 @@ export type CxSelect = {
         emoji?      : Emoji;
         default?    : boolean;
     }[];
+    optionValues  : str[];
     values        : str[];
+    value         : str[];
     channel_types : ChannelType[];
     default_values: {
         id  : Snowflake;

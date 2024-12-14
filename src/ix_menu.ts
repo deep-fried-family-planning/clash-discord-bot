@@ -1,4 +1,4 @@
-import {CSL, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, DT, E, g, L, Logger, Metric, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {MGF} from '#src/internal/discord.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -14,6 +14,7 @@ import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
+import {execTime} from '#src/internal/metrics.ts';
 
 
 const menu = (ix: IxD) => ixcRouter(ix).pipe(
@@ -46,7 +47,7 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
 
         const message = {
             ...userMessage,
-            embeds: [{...userMessage.embeds[0], // @ts-expect-error clashperk lib types
+            embeds: [{...userMessage.embeds[0],
                 title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
             }],
         };
@@ -96,6 +97,12 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
             E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
         );
     })),
+    Metric.trackDuration(execTime),
+    E.tap(() => g(function * () {
+        const value = yield * Metric.value(execTime);
+
+        yield * CSL.debug(execTime.name, value.count);
+    })),
 );
 
 
@@ -112,7 +119,7 @@ const live = pipe(
     )),
     L.provideMerge(L.setTracerTiming(true)),
     L.provideMerge(L.setTracerEnabled(true)),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
     L.provideMerge(DT.layerCurrentZoneLocal),
 );
 

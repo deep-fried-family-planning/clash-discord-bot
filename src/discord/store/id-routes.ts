@@ -2,9 +2,28 @@ import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {parse} from 'regexparam';
 
 
+export type V2Params = {
+    params: {
+        view     : str;
+        nextView : str;
+        slice    : str;
+        action   : str;
+        ctype    : str;
+        cmode    : str;
+        row      : str;
+        col      : str;
+        modifiers: str;
+    };
+};
+
+
 export type Route = {
     custom_id: str;
     template : str;
+
+    v2?: V2Params;
+
+
     params: {
         kind     : str;
         type?    : str | und;
@@ -23,6 +42,8 @@ export type RouteParams = Route['params'];
 
 
 const templates = [
+    '/v2/:view/:nextView/:slice/:action/:ctype/:cmode/:row/:col/:modifiers*',
+
     '/k/:kind/t/:type/nk/:nextKind/nt/:nextType/bk/:backKind/bt/:backType/f/:forward/d/:data',
     '/k/:kind/t/:type/nk/:nextKind/nt/:nextType/bk/:backKind/bt/:backType/f/:forward',
     '/k/:kind/t/:type/nk/:nextKind/nt/:nextType/bk/:backKind/bt/:backType/d/:data',

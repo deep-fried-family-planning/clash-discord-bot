@@ -16,6 +16,10 @@ export const SSM_counter = pipe(
     Metric.withConstantInput(1),
 );
 
+
+export const execTime = Metric.timer('exec_time', 'execution time to process event');
+
+
 export const errorCount = Metric
     .counter('error_count', {
         description: 'total errors in lambda instance lifetime',
@@ -25,5 +29,5 @@ export const errorCount = Metric
 
 export const showMetric = flow(
     Metric.value,
-    E.andThen(Console.log),
+    E.andThen((m) => Console.log(m)),
 );

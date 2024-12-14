@@ -1,11 +1,11 @@
-import {DT, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, DT, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import type {IxD} from '#src/internal/discord.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 
 
 const menuClose = (ix: IxD) => g(function * () {
-    yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
+    yield * CSL.debug('delete');
 });
 
 

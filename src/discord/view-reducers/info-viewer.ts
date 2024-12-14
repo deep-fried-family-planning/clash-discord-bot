@@ -34,9 +34,7 @@ export const InfoNavS = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
     let Kind = KindNavS
-        .fromMap(s.cmap)
-        .initialize(InfoViewerB.id.predicate, options)
-        .initialize();
+        .fromMap(s.cmap);
 
 
     let Info = InfoNavS.fromMap(s.cmap);
@@ -117,7 +115,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         || isClicked(InfoViewerB, ax)
     ) {
         if (!Info.options.options?.map((o) => o.value).includes(UNAVAILABLE)) {
-            const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
+            const [, embedId] = Info.values[0].split(DELIM_DATA);
 
             const embed = yield * MenuCache.embedRead(embedId);
 
@@ -140,7 +138,6 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
         editor: unset,
         viewer: viewer ?? {
             description: 'Select Kind/Info',
-            embedId    : '',
         },
         status: unset,
 

@@ -1,6 +1,6 @@
 import type {ActionRow, Button, Embed, EmbedField, SelectMenu, Snowflake, TextInput} from 'dfx/types';
 import type {IxD} from '#src/internal/discord.ts';
-import {Ar, E, f, Kv, p, pipe} from '#src/internal/pure/effect.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
@@ -59,15 +59,6 @@ export type St = {
     forward? : MadeButton | undefined;
     close?   : MadeButton | undefined;
 };
-
-
-const toComponentMap = f(
-    (rows: ActionRow[]) => rows,
-    Ar.map((row) => row.components as (Button | SelectMenu)[]),
-    Ar.flatten,
-    Kv.fromIterableWith((c) => [c.custom_id!, c]),
-
-);
 
 
 export const deriveState = (ix: IxD, ax: Ax) => E.gen(function * () {
