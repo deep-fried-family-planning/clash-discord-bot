@@ -81,7 +81,7 @@
     "@vitest/coverage-istanbul": "2.1.8",
     "husky": "9.1.7",
     "nodemon": "3.1.7",
-    "terser-webpack-plugin": "5.3.10",
+    "terser-webpack-plugin": "5.3.11",
     "ts-node": "10.9.2",
     "tsx": "4.19.2",
     "typescript": "5.7.2",
