@@ -18,85 +18,85 @@ import {execTime} from '#src/internal/metrics.ts';
 
 
 const menu = (ix: IxD) => ixcRouter(ix).pipe(
-    E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
-        yield * CSL.error('[USER]');
-        const userMessage = yield * logDiscordError([e]);
-
-        const message = {
-            ...userMessage,
-            embeds: [{
-                ...userMessage.embeds[0],
-                title: e.issue,
-            }],
-        };
-
-        return yield * pipe(
-            DiscordApi.createInteractionResponse(ix.id, ix.token, {
-                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    ...userMessage,
-                    flags: MGF.EPHEMERAL,
-                },
-            }),
-            E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
-        );
-    })),
-    E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
-        yield * CSL.error('[CLASH]');
-        const userMessage = yield * logDiscordError([e]);
-
-        const message = {
-            ...userMessage,
-            embeds: [{...userMessage.embeds[0],
-                title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
-            }],
-        };
-
-        return yield * pipe(
-            DiscordApi.createInteractionResponse(ix.id, ix.token, {
-                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    ...userMessage,
-                    flags: MGF.EPHEMERAL,
-                },
-            }),
-            E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
-        );
-    })),
-    E.catchAllCause((error) => E.gen(function * () {
-        yield * CSL.error('[CAUSE]');
-
-        const e = Cause.prettyErrors(error);
-
-        const userMessage = yield * logDiscordError(e);
-
-        yield * pipe(
-            DiscordApi.createInteractionResponse(ix.id, ix.token, {
-                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    ...userMessage,
-                    flags: MGF.EPHEMERAL,
-                },
-            }),
-            E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
-        );
-    })),
-    E.catchAllDefect((e) => E.gen(function * () {
-        yield * CSL.error('[DEFECT]');
-
-        const userMessage = yield * logDiscordError([e]);
-
-        yield * pipe(
-            DiscordApi.createInteractionResponse(ix.id, ix.token, {
-                type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: {
-                    ...userMessage,
-                    flags: MGF.EPHEMERAL,
-                },
-            }),
-            E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
-        );
-    })),
+    // E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
+    //     yield * CSL.error('[USER]');
+    //     const userMessage = yield * logDiscordError([e]);
+    //
+    //     const message = {
+    //         ...userMessage,
+    //         embeds: [{
+    //             ...userMessage.embeds[0],
+    //             title: e.issue,
+    //         }],
+    //     };
+    //
+    //     return yield * pipe(
+    //         DiscordApi.createInteractionResponse(ix.id, ix.token, {
+    //             type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //             data: {
+    //                 ...userMessage,
+    //                 flags: MGF.EPHEMERAL,
+    //             },
+    //         }),
+    //         E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
+    //     );
+    // })),
+    // E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
+    //     yield * CSL.error('[CLASH]');
+    //     const userMessage = yield * logDiscordError([e]);
+    //
+    //     const message = {
+    //         ...userMessage,
+    //         embeds: [{...userMessage.embeds[0],
+    //             title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
+    //         }],
+    //     };
+    //
+    //     return yield * pipe(
+    //         DiscordApi.createInteractionResponse(ix.id, ix.token, {
+    //             type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //             data: {
+    //                 ...userMessage,
+    //                 flags: MGF.EPHEMERAL,
+    //             },
+    //         }),
+    //         E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
+    //     );
+    // })),
+    // E.catchAllCause((error) => E.gen(function * () {
+    //     yield * CSL.error('[CAUSE]');
+    //
+    //     const e = Cause.prettyErrors(error);
+    //
+    //     const userMessage = yield * logDiscordError(e);
+    //
+    //     yield * pipe(
+    //         DiscordApi.createInteractionResponse(ix.id, ix.token, {
+    //             type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //             data: {
+    //                 ...userMessage,
+    //                 flags: MGF.EPHEMERAL,
+    //             },
+    //         }),
+    //         E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
+    //     );
+    // })),
+    // E.catchAllDefect((e) => E.gen(function * () {
+    //     yield * CSL.error('[DEFECT]');
+    //
+    //     const userMessage = yield * logDiscordError([e]);
+    //
+    //     yield * pipe(
+    //         DiscordApi.createInteractionResponse(ix.id, ix.token, {
+    //             type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+    //             data: {
+    //                 ...userMessage,
+    //                 flags: MGF.EPHEMERAL,
+    //             },
+    //         }),
+    //         E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
+    //     );
+    // })),
     Metric.trackDuration(execTime),
     E.tap(() => g(function * () {
         const value = yield * Metric.value(execTime);

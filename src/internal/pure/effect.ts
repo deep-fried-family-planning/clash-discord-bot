@@ -45,3 +45,4 @@ export const ORDNR = Order.reverse(Order.number);
 
 export * as Ar from 'effect/Array'; // collection array
 export * as Kv from 'effect/Record'; // collection key-value
+export * as Sr from 'effect/Struct'; // collection key-value
