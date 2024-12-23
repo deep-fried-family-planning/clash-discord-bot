@@ -101,7 +101,7 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
     E.tap(() => g(function * () {
         const value = yield * Metric.value(execTime);
 
-        yield * CSL.debug(execTime.name, value.count);
+        yield * CSL.debug(execTime.name, value);
     })),
 );
 

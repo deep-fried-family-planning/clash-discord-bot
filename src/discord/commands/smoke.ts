@@ -6,7 +6,7 @@ import {validateServer} from '#src/discord/util/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {UI} from 'dfx';
 import {RK_ENTRY} from '#src/constants/route-kind.ts';
-import {v3_routing, v3_slice, v3_view1} from '#src/internal/ix-system/model/v3/v3.ts';
+import {v3_routing, v3_slice, v3_view1} from '#src/discord/v3/v3.ts';
 
 
 export const SMOKE

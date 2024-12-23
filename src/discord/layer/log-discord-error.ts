@@ -8,7 +8,7 @@ import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
 import {inspect} from 'node:util';
 import {UI} from 'dfx';
 import {RK_CLOSE, RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
-import {CxId} from '#src/internal/ix-system/id/cx-id.ts';
+import {CxId} from '#src/internal/ix-v2/id/cx-id.ts';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

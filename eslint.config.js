@@ -96,6 +96,15 @@ const config = [
                 '@stylistic/multiline-ternary'      : [0],
                 '@stylistic/indent'                 : [2, 4, {flatTernaryExpressions: true}],
                 '@stylistic/no-multiple-empty-lines': [2],
+                '@typescript-eslint/no-unused-vars' : [2, {
+                    args                          : 'all',
+                    argsIgnorePattern             : '^_',
+                    caughtErrors                  : 'all',
+                    caughtErrorsIgnorePattern     : '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                    varsIgnorePattern             : '^_',
+                    ignoreRestSiblings            : true,
+                }],
             },
         },
         {
