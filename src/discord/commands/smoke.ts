@@ -7,6 +7,7 @@ import {SlashUserError} from '#src/internal/errors.ts';
 import {UI} from 'dfx';
 import {RK_ENTRY} from '#src/constants/route-kind.ts';
 import {v3_routing, v3_slice, v3_view1} from '#src/discord/v3/v3.ts';
+import {defaultCxRouter} from '#src/internal/ix-v3/routing';
 
 
 export const SMOKE
@@ -41,15 +42,20 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
         components: UI.grid([
             [UI.button({
                 label    : 'Dev Mode',
-                custom_id: v3_routing.build({
-                    slice    : v3_slice.name,
-                    action   : 'init',
-                    ctype    : 'test',
-                    cmode    : 'test',
-                    row      : 'test',
-                    col      : 'test',
-                    view     : v3_view1.name,
-                    modifiers: RK_ENTRY,
+                custom_id: defaultCxRouter.build({
+                    root  : 'v3',
+                    name  : 'vdomtest',
+                    data  : 'test1',
+                    action: 'init',
+                    type  : 'test',
+                    mode  : 'test',
+                    row   : 'test',
+                    col   : 'test',
+                    pgp   : 'test',
+                    pgn   : 'test',
+                    pgx   : 'test',
+                    view  : 'root',
+                    mod   : RK_ENTRY,
                 }),
             })],
         ]),

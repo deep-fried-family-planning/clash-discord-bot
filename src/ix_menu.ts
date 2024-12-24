@@ -97,12 +97,12 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
     //         E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
     //     );
     // })),
-    Metric.trackDuration(execTime),
-    E.tap(() => g(function * () {
-        const value = yield * Metric.value(execTime);
-
-        yield * CSL.debug(execTime.name, value);
-    })),
+    // Metric.trackDuration(execTime),
+    // E.tap(() => g(function * () {
+    //     const value = yield * Metric.value(execTime);
+    //
+    //     yield * CSL.debug(execTime.name, value);
+    // })),
 );
 
 

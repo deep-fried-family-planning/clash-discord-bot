@@ -1,18 +1,115 @@
-import {Ar, CSL, E, Kv, ORD, ORDS, p} from '#src/internal/pure/effect.ts';
+import {CSL, E, p} from '#src/internal/pure/effect.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {original} from '#src/discord/ixc-original.ts';
-import {Discord, UI} from 'dfx';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {CxId} from '#src/internal/ix-v2/id/cx-id.ts';
-import {RK_ENTRY} from '#src/constants/route-kind.ts';
-import {runner} from '#src/internal/ix-v2/runner.ts';
-import {v3_driver} from '#src/discord/v3/v3.ts';
-import {inspect} from 'node:util';
+import {Mdr, Sc, Cx, VxTree, VxCx} from '#src/internal/ix-v3/entities';
+import {defaultCxRouter, defaultExRouter} from '#src/internal/ix-v3/routing';
+import {implementation} from '#src/internal/ix-v3/implementation.ts';
+import type {IxIn} from '#src/internal/ix-v2/model/types.ts';
+
+
+const slice = Sc.make({
+    name: 'vdomtest',
+    spec: {
+        thing1: {type: Cx.C.User},
+        thing2: {type: Cx.C.Channel},
+        test1 : {type: Cx.C.Channel},
+        test2 : {type: Cx.C.Channel},
+    },
+    init   : (si: unknown, sc) => E.succeed(sc),
+    actions: {
+        setUser: (_, sc) => E.succeed({
+            ...sc,
+            thing1: {
+                ...sc.thing1,
+            },
+        }),
+        setChannel: (_, sc) => E.succeed({
+            ...sc,
+            thing2: {
+                ...sc.thing2,
+            },
+        }),
+    },
+});
+
+const slice2 = Sc.make({
+    name: 'test2',
+    spec: {
+        thing1: {type: Cx.C.User},
+        thing2: {type: Cx.C.Channel},
+    },
+    init   : (si: unknown, sc) => E.succeed(sc),
+    actions: {
+        setUser: (si, sc) => E.succeed({
+            ...sc,
+            thing1: {
+                ...sc.thing1,
+            },
+        }),
+        setChannel: (si, sc) => E.succeed({
+            ...sc,
+            thing2: {
+                ...sc.thing2,
+            },
+        }),
+    },
+});
+
+
+const root = VxTree.C.Root({
+    name : 'root',
+    label: 'Root',
+    fn   : () => {
+        return [
+            VxCx.FrameC.ComponentFrame({
+                data: [
+                    VxCx.RowC.ComponentRow({
+                        row : 0,
+                        data: [
+                            VxCx.C.FunctionComponent({
+                                name: 'first',
+                                data: () => Cx.C.User({
+                                    _data: '',
+                                    _id  : {
+                                        root          : '',
+                                        sc_name       : '',
+                                        sc_data       : '',
+                                        sc_action     : '',
+                                        component_name: '',
+                                        component_mode: '',
+                                        view_name     : '',
+                                        view_type     : '',
+                                        page_port     : '',
+                                        page_static   : '',
+                                        page_current  : '',
+                                        row           : '',
+                                        col           : '',
+                                    },
+                                }),
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ];
+    },
+});
+
+
+const modelDriver = Mdr.make({
+    name      : 'v3',
+    root      : root,
+    routing_cx: defaultCxRouter,
+    routing_ex: defaultExRouter,
+    slices    : [
+        slice,
+        slice2,
+    ],
+});
 
 
 const drivers = [
-    v3_driver,
+    modelDriver,
 ];
 
 
@@ -42,80 +139,13 @@ const router = (ix: IxD) => E.gen(function * () {
         return yield * original(ix);
     }
 
-    return yield * runner(driver, ix);
-}).pipe(
-    E.catchTag('DriverError', (e) => E.gen(function * () {
-        console.error(inspect(e, false, null, true));
 
-        const embeds = ix.message?.embeds;
+    yield * CSL.debug('driver found', driver);
 
-        const ex = p(
-            ix.message!.embeds,
-            Ar.filter((e) => !!e.author?.name),
-            Kv.fromIterableWith((e) => [e.author!.name, e] as const),
-        );
+    return yield * implementation(driver, ix as IxIn);
 
-        ex['ohshit'] = {
-            author: {
-                name: 'ohshit',
-            },
-            title      : `Recoverable Error: ${e.message}`,
-            description: 'Ya dun goofed, click restart',
-            color      : nColor(COLOR.ERROR),
-        };
-
-        const em = p(
-            ex,
-            Ar.fromRecord,
-            Ar.sortBy(
-                ORD.mapInput(ORDS, ([,embed]) => embed.author?.name ?? ''),
-            ),
-            Ar.map(([, embed]) => embed),
-        );
-
-
-        yield * DiscordApi.editMenu(ix, {
-            embeds: [
-                ...embeds,
-                {
-                    author: {
-                        name: 'ohshit',
-                    },
-                    title      : `Recoverable Error: ${e.message}`,
-                    description: 'Ya dun goofed, click restart from last UI state',
-                    color      : nColor(COLOR.ERROR),
-                },
-            ],
-            components: UI.grid([
-                ...p(
-                    ix.message!.components,
-                    Ar.map((cs) => p(cs.components, Ar.map((c) => ({
-                        ...c,
-                        disabled: true,
-                    })))),
-                ),
-                [
-                    UI.button({
-                        style    : Discord.ButtonStyle.SUCCESS,
-                        custom_id: CxId.build({
-                            origin   : 'test',
-                            slice    : 'test',
-                            action   : 'test',
-                            ctype    : 'test',
-                            cmode    : 'test',
-                            row      : 'test',
-                            col      : 'test',
-                            view     : 'test',
-                            modifiers: RK_ENTRY,
-                        }),
-                        label: 'Recover',
-                    }),
-                ],
-            ]),
-        });
-    })),
-    E.catchAllDefect((e) => CSL.log(inspect(e, true, null, true))),
-);
+    // return yield * runner(driver, ix);
+});
 
 
 export const ixcRouter = (ix: IxD) => p(

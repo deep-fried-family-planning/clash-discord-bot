@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-empty-object-type */
+
+
 export type num = number;
 export type str = string;
 export type und = undefined;
@@ -9,8 +12,9 @@ export type isodate = string;
 export type unixdate = number;
 export type url = string;
 export type alias = Record<str, str>;
+export type ny = any;
+export type eobj = {};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyKV = {[k in any]: any};
 export type KV<T extends AnyKV = AnyKV> = {[k in keyof T]: T[k]};
 
