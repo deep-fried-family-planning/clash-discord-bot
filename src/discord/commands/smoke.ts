@@ -1,13 +1,12 @@
-import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import {defaultCxRouter} from '#discord/model-routing/ope.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {validateServer} from '#src/discord/util/validation.ts';
-import {SlashUserError} from '#src/internal/errors.ts';
-import {UI} from 'dfx';
 import {RK_ENTRY} from '#src/constants/route-kind.ts';
-import {v3_routing, v3_slice, v3_view1} from '#src/discord/v3/v3.ts';
-import {defaultCxRouter} from '#src/internal/ix-v3/routing';
+import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
+import {validateServer} from '#src/discord/util/validation.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {UI} from 'dfx';
 
 
 export const SMOKE
@@ -24,7 +23,7 @@ export const SMOKE
 /**
  * @desc [SLASH /smoke]
  */
-export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function * () {
+export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
     const [server, user] = yield * validateServer(data);
 
     if (!user.roles.includes(server.admin as snflk)) {
@@ -43,19 +42,11 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
             [UI.button({
                 label    : 'Dev Mode',
                 custom_id: defaultCxRouter.build({
-                    root  : 'v3',
-                    name  : 'vdomtest',
-                    data  : 'test1',
-                    action: 'init',
-                    type  : 'test',
-                    mode  : 'test',
-                    row   : 'test',
-                    col   : 'test',
-                    pgp   : 'test',
-                    pgn   : 'test',
-                    pgx   : 'test',
-                    view  : 'root',
-                    mod   : RK_ENTRY,
+                    root: 'v3',
+                    view: 'root',
+                    row : 'test',
+                    col : 'test',
+                    mod : RK_ENTRY,
                 }),
             })],
         ]),

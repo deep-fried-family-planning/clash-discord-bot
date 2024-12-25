@@ -1,12 +1,12 @@
-import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
-import {type DServer, putDiscordServer} from '#src/dynamo/schema/discord-server.ts';
-import {DiscordREST} from 'dfx/DiscordREST';
-import {MD} from '#src/internal/pure/pure';
 import {ServerCache} from '#src/dynamo/cache/server-cache.ts';
-import {SetInviteOnly} from '#src/task/raid-thread/set-invite-only.ts';
 import {encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
+import {type DServer, putDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
+import {MD} from '#src/internal/pure/pure';
+import {SetInviteOnly} from '#src/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/task/raid-thread/set-open.ts';
+import {Scheduler} from '@effect-aws/client-scheduler';
+import {DiscordREST} from 'dfx/DiscordREST';
 
 
 const raidWeekendDone = Cron.make({

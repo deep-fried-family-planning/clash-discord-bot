@@ -1,9 +1,9 @@
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {makeTask} from '#src/task/war-thread/common.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/discord/util/markdown.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
+import {makeTask} from '#src/task/war-thread/common.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {join} from 'effect/Array';
 

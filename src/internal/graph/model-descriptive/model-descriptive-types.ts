@@ -1,5 +1,6 @@
 import type {num} from '#src/internal/pure/types-pure.ts';
 
+
 export type Descriptive1D = {
     n_samples: num;
     mean     : num;

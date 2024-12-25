@@ -1,7 +1,7 @@
-import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
-import {g} from '#src/internal/pure/effect.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {dHdr1, dHdr3, dLinesS, dmRole, dSpoi, dtRel} from '#src/discord/util/markdown.ts';
+import {g} from '#src/internal/pure/effect.ts';
+import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
 
 
 export const WarPrep12hr = makeTask('WarPrep12hr', (data, war) => g(function * () {

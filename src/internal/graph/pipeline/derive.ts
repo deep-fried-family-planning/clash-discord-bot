@@ -1,10 +1,11 @@
-import type {DispatchedClan, DispatchedModel, DispatchedPlayer, DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import type {DerivedHit, DerivedModel, DerivedWar} from '#src/internal/graph/pipeline/derive-types.ts';
+import type {DispatchedClan, DispatchedModel, DispatchedPlayer, DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import type {IDKV} from '#src/internal/graph/types.ts';
-import type {n_bool} from '#src/internal/pure/types-pure.ts';
-import {orderHits} from '#src/internal/pure/pure.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
+import {orderHits} from '#src/internal/pure/pure.ts';
+import type {n_bool} from '#src/internal/pure/types-pure.ts';
+
 
 export const deriveWar = (war: DispatchedWar): DerivedWar => {
     const clans = pipe(war.clans, reduceL({} as IDKV<DispatchedClan>, (acc, c) => {

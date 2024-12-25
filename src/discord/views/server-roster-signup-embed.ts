@@ -1,9 +1,9 @@
 import {dCodes, dLinesS} from '#src/discord/util/markdown.ts';
 import {dTable} from '#src/discord/util/message-table.ts';
+import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {DT, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL} from '#src/internal/pure/pure-list.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
-import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 import type {Player} from 'clashofclans.js';
 
 

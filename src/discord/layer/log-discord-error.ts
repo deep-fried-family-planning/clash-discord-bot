@@ -1,14 +1,14 @@
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import {defaultCxRouter} from '#discord/model-routing/ope.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dLinesS} from '#src/discord/util/markdown.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
+import {RK_CLOSE, RK_ENTRY} from '#src/constants/route-kind.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {IXCBS, IXCT} from '#src/internal/discord.ts';
+import {dLinesS} from '#src/discord/util/markdown.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
-import {inspect} from 'node:util';
+import {IXCBS, IXCT} from '#src/internal/discord.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
-import {RK_CLOSE, RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
-import {CxId} from '#src/internal/ix-v2/id/cx-id.ts';
+import {inspect} from 'node:util';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {
@@ -69,19 +69,21 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
                     type     : IXCT.BUTTON,
                     style    : IXCBS.SUCCESS,
                     label    : 'Restart',
-                    custom_id: CxId.build({
-                        origin   : 'test',
-                        slice    : 'test',
-                        action   : 'test',
-                        ctype    : 'test',
-                        cmode    : 'test',
-                        row      : 'test',
-                        col      : 'test',
-                        view     : 'test',
-                        modifiers: RK_ENTRY,
-                        // modifiers: 'modifiers*',
+                    custom_id: defaultCxRouter.build({
+                        root   : 'test',
+                        name   : 'test',
+                        data   : 'test',
+                        action : 'test',
+                        type   : 'test',
+                        mode   : 'test',
+                        row    : 'test',
+                        col    : 'test',
+                        view   : 'test',
+                        p_group: 'test',
+                        p_num  : 'test',
+                        p_now  : 'test',
+                        mod    : RK_ENTRY,
                     }),
-                    // custom_id: `/k/${RK_OPEN}/t/INFO`,
                 },
                 {
                     type     : IXCT.BUTTON,

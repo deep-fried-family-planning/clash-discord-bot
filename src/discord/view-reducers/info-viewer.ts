@@ -1,23 +1,23 @@
-import {BackB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {asViewer, isClicked, unset} from '#src/discord/components/component-utils.ts';
-import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
-import {InfoViewerAdminB} from '#src/discord/view-reducers/info-viewer-admin.ts';
-import type {snflk} from '#src/discord/types.ts';
-import {InfoViewerCreatorB} from '#src/discord/view-reducers/info-viewer-creator.ts';
-import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
-import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
-import type {Embed} from 'dfx/types';
-import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/constants/ix-constants.ts';
-import {viewInfoEmbed} from '#src/discord/views/info-embed.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {DELIM_DATA} from '#src/constants/delim.ts';
+import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/constants/label.ts';
 import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asViewer, isClicked, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import type {snflk} from '#src/discord/types.ts';
+import {InfoViewerAdminB} from '#src/discord/view-reducers/info-viewer-admin.ts';
+import {InfoViewerCreatorB} from '#src/discord/view-reducers/info-viewer-creator.ts';
+import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
+import {viewInfoEmbed} from '#src/discord/views/info-embed.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
+import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
+import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
+import type {Embed} from 'dfx/types';
 
 
 export const InfoViewerB = PrimaryB.as(makeId(RK_OPEN, 'IV'), {

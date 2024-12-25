@@ -1,5 +1,5 @@
+import {Ar, f, p} from '#src/internal/pure/effect';
 import type {num, str, url} from '#src/internal/pure/types-pure.ts';
-import {Ar, p, f} from '#src/internal/pure/effect';
 
 
 export const m_user = (s: str) => `<@${s}>`;

@@ -1,9 +1,9 @@
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {DynamoError} from '#src/internal/errors.ts';
-import {decodeDiscordUser, encodeDiscordUser, type DUser} from '#src/dynamo/schema/discord-user.ts';
 import {encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
+import {decodeDiscordUser, type DUser, encodeDiscordUser} from '#src/dynamo/schema/discord-user.ts';
+import {DynamoError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const userRead = (user: str) => E.gen(function * () {

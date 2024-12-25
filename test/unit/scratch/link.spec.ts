@@ -1,10 +1,8 @@
-import {it, describe, expect} from '@effect/vitest';
-import {CSL, E, g, L, pipe} from '#src/internal/pure/effect.ts';
-import {makeDiscordPlayer, oneofus} from '#src/discord/commands/oneofus.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {LambdaLive} from '#src/poll.ts';
+import {makeDiscordPlayer} from '#src/discord/commands/oneofus.ts';
 import {putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {E, g} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {describe, it} from '@effect/vitest';
 
 
 const userId = '358621794204123148';

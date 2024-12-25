@@ -1,9 +1,9 @@
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {DynamoError} from '#src/internal/errors.ts';
-import {decodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
+import {decodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {DynamoError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const serverRead = (server: str) => E.gen(function * () {

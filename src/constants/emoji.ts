@@ -1,5 +1,3 @@
-import type {str} from '#src/internal/pure/types-pure.ts';
-
 export const EMOJI_CLAP = {
     id  : null,
     name: '👏',

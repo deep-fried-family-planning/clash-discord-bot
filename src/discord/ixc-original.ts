@@ -1,23 +1,16 @@
-import type {IxD, IxDc} from '#src/internal/discord.ts';
-import {CSL, E} from '#src/internal/pure/effect.ts';
+import {RK_BACK, RK_CLOSE, RK_FORWARD, RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD, RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD} from '#src/constants/route-kind.ts';
+import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {deriveAction} from '#src/discord/store/derive-action.ts';
 import {deriveState, type St} from '#src/discord/store/derive-state.ts';
-import type {str, und} from '#src/internal/pure/types-pure.ts';
-import {
-    RK_BACK,
-    RK_CLOSE, RK_FORWARD,
-    RK_MODAL_OPEN,
-    RK_MODAL_OPEN_FORWARD,
-    RK_MODAL_SUBMIT,
-    RK_MODAL_SUBMIT_FORWARD,
-} from '#src/constants/route-kind.ts';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {UserB, userEditReducer} from '#src/discord/view-reducers/user-settings.ts';
-import {allReducers} from '#src/discord/view-reducers/all-reducers.ts';
 import {deriveView} from '#src/discord/store/derive-view.ts';
+import {allReducers} from '#src/discord/view-reducers/all-reducers.ts';
 import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
+import {UserB, userEditReducer} from '#src/discord/view-reducers/user-settings.ts';
+import type {IxD, IxDc} from '#src/internal/discord.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
+import {CSL, E} from '#src/internal/pure/effect.ts';
+import type {str, und} from '#src/internal/pure/types-pure.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const original = (ix: IxD) => E.gen(function * () {

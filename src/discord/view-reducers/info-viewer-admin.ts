@@ -1,22 +1,22 @@
-import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {DELIM_DATA} from '#src/constants/delim.ts';
+import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/constants/ix-constants.ts';
+import {LABEL_TITLE_EDIT_INFO} from '#src/constants/label.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
+import {REF_EMBED_ID, REF_INFO_ID, REF_INFO_KIND, REF_INFO_POSITION} from '#src/constants/reference.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
-import {InfoNavS, InfoViewerB, KindNavS} from '#src/discord/view-reducers/info-viewer.ts';
-import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
 import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
-import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/constants/ix-constants.ts';
-import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
-import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
+import {InfoNavS, InfoViewerB, KindNavS} from '#src/discord/view-reducers/info-viewer.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {DELIM_DATA} from '#src/constants/delim.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
-import {LABEL_TITLE_EDIT_INFO} from '#src/constants/label.ts';
-import {REF_EMBED_ID, REF_INFO_ID, REF_INFO_KIND, REF_INFO_POSITION} from '#src/constants/reference.ts';
+import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
+import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
+import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 export const InfoViewerAdminB = AdminB.as(makeId(RK_OPEN, 'IVA'));

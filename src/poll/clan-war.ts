@@ -1,24 +1,24 @@
-import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
-import type {DServer} from '#src/dynamo/schema/discord-server.ts';
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {DiscordREST} from 'dfx';
-import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
-import {updateWarCountdown} from '#src/poll/clan-war-countdown.ts';
-import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
-import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
-import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
-import {reduceL} from '#src/internal/pure/pure-list.ts';
-import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
+import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
+import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
+import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
-import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
-import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import {reduceL} from '#src/internal/pure/pure-list.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import {updateWarCountdown} from '#src/poll/clan-war-countdown.ts';
+import {WarBattle00hr} from '#src/task/war-thread/war-battle-00hr.ts';
+import {WarBattle24Hr} from '#src/task/war-thread/war-battle-24hr.ts';
+import {WarPrep12hr} from '#src/task/war-thread/war-prep-12hr.ts';
+import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
+import {Scheduler} from '@effect-aws/client-scheduler';
+import {DiscordREST} from 'dfx';
 
 
 export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {

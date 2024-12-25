@@ -1,16 +1,16 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
-import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
-import {makeId} from '#src/discord/store/type-rx.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {asConfirm, asEditor, asSuccess} from '#src/discord/components/component-utils.ts';
-import {AccountViewerAccountS, AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/constants/placeholder.ts';
 import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/constants/label.ts';
+import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/constants/placeholder.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asConfirm, asEditor, asSuccess} from '#src/discord/components/component-utils.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {AccountViewerAccountS, AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
+import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 const submit = (s: St, playerTag: str, accountType: str) => E.gen(function * () {

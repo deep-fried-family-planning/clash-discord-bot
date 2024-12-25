@@ -1,9 +1,9 @@
-import type {Route, RouteParams} from '#src/discord/store/id-routes.ts';
-import {UI} from 'dfx';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/store/derive-state.ts';
 import {toId} from '#src/discord/store/id-build.ts';
+import type {Route, RouteParams} from '#src/discord/store/id-routes.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Maybe} from '#src/internal/pure/types.ts';
+import {UI} from 'dfx';
 
 
 export type MadeSelectUser = ReturnType<typeof makeSelectUser>;

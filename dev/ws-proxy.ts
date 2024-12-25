@@ -1,10 +1,10 @@
-import hapi from '@hapi/hapi';
-import {delay} from 'effect/Effect';
 import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {WebSocket} from 'ws';
-import {fromParameterStore} from '@effect-aws/ssm';
-import Nes from '@hapi/nes';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {fromParameterStore} from '@effect-aws/ssm';
+import hapi from '@hapi/hapi';
+import Nes from '@hapi/nes';
+import {delay} from 'effect/Effect';
+import {WebSocket} from 'ws';
 
 
 const wss = await pipe(

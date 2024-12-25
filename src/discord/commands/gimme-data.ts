@@ -1,9 +1,9 @@
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import type {IxD} from '#src/internal/discord.ts';
-import {validateServer} from '#src/discord/util/validation.ts';
-import {SlashUserError} from '#src/internal/errors.ts';
 import {jsonEmbed} from '#src/discord/util/embed.ts';
+import {validateServer} from '#src/discord/util/validation.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 

@@ -1,18 +1,18 @@
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asViewer, unset} from '#src/discord/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
 import {makeId} from '#src/discord/store/type-rx.ts';
-import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
+import type {snflk} from '#src/discord/types.ts';
+import {ClanViewerAdminB} from '#src/discord/view-reducers/clan-viewer-admin.ts';
+import {LinkClanB} from '#src/discord/view-reducers/links/link-clan.ts';
 import {OmbiBoardB} from '#src/discord/view-reducers/omni-board.ts';
 import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
+import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ClanViewerAdminB} from '#src/discord/view-reducers/clan-viewer-admin.ts';
-import type {snflk} from '#src/discord/types.ts';
-import {asViewer, unset} from '#src/discord/components/component-utils.ts';
-import {LinkClanB} from '#src/discord/view-reducers/links/link-clan.ts';
 import type {Embed} from 'dfx/types';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
 
 
 const getClans = (s: St, ax: Ax) => E.gen(function * () {

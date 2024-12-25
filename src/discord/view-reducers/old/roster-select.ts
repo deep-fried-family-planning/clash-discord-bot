@@ -1,9 +1,9 @@
+import {RK_INIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
 import {makeId} from '#src/discord/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
-import {RK_INIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 
 
 const getRosters = () => E.gen(function * () {
@@ -61,4 +61,3 @@ export const rosterSelectReducer = {
     [SelectRosterB.id.predicate]: view,
     [RosterS.id.predicate]      : view,
 };
-

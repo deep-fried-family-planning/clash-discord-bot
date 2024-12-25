@@ -1,6 +1,7 @@
-import type {IDKV} from '#src/internal/graph/types.ts';
 import type {DerivedClan, DerivedHit, DerivedPlayer, DerivedWar} from '#src/internal/graph/pipeline/derive-types.ts';
+import type {IDKV} from '#src/internal/graph/types.ts';
 import type {Player} from 'clashofclans.js';
+
 
 export type OptimizedWar = {
     data : DerivedWar;

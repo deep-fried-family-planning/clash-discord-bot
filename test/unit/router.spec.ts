@@ -1,10 +1,10 @@
-import {E} from '#src/internal/pure/effect';
-import {expect, it} from '@effect/vitest';
-import {buildCustomId, parseCustomId} from '#src/discord/store/id.ts';
+import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
+import {parseCustomId} from '#src/discord/store/id.ts';
 import {IXCDELIM} from '#src/discord/store/types.ts';
+import {E} from '#src/internal/pure/effect';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterKV, replaceKV} from '#src/internal/pure/pure-kv.ts';
-import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
+import {expect, it} from '@effect/vitest';
 
 
 describe('parse routing', () => {

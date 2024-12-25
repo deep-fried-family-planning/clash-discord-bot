@@ -1,11 +1,11 @@
-import type {CommandSpec, snflk} from '#src/discord/types.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {IXCBS, type IxD} from '#src/internal/discord.ts';
-import {UI} from 'dfx';
-import {validateServer} from '#src/discord/util/validation.ts';
-import {SlashUserError} from '#src/internal/errors.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import type {CommandSpec, snflk} from '#src/discord/types.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
+import {validateServer} from '#src/discord/util/validation.ts';
+import {IXCBS, type IxD} from '#src/internal/discord.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {UI} from 'dfx';
 
 
 export const OMNI_BOARD

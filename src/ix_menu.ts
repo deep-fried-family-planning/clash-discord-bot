@@ -1,20 +1,15 @@
-import {CSL, DT, E, g, L, Logger, Metric, pipe} from '#src/internal/pure/effect.ts';
-import {makeLambda} from '@effect-aws/lambda';
-import {MGF} from '#src/internal/discord.ts';
-import type {IxD} from '#src/internal/discord.ts';
-import {Cause} from 'effect';
-import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {Discord} from 'dfx';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {ixcRouter} from '#src/discord/ixc-router.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {ClashKing} from '#src/clash/clashking.ts';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
+import {ixcRouter} from '#src/discord/ixc-router.ts';
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ClashKing} from '#src/clash/clashking.ts';
-import {execTime} from '#src/internal/metrics.ts';
+import {makeLambda} from '@effect-aws/lambda';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 const menu = (ix: IxD) => ixcRouter(ix).pipe(

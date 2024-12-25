@@ -1,14 +1,15 @@
-import type {Player} from 'clashofclans.js';
-import type {DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
+import type {CK_War} from '#src/clash/api-ck-get-previous-wars.ts';
+import type {CK_Player_PreviousHits} from '#src/clash/api-ck-get-warhits.ts';
 import {ingestCkPlayerPreviousWars} from '#src/internal/graph/pipeline/ingest-ck-player-previous-wars.ts';
 import {ingestCkWar} from '#src/internal/graph/pipeline/ingest-ck-wars.ts';
+import type {DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import type {IDKV} from '#src/internal/graph/types.ts';
 import {attachModelId} from '#src/internal/graph/types.ts';
-import type {CK_Player_PreviousHits} from '#src/clash/api-ck-get-warhits.ts';
-import type {CK_War} from '#src/clash/api-ck-get-previous-wars.ts';
-import {toEntries} from 'effect/Record';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {concatL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
+import type {Player} from 'clashofclans.js';
+import {toEntries} from 'effect/Record';
+
 
 export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPrevious?: CK_Player_PreviousHits[]) => {
     console.log('[INGEST]: starting...');

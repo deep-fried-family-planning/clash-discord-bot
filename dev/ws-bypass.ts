@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
+import {type E, g} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {CSL, type E} from '#src/internal/pure/effect.ts';
-import {g} from '#src/internal/pure/effect.ts';
+import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {WsCtx} from './dev_ws.ts';
-import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 
 
 export const WS_BYPASS_KEY = {
@@ -49,5 +48,3 @@ export const wsBypass = <
 
     return true;
 });
-
-

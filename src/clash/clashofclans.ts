@@ -1,7 +1,6 @@
-import {Client} from 'clashofclans.js';
+import {clashErrorFromUndefined, type ClashperkError, SlashUserError} from '#src/internal/errors.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
-import {type ClashperkError, SlashUserError} from '#src/internal/errors.ts';
-import {clashErrorFromUndefined} from '#src/internal/errors.ts';
+import {Client} from 'clashofclans.js';
 
 
 type ClashClient = {

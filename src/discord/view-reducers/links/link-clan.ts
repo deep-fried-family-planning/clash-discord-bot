@@ -1,16 +1,16 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/discord/components/global-components.ts';
-import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/modals/link-clan-modal.ts';
-import {clanfam} from '#src/discord/commands/clanfam.ts';
-import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
-import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
-import {asFailure, asSuccess, unset} from '#src/discord/components/component-utils.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_CLAN_LINK, LABEL_CLAN_TAG} from '#src/constants/label.ts';
 import {PLACEHOLDER_WAR_COUNTDOWN} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {clanfam} from '#src/discord/commands/clanfam.ts';
+import {asFailure, asSuccess, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/discord/components/global-components.ts';
+import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/discord/modals/link-clan-modal.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
+import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 export const LinkClanB = NewB.as(makeId(RK_OPEN, 'LCT'));

@@ -1,6 +1,6 @@
-import {Schema} from 'effect';
-import {CSL, DT, E} from '#src/internal/pure/effect.ts';
 import {ServerId} from '#src/dynamo/schema/common.ts';
+import {CSL, DT, E} from '#src/internal/pure/effect.ts';
+import {Schema} from 'effect';
 
 
 describe('deep fryer branded types', () => {

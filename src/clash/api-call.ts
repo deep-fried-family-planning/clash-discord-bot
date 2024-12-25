@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-import {URL} from 'node:url';
 import console from 'node:console';
+import {URL} from 'node:url';
+
 
 export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
     async <
@@ -22,7 +23,6 @@ export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
 
         if (ops.query) {
             for (const key in ops.query) {
-                // eslint-disable-next-line @typescript-eslint/no-base-to-string
                 url.searchParams.append(key, `${ops.query[key]}`);
             }
         }

@@ -21,8 +21,8 @@
 //
 
 
-import {it} from '@effect/vitest';
 import {CSL, E} from '#src/internal/pure/effect.ts';
+import {it} from '@effect/vitest';
 
 
 describe('links', () => {

@@ -1,17 +1,17 @@
-import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
-import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
-import {describeSamples} from '#src/internal/graph/model-descriptive/describe-samples.ts';
-import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/discord/util/markdown.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {toEntries} from 'effect/Record';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {dTable} from '#src/discord/util/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/discord/types.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import type {IxD} from '#src/internal/discord.ts';
 import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/constants/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/types.ts';
+import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/discord/util/markdown.ts';
+import {dTable} from '#src/discord/util/message-table.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
+import {describeSamples} from '#src/internal/graph/model-descriptive/describe-samples.ts';
+import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {toEntries} from 'effect/Record';
 
 
 export const WA_SCOUT

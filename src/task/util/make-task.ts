@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {DT, type E, pipe} from '#src/internal/pure/effect.ts';
-import {g, S} from '#src/internal/pure/effect.ts';
+import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import type {DurationInput} from 'effect/Duration';
-import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export type TaskEffect = E.Effect<void, any, any>;
@@ -93,5 +92,3 @@ export const makeTask = <
         }),
     };
 };
-
-

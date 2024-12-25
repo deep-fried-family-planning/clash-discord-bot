@@ -1,8 +1,8 @@
-import type {IxD} from '#src/internal/discord.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
-import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import type {snflk} from '#src/discord/types.ts';
+import {getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {replyError, SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {ME} from '#src/scratch/secret.ts';
 
 

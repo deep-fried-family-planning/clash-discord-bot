@@ -1,9 +1,9 @@
-import {EmbedId, NowId, UserId} from '#src/dynamo/schema/common.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
-import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
+import {EmbedId, NowId, UserId} from '#src/dynamo/schema/common.ts';
+import {DynamoError} from '#src/internal/errors.ts';
+import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const DiscordUser = S.Struct({

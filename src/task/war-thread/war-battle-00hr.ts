@@ -1,7 +1,7 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {makeTask} from '#src/task/war-thread/common.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {dHdr1, dLinesS, dtRel} from '#src/discord/util/markdown.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {makeTask} from '#src/task/war-thread/common.ts';
 
 
 export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(function * () {
@@ -18,5 +18,3 @@ export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(func
         locked  : true,
     });
 }));
-
-

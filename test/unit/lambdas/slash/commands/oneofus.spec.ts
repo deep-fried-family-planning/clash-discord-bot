@@ -1,10 +1,10 @@
+import {oneofus} from '#src/discord/commands/oneofus.ts';
+import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
-import {afterAll, beforeAll, describe, vi} from 'vitest';
-import {E} from '#src/internal/pure/effect.ts';
-import {oneofus} from '#src/discord/commands/oneofus.ts';
 import {Client} from 'clashofclans.js';
-import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {afterAll, beforeAll, describe, vi} from 'vitest';
 
 
 /* eslint-disable */

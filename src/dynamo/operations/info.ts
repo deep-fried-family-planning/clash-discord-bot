@@ -1,8 +1,8 @@
-import {E} from '#src/internal/pure/effect.ts';
-import type {DRoster, DRosterKey} from '#src/dynamo/schema/discord-roster.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {decodeDiscordInfo, type DInfo, type DInfoKey, encodeDiscordInfo} from '#src/dynamo/schema/discord-info.ts';
 import {encodeInfoId, encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
+import {decodeDiscordInfo, type DInfo, type DInfoKey, encodeDiscordInfo} from '#src/dynamo/schema/discord-info.ts';
+import type {DRoster, DRosterKey} from '#src/dynamo/schema/discord-roster.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const infoCreate = (info: DInfo) => E.gen(function * () {

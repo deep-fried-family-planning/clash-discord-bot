@@ -1,8 +1,8 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 import {dtNowIso} from '#src/discord/util/markdown.ts';
 import {encodeRosterId, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
+import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function * () {

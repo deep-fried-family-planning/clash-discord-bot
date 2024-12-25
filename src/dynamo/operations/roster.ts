@@ -1,7 +1,7 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {decodeDiscordRoster, type DRoster, type DRosterKey, encodeDiscordRoster} from '#src/dynamo/schema/discord-roster.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {encodeRosterId, encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
+import {decodeDiscordRoster, type DRoster, type DRosterKey, encodeDiscordRoster} from '#src/dynamo/schema/discord-roster.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 export const rosterCreate = (roster: DRoster) => E.gen(function * () {

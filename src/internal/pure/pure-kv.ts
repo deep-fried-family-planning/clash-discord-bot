@@ -1,15 +1,8 @@
+import {flow} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {AnyKV} from '#src/internal/pure/types-pure.ts';
-import {
-    reduce, toEntries, fromEntries,
-    filter as filterKV,
-    map as mapKV,
-    size as sizeKV,
-    empty as emptyKV,
-    keys as keysKv,
-    replace as replaceKV,
-} from 'effect/Record';
-import {flow} from '#src/internal/pure/effect.ts';
+import {empty as emptyKV, filter as filterKV, fromEntries, keys as keysKv, map as mapKV, reduce, replace as replaceKV, size as sizeKV, toEntries} from 'effect/Record';
+
 
 export {
     mapKV,

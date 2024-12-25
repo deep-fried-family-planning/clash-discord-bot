@@ -1,6 +1,7 @@
-import {it} from '@effect/vitest';
+import {E, g} from '#src/internal/pure/effect.ts';
 import {h, LambdaLive} from '#src/poll.ts';
-import {E, g, L} from '#src/internal/pure/effect.ts';
+import {it} from '@effect/vitest';
+
 
 describe('poll test', () => {
     it.live('poll', () => g(function * () {

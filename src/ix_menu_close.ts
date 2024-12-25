@@ -1,7 +1,7 @@
+import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {CSL, DT, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
-import type {IxD} from '#src/internal/discord.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 
 
 const menuClose = (ix: IxD) => g(function * () {

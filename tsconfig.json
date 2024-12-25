@@ -14,8 +14,12 @@
         "exactOptionalPropertyTypes"  : true,
         "baseUrl"                     : "./",
         "paths"                       : {
-            "#src"  : ["src"],
-            "#src/*": ["src/*"]
+            "#src"               : ["src"],
+            "#src/*"             : ["src/*"],
+            "#dfdis"             : ["src/internal/discord/index.ts"],
+            "#discord/*"         : ["src/internal/discord/*"],
+            "#discord/entities"  : ["src/internal/discord/entities"],
+            "#discord/entities/*": ["src/internal/discord/entities/*"]
         }
     }
 }

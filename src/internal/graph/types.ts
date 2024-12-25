@@ -1,5 +1,6 @@
-import type {AnyKV, unixdate} from '#src/internal/pure/types-pure.ts';
+import type {AnyKV, unix} from '#src/internal/pure/types-pure.ts';
 import {v4} from 'uuid';
+
 
 export type UUID = string;
 export type CID = string;
@@ -10,7 +11,7 @@ export type IDKV<T > = Record<string, T>;
 
 export type _Model = {
     _id: UUID;
-    _tm: unixdate;
+    _tm: unix;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

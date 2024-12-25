@@ -1,7 +1,7 @@
-import {E} from '#src/internal/pure/effect.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {SlashUserError} from '#src/internal/errors.ts';
 import {deleteDiscordPlayer, type DPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

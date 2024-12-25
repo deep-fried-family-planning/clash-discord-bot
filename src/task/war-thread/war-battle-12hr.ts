@@ -1,12 +1,11 @@
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import type {snflk} from '#src/discord/types.ts';
 import {dBold, dCrss, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/discord/util/markdown.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import {dedupeL, filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
-import type {ClanWarAttack} from 'clashofclans.js';
-import type {ClanWarMember} from 'clashofclans.js';
-import type {snflk} from '#src/discord/types.ts';
+import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
+import type {ClanWarAttack, ClanWarMember} from 'clashofclans.js';
 import {join} from 'effect/Array';
 
 

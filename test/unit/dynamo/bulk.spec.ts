@@ -1,8 +1,8 @@
-import {describe} from 'vitest';
-import {it} from '@effect/vitest';
 import {CSL, E} from '#src/internal/pure/effect';
-import {members} from './csv.ts';
+import {it} from '@effect/vitest';
+import {describe} from 'vitest';
 import {bulk} from './bulk.ts';
+import {members} from './csv.ts';
 
 
 describe('bulk', () => {
