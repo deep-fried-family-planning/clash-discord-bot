@@ -1,10 +1,11 @@
 import type {DerivedModel} from '#src/internal/graph/pipeline/derive-types.ts';
 import type {GraphModel} from '#src/internal/graph/pipeline/optimize-types.ts';
 import type {IDKV} from '#src/internal/graph/types.ts';
-import type {Player} from 'clashofclans.js';
-import console from 'node:console';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
+import type {Player} from 'clashofclans.js';
+import console from 'node:console';
+
 
 export const accumulateWarData = (model: DerivedModel): GraphModel['data'] => {
     const data_initial = {

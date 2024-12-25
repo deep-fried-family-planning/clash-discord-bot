@@ -1,13 +1,12 @@
-import {C, L} from '#src/internal/pure/effect.ts';
-import {E} from '#src/internal/pure/effect.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
-import type {EA} from '#src/internal/types.ts';
-import type {DUser} from '#src/dynamo/schema/discord-user.ts';
-import type {DServer} from '#src/dynamo/schema/discord-server.ts';
-import {userRead} from '#src/dynamo/operations/user.ts';
-import {serverRead} from '#src/dynamo/operations/server.ts';
-import type {DEmbed} from '#src/dynamo/schema/discord-embed.ts';
 import {discordEmbedRead} from '#src/dynamo/operations/embed.ts';
+import {serverRead} from '#src/dynamo/operations/server.ts';
+import {userRead} from '#src/dynamo/operations/user.ts';
+import type {DEmbed} from '#src/dynamo/schema/discord-embed.ts';
+import type {DServer} from '#src/dynamo/schema/discord-server.ts';
+import type {DUser} from '#src/dynamo/schema/discord-user.ts';
+import {C, E, L} from '#src/internal/pure/effect.ts';
+import type {EA} from '#src/internal/types.ts';
 
 
 const users = C.make({

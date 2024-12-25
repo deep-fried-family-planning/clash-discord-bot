@@ -1,5 +1,5 @@
-import {S} from '#src/internal/pure/effect.ts';
 import {AllianceId, ClanTag, EmbedId, InfoId, PlayerTag, RosterId, ServerId, ServerUserRefId, UserId} from '#src/dynamo/schema/common.ts';
+import {S} from '#src/internal/pure/effect.ts';
 
 
 export const encodeServerId = S.encodeUnknown(ServerId);

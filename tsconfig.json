@@ -1,21 +1,27 @@
 {
-    "compilerOptions": {
-        "target"                      : "esnext",
-        "lib"                         : ["esnext"],
-        "module"                      : "esnext",
-        "moduleResolution"            : "bundler",
-        "isolatedModules"             : true,
-        "esModuleInterop"             : true,
-        "allowSyntheticDefaultImports": true,
-        "verbatimModuleSyntax"        : true,
-        "allowArbitraryExtensions"    : true,
-        "allowImportingTsExtensions"  : true,
-        "strict"                      : true,
-        "exactOptionalPropertyTypes"  : true,
-        "baseUrl"                     : "./",
-        "paths"                       : {
-            "#src"  : ["src"],
-            "#src/*": ["src/*"]
-        }
+  "compilerOptions": {
+    "target"                      : "esnext",
+    "lib"                         : ["esnext"],
+    "module"                      : "esnext",
+    "moduleResolution"            : "bundler",
+    "isolatedModules"             : true,
+    "esModuleInterop"             : true,
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax"        : true,
+    "allowArbitraryExtensions"    : true,
+    "allowImportingTsExtensions"  : true,
+    "strict"                      : true,
+    "exactOptionalPropertyTypes"  : true,
+    "baseUrl"                     : "./",
+    "paths"                       : {
+      "#src"        : ["src"],
+      "#src/*"      : ["src/*"],
+      "dffp-discord": [
+        "src/internal/dffp-discord/*"
+      ],
+      "dffp-ix": [
+        "src/internal/dffp-ix/*"
+      ]
     }
+  }
 }

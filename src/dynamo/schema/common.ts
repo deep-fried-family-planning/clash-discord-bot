@@ -1,5 +1,6 @@
-import {S} from '#src/internal/pure/effect.ts';
 import {StartsWithId} from '#src/dynamo/schema/common-utils.ts';
+import {S} from '#src/internal/pure/effect.ts';
+
 
 export const NowId = S.Literal('now');
 

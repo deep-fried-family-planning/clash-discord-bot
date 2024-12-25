@@ -2,17 +2,7 @@ import type {CID} from '#src/internal/graph/types.ts';
 import type {bool, int} from '#src/internal/pure/types-pure.ts';
 
 
-import type {
-    APIApplicationCommandBasicOption,
-    APIApplicationCommandInteractionDataBasicOption,
-    APIApplicationCommandInteractionDataOption,
-    APIApplicationCommandInteractionDataSubcommandGroupOption,
-    APIApplicationCommandInteractionDataSubcommandOption,
-    APIApplicationCommandSubcommandGroupOption,
-    APIApplicationCommandSubcommandOption,
-    ApplicationCommandOptionType,
-    RESTPostAPIChatInputApplicationCommandsJSONBody,
-} from '@discordjs/core/http-only';
+import type {APIApplicationCommandBasicOption, APIApplicationCommandInteractionDataBasicOption, APIApplicationCommandInteractionDataOption, APIApplicationCommandInteractionDataSubcommandGroupOption, APIApplicationCommandInteractionDataSubcommandOption, APIApplicationCommandSubcommandGroupOption, APIApplicationCommandSubcommandOption, ApplicationCommandOptionType, RESTPostAPIChatInputApplicationCommandsJSONBody} from '@discordjs/core/http-only';
 
 
 // Utils

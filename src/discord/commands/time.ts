@@ -1,14 +1,14 @@
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import type {CommandSpec, IxDS} from '#src/discord/types.ts';
+import {dCodes, dLines} from '#src/discord/util/markdown.ts';
+import {dTable} from '#src/discord/util/message-table.ts';
+
+import {validateServer} from '#src/discord/util/validation.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
-import {dTable} from '#src/discord/util/message-table.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {dCodes, dLines} from '#src/discord/util/markdown.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import type {CommandSpec, IxDS} from '#src/discord/types.ts';
-import type {IxD} from '#src/internal/discord.ts';
-
-import {validateServer} from '#src/discord/util/validation.ts';
 
 
 export const TIME

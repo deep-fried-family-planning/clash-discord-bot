@@ -1,11 +1,11 @@
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {ID_ROUTES, type Route} from '#src/discord/store/id-routes.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
-import {reduceL} from '#src/internal/pure/pure-list.ts';
-import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import {RK_CLOSE} from '#src/constants/route-kind.ts';
 import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/constants/delim.ts';
+import {RK_CLOSE} from '#src/constants/route-kind.ts';
+import {ID_ROUTES, type Route} from '#src/discord/store/id-routes.ts';
 import {idPredicate} from '#src/discord/store/id.ts';
+import {pipe} from '#src/internal/pure/effect.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import {reduceL} from '#src/internal/pure/pure-list.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const fromId = (custom_id: str): Route => {

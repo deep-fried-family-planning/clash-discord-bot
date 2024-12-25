@@ -1,12 +1,12 @@
+import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord.ts';
 import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
+import type {EA} from '#src/internal/types.ts';
+import {NodeHttpClient} from '@effect/platform-node';
+import type {ResponseError} from '@effect/platform/HttpClientError';
+import {Discord, DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
 import {DiscordREST} from 'dfx/DiscordREST';
-import type {EA} from '#src/internal/types.ts';
-import {Discord, DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
-import {type IxR, type IxRE, type IxD, MGF} from '#src/internal/discord.ts';
-import type {ResponseError} from '@effect/platform/HttpClientError';
 import type {Message} from 'dfx/types';
-import {NodeHttpClient} from '@effect/platform-node';
 
 
 type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof DiscordREST.Service[T]>;

@@ -1,5 +1,5 @@
-import type {Ax, Cx, IxNamespace, Tx} from '#src/ix/types.ts';
 import type {E} from '#src/internal/pure/effect.ts';
+import type {Ax, Cx, IxNamespace, Tx} from '#src/ix/types.ts';
 
 
 export const makeModel = <

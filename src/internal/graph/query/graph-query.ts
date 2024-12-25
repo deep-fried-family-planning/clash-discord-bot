@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import type {GClans, GHits, GPlayers, GraphModel, GWars, OptimizedClan, OptimizedHit, OptimizedPlayer, OptimizedWar} from '#src/internal/graph/pipeline/optimize-types.ts';
 import type {CID, PID} from '#src/internal/graph/types.ts';
-import type {
-    GClans, GHits,
-    GPlayers, GWars, GraphModel,
-    OptimizedClan,
-    OptimizedHit,
-    OptimizedPlayer, OptimizedWar,
-} from '#src/internal/graph/pipeline/optimize-types.ts';
+import {flow} from '#src/internal/pure/effect.ts';
 import {filterKV, toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {flattenL, mapL} from '#src/internal/pure/pure-list.ts';
-import {flow} from '#src/internal/pure/effect.ts';
+
 
 type GQ<I, O> = (m: I) => O;
 type MQ<O> = (model: GraphModel) => O;

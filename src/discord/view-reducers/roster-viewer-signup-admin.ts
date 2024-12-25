@@ -1,25 +1,25 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {BackB, SingleS, SingleUserS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
-import {DT, E, pipe} from '#src/internal/pure/effect.ts';
-import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
-import {asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
-import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
-import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
-import {rosterRead} from '#src/dynamo/operations/roster.ts';
-import {dtNow} from '#src/discord/util/markdown.ts';
-import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
-import type {SelectOption} from 'dfx/types';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash';
+import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {REF_ROSTER_ID} from '#src/constants/reference.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, SingleS, SingleUserS, SubmitB, SuccessB} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {dtNow} from '#src/discord/util/markdown.ts';
+import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
+import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
+import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
+import {rosterRead} from '#src/dynamo/operations/roster.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
+import {DT, E, pipe} from '#src/internal/pure/effect.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
+import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
+import type {SelectOption} from 'dfx/types';
 
 
 const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function * () {
@@ -267,4 +267,3 @@ export const rosterViewerSignupAdminReducer = {
     [SelectDesignation.id.predicate]       : view,
     [SubmitSignup.id.predicate]            : view,
 };
-

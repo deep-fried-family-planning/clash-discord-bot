@@ -1,16 +1,15 @@
-import {makeLambda} from '@effect-aws/lambda';
-import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {SQS} from '@effect-aws/client-sqs';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import type {IxRE} from '#src/internal/discord.ts';
-import type {IxD} from '#src/internal/discord.ts';
-import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import {Cause} from 'effect';
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ixsRouter} from '#src/discord/ixs-router.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
+import type {IxD, IxRE} from '#src/internal/discord.ts';
+import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {Scheduler} from '@effect-aws/client-scheduler';
+import {SQS} from '@effect-aws/client-sqs';
+import {makeLambda} from '@effect-aws/lambda';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Cause} from 'effect';
 
 
 const slash = (ix: IxD) => E.gen(function * () {

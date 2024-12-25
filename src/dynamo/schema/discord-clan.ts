@@ -1,12 +1,12 @@
-import {Console, Schema as S} from 'effect';
-import {ClanTag, EmbedId, ServerId, ThreadId} from '#src/dynamo/schema/common.ts';
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 import {encodeClanTag, encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
+import {ClanTag, EmbedId, ServerId, ThreadId} from '#src/dynamo/schema/common.ts';
+import {DynamoError} from '#src/internal/errors.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Console, Schema as S} from 'effect';
 
 
 export const DiscordClan = S.Struct({

@@ -1,13 +1,13 @@
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dLinesS} from '#src/discord/util/markdown.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {IXCBS, IXCT} from '#src/internal/discord.ts';
-import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
-import {inspect} from 'node:util';
-import {UI} from 'dfx';
 import {RK_CLOSE, RK_OPEN} from '#src/constants/route-kind.ts';
+import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {dLinesS} from '#src/discord/util/markdown.ts';
+import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
+import {IXCBS, IXCT} from '#src/internal/discord.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {UI} from 'dfx';
+import {inspect} from 'node:util';
 
 
 export const logDiscordError = (e: unknown[]) => E.gen(function * () {

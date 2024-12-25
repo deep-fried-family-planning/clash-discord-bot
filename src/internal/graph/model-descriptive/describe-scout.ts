@@ -1,15 +1,16 @@
-import {queryAttacksByClan, queryClan, queryWarsByClan} from '#src/internal/graph/query/graph-query.ts';
-import {filterL, flattenL, mapL, ofL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
-import {mean as meanThrowable, median as medianThrowable, standardDeviation as stdThrowable} from 'simple-statistics';
-import {descriptiveHitRates} from '#src/internal/graph/model-descriptive/descriptive-hit-rates.ts';
 import type {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
-import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
+import {descriptiveHitRates} from '#src/internal/graph/model-descriptive/descriptive-hit-rates.ts';
 import type {OptimizedHit} from '#src/internal/graph/pipeline/optimize-types.ts';
-import {compareTwoStrings} from 'string-similarity';
-import type {num} from '#src/internal/pure/types-pure.ts';
+import {queryAttacksByClan, queryClan, queryWarsByClan} from '#src/internal/graph/query/graph-query.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
-import {collect} from 'effect/Record';
+import {filterL, flattenL, mapL, ofL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
+import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
+import type {num} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
+import {collect} from 'effect/Record';
+import {mean as meanThrowable, median as medianThrowable, standardDeviation as stdThrowable} from 'simple-statistics';
+import {compareTwoStrings} from 'string-similarity';
+
 
 const median = (xs: num[]) => {
     try {

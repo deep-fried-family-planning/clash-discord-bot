@@ -1,12 +1,12 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
-import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
-import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
-import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {ForwardB, PrimaryB, SingleS} from '#src/discord/components/global-components.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
+import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
+import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 
 
 const getClans = (s: St) => E.gen(function * () {
@@ -74,5 +74,3 @@ export const clanSelectReducer = {
     [ClanSelectB.id.predicate]: view,
     [ClanS.id.predicate]      : view,
 };
-
-

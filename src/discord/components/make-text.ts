@@ -1,10 +1,10 @@
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {UI} from 'dfx';
-import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/store/derive-state.ts';
-import type {Route, RouteParams} from '#src/discord/store/id-routes.ts';
-import type {TextInput} from 'dfx/types';
 import {toId} from '#src/discord/store/id-build.ts';
+import type {Route, RouteParams} from '#src/discord/store/id-routes.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Maybe} from '#src/internal/pure/types.ts';
+import {UI} from 'dfx';
+import type {TextInput} from 'dfx/types';
 
 
 export type MadeText = ReturnType<typeof makeText>;
@@ -45,4 +45,3 @@ export const makeText = (
         },
     };
 };
-

@@ -1,14 +1,13 @@
-import type {IxD, IxDc, IxDm} from '#src/internal/discord.ts';
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {inspect} from 'node:util';
-import type {ActionRow, TextInput} from 'dfx/types';
-import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import {emptyKV} from '#src/internal/pure/pure-kv.ts';
-import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ComponentMapItem} from '#src/discord/store/derive-state.ts';
 import {fromId} from '#src/discord/store/id-parse.ts';
 import type {Route} from '#src/discord/store/id-routes.ts';
+import type {IxD, IxDc, IxDm} from '#src/internal/discord.ts';
+import {pipe} from '#src/internal/pure/effect.ts';
+import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Maybe} from '#src/internal/pure/types.ts';
+import type {ActionRow, TextInput} from 'dfx/types';
 
 
 export type Ax = {
@@ -54,5 +53,3 @@ export const deriveAction = (ix: IxD, d: IxDc | IxDm) => {
         cmap,
     } as const satisfies Ax;
 };
-
-

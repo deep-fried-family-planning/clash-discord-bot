@@ -1,5 +1,6 @@
-import type {int, isodate, num, url} from '#src/internal/pure/types-pure.ts';
 import type {CID, PID} from '#src/internal/graph/types.ts';
+import type {int, iso, num, url} from '#src/internal/pure/types-pure.ts';
+
 
 export type CK_Player_PreviousHitsClan = {
     tag      : CID;
@@ -39,9 +40,9 @@ export type CK_Player_PreviousHits = {
         teamSize            : int;
         attacksPerMember    : int;
         battleModifier      : string;
-        preparationStartTime: isodate;
-        startTime           : isodate;
-        endTime             : isodate;
+        preparationStartTime: iso;
+        startTime           : iso;
+        endTime             : iso;
         clan                : CK_Player_PreviousHitsClan;
         opponent            : CK_Player_PreviousHitsClan;
         type                : 'random';

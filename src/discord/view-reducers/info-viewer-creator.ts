@@ -1,23 +1,23 @@
-import {BackB, NewB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {asEditor, unset} from '#src/discord/components/component-utils.ts';
-import {InfoViewerB} from '#src/discord/view-reducers/info-viewer.ts';
-import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
-import type {Embed} from 'dfx/types';
-import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
-import {infoCreate} from '#src/dynamo/operations/info.ts';
-import {v4} from 'uuid';
-import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
-import type {num, str} from '#src/internal/pure/types-pure.ts';
 import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/constants/ix-constants.ts';
-import {decodePersist, encodePersist, extractPersist} from '#src/discord/components/persistor.ts';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
 import {LABEL_TITLE_NEW_INFO} from '#src/constants/label.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asEditor, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, NewB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
+import {decodePersist, encodePersist, extractPersist} from '#src/discord/components/persistor.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
+import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
+import {InfoViewerB} from '#src/discord/view-reducers/info-viewer.ts';
+import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
+import {infoCreate} from '#src/dynamo/operations/info.ts';
+import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {num, str} from '#src/internal/pure/types-pure.ts';
+import type {Embed} from 'dfx/types';
+import {v4} from 'uuid';
 
 
 const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(function * () {

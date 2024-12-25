@@ -1,7 +1,7 @@
-import {UI} from 'dfx';
-import {toId} from '#src/discord/store/id-build.ts';
-import {PlayerTagT} from '#src/discord/modals/link-account-modal.ts';
 import {RK_MODAL_OPEN, RK_MODAL_SUBMIT} from '#src/constants/route-kind.ts';
+import {PlayerTagT} from '#src/discord/modals/link-account-modal.ts';
+import {toId} from '#src/discord/store/id-build.ts';
+import {UI} from 'dfx';
 
 
 export const LINK_ACCOUNT_ADMIN_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'LAA'});

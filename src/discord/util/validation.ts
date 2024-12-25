@@ -1,7 +1,8 @@
-import type {IxD} from '#src/internal/discord.ts';
-import {E} from '#src/internal/pure/effect.ts';
 import {getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
+import {E} from '#src/internal/pure/effect.ts';
+
 
 export const validateServer = (data: IxD) => E.gen(function* () {
     if (!data.member) {

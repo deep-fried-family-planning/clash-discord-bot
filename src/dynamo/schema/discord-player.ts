@@ -1,11 +1,11 @@
-import {Console, Schema as S} from 'effect';
-import {EmbedId, PlayerTag, UserId} from '#src/dynamo/schema/common.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {DynamoError} from '#src/internal/errors.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {encodePlayerTag, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
+import {EmbedId, PlayerTag, UserId} from '#src/dynamo/schema/common.ts';
+import {DynamoError} from '#src/internal/errors.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Console, Schema as S} from 'effect';
 
 
 export const DiscordPlayer = S.Struct({

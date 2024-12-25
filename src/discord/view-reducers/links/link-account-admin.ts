@@ -1,17 +1,17 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {BackB, DangerB, ForwardB, SingleS, SingleUserS, SuccessB} from '#src/discord/components/global-components.ts';
-import {PlayerTagT} from '#src/discord/modals/link-account-modal.ts';
-import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
-import {oneofus} from '#src/discord/commands/oneofus.ts';
-import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LINK_ACCOUNT_ADMIN_MODAL_SUBMIT} from '#src/discord/modals/link-account-admin-modal.ts';
-import {asFailure, asSuccess, unset} from '#src/discord/components/component-utils.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_ADMIN_LINK, LABEL_LINK, LABEL_PLAYER_TAG, LABEL_TITLE_ADMIN_LINK, LABEL_TRY_AGAIN} from '#src/constants/label.ts';
 import {PLACEHOLDER_ACCOUNT_TYPE, PLACEHOLDER_SELECT_USER} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {oneofus} from '#src/discord/commands/oneofus.ts';
+import {asFailure, asSuccess, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, DangerB, ForwardB, SingleS, SingleUserS, SuccessB} from '#src/discord/components/global-components.ts';
+import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LINK_ACCOUNT_ADMIN_MODAL_SUBMIT} from '#src/discord/modals/link-account-admin-modal.ts';
+import {PlayerTagT} from '#src/discord/modals/link-account-modal.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {LinkB} from '#src/discord/view-reducers/omni-board.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 export const LinkAccountAdminB = DangerB.as(makeId(RK_OPEN, 'LAA'), {

@@ -4,6 +4,7 @@ import type * as C_KIND from '#src/ix/enum/kind.ts';
 import type * as C_MOD from '#src/ix/enum/mod.ts';
 import type * as C_ROW from '#src/ix/enum/row.ts';
 
+
 export type BMULTI = typeof C_BMULTI;
 export type COL = typeof C_COL;
 export type KIND = typeof C_KIND;

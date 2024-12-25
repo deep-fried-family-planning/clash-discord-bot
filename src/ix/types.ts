@@ -1,8 +1,8 @@
 import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Kind, Mod} from '#src/ix/enum/enums.ts';
+import type {Button, ChannelSelect, LongText, MentionableSelect, Modal, MultiButton, NavSelect, Pressable, RoleSelect, Selectable, ShortText, StringSelect, Typeable, UserSelect} from '#src/ix/types-components.ts';
 import type {Embed, Message} from 'dfx/types';
-import type {Button, ChannelSelect, Modal, LongText, MentionableSelect, MultiButton, NavSelect, Selectable, Pressable, RoleSelect, ShortText, StringSelect, UserSelect, Typeable} from '#src/ix/types-components.ts';
-import type {Col, Kind, Mod, Row} from '#src/ix/enum/enums.ts';
-import type {IXCT} from '#src/internal/discord.ts';
+
 
 export type IxNamespace = str;
 export type Id = str;
@@ -66,5 +66,3 @@ export type Rx = {
         | Selectable
         | Typeable
 };
-
-

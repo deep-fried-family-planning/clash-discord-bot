@@ -1,20 +1,20 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS} from '#src/discord/components/global-components.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
-import {asConfirm, asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
-import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
-import {filterL} from '#src/internal/pure/pure-list.ts';
-import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
-import {dtNow} from '#src/discord/util/markdown.ts';
-import {filterKV} from '#src/internal/pure/pure-kv.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash';
+import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asConfirm, asSuccess, asViewer, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import {dtNow} from '#src/discord/util/markdown.ts';
+import {RosterS, RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
+import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
+import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {filterKV} from '#src/internal/pure/pure-kv.ts';
+import {filterL} from '#src/internal/pure/pure-list.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
@@ -133,4 +133,3 @@ export const rosterViewerOptOutReducer = {
     [Delete.id.predicate]             : view,
     [DeleteConfirm.id.predicate]      : view,
 };
-

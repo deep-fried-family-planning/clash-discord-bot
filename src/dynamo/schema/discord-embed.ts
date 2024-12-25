@@ -1,6 +1,6 @@
-import {S} from '#src/internal/pure/effect.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {EmbedId, NowId, ServerId, UserId} from '#src/dynamo/schema/common.ts';
+import {S} from '#src/internal/pure/effect.ts';
 
 
 export const equalField = S.equivalence(S.Struct({
@@ -98,5 +98,3 @@ export const DiscordEmbed = S.Struct({
 
 export const encodeDiscordEmbed = S.encodeUnknown(DiscordEmbed);
 export const decodeDiscordEmbed = S.decodeUnknown(DiscordEmbed);
-
-

@@ -1,4 +1,5 @@
-import type {int, isodate, unixdate, url} from '#src/internal/pure/types-pure.ts';
+import type {int, iso, unix, url} from '#src/internal/pure/types-pure.ts';
+
 
 export type CK_War_Member = {
     tag               : string;
@@ -39,11 +40,11 @@ export type CK_War = {
     teamSize            : int;
     attacksPerMember?   : int;
     battleModifier      : string;
-    preparationStartTime: isodate;
-    startTime           : isodate;
-    endTime             : isodate;
+    preparationStartTime: iso;
+    startTime           : iso;
+    endTime             : iso;
     status_code         : int;
-    timestamp           : unixdate;
+    timestamp           : unix;
     _response_retry     : 120;
     clan                : CK_War_Clan;
     opponent            : CK_War_Clan;

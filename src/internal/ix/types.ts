@@ -1,6 +1,6 @@
-import type {IxD} from '#src/internal/discord.ts';
-import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
+import type {DUser} from '#src/dynamo/schema/discord-user.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

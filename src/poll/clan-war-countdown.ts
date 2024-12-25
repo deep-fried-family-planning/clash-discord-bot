@@ -1,9 +1,9 @@
-import type {ClanWar} from 'clashofclans.js';
-import {E} from '#src/internal/pure/effect.ts';
-import type {DClan} from '#src/dynamo/schema/discord-clan.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import type {DClan} from '#src/dynamo/schema/discord-clan.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import type {ClanWar} from 'clashofclans.js';
 
 
 export const nicknames = {

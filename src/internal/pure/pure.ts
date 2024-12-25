@@ -1,8 +1,9 @@
-import {Order as OrdN} from 'effect/Number';
-import {Order as OrdS} from 'effect/String';
-import {Order as OrdB} from 'effect/Boolean';
-import {make as fromCompare} from 'effect/Order';
 import type {DispatchedHit} from '#src/internal/graph/pipeline/ingest-types.ts';
+import {Order as OrdB} from 'effect/Boolean';
+import {Order as OrdN} from 'effect/Number';
+import {make as fromCompare} from 'effect/Order';
+import {Order as OrdS} from 'effect/String';
+
 
 export {
     OrdN,

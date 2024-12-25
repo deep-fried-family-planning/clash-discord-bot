@@ -1,23 +1,23 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {BackB, SuccessB} from '#src/discord/components/global-components.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import type {snflk} from '#src/discord/types.ts';
-import {UserB} from './user-settings.ts';
-import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
-import {ClanViewerB} from '#src/discord/view-reducers/clan-viewer.ts';
-import {LinkAccountAdminB} from '#src/discord/view-reducers/links/link-account-admin.ts';
-import {RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
-import {AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
-import {unset} from '#src/discord/components/component-utils.ts';
-import {InfoViewerB} from '#src/discord/view-reducers/info-viewer.ts';
-import {dLinesS} from '#src/discord/util/markdown.ts';
-import {BotViewer} from '#src/discord/view-reducers/bot-viewer.ts';
-import {ServerViewerB} from '#src/discord/view-reducers/server-viewer.ts';
-import {BotViewerDevB, DEVS} from '#src/discord/view-reducers/bot-viewer-dev.ts';
-import {RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
 import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/constants/label.ts';
+import {RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
+import {unset} from '#src/discord/components/component-utils.ts';
+import {BackB, SuccessB} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
+import type {snflk} from '#src/discord/types.ts';
+import {dLinesS} from '#src/discord/util/markdown.ts';
+import {AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
+import {BotViewerDevB, DEVS} from '#src/discord/view-reducers/bot-viewer-dev.ts';
+import {BotViewer} from '#src/discord/view-reducers/bot-viewer.ts';
+import {ClanViewerB} from '#src/discord/view-reducers/clan-viewer.ts';
+import {InfoViewerB} from '#src/discord/view-reducers/info-viewer.ts';
+import {LinkAccountAdminB} from '#src/discord/view-reducers/links/link-account-admin.ts';
+import {LinkAccountB} from '#src/discord/view-reducers/links/link-account.ts';
+import {RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
+import {ServerViewerB} from '#src/discord/view-reducers/server-viewer.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {UserB} from './user-settings.ts';
 
 
 const axn = {

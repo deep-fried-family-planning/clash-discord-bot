@@ -1,8 +1,7 @@
-import {C, CSL, L} from '#src/internal/pure/effect.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {type DServer, getDiscordServer, scanDiscordServers} from '#src/dynamo/schema/discord-server.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {type DServer, getDiscordServer, scanDiscordServers} from '#src/dynamo/schema/discord-server.ts';
+import {C, CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {EA} from '#src/internal/types.ts';
 
 

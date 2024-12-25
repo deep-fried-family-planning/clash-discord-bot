@@ -1,6 +1,7 @@
-import type {num} from '#src/internal/pure/types-pure.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedModel, DispatchedPlayer, DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import type {UUID} from '#src/internal/graph/types.ts';
+import type {num} from '#src/internal/pure/types-pure.ts';
+
 
 export type DerivedWar =
     & DispatchedWar

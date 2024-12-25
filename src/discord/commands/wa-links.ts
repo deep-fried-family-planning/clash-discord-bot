@@ -1,17 +1,17 @@
+import {getAliasTag} from '#src/clash/get-alias-tag.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/constants/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/types.ts';
+import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/util/markdown.ts';
+import {dTable} from '#src/discord/util/message-table.ts';
+import {validateServer} from '#src/discord/util/validation.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {fetchWarEntities} from '#src/internal/graph/fetch-war-entities.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {concatL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
-import type {ClanWar, ClanWarMember} from 'clashofclans.js';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/util/markdown.ts';
-import {dTable} from '#src/discord/util/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/discord/types.ts';
-import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import type {IxD} from '#src/internal/discord.ts';
-import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/constants/ix-constants.ts';
-import {validateServer} from '#src/discord/util/validation.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
+import type {ClanWar, ClanWarMember} from 'clashofclans.js';
 
 
 export const WA_LINKS = {

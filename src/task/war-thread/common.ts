@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {DT, type E, pipe} from '#src/internal/pure/effect.ts';
-import {g, S} from '#src/internal/pure/effect.ts';
-import {DiscordServer, type DServer} from '#src/dynamo/schema/discord-server.ts';
-import {type DClan, DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 import {ThreadId} from '#src/dynamo/schema/common.ts';
-import type {ClanWar} from 'clashofclans.js';
+import {type DClan, DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import {DiscordServer, type DServer} from '#src/dynamo/schema/discord-server.ts';
+import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
+import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
+import type {EAR} from '#src/internal/types.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
+import type {ClanWar} from 'clashofclans.js';
 import type {Channel} from 'dfx/types';
 import type {DurationInput} from 'effect/Duration';
-import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
-import type {EAR} from '#src/internal/types.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export const TEMP_ROLES = {
@@ -131,5 +130,3 @@ export const makeTask = <
         }),
     };
 };
-
-

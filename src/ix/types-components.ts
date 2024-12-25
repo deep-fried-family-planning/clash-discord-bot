@@ -1,6 +1,7 @@
 import type {BMulti, COL, Col, KIND, Mod, Row} from '#src/ix/enum/enums.ts';
 import type {Id} from '#src/ix/types.ts';
 
+
 export type Structural =
     {
         row: Row;
@@ -117,5 +118,3 @@ export type LongText = {
     kind: KIND['K_TXTLNG'];
     mod : Mod;
 };
-
-

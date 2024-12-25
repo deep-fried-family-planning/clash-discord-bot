@@ -1,7 +1,8 @@
-import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type DPlayer, scanDiscordPlayers} from '#src/dynamo/schema/discord-player.ts';
+import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {EA} from '#src/internal/types.ts';
+
 
 const cache = E.gen(function* () {
     yield * CSL.log('player cache');

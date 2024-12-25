@@ -1,5 +1,4 @@
-import type {L} from '#src/internal/pure/effect.ts';
-import type {E} from '#src/internal/pure/effect.ts';
+import type {E, L} from '#src/internal/pure/effect.ts';
 import type {Context} from 'effect';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

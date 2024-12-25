@@ -1,23 +1,23 @@
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {BackB, NewB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
-import {DT, E, pipe} from '#src/internal/pure/effect.ts';
-import {RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
-import {asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
-import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
-import {DateTimeEditorB} from '#src/discord/view-reducers/editors/embed-date-time-editor.ts';
 import {SELECT_POSITIONS, SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.ts';
+import {LABEL_TITLE_CREATE_ROSTER} from '#src/constants/label.ts';
+import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asEditor, asSuccess, unset} from '#src/discord/components/component-utils.ts';
+import {BackB, NewB, SingleS, SubmitB} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
 import {dtNow, dtNowIso} from '#src/discord/util/markdown.ts';
-import {rosterCreate} from '#src/dynamo/operations/roster.ts';
-import {v4} from 'uuid';
+import {DateTimeEditorB} from '#src/discord/view-reducers/editors/embed-date-time-editor.ts';
+import {EmbedEditorB} from '#src/discord/view-reducers/editors/embed-editor.ts';
+import {RosterViewerB} from '#src/discord/view-reducers/roster-viewer.ts';
 import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
+import {rosterCreate} from '#src/dynamo/operations/roster.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
+import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
-import type {St} from '#src/discord/store/derive-state.ts';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
-import {LABEL_TITLE_CREATE_ROSTER} from '#src/constants/label.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
+import {v4} from 'uuid';
 
 
 const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function * () {
@@ -146,4 +146,3 @@ export const rosterViewerCreatorReducer = {
     [PositionS.id.predicate]           : view,
     [TypeS.id.predicate]               : view,
 };
-

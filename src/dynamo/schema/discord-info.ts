@@ -1,6 +1,6 @@
-import {S} from '#src/internal/pure/effect.ts';
-import {EmbedId, InfoId, ServerId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {EmbedId, InfoId, ServerId} from '#src/dynamo/schema/common.ts';
+import {S} from '#src/internal/pure/effect.ts';
 
 
 export type DInfo = S.Schema.Type<typeof DiscordInfo>;

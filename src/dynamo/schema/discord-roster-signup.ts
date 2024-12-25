@@ -1,6 +1,6 @@
-import {Schema as S} from 'effect';
-import {RosterId, UserId} from '#src/dynamo/schema/common.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {RosterId, UserId} from '#src/dynamo/schema/common.ts';
+import {Schema as S} from 'effect';
 
 
 export type DRosterSignup = S.Schema.Type<typeof DiscordRosterSignup>;

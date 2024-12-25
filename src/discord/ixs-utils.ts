@@ -1,8 +1,8 @@
 import type {CommandSpec, IxDS} from '#src/discord/types.ts';
 import {type IxD, IXSOT} from '#src/internal/discord.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
-import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
+import {reduceL} from '#src/internal/pure/pure-list.ts';
 
 
 export const nameOptions = <T extends CommandSpec>(ix: IxD): IxDS<T> => {
