@@ -10,8 +10,9 @@ type _Meta = {
 
 
 export type T = D.TaggedEnum<{
-    None : _Meta & Embed;
-    Basic: _Meta & Embed;
+    None      : _Meta & Embed;
+    Basic     : _Meta & Embed;
+    Controller: _Meta & Embed;
 }>;
 export const C = D.taggedEnum<T>();
 

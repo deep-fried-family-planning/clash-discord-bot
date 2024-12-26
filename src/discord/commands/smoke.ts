@@ -1,4 +1,5 @@
-import {defaultCxRouter} from '#discord/model-routing/ope.ts';
+import {exampleDriver, exampleView} from '#discord/example.ts';
+import {cxRouter} from '#discord/model-routing/ope.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {RK_ENTRY} from '#src/constants/route-kind.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
@@ -10,45 +11,45 @@ import {UI} from 'dfx';
 
 
 export const SMOKE
-    = {
-        type       : 1,
-        name       : 'smoke',
-        description: 'devs & inner circle ONLY!!!',
-        options    : {
-            ...OPTION_CLAN,
-        },
-    } as const satisfies CommandSpec;
+               = {
+  type       : 1,
+  name       : 'smoke',
+  description: 'devs & inner circle ONLY!!!',
+  options    : {
+    ...OPTION_CLAN,
+  },
+} as const satisfies CommandSpec;
 
 
 /**
  * @desc [SLASH /smoke]
  */
 export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
-    const [server, user] = yield * validateServer(data);
+  const [server, user] = yield * validateServer(data);
 
-    if (!user.roles.includes(server.admin as snflk)) {
-        return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
-    }
+  if (!user.roles.includes(server.admin as snflk)) {
+    return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
+  }
 
-    return {
-        embeds: [{
-            author: {
-                name: 'Dev Omni',
-            },
-            title      : 'Dev',
-            description: 'The one board to rule them all',
-        }],
-        components: UI.grid([
-            [UI.button({
-                label    : 'Dev Mode',
-                custom_id: defaultCxRouter.build({
-                    root: 'v3',
-                    view: 'root',
-                    row : 'test',
-                    col : 'test',
-                    mod : RK_ENTRY,
-                }),
-            })],
-        ]),
-    };
+  return {
+    embeds: [{
+      author: {
+        name: 'Dev Omni',
+      },
+      title      : 'Dev',
+      description: 'The one board to rule them all',
+    }],
+    components: UI.grid([
+      [UI.button({
+        label    : 'Dev Mode',
+        custom_id: cxRouter.build({
+          root: exampleDriver.name,
+          view: exampleView.name,
+          row : 'test',
+          col : 'test',
+          mod : RK_ENTRY,
+        }),
+      })],
+    ]),
+  };
 });

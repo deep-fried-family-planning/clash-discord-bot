@@ -5,9 +5,9 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export class DeveloperError extends D.TaggedError('DeveloperError')<{
-    user     : UserMessage;
-    dev      : DeveloperMessage;
-    message  : str;
-    original?: Error;
-    ix?      : IxD;
+  user?    : UserMessage;
+  dev?     : DeveloperMessage;
+  message? : str;
+  original?: Error;
+  ix?      : IxD;
 }> {}

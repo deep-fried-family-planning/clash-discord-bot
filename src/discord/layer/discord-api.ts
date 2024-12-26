@@ -14,44 +14,46 @@ type DE<T> = E.Effect<T, DiscordRESTError | ResponseError>;
 
 
 const api = E.gen(function * () {
-    const discord = yield * DiscordREST;
+  const discord = yield * DiscordREST;
 
-    const executeWebhookJson = (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
-        ...p[3],
-        urlParams: {
-            ...p[3]?.urlParams,
-            wait: true,
-        },
-    }).json as DE<Message>;
+  const executeWebhookJson = (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
+    ...p[3],
+    urlParams: {
+      ...p[3]?.urlParams,
+      wait: true,
+    },
+  }).json as DE<Message>;
 
-    return {
-        ...discord,
-        executeWebhookJson,
+  return {
+    ...discord,
+    executeWebhookJson,
 
-        entryMenu: (ix: IxD, res: IxR['data']) => discord.createInteractionResponse(ix.id, ix.token, {
-            type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-                flags: MGF.EPHEMERAL,
-                ...res,
-            },
-        }).json,
+    deleteMenu: (ix: IxD) => discord.deleteOriginalInteractionResponse(ix.application_id, ix.token),
 
-        editMenu: (ix: IxD, res: Partial<IxRE>) => discord.editOriginalInteractionResponse(ix.application_id, ix.token, res).json,
-    };
+    entryMenu: (ix: IxD, res: IxR['data']) => discord.createInteractionResponse(ix.id, ix.token, {
+      type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        flags: MGF.EPHEMERAL,
+        ...res,
+      },
+    }).json,
+
+    editMenu: (ix: IxD, res: Partial<IxRE>) => discord.editOriginalInteractionResponse(ix.application_id, ix.token, res).json,
+  };
 });
 
 
 export class DiscordApi extends E.Tag('DeepFryerDiscord')<
-    DiscordApi,
-    EA<typeof api>
+  DiscordApi,
+  EA<typeof api>
 >() {
-    static Live = L.effect(this, api);
+  static Live = L.effect(this, api);
 }
 
 
 export const DiscordLayerLive = pipe(
-    DiscordApi.Live,
-    L.provideMerge(DiscordRESTMemoryLive),
-    L.provide(NodeHttpClient.layerUndici),
-    L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
+  DiscordApi.Live,
+  L.provideMerge(DiscordRESTMemoryLive),
+  L.provide(NodeHttpClient.layerUndici),
+  L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
 );

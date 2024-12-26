@@ -1,25 +1,27 @@
 {
-    "compilerOptions": {
-        "target"                      : "esnext",
-        "lib"                         : ["esnext"],
-        "module"                      : "esnext",
-        "moduleResolution"            : "bundler",
-        "isolatedModules"             : true,
-        "esModuleInterop"             : true,
-        "allowSyntheticDefaultImports": true,
-        "verbatimModuleSyntax"        : true,
-        "allowArbitraryExtensions"    : true,
-        "allowImportingTsExtensions"  : true,
-        "strict"                      : true,
-        "exactOptionalPropertyTypes"  : true,
-        "baseUrl"                     : "./",
-        "paths"                       : {
-            "#src"               : ["src"],
-            "#src/*"             : ["src/*"],
-            "#dfdis"             : ["src/internal/discord/index.ts"],
-            "#discord/*"         : ["src/internal/discord/*"],
-            "#discord/entities"  : ["src/internal/discord/entities"],
-            "#discord/entities/*": ["src/internal/discord/entities/*"]
-        }
+  "compilerOptions": {
+    "target"                      : "esnext",
+    "lib"                         : ["esnext"],
+    "module"                      : "esnext",
+    "moduleResolution"            : "bundler",
+    "isolatedModules"             : true,
+    "esModuleInterop"             : true,
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax"        : true,
+    "allowArbitraryExtensions"    : true,
+    "allowImportingTsExtensions"  : true,
+    "strict"                      : true,
+    "exactOptionalPropertyTypes"  : true,
+    "baseUrl"                     : "./",
+    "paths"                       : {
+      "#src"               : ["src"],
+      "#src/*"             : ["src/*"],
+      "#dfdis"             : ["src/internal/discord/index.ts"],
+      "#discord/*"         : ["src/internal/discord/*"],
+      "#discord/entities"  : ["src/internal/discord/entities"],
+      "#discord/entities/*": ["src/internal/discord/entities/*"],
+      "#pure/effect"       : ["src/internal/pure/effect.ts"],
+      "#pure/dfx"          : ["src/internal/pure/dfx.ts"]
     }
+  }
 }

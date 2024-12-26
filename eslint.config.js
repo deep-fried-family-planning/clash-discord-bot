@@ -1,3 +1,4 @@
+// @ts-check
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
@@ -76,8 +77,10 @@ const config = [
                 '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
 
                 // temp
-                '@typescript-eslint/no-unused-expressions'    : [0],
-                '@typescript-eslint/no-unsafe-enum-comparison': [0],
+                '@typescript-eslint/no-unused-expressions'        : [0],
+                '@typescript-eslint/no-unsafe-enum-comparison'    : [0],
+                '@typescript-eslint/only-throw-error'             : [0],
+                '@typescript-eslint/restrict-template-expressions': [0],
             },
         },
         {
@@ -88,13 +91,15 @@ const config = [
                     singleLine: {beforeColon: false, afterColon: true},
                     multiLine : {beforeColon: false, afterColon: true, align: 'colon', mode: 'strict'},
                 }],
-                '@stylistic/object-curly-spacing'   : [2, 'never'],
+                // '@stylistic/object-curly-spacing'   : [2, 'never'],
                 '@stylistic/type-annotation-spacing': [0],
                 '@stylistic/max-statements-per-line': [2, {max: 2}],
                 '@stylistic/semi'                   : [2, 'always', {omitLastInOneLineBlock: true}],
-                '@stylistic/no-multi-spaces'        : [2, {exceptions: {TSPropertySignature: true}}],
+                '@stylistic/no-multi-spaces'        : [0, {exceptions: {TSPropertySignature: true}}],
                 '@stylistic/multiline-ternary'      : [0],
-                '@stylistic/indent'                 : [2, 4, {flatTernaryExpressions: true}],
+                '@stylistic/indent-binary-ops'      : [0],
+                '@stylistic/object-curly-spacing'   : [0],
+                '@stylistic/indent'                 : [0, 4, {flatTernaryExpressions: true}],
                 '@stylistic/no-multiple-empty-lines': [2],
                 '@typescript-eslint/no-unused-vars' : [2, {
                     args                          : 'all',

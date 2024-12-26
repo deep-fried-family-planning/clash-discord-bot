@@ -8,13 +8,17 @@ export * as Vn from '#discord/entities/vnode.ts';
 
 export * as Ax from '#discord/entities-basic/ax.ts';
 export * as Cx from '#discord/entities-basic/cx.ts';
+export * as CxV from '#discord/entities-basic/cxv.ts';
 export * as Ex from '#discord/entities-basic/ex.ts';
+export * as ExV from '#discord/entities-basic/exv.ts';
 export * as ExVi from '#discord/model-routing/ex-virtual.ts';
 export * as Rx from '#discord/entities-basic/rx.ts';
 export * as Sx from '#discord/entities-basic/sx.ts';
 export * as Tracker from '#discord/entities-basic/tracker.ts';
 export * as Tx from '#discord/entities-basic/tx.ts';
-export * as Vx from '#discord/entities-basic/vx.ts';
+
+
+export * as Vcx from '#discord/entities-basic/cxv.ts';
 
 
 export * as VxCx from '#discord/entities-basic/vx-cx.ts';
