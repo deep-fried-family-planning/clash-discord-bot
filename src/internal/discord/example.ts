@@ -2,6 +2,7 @@ import {Button, Row, Text} from '#discord/entities/cxv.ts';
 import {EmbedController} from '#discord/entities/exv.ts';
 import {makeView} from '#discord/entities/view.ts';
 import {useState, useView} from '#discord/hooks/context.ts';
+import {v2Router} from '#discord/model-routing/ope.ts';
 import {StyleT} from '#pure/dfx';
 import {Driver} from '.';
 
@@ -9,8 +10,8 @@ import {Driver} from '.';
 const ExampleDialog = () => {
   return [
     {
-      title    : 'ExampleDialog',
-      custom_id: {},
+      title: 'ExampleDialog',
+      route: v2Router.empty(),
     },
     Row(
       Text({

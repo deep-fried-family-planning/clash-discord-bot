@@ -5,7 +5,7 @@ import {createHookContext, updateHookContext} from '#discord/hooks/context.ts';
 import {v2Router} from '#discord/model-routing/ope.ts';
 import {resolveIx, saveIx} from '#discord/relay.ts';
 import {isComponentIx, type IxIn} from '#discord/utils/types.ts';
-import {type RestDataResolved, type RestRow, type RestStringSelect, RxType, TxFlag, TxType} from '#pure/dfx';
+import {type RestDataResolved, type RestRow, type RestStringSelect, RxType} from '#pure/dfx';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import type {snflk} from '#src/discord/types.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
@@ -107,18 +107,12 @@ export const implementation = <
     } as IxIn);
   }
 
-  const defer = ax.mod === Const.ENTRY
-    ? {
-      type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        flags: TxFlag.EPHEMERAL,
-      },
-    }
-    : {
-      type: TxType.DEFERRED_UPDATE_MESSAGE,
-    };
-
-  yield * DiscordApi.createInteractionResponse(ix.id, ix.token, defer);
+  if (ax.mod === Const.ENTRY) {
+    yield * DiscordApi.deferEntryEphemeral(ix);
+  }
+  else {
+    yield * DiscordApi.deferUpdate(ix);
+  }
 
   const view           = driver.views[nextView].view(driver.name);
   const grid           = makeGrid(view.components);
