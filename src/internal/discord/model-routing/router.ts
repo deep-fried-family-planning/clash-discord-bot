@@ -11,7 +11,6 @@ export type ParamsBase<T extends str = str> = {
 const makeParser = (route: str) => {
   const parser = routeParse(route);
 
-
   return {
     template: route,
     keys    : parser.keys,
@@ -57,7 +56,7 @@ export const build = <P extends ParamsBase>(routes: str[]) => {
 
   return (p: { [k in keyof P]: str }) => {
     const defined = pipe(p, Kv.filter((v) => !!v));
-    const keys    = [...Kv.keys(defined), 'mod'];
+    const keys    = [...Kv.keys(defined)];
 
     const parser = routeParsers.find((rP) =>
       (rP.keys.length === keys.length || rP.keys.length === keys.length - 1)

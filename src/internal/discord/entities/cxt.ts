@@ -1,6 +1,6 @@
 import {Cx} from '#dfdis';
 import {DeveloperError} from '#discord/errors/developer-error.ts';
-import {TxType, TypeC} from '#pure/dfx';
+import {TypeC} from '#pure/dfx';
 import {Ar, p} from '#pure/effect';
 import type {Component} from 'dfx/types';
 
@@ -35,13 +35,11 @@ export const makeGrid = (cxs: Cx.T[][]) => p(cxs, Ar.map((cxs, row) => ({
             cx,
             Cx.set('route', {
                 ...cx.route,
-                row  : `${row}`,
-                col  : `${col}`,
-                defer: cx.route.defer ?? `${TxType.DEFERRED_UPDATE_MESSAGE}`,
+                row: `${row}`,
+                col: `${col}`,
             }),
             Cx.buildId,
             makeRest,
-            (cx) => cx,
         );
     })),
 }))) as unknown as Component[];

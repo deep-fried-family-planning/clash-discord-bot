@@ -1,10 +1,10 @@
 import {exampleDriver, exampleView} from '#discord/example.ts';
-import {cxRouter} from '#discord/model-routing/ope.ts';
+import {v2Router} from '#discord/model-routing/ope.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {RK_ENTRY} from '#src/constants/route-kind.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
+import {Const} from '#src/internal/discord/index';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {UI} from 'dfx';
@@ -42,12 +42,11 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
     components: UI.grid([
       [UI.button({
         label    : 'Dev Mode',
-        custom_id: cxRouter.build({
+        custom_id: v2Router.build({
+          ...v2Router.empty(),
           root: exampleDriver.name,
           view: exampleView.name,
-          row : 'test',
-          col : 'test',
-          mod : RK_ENTRY,
+          mod : Const.ENTRY,
         }),
       })],
     ]),

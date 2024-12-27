@@ -1,5 +1,4 @@
 import type {Cx} from '#dfdis';
-import type {CxMap} from '#discord/utils/types.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -22,9 +21,9 @@ export type T = {
 export const empty = (): T => ({});
 
 
-export const pure = <A extends T>(s: A) => s;
-export const get = <A extends T>(key: str) => (s: A) => s[key];
-export const setAll = (kind: keyof I, ts: CxMap) => (s: T) => {
+export const pure   = <A extends T>(s: A) => s;
+export const get    = <A extends T>(key: str) => (s: A) => s[key];
+export const setAll = (kind: keyof I, ts: Record<str, Cx.T>) => (s: T) => {
     for (const t in ts) {
         s[t] ??= {};
         s[t][kind] = ts[t];

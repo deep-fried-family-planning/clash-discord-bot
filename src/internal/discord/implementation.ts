@@ -1,140 +1,136 @@
 import type {Driver} from '#dfdis';
 import {Const, Cx, CxVR, Flags} from '#dfdis';
-import {makeGrid} from '#discord/entities-basic/cxt.ts';
-import {DeveloperError} from '#discord/errors/developer-error.ts';
-import {RenderError} from '#discord/errors/render-error.ts';
+import {makeGrid} from '#discord/entities/cxt.ts';
 import {createHookContext, updateHookContext} from '#discord/hooks/context.ts';
-import {cxRouter} from '#discord/model-routing/ope.ts';
+import {v2Router} from '#discord/model-routing/ope.ts';
+import {resolveIx, saveIx} from '#discord/relay.ts';
 import {isComponentIx, type IxIn} from '#discord/utils/types.ts';
-import type {RestDataResolved, RestRow, RestStringSelect} from '#pure/dfx';
+import {type RestDataResolved, type RestRow, type RestStringSelect, RxType, TxFlag, TxType} from '#pure/dfx';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import type {snflk} from '#src/discord/types.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {Ar, CSL, E, g, Kv, p} from '#src/internal/pure/effect.ts';
+import {Ar, CSL, E, g, Kv, p, pipe} from '#src/internal/pure/effect.ts';
 import type {nopt, nro, str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
-import {inspect} from 'node:util';
 
 
 const parseCx = (rest: RestRow[]) => p(
-    rest,
-    Ar.flatMap((cs) => cs.components.map((c) => p(
-        Cx.makeFromRest(c),
-        Cx.set('route', cxRouter.parse((c as {custom_id: str}).custom_id)),
-        Cx.resolveFlags,
-    ))),
-    Kv.fromIterableWith((cx) => [CxVR.makeAccessorFromVR(cx.route), cx]),
+  rest,
+  Ar.flatMap((cs) => cs.components.map((c) => p(
+    Cx.makeFromRest(c),
+    Cx.set('route', v2Router.parse((c as {custom_id: str}).custom_id)),
+  ))),
+  Kv.fromIterableWith((cx) => [cx.data.custom_id, cx]),
 );
 
 
-const resolveType = (resolved: nopt<RestDataResolved>, val: snflk) =>
-    resolved.users?.[val] ? 'user'
-        : resolved.roles?.[val] ? 'role'
-            : resolved.channels?.[val] ? 'channel'
-                : 'fail';
-
-
-const parseIx = (ix: IxIn) => {
-    const cxm       = parseCx(ix.message!.components as RestRow[]);
-    const cxd       = parseCx('components' in ix.data ? ix.data.components as RestRow[] : []);
-    const cx        = {...cxm, ...cxd};
-    const data      = ix.data;
-    const dataRoute = cxRouter.parse(ix.data.custom_id);
-
-    let values   = [] as str[];
-    let target   = {} as Cx.T;
-    let resolved = {
-        users   : {},
-        roles   : {},
-        channels: {},
-    } as nopt<RestDataResolved>;
-
-    if (isComponentIx(ix.data) && 'values' in data) {
-        target = cx[CxVR.makeAccessorFromVR(dataRoute)];
-        values = data.values as unknown as str[];
-
-        if (target._tag === 'Select') {
-            (target.data as nro<RestStringSelect>).options = target.data.options!.map((option) => ({
-                ...option,
-                default: values.includes(option.value),
-            }));
-        }
-
-        if (target._tag === 'User' || target._tag === 'Role' || target._tag === 'Channel' || target._tag === 'Mention') {
-            resolved = ix.data.resolved! as nopt<RestDataResolved>;
-
-            (target.data as nro<RestStringSelect>).default_values = values.map((v) => ({
-                id  : v as snflk,
-                type: resolveType(resolved, v as snflk),
-            }));
-        }
-    }
-
-    return {
-        cx,
-        ax: {
-            values,
-            route: dataRoute,
-            target,
-            flags: Flags.assignFlags(dataRoute),
-        },
-    };
-};
-
-
 export const implementation = <
-    A extends ReturnType<typeof Driver.make>,
+  A extends ReturnType<typeof Driver.make>,
 >(
-    driver: A,
-    anyIx: IxD,
+  driver: A,
+  anyIx: IxD,
 ) => g(function * () {
-    const ix = anyIx as IxIn;
+  if (anyIx.type === RxType.MODAL_SUBMIT) {
+    yield * DiscordApi.deferUpdate(anyIx);
+  }
 
-    const {cx: sx, ax} = parseIx(ix);
+
+  const ix = anyIx as IxIn;
+  const ax = v2Router.parse(ix.data.custom_id);
 
 
-    if (ax.route.mod === Const.CLOSE) {
-        return yield * DiscordApi.deleteMenu(ix);
-    }
-    if (!(ax.route.view in driver.views)) {
-        return yield * new RenderError({});
-    }
+  const [server, user] = yield * pipe(
+    [
+      MenuCache.serverRead(ix.guild_id!),
+      MenuCache.userRead(ix.member?.user?.id ?? ix.user!.id),
+    ] as const,
+    E.allWith(),
+    E.catchTag('DeepFryerDynamoError', () => E.succeed([undefined, undefined])),
+  );
 
-    const context = createHookContext(driver.name, ax.route.view, ix.message?.embeds[0] ?? {});
 
-    const preview = driver.views[ax.route.view].view(driver.name);
+  if (ax.mod === Const.CLOSE) {
+    return yield * DiscordApi.deleteMenu(ix);
+  }
 
-    const clicked = preview
-        .components
-        .flat()
-        .find((vx) => vx.route.row === ax.route.row && vx.route.col === ax.route.col);
 
-    clicked?.onClick?.({}, {});
+  const axdx = parseCx('components' in ix.data ? ix.data.components as RestRow[] : []);
+  const rx   = ix.type === RxType.MODAL_SUBMIT ? yield * resolveIx(ax.mod) : ix;
+  const rxcx = parseCx(rx.message!.components as RestRow[]);
 
-    const nextView = context.views[1];
 
-    if (!(nextView in driver.views)) {
-        console.log(context.views);
-        return yield * new DeveloperError({});
-    }
+  if (anyIx.type === RxType.MODAL_SUBMIT) {
+    const ix_context     = createHookContext(driver.name, ax.view, rx.message?.embeds[0] ?? {});
+    const ax_preview     = driver.views[ax.dialog].view(driver.name, ax.view);
+    const rx_preview     = driver.views[ax.view].view(driver.name);
+    const updatedContext = updateHookContext(ix_context, rx_preview.embeds);
 
-    const view = driver.views[nextView].view(driver.name);
+    return yield * DiscordApi.editMenu(ix, {
+      embeds    : updatedContext.embeds,
+      components: makeGrid(rx_preview.components),
+    });
+  }
 
-    const [controller, ...embeds] = view.embeds;
-    const updatedContext          = updateHookContext({
-        ...context,
-        embed: controller,
+  const context = createHookContext(driver.name, ax.view, rx.message?.embeds[0] ?? {});
+  const preview = driver.views[ax.view].view(driver.name);
+
+  preview.components.flat().find((vx) => vx.route.row === ax.row && vx.route.col === ax.col)?.onClick?.({}, {});
+
+  const nextView = context.views[1];
+
+  if (context.views[2] === Const.DIALOG) {
+    const view_dialog = driver.views[nextView].view(driver.name);
+
+    const custom_id = p(
+      view_dialog.dialog.route,
+      v2Router.set('view', ax.view),
+      v2Router.set('mod', ix.id),
+      v2Router.build,
+    );
+
+    yield * DiscordApi.openModal(ix, {
+      custom_id : custom_id,
+      title     : view_dialog.dialog.title,
+      components: makeGrid(view_dialog.components),
     });
 
-    const grid = makeGrid(view.components);
+    const view_message   = driver.views[ax.view].view(driver.name);
+    const updatedContext = updateHookContext(context, view_message.embeds);
 
-    yield * DiscordApi.editMenu(ix, {
-        embeds    : [updatedContext.embed, ...embeds],
-        components: grid,
-    });
+    return yield * saveIx({
+      ...ix,
+      message: {
+        ...ix.message,
+        embeds    : updatedContext.embeds,
+        components: makeGrid(view_message.components),
+      },
+    } as IxIn);
+  }
+
+  const defer = ax.mod === Const.ENTRY
+    ? {
+      type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        flags: TxFlag.EPHEMERAL,
+      },
+    }
+    : {
+      type: TxType.DEFERRED_UPDATE_MESSAGE,
+    };
+
+  yield * DiscordApi.createInteractionResponse(ix.id, ix.token, defer);
+
+  const view           = driver.views[nextView].view(driver.name);
+  const grid           = makeGrid(view.components);
+  const updatedContext = updateHookContext(context, view.embeds);
+
+  return yield * DiscordApi.editMenu(ix, {
+    embeds    : updatedContext.embeds,
+    components: grid,
+  });
 }).pipe(
-    E.catchAll((e) => CSL.debug(inspect(e, false, null))),
-    E.catchAllDefect((e) => CSL.debug(inspect(e, false, null))),
+  // E.catchAll((e) => CSL.debug(inspect(e, false, null))),
+  E.catchAllDefect((e) => CSL.debug(e)),
 );
 
 
@@ -153,3 +149,58 @@ export const implementation = <
 //     return [CxVR.makeAccessor(spec.slice, spec.data), Cx.C[spec.type](v as never)];
 //   }));
 // }
+
+
+const parseIx = (ix: IxIn) => {
+  const cxm       = parseCx(ix.message!.components as RestRow[]);
+  const cxd       = parseCx('components' in ix.data ? ix.data.components as RestRow[] : []);
+  const cx        = {...cxm, ...cxd};
+  const data      = ix.data;
+  const dataRoute = v2Router.parse(ix.data.custom_id);
+
+  let values   = [] as str[];
+  let target   = {} as Cx.T;
+  let resolved = {
+    users   : {},
+    roles   : {},
+    channels: {},
+  } as nopt<RestDataResolved>;
+
+  if (isComponentIx(ix.data) && 'values' in data) {
+    target = cx[CxVR.makeAccessorFromVR(dataRoute)];
+    values = data.values as unknown as str[];
+
+    if (target._tag === 'Select') {
+      (target.data as nro<RestStringSelect>).options = target.data.options!.map((option) => ({
+        ...option,
+        default: values.includes(option.value),
+      }));
+    }
+
+    if (target._tag === 'User' || target._tag === 'Role' || target._tag === 'Channel' || target._tag === 'Mention') {
+      resolved = ix.data.resolved! as nopt<RestDataResolved>;
+
+      (target.data as nro<RestStringSelect>).default_values = values.map((v) => ({
+        id  : v as snflk,
+        type: resolveType(resolved, v as snflk),
+      }));
+    }
+  }
+
+  return {
+    cx,
+    ax: {
+      values,
+      route: dataRoute,
+      target,
+      flags: Flags.assignFlags(dataRoute),
+    },
+  };
+};
+
+
+const resolveType = (resolved: nopt<RestDataResolved>, val: snflk) =>
+  resolved.users?.[val] ? 'user'
+    : resolved.roles?.[val] ? 'role'
+      : resolved.channels?.[val] ? 'channel'
+        : 'fail';

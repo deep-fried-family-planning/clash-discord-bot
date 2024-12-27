@@ -1,20 +1,17 @@
-import {createUseDispatch} from '#discord/hooks/use-dispatch.ts';
-import {createUseEffect} from '#discord/hooks/use-effect.ts';
-import {createUseSlice} from '#discord/hooks/use-slice.ts';
-import {createUseState} from '#discord/hooks/use-state.ts';
-import {createUseView} from '#discord/hooks/use-view.ts';
+import {createUseAccessor, createUseComponent, createUseDispatch, createUseEffect, createUseSlice, createUseState, createUseView} from '#discord/hooks/hooks.ts';
 import type {RestEmbed} from '#pure/dfx';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
 import {Const} from '..';
 
 
 export let
-  useState    = createUseState([], new URLSearchParams()),
-  useEffect   = createUseEffect([], new URLSearchParams()),
-  useSlice    = createUseSlice([], new URLSearchParams()),
-  useDispatch = createUseDispatch(),
-  useView     = createUseView(['', '', '']);
+  useState     = createUseState([], new URLSearchParams()),
+  useEffect    = createUseEffect([], new URLSearchParams()),
+  useSlice     = createUseSlice([], new URLSearchParams()),
+  useDispatch  = createUseDispatch(),
+  useView      = createUseView(['', '', '']),
+  useAccessor  = createUseAccessor(),
+  useComponent = createUseComponent();
 
 
 export type HookContext = {
@@ -43,11 +40,13 @@ export const createHookContext = (
   params.set('0_useless_link', '0');
   states.push('0_useless_link');
 
-  useState    = createUseState(states, params);
-  useEffect   = createUseEffect(effects, params);
-  useSlice    = createUseSlice(slices, params);
-  useDispatch = createUseDispatch();
-  useView     = createUseView(views);
+  useState     = createUseState(states, params);
+  useEffect    = createUseEffect(effects, params);
+  useSlice     = createUseSlice(slices, params);
+  useDispatch  = createUseDispatch();
+  useView      = createUseView(views);
+  useAccessor  = createUseAccessor();
+  useComponent = createUseComponent();
 
   return {
     root,
@@ -63,10 +62,11 @@ export const createHookContext = (
 
 export const updateHookContext = (
   context: HookContext,
+  embeds: RestEmbed[],
 ) => {
-  const url = new URL('https://dffp.org');
+  const [first, ...restEmbeds] = embeds;
 
-  console.debug(context.params);
+  const url = new URL('https://dffp.org');
 
   for (const [id, value] of context.params.entries()) {
     if (context.states.includes(id)) {
@@ -76,20 +76,16 @@ export const updateHookContext = (
 
   url.searchParams.sort();
 
-  console.debug(url.searchParams);
+  const controller = {
+    ...first,
+    image: {
+      ...first.image,
+      url: url.href,
+    },
+  };
 
   return {
     ...context,
-    embed: {
-      ...context.embed,
-      author: {
-        ...context.embed.author,
-        name: context.embed.author?.name ?? 'DeepFryer',
-      },
-      image: {
-        ...context.embed.image,
-        url: url.href,
-      },
-    },
+    embeds: [controller, ...restEmbeds],
   };
 };
