@@ -1,89 +1,124 @@
-import {createUseAccessor, createUseDispatch, createUseEffect, createUseSlice, createUseState, createUseView} from '#discord/hooks/hooks.ts';
+import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam} from '#discord/hooks/controller-params.ts';
+import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/store-hooks.ts';
+import type {CxPath} from '#discord/routing/cx-path.ts';
+import {DeveloperError} from '#discord/z-errors/developer-error.ts';
 import type {RestEmbed} from '#pure/dfx';
+import {Ar, pipe} from '#pure/effect';
+import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {Const} from '..';
+import console from 'node:console';
+import {URL} from 'node:url';
+import {ExV} from '..';
 
 
-export let
-  useState    = createUseState([], new URLSearchParams()),
-  useEffect   = createUseEffect([], new URLSearchParams()),
-  useSlice    = createUseSlice([], new URLSearchParams()),
-  useDispatch = createUseDispatch(),
-  useView     = createUseView(['', '', '']),
-  useAccessor = createUseAccessor();
+export type HookId = str;
+export type ViewName = str;
+export type DialogName = str;
+export type ViewModifier = str;
 
 
-export type HookContext = {
-  root   : str;
-  embed  : RestEmbed;
-  params : URLSearchParams;
-  states : str[];
-  effects: [str, () => void][];
-  slices : str[];
-  views  : [str, str, str];
+export const startContext = (embeds: ExV.T[], ax: CxPath) => {
+  clearHooks();
+  clearAllParams();
+  clearRoute();
+
+
+  const url = ExV.controllerUrl(embeds) ?? new URL(DFFP_URL);
+
+  console.log('');
+  console.log('[NEW_IX]');
+  console.log('initial', url.href);
+
+
+  setAllParams(new URLSearchParams(url.searchParams));
+  setParam('s_0', 'useless_link');
+  addStateHookId('s_0');
+
+
+  setFirstView(ax.view);
+  setNextView(ax.view);
+  setViewModifier(ax.mod);
 };
 
 
-export const createHookContext = (
-  root: str,
-  view: str,
-  embed: RestEmbed,
-): HookContext => {
-  const url     = new URL(embed.image?.url ?? 'https://dffp.org');
-  const params  = url.searchParams;
-  const states  = [] as str[];
-  const effects = [] as [str, () => void][];
-  const slices  = [] as str[];
-  const views   = [view, view, Const.ENTRY] as [str, str, str];
-
-  params.set('0_useless_link', '0');
-  states.push('0_useless_link');
-
-  useState    = createUseState(states, params);
-  useEffect   = createUseEffect(effects, params);
-  useSlice    = createUseSlice(slices, params);
-  useDispatch = createUseDispatch();
-  useView     = createUseView(views);
-  useAccessor = createUseAccessor();
-
-  return {
-    root,
-    embed,
-    params,
-    states,
-    slices,
-    effects,
-    views,
-  };
+export const stopContext = () => {
+  clearHooks();
+  clearAllParams();
+  clearRoute();
+  return true;
 };
 
 
-export const updateHookContext = (
-  context: HookContext,
-  embeds: RestEmbed[],
-) => {
-  const [first, ...restEmbeds] = embeds;
+export const updateUrlContext = ([controller, ...embeds]: ExV.T[], rx_embeds?: ExV.T[]): RestEmbed[] => {
+  const controller_encoded = ExV.encode(controller);
+  const url                = new URL(controller_encoded.image!.url);
 
-  const url = new URL('https://dffp.org');
+  console.log('');
+  console.log('update_before', url.href);
 
-  for (const [id, value] of context.params.entries()) {
-    if (context.states.includes(id)) {
-      url.searchParams.append(id, value);
-    }
+  const params = getAllParams();
+  const hooks  = getHooks();
+
+  const updated = new URLSearchParams();
+
+  for (const id of hooks.states) {
+    updated.set(id, params.get(id)!);
+  }
+  updated.sort();
+
+  const updatedUrl = new URL(`${url.origin}${url.pathname}?${updated.toString()}`);
+
+  console.log('update_after', updatedUrl.href);
+
+  const controller_updated = {
+    ...controller_encoded,
+    image: {
+      ...controller_encoded.image,
+      url: updatedUrl.href,
+    },
+  } as RestEmbed;
+
+
+  const firstView = getFirstView();
+  const nextView  = getNextView();
+
+
+  if (
+    rx_embeds
+    && firstView === nextView
+  ) {
+    const [, ...rxWithoutController] = rx_embeds;
+    return [controller_updated, ...ExV.encodeAll(embeds, rxWithoutController)];
   }
 
-  url.searchParams.sort();
+  return [controller_updated, ...ExV.encodeAll(embeds)];
+};
 
-  const controller = {
-    ...first,
-    image: {
-      ...first.image,
-      url: url.href,
-    },
-  };
 
-  return {
-    ...context,
-    embeds: [controller, ...restEmbeds],
-  };
+export const detectDuplicateIds = () => {
+  const hooks = getHooks();
+
+  const all = pipe(
+    hooks.states,
+    Ar.appendAll(hooks.effects.map(([id]) => id)),
+    Ar.appendAll(hooks.accessors.map(([id]) => id)),
+    Ar.appendAll(hooks.slices.map(([id]) => id)),
+    Ar.appendAll(hooks.actions.map(([id]) => id)),
+  );
+
+  const unique = pipe(
+    all,
+    Ar.dedupe,
+  );
+
+  if (all.length !== unique.length) {
+    throw new DeveloperError({
+      data: {
+        all,
+        unique,
+      },
+    });
+  }
+
+  return all;
 };

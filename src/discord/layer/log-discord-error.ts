@@ -1,6 +1,6 @@
-import {cxRouter} from '#discord/model-routing/ope.ts';
+import {CxPath} from '#discord/routing/cx-path.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {RK_CLOSE, RK_ENTRY} from '#src/constants/route-kind.ts';
+import {RK_CLOSE} from '#src/constants/route-kind.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {buildCloudWatchLink} from '#src/discord/util/validation.ts';
@@ -69,21 +69,7 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
           type     : IXCT.BUTTON,
           style    : IXCBS.SUCCESS,
           label    : 'Restart',
-          custom_id: cxRouter.build({
-            root   : 'test',
-            name   : 'test',
-            data   : 'test',
-            action : 'test',
-            type   : 'test',
-            mode   : 'test',
-            row    : 'test',
-            col    : 'test',
-            view   : 'test',
-            p_group: 'test',
-            p_num  : 'test',
-            p_now  : 'test',
-            mod    : RK_ENTRY,
-          }),
+          custom_id: CxPath.build(CxPath.empty()),
         },
         {
           type     : IXCT.BUTTON,

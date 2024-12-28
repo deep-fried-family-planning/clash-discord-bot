@@ -1,31 +1,25 @@
-import {Cx} from '#dfdis';
-import type {V2Route} from '#discord/model-routing/ope.ts';
+import {Const, Cx} from '#dfdis';
+import {CxPath} from '#discord/routing/cx-path.ts';
 import {type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, TypeC} from '#pure/dfx';
 import {D, p} from '#pure/effect';
-import type {ne, unk} from '#src/internal/pure/types-pure.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-type Ctx<T> = {
-  setView     : (view: unk) => void;
-  setComponent: (cx: T) => void;
-  dispatch    : (action: unk) => void;
-};
-
-
-type Meta<T> = {
-  onClick?: (cx: T, ctx: Ctx<T>) => void;
+type Meta<A extends keyof Cx.E> = {
+  accessor?: str;
+  onClick? : (event: Omit<Cx.E[A], 'onClick'>) => void;
 };
 
 
 export type T = D.TaggedEnum<{
-  Button : Meta<OptButton> & OptButton;
-  Link   : Meta<OptButton> & OptButton;
-  Select : Meta<OptSelect> & OptSelect;
-  User   : Meta<OptUser> & OptUser;
-  Role   : Meta<OptRole> & OptRole;
-  Channel: Meta<OptChannel> & OptChannel;
-  Mention: Meta<OptMention> & OptMention;
-  Text   : Meta<OptText> & OptText;
+  Button : Meta<'Button'> & OptButton;
+  Link   : Meta<'Link'> & OptButton;
+  Select : Meta<'Select'> & OptSelect;
+  User   : Meta<'User'> & OptUser;
+  Role   : Meta<'Role'> & OptRole;
+  Channel: Meta<'Channel'> & OptChannel;
+  Mention: Meta<'Mention'> & OptMention;
+  Text   : Meta<'Text'> & OptText;
 }>;
 export const C = D.taggedEnum<T>();
 
@@ -48,53 +42,23 @@ const makeMap = {
 
 export const make = <A extends T>(
   vx: A,
-  route: V2Route,
+  route: CxPath,
 ) => {
-  const {_tag, onClick, ...rest} = vx;
-
-  const data = {
-    custom_id: '',
-    ...rest,
-    type     : makeMap[_tag],
-  };
+  const {_tag, onClick, accessor, ...rest} = vx;
 
   return p(
     Cx.C[_tag]({
-      route  : route,
-      status : Cx.Status.will_mount,
-      onClick: onClick,
-      data   : data,
+      route: p(
+        route,
+        CxPath.set('accessor', accessor ?? Const.NONE),
+      ),
+      onClick: onClick ?? (() => {}),
+      data   : {
+        custom_id: '',
+        ...rest,
+        type     : makeMap[_tag],
+      },
     }),
     Cx.defaultFromView,
-    (cx) => cx,
   );
-};
-
-
-export const captureOnClick = <A extends T>(vx: A, data: unk = {}) => {
-  let view: unk      = {};
-  let component: unk = {};
-  let action: unk    = {};
-
-  const ctx = {
-    setView     : (called: unk) => {view = called},
-    setComponent: (called: unk) => {component = called},
-    dispatch    : (called: unk) => {action = called},
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  vx.onClick?.(data as ne, ctx);
-
-  return {
-    view,
-    component,
-    action,
-  };
-};
-
-
-export const shallow = <A extends T>(vx: A) => {
-  const captured = captureOnClick(vx);
-
-  return captured.view;
 };

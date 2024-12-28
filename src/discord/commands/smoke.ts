@@ -1,5 +1,5 @@
 import {exampleDriver, exampleView} from '#discord/example.ts';
-import {v2Router} from '#discord/model-routing/ope.ts';
+import {CxPath} from '#discord/routing/cx-path.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
@@ -42,8 +42,8 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
     components: UI.grid([
       [UI.button({
         label    : 'Dev Mode',
-        custom_id: v2Router.build({
-          ...v2Router.empty(),
+        custom_id: CxPath.build({
+          ...CxPath.empty(),
           root: exampleDriver.name,
           view: exampleView.name,
           mod : Const.ENTRY,

@@ -1,8 +1,8 @@
-import {type V2Route, v2Router} from '#discord/model-routing/ope.ts';
-import {p} from '#pure/effect';
+import {CxPath} from '#discord/routing/cx-path.ts';
+import {NONE} from '#discord/utils/constants.ts';
+import {Ar, p} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import type {ExV} from '..';
-import {Const, CxV} from '..';
+import {Const, CxV, ExV} from '..';
 
 
 // export type ViewNode = {
@@ -11,63 +11,69 @@ import {Const, CxV} from '..';
 // };
 
 
-type TempDialog = {title: str; route: V2Route};
+type TempDialog = {
+  title    : str;
+  route    : CxPath;
+  onSubmit?: () => void;
+  onOpen?  : () => void;
+};
+
+
+export type SimulatedView = ReturnType<ReturnType<typeof makeView>['view']>;
 
 
 export type View = () =>
-    | readonly [TempDialog, ...CxV.T[][]]
-    | readonly [ExV.T, ...CxV.T[][]]
-    | readonly [ExV.T, ExV.T, ...CxV.T[][]]
-    | readonly [ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-    | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-    | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-    | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]];
+  | readonly [TempDialog, ...CxV.T[][]]
+  | readonly [ExV.T, ...CxV.T[][]]
+  | readonly [ExV.T, ExV.T, ...CxV.T[][]]
+  | readonly [ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
+  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
+  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
+  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]];
 
 
 export const makeView = (name: str, view: View) => {
-    return {
-        name,
-        view: (root: str, viewname?: str) => {
-            const output = view();
+  return {
+    name,
+    view: (root: str, viewname?: str) => {
+      const output = view();
 
-            const [...rest] = output;
+      const [...rest] = output;
 
-            const [first, ...restEmbeds] = rest.filter((r) => !Array.isArray(r)) as ExV.T[];
-            const components             = rest.filter((r) => Array.isArray(r));
-            const dialog                 = 'custom_id' in first ? first as unknown as TempDialog : {title: Const.NONE, route: v2Router.empty()};
+      const [first, ...restEmbeds] = rest.filter((r) => !Array.isArray(r));
+      const components             = rest.filter((r) => Array.isArray(r));
+      const dialog                 = 'route' in first ? first : {title: Const.NONE, route: CxPath.empty()};
 
-            const route = {
-                ...v2Router.empty(),
-                ...dialog.route,
-            };
+      const route = {
+        ...CxPath.empty(),
+        ...dialog.route,
+      };
 
-            return {
-                dialog: {
-                    ...dialog,
-                    route: p(
-                        route,
-                        v2Router.set('root', root),
-                        v2Router.set('view', viewname ?? name),
-                        v2Router.set('dialog', name),
-                    ),
-                },
-                embeds: 'custom_id' in first ? [] : [
-                    (({_tag, ...data}) => data)(first),
-                    ...restEmbeds.map(({_tag, ...exv}) => exv),
-                ],
-                components: components.map((r, row) => r.map((c, col) => {
-                    return p(
-                        CxV.make(c, {
-                            ...v2Router.empty(),
-                            root  : root,
-                            view  : viewname ?? name,
-                            dialog: name,
-                            row   : `${row}`,
-                            col   : `${col}`,
-                        }),
-                    );
-                })),
-            };
+      return {
+        dialog: {
+          ...dialog,
+          route: p(
+            route,
+            CxPath.set('root', root),
+            CxPath.set('view', viewname ?? name),
+            CxPath.set('dialog', name),
+          ),
         },
-    };
+        embeds    : 'route' in first ? [] : p([first, ...restEmbeds] as ExV.T[], Ar.map((exv) => ExV.make(exv))),
+        components: components.map((r, row) => r.map((c, col) => {
+          return p(
+            CxV.make(c, {
+              ...CxPath.empty(),
+              root    : root,
+              view    : viewname ?? name,
+              dialog  : name,
+              accessor: c.accessor ?? NONE,
+              row     : row,
+              col     : col,
+            }),
+          );
+        })),
+      };
+    },
+  };
 };
