@@ -3,15 +3,15 @@ import type {Driver} from '#discord/context/model-driver.ts';
 import {CLOSE, DIALOG} from '#discord/entities/constants/constants.ts';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {openDialog} from '#discord/simulation/flows/open-dialog.ts';
-import {simulateComponentClick} from '#discord/simulation/flows/simulate-click.ts';
-import {getNextView, getViewModifier} from '#discord/simulation/hooks/hooks.ts';
-import {updateUseEffect} from '#discord/simulation/hooks/use-effect.ts';
+import {openDialog} from '#discord/flows/open-dialog.ts';
+import {simulateComponentClick} from '#discord/flows/simulate-click.ts';
+import {getNextView, getViewModifier} from '#discord/hooks/hooks.ts';
+import {updateUseEffect} from '#discord/hooks/use-effect.ts';
 import type {IxIn} from '#discord/types.ts';
 import type {RestDataComponent} from '#pure/dfx';
 import {g, p} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {Cx, ExV} from '../../index.ts';
+import {Cx, ExV} from '../index.ts';
 
 
 export const clickEphemeral = (driver: Driver, ax: CxPath, ix: IxIn) => g(function * () {

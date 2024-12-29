@@ -1,7 +1,7 @@
 import {CLOSE} from '#discord/entities/constants/constants.ts';
 import {Button, Row} from '#discord/entities/vc.ts';
-import {setViewModifier} from '#discord/simulation/hooks/hooks.ts';
-import {openView} from '#discord/simulation/hooks/use-view.ts';
+import {setViewModifier} from '#discord/hooks/hooks.ts';
+import {openView} from '#discord/hooks/use-view.ts';
 import {StyleB} from '#pure/dfx';
 import {EMOJI_BACK, EMOJI_CLOSE, EMOJI_NEXT} from '#src/constants/emoji.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

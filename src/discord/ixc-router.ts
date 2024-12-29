@@ -1,5 +1,5 @@
 import {exampleDriver} from '#discord/example.ts';
-import {implementation} from '#discord/simulation/flows/implementation.ts';
+import {implementation} from '#discord/flows/implementation.ts';
 import {original} from '#src/discord/ixc-original.ts';
 import {v2driver} from '#src/discord/omni-board/omni-board-driver.ts';
 import type {IxD} from '#src/internal/discord.ts';

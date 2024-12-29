@@ -1,8 +1,8 @@
 import {Const, Cx, type Driver} from '#dfdis';
 import {ENTRY, NO_SIM} from '#discord/entities/constants/constants.ts';
-import {clickEntrypoint} from '#discord/simulation/flows/click-entrypoint.ts';
-import {clickEphemeral} from '#discord/simulation/flows/click-ephemeral.ts';
-import {submitDialog} from '#discord/simulation/flows/submit-dialog.ts';
+import {clickEntrypoint} from '#discord/flows/click-entrypoint.ts';
+import {clickEphemeral} from '#discord/flows/click-ephemeral.ts';
+import {submitDialog} from '#discord/flows/submit-dialog.ts';
 import type {IxIn} from '#discord/types.ts';
 import {type RestDataComponent, type RestDataDialog, RxType} from '#pure/dfx';
 import {CSL, E, g} from '#pure/effect';

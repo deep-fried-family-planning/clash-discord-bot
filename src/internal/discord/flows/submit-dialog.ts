@@ -3,14 +3,14 @@ import {getPreviousIxForDialog} from '#discord/context/dialog-relay.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {simulateDialogSubmit} from '#discord/simulation/flows/simulate-click.ts';
-import {getFirstView} from '#discord/simulation/hooks/hooks.ts';
-import {updateDialogRefEmbeds} from '#discord/simulation/hooks/use-dialog-ref.ts';
+import {simulateDialogSubmit} from '#discord/flows/simulate-click.ts';
+import {getFirstView} from '#discord/hooks/hooks.ts';
+import {updateDialogRefEmbeds} from '#discord/hooks/use-dialog-ref.ts';
 import type {IxIn} from '#discord/types.ts';
 import type {RestDataDialog} from '#pure/dfx';
 import {g, p, pipe} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {Cx, ExV} from '../../index.ts';
+import {Cx, ExV} from '../index.ts';
 
 
 export const submitDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: RestDataDialog) => g(function * () {

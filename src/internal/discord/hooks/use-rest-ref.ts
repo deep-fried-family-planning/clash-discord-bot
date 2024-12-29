@@ -1,5 +1,5 @@
 import type {Cx} from '#dfdis';
-import {hooks} from '#discord/simulation/hooks/hooks.ts';
+import {hooks} from '#discord/hooks/hooks.ts';
 import {Arr, Kv, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 

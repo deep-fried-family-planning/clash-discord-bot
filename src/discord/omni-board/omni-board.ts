@@ -1,7 +1,7 @@
 import {EmbedController} from '#discord/entities/exv.ts';
 import {Button, Row} from '#discord/entities/vc.ts';
 import {makeView} from '#discord/entities/view.ts';
-import {openView} from '#discord/simulation/hooks/use-view.ts';
+import {openView} from '#discord/hooks/use-view.ts';
 import {OmniClans} from '#src/discord/omni-board/clans/omni-clans.ts';
 import {OmniInfo} from '#src/discord/omni-board/info/omni-info.ts';
 import {Nav} from '#src/discord/omni-board/nav.ts';

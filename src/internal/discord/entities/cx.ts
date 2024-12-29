@@ -1,7 +1,7 @@
 import {Const, Cx} from '#dfdis';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {updateRxRefs} from '#discord/simulation/hooks/use-rest-ref.ts';
+import {updateRxRefs} from '#discord/hooks/use-rest-ref.ts';
 import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestDataComponent, type RestDataDialog, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
 import type {snow} from '#src/discord/types.ts';
 import {Ar, D, p, pipe} from '#src/internal/pure/effect.ts';

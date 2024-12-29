@@ -1,8 +1,8 @@
 import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam, setPath} from '#discord/context/controller-params.ts';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/simulation/hooks/hooks.ts';
-import {updateRestEmbedRef} from '#discord/simulation/hooks/use--rest-embed-ref.ts';
+import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
+import {updateRestEmbedRef} from '#discord/hooks/use--rest-embed-ref.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import {DFFP_URL} from '#src/constants/dffp-alias.ts';

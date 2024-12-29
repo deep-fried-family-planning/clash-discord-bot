@@ -1,8 +1,8 @@
 import type {DialogName, HookId, ViewModifier, ViewName} from '#discord/context/context.ts';
-import type {UseRestEmbedRef} from '#discord/simulation/hooks/use--rest-embed-ref.ts';
-import type {Accessor} from '#discord/simulation/hooks/use-dialog-ref.ts';
-import type {UseEffectHook} from '#discord/simulation/hooks/use-effect.ts';
-import type {RxRef} from '#discord/simulation/hooks/use-rest-ref.ts';
+import type {UseRestEmbedRef} from '#discord/hooks/use--rest-embed-ref.ts';
+import type {Accessor} from '#discord/hooks/use-dialog-ref.ts';
+import type {UseEffectHook} from '#discord/hooks/use-effect.ts';
+import type {RxRef} from '#discord/hooks/use-rest-ref.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

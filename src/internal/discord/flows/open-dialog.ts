@@ -3,16 +3,16 @@ import {saveCurrentIxForDialog} from '#discord/context/dialog-relay.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {simulateDialogOpen} from '#discord/simulation/flows/simulate-click.ts';
-import {getNextView} from '#discord/simulation/hooks/hooks.ts';
-import {updateDialogRefComponents} from '#discord/simulation/hooks/use-dialog-ref.ts';
-import {updateUseEffect} from '#discord/simulation/hooks/use-effect.ts';
+import {simulateDialogOpen} from '#discord/flows/simulate-click.ts';
+import {getNextView} from '#discord/hooks/hooks.ts';
+import {updateDialogRefComponents} from '#discord/hooks/use-dialog-ref.ts';
+import {updateUseEffect} from '#discord/hooks/use-effect.ts';
 import type {IxIn} from '#discord/types.ts';
 import type {RestDataComponent} from '#pure/dfx';
 import {g, p} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import type {ExV} from '../../index.ts';
-import {Cx} from '../../index.ts';
+import type {ExV} from '../index.ts';
+import {Cx} from '../index.ts';
 
 
 export const openDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: RestDataComponent, rx_embeds: ExV.Type[]) => g(function * () {

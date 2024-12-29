@@ -1,8 +1,8 @@
 import type {HookId} from '#discord/context/context.ts';
 import {getParam, setParam} from '#discord/context/controller-params.ts';
-import {addAccessorHook, getHooks} from '#discord/simulation/hooks/hooks.ts';
+import {addAccessorHook, getHooks} from '#discord/hooks/hooks.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import type {Cx, ExV} from '../../index.ts';
+import type {Cx, ExV} from '../index.ts';
 
 
 type EmbedToText = (embed: ExV.Type) => Partial<Cx.E['Text']>;
