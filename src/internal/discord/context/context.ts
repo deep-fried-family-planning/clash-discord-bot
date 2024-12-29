@@ -1,8 +1,8 @@
 import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam, setPath} from '#discord/context/controller-params.ts';
-import type {CxPath} from '#discord/entities/cx-path.ts';
-import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
-import {updateRestEmbedRef} from '#discord/hooks/use--rest-embed-ref.ts';
-import {DeveloperError} from '#discord/z-errors/developer-error.ts';
+import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
+import type {CxPath} from '#discord/entities/routing/cx-path.ts';
+import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/simulation/hooks/hooks.ts';
+import {updateRestEmbedRef} from '#discord/simulation/hooks/use--rest-embed-ref.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import {DFFP_URL} from '#src/constants/dffp-alias.ts';
@@ -18,7 +18,7 @@ export type DialogName = str;
 export type ViewModifier = str;
 
 
-export const startContext = (embeds: ExV.T[], ax: CxPath) => {
+export const startContext = (embeds: ExV.Type[], ax: CxPath) => {
   clearHooks();
   clearAllParams();
   clearRoute();
@@ -49,7 +49,7 @@ export const stopContext = () => {
 };
 
 
-export const updateUrlContext = ([controller, ...embeds]: ExV.T[], rx_embeds?: ExV.T[]): RestEmbed[] => {
+export const updateUrlContext = ([controller, ...embeds]: ExV.Type[], rx_embeds?: ExV.Type[]): RestEmbed[] => {
   const controller_encoded = ExV.encode(controller);
   const url                = new URL(controller_encoded.image!.url);
   const params             = getAllParams();

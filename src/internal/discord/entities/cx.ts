@@ -1,13 +1,16 @@
-import {Const} from '#dfdis';
-import {CxPath} from '#discord/entities/cx-path.ts';
-import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
+import {Const, Cx} from '#dfdis';
+import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
+import {CxPath} from '#discord/entities/routing/cx-path.ts';
+import {updateRxRefs} from '#discord/simulation/hooks/use-rest-ref.ts';
+import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestDataComponent, type RestDataDialog, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
 import type {snow} from '#src/discord/types.ts';
-import {Ar, D, pipe} from '#src/internal/pure/effect.ts';
+import {Ar, D, p, pipe} from '#src/internal/pure/effect.ts';
 import type {nopt, nro, num, opt, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types';
 import type {Component} from 'dfx/types';
 
 
+export type Path = CxPath;
 export const Path = CxPath;
 
 
@@ -226,3 +229,49 @@ const resolveType = (val: snow, resolved?: nopt<RestDataResolved>) =>
     : resolved?.roles?.[val] ? 'role'
       : resolved?.channels?.[val] ? 'channel'
         : 'fail';
+
+
+export const makeGrid = (
+  vxcx: Cx.Type[][],
+  data: RestDataDialog | RestDataComponent,
+  ax: CxPath,
+  rx?: Cx.Type[][],
+) => {
+  const txcx = rx
+    ? updateRxRefs(vxcx, rx)
+    : vxcx;
+
+
+  return p(txcx, Ar.map((cxs, row) => ({
+    type      : TypeC.ACTION_ROW,
+    components: p(cxs, Ar.map((cx, col) => {
+      if (row > 5) {
+        throw new DeveloperError({
+          message: 'No more than 5 rows allowed',
+        });
+      }
+      if (col > 5) {
+        throw new DeveloperError({
+          message: 'No more than 5 columns allowed',
+        });
+      }
+
+      return p(
+        cx,
+        Cx.set('route', {
+          ...cx.route,
+          row: row,
+          col: col,
+        }),
+        Cx.buildId,
+        row === ax.row && col === ax.col
+          ? Cx.setSelectedOptions(
+            'values' in data ? data.values as unknown as str[] : [],
+            'resolved' in data ? data.resolved as nopt<RestDataResolved> : undefined,
+          )
+          : Cx.pure,
+        Cx.encode,
+      );
+    })),
+  }))) as unknown as Component[];
+};

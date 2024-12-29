@@ -1,4 +1,4 @@
-import {CxPath} from '#discord/entities/cx-path.ts';
+import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

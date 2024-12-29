@@ -1,5 +1,8 @@
-import {NONE} from '#discord/entities/constants.ts';
-import {CxPath} from '#discord/entities/cx-path.ts';
+import {NONE} from '#discord/entities/constants/constants.ts';
+import type {Ex} from '#discord/entities/index.ts';
+import type { Vc} from '#discord/entities/index.ts';
+import {CxPath} from '#discord/entities/routing/cx-path.ts';
+import type {ViewNodeMessageOutput} from '#discord/entities/types.ts';
 import type {RestDataComponent, RestDataDialog} from '#pure/dfx';
 import {Ar, p} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -13,10 +16,10 @@ import {Const, CxV, ExV} from '..';
 
 
 type TempDialog = {
-  title: str;
-  route: CxPath;
+  title    : str;
+  route    : CxPath;
   onSubmit?: () => void;
-  onOpen?: () => void;
+  onOpen?  : () => void;
 };
 
 
@@ -24,13 +27,8 @@ export type SimulatedView = ReturnType<ReturnType<typeof makeView>['view']>;
 
 
 export type View = () =>
-  | readonly [TempDialog, ...CxV.T[][]]
-  | readonly [ExV.T, ...CxV.T[][]]
-  | readonly [ExV.T, ExV.T, ...CxV.T[][]]
-  | readonly [ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]]
-  | readonly [ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ExV.T, ...CxV.T[][]];
+  | readonly [TempDialog, ...Vc.Type[][]]
+  | ViewNodeMessageOutput;
 
 
 export const makeView = (name: str, view: View) => {
@@ -51,7 +49,7 @@ export const makeView = (name: str, view: View) => {
       };
 
       return {
-        dialog    : {
+        dialog: {
           ...dialog,
           route: p(
             route,
@@ -60,7 +58,7 @@ export const makeView = (name: str, view: View) => {
             CxPath.set('dialog', name),
           ),
         },
-        embeds    : 'route' in first ? [] : p([first, ...restEmbeds] as ExV.T[], Ar.map((exv) => ExV.make(exv))),
+        embeds    : 'route' in first ? [] : p([first, ...restEmbeds] as Ex.Type[], Ar.map((exv) => ExV.make(exv))),
         components: components.map((r, row) => r.map((c, col) => {
           return p(
             CxV.make(c, {

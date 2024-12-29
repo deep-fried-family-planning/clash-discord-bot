@@ -1,27 +1,42 @@
-import {NONE} from '#discord/entities/constants.ts';
-import {ExPath} from '#discord/entities/ex-router.ts';
+import {NONE} from '#discord/entities/constants/constants.ts';
+import {ExPath} from '#discord/entities/routing/ex-path.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import {D, pipe} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
 import {URL} from 'node:url';
 
 
-export type T = D.TaggedEnum<{
+export type Path = ExPath;
+export const Path = ExPath;
+
+
+export type Type = D.TaggedEnum<{
   Controller   : {_url?: URL} & RestEmbed;
   Basic        : {_url?: URL; ref: str} & RestEmbed;
   AccessorEmbed: {_url?: URL} & {accessors: str[]} & RestEmbed;
 }>;
-export const C = D.taggedEnum<T>();
 
 
-export const BasicEmbed      = C.Basic;
-export const AccessorEmbed   = C.AccessorEmbed;
-export const EmbedController = C.Controller;
+export const Enum            = D.taggedEnum<Type>();
+export const BasicEmbed      = Enum.Basic;
+export const AccessorEmbed   = Enum.AccessorEmbed;
+export const EmbedController = Enum.Controller;
 
 
-export const make = (exv: T): T => {
+export const ControllerTag    = 'Controller';
+export const BasicTag         = 'Basic';
+export const AccessorEmbedTag = 'AccessorEmbed';
+
+
+export const match           = Enum.$match;
+export const is              = Enum.$is;
+export const isController    = is('Controller');
+export const isBasic         = is('Basic');
+export const isAccessorEmbed = is('AccessorEmbed');
+
+
+export const make = (exv: Type): Type => {
   const url = new URL(DFFP_URL);
 
   if (exv._tag === 'AccessorEmbed') {
@@ -50,7 +65,7 @@ export const decode = (ex: RestEmbed) => {
   const ids = [...url.searchParams.keys()].filter((id) => id.startsWith('a_'));
 
   if (ids.length) {
-    return C.AccessorEmbed({
+    return AccessorEmbed({
       ...base,
       accessors: ids,
     });
@@ -61,28 +76,25 @@ export const decode = (ex: RestEmbed) => {
     : ExPath.parse(url.pathname);
 
   if (route.kind === 'Controller') {
-    return C.Controller(base);
+    return EmbedController(base);
   }
 
-  return C.Basic({
+  return BasicEmbed({
     ...base,
     ref: route.ref,
   });
 };
 
 
-export const encode = (exv: T) => {
+export const encode = (exv: Type) => {
   let {_tag, _url, ...rest} = exv;
   let accessors             = [] as str[];
   let ref                   = NONE;
 
-  console.log('');
-  console.log('encode_before', _url?.href);
-
-  if (C.$is('AccessorEmbed')(exv)) {
+  if (isAccessorEmbed(exv)) {
     ({_tag, _url, accessors, ...rest} = exv);
   }
-  if (C.$is('Basic')(exv)) {
+  if (isBasic(exv)) {
     ({_tag, _url, ref, ...rest} = exv);
   }
 
@@ -97,8 +109,6 @@ export const encode = (exv: T) => {
     _url!.searchParams.set(id, 'a');
   }
 
-  console.log('encode_after', _url?.href);
-
   return {
     ...rest,
     image: {
@@ -111,12 +121,9 @@ export const encode = (exv: T) => {
 
 export const decodeAll = (rest: RestEmbed[]) => rest.map((r) => decode(r));
 
-export const encodeAll = (exvs: T[], rx_exvs?: T[]): RestEmbed[] => {
+export const encodeAll = (exvs: Type[], rx_exvs?: Type[]): RestEmbed[] => {
   if (rx_exvs && exvs.length === rx_exvs.length) {
-    console.log('encode with rx');
     return exvs.map((exv, row) => {
-      console.log('encode_accessor_embed', exv._tag, rx_exvs[row]._tag);
-
       if (exv._tag === 'AccessorEmbed' && rx_exvs[row]._tag === 'AccessorEmbed') {
         const rx_exv = rx_exvs[row];
 
@@ -133,5 +140,5 @@ export const encodeAll = (exvs: T[], rx_exvs?: T[]): RestEmbed[] => {
   return exvs.map((exv) => encode(exv));
 };
 
-export const controllerUrl = (exvs: T[]) => exvs.at(0)?._url;
-export const withUrl       = (url: URL) => (exvs: T[]) => exvs.with(0, {...exvs.at(0)!, _url: url});
+export const controllerUrl = (exvs: Type[]) => exvs.at(0)?._url;
+export const withUrl       = (url: URL) => (exvs: Type[]) => exvs.with(0, {...exvs.at(0)!, _url: url});
