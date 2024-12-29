@@ -7,6 +7,7 @@ import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import console from 'node:console';
 import {URL} from 'node:url';
 import {ExV} from '../index.ts';
 
@@ -68,6 +69,8 @@ export const updateUrlContext = ([controller, ...embeds]: ExV.T[], rx_embeds?: E
     }
   }
   updated.sort();
+
+  console.info(updated);
 
   const updatedUrl = new URL(`${url.origin}${url.pathname}?${updated.toString()}`);
 

@@ -97,7 +97,7 @@ const Example = () => {
       Button({
         label   : `clicked ${clickCount}`,
         disabled: !isResetDisabled,
-        onClick : () => {
+        onClick : () => g(function * () {
           setClickCount(clickCount + 1);
 
           setClickedEmbed({description: `clicked ${clickCount + 1}`});
@@ -106,7 +106,7 @@ const Example = () => {
             setResetDisabled(false);
             openDialog(exampleDialog.name);
           }
-        },
+        }),
       }),
     ),
     Row(

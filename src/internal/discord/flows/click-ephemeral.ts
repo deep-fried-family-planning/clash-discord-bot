@@ -1,6 +1,6 @@
 import {startContext, stopContext, updateUrlContext} from '#discord/context/context.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
-import {DIALOG} from '#discord/entities/constants.ts';
+import {CLOSE, DIALOG} from '#discord/entities/constants.ts';
 import type {CxPath} from '#discord/entities/cx-path.ts';
 import {makeGrid} from '#discord/entities/cxt.ts';
 import {openDialog} from '#discord/flows/open-dialog.ts';
@@ -23,11 +23,12 @@ export const clickEphemeral = (driver: Driver, ax: CxPath, ix: IxIn) => g(functi
 
   yield * updateUseEffect;
 
-  yield * simulateComponentClick(original, ax);
+  yield * simulateComponentClick(original, ax, p(ix.message?.components ?? [], Cx.mapFromDiscordRest((rx) => Cx.decode(rx))));
 
 
   const nextView         = getNextView();
   const nextViewModifier = getViewModifier();
+
 
   if (nextViewModifier === DIALOG) {
     yield * openDialog(driver, ax, ix, ix.data as RestDataComponent, rx_embeds);
@@ -40,6 +41,10 @@ export const clickEphemeral = (driver: Driver, ax: CxPath, ix: IxIn) => g(functi
 
   const next_embeds     = updateUrlContext(next.embeds, rx_embeds);
   const next_components = makeGrid(next.components, ix.data, ax, p(ix.message?.components ?? [], Cx.mapFromDiscordRest((rx) => Cx.decode(rx))));
+
+  if (nextViewModifier === CLOSE) {
+    return yield * DiscordApi.deleteMenu(ix);
+  }
 
   yield * DiscordApi.editMenu(ix, {
     embeds    : next_embeds,

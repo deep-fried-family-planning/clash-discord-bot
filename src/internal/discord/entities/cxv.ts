@@ -2,7 +2,7 @@ import {Const, Cx} from '#dfdis';
 import {CxPath} from '#discord/entities/cx-path.ts';
 import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type SelectOp, TypeC} from '#pure/dfx';
 import {D, p} from '#pure/effect';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
 
 
@@ -26,7 +26,7 @@ export const CxV = D.taggedEnum<T>();
 
 export const {Button, Link, Select, User, Role, Channel, Mention, Text} = CxV;
 
-export const Row = (...vxs: T[]) => vxs;
+export const Row = (...vxs: (T | boolean | und | '')[]) => vxs.filter(Boolean) as T[];
 
 
 const makeMap = {
