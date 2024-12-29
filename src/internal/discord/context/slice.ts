@@ -12,7 +12,7 @@ export type DataSpec = {
 
 export const make = <
   Sg extends {ope: ''},
-  Spec extends { [k in str]: {type: Cx.T['_tag']} },
+  Spec extends { [k in str]: {type: Cx.Type['_tag']} },
   Data extends { [k in keyof Spec]: Cx.E[Spec[k]['type']] },
   Reducers extends & { [k in 'init']: (sg: Sg, sxc: Data) => AnyE<Data> }
                      & { [k in str]: (sg: Sg, sxc: Data) => AnyE<Data> },

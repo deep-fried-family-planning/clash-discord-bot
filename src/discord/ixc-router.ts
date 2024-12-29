@@ -1,5 +1,5 @@
 import {exampleDriver} from '#discord/example.ts';
-import {implementation} from '#discord/implementation.ts';
+import {implementation} from '#discord/flows/implementation.ts';
 import {original} from '#src/discord/ixc-original.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E, p} from '#src/internal/pure/effect.ts';

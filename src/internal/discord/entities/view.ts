@@ -1,5 +1,6 @@
-import {CxPath} from '#discord/routing/cx-path.ts';
-import {NONE} from '#discord/utils/constants.ts';
+import {NONE} from '#discord/entities/constants.ts';
+import {CxPath} from '#discord/entities/cx-path.ts';
+import type {RestDataComponent, RestDataDialog} from '#pure/dfx';
 import {Ar, p} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {Const, CxV, ExV} from '..';
@@ -12,10 +13,10 @@ import {Const, CxV, ExV} from '..';
 
 
 type TempDialog = {
-  title    : str;
-  route    : CxPath;
+  title: str;
+  route: CxPath;
   onSubmit?: () => void;
-  onOpen?  : () => void;
+  onOpen?: () => void;
 };
 
 
@@ -35,7 +36,7 @@ export type View = () =>
 export const makeView = (name: str, view: View) => {
   return {
     name,
-    view: (root: str, viewname?: str) => {
+    view: (root: str, data: RestDataDialog | RestDataComponent, viewname?: str) => {
       const output = view();
 
       const [...rest] = output;
@@ -50,7 +51,7 @@ export const makeView = (name: str, view: View) => {
       };
 
       return {
-        dialog: {
+        dialog    : {
           ...dialog,
           route: p(
             route,

@@ -1,42 +1,71 @@
-import type {Cx} from '#dfdis';
 import {Const} from '#dfdis';
-import {CxPath} from '#discord/routing/cx-path.ts';
-import {type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestRow, StyleB, StyleT, TypeC} from '#pure/dfx';
+import {CxPath} from '#discord/entities/cx-path.ts';
+import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
+import type {snow} from '#src/discord/types.ts';
 import {Ar, D, pipe} from '#src/internal/pure/effect.ts';
-import type {nro, num, opt} from '#src/internal/pure/types-pure.ts';
-import {Discord} from 'dfx';
+import type {nopt, nro, num, opt, str} from '#src/internal/pure/types-pure.ts';
+import type {AnyE} from '#src/internal/types';
 import type {Component} from 'dfx/types';
 
 
-type Meta<A, K extends keyof E> = {
+export const Path = CxPath;
+
+
+type Meta<A, B> = {
   route   : CxPath;
   data    : nro<A>;
-  onClick?: (event: Omit<E[K], 'onClick'>) => void;
+  onClick?: (values: B[]) => void | AnyE<void>;
 };
-
-
 export type E = {
-  Button : Meta<OptButton, 'Button'>;
-  Link   : Meta<OptButton, 'Link'>;
-  Select : Meta<OptSelect, 'Select'>;
-  User   : Meta<OptUser, 'User'>;
-  Role   : Meta<OptRole, 'Role'>;
-  Channel: Meta<OptChannel, 'Channel'>;
-  Mention: Meta<OptMention, 'Mention'>;
-  Text   : Meta<OptText, 'Text'>;
+  Button : Meta<OptButton, never>;
+  Link   : Meta<OptButton, never>;
+  Select : Meta<OptSelect, SelectOp>;
+  User   : Meta<OptUser, ManagedOp>;
+  Role   : Meta<OptRole, ManagedOp>;
+  Channel: Meta<OptChannel, ManagedOp>;
+  Mention: Meta<OptMention, ManagedOp>;
+  Text   : Meta<OptText, never>;
 };
-
-export type T = D.TaggedEnum<E>;
-
-
-export const C     = D.taggedEnum<T>();
-export const is    = C.$is;
-export const match = C.$match;
+export type Type = D.TaggedEnum<E>;
+export type Tag = Type['_tag'];
 
 
-export const {Button, Link, Select, User, Role, Channel, Mention, Text} = C;
+export const Enum  = D.taggedEnum<Type>();
+export const is    = Enum.$is;
+export const match = Enum.$match;
 
-export const Tag: { [k in Cx.T['_tag']]: k } = {
+
+export const ButtonTag  = 'Button' satisfies Tag;
+export const LinkTag    = 'Link' satisfies Tag;
+export const SelectTag  = 'Select' satisfies Tag;
+export const UserTag    = 'User' satisfies Tag;
+export const RoleTag    = 'Role' satisfies Tag;
+export const ChannelTag = 'Channel' satisfies Tag;
+export const MentionTag = 'Mention' satisfies Tag;
+export const TextTag    = 'Text' satisfies Tag;
+
+
+export const Button  = Enum.Button;
+export const Link    = Enum.Link;
+export const Select  = Enum.Select;
+export const User    = Enum.User;
+export const Role    = Enum.Role;
+export const Channel = Enum.Channel;
+export const Mention = Enum.Mention;
+export const Text    = Enum.Text;
+
+
+export const isButton  = is('Button');
+export const isLink    = is('Link');
+export const isSelect  = is('Select');
+export const isUser    = is('User');
+export const isRole    = is('Role');
+export const isChannel = is('Channel');
+export const isMention = is('Mention');
+export const isText    = is('Text');
+
+
+export const Tags: { [k in Type['_tag']]: k } = {
   Button : 'Button',
   Link   : 'Link',
   Select : 'Select',
@@ -48,67 +77,46 @@ export const Tag: { [k in Cx.T['_tag']]: k } = {
 };
 
 
-export const pure    = <A extends T>(self: A) => self;
-export const map     = <A extends T, B = A>(fa: (a: A) => B) => (a: A) => fa(a);
-export const mapSame = <A extends T>(fa: (a: A) => A) => (a: A) => fa(a);
-export const get     = <A extends T, B extends keyof A>(b: B) => (a: A): A[B] => a[b];
-export const set     = <A extends T, B extends keyof A, C extends A[B]>(b: B, c: C) => (a: A) => (a[b] = c) && a;
+export const pure    = <A extends Type>(self: A) => self;
+export const map     = <A extends Type, B = A>(fa: (a: A) => B) => (a: A) => fa(a);
+export const mapSame = <A extends Type>(fa: (a: A) => A) => (a: A) => fa(a);
+export const get     = <A extends Type, B extends keyof A>(b: B) => (a: A): A[B] => a[b];
+export const set     = <A extends Type, B extends keyof A, C extends A[B]>(b: B, c: C) => (a: A) => (a[b] = c) && a;
+
 
 export const buildId = map((cx) => ({...cx, data: {...cx.data, custom_id: CxPath.build(cx.route)}} as typeof cx));
-export const merge   = <A extends T>(a: opt<A>) => (b: A) => ({...b, ...a});
+export const merge   = <A extends Type>(a: opt<A>) => (b: A) => ({...b, ...a});
 
 
-export const mergeData = <A extends T>(a: A['data']) => (b: A) => ({
-  ...b,
-  data: {...b.data, ...a},
-});
-export const mergeMeta = <A extends T>(a: A['data']) => (b: A) => ({
-  ...b,
-  data: {...b.data, ...a},
-});
-
-
-export const getSelected = C.$match({
-  Button : () => [],
-  Link   : () => [],
-  Select : (cx) => cx.data.options!.filter((o) => o.default),
-  User   : (cx) => cx.data.default_values,
-  Role   : (cx) => cx.data.default_values,
-  Channel: (cx) => cx.data.default_values,
-  Mention: (cx) => cx.data.default_values,
-  Text   : () => [],
-});
-
-
-const makeMap = {
-  [TypeC.TEXT_INPUT]        : C.Text,
-  [TypeC.STRING_SELECT]     : C.Select,
-  [TypeC.USER_SELECT]       : C.User,
-  [TypeC.ROLE_SELECT]       : C.Role,
-  [TypeC.CHANNEL_SELECT]    : C.Channel,
-  [TypeC.MENTIONABLE_SELECT]: C.Mention,
+const decodeMap = {
+  [TypeC.TEXT_INPUT]        : Enum.Text,
+  [TypeC.STRING_SELECT]     : Enum.Select,
+  [TypeC.USER_SELECT]       : Enum.User,
+  [TypeC.ROLE_SELECT]       : Enum.Role,
+  [TypeC.CHANNEL_SELECT]    : Enum.Channel,
+  [TypeC.MENTIONABLE_SELECT]: Enum.Mention,
 };
 
 
-export const makeFromRest = (rx_cx: Component) => {
+export const decode = (rx_cx: Component) => {
   const route = 'custom_id' in rx_cx
     ? CxPath.parse(rx_cx.custom_id)
     : CxPath.empty();
 
-  if (rx_cx.type in makeMap) {
-    return makeMap[rx_cx.type as keyof typeof makeMap]({
+  if (rx_cx.type in decodeMap) {
+    return decodeMap[rx_cx.type as keyof typeof decodeMap]({
       route,
       data: rx_cx as never,
     });
   }
 
-  if (rx_cx.type === Discord.ComponentType.BUTTON) {
+  if (rx_cx.type === TypeC.BUTTON) {
     return 'custom_id' in rx_cx
-      ? C.Button({
+      ? Enum.Button({
         route,
         data: rx_cx as never,
       })
-      : C.Link({
+      : Enum.Link({
         route,
         data: {
           ...rx_cx,
@@ -117,7 +125,7 @@ export const makeFromRest = (rx_cx: Component) => {
       });
   }
 
-  return C.Button({
+  return Enum.Button({
     route,
     data: {
       ...rx_cx,
@@ -127,43 +135,94 @@ export const makeFromRest = (rx_cx: Component) => {
 };
 
 
-export const defaultFromView = <A extends T>(vx_cx: A) => {
-  if (is('Link')(vx_cx)) {
-    return {
-      ...vx_cx,
-      data: {
-        ...vx_cx,
-        ...vx_cx.data,
-        style: StyleB.LINK,
-      },
-    };
+export const encode = match({
+  Button : ({data}) => data,
+  Link   : ({data: {custom_id, ...data}}) => data,
+  Select : ({data}) => data,
+  User   : ({data}) => data,
+  Role   : ({data}) => data,
+  Channel: ({data}) => data,
+  Mention: ({data}) => data,
+  Text   : ({data}) => data,
+});
+
+
+export const makeFromView = <A extends Type>(cx: A) => {
+  if (is('Link')(cx)) {
+    cx.data.style ??= StyleB.LINK;
   }
-  if (is('Button')(vx_cx)) {
-    return {
-      ...vx_cx,
-      data: {
-        ...vx_cx.data,
-        style: vx_cx.data.style ?? StyleB.PRIMARY,
-      },
-    };
+  if (is('Button')(cx)) {
+    cx.data.style ??= StyleB.PRIMARY;
   }
-  if (is('Text')(vx_cx)) {
-    return {
-      ...vx_cx,
-      data: {
-        ...vx_cx.data,
-        style: vx_cx.data.style ?? StyleT.SHORT,
-      },
-    };
+  if (is('Text')(cx)) {
+    cx.data.style ??= StyleT.SHORT;
   }
-  return vx_cx;
+  return cx;
 };
 
 
-export const mapFromData = <A>(fa: (a: Component, row: num, col: num) => A) => (cs: Component[]) => pipe(
+export const getSelectedOptions = Enum.$match({
+  Button : () => [],
+  Link   : () => [],
+  Select : (cx) => cx.data.options?.filter((o) => o.default) ?? [],
+  User   : (cx) => cx.data.default_values ?? [],
+  Role   : (cx) => cx.data.default_values ?? [],
+  Channel: (cx) => cx.data.default_values ?? [],
+  Mention: (cx) => cx.data.default_values ?? [],
+  Text   : () => [],
+});
+
+
+export const setSelectedOptions = (
+  values: str[],
+  resolved?: nopt<RestDataResolved>,
+) => Enum.$match({
+  Button : pure,
+  Link   : pure,
+  Select : (cx) => Enum.Select({...cx, data: {...cx.data, options: cx.data.options!.map((o) => ({...o, default: values.includes(o.value)}))}}),
+  User   : (cx) => Enum.User({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
+  Role   : (cx) => Enum.Role({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
+  Channel: (cx) => Enum.Channel({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
+  Mention: (cx) => Enum.Mention({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
+  Text   : pure,
+});
+
+
+export const getOptions = Enum.$match({
+  Button : () => [],
+  Link   : () => [],
+  Select : (cx) => cx.data.options ?? [],
+  User   : (cx) => cx.data.default_values ?? [],
+  Role   : (cx) => cx.data.default_values ?? [],
+  Channel: (cx) => cx.data.default_values ?? [],
+  Mention: (cx) => cx.data.default_values ?? [],
+  Text   : () => [],
+});
+
+
+export const setOptions = Enum.$match({
+  Button : () => [],
+  Link   : () => [],
+  Select : (cx) => cx.data.options ?? [],
+  User   : (cx) => cx.data.default_values ?? [],
+  Role   : (cx) => cx.data.default_values ?? [],
+  Channel: (cx) => cx.data.default_values ?? [],
+  Mention: (cx) => cx.data.default_values ?? [],
+  Text   : () => [],
+});
+
+
+export const mapFromDiscordRest = <A>(fa: (a: Component, row: num, col: num) => A) => (cs: Component[]) => pipe(
   cs as RestRow[],
   Ar.map((r, row) => pipe(
     r.components,
     Ar.map((c, col) => fa(c, row, col)),
   )),
 );
+
+
+const resolveType = (val: snow, resolved?: nopt<RestDataResolved>) =>
+  resolved?.users?.[val] ? 'user'
+    : resolved?.roles?.[val] ? 'role'
+      : resolved?.channels?.[val] ? 'channel'
+        : 'fail';

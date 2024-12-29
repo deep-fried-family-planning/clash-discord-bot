@@ -1,4 +1,4 @@
-import {CxPath} from '#discord/routing/cx-path.ts';
+import {CxPath} from '#discord/entities/cx-path.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {RK_CLOSE} from '#src/constants/route-kind.ts';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';

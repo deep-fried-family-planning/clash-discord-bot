@@ -5,7 +5,7 @@ import {BackB, SuccessB} from '#src/discord/components/global-components.ts';
 import type {Ax} from '#src/discord/store/derive-action.ts';
 import type {St} from '#src/discord/store/derive-state.ts';
 import {makeId} from '#src/discord/store/type-rx.ts';
-import type {snflk} from '#src/discord/types.ts';
+import type {snow} from '#src/discord/types.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
 import {AccountViewerB} from '#src/discord/view-reducers/account-viewer.ts';
 import {BotViewerDevB, DEVS} from '#src/discord/view-reducers/bot-viewer-dev.ts';
@@ -21,75 +21,75 @@ import {UserB} from './user-settings.ts';
 
 
 const axn = {
-    ENTRY: makeId(RK_ENTRY, 'INFO'),
-    OPEN : makeId(RK_OPEN, 'INFO'),
+  ENTRY: makeId(RK_ENTRY, 'INFO'),
+  OPEN : makeId(RK_OPEN, 'INFO'),
 };
 
 
 export const OmbiBoardEB = SuccessB.as(axn.ENTRY, {
-    label: LABEL_START,
+  label: LABEL_START,
 });
-export const OmbiBoardB = SuccessB.as(axn.OPEN, {
-    label: LABEL_START,
+export const OmbiBoardB  = SuccessB.as(axn.OPEN, {
+  label: LABEL_START,
 });
 
 
 const start = (s: St, ax: Ax) => E.gen(function * () {
-    return {
-        ...s,
-        title:
-            (s.server?.alias ? s.server.alias : unset)
-            ?? 'Start',
-        description: dLinesS(
-            `Hello <@${s.user_id}>`,
-            `Admin View: ${s.user_roles.includes(s.server?.admin as snflk)}`,
-        ),
+  return {
+    ...s,
+    title:
+      (s.server?.alias ? s.server.alias : unset)
+      ?? 'Start',
+    description: dLinesS(
+      `Hello <@${s.user_id}>`,
+      `Admin View: ${s.user_roles.includes(s.server?.admin as snow)}`,
+    ),
 
-        viewer: unset,
-        editor: unset,
-        status: unset,
+    viewer: unset,
+    editor: unset,
+    status: unset,
 
-        row1: [
-            InfoViewerB,
-            ClanViewerB,
-            RosterViewerB,
-            BotViewer,
-        ],
+    row1: [
+      InfoViewerB,
+      ClanViewerB,
+      RosterViewerB,
+      BotViewer,
+    ],
 
-        submit: LinkB,
-        delete: ServerViewerB.if(s.user_roles.includes(s.server!.admin as snflk)),
-        back  : BotViewerDevB.if(DEVS.includes(s.user_id)),
-    } satisfies St;
+    submit: LinkB,
+    delete: ServerViewerB.if(s.user_roles.includes(s.server!.admin as snow)),
+    back  : BotViewerDevB.if(DEVS.includes(s.user_id)),
+  } satisfies St;
 });
 
 
 export const LinkB = SuccessB.as(makeId(RK_OPEN, 'LINK'), {
-    label: LABEL_LINK,
+  label: LABEL_LINK,
 });
-const link = (s: St, ax: Ax) => E.gen(function * () {
-    return {
-        ...s,
-        title      : LABEL_TITLE_LINK,
-        description: undefined,
+const link         = (s: St, ax: Ax) => E.gen(function * () {
+  return {
+    ...s,
+    title      : LABEL_TITLE_LINK,
+    description: undefined,
 
-        viewer: unset,
-        editor: unset,
-        status: unset,
+    viewer: unset,
+    editor: unset,
+    status: unset,
 
-        row1: [
-            LinkAccountB,
-            AccountViewerB,
-            UserB.fwd(OmbiBoardB.id),
-        ],
+    row1: [
+      LinkAccountB,
+      AccountViewerB,
+      UserB.fwd(OmbiBoardB.id),
+    ],
 
-        back  : BackB.as(OmbiBoardB.id),
-        delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
-    } satisfies St;
+    back  : BackB.as(OmbiBoardB.id),
+    delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snow)),
+  } satisfies St;
 });
 
 
 export const infoBoardReducer = {
-    [OmbiBoardEB.id.predicate]: start,
-    [OmbiBoardB.id.predicate] : start,
-    [LinkB.id.predicate]      : link,
+  [OmbiBoardEB.id.predicate]: start,
+  [OmbiBoardB.id.predicate] : start,
+  [LinkB.id.predicate]      : link,
 };

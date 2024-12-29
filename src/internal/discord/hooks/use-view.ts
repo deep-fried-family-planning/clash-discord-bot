@@ -1,5 +1,5 @@
-import {setNextView, setViewModifier} from '#discord/hooks/store-hooks.ts';
-import {DIALOG} from '#discord/utils/constants.ts';
+import {setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
+import {DIALOG} from '#discord/entities/constants.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

@@ -1,9 +1,9 @@
-import type {HookId} from '#discord/hooks/context.ts';
-import {addAccessorHook, getHooks} from '#discord/hooks/store-hooks.ts';
-import {getParam, setParam} from '#discord/hooks/controller-params.ts';
+import type {HookId} from '#discord/context/context.ts';
+import {getParam, setParam} from '#discord/context/controller-params.ts';
+import {addAccessorHook, getHooks} from '#discord/hooks/hooks.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import console from 'node:console';
-import type {Cx, ExV} from '..';
+import type {Cx, ExV} from '../index.ts';
 
 
 type EmbedToText = (embed: ExV.T) => Partial<Cx.E['Text']>;
@@ -11,7 +11,7 @@ type TextToEmbed = (text: Cx.E['Text']) => Partial<ExV.T>;
 export type Accessor = readonly [HookId, EmbedToText, TextToEmbed];
 
 
-export const useAccessor = (...[id, et, te]: Accessor) => {
+export const useDialogRef = (...[id, et, te]: Accessor) => {
   const accessor_id = `a_${id}`;
 
   return () => {
@@ -27,9 +27,9 @@ export const useAccessor = (...[id, et, te]: Accessor) => {
 };
 
 
-export const updateAccessorEmbeds = (
+export const updateDialogRefEmbeds = (
   embeds: ExV.T[],
-  components: Cx.T[][],
+  components: Cx.Type[][],
 ) => {
   const hooks = getHooks();
 
@@ -51,7 +51,7 @@ export const updateAccessorEmbeds = (
           return {
             ...ex,
             ...textToEmbed(providingText),
-          };
+          } as typeof ex;
         }
         return ex;
       });
@@ -61,9 +61,9 @@ export const updateAccessorEmbeds = (
 };
 
 
-export const updateAccessorDialogText = (
+export const updateDialogRefComponents = (
   embeds: ExV.T[],
-  components: Cx.T[][],
+  components: Cx.Type[][],
 ) => {
   const hooks = getHooks();
 
@@ -75,11 +75,8 @@ export const updateAccessorDialogText = (
         return acc;
       }
 
-      console.log('accessor_text', id);
-
       return acc.map((row) => row.map((cx) => {
         if (cx._tag === 'Text' && cx.route.accessor === id) {
-          console.log('accessor_text_put', id, embedToText(providingEmbed));
           return {
             ...cx,
             data: {

@@ -1,4 +1,4 @@
-import {CxPath} from '#discord/routing/cx-path.ts';
+import {CxPath} from '#discord/entities/cx-path.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
 import {RK_CLOSE} from '#src/constants/route-kind.ts';
 import {dLinesS} from '#src/discord/util/markdown.ts';
@@ -7,8 +7,8 @@ import {UI} from 'dfx';
 
 
 export const messageUnrecoverable = {
-  embeds: [{
-    author: {
+  embeds    : [{
+    author     : {
       name: 'Unrecoverable Error',
     },
     color      : nColor(COLOR.ERROR),
@@ -17,7 +17,7 @@ export const messageUnrecoverable = {
       `If you don't think your input caused this error, send this link to the support server:`,
       // `-# <https://discord.com/channels/1283847240061947964/${log.channel_id}/${log.id}>`,
     ),
-    footer: {
+    footer     : {
       text: 'Made with ❤️ by NotStr8DontH8 and DFFP.',
     },
   }],

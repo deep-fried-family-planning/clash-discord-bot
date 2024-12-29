@@ -2,20 +2,31 @@ import type {opt, str} from '#src/internal/pure/types-pure.ts';
 import {Discord} from 'dfx';
 
 
-export type RestMessage = Discord.Message;
 export type RestEmbed = Discord.Embed;
+export type RestMessage = Discord.Message;
 
 
 export type RestIx = Discord.Interaction;
 export type RestData = Discord.InteractionDatum;
-export type RestDialog = Discord.ModalSubmitDatum;
-export type RestClick = Discord.MessageComponentDatum;
-
+export type RestDataDialog = Discord.ModalSubmitDatum;
+export type RestDataComponent = Discord.MessageComponentDatum;
 export type RestDataResolved = Discord.ResolvedDatum;
+export type SelectOp = Discord.SelectOption;
+export type ManagedOp = Discord.SelectDefaultValue;
+
+
+export type SelectEvent = {
+  values: str[];
+};
+
+
+export type ManagedSelectEvent = {
+  values  : str[];
+  resolved: Required<RestDataResolved>;
+};
 
 
 export type RestRow = Discord.ActionRow;
-export type RestNone = {custom_id: str};
 export type RestButton = Discord.Button;
 export type RestText = Discord.TextInput;
 export type RestStringSelect = Discord.SelectMenu;
@@ -25,7 +36,6 @@ export type RestChannelSelect = Discord.SelectMenu;
 export type RestMentionableSelect = Discord.SelectMenu;
 
 
-export type OptNone = opt<RestNone>;
 export type OptRow = opt<RestRow>;
 export type OptButton = opt<RestButton>;
 export type OptSelect = opt<RestStringSelect>;

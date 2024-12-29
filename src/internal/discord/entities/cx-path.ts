@@ -1,5 +1,5 @@
-import {makePathBuilder, makePathParser, makePathPattern, mapParam, setParam, setParamWith} from '#discord/routing/template-path.ts';
-import {NONE, NONE_NUM} from '#discord/utils/constants.ts';
+import {NONE, NONE_NUM} from '#discord/entities/constants.ts';
+import {makePathBuilder, makePathParser, makePathPattern, mapParam, setParam, setParamWith} from '#discord/entities/template-path.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -9,7 +9,8 @@ const route_templates = [
 
 const parsers = route_templates.map(makePathPattern);
 
-const pathParser = makePathParser<CxPath>('CxPath', parsers);
+const pathParser  = makePathParser<CxPath>('CxPath', parsers);
+const pathBuilder = makePathBuilder<CxPath>('CxPath', parsers);
 
 export type CxPath = {
   root    : str;
@@ -30,7 +31,12 @@ export const CxPath = {
 
     return params;
   },
-  build  : makePathBuilder<CxPath>('CxPath', parsers),
+  build: (route: CxPath) => {
+    route.row = route.row.toString() as unknown as num;
+    route.col = route.col.toString() as unknown as num;
+
+    return pathBuilder(route);
+  },
   set    : setParam<CxPath>,
   setWith: setParamWith<CxPath>,
   map    : mapParam<CxPath>,

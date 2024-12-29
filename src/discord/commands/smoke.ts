@@ -1,7 +1,7 @@
+import {CxPath} from '#discord/entities/cx-path.ts';
 import {exampleDriver, exampleView} from '#discord/example.ts';
-import {CxPath} from '#discord/routing/cx-path.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
+import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {Const} from '#src/internal/discord/index';
@@ -27,13 +27,13 @@ export const SMOKE
 export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
   const [server, user] = yield * validateServer(data);
 
-  if (!user.roles.includes(server.admin as snflk)) {
+  if (!user.roles.includes(server.admin as snow)) {
     return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
   }
 
   return {
-    embeds: [{
-      author: {
+    embeds    : [{
+      author     : {
         name: 'Dev Omni',
       },
       title      : 'Dev',

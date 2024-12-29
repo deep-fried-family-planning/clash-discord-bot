@@ -1,4 +1,4 @@
-import type {IxIn} from '#discord/utils/types.ts';
+import type {IxIn} from '#discord/types.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
