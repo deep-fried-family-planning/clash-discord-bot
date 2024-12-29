@@ -6,8 +6,6 @@ import type {ExV} from '../index.ts';
 
 
 export type UseRestEmbedRef = readonly [str, (embed: Partial<RestEmbed>) => Partial<RestEmbed>];
-
-
 const noop = (embed: Partial<RestEmbed>) => embed;
 
 

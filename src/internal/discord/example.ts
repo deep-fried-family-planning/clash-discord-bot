@@ -2,7 +2,7 @@ import {AccessorEmbed, BasicEmbed, EmbedController} from '#discord/entities/exv.
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {Button, Row, Select, Text, User} from '#discord/entities/vc.ts';
 import {makeView} from '#discord/entities/view.ts';
-import {useRestEmbedRef} from '#discord/hooks/use--rest-embed-ref.ts';
+import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
 import {useDialogRef} from '#discord/hooks/use-dialog-ref.ts';
 import {useEffect} from '#discord/hooks/use-effect.ts';
 import {useRestRef} from '#discord/hooks/use-rest-ref.ts';

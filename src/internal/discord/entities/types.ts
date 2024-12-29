@@ -1,12 +1,20 @@
 import type {Cx, Ex, Vc} from '#discord/entities/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import type {AnyE} from '#src/internal/types.ts';
 
 
-export type ViewNodeDialogOutput = {
-  route     : Cx.Type['route'];
-  title     : str;
-  components: Cx.Type[][];
-};
+export type VoidOrVoidEffect = () => void | AnyE<void>;
+
+
+export type ViewNodeDialogOutput = readonly [
+  {
+    route    : Cx.Type['route'];
+    title    : str;
+    onSubmit?: VoidOrVoidEffect;
+    onOpen?  : VoidOrVoidEffect;
+  },
+  ...Vc.Type[][],
+];
 
 
 export type ViewNodeMessageOutput =
@@ -18,9 +26,5 @@ export type ViewNodeMessageOutput =
 
 
 export type ViewNodeOutput =
-  | readonly [ViewNodeDialogOutput, ...Vc.Type[][]]
-  | readonly [Ex.Type, ...Vc.Type[][]]
-  | readonly [Ex.Type, Ex.Type, ...Vc.Type[][]]
-  | readonly [Ex.Type, Ex.Type, Ex.Type, ...Vc.Type[][]]
-  | readonly [Ex.Type, Ex.Type, Ex.Type, Ex.Type, ...Vc.Type[][]]
-  | readonly [Ex.Type, Ex.Type, Ex.Type, Ex.Type, Ex.Type, ...Vc.Type[][]];
+  ViewNodeDialogOutput
+  | ViewNodeMessageOutput;

@@ -1,7 +1,7 @@
 import {BasicEmbed, EmbedController} from '#discord/entities/exv.ts';
 import {Row, Select} from '#discord/entities/vc.ts';
 import {makeView} from '#discord/entities/view.ts';
-import {useRestEmbedRef} from '#discord/hooks/use--rest-embed-ref.ts';
+import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
 import {useEffect} from '#discord/hooks/use-effect.ts';
 import {useRestRef} from '#discord/hooks/use-rest-ref.ts';
 import {useState} from '#discord/hooks/use-state.ts';

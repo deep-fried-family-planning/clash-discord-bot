@@ -1,33 +1,18 @@
 import {NONE} from '#discord/entities/constants/constants.ts';
 import type {Ex} from '#discord/entities/index.ts';
-import type { Vc} from '#discord/entities/index.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import type {ViewNodeMessageOutput} from '#discord/entities/types.ts';
+import type {ViewNodeDialogOutput, ViewNodeMessageOutput} from '#discord/entities/types.ts';
 import type {RestDataComponent, RestDataDialog} from '#pure/dfx';
 import {Ar, p} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {Const, CxV, ExV} from '..';
 
 
-// export type ViewNode = {
-//     Dialog : [{title: str; route: V2Route}, ...CxV.T[][]];
-//     Message: [ExV.T[], ...CxV.T[][]];
-// };
-
-
-type TempDialog = {
-  title    : str;
-  route    : CxPath;
-  onSubmit?: () => void;
-  onOpen?  : () => void;
-};
-
-
 export type SimulatedView = ReturnType<ReturnType<typeof makeView>['view']>;
 
 
 export type View = () =>
-  | readonly [TempDialog, ...Vc.Type[][]]
+  | ViewNodeDialogOutput
   | ViewNodeMessageOutput;
 
 
