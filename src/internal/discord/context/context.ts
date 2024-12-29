@@ -1,4 +1,5 @@
 import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam, setPath} from '#discord/context/controller-params.ts';
+import {Ex} from '#discord/entities';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
@@ -9,7 +10,6 @@ import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
 import {URL} from 'node:url';
-import {ExV} from '../index.ts';
 
 
 export type HookId = str;
@@ -18,13 +18,13 @@ export type DialogName = str;
 export type ViewModifier = str;
 
 
-export const startContext = (embeds: ExV.Type[], ax: CxPath) => {
+export const startContext = (embeds: Ex.Type[], ax: CxPath) => {
   clearHooks();
   clearAllParams();
   clearRoute();
 
 
-  const url = ExV.controllerUrl(embeds) ?? new URL(DFFP_URL);
+  const url = Ex.controllerUrl(embeds) ?? new URL(DFFP_URL);
 
 
   setPath(ax);
@@ -49,8 +49,8 @@ export const stopContext = () => {
 };
 
 
-export const updateUrlContext = ([controller, ...embeds]: ExV.Type[], rx_embeds?: ExV.Type[]): RestEmbed[] => {
-  const controller_encoded = ExV.encode(controller);
+export const updateUrlContext = ([controller, ...embeds]: Ex.Type[], rx_embeds?: Ex.Type[]): RestEmbed[] => {
+  const controller_encoded = Ex.encode(controller);
   const url                = new URL(controller_encoded.image!.url);
   const params             = getAllParams();
   const hooks              = getHooks();
@@ -91,10 +91,10 @@ export const updateUrlContext = ([controller, ...embeds]: ExV.Type[], rx_embeds?
 
     const updated = updateRestEmbedRef(embeds);
 
-    return [controller_updated, ...ExV.encodeAll(updated, rxWithoutController)];
+    return [controller_updated, ...Ex.encodeAll(updated, rxWithoutController)];
   }
 
-  return [controller_updated, ...pipe(updateRestEmbedRef(embeds), ExV.encodeAll)];
+  return [controller_updated, ...pipe(updateRestEmbedRef(embeds), Ex.encodeAll)];
 };
 
 

@@ -1,5 +1,6 @@
-import {Const, Cx, type Driver} from '#dfdis';
-import {ENTRY, NO_SIM} from '#discord/entities/constants/constants.ts';
+import type {makeDriver} from '#discord/context/model-driver.ts';
+import {Cx} from '#discord/entities';
+import {CLOSE, ENTRY, NO_SIM} from '#discord/entities/constants/constants.ts';
 import {clickEntrypoint} from '#discord/flows/click-entrypoint.ts';
 import {clickEphemeral} from '#discord/flows/click-ephemeral.ts';
 import {submitDialog} from '#discord/flows/submit-dialog.ts';
@@ -21,7 +22,7 @@ import type {IxD} from '#src/internal/discord.ts';
 
 
 export const implementation = <
-  A extends ReturnType<typeof Driver.make>,
+  A extends ReturnType<typeof makeDriver>,
 >(
   driver: A,
   anyIx: IxD,
@@ -29,7 +30,7 @@ export const implementation = <
   const ix = anyIx as IxIn;
   const ax = Cx.Path.parse(ix.data.custom_id);
 
-  if (ax.mod === Const.CLOSE) {
+  if (ax.mod === CLOSE) {
     return yield * DiscordApi.deleteMenu(ix);
   }
   if (ax.mod === NO_SIM) {

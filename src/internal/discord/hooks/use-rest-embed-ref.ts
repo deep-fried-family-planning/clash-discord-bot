@@ -1,8 +1,8 @@
+import type {Ex} from '#discord/entities';
 import {hooks} from '#discord/hooks/hooks.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import type {ExV} from '../index.ts';
 
 
 export type UseRestEmbedRef = readonly [str, (embed: Partial<RestEmbed>) => Partial<RestEmbed>];
@@ -28,7 +28,7 @@ export const useRestEmbedRef = (id: str) => {
 };
 
 
-export const updateRestEmbedRef = (embeds: ExV.Type[]) => {
+export const updateRestEmbedRef = (embeds: Ex.Type[]) => {
   return pipe(
     hooks.embeds,
     Ar.reduce(embeds, (acc, [id, updater]) => {

@@ -1,14 +1,14 @@
-import type {Slice} from '#dfdis';
+import type {makeSlice} from '#discord/context/slice.ts';
 import type {makeView} from '#discord/entities/view.ts';
 import {Kv, p} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-export type Driver = ReturnType<typeof make>;
+export type Driver = ReturnType<typeof makeDriver>;
 
 
-export const make = <
-  Scs extends ReturnType<typeof Slice.make>[],
+export const makeDriver = <
+  Scs extends ReturnType<typeof makeSlice>[],
 >(
   config: {
     name  : str;

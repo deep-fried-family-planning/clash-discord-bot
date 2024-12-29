@@ -1,12 +1,12 @@
-import {exampleDriver, exampleView} from '#discord/example.ts';
+import {ENTRY} from '#discord/entities/constants/constants.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
+import {exampleDriver, exampleView} from '#src/discord/example.ts';
 import {v2driver} from '#src/discord/omni-board/omni-board-driver.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {Const} from '#src/internal/discord/index';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {UI} from 'dfx';
@@ -48,7 +48,7 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
           ...CxPath.empty(),
           root: exampleDriver.name,
           view: exampleView.name,
-          mod : Const.ENTRY,
+          mod : ENTRY,
         }),
       }), UI.button({
         label    : 'V2 Omni Board Test',
@@ -56,7 +56,7 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
           ...CxPath.empty(),
           root: v2driver.name,
           view: OmniBoard.name,
-          mod : Const.ENTRY,
+          mod : ENTRY,
         }),
       })],
     ]),

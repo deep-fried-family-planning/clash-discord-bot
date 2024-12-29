@@ -1,6 +1,8 @@
 import {stopContext, updateUrlContext} from '#discord/context/context.ts';
 import {saveCurrentIxForDialog} from '#discord/context/dialog-relay.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
+import type { Ex} from '#discord/entities';
+import {Cx} from '#discord/entities';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {simulateDialogOpen} from '#discord/flows/simulate-click.ts';
@@ -11,11 +13,9 @@ import type {IxIn} from '#discord/types.ts';
 import type {RestDataComponent} from '#pure/dfx';
 import {g, p} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import type {ExV} from '../index.ts';
-import {Cx} from '../index.ts';
 
 
-export const openDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: RestDataComponent, rx_embeds: ExV.Type[]) => g(function * () {
+export const openDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: RestDataComponent, rx_embeds: Ex.Type[]) => g(function * () {
   const nextView = getNextView();
 
   const dialog = driver.views[nextView].view(driver.name, ix_data);

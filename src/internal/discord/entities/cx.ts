@@ -1,4 +1,3 @@
-import {Const, Cx} from '#dfdis';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {updateRxRefs} from '#discord/hooks/use-rest-ref.ts';
@@ -8,6 +7,7 @@ import {Ar, D, p, pipe} from '#src/internal/pure/effect.ts';
 import type {nopt, nro, num, opt, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types';
 import type {Component} from 'dfx/types';
+import {NONE} from './constants/path';
 
 
 export type Path = CxPath;
@@ -92,12 +92,12 @@ export const merge   = <A extends Type>(a: opt<A>) => (b: A) => ({...b, ...a});
 
 
 const decodeMap = {
-  [TypeC.TEXT_INPUT]        : Enum.Text,
-  [TypeC.STRING_SELECT]     : Enum.Select,
-  [TypeC.USER_SELECT]       : Enum.User,
-  [TypeC.ROLE_SELECT]       : Enum.Role,
-  [TypeC.CHANNEL_SELECT]    : Enum.Channel,
-  [TypeC.MENTIONABLE_SELECT]: Enum.Mention,
+  [TypeC.TEXT_INPUT]        : Text,
+  [TypeC.STRING_SELECT]     : Select,
+  [TypeC.USER_SELECT]       : User,
+  [TypeC.ROLE_SELECT]       : Role,
+  [TypeC.CHANNEL_SELECT]    : Channel,
+  [TypeC.MENTIONABLE_SELECT]: Mention,
 };
 
 
@@ -115,24 +115,24 @@ export const decode = (rx_cx: Component) => {
 
   if (rx_cx.type === TypeC.BUTTON) {
     return 'custom_id' in rx_cx
-      ? Enum.Button({
+      ? Button({
         route,
         data: rx_cx as never,
       })
-      : Enum.Link({
+      : Link({
         route,
         data: {
           ...rx_cx,
-          custom_id: Const.NONE,
+          custom_id: NONE,
         },
       });
   }
 
-  return Enum.Button({
+  return Button({
     route,
     data: {
       ...rx_cx,
-      custom_id: Const.NONE,
+      custom_id: NONE,
     } as never,
   });
 };
@@ -232,10 +232,10 @@ const resolveType = (val: snow, resolved?: nopt<RestDataResolved>) =>
 
 
 export const makeGrid = (
-  vxcx: Cx.Type[][],
+  vxcx: Type[][],
   data: RestDataDialog | RestDataComponent,
   ax: CxPath,
-  rx?: Cx.Type[][],
+  rx?: Type[][],
 ) => {
   const txcx = rx
     ? updateRxRefs(vxcx, rx)
@@ -258,19 +258,19 @@ export const makeGrid = (
 
       return p(
         cx,
-        Cx.set('route', {
+        set('route', {
           ...cx.route,
           row: row,
           col: col,
         }),
-        Cx.buildId,
+        buildId,
         row === ax.row && col === ax.col
-          ? Cx.setSelectedOptions(
+          ? setSelectedOptions(
             'values' in data ? data.values as unknown as str[] : [],
             'resolved' in data ? data.resolved as nopt<RestDataResolved> : undefined,
           )
-          : Cx.pure,
-        Cx.encode,
+          : pure,
+        encode,
       );
     })),
   }))) as unknown as Component[];

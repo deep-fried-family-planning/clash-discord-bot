@@ -1,12 +1,12 @@
 import type {HookId} from '#discord/context/context.ts';
 import {getParam, setParam} from '#discord/context/controller-params.ts';
+import type {Cx, Ex} from '#discord/entities';
 import {addAccessorHook, getHooks} from '#discord/hooks/hooks.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
-import type {Cx, ExV} from '../index.ts';
 
 
-type EmbedToText = (embed: ExV.Type) => Partial<Cx.E['Text']>;
-type TextToEmbed = (text: Cx.E['Text']) => Partial<ExV.Type>;
+type EmbedToText = (embed: Ex.Type) => Partial<Cx.E['Text']>;
+type TextToEmbed = (text: Cx.E['Text']) => Partial<Ex.Type>;
 export type Accessor = readonly [HookId, EmbedToText, TextToEmbed];
 
 
@@ -27,7 +27,7 @@ export const useDialogRef = (...[id, et, te]: Accessor) => {
 
 
 export const updateDialogRefEmbeds = (
-  embeds: ExV.Type[],
+  embeds: Ex.Type[],
   components: Cx.Type[][],
 ) => {
   const hooks = getHooks();
@@ -58,7 +58,7 @@ export const updateDialogRefEmbeds = (
 
 
 export const updateDialogRefComponents = (
-  embeds: ExV.Type[],
+  embeds: Ex.Type[],
   components: Cx.Type[][],
 ) => {
   const hooks = getHooks();

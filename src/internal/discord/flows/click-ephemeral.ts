@@ -1,5 +1,6 @@
 import {startContext, stopContext, updateUrlContext} from '#discord/context/context.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
+import {Cx, Ex} from '#discord/entities';
 import {CLOSE, DIALOG} from '#discord/entities/constants/constants.ts';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
@@ -11,11 +12,10 @@ import type {IxIn} from '#discord/types.ts';
 import type {RestDataComponent} from '#pure/dfx';
 import {g, p} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {Cx, ExV} from '../index.ts';
 
 
 export const clickEphemeral = (driver: Driver, ax: CxPath, ix: IxIn) => g(function * () {
-  const rx_embeds = ExV.decodeAll(ix.message?.embeds ?? []);
+  const rx_embeds = Ex.decodeAll(ix.message?.embeds ?? []);
 
   startContext(rx_embeds, ax);
 

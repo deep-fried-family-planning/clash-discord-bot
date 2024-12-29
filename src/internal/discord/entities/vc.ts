@@ -1,4 +1,5 @@
-import {Const, Cx} from '#dfdis';
+import {NONE} from '#discord/entities/constants/path.ts';
+import {Cx} from '#discord/entities/index.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type SelectOp, TypeC} from '#pure/dfx';
 import {D, p} from '#pure/effect';
@@ -80,7 +81,7 @@ export const make = <A extends Type>(
     Cx.Enum[_tag]({
       route: p(
         route,
-        CxPath.set('accessor', accessor ?? Const.NONE),
+        CxPath.set('accessor', accessor ?? NONE),
       ),
       onClick: onClick as never,
       data   : {

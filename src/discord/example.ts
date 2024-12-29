@@ -1,10 +1,11 @@
+import {makeDriver} from '#discord/context/model-driver.ts';
 import {AccessorEmbed, BasicEmbed, EmbedController} from '#discord/entities/exv.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {Button, Row, Select, Text, User} from '#discord/entities/vc.ts';
 import {makeView} from '#discord/entities/view.ts';
-import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
 import {useDialogRef} from '#discord/hooks/use-dialog-ref.ts';
 import {useEffect} from '#discord/hooks/use-effect.ts';
+import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
 import {useRestRef} from '#discord/hooks/use-rest-ref.ts';
 import {useState} from '#discord/hooks/use-state.ts';
 import {useDialogView, useMessageView} from '#discord/hooks/use-view.ts';
@@ -12,7 +13,6 @@ import {StyleT} from '#pure/dfx';
 import {CSL, g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
-import {Driver} from '.';
 
 
 const useEmbedEditorDescription = useDialogRef(
@@ -199,7 +199,7 @@ export const exampleView2  = makeView('example2', Example2);
 export const exampleDialog = makeView('exampleDialog', ExampleDialog);
 
 
-export const exampleDriver = Driver.make({
+export const exampleDriver = makeDriver({
   name  : 'v3',
   slices: [],
   views : [

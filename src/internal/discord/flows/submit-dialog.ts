@@ -1,6 +1,7 @@
 import {startContext, stopContext, updateUrlContext} from '#discord/context/context.ts';
 import {getPreviousIxForDialog} from '#discord/context/dialog-relay.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
+import {Cx, Ex} from '#discord/entities';
 import {makeGrid} from '#discord/entities/cx.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {simulateDialogSubmit} from '#discord/flows/simulate-click.ts';
@@ -10,14 +11,13 @@ import type {IxIn} from '#discord/types.ts';
 import type {RestDataDialog} from '#pure/dfx';
 import {g, p, pipe} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {Cx, ExV} from '../index.ts';
 
 
 export const submitDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: RestDataDialog) => g(function * () {
   yield * DiscordApi.deferUpdate(ix);
 
   const rx        = yield * getPreviousIxForDialog(ax.mod);
-  const rx_embeds = ExV.decodeAll(rx.message?.embeds ?? []);
+  const rx_embeds = Ex.decodeAll(rx.message?.embeds ?? []);
 
   startContext(rx_embeds, ax);
 

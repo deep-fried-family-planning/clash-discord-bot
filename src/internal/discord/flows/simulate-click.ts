@@ -1,6 +1,6 @@
-import {Cx} from '#dfdis';
-import type {SimulatedView} from '#discord/entities/view.ts';
+import {Cx} from '#discord/entities';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
+import type {SimulatedView} from '#discord/entities/view.ts';
 import {CSL, E, g} from '#pure/effect';
 
 

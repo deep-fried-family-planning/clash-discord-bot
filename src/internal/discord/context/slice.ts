@@ -1,4 +1,4 @@
-import type {Cx} from '#dfdis';
+import type {Cx} from '#discord/entities';
 import {Kv, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
@@ -10,7 +10,7 @@ export type DataSpec = {
 };
 
 
-export const make = <
+export const makeSlice = <
   Sg extends {ope: ''},
   Spec extends { [k in str]: {type: Cx.Type['_tag']} },
   Data extends { [k in keyof Spec]: Cx.E[Spec[k]['type']] },

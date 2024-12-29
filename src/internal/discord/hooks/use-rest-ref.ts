@@ -1,4 +1,4 @@
-import type {Cx} from '#dfdis';
+import type {Cx} from '#discord/entities';
 import {hooks} from '#discord/hooks/hooks.ts';
 import {Arr, Kv, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -16,16 +16,16 @@ export const useRestRef = (id: str) => {
 };
 
 
-export const updateRxRefs = (vxs: Cx.Type[][], rxs: Cx.Type[][]) => {
+export const updateRxRefs = (vcs: Cx.Type[][], rcs: Cx.Type[][]) => {
   const rxRefs = pipe(
-    rxs,
+    rcs,
     Arr.flatten,
     Kv.fromIterableWith((cxrx) => [cxrx.route.accessor, cxrx]),
   );
 
-  const flatVx = vxs.flat();
+  const flatVx = vcs.flat();
 
-  return pipe(hooks.refs, Arr.reduce(vxs, (acc, ref_id) => {
+  return pipe(hooks.refs, Arr.reduce(vcs, (acc, ref_id) => {
     if (!(ref_id in rxRefs)) {
       return acc;
     }
