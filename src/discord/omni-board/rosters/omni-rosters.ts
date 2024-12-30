@@ -5,10 +5,10 @@ import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 
 
-export const OmniDeepFryer = makeView('OmniDeepFryer', () => {
+export const OmniRosters = makeView('OmniRosters', () => {
   return [
     EmbedController({
-      title      : 'About DeepFryer',
+      title      : 'Rosters',
       description: MD.content(
         'Start',
       ),

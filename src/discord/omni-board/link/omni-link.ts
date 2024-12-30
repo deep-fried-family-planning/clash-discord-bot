@@ -5,7 +5,7 @@ import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 
 
-export const OmniDeepFryer = makeView('OmniDeepFryer', () => {
+export const OmniLink = makeView('OmniLink', () => {
   return [
     EmbedController({
       title      : 'About DeepFryer',
