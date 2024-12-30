@@ -5,7 +5,7 @@ import {clickEntrypoint} from '#discord/flows/click-entrypoint.ts';
 import {clickEphemeral} from '#discord/flows/click-ephemeral.ts';
 import {submitDialog} from '#discord/flows/submit-dialog.ts';
 import type {IxIn} from '#discord/types.ts';
-import {type RestDataComponent, type RestDataDialog, RxType} from '#pure/dfx';
+import {type RestDataDialog, RxType} from '#pure/dfx';
 import {CSL, E, g} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -41,11 +41,11 @@ export const implementation = <
     return yield * submitDialog(driver, ax, ix, ix.data as RestDataDialog);
   }
   if (ax.mod === ENTRY) {
-    return yield * clickEntrypoint(driver, ax, ix, ix.data as RestDataComponent);
+    return yield * clickEntrypoint(driver, ax, ix);
   }
 
   return yield * clickEphemeral(driver, ax, ix);
 }).pipe(
-  E.catchAll((e) => CSL.debug(inspect(e, false, null))),
+  // E.catchAll((e) => CSL.debug(inspect(e, false, null))),
   E.catchAllDefect((e) => CSL.debug(inspect(e, false, null))),
 );

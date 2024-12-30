@@ -16,7 +16,7 @@ export const useRestRef = (id: str) => {
 };
 
 
-export const updateRxRefs = (vcs: Cx.Grid, rcs: Cx.Grid) => {
+export const updateRxRefs = (rcs: Cx.Grid) => (vcs: Cx.Grid) => {
   const rxRefs = pipe(
     rcs,
     Arr.flatten,

@@ -2,9 +2,10 @@ import type {HookId} from '#discord/context/context.ts';
 import {getParam, setParam} from '#discord/context/controller-params.ts';
 import type {Cx, Ex} from '#discord/entities/basic';
 import {addAccessorHook, getHooks} from '#discord/entities/hooks/hooks.ts';
+import console from 'node:console';
 
 
-type EmbedToText = (embed: Ex.Data) => Partial<Cx.E['Text']>;
+type EmbedToText = (embed: Ex.T['data']) => Partial<Cx.E['Text']['data']>;
 type TextToEmbed = (text: Cx.E['Text']['data']) => Partial<Ex.T['data']>;
 export type Accessor = readonly [HookId, EmbedToText, TextToEmbed];
 
@@ -18,6 +19,7 @@ export const useDialogRef = (...[id, et, te]: Accessor) => {
     if (exists === null) {
       addAccessorHook([accessor_id, et, te]);
       setParam(accessor_id, 'a');
+      console.log('useDialogRef', accessor_id);
     }
 
     return accessor_id;
@@ -25,10 +27,7 @@ export const useDialogRef = (...[id, et, te]: Accessor) => {
 };
 
 
-export const updateDialogRefEmbeds = (
-  embeds: Ex.Grid,
-  components: Cx.Grid,
-) => {
+export const updateDialogRefEmbeds = (components: Cx.Grid) => (embeds: Ex.Grid) => {
   const hooks = getHooks();
 
   const flatComponents = components.flat();
@@ -42,7 +41,9 @@ export const updateDialogRefEmbeds = (
       }
 
       return acc.map((ex) => {
+        console.log('embed refs', ex._tag === 'DialogLinked' && ex.refs);
         if (ex._tag === 'DialogLinked' && ex.refs.includes(id)) {
+          console.log('updateDialogRefEmbeds');
           return {
             ...ex,
             data: {
@@ -59,10 +60,7 @@ export const updateDialogRefEmbeds = (
 };
 
 
-export const updateDialogRefComponents = (
-  embeds: Ex.Grid,
-  components: Cx.Grid,
-) => {
+export const updateDialogRefComponents = (embeds: Ex.Grid) => (components: Cx.Grid) => {
   const hooks = getHooks();
 
   return hooks.accessors.reduce(
@@ -75,6 +73,7 @@ export const updateDialogRefComponents = (
 
       return acc.map((row) => row.map((cx) => {
         if (cx._tag === 'Text' && cx.path.ref === id) {
+          console.log('updateDialogRefComponents');
           return {
             ...cx,
             data: {

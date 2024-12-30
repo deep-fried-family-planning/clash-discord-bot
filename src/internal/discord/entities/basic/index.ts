@@ -4,6 +4,7 @@ import * as EmbedData from './embed-data.ts';
 import * as EmbedView from './embed-view.ts';
 import * as NodeData from './node-data.ts';
 import * as NodeView from './node-view.ts';
+import * as Reply from './reply.ts';
 
 
 export {
@@ -19,4 +20,6 @@ export {
   NodeData as Nx,
   NodeView,
   NodeView as Nv,
+  Reply,
+  Reply as Tx,
 };

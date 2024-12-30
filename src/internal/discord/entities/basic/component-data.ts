@@ -1,10 +1,12 @@
 import {NONE_NUM} from '#discord/entities/constants/constants.ts';
+import {NONE} from '#discord/entities/constants/path.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestComponent, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
+import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestComponent, type RestDataComponent, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
 import {D, flow, pipe} from '#pure/effect';
 import type {snow} from '#src/discord/types.ts';
 import type {Mutable, nopt, num, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
+import console from 'node:console';
 
 
 export type OnClick<T, O> = (
@@ -123,23 +125,26 @@ export const encode = flow(
     Mention: (cx) => ({...cx.data, type: EncodeTypeMap[cx._tag], custom_id: CxPath.build(cx.path)}),
     Text   : (cx) => ({...cx.data, type: EncodeTypeMap[cx._tag], style: cx.data.style ?? StyleT.SHORT, custom_id: CxPath.build(cx.path)}),
   }),
-  (data) => data as RestComponent,
+  (data) => {
+    console.log('[cx_encode]', data.custom_id);
+    return data as RestComponent;
+  },
 );
 
 
-export const encodeGrid = (
-  path: Path,
-) => (grid: Grid) => grid.map((row, rowIdx) => ({
-  type      : TypeC.ACTION_ROW,
-  components: row.map((cx, colIdx) => {
-    cx.path.root = path.root;
-    cx.path.view = path.view;
-    cx.path.row  = rowIdx;
-    cx.path.col  = colIdx;
-    cx.path.mod  = path.mod;
-    return encode(cx);
-  }),
-}) as RestRow) as RestComponent[];
+export const encodeGrid = (root: str, view: str, mod?: str) => (grid: Grid) => {
+  return grid.map((row, rowIdx) => ({
+    type      : TypeC.ACTION_ROW,
+    components: row.map((cx, colIdx) => {
+      cx.path.root = root;
+      cx.path.view = view;
+      cx.path.row  = rowIdx;
+      cx.path.col  = colIdx;
+      cx.path.mod  = mod ?? NONE;
+      return encode(cx);
+    }),
+  }) as RestRow) as RestComponent[];
+};
 
 
 export const getSelectedOptions = match({
@@ -155,20 +160,39 @@ export const getSelectedOptions = match({
 });
 
 
-export const setSelectedOptions = (
-  values: str[],
-  resolved?: nopt<RestDataResolved>,
-) => match({
-  Button : pure,
-  Link   : pure,
-  Premium: pure,
-  Select : (cx) => ({...cx, data: {...cx.data, options: cx.data.options!.map((o) => ({...o, default: values.includes(o.value)}))}}) as typeof cx,
-  User   : (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}) as typeof cx,
-  Role   : (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}) as typeof cx,
-  Channel: (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}) as typeof cx,
-  Mention: (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}) as typeof cx,
-  Text   : pure,
+export const getSelectedValues = match({
+  Button : () => [],
+  Link   : () => [],
+  Premium: () => [],
+  Select : (cx) => cx.data.options?.filter((o) => o.default).map((o) => o.value) ?? [],
+  User   : (cx) => cx.data.default_values?.map((v) => v.id) ?? [],
+  Role   : (cx) => cx.data.default_values?.map((v) => v.id) ?? [],
+  Channel: (cx) => cx.data.default_values?.map((v) => v.id) ?? [],
+  Mention: (cx) => cx.data.default_values?.map((v) => v.id) ?? [],
+  Text   : () => [],
 });
+
+
+export const setSelectedOptions = (target: Path, data: RestDataComponent) => (cx: T) => {
+  if (target.row !== cx.path.row || target.col !== cx.path.col) {
+    return cx;
+  }
+
+  const values   = data.values ?? [];
+  const resolved = data.resolved as nopt<RestDataResolved>;
+
+  return match({
+    Button : pure,
+    Link   : pure,
+    Premium: pure,
+    Select : (cx) => ({...cx, data: {...cx.data, options: cx.data.options!.map((o) => ({...o, default: values.includes(o.value)}))}}) as typeof cx,
+    User   : (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v, resolved)}))}}) as typeof cx,
+    Role   : (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v, resolved)}))}}) as typeof cx,
+    Channel: (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v, resolved)}))}}) as typeof cx,
+    Mention: (cx) => ({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v, resolved)}))}}) as typeof cx,
+    Text   : pure,
+  })(cx);
+};
 
 
 export const getOptions = match({
@@ -197,8 +221,11 @@ export const setOptions = match({
 });
 
 
-const resolveType = (val: snow, resolved?: nopt<RestDataResolved>) =>
-  resolved?.users?.[val] ? 'user'
+const resolveType = (value: str, resolved?: nopt<RestDataResolved>) => {
+  const val = value as snow;
+
+  return resolved?.users?.[val] ? 'user'
     : resolved?.roles?.[val] ? 'role'
       : resolved?.channels?.[val] ? 'channel'
         : 'fail';
+};

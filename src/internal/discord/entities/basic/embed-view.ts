@@ -1,5 +1,4 @@
 import {Ex} from '#discord/entities/basic/index.ts';
-import {ROW_NONE} from '#discord/entities/constants/path.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {D, pipe} from '#pure/effect';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
@@ -35,18 +34,20 @@ export const isDialogLinked = is('DialogLinked');
 export const isBasic        = is('Basic');
 
 
-export const make = (ve: T, row?: num) => {
+export const make = (root: str, view: str) => (ve: T, row: num) => {
   const path = pipe(
     Ex.Path.empty(),
+    Ex.Path.set('root', root),
+    Ex.Path.set('view', view),
     Ex.Path.set('tag', ve._tag),
-    Ex.Path.set('row', row ?? ROW_NONE),
+    Ex.Path.set('row', row),
   );
 
   if (isController(ve)) {
     const {_tag, ...data} = ve;
 
-    return Ex.E.Controller({
-      path,
+    return Ex.Controller({
+      path : path,
       query: new URLSearchParams(),
       data : data,
     });
@@ -55,9 +56,15 @@ export const make = (ve: T, row?: num) => {
   if (isDialogLinked(ve)) {
     const {_tag, refs, ...data} = ve;
 
-    return Ex.E.DialogLinked({
+    const query = new URLSearchParams();
+
+    for (const ref of refs) {
+      query.set(ref, 'd');
+    }
+
+    return Ex.DialogLinked({
       path,
-      query: new URLSearchParams(),
+      query: query,
       refs : refs,
       data : data,
     });
@@ -65,7 +72,7 @@ export const make = (ve: T, row?: num) => {
 
   const {_tag, ref, ...data} = ve;
 
-  return Ex.E.Basic({
+  return Ex.Basic({
     path: pipe(
       path,
       Ex.Path.set('ref', ref),

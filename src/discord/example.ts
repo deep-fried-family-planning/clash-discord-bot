@@ -2,14 +2,13 @@ import {makeDriver} from '#discord/context/model-driver.ts';
 import {Cv, Ev} from '#discord/entities/basic';
 import {makeDialog, makeMessage} from '#discord/entities/basic/node-view.ts';
 import {useDialogRef} from '#discord/entities/hooks/use-dialog-ref.ts';
-import {useEffect} from '#discord/entities/hooks/use-effect.ts';
 import {useRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
 import {useRestRef} from '#discord/entities/hooks/use-rest-ref.ts';
 import {useState} from '#discord/entities/hooks/use-state.ts';
 import {useDialogView, useMessageView} from '#discord/entities/hooks/use-view.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {StyleT} from '#pure/dfx';
-import {CSL, g} from '#pure/effect';
+import {g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
 
@@ -17,7 +16,7 @@ import console from 'node:console';
 const useEmbedEditorDescription = useDialogRef(
   'embed.description',
   (embed) => {
-    return {data: {value: embed.description!}};
+    return {value: embed.description!};
   },
   (text) => {
     return {description: text.value!};
@@ -61,21 +60,10 @@ const ExampleDialog = () => {
 const Example = () => {
   const [clickCount, setClickCount]         = useState('click', 0);
   const [isResetDisabled, setResetDisabled] = useState('reset', true);
-  const openView                            = useMessageView();
   const openDialog                          = useDialogView();
   const [clickedEmbedRef, setClickedEmbed]  = useRestEmbedRef('clicked');
-
-  const selectRef = useRestRef('users');
-  const pickMeRef = useRestRef('pick_me');
-
-  const externalData = [''];
-
-  useEffect('testeffect', g(function * () {
-    externalData[0] = 'effectful';
-    yield * CSL.log('effect', externalData);
-  }));
-
-  console.log(externalData);
+  const selectRef                           = useRestRef('users');
+  const pickMeRef                           = useRestRef('pick_me');
 
   return [
     Ev.Controller({
@@ -95,7 +83,6 @@ const Example = () => {
         disabled: !isResetDisabled,
         onClick : () => g(function * () {
           setClickCount(clickCount + 1);
-
           setClickedEmbed({description: `clicked ${clickCount + 1}`});
 
           if (clickCount >= 2) {
@@ -151,7 +138,6 @@ const Example = () => {
 const Example2 = () => {
   const [clickCount, setClickCount]         = useState('click', 0);
   const [isResetDisabled, setResetDisabled] = useState('reset', true);
-  const openView                            = useMessageView();
   const openDialog                          = useDialogView();
 
   return [

@@ -4,7 +4,7 @@ import type {num, str} from '#src/internal/pure/types-pure.ts';
 
 
 const route_templates = [
-  '/cx/:root/:view/:dialog/:accessor/:row/:col/:mod',
+  '/cx/:root/:view/:dialog/:ref/:row/:col/:mod',
 ];
 
 const parsers = route_templates.map(makePathPattern);

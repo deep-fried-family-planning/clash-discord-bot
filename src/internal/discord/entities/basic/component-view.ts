@@ -1,8 +1,8 @@
 import type {OnClick} from '#discord/entities/basic/component-data.ts';
 import {Cx} from '#discord/entities/basic/index.ts';
-import {COL_NONE, NONE, ROW_NONE} from '#discord/entities/constants/path.ts';
+import {NONE} from '#discord/entities/constants/path.ts';
 import type {ManagedOp, OptButton, OptChannel, OptMention, OptRole, OptSelect, OptText, OptUser, SelectOp} from '#pure/dfx';
-import {D, pipe} from '#pure/effect';
+import {D} from '#pure/effect';
 import type {Mutable, num, str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -59,18 +59,19 @@ export const TypeMap = {
 };
 
 
-export const make = (cv: T, row?: num, col?: num) => {
+export const make = (root: str, view: str, mod?: str) => (cv: T, row: num, col: num) => {
   const {_tag, ref, onClick, ...data} = cv;
 
-  const path = pipe(
-    Cx.Path.empty(),
-    Cx.Path.set('ref', ref ?? NONE),
-    Cx.Path.set('row', row ?? ROW_NONE),
-    Cx.Path.set('col', col ?? COL_NONE),
-  );
-
   return TypeMap[_tag]({
-    path   : path,
+    path: {
+      ...Cx.Path.empty(),
+      root,
+      view,
+      ref: ref ?? NONE,
+      row,
+      col,
+      mod: mod ?? NONE,
+    },
     data   : data as never,
     onClick: onClick as never,
   });

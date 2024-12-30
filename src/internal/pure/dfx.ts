@@ -9,7 +9,9 @@ export type RestMessage = Discord.Message;
 export type RestIx = Discord.Interaction;
 export type RestData = Discord.InteractionDatum;
 export type RestDataDialog = Discord.ModalSubmitDatum;
-export type RestDataComponent = Discord.MessageComponentDatum;
+export type RestDataComponent =
+  Omit<Discord.MessageComponentDatum, 'values'>
+  & {values?: str[]};
 export type RestDataResolved = Discord.ResolvedDatum;
 export type SelectOp = Discord.SelectOption;
 export type ManagedOp = Discord.SelectDefaultValue;

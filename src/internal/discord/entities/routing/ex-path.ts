@@ -1,10 +1,11 @@
 import {NONE, NONE_NUM} from '#discord/entities/constants/constants.ts';
 import {makePathBuilder, makePathParser, makePathPattern, mapParam, setParam, setParamWith} from '#discord/entities/routing/template-path.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
+import type {URL} from 'node:url';
 
 
 const route_templates = [
-  '/exp/:version/:driver/:kind/:ref/:row',
+  '/exp/:version/:root/:view/:tag/:kind/:ref/:row',
 ];
 
 const parsers     = route_templates.map(makePathPattern);
@@ -14,7 +15,8 @@ const pathBuilder = makePathBuilder<ExPath>('ExPath', parsers);
 
 export type ExPath = {
   version: str;
-  driver : str;
+  root   : str;
+  view   : str;
   kind   : str;
   ref    : str;
   tag    : str;
@@ -24,7 +26,8 @@ export type ExPath = {
 
 const empty = (): ExPath => ({
   version: NONE,
-  driver : NONE,
+  root   : NONE,
+  view   : NONE,
   kind   : NONE,
   ref    : NONE,
   tag    : NONE,
@@ -32,8 +35,12 @@ const empty = (): ExPath => ({
 });
 
 export const ExPath = {
-  parse: (id: str) => {
-    const route = pathParser(id);
+  parse: (url: URL) => {
+    if (url.pathname === '/') {
+      return empty();
+    }
+
+    const route = pathParser(url.pathname);
 
     route.row = parseInt(route.row as unknown as str);
 

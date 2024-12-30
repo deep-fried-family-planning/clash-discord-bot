@@ -4,7 +4,6 @@ import {Ex} from '#discord/entities/basic';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
 import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/entities/hooks/hooks.ts';
 import {updateRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
-import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
@@ -40,7 +39,7 @@ export const stopContext = () => {
 };
 
 
-export const updateUrlContext = ([controller, ...embeds]: Ex.Grid, rx_embeds?: Ex.Grid): RestEmbed[] => {
+export const updateUrlContext = ([controller, ...embeds]: Ex.Grid) => {
   const params    = getAllParams();
   const hooks     = getHooks();
   const updated   = new URLSearchParams();
@@ -64,11 +63,6 @@ export const updateUrlContext = ([controller, ...embeds]: Ex.Grid, rx_embeds?: E
   return pipe(
     [updatedController, ...embeds],
     updateRestEmbedRef,
-    Ex.encodeGrid(
-      rx_embeds && firstView === nextView
-        ? rx_embeds
-        : [],
-    ),
   );
 };
 
