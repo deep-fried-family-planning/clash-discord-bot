@@ -1,5 +1,5 @@
 import {getParam, setParam} from '#discord/context/controller-params.ts';
-import {addEffectHook, hooks} from '#discord/hooks/hooks.ts';
+import {addEffectHook, hooks} from '#discord/entities/hooks/hooks.ts';
 import {type E, g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 

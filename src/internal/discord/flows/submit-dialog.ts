@@ -1,15 +1,13 @@
 import {startContext, stopContext, updateUrlContext} from '#discord/context/context.ts';
 import {getPreviousIxForDialog} from '#discord/context/dialog-relay.ts';
 import type {Driver} from '#discord/context/model-driver.ts';
-import {Cx, Ex} from '#discord/entities';
-import {makeGrid} from '#discord/entities/cx.ts';
+import {Cx, Ex, Nv} from '#discord/entities/basic';
+import {getFirstView} from '#discord/entities/hooks/hooks.ts';
+import {updateDialogRefEmbeds} from '#discord/entities/hooks/use-dialog-ref.ts';
 import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {simulateDialogSubmit} from '#discord/flows/simulate-click.ts';
-import {getFirstView} from '#discord/hooks/hooks.ts';
-import {updateDialogRefEmbeds} from '#discord/hooks/use-dialog-ref.ts';
 import type {IxIn} from '#discord/types.ts';
 import type {RestDataDialog} from '#pure/dfx';
-import {g, p, pipe} from '#pure/effect';
+import {g, pipe} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 
 
@@ -17,51 +15,42 @@ export const submitDialog = (driver: Driver, ax: CxPath, ix: IxIn, ix_data: Rest
   yield * DiscordApi.deferUpdate(ix);
 
   const rx        = yield * getPreviousIxForDialog(ax.mod);
-  const rx_embeds = Ex.decodeAll(rx.message?.embeds ?? []);
+  const rx_embeds = Ex.decodeGrid(rx.message?.embeds);
 
   startContext(rx_embeds, ax);
 
 
-  const dialog = driver.views[ax.dialog].view(driver.name, ix_data, ax.view);
+  const dialog    = Nv.render(driver.views[ax.dialog]);
+  const rx_dialog = Cx.decodeGrid(ix_data.components);
 
 
-  const rx_dialog = pipe(
-    ix_data.components,
-    Cx.mapFromDiscordRest((a, row, col) => pipe(
-      Cx.decode(a),
-      Cx.mapSame((cx) => ({
-        ...cx,
-        route: pipe(
-          Cx.Path.empty(),
-          Cx.Path.set('row', row),
-          Cx.Path.set('row', col),
-        ),
-      }))),
-    ),
+  const updatedDialogComponents = pipe(
+    dialog.components,
+    Cx.mapGrid((cx, row, col) => ({
+      ...cx,
+      data: {
+        ...cx.data,
+        ...rx_dialog[row][col].data,
+      },
+    } as typeof cx)),
   );
 
 
-  dialog.components = dialog.components.map((r, row) => r.map((dx, col) => ({
-    ...dx,
-    data: {
-      ...dx.data,
-      ...rx_dialog[row][col].data,
-    },
-  } as typeof dx)));
-
-
-  simulateDialogSubmit(dialog);
+  // simulateDialogSubmit(dialog);
 
   const nextView = getFirstView();
 
 
-  const original = driver.views[nextView].view(driver.name, ix.data);
-  const embeds   = updateDialogRefEmbeds(original.embeds, dialog.components);
+  const original = Nv.render(driver.views[nextView]);
+  const embeds   = updateDialogRefEmbeds(original.embeds, updatedDialogComponents);
 
 
   yield * DiscordApi.editMenu(ix, {
     embeds    : updateUrlContext(embeds),
-    components: makeGrid(original.components, ix.data, Cx.Path.empty(), p(ix.message?.components ?? [], Cx.mapFromDiscordRest((rx) => Cx.decode(rx)))),
+    components: pipe(
+      original.components,
+      Cx.encodeGrid(original.path),
+    ),
   });
 
 

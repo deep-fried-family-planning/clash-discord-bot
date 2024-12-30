@@ -1,34 +1,39 @@
+import type {Nv} from '#discord/entities/basic';
+import {Cv} from '#discord/entities/basic';
 import {CLOSE} from '#discord/entities/constants/constants.ts';
-import {Button, Row} from '#discord/entities/vc.ts';
-import {setViewModifier} from '#discord/hooks/hooks.ts';
-import {openView} from '#discord/hooks/use-view.ts';
+import {setViewModifier} from '#discord/entities/hooks/hooks.ts';
+import {openView} from '#discord/entities/hooks/use-view.ts';
 import {StyleB} from '#pure/dfx';
 import {EMOJI_BACK, EMOJI_CLOSE, EMOJI_NEXT} from '#src/constants/emoji.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 type Props = {
-  back?: str;
-  next?: str;
+  first? : Cv.T;
+  second?: Cv.T;
+  back?  : Nv.T;
+  next?  : Nv.T;
 };
 
-export const Nav = (props: Props) => {
-  return Row(
-    props.back && Button({
+
+export const NavButtons = (props: Props) => {
+  return Cv.Row(
+    props.first,
+    props.second,
+    props.back && Cv.Button({
       emoji  : EMOJI_BACK,
       style  : StyleB.SECONDARY,
       onClick: () => {
-        openView(props.back!);
+        openView(props.back);
       },
     }),
-    props.next && Button({
+    props.next && Cv.Button({
       emoji  : EMOJI_NEXT,
       style  : StyleB.SECONDARY,
       onClick: () => {
-        openView(props.next!);
+        openView(props.next);
       },
     }),
-    Button({
+    Cv.Button({
       emoji  : EMOJI_CLOSE,
       style  : StyleB.SECONDARY,
       onClick: () => {

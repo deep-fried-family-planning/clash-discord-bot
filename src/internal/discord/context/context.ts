@@ -1,15 +1,12 @@
 import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam, setPath} from '#discord/context/controller-params.ts';
-import {Ex} from '#discord/entities';
+import type {Cx} from '#discord/entities/basic';
+import {Ex} from '#discord/entities/basic';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
-import type {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
-import {updateRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
+import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/entities/hooks/hooks.ts';
+import {updateRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
-import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
-import {URL} from 'node:url';
 
 
 export type HookId = str;
@@ -18,22 +15,16 @@ export type DialogName = str;
 export type ViewModifier = str;
 
 
-export const startContext = (embeds: Ex.Type[], ax: CxPath) => {
+export const startContext = ([controller]: Ex.Grid, ax: Cx.Path) => {
   clearHooks();
   clearAllParams();
   clearRoute();
 
-
-  const url = Ex.controllerUrl(embeds) ?? new URL(DFFP_URL);
-
-
   setPath(ax);
 
-
-  setAllParams(new URLSearchParams(url.searchParams));
+  setAllParams(new URLSearchParams(controller.query));
   setParam('s_0', 'useless_link');
   addStateHookId('s_0');
-
 
   setFirstView(ax.view);
   setNextView(ax.view);
@@ -49,14 +40,12 @@ export const stopContext = () => {
 };
 
 
-export const updateUrlContext = ([controller, ...embeds]: Ex.Type[], rx_embeds?: Ex.Type[]): RestEmbed[] => {
-  const controller_encoded = Ex.encode(controller);
-  const url                = new URL(controller_encoded.image!.url);
-  const params             = getAllParams();
-  const hooks              = getHooks();
-  const updated            = new URLSearchParams();
-  const firstView          = getFirstView();
-  const nextView           = getNextView();
+export const updateUrlContext = ([controller, ...embeds]: Ex.Grid, rx_embeds?: Ex.Grid): RestEmbed[] => {
+  const params    = getAllParams();
+  const hooks     = getHooks();
+  const updated   = new URLSearchParams();
+  const firstView = getFirstView();
+  const nextView  = getNextView();
 
   for (const id of hooks.states) {
     updated.set(id, params.get(id)!);
@@ -70,31 +59,17 @@ export const updateUrlContext = ([controller, ...embeds]: Ex.Type[], rx_embeds?:
   }
   updated.sort();
 
-  console.info(updated);
+  const updatedController = pipe(controller, Ex.set('query', updated));
 
-  const updatedUrl = new URL(`${url.origin}${url.pathname}?${updated.toString()}`);
-
-  const controller_updated = {
-    ...controller_encoded,
-    image: {
-      ...controller_encoded.image,
-      url: updatedUrl.href,
-    },
-  } as RestEmbed;
-
-
-  if (
-    rx_embeds
-    && firstView === nextView
-  ) {
-    const [, ...rxWithoutController] = rx_embeds;
-
-    const updated = updateRestEmbedRef(embeds);
-
-    return [controller_updated, ...Ex.encodeAll(updated, rxWithoutController)];
-  }
-
-  return [controller_updated, ...pipe(updateRestEmbedRef(embeds), Ex.encodeAll)];
+  return pipe(
+    [updatedController, ...embeds],
+    updateRestEmbedRef,
+    Ex.encodeGrid(
+      rx_embeds && firstView === nextView
+        ? rx_embeds
+        : [],
+    ),
+  );
 };
 
 

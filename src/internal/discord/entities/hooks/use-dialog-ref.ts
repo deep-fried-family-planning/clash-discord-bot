@@ -1,12 +1,11 @@
 import type {HookId} from '#discord/context/context.ts';
 import {getParam, setParam} from '#discord/context/controller-params.ts';
-import type {Cx, Ex} from '#discord/entities';
-import {addAccessorHook, getHooks} from '#discord/hooks/hooks.ts';
-import type {Maybe} from '#src/internal/pure/types.ts';
+import type {Cx, Ex} from '#discord/entities/basic';
+import {addAccessorHook, getHooks} from '#discord/entities/hooks/hooks.ts';
 
 
-type EmbedToText = (embed: Ex.Type) => Partial<Cx.E['Text']>;
-type TextToEmbed = (text: Cx.E['Text']) => Partial<Ex.Type>;
+type EmbedToText = (embed: Ex.Data) => Partial<Cx.E['Text']>;
+type TextToEmbed = (text: Cx.E['Text']['data']) => Partial<Ex.T['data']>;
 export type Accessor = readonly [HookId, EmbedToText, TextToEmbed];
 
 
@@ -27,8 +26,8 @@ export const useDialogRef = (...[id, et, te]: Accessor) => {
 
 
 export const updateDialogRefEmbeds = (
-  embeds: Ex.Type[],
-  components: Cx.Type[][],
+  embeds: Ex.Grid,
+  components: Cx.Grid,
 ) => {
   const hooks = getHooks();
 
@@ -36,17 +35,20 @@ export const updateDialogRefEmbeds = (
 
   return hooks.accessors.reduce(
     (acc, [id, , textToEmbed]) => {
-      const providingText = flatComponents.find((cx) => cx._tag === 'Text' && cx.route.accessor === id) as Maybe<Cx.E['Text']>;
+      const providingText = flatComponents.find((cx) => cx._tag === 'Text' && cx.path.ref === id);
 
       if (!providingText) {
         return acc;
       }
 
       return acc.map((ex) => {
-        if (ex._tag === 'AccessorEmbed' && ex.accessors.includes(id)) {
+        if (ex._tag === 'DialogLinked' && ex.refs.includes(id)) {
           return {
             ...ex,
-            ...textToEmbed(providingText),
+            data: {
+              ...ex.data,
+              ...textToEmbed((providingText as Cx.E['Text']).data),
+            },
           } as typeof ex;
         }
         return ex;
@@ -58,26 +60,26 @@ export const updateDialogRefEmbeds = (
 
 
 export const updateDialogRefComponents = (
-  embeds: Ex.Type[],
-  components: Cx.Type[][],
+  embeds: Ex.Grid,
+  components: Cx.Grid,
 ) => {
   const hooks = getHooks();
 
   return hooks.accessors.reduce(
     (acc, [id, embedToText]) => {
-      const providingEmbed = embeds.find((ex) => ex._tag === 'AccessorEmbed' && ex.accessors.includes(id));
+      const providingEmbed = embeds.find((ex) => ex._tag === 'DialogLinked' && ex.refs.includes(id));
 
       if (!providingEmbed) {
         return acc;
       }
 
       return acc.map((row) => row.map((cx) => {
-        if (cx._tag === 'Text' && cx.route.accessor === id) {
+        if (cx._tag === 'Text' && cx.path.ref === id) {
           return {
             ...cx,
             data: {
               ...cx.data,
-              ...embedToText(providingEmbed).data,
+              ...embedToText(providingEmbed.data),
             },
           } as typeof cx;
         }

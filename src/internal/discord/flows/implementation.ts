@@ -1,5 +1,5 @@
 import type {makeDriver} from '#discord/context/model-driver.ts';
-import {Cx} from '#discord/entities';
+import {Cx} from '#discord/entities/basic';
 import {CLOSE, ENTRY, NO_SIM} from '#discord/entities/constants/constants.ts';
 import {clickEntrypoint} from '#discord/flows/click-entrypoint.ts';
 import {clickEphemeral} from '#discord/flows/click-ephemeral.ts';
@@ -9,6 +9,7 @@ import {type RestDataComponent, type RestDataDialog, RxType} from '#pure/dfx';
 import {CSL, E, g} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
 import type {IxD} from '#src/internal/discord.ts';
+import {inspect} from 'node:util';
 
 
 // const [server, user] = yield * pipe(
@@ -45,6 +46,6 @@ export const implementation = <
 
   return yield * clickEphemeral(driver, ax, ix);
 }).pipe(
-  // E.catchAll((e) => CSL.debug(inspect(e, false, null))),
-  E.catchAllDefect((e) => CSL.debug(e)),
+  E.catchAll((e) => CSL.debug(inspect(e, false, null))),
+  E.catchAllDefect((e) => CSL.debug(inspect(e, false, null))),
 );

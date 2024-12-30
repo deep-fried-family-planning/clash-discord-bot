@@ -15,6 +15,12 @@ export type SelectOp = Discord.SelectOption;
 export type ManagedOp = Discord.SelectDefaultValue;
 
 
+export type RestEncodeMessage = opt<Discord.Message>;
+export type RestEncodeDialog =
+  Discord.ModalSubmitDatum
+  & {title: str};
+
+
 export type SelectEvent = {
   values: str[];
 };
@@ -27,6 +33,7 @@ export type ManagedSelectEvent = {
 
 
 export type RestRow = Discord.ActionRow;
+export type RestComponent = Discord.Component;
 export type RestButton = Discord.Button;
 export type RestText = Discord.TextInput;
 export type RestStringSelect = Discord.SelectMenu;

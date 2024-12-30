@@ -23,6 +23,8 @@ export type opt<A> = { [k in keyof A]?: A[k] | und };
 export type nopt<A> = { [k in keyof A]-?: A[k] | und };
 export type ro<A> = { readonly [k in keyof A]: A[k] };
 export type nro<A> = { -readonly [k in keyof A]: A[k] };
+export type Immutable<A> = { readonly [k in keyof A]: A[k] };
+export type Mutable<A> = { -readonly [k in keyof A]: A[k] };
 
 
 export const ANY = <T>() => ({}) as T;

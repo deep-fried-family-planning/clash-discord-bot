@@ -5,6 +5,7 @@ import {OmniInfo} from '#src/discord/omni-board/info/omni-info.ts';
 import {OmniLink} from '#src/discord/omni-board/link/omni-link.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
 import {OmniRosters} from '#src/discord/omni-board/rosters/omni-rosters.ts';
+import {OmniServerConfig} from '#src/discord/omni-board/server-config/omni-server-config.ts';
 
 
 export const v2driver = makeDriver({
@@ -16,6 +17,7 @@ export const v2driver = makeDriver({
     OmniInfo,
     OmniClans,
     OmniRosters,
+    OmniServerConfig,
     OmniDeepFryer,
   ],
 });

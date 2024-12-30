@@ -1,9 +1,10 @@
 import type {DialogName, HookId, ViewModifier, ViewName} from '#discord/context/context.ts';
-import type {UseRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
-import type {Accessor} from '#discord/hooks/use-dialog-ref.ts';
-import type {UseEffectHook} from '#discord/hooks/use-effect.ts';
-import type {RxRef} from '#discord/hooks/use-rest-ref.ts';
+import type {Accessor} from '#discord/entities/hooks/use-dialog-ref.ts';
+import type {UseEffectHook} from '#discord/entities/hooks/use-effect.ts';
+import type {UseRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
+import type {RxRef} from '#discord/entities/hooks/use-rest-ref.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import console from 'node:console';
 
 
 export type Hooks = {
@@ -51,6 +52,7 @@ export const setFirstView = (id: str) => {
 
 export const getNextView = () => hooks.views[1];
 export const setNextView = (id: str) => {
+  console.log('next view', id);
   hooks.views[1] = id;
 };
 

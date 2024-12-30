@@ -1,6 +1,6 @@
 import type {makeSlice} from '#discord/context/slice.ts';
-import type {makeView} from '#discord/entities/view.ts';
-import {Kv, p} from '#pure/effect';
+import {Cx, Nv} from '#discord/entities/basic';
+import {Kv, p, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -13,7 +13,7 @@ export const makeDriver = <
   config: {
     name  : str;
     slices: Scs;
-    views : ReturnType<typeof makeView>[];
+    views : Nv.T[];
   },
 ) => {
   const slices = p(
@@ -23,7 +23,7 @@ export const makeDriver = <
 
   const views = p(
     config.views,
-    Kv.fromIterableWith((view) => [view.name, view]),
+    Kv.fromIterableWith((view) => [view.name, pipe(view, Nv.set('path', pipe(Cx.Path.empty(), Cx.Path.set('root', config.name))))]),
   );
 
   return {

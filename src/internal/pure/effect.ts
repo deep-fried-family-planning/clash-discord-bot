@@ -1,4 +1,14 @@
 import {Order} from 'effect';
+import * as Ar from 'effect/Array'; // collection array
+import * as AR from 'effect/Array'; // collection array
+import * as Arr from 'effect/Array'; // collection array
+import * as ARR from 'effect/Array'; // collection array
+import * as Kv from 'effect/Record'; // collection key-value
+import * as KV from 'effect/Record'; // collection key-value
+import * as Rec from 'effect/Record'; // collection key-value
+import * as REC from 'effect/Record'; // collection key-value
+import * as Sr from 'effect/Struct'; // collection key-value
+import * as SR from 'effect/Struct'; // collection key-value
 
 
 export {
@@ -44,13 +54,15 @@ export const ORDN  = Order.number;
 export const ORDNR = Order.reverse(Order.number);
 
 
-export * as Ar from 'effect/Array'; // collection array
-export * as AR from 'effect/Array'; // collection array
-export * as Arr from 'effect/Array'; // collection array
-export * as ARR from 'effect/Array'; // collection array
-export * as Kv from 'effect/Record'; // collection key-value
-export * as KV from 'effect/Record'; // collection key-value
-export * as Rec from 'effect/Record'; // collection key-value
-export * as REC from 'effect/Record'; // collection key-value
-export * as Sr from 'effect/Struct'; // collection key-value
-export * as SR from 'effect/Struct'; // collection key-value
+export {
+  Ar,
+  AR,
+  Arr,
+  ARR,
+  Kv,
+  KV,
+  Rec,
+  REC,
+  Sr,
+  SR,
+};

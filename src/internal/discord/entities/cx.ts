@@ -1,8 +1,8 @@
+import {setSelectedOptions} from '#discord/entities/basic/component-data.ts';
 import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
+import {updateRxRefs} from '#discord/entities/hooks/use-rest-ref.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {updateRxRefs} from '#discord/hooks/use-rest-ref.ts';
 import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestDataComponent, type RestDataDialog, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
-import type {snow} from '#src/discord/types.ts';
 import {Ar, D, p, pipe} from '#src/internal/pure/effect.ts';
 import type {nopt, nro, num, opt, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types';
@@ -103,8 +103,8 @@ const decodeMap = {
 
 export const decode = (rx_cx: Component) => {
   const route = 'custom_id' in rx_cx
-    ? CxPath.parse(rx_cx.custom_id)
-    : CxPath.empty();
+    ? Path.parse(rx_cx.custom_id)
+    : Path.empty();
 
   if (rx_cx.type in decodeMap) {
     return decodeMap[rx_cx.type as keyof typeof decodeMap]({
@@ -164,57 +164,6 @@ export const makeFromView = <A extends Type>(cx: A) => {
 };
 
 
-export const getSelectedOptions = Enum.$match({
-  Button : () => [],
-  Link   : () => [],
-  Select : (cx) => cx.data.options?.filter((o) => o.default) ?? [],
-  User   : (cx) => cx.data.default_values ?? [],
-  Role   : (cx) => cx.data.default_values ?? [],
-  Channel: (cx) => cx.data.default_values ?? [],
-  Mention: (cx) => cx.data.default_values ?? [],
-  Text   : () => [],
-});
-
-
-export const setSelectedOptions = (
-  values: str[],
-  resolved?: nopt<RestDataResolved>,
-) => Enum.$match({
-  Button : pure,
-  Link   : pure,
-  Select : (cx) => Enum.Select({...cx, data: {...cx.data, options: cx.data.options!.map((o) => ({...o, default: values.includes(o.value)}))}}),
-  User   : (cx) => Enum.User({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
-  Role   : (cx) => Enum.Role({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
-  Channel: (cx) => Enum.Channel({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
-  Mention: (cx) => Enum.Mention({...cx, data: {...cx.data, default_values: values.map((v) => ({id: v as snow, type: resolveType(v as snow, resolved)}))}}),
-  Text   : pure,
-});
-
-
-export const getOptions = Enum.$match({
-  Button : () => [],
-  Link   : () => [],
-  Select : (cx) => cx.data.options ?? [],
-  User   : (cx) => cx.data.default_values ?? [],
-  Role   : (cx) => cx.data.default_values ?? [],
-  Channel: (cx) => cx.data.default_values ?? [],
-  Mention: (cx) => cx.data.default_values ?? [],
-  Text   : () => [],
-});
-
-
-export const setOptions = Enum.$match({
-  Button : () => [],
-  Link   : () => [],
-  Select : (cx) => cx.data.options ?? [],
-  User   : (cx) => cx.data.default_values ?? [],
-  Role   : (cx) => cx.data.default_values ?? [],
-  Channel: (cx) => cx.data.default_values ?? [],
-  Mention: (cx) => cx.data.default_values ?? [],
-  Text   : () => [],
-});
-
-
 export const mapFromDiscordRest = <A>(fa: (a: Component, row: num, col: num) => A) => (cs: Component[]) => pipe(
   cs as RestRow[],
   Ar.map((r, row) => pipe(
@@ -222,13 +171,6 @@ export const mapFromDiscordRest = <A>(fa: (a: Component, row: num, col: num) => 
     Ar.map((c, col) => fa(c, row, col)),
   )),
 );
-
-
-const resolveType = (val: snow, resolved?: nopt<RestDataResolved>) =>
-  resolved?.users?.[val] ? 'user'
-    : resolved?.roles?.[val] ? 'role'
-      : resolved?.channels?.[val] ? 'channel'
-        : 'fail';
 
 
 export const makeGrid = (

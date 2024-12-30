@@ -1,14 +1,13 @@
 import {makeDriver} from '#discord/context/model-driver.ts';
-import {AccessorEmbed, BasicEmbed, EmbedController} from '#discord/entities/exv.ts';
+import {Cv, Ev} from '#discord/entities/basic';
+import {makeDialog, makeMessage} from '#discord/entities/basic/node-view.ts';
+import {useDialogRef} from '#discord/entities/hooks/use-dialog-ref.ts';
+import {useEffect} from '#discord/entities/hooks/use-effect.ts';
+import {useRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
+import {useRestRef} from '#discord/entities/hooks/use-rest-ref.ts';
+import {useState} from '#discord/entities/hooks/use-state.ts';
+import {useDialogView, useMessageView} from '#discord/entities/hooks/use-view.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {Button, Row, Select, Text, User} from '#discord/entities/vc.ts';
-import {makeView} from '#discord/entities/view.ts';
-import {useDialogRef} from '#discord/hooks/use-dialog-ref.ts';
-import {useEffect} from '#discord/hooks/use-effect.ts';
-import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
-import {useRestRef} from '#discord/hooks/use-rest-ref.ts';
-import {useState} from '#discord/hooks/use-state.ts';
-import {useDialogView, useMessageView} from '#discord/hooks/use-view.ts';
 import {StyleT} from '#pure/dfx';
 import {CSL, g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -21,7 +20,7 @@ const useEmbedEditorDescription = useDialogRef(
     return {data: {value: embed.description!}};
   },
   (text) => {
-    return {description: text.data.value!};
+    return {description: text.value!};
   },
 );
 
@@ -29,10 +28,9 @@ const useEmbedEditorDescription = useDialogRef(
 export const EmbedEditor = (props: {title: str}) => {
   const descriptionId = useEmbedEditorDescription();
 
-
-  return AccessorEmbed({
-    title    : props.title,
-    accessors: [
+  return Ev.DialogLinked({
+    title: props.title,
+    refs : [
       descriptionId,
     ],
   });
@@ -48,16 +46,14 @@ const ExampleDialog = () => {
       title   : 'ExampleDialog',
       route   : CxPath.empty(),
       onSubmit: () => {
-        openView(exampleView.name);
+        openView(exampleView);
       },
     },
-    Row(
-      Text({
-        accessor: descriptionId,
-        label   : 'ope',
-        style   : StyleT.PARAGRAPH,
-      }),
-    ),
+    Cv.Text({
+      ref  : descriptionId,
+      label: 'ope',
+      style: StyleT.PARAGRAPH,
+    }),
   ] as const;
 };
 
@@ -82,19 +78,19 @@ const Example = () => {
   console.log(externalData);
 
   return [
-    EmbedController({
+    Ev.Controller({
       description: clickCount === 2 ? 'click reset' : 'init',
     }),
     EmbedEditor({
       title: 'editor',
     }),
-    BasicEmbed({
+    Ev.Basic({
       ref        : clickedEmbedRef,
       title      : 'clicked counter',
       description: `clicked ${clickCount}`,
     }),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label   : `clicked ${clickCount}`,
         disabled: !isResetDisabled,
         onClick : () => g(function * () {
@@ -109,8 +105,8 @@ const Example = () => {
         }),
       }),
     ),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label   : `reset`,
         disabled: isResetDisabled,
         onClick : () => {
@@ -120,38 +116,34 @@ const Example = () => {
         },
       }),
     ),
-    Row(
-      Select({
-        accessor   : pickMeRef,
-        placeholder: 'Pick ME Choose ME Love ME',
-        options    : [
-          {
-            label: 'Pick ME',
-            value: 'op1',
-          },
-          {
-            label: 'Choose ME',
-            value: 'op2',
-          },
-          {
-            label: 'Hawk Tuah',
-            value: 'op3',
-          },
-        ],
-        onClick: (values) => {
-          console.log('Select', values);
+    Cv.Select({
+      ref        : pickMeRef,
+      placeholder: 'Pick ME Choose ME Love ME',
+      options    : [
+        {
+          label: 'Pick ME',
+          value: 'op1',
         },
-      }),
-    ),
-    Row(
-      User({
-        accessor   : selectRef,
-        placeholder: 'Pick ME Choose ME Love ME',
-        onClick    : (values) => {
-          console.log('User', values);
+        {
+          label: 'Choose ME',
+          value: 'op2',
         },
-      }),
-    ),
+        {
+          label: 'Hawk Tuah',
+          value: 'op3',
+        },
+      ],
+      onClick: (values) => {
+        console.log('Select', values);
+      },
+    }),
+    Cv.User({
+      ref        : selectRef,
+      placeholder: 'Pick ME Choose ME Love ME',
+      onClick    : (values) => {
+        console.log('User', values);
+      },
+    }),
   ] as const;
 };
 
@@ -163,11 +155,11 @@ const Example2 = () => {
   const openDialog                          = useDialogView();
 
   return [
-    EmbedController({
+    Ev.Controller({
       description: clickCount === 2 ? 'click reset' : 'init',
     }),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label   : `example2: clicked ${clickCount}`,
         disabled: !isResetDisabled,
         onClick : () => {
@@ -180,8 +172,8 @@ const Example2 = () => {
         },
       }),
     ),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label   : `reset`,
         disabled: isResetDisabled,
         onClick : () => {
@@ -194,9 +186,9 @@ const Example2 = () => {
 };
 
 
-export const exampleView   = makeView('example', Example);
-export const exampleView2  = makeView('example2', Example2);
-export const exampleDialog = makeView('exampleDialog', ExampleDialog);
+export const exampleView   = makeMessage('example', Example);
+export const exampleView2  = makeMessage('example2', Example2);
+export const exampleDialog = makeDialog('exampleDialog', ExampleDialog);
 
 
 export const exampleDriver = makeDriver({

@@ -1,60 +1,59 @@
-import {EmbedController} from '#discord/entities/exv.ts';
-import {Button, Row} from '#discord/entities/vc.ts';
-import {makeView} from '#discord/entities/view.ts';
-import {openView} from '#discord/hooks/use-view.ts';
+import {Cv, Ev} from '#discord/entities/basic';
+import {makeEntry} from '#discord/entities/basic/node-view.ts';
+import {openView} from '#discord/entities/hooks/use-view.ts';
 import {StyleB} from '#pure/dfx';
 import {OmniClans} from '#src/discord/omni-board/clans/omni-clans.ts';
 import {OmniDeepFryer} from '#src/discord/omni-board/deepfryer/omni-deep-fryer.ts';
 import {OmniInfo} from '#src/discord/omni-board/info/omni-info.ts';
 import {OmniLink} from '#src/discord/omni-board/link/omni-link.ts';
-import {Nav} from '#src/discord/omni-board/nav.ts';
+import {NavButtons} from '#src/discord/omni-board/nav-buttons.ts';
 import {OmniRosters} from '#src/discord/omni-board/rosters/omni-rosters.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 
 
-export const OmniBoard = makeView('OmniBoard', () => {
+export const OmniBoard = makeEntry('OmniBoard', () => {
   return [
-    EmbedController({
+    Ev.Controller({
       title      : 'Omni Board',
       description: MD.content(
         'Start',
       ),
     }),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label  : 'Info',
         onClick: () => {
-          openView(OmniInfo.name);
+          openView(OmniInfo);
         },
       }),
-      Button({
+      Cv.Button({
         label  : 'Clans',
         onClick: () => {
-          openView(OmniClans.name);
+          openView(OmniClans);
         },
       }),
-      Button({
+      Cv.Button({
         label  : 'Rosters',
         onClick: () => {
-          openView(OmniRosters.name);
+          openView(OmniRosters);
         },
       }),
-      Button({
+      Cv.Button({
         label  : 'DeepFryer',
         onClick: () => {
-          openView(OmniDeepFryer.name);
+          openView(OmniDeepFryer);
         },
       }),
     ),
-    Row(
-      Button({
+    Cv.Row(
+      Cv.Button({
         label  : 'Link',
         style  : StyleB.SUCCESS,
         onClick: () => {
-          openView(OmniLink.name);
+          openView(OmniLink);
         },
       }),
     ),
-    Nav({}),
+    NavButtons({}),
   ];
 });

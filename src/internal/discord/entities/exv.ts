@@ -24,14 +24,8 @@ export const AccessorEmbed   = Enum.AccessorEmbed;
 export const EmbedController = Enum.Controller;
 
 
-export const ControllerTag    = 'Controller';
-export const BasicTag         = 'Basic';
-export const AccessorEmbedTag = 'AccessorEmbed';
-
-
 export const match           = Enum.$match;
 export const is              = Enum.$is;
-export const isController    = is('Controller');
 export const isBasic         = is('Basic');
 export const isAccessorEmbed = is('AccessorEmbed');
 

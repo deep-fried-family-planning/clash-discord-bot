@@ -19,6 +19,7 @@ export type CxPath = {
   view    : str;
   dialog  : str;
   accessor: str;
+  ref     : str;
   row     : num;
   col     : num;
   mod     : str;
@@ -30,6 +31,7 @@ const empty = (): CxPath => ({
   view    : NONE,
   dialog  : NONE,
   accessor: NONE,
+  ref     : NONE,
   row     : NONE_NUM,
   col     : NONE_NUM,
   mod     : NONE,

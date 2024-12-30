@@ -1,20 +1,18 @@
-import {BasicEmbed, EmbedController} from '#discord/entities/exv.ts';
-import {Row, Select} from '#discord/entities/vc.ts';
-import {makeView} from '#discord/entities/view.ts';
-import {useRestEmbedRef} from '#discord/hooks/use-rest-embed-ref.ts';
-import {useEffect} from '#discord/hooks/use-effect.ts';
-import {useRestRef} from '#discord/hooks/use-rest-ref.ts';
-import {useState} from '#discord/hooks/use-state.ts';
+import {Cv, Ev} from '#discord/entities/basic';
+import {makeMessage} from '#discord/entities/basic/node-view.ts';
+import {useEffect} from '#discord/entities/hooks/use-effect.ts';
+import {useRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
+import {useRestRef} from '#discord/entities/hooks/use-rest-ref.ts';
+import {useState} from '#discord/entities/hooks/use-state.ts';
 import type {SelectOp} from '#pure/dfx';
 import {CSL, g} from '#pure/effect';
 import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
-import {Nav} from '#src/discord/omni-board/nav.ts';
+import {NavButtons} from '#src/discord/omni-board/nav-buttons.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
 import {MD} from '#src/internal/pure/pure.ts';
-import console from 'node:console';
 
 
-export const OmniInfo = makeView('OmniInfo', () => {
+export const OmniInfo = makeMessage('OmniInfo', () => {
   const [kind, setKind]              = useState('kind', [{value: 'nope'}] as SelectOp[]);
   const [infoId, setInfoId]          = useState('info', [{value: 'nope'}]);
   const [infoEmbedRef, setInfoEmbed] = useRestEmbedRef('info');
@@ -34,41 +32,35 @@ export const OmniInfo = makeView('OmniInfo', () => {
   }));
 
   return [
-    EmbedController({
+    Ev.Controller({
       title      : 'Server Info',
       description: MD.content(
         'Start',
       ),
     }),
-    BasicEmbed({
+    Ev.Basic({
       ref        : infoEmbedRef,
       title      : 'No Info Page Selected',
       description: 'Click below to start',
     }),
-    Row(
-      Select({
-        accessor   : selectKindRef,
-        placeholder: 'Select Kind',
-        options    : OPTION_UNAVAILABLE,
-        onClick    : (values) => {
-          console.info(values);
-          setKind(values);
-        },
-      }),
-    ),
-    Row(
-      Select({
-        accessor   : selectInfoRef,
-        placeholder: 'Select Page',
-        options    : OPTION_UNAVAILABLE,
-        onClick    : (values) => {
-          console.info('selected info', values);
-          setInfoId(values);
-        },
-      }),
-    ),
-    Nav({
-      back: OmniBoard.name,
+    Cv.Select({
+      ref        : selectKindRef,
+      placeholder: 'Select Kind',
+      options    : OPTION_UNAVAILABLE,
+      onClick    : (event) => {
+        setKind(event.values);
+      },
+    }),
+    Cv.Select({
+      ref        : selectInfoRef,
+      placeholder: 'Select Page',
+      options    : OPTION_UNAVAILABLE,
+      onClick    : (event) => {
+        setInfoId(event.values);
+      },
+    }),
+    NavButtons({
+      back: OmniBoard,
     }),
   ];
 });

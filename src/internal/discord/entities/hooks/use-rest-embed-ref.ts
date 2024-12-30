@@ -1,11 +1,11 @@
-import type {Ex} from '#discord/entities';
-import {hooks} from '#discord/hooks/hooks.ts';
+import type {Ex} from '#discord/entities/basic';
+import {hooks} from '#discord/entities/hooks/hooks.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-export type UseRestEmbedRef = readonly [str, (embed: Partial<RestEmbed>) => Partial<RestEmbed>];
+export type UseRestEmbedRef = readonly [str, (data: Partial<RestEmbed>) => Partial<RestEmbed>];
 const noop = (embed: Partial<RestEmbed>) => embed;
 
 
@@ -28,13 +28,19 @@ export const useRestEmbedRef = (id: str) => {
 };
 
 
-export const updateRestEmbedRef = (embeds: Ex.Type[]) => {
+export const updateRestEmbedRef = (embeds: Ex.Grid) => {
   return pipe(
     hooks.embeds,
     Ar.reduce(embeds, (acc, [id, updater]) => {
       return acc.map((embed) => {
-        if ('ref' in embed && embed.ref === id) {
-          return updater(embed) as typeof embed;
+        if (embed.path.ref === id) {
+          return {
+            ...embed,
+            data: {
+              ...embed.data,
+              ...updater(embed.data),
+            },
+          } as typeof embed;
         }
         return embed;
       });
