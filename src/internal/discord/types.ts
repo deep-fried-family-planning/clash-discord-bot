@@ -1,3 +1,4 @@
+import {RxType} from '#pure/dfx';
 import type {IxD} from '#src/internal/discord.ts';
 import type {MessageComponentDatum, ModalSubmitDatum} from 'dfx/types';
 
@@ -12,5 +13,5 @@ export type IxDataDialog =
   & {data: MessageComponentDatum};
 
 
-export const isModalIx     = (data: IxIn['data']): data is ModalSubmitDatum => 'components' in data;
-export const isComponentIx = (data: IxIn['data']): data is MessageComponentDatum => 'component_type' in data;
+export const isDialogSubmit = (ix: IxIn) => ix.type === RxType.MODAL_SUBMIT;
+export const isClick        = (ix: IxIn) => ix.type === RxType.MESSAGE_COMPONENT;

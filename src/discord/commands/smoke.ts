@@ -1,9 +1,9 @@
-import {ENTRY} from '#discord/entities/constants/constants.ts';
+import {ENTRY} from '#discord/constants/constants.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {exampleDriver, exampleView} from '#src/discord/example.ts';
 import {v2driver} from '#src/discord/omni-board/omni-board-driver.ts';
-import {OmniBoard} from '#src/discord/omni-board/omni-board.ts';
+import {OmniStart} from '#src/discord/omni-board/omni-start.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -12,8 +12,7 @@ import {E} from '#src/internal/pure/effect.ts';
 import {UI} from 'dfx';
 
 
-export const SMOKE
-               = {
+export const SMOKE = {
   type       : 1,
   name       : 'smoke',
   description: 'devs & inner circle ONLY!!!',
@@ -55,7 +54,7 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
         custom_id: CxPath.build({
           ...CxPath.empty(),
           root: v2driver.name,
-          view: OmniBoard.name,
+          view: OmniStart.name,
           mod : ENTRY,
         }),
       })],

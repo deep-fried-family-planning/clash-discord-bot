@@ -1,5 +1,5 @@
-import type {Cv, Ev} from '#discord/entities/basic/index.ts';
-import {Cx} from '#discord/entities/basic/index.ts';
+import type {Cv, Ev} from '#discord/entities/index.ts';
+import {Cx} from '#discord/entities/index.ts';
 import {Ar, D, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
@@ -36,9 +36,9 @@ export type Meta = {
   path: Cx.Path;
 };
 export type E = {
-  Entry  : Meta & {func: () => ViewNodeMessageOutput};
-  Message: Meta & {func: () => ViewNodeMessageOutput};
-  Dialog : Meta & {func: () => ViewNodeDialogOutput};
+  Entry  : Meta & {render: () => ViewNodeMessageOutput};
+  Message: Meta & {render: () => ViewNodeMessageOutput};
+  Dialog : Meta & {render: () => ViewNodeDialogOutput};
 };
 export type T = D.TaggedEnum<E>;
 
@@ -62,7 +62,14 @@ export const Entry   = E.Entry;
 export const Message = E.Message;
 export const Dialog  = E.Dialog;
 
+export const isEntry = is('Entry');
+export const isMessage = is('Message');
+export const isDialog = is('Dialog');
 
-export const makeEntry   = (name: str, func: MessageNode) => Entry({name, func, path: Cx.Path.empty()});
-export const makeMessage = (name: str, func: MessageNode) => Message({name, func, path: Cx.Path.empty()});
-export const makeDialog  = (name: str, func: DialogNode) => Dialog({name, func, path: Cx.Path.empty()});
+
+export const DialogHeader = (props: DialogOutput) => props;
+
+
+export const makeEntry   = (name: str, render: MessageNode) => Entry({name, render, path: Cx.Path.empty()});
+export const makeMessage = (name: str, render: MessageNode) => Message({name, render, path: Cx.Path.empty()});
+export const makeDialog  = (name: str, render: DialogNode) => Dialog({name, render, path: Cx.Path.empty()});

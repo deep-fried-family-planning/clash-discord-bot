@@ -1,4 +1,4 @@
-import type {opt, str} from '#src/internal/pure/types-pure.ts';
+import type {Mutable, opt, str} from '#src/internal/pure/types-pure.ts';
 import {Discord} from 'dfx';
 
 
@@ -13,8 +13,8 @@ export type RestDataComponent =
   Omit<Discord.MessageComponentDatum, 'values'>
   & {values?: str[]};
 export type RestDataResolved = Discord.ResolvedDatum;
-export type SelectOp = Discord.SelectOption;
-export type ManagedOp = Discord.SelectDefaultValue;
+export type SelectOp = Mutable<Discord.SelectOption>;
+export type ManagedOp = Mutable<Discord.SelectDefaultValue>;
 
 
 export type RestEncodeMessage = opt<Discord.Message>;

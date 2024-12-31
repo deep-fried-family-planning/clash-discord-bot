@@ -1,17 +1,19 @@
-import {NONE_NUM} from '#discord/entities/constants/constants.ts';
-import {NONE} from '#discord/entities/constants/path.ts';
+import {NONE_NUM} from '#discord/constants/constants.ts';
+import {NONE} from '#discord/constants/path.ts';
 import {CxPath} from '#discord/entities/routing/cx-path.ts';
+import type {IxIn} from '#discord/types.ts';
 import {type ManagedOp, type OptButton, type OptChannel, type OptMention, type OptRole, type OptSelect, type OptText, type OptUser, type RestComponent, type RestDataComponent, type RestDataResolved, type RestRow, type SelectOp, StyleB, StyleT, TypeC} from '#pure/dfx';
 import {D, flow, pipe} from '#pure/effect';
 import type {snow} from '#src/discord/types.ts';
 import type {Mutable, nopt, num, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
-import console from 'node:console';
 
 
 export type OnClick<T, O> = (
   event: {
+    ix      : IxIn;
     target  : T;
+    first   : str;
     selected: str[];
     values  : O[];
     options : O[];
@@ -22,6 +24,7 @@ export type OnClick<T, O> = (
 export type Path = CxPath;
 export type Meta = {
   path: Path;
+  auth: str[];
 };
 export type E = {
   Button : Meta & {onClick?: OnClick<Mutable<OptButton>, never>; data: Mutable<OptButton>};
@@ -35,13 +38,16 @@ export type E = {
   Text   : Meta & {onClick?: OnClick<Mutable<OptText>, never>; data: Mutable<OptText>};
 };
 export type T = D.TaggedEnum<E>;
+export type Data = T['data'];
 export type Grid = T[][];
+export type Refs = Record<str, T>;
+export type RefsData = Record<str, Data>;
 
 
-export const E        = D.taggedEnum<T>();
+export const T        = D.taggedEnum<T>();
 export const Path     = CxPath;
-export const is       = E.$is;
-export const match    = E.$match;
+export const is       = T.$is;
+export const match    = T.$match;
 export const pure     = <A extends T>(a: A) => a;
 export const pureGrid = (a: Grid) => a;
 export const get      = <A extends T, B extends keyof A>(b: B) => (a: A): A[B] => a[b];
@@ -50,26 +56,41 @@ export const setWith  = <A extends T, B extends keyof A, C extends A[B]>(b: B, c
 export const map      = <A extends T>(fa: (a: A) => A) => (a: A) => fa(a);
 export const mapTo    = <A extends T, B>(fa: (a: A) => B) => (a: A) => fa(a);
 export const mapGrid  = (fa: (a: T, row: num, col: num) => T) => (grid: Grid) => grid.map((row, rowIdx) => row.map((cx, colIdx) => fa(cx, rowIdx, colIdx)));
+export const getAt    = (x: num, y: num) => (cxs: Grid) => cxs.at(x)?.at(y);
 
 
-export const Button  = E.Button;
-export const Link    = E.Link;
-export const Premium = E.Premium;
-export const Select  = E.Select;
-export const User    = E.User;
-export const Role    = E.Role;
-export const Channel = E.Channel;
-export const Mention = E.Mention;
-export const Text    = E.Text;
+export const button  = T.Button;
+export const link    = T.Link;
+export const premium = T.Premium;
+export const select  = T.Select;
+export const user    = T.User;
+export const role    = T.Role;
+export const channel = T.Channel;
+export const mention = T.Mention;
+export const text    = T.Text;
+
+
+export const isbutton  = is('Button');
+export const islink    = is('Link');
+export const ispremium = is('Premium');
+export const isselect  = is('Select');
+export const isuser    = is('User');
+export const isrole    = is('Role');
+export const ischannel = is('Channel');
+export const ismention = is('Mention');
+export const istext    = is('Text');
+
+
+export const isManaged = (a: T) => [isuser, isrole, ischannel, ismention].some((predicate) => predicate(a));
 
 
 export const DecodeTypeMap = {
-  [TypeC.TEXT_INPUT]        : Text,
-  [TypeC.STRING_SELECT]     : Select,
-  [TypeC.USER_SELECT]       : User,
-  [TypeC.ROLE_SELECT]       : Role,
-  [TypeC.CHANNEL_SELECT]    : Channel,
-  [TypeC.MENTIONABLE_SELECT]: Mention,
+  [TypeC.TEXT_INPUT]        : text,
+  [TypeC.STRING_SELECT]     : select,
+  [TypeC.USER_SELECT]       : user,
+  [TypeC.ROLE_SELECT]       : role,
+  [TypeC.CHANNEL_SELECT]    : channel,
+  [TypeC.MENTIONABLE_SELECT]: mention,
 };
 
 export const decode = (rest: RestComponent, row?: num, col?: num) => {
@@ -81,17 +102,20 @@ export const decode = (rest: RestComponent, row?: num, col?: num) => {
 
   if (rest.type in DecodeTypeMap) {
     return DecodeTypeMap[rest.type as keyof typeof DecodeTypeMap]({
+      auth: [],
       path: route,
       data: rest as never,
     });
   }
   if ((rest as OptButton).custom_id) {
-    return Button({
+    return button({
+      auth: [],
       path: route,
       data: rest as OptButton,
     });
   }
-  return Link({
+  return link({
+    auth: [],
     path: CxPath.empty(),
     data: rest as OptButton,
   });
@@ -126,7 +150,6 @@ export const encode = flow(
     Text   : (cx) => ({...cx.data, type: EncodeTypeMap[cx._tag], style: cx.data.style ?? StyleT.SHORT, custom_id: CxPath.build(cx.path)}),
   }),
   (data) => {
-    console.log('[cx_encode]', data.custom_id);
     return data as RestComponent;
   },
 );

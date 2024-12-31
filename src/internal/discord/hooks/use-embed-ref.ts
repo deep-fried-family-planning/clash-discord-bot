@@ -1,11 +1,11 @@
-import type {Ex} from '#discord/entities/basic';
-import {hooks} from '#discord/entities/hooks/hooks.ts';
+import type {Ex} from '#discord/entities';
+import {hooks} from '#discord/hooks/hooks.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {Ar, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-export type UseRestEmbedRef = readonly [str, (data: Partial<RestEmbed>) => Partial<RestEmbed>];
+export type UseEmbedRef = readonly [str, (data: Partial<RestEmbed>) => Partial<RestEmbed>];
 const noop = (embed: Partial<RestEmbed>) => embed;
 
 

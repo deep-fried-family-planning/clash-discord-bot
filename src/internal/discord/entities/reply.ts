@@ -1,4 +1,4 @@
-import {NONE} from '#discord/entities/constants/path.ts';
+import {NONE} from '#discord/constants/path.ts';
 import type {IxIn} from '#discord/types.ts';
 import type {RestComponent, RestEmbed} from '#pure/dfx';
 import {D} from '#pure/effect';
@@ -7,6 +7,7 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 export type T = D.TaggedEnum<{
+  Delete : {custom_id: str; title: str; components: RestComponent[]};
   Dialog : {custom_id: str; title: str; components: RestComponent[]};
   Message: {embeds: RestEmbed[]; components: RestComponent[]};
 }>;
@@ -16,6 +17,7 @@ export const is    = E.$is;
 export const match = E.$match;
 
 
+export const Delete  = E.Delete;
 export const Dialog  = E.Dialog;
 export const Message = E.Message;
 
@@ -34,6 +36,7 @@ export const MessageEmpty = () => Message({
 
 
 export const reply = (ix: IxIn) => match({
+  Delete : () => DiscordApi.deleteMenu(ix),
   Dialog : (tx) => DiscordApi.openModal(ix, tx),
   Message: (tx) => DiscordApi.editMenu(ix, tx),
 });

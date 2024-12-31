@@ -1,11 +1,10 @@
-import {NONE_NUM} from '#discord/entities/constants/constants.ts';
-import {NONE, ROW_NONE} from '#discord/entities/constants/path.ts';
+import {NONE_NUM} from '#discord/constants/constants.ts';
+import {NONE, ROW_NONE} from '#discord/constants/path.ts';
 import {ExPath} from '#discord/entities/routing/ex-path.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {D, pipe} from '#pure/effect';
 import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import type {Mutable, num, str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
 import {URL} from 'node:url';
 
 
@@ -43,8 +42,6 @@ export const DialogLinked = E.DialogLinked;
 
 
 export const decode = (rest: RestEmbed, row?: num) => {
-  console.log(`[ex_decode]`, rest.image?.url);
-
   const url = new URL(rest.image?.url ?? DFFP_URL);
 
   const path = pipe(
@@ -70,9 +67,6 @@ export const decode = (rest: RestEmbed, row?: num) => {
   }
 
   if (path.tag === 'DialogLinked') {
-    console.log('DialogLinked', [...url.searchParams.keys()]);
-    console.log('DialogLinked', [...url.searchParams.keys()].filter((k) => k.startsWith('a_')));
-
     return DialogLinked({
       path,
       query: url.searchParams,
@@ -110,8 +104,6 @@ export const encode = (ex: T, row?: num) => {
   url.pathname  = path;
   url.search    = ex.query.toString();
   ex.data.image = {url: url.href};
-
-  console.log('[ex_encode]', ex.data.image.url);
 
   return ex.data;
 };

@@ -1,5 +1,5 @@
 import type {makeSlice} from '#discord/context/slice.ts';
-import {Cx, Nv} from '#discord/entities/basic';
+import {Cx, Nv} from '#discord/entities';
 import {Kv, p, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 

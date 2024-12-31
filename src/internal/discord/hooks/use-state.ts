@@ -1,5 +1,5 @@
 import {getParam, setParam} from '#discord/context/controller-params.ts';
-import {addStateHookId} from '#discord/entities/hooks/hooks.ts';
+import {addStateHookId} from '#discord/hooks/hooks.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

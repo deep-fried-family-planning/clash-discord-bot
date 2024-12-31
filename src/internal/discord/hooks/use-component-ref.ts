@@ -1,5 +1,5 @@
-import type {Cx} from '#discord/entities/basic';
-import {hooks} from '#discord/entities/hooks/hooks.ts';
+import type {Cx} from '#discord/entities';
+import {hooks} from '#discord/hooks/hooks.ts';
 import {Arr, Kv, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
@@ -7,7 +7,7 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 export type RxRef = str;
 
 
-export const useRestRef = (id: str) => {
+export const useComponentRef = (id: str) => {
   const ref_id = `r_${id}`;
 
   hooks.refs.push(ref_id);
@@ -21,6 +21,7 @@ export const updateRxRefs = (rcs: Cx.Grid) => (vcs: Cx.Grid) => {
     rcs,
     Arr.flatten,
     Kv.fromIterableWith((cxrx) => [cxrx.path.ref, cxrx]),
+    // Kv.filter((v, k) => k.startsWith('r_') || k.startsWith('a_')),
   );
 
   const flatVx = vcs.flat();
@@ -38,7 +39,7 @@ export const updateRxRefs = (rcs: Cx.Grid) => (vcs: Cx.Grid) => {
     }
 
     // @ts-expect-error tagged enums
-    acc[vx.path.row][vx.path.col].data = rx.data;
+    acc[vx.path.row][vx.path.col].data = {...vx.data, ...rx.data};
 
     return acc;
   }));

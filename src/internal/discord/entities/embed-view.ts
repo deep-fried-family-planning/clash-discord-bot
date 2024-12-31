@@ -1,4 +1,4 @@
-import {Ex} from '#discord/entities/basic/index.ts';
+import {Ex} from '#discord/entities/index.ts';
 import type {RestEmbed} from '#pure/dfx';
 import {D, pipe} from '#pure/effect';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
@@ -27,6 +27,11 @@ export const mapGrid = <A>(fa: (a: T, row: num) => A) => (grid: Grid) => grid.ma
 export const Controller   = E.Controller;
 export const DialogLinked = E.DialogLinked;
 export const Basic        = E.Basic;
+
+
+export const TitleEmbed  = E.Controller;
+export const BasicEmbed  = E.Basic;
+export const DialogEmbed = E.DialogLinked;
 
 
 export const isController   = is('Controller');

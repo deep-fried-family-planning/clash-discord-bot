@@ -1,14 +1,16 @@
 import {updateUrlContext} from '#discord/context/context.ts';
-import {Cv, Cx, Ev, Ex, Nv, Nx, Tx} from '#discord/entities/basic/index.ts';
-import {parseOutput} from '#discord/entities/basic/node-view.ts';
-import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
-import {updateDialogRefComponents, updateDialogRefEmbeds} from '#discord/entities/hooks/use-dialog-ref.ts';
-import {updateUseEffect} from '#discord/entities/hooks/use-effect.ts';
-import {updateRxRefs} from '#discord/entities/hooks/use-rest-ref.ts';
+import {IxService} from '#discord/context/ix-service.ts';
+import {DeveloperError} from '#discord/entities/errors.ts';
+import {Cv, Cx, Ev, Ex, Nv, Nx, Tx} from '#discord/entities/index.ts';
+import {parseOutput} from '#discord/entities/node-view.ts';
+import {loadInitialComponentReducerState, updateAllComponentReducers} from '#discord/hooks/use-component-reducer.ts';
+import {updateRxRefs} from '#discord/hooks/use-component-ref.ts';
+import {updateDialogRefComponents, updateDialogRefEmbeds} from '#discord/hooks/use-dialog-ref.ts';
+import {updateUseEffect} from '#discord/hooks/use-view-effect.ts';
 import type {IxIn} from '#discord/types.ts';
 import {type RestDataComponent, type RestDataDialog, RxType} from '#pure/dfx';
 import {D, E as Effect, g, p, pipe} from '#pure/effect';
-import type {str, unk} from '#src/internal/pure/types-pure.ts';
+import type {Mutable, str, unk} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
 
 
@@ -19,19 +21,24 @@ export type Meta = {
   mod?: str;
 };
 
+
 export type T = D.TaggedEnum<{
   Message: Meta & {components: Cx.Grid; embeds: Ex.Grid};
   Dialog : Meta & {components: Cx.Grid; embeds: Ex.Grid; title: str};
 }>;
 
 
-export const E         = D.taggedEnum<T>();
-export const match     = E.$match;
-export const is        = E.$is;
-export const Message   = E.Message;
-export const Dialog    = E.Dialog;
-export const isMessage = is('Message');
-export const isDialog  = is('Dialog');
+export const E                = D.taggedEnum<T>();
+export const match            = E.$match;
+export const is               = E.$is;
+export const Message          = E.Message;
+export const Dialog           = E.Dialog;
+export const isMessage        = is('Message');
+export const isDialog         = is('Dialog');
+export const updateComponents = <A extends T>(fa: (a: A) => A['components']) => (a: A) => {
+  (a as Mutable<A>).components = fa(a);
+  return a;
+};
 
 
 export const decodeDialog = (ix: IxIn) => {
@@ -54,9 +61,9 @@ export const decodeDialog = (ix: IxIn) => {
 };
 
 
-export const decodeMessage = (ix: IxIn) => {
-  const path = Cx.Path.parse(ix.data.custom_id);
+export const decodeMessage = (ix: IxIn, path: Cx.Path) => {
   const data = ix.data as unk as RestDataComponent;
+
 
   return Message({
     name      : path.view,
@@ -154,24 +161,21 @@ export const encodeMessage = (rx_message?: T, rx_dialog?: T) => (nx: T) => {
 
   return Tx.Message({
     embeds    : embeds,
-    components: p(nx.components, Cx.encodeGrid(nx.root, nx.view)),
+    components: p(nx.components, loadInitialComponentReducerState, Cx.encodeGrid(nx.root, nx.view)),
   });
 };
 
 
-export const renderViewNode = (nv: Nv.T, ix?: IxIn) => g(function * () {
-  nv.func();
-  yield * updateUseEffect;
+export const renderViewNode = (nv: Nv.T) => g(function * () {
+  const {ix} = yield * IxService.value();
+
+  nv.render();
+
+  yield * updateUseEffect(ix);
 
   if (Nv.is('Dialog')(nv)) {
-    if (!ix) {
-      throw new DeveloperError({});
-    }
-
-    const [dialog, ...cvs] = nv.func();
-
-    console.log('[view_dialog]');
-    const components = p(cvs, Cv.mapGrid(Cv.make(nv.path.root, nv.name)));
+    const [dialog, ...cvs] = nv.render();
+    const components       = p(cvs, Cv.mapGrid(Cv.make(nv.path.root, nv.name)));
 
     return Nx.Dialog({
       name      : nv.name,
@@ -184,7 +188,8 @@ export const renderViewNode = (nv: Nv.T, ix?: IxIn) => g(function * () {
     });
   }
 
-  const [evs, cvs] = parseOutput(nv.func());
+  const output     = nv.render();
+  const [evs, cvs] = parseOutput(output);
   const embeds     = p(evs, Ev.mapGrid(Ev.make(nv.path.root, nv.name)));
   const components = p(cvs, Cv.mapGrid(Cv.make(nv.path.root, nv.name)));
 
@@ -193,35 +198,37 @@ export const renderViewNode = (nv: Nv.T, ix?: IxIn) => g(function * () {
     root      : nv.path.root,
     view      : nv.name,
     embeds    : embeds,
-    components: components,
+    components: yield * updateAllComponentReducers(components),
   });
 });
 
 
-export const simulateViewNodeClick = (action: RestDataComponent) => (nx: T) => g(function * () {
-  if (isDialog(nx)) {
-    throw new DeveloperError({});
-  }
+export const simulateViewNodeClick = (action: RestDataComponent, ix: IxIn, rx: T) => (nx: T) => g(function * () {
+  if (isDialog(nx)) throw new DeveloperError({});
 
   const path      = Cx.Path.parse(action.custom_id);
   const component = nx.components.at(path.row)?.at(path.col);
+  const data      = rx.components.at(path.row)!.at(path.col)!;
 
-  console.log('click', action.custom_id);
+  console.log('[view_click]', action.custom_id);
 
-  if (!component || !component.onClick) {
-    throw new DeveloperError({});
-  }
+  if (!component || !component.onClick) throw new DeveloperError({});
 
   const func = component.onClick({
+    ix      : ix,
     target  : component.data as never,
-    selected: Cx.getSelectedValues(component),
-    values  : Cx.getSelectedOptions(component) as never,
-    options : Cx.getOptions(component) as never,
+    first   : Cx.getSelectedValues(data).at(0) ?? '',
+    selected: Cx.getSelectedValues(data),
+    values  : Cx.getSelectedOptions(data) as never,
+    options : Cx.getOptions(data) as never,
   });
 
-  if (Effect.isEffect(func)) {
-    yield * func;
-  }
+  if (Effect.isEffect(func)) yield * func;
 
-  return nx;
+  const stateUpdated = yield * updateAllComponentReducers(nx.components);
+
+  return pipe(
+    nx,
+    updateComponents(() => stateUpdated),
+  );
 });

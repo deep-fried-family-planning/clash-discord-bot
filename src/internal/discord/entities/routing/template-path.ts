@@ -107,9 +107,3 @@ export const setParam = <A extends Param, B extends keyof A = keyof A>(key: B, v
   a[key] = val;
   return a;
 };
-
-
-export const setParamWith = <A extends Param, B extends keyof A = keyof A>(key: B, val: A[B]) => (a: A) => {
-  a[key] = val;
-  return a;
-};

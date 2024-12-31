@@ -1,7 +1,7 @@
 import type {HookId} from '#discord/context/context.ts';
 import {getParam, setParam} from '#discord/context/controller-params.ts';
-import type {Cx, Ex} from '#discord/entities/basic';
-import {addAccessorHook, getHooks} from '#discord/entities/hooks/hooks.ts';
+import type {Cx, Ex} from '#discord/entities';
+import {addAccessorHook, getHooks} from '#discord/hooks/hooks.ts';
 import console from 'node:console';
 
 

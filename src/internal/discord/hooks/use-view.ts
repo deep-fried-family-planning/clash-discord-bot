@@ -1,6 +1,6 @@
-import type {Nv} from '#discord/entities/basic';
-import {DIALOG} from '#discord/entities/constants/constants.ts';
-import {setNextView, setViewModifier} from '#discord/entities/hooks/hooks.ts';
+import {DIALOG} from '#discord/constants/constants.ts';
+import type {Nv} from '#discord/entities';
+import {setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 
 

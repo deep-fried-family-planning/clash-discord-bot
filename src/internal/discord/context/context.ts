@@ -1,10 +1,9 @@
 import {clearAllParams, clearRoute, getAllParams, setAllParams, setParam, setPath} from '#discord/context/controller-params.ts';
-import type {Cx} from '#discord/entities/basic';
-import {Ex} from '#discord/entities/basic';
-import {DeveloperError} from '#discord/entities/errors/developer-error.ts';
-import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/entities/hooks/hooks.ts';
-import {updateRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
-import {Ar, pipe} from '#pure/effect';
+import type {Cx} from '#discord/entities';
+import {Ex} from '#discord/entities';
+import {addStateHookId, clearHooks, getFirstView, getHooks, getNextView, setFirstView, setNextView, setViewModifier} from '#discord/hooks/hooks.ts';
+import {updateRestEmbedRef} from '#discord/hooks/use-embed-ref.ts';
+import {pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -64,33 +63,4 @@ export const updateUrlContext = ([controller, ...embeds]: Ex.Grid) => {
     [updatedController, ...embeds],
     updateRestEmbedRef,
   );
-};
-
-
-export const detectDuplicateIds = () => {
-  const hooks = getHooks();
-
-  const all = pipe(
-    hooks.states,
-    Ar.appendAll(hooks.effects.map(([id]) => id)),
-    Ar.appendAll(hooks.accessors.map(([id]) => id)),
-    Ar.appendAll(hooks.slices.map(([id]) => id)),
-    Ar.appendAll(hooks.actions.map(([id]) => id)),
-  );
-
-  const unique = pipe(
-    all,
-    Ar.dedupe,
-  );
-
-  if (all.length !== unique.length) {
-    throw new DeveloperError({
-      data: {
-        all,
-        unique,
-      },
-    });
-  }
-
-  return all;
 };

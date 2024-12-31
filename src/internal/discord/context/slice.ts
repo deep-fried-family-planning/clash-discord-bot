@@ -1,4 +1,4 @@
-import type {Cx} from '#discord/entities/basic';
+import type {Cx} from '#discord/entities';
 import {Kv, pipe} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
@@ -14,8 +14,9 @@ export const makeSlice = <
   Sg extends {ope: ''},
   Spec extends { [k in str]: {type: Cx.T['_tag']} },
   Data extends { [k in keyof Spec]: Cx.E[Spec[k]['type']] },
-  Reducers extends & { [k in 'init']: (sg: Sg, sxc: Data) => AnyE<Data> }
-                     & { [k in str]: (sg: Sg, sxc: Data) => AnyE<Data> },
+  Reducers extends &
+    { [k in 'init']: (sg: Sg, sxc: Data) => AnyE<Data> }
+    & { [k in str]: (sg: Sg, sxc: Data) => AnyE<Data> },
   OutData extends { [k in keyof Spec]: {slice: str; data: k; type: Spec[k]['type']} },
   OutActions extends { [k in keyof Reducers]: {slice: str; action: k} },
 >(

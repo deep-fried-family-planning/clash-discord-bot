@@ -1,4 +1,6 @@
+import {IxService} from '#discord/context/ix-service.ts';
 import {implementation} from '#discord/flows/implementation.ts';
+import type {IxIn} from '#discord/types.ts';
 import {exampleDriver} from '#src/discord/example.ts';
 import {original} from '#src/discord/ixc-original.ts';
 import {v2driver} from '#src/discord/omni-board/omni-board-driver.ts';
@@ -31,10 +33,12 @@ const router = (ix: IxD) => E.gen(function * () {
     return yield * original(ix);
   }
 
-  return yield * implementation(driver, ix);
+  yield * IxService.start(driver, ix as IxIn);
+  yield * implementation;
+  return yield * IxService.reset();
 });
 
-
+// todo add "recoverable error"
 export const ixcRouter = (ix: IxD) => p(
-  router(ix), // todo add "recoverable error"
+  router(ix),
 );

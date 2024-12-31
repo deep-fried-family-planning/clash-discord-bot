@@ -1,51 +1,110 @@
-import type {makeDriver} from '#discord/context/model-driver.ts';
-import {Cx} from '#discord/entities/basic';
-import {CLOSE, ENTRY, NO_SIM} from '#discord/entities/constants/constants.ts';
-import {clickEntrypoint} from '#discord/flows/click-entrypoint.ts';
-import {clickEphemeral} from '#discord/flows/click-ephemeral.ts';
-import {submitDialog} from '#discord/flows/submit-dialog.ts';
-import type {IxIn} from '#discord/types.ts';
-import {type RestDataDialog, RxType} from '#pure/dfx';
-import {CSL, E, g} from '#pure/effect';
+import {CLOSE, DIALOG, ENTRY} from '#discord/constants/constants.ts';
+import {IxService} from '#discord/context/ix-service.ts';
+import {Nx, Tx} from '#discord/entities';
+import {getNextView, getViewModifier} from '#discord/hooks/hooks.ts';
+import {isDialogSubmit} from '#discord/types.ts';
+import type {RestDataComponent} from '#pure/dfx';
+import {CSL, E, g, p, pipe} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {unk} from '#src/internal/pure/types-pure.ts';
+import console from 'node:console';
 import {inspect} from 'node:util';
 
 
-// const [server, user] = yield * pipe(
-//   [
-//     MenuCache.serverRead(ix.guild_id!),
-//     MenuCache.userRead(ix.member?.user?.id ?? ix.user!.id),
-//   ] as const,
-//   E.allWith(),
-//   E.catchTag('DeepFryerDynamoError', () => E.succeed([undefined, undefined])),
-// );
+export const implementation = g(function * () {
+  const {ax, ix, driver, curr, next, message, dialog} = yield * IxService.value();
+  console.log('[implementation]', ix.id);
 
 
-export const implementation = <
-  A extends ReturnType<typeof makeDriver>,
->(
-  driver: A,
-  anyIx: IxD,
-) => g(function * () {
-  const ix = anyIx as IxIn;
-  const ax = Cx.Path.parse(ix.data.custom_id);
+  if (ax.path.mod === CLOSE) {
+    console.log('[DELETE]');
+    return yield * DiscordApi.deleteMenu(ix).pipe(E.ignoreLogged);
+  }
 
-  if (ax.mod === CLOSE) {
+
+  if (ax.path.mod === ENTRY) {
+    console.log('[DEFER]: entry');
+    yield * DiscordApi.deferEntryEphemeral(ix);
+
+    return yield * p(
+      Nx.renderViewNode(driver.views[ax.path.view]),
+      E.map(Nx.encodeMessage()),
+      E.flatMap(Tx.reply(ix)),
+    );
+  }
+
+
+  if (isDialogSubmit(ix)) {
+    console.log('[DEFER]: dialog submit');
+    yield * DiscordApi.deferUpdate(ix);
+
+    const dialog_rest = curr.rest;
+    const dialog_view = yield * IxService.currentViewNode;
+    yield * Nx.renderViewNode(dialog_view);
+
+    const message_rest = message.rest;
+    const message_view = driver.views[getNextView()];
+    const message_data = yield * Nx.renderViewNode(message_view);
+
+    return yield * pipe(
+      message_data,
+      Nx.encodeMessage(message_rest, dialog_rest),
+      Tx.reply(ix),
+    );
+  }
+
+
+  const current_rest = curr.rest;
+  const current_view = yield * IxService.currentViewNode;
+  const current_data = yield * pipe(
+    Nx.renderViewNode(current_view),
+    E.flatMap(Nx.simulateViewNodeClick(ix.data as unk as RestDataComponent, ix, current_rest)),
+  );
+
+  const next_view        = driver.views[getNextView()];
+  const nextViewModifier = getViewModifier();
+
+
+  if (nextViewModifier === DIALOG) {
+    yield * p(
+      Nx.renderViewNode(next_view),
+      E.map(Nx.encodeDialog(current_rest)),
+      E.flatMap(Tx.reply(ix)),
+    );
+
+    message.sent = p(
+      current_data,
+      Nx.encodeMessage(current_rest),
+    );
+
+    return yield * IxService.saveMessage;
+  }
+
+
+  console.log('[DEFER]: update');
+  yield * DiscordApi.deferUpdate(ix);
+
+
+  if (nextViewModifier === CLOSE) {
     return yield * DiscordApi.deleteMenu(ix);
   }
-  if (ax.mod === NO_SIM) {
-    return;
-  }
-  if (ix.type === RxType.MODAL_SUBMIT) {
-    return yield * submitDialog(driver, ax, ix, ix.data as RestDataDialog);
-  }
-  if (ax.mod === ENTRY) {
-    return yield * clickEntrypoint(driver, ax, ix);
+
+
+  if (current_view.name === next_view.name) {
+    return yield * pipe(
+      current_data,
+      Nx.encodeMessage(current_rest),
+      Tx.reply(ix),
+    );
   }
 
-  return yield * clickEphemeral(driver, ax, ix);
+  return yield * p(
+    Nx.renderViewNode(next_view),
+    E.map(Nx.encodeMessage()),
+    E.flatMap(Tx.reply(ix)),
+  );
 }).pipe(
   // E.catchAll((e) => CSL.debug(inspect(e, false, null))),
+
   E.catchAllDefect((e) => CSL.debug(inspect(e, false, null))),
 );

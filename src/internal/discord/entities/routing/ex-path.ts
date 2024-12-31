@@ -1,7 +1,6 @@
-import {NONE, NONE_NUM} from '#discord/entities/constants/constants.ts';
-import {makePathBuilder, makePathParser, makePathPattern, mapParam, setParam, setParamWith} from '#discord/entities/routing/template-path.ts';
+import {NONE, NONE_NUM} from '#discord/constants/constants.ts';
+import {makePathBuilder, makePathParser, makePathPattern, mapParam, setParam} from '#discord/entities/routing/template-path.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
-import type {URL} from 'node:url';
 
 
 const route_templates = [
@@ -57,8 +56,7 @@ export const ExPath = {
       ...route,
     });
   },
-  set    : setParam<ExPath>,
-  setWith: setParamWith<ExPath>,
-  map    : mapParam<ExPath>,
-  empty  : empty,
+  set  : setParam<ExPath>,
+  map  : mapParam<ExPath>,
+  empty: empty,
 };

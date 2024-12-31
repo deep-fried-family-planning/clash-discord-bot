@@ -1,13 +1,12 @@
 import {makeDriver} from '#discord/context/model-driver.ts';
-import {Cv, Ev} from '#discord/entities/basic';
-import {makeDialog, makeMessage} from '#discord/entities/basic/node-view.ts';
-import {useDialogRef} from '#discord/entities/hooks/use-dialog-ref.ts';
-import {useRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
-import {useRestRef} from '#discord/entities/hooks/use-rest-ref.ts';
-import {useState} from '#discord/entities/hooks/use-state.ts';
-import {useDialogView, useMessageView} from '#discord/entities/hooks/use-view.ts';
-import {CxPath} from '#discord/entities/routing/cx-path.ts';
-import {StyleT} from '#pure/dfx';
+import {Cv, Ev} from '#discord/entities';
+import {ParagraphText, ShortText} from '#discord/entities/component-view.ts';
+import {DialogHeader, makeDialog, makeMessage} from '#discord/entities/node-view.ts';
+import {useComponentRef} from '#discord/hooks/use-component-ref.ts';
+import {useDialogRef} from '#discord/hooks/use-dialog-ref.ts';
+import {useRestEmbedRef} from '#discord/hooks/use-embed-ref.ts';
+import {useState} from '#discord/hooks/use-state.ts';
+import {useDialogView, useMessageView} from '#discord/hooks/use-view.ts';
 import {g} from '#pure/effect';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
@@ -41,17 +40,18 @@ const ExampleDialog = () => {
   const openView      = useMessageView();
 
   return [
-    {
+    DialogHeader({
       title   : 'ExampleDialog',
-      route   : CxPath.empty(),
       onSubmit: () => {
         openView(exampleView);
       },
-    },
-    Cv.Text({
+    }),
+    ShortText({
       ref  : descriptionId,
       label: 'ope',
-      style: StyleT.PARAGRAPH,
+    }),
+    ParagraphText({
+      label: 'ope2',
     }),
   ] as const;
 };
@@ -62,8 +62,8 @@ const Example = () => {
   const [isResetDisabled, setResetDisabled] = useState('reset', true);
   const openDialog                          = useDialogView();
   const [clickedEmbedRef, setClickedEmbed]  = useRestEmbedRef('clicked');
-  const selectRef                           = useRestRef('users');
-  const pickMeRef                           = useRestRef('pick_me');
+  const selectRef                           = useComponentRef('users');
+  const pickMeRef                           = useComponentRef('pick_me');
 
   return [
     Ev.Controller({

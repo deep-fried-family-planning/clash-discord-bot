@@ -1,8 +1,9 @@
 import type {DialogName, HookId, ViewModifier, ViewName} from '#discord/context/context.ts';
-import type {Accessor} from '#discord/entities/hooks/use-dialog-ref.ts';
-import type {UseEffectHook} from '#discord/entities/hooks/use-effect.ts';
-import type {UseRestEmbedRef} from '#discord/entities/hooks/use-rest-embed-ref.ts';
-import type {RxRef} from '#discord/entities/hooks/use-rest-ref.ts';
+import type {UseComponentReducerAction, UseComponentReducerStore} from '#discord/hooks/use-component-reducer.ts';
+import type {RxRef} from '#discord/hooks/use-component-ref.ts';
+import type {Accessor} from '#discord/hooks/use-dialog-ref.ts';
+import type {UseEmbedRef} from '#discord/hooks/use-embed-ref.ts';
+import type {UseEffectHook} from '#discord/hooks/use-view-effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
 
@@ -11,11 +12,12 @@ export type Hooks = {
   states   : HookId[];
   effects  : UseEffectHook[];
   refs     : RxRef[];
-  embeds   : UseRestEmbedRef[];
+  embeds   : UseEmbedRef[];
   slices   : str[];
-  actions  : str[];
   views    : [ViewName, DialogName, ViewModifier];
   accessors: Accessor[];
+  reducers : UseComponentReducerStore[];
+  actions  : UseComponentReducerAction[];
 };
 
 
@@ -25,9 +27,10 @@ export const makeEmptyHooks = (): Hooks => ({
   refs     : [],
   embeds   : [],
   slices   : [],
-  actions  : [],
   views    : ['', '', ''],
   accessors: [],
+  reducers : [],
+  actions  : [],
 });
 
 

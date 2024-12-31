@@ -1,3 +1,4 @@
+import {IxService} from '#discord/context/ix-service.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
@@ -5,7 +6,7 @@ import {ixcRouter} from '#src/discord/ixc-router.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
@@ -94,15 +95,17 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
   // })),
   // Metric.trackDuration(execTime),
   // E.tap(() => g(function * () {
-  //     const value = yield * Metric.value(execTime);
+  //   const value = yield * Metric.value(execTime);
   //
-  //     yield * CSL.debug(execTime.name, value);
+  //   yield * CSL.debug(execTime.name, value);
   // })),
+  E.catchAllDefect(() => IxService.reset()),
 );
 
 
 const live = pipe(
   ClashCache.Live,
+  L.provideMerge(IxService.Live),
   L.provideMerge(MenuCache.Live),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
