@@ -1,9 +1,9 @@
-import {useState} from '#discord/hooks/use-state.ts';
-import {useViewEffect} from '#discord/hooks/use-view-effect.ts';
 import {g} from '#pure/effect';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import type {DUser} from '#src/dynamo/schema/discord-user.ts';
+import {useState} from '#src/internal/disreact/constants/hooks/use-state.ts';
+import {useViewEffect} from '#src/internal/disreact/constants/hooks/use-view-effect.ts';
 import type {und} from '#src/internal/pure/types-pure.ts';
 
 

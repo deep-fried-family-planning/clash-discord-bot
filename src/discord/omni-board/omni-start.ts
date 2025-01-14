@@ -1,7 +1,3 @@
-import {Button, ButtonRow, DangerButton, SuccessButton} from '#discord/entities/component-view.ts';
-import {TitleEmbed} from '#discord/entities/embed-view.ts';
-import {makeEntry} from '#discord/entities/node-view.ts';
-import {openView} from '#discord/hooks/use-view.ts';
 import {OmniClans} from '#src/discord/omni-board/clans/omni-clans.ts';
 import {OmniDeepFryer} from '#src/discord/omni-board/deepfryer/omni-deep-fryer.ts';
 import {OmniInfo} from '#src/discord/omni-board/info/omni-info.ts';
@@ -9,6 +5,10 @@ import {OmniLink} from '#src/discord/omni-board/link/omni-link.ts';
 import {NavButtons} from '#src/discord/omni-board/nav-buttons.ts';
 import {OmniRosters} from '#src/discord/omni-board/rosters/omni-rosters.ts';
 import {OmniServerConfig} from '#src/discord/omni-board/server-config/omni-server-config.ts';
+import {openView} from '#src/internal/disreact/constants/hooks/use-view.ts';
+import {_Button, ButtonRow, DangerButton, SuccessButton} from '#src/internal/disreact/entity/interface-component.ts';
+import {TitleEmbed} from '#src/internal/disreact/entity/interface-embed.ts';
+import {makeEntry} from '#src/internal/disreact/entity/node-view.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 
 
@@ -21,25 +21,25 @@ export const OmniStart = makeEntry('OmniBoard', () => {
       ),
     }),
     ButtonRow(
-      Button({
+      _Button({
         label  : 'Info',
         onClick: () => {
           openView(OmniInfo);
         },
       }),
-      Button({
+      _Button({
         label  : 'Clans',
         onClick: () => {
           openView(OmniClans);
         },
       }),
-      Button({
+      _Button({
         label  : 'Rosters',
         onClick: () => {
           openView(OmniRosters);
         },
       }),
-      Button({
+      _Button({
         label  : 'DeepFryer',
         onClick: () => {
           openView(OmniDeepFryer);

@@ -43,7 +43,7 @@ const api = E.gen(function * () {
       type: TxType.DEFERRED_UPDATE_MESSAGE,
     }),
 
-    openModal: (ix: IxD, res: Discord.InteractionCallbackModal) => discord.createInteractionResponse(ix.id, ix.token, {
+    openDialog: (ix: IxD, res: Discord.InteractionCallbackModal) => discord.createInteractionResponse(ix.id, ix.token, {
       type: TxType.MODAL,
       data: res,
     }),
@@ -76,7 +76,4 @@ export const DiscordLayerLive = pipe(
   L.provideMerge(DiscordRESTMemoryLive),
   L.provideMerge(NodeHttpClient.layerUndici),
   L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
-  L.provideMerge(L.setTracerTiming(true)),
-  L.provideMerge(L.setTracerEnabled(true)),
 );

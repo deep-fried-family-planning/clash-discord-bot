@@ -1,15 +1,13 @@
-import {ENTRY} from '#discord/constants/constants.ts';
-import {CxPath} from '#discord/entities/routing/cx-path.ts';
+import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {exampleDriver, exampleView} from '#src/discord/example.ts';
-import {v2driver} from '#src/discord/omni-board/omni-board-driver.ts';
-import {OmniStart} from '#src/discord/omni-board/omni-start.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
+import {Route} from '#src/internal/disreact/entity/index.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import {UI} from 'dfx';
+import {URL} from 'node:url';
 
 
 export const SMOKE = {
@@ -23,7 +21,8 @@ export const SMOKE = {
 
 
 /**
- * @desc [SLASH /smoke]
+ * @desc [SLASH
+ *   /smoke]
  */
 export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
   const [server, user] = yield * validateServer(data);
@@ -39,24 +38,31 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
       },
       title      : 'Dev',
       description: 'The one board to rule them all',
+      image      : {
+        url: new URL(`${DFFP_URL}${pipe(
+          Route.Simulated.empty(),
+          Route.setRoot('Starter'),
+          Route.encodeUrl,
+        )}`),
+      },
     }],
     components: UI.grid([
       [UI.button({
         label    : 'Dev Mode',
-        custom_id: CxPath.build({
-          ...CxPath.empty(),
-          root: exampleDriver.name,
-          view: exampleView.name,
-          mod : ENTRY,
-        }),
+        custom_id: pipe(
+          Route.Component.empty(),
+          Route.setRow('0'),
+          Route.setCol('0'),
+          Route.encode,
+        ),
       }), UI.button({
         label    : 'V2 Omni Board Test',
-        custom_id: CxPath.build({
-          ...CxPath.empty(),
-          root: v2driver.name,
-          view: OmniStart.name,
-          mod : ENTRY,
-        }),
+        custom_id: pipe(
+          Route.Component.empty(),
+          Route.setRow('0'),
+          Route.setCol('1'),
+          Route.encode,
+        ),
       })],
     ]),
   };

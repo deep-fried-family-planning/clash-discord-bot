@@ -1,19 +1,16 @@
-import {makeDriver} from '#discord/context/model-driver.ts';
-import {Cv, Ev} from '#discord/entities';
-import {ParagraphText, ShortText} from '#discord/entities/component-view.ts';
-import {DialogHeader, makeDialog, makeMessage} from '#discord/entities/node-view.ts';
-import {useComponentRef} from '#discord/hooks/use-component-ref.ts';
-import {useDialogRef} from '#discord/hooks/use-dialog-ref.ts';
-import {useRestEmbedRef} from '#discord/hooks/use-embed-ref.ts';
-import {useState} from '#discord/hooks/use-state.ts';
-import {useDialogView, useMessageView} from '#discord/hooks/use-view.ts';
-import {g} from '#pure/effect';
+import {openDialog, useDialogView, useMessageView} from '#src/internal/disreact/constants/hooks/use-view.ts';
+import {useRefComponent, useRefDialog, useRefEmbed, useState} from '#src/internal/disreact/context/hooks/interface.ts';
+import {makeDriver} from '#src/internal/disreact/context/old/model-driver.ts';
+import {ParagraphText, ShortText} from '#src/internal/disreact/entity/interface-component.ts';
+import {Controller} from '#src/internal/disreact/entity/interface-embed.ts';
+import {DialogHeader, makeDialog, makeMessage} from '#src/internal/disreact/entity/node-view.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import console from 'node:console';
+import {Cv, Ev} from 'src/internal/disreact/entity';
 
 
-const useEmbedEditorDescription = useDialogRef(
-  'embed.description',
+const useEmbedEditorDescription = useRefDialog(
+  // 'embed.description',
   (embed) => {
     return {value: embed.description!};
   },
@@ -58,15 +55,14 @@ const ExampleDialog = () => {
 
 
 const Example = () => {
-  const [clickCount, setClickCount]         = useState('click', 0);
-  const [isResetDisabled, setResetDisabled] = useState('reset', true);
-  const openDialog                          = useDialogView();
-  const [clickedEmbedRef, setClickedEmbed]  = useRestEmbedRef('clicked');
-  const selectRef                           = useComponentRef('users');
-  const pickMeRef                           = useComponentRef('pick_me');
+  const [clickCount, setClickCount]         = useState(0);
+  const [isResetDisabled, setResetDisabled] = useState(true);
+  const clickedEmbedRef  = useRefEmbed();
+  const selectRef                           = useRefComponent();
+  const pickMeRef                           = useRefComponent();
 
   return [
-    Ev.Controller({
+    Controller({
       description: clickCount === 2 ? 'click reset' : 'init',
     }),
     EmbedEditor({
@@ -78,32 +74,35 @@ const Example = () => {
       description: `clicked ${clickCount}`,
     }),
     Cv.Row(
-      Cv.Button({
+      Cv._Button({
         label   : `clicked ${clickCount}`,
         disabled: !isResetDisabled,
-        onClick : () => g(function * () {
+        onClick : () =>  {
           setClickCount(clickCount + 1);
-          setClickedEmbed({description: `clicked ${clickCount + 1}`});
+          // setClickedEmbed({description: `clicked ${clickCount + 1}`});
+
+          if (clickCount >= 1) {
+            setResetDisabled(false);
+          }
 
           if (clickCount >= 2) {
-            setResetDisabled(false);
             openDialog(exampleDialog.name);
           }
-        }),
+        },
       }),
     ),
     Cv.Row(
-      Cv.Button({
+      Cv._Button({
         label   : `reset`,
         disabled: isResetDisabled,
         onClick : () => {
-          setClickCount(1);
+          setClickCount(0);
           setResetDisabled(true);
           // openView(exampleView2.name);
         },
       }),
     ),
-    Cv.Select({
+    Cv._Select({
       ref        : pickMeRef,
       placeholder: 'Pick ME Choose ME Love ME',
       options    : [
@@ -121,10 +120,9 @@ const Example = () => {
         },
       ],
       onClick: (values) => {
-        console.log('Select', values);
       },
     }),
-    Cv.User({
+    Cv._User({
       ref        : selectRef,
       placeholder: 'Pick ME Choose ME Love ME',
       onClick    : (values) => {
@@ -136,8 +134,8 @@ const Example = () => {
 
 
 const Example2 = () => {
-  const [clickCount, setClickCount]         = useState('click', 0);
-  const [isResetDisabled, setResetDisabled] = useState('reset', true);
+  const [clickCount, setClickCount]         = useState(0);
+  const [isResetDisabled, setResetDisabled] = useState(true);
   const openDialog                          = useDialogView();
 
   return [
@@ -145,7 +143,7 @@ const Example2 = () => {
       description: clickCount === 2 ? 'click reset' : 'init',
     }),
     Cv.Row(
-      Cv.Button({
+      Cv._Button({
         label   : `example2: clicked ${clickCount}`,
         disabled: !isResetDisabled,
         onClick : () => {
@@ -159,7 +157,7 @@ const Example2 = () => {
       }),
     ),
     Cv.Row(
-      Cv.Button({
+      Cv._Button({
         label   : `reset`,
         disabled: isResetDisabled,
         onClick : () => {

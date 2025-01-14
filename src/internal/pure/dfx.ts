@@ -4,6 +4,7 @@ import {Discord} from 'dfx';
 
 export type RestEmbed = Discord.Embed;
 export type RestMessage = Discord.Message;
+export type RestDialog = Discord.InteractionCallbackModal;
 
 
 export type RestIx = Discord.Interaction;
@@ -35,7 +36,7 @@ export type ManagedSelectEvent = {
 
 
 export type RestRow = Discord.ActionRow;
-export type RestComponent = Discord.Component;
+export type RestComponent = Discord.Component & {custom_id?: str};
 export type RestButton = Discord.Button;
 export type RestText = Discord.TextInput;
 export type RestStringSelect = Discord.SelectMenu;
@@ -55,11 +56,15 @@ export type OptMention = opt<RestMentionableSelect>;
 export type OptText = opt<RestText>;
 
 
+export type RxType = typeof Discord.InteractionType;
 export const RxType = Discord.InteractionType;
+export type TxType = typeof Discord.InteractionCallbackType;
 export const TxType = Discord.InteractionCallbackType;
+export type TxFlag = typeof Discord.MessageFlag;
 export const TxFlag = Discord.MessageFlag;
 
 
+export type TypeC = typeof Discord.ComponentType;
 export const TypeC  = Discord.ComponentType;
 export const StyleB = Discord.ButtonStyle;
 export const StyleT = Discord.TextInputStyle;

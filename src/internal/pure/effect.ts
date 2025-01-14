@@ -38,6 +38,7 @@ export {
   pipe as p,
   flow,
   flow as f,
+  absurd,
 
 } from 'effect';
 

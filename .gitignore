@@ -1,6 +1,6 @@
 .code
 .DS_store
-.idea
+.pnpm
 .husky/_
 .terraform
 dist

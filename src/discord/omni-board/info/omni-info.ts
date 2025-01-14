@@ -1,14 +1,14 @@
-import {SingleSelect} from '#discord/entities/component-view.ts';
-import {BasicEmbed, TitleEmbed} from '#discord/entities/embed-view.ts';
-import {setValueSelected} from '#discord/entities/helpers.ts';
-import {makeMessage} from '#discord/entities/node-view.ts';
-import {useComponentReducer} from '#discord/hooks/use-component-reducer.ts';
-import {useRestEmbedRef} from '#discord/hooks/use-embed-ref.ts';
 import {g} from '#pure/effect';
 import {SELECT_INFO_KIND} from '#src/constants/ix-constants.ts';
 import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
 import {NavButtons} from '#src/discord/omni-board/nav-buttons.ts';
 import {OmniStart} from '#src/discord/omni-board/omni-start.ts';
+import {useComponentReducer} from '#src/internal/disreact/constants/hooks/use-component-reducer.ts';
+import {useRestEmbedRef} from '#src/internal/disreact/constants/hooks/use-ref-embed.ts';
+import {setValueSelected} from '#src/internal/disreact/entity/helpers.ts';
+import {SingleSelect} from '#src/internal/disreact/entity/interface-component.ts';
+import {BasicEmbed, TitleEmbed} from '#src/internal/disreact/entity/interface-embed.ts';
+import {makeMessage} from '#src/internal/disreact/entity/node-view.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
