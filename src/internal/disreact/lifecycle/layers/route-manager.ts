@@ -12,6 +12,7 @@ const makeEmptyParams = () => ({
   pipe_id: NONE,
   curr_id: NONE,
   prev_id: NONE,
+  defer  : NONE,
 });
 
 const makeEmptySearch = () => new URLSearchParams();
@@ -32,18 +33,25 @@ const implementation = (baseUrl: str) => E.gen(function * () {
 
   let original = {} as Ix.Rest;
 
+  const semaphore = yield * E.makeSemaphore(1);
+  const mutex     = semaphore.withPermits(1);
+
   return {
-    allocate: (rest: Ix.Rest) => {
-      params = makeEmptyParams();
-      search = makeEmptySearch();
+    allocate: (rest: Ix.Rest) => mutex(E.sync(() => {
+      params   = makeEmptyParams();
+      search   = makeEmptySearch();
       original = rest;
-    },
-    rest      : () => original,
-    getBaseUrl: () => baseUrl,
-    getParams : () => ({...params}),
-    getSearch : () => new URLSearchParams(search),
-    getRouter : () => router,
-    setParams : (next: opt<typeof params>) => {
+    })),
+
+    rest: () => mutex(E.succeed(original)),
+
+    getParams: () => mutex(E.succeed({...params})),
+
+    getSearch: () => mutex(E.succeed(new URLSearchParams(search))),
+
+    getRouter: () => mutex(E.succeed(router)),
+
+    setParams: (next: opt<typeof params>) => mutex(E.sync(() => {
       for (const [k, v] of Object.entries(next)) {
         if (!v) {
           params[k as keyof typeof params] = NONE;
@@ -52,8 +60,11 @@ const implementation = (baseUrl: str) => E.gen(function * () {
           params[k as keyof typeof params] = v;
         }
       }
-    },
-    setSearch: (next?: typeof search) => {search = next ?? search},
+    })),
+
+    setSearch: (next?: typeof search) => mutex(E.sync(() => {
+      search = next ?? search;
+    })),
   };
 });
 

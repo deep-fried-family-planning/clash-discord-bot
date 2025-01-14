@@ -1,6 +1,5 @@
 import {Ar, Arr, pipe} from '#pure/effect';
-import {Cv, Ev, VDialog, VMessage} from '#src/internal/disreact/entity/index.ts';
-import {Tx} from '#src/internal/disreact/entity/types/index.ts';
+import {Cv, Ev, Tx, VDialog, VMessage} from '#src/internal/disreact/entity/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

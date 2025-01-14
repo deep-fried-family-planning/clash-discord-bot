@@ -1,7 +1,7 @@
 import {g, pipe} from '#pure/effect';
-import {Ix, VDialog, VEvent, VMessage} from '#src/internal/disreact/entity/index.ts';
-import {MemoryStore} from '#src/internal/disreact/main/layers/memory-store.ts';
-import {RouteManager} from '#src/internal/disreact/main/layers/route-manager.ts';
+import {Cd, Ed, Ix, VDialog, VEvent, VMessage} from '#src/internal/disreact/entity/index.ts';
+import {MemoryStore} from '#src/internal/disreact/lifecycle/layers/memory-store.ts';
+import {RouteManager} from '#src/internal/disreact/lifecycle/layers/route-manager.ts';
 
 
 export type T = {
@@ -42,7 +42,10 @@ export const makeFromRest = g(function * () {
     return pipe(
       makeEmpty(),
       attachElement(dialog),
-      attachElement(message),
+      attachElement(VMessage.make(
+        Ed.decodeGrid(message.embeds),
+        Cd.decodeGrid(message.components),
+      )),
     );
   }
 

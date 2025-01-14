@@ -1,3 +1,4 @@
+import type {D} from '#pure/effect';
 import {Kv, pipe} from '#pure/effect';
 import type {Cd} from '#src/internal/disreact/entity/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -13,7 +14,7 @@ export type DataSpec = {
 export const makeSlice = <
   Sg extends {ope: ''},
   Spec extends { [k in str]: {type: Cd.T['_tag']} },
-  Data extends { [k in keyof Spec]: Cd.E[Spec[k]['type']] },
+  Data extends { [k in keyof Spec]: D.TaggedEnum.Value<Cd.T, Spec[k]['type']>},
   Reducers extends &
     { [k in 'init']: (sg: Sg, sxc: Data) => AnyE<Data> }
     & { [k in str]: (sg: Sg, sxc: Data) => AnyE<Data> },

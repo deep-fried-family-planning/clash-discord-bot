@@ -115,6 +115,42 @@ export const setQuery = (query: URLSearchParams) => match({
 });
 
 
+export const getDefer = match({
+  Simulated: (self) => NONE,
+  Immediate: (self) => NONE,
+  Direct   : (self) => self.params.defer,
+  Component: (self) => NONE,
+  Embed    : (self) => NONE,
+});
+
+
+export const setDefer = (defer: str) => match({
+  Simulated: (self) => self,
+  Immediate: (self) => self,
+  Direct   : (self) => ((self.params.defer = defer) && self) || self,
+  Component: (self) => self,
+  Embed    : (self) => self,
+});
+
+
+export const getPipe = match({
+  Simulated: (self) => self.params.pipe_id,
+  Immediate: (self) => self.params.pipe_id,
+  Direct   : (self) => self.params.pipe_id,
+  Component: (self) => NONE,
+  Embed    : (self) => NONE,
+});
+
+
+export const setPipe = (pipe_id: str) => match({
+  Simulated: (self) => ((self.params.pipe_id = pipe_id) && self) || self,
+  Immediate: (self) => ((self.params.pipe_id = pipe_id) && self) || self,
+  Direct   : (self) => ((self.params.pipe_id = pipe_id) && self) || self,
+  Component: (self) => self,
+  Embed    : (self) => self,
+});
+
+
 export const getRoot = match({
   Simulated: (self) => self.params.root_id,
   Immediate: (self) => self.params.root_id,

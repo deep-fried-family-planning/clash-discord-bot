@@ -1,4 +1,5 @@
-import {DevComponent, DevEmbed, DevHook, DevNode} from '#src/internal/disreact/developer-interface/index.ts';
+import {createEffect} from '#src/internal/disreact/disreact.ts';
+import {DevComponent, DevEmbed, DevHook, DevNode} from '#src/internal/disreact/entity/index.ts';
 
 
 export const Entrypoint = DevNode.makeEntrypoint;
@@ -21,3 +22,6 @@ export const useRestState       = DevHook.makeUseRestState;
 export const useReducer         = DevHook.makeUseReducer;
 export const useDialogRestState = DevHook.makeUseDialogRestState;
 export const useRoute           = DevHook.makeUseRoute;
+
+
+export const createDisReactEffect = createEffect;

@@ -1,7 +1,11 @@
 import {TxFlag, TxType} from '#pure/dfx';
 import {D} from '#pure/effect';
 import type {obj, str} from '#src/internal/pure/types-pure.ts';
-import type {InteractionCallbackModal} from 'dfx/types';
+import type {InteractionCallbackMessage, InteractionCallbackModal} from 'dfx/types';
+
+
+export type Dialog = InteractionCallbackModal;
+export type Message = InteractionCallbackMessage;
 
 
 export type Defer = D.TaggedEnum<{
@@ -15,7 +19,7 @@ export type Defer = D.TaggedEnum<{
 
 
 const defer                  = D.taggedEnum<Defer>();
-export const None            = defer.none();
+export const None            = defer.none() as Defer;
 export const Public          = defer.public({type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
 export const PublicUpdate    = defer.public_update({type: TxType.DEFERRED_UPDATE_MESSAGE});
 export const Private         = defer.private({type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, flags: TxFlag.EPHEMERAL});
@@ -42,7 +46,12 @@ const lookup = {
 };
 
 
-export const decode = (tx: str) => lookup[tx as keyof typeof lookup];
+export const decode = (tx: str) => {
+  if (tx in lookup) {
+    return lookup[tx as keyof typeof lookup];
+  }
+  return None;
+};
 
 
 export const encode = defer.$match({

@@ -1,8 +1,9 @@
-import {g} from '#pure/effect';
-import {Cd, Ed, Ix} from '#src/internal/disreact/entity/index.ts';
-import {Tx} from '#src/internal/disreact/entity/types/index.ts';
-import {RouteManager} from '#src/internal/disreact/main/layers/route-manager.ts';
-import type {num} from '#src/internal/pure/types-pure.ts';
+import type {RestMessage} from '#pure/dfx';
+import {g, pipe} from '#pure/effect';
+import type {Route} from '#src/internal/disreact/entity/index.ts';
+import {Cd, Ed, Ix, Tx} from '#src/internal/disreact/entity/index.ts';
+import {RouteManager} from '#src/internal/disreact/lifecycle/layers/route-manager.ts';
+import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
 
 
 type Em = Ed.T;
@@ -11,6 +12,9 @@ type Cm = Cd.T;
 
 export type T = {
   _tag      : 'Message';
+  root_id?  : str;
+  node_id?  : str;
+  isEmpty?  : bool;
   embeds    : Ed.T[];
   components: Cd.T[][];
   defer     : Tx.Defer;
@@ -19,6 +23,7 @@ export type T = {
 
 export const makeEmpty = (): T => ({
   _tag      : 'Message',
+  isEmpty   : true,
   embeds    : [],
   components: [],
   defer     : Tx.None,
@@ -49,6 +54,24 @@ export const makeFromRest = g(function * () {
 
   return makeEmpty();
 });
+
+
+export const encodeForRestOrMemory = (route: Route.T) => (message: T) => {
+  const [controller, ...embeds] = message.embeds;
+
+  const routedController = pipe(
+    controller,
+    Ed.setRoute(route),
+  );
+
+  const encodedController = Ed.encode(routedController, 0);
+  const encodedEmbeds = embeds.map((embed, row) => Ed.encode(embed, row + 1));
+
+  return {
+    embeds    : [encodedController, ...encodedEmbeds],
+    components: Cd.encodeGrid(message.components),
+  } as RestMessage;
+};
 
 
 export const identity = (message: unknown) => message as T;

@@ -50,7 +50,7 @@ export const getController = (ed: T[]) => {
 
 export const getRoute = (ed: T) => ed.route;
 export const setRoute = (
-  route: Route.Simulated | Route.Immediate,
+  route: Route.T,
 ) => match({
   Controller  : (ed) => (((ed as mut<Controller>).route = route) && ed) || ed,
   DialogLinked: (ed) => cannot(ed),
@@ -109,7 +109,7 @@ export const decodeGrid = (rest: RestEmbed[] = []) => rest.map(decode);
 
 
 export const encode = (ex: T, row: num) => {
-  if (!ex.route) throw new Failure.Critical();
+  if (!ex.route) throw new Failure.Critical({why: 'route is not set'});
 
   const route = pipe(
     ex.route,

@@ -1,14 +1,17 @@
-import {g} from '#pure/effect';
+import {g, pipe} from '#pure/effect';
 import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import {Cd, Ix} from '#src/internal/disreact/entity/index.ts';
-import {Tx} from '#src/internal/disreact/entity/types/index.ts';
-import {RouteManager} from '#src/internal/disreact/main/layers/route-manager.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Route} from '#src/internal/disreact/entity/index.ts';
+import {Cd, Ix, Tx} from '#src/internal/disreact/entity/index.ts';
+import {RouteManager} from '#src/internal/disreact/lifecycle/layers/route-manager.ts';
+import type {bool, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
 
 
 export type T = {
   _tag      : 'Dialog';
+  isEmpty?  : bool;
+  root_id?  : str;
+  node_id?  : str;
   onOpen?   : () => void | AnyE<void>;
   onSubmit? : () => void | AnyE<void>;
   custom_id : str;
@@ -20,7 +23,7 @@ export type T = {
 
 export const makeEmpty = (): T => ({
   _tag      : 'Dialog',
-  onOpen    : () => {},
+  isEmpty   : true,
   custom_id : '',
   title     : '',
   components: [],
@@ -34,15 +37,15 @@ export const make = (
   onOpen: () => void | AnyE<void> = () => {},
   onSubmit: () => void | AnyE<void> = () => {},
   custom_id: str = '',
+  defer: Tx.Defer = Tx.OpenDialog,
 ): T => ({
   _tag: 'Dialog',
-
   title,
   components,
   onOpen,
   onSubmit,
   custom_id,
-  defer: Tx.OpenDialog,
+  defer,
 });
 
 
@@ -64,3 +67,12 @@ export const makeFromRest = g(function * () {
 
   return makeEmpty();
 });
+
+
+export const encodeToRestOrMemory = (route: Route.T) => (dialog: T) => {
+  return {
+    custom_id: pipe(
+
+    ),
+  } as Tx.Dialog;
+};

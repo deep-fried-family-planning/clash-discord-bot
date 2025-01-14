@@ -3,7 +3,7 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {createEffectfulDisReact} from '#src/internal/disreact/disreact.ts';
+import {createDisReactEffect} from '#src/internal/disreact/index.ts';
 import {Starter} from '#src/internal/disreact/initializer.ts';
 import {DT, E, g, L, Logger, LogLevel, pipe} from '#src/internal/pure/effect.ts';
 import {IxRouter} from '#src/shared.ts';
@@ -14,14 +14,14 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {Ix} from 'src/internal/disreact/entity';
 
 
-const disreact = createEffectfulDisReact(
+const disreact = createDisReactEffect(
   {Starter},
 );
 
 
 const menu = (ix: Ix.Rest) => pipe(
   g(function * () {
-    yield * disreact.respond(ix);
+    yield * disreact.interact(ix);
   }),
   E.catchAll((e) => E.log('[catchAll]', e)),
   E.catchAllDefect((e) => E.log('[catchAllDefect]', e)),

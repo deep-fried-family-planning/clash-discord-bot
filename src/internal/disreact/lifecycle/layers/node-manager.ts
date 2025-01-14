@@ -25,10 +25,13 @@ const implementation = (
     );
   }
 
+  const semaphore = yield * E.makeSemaphore(1);
+  const mutex     = semaphore.withPermits(1);
+
   yield * E.logDebug('[Router]', inspect(roots, true, null, true));
 
   return {
-    getNode: (root: str, node: str) => g(function * () {
+    getNode: (root: str, node: str) => mutex(g(function * () {
       if (!(root in roots)) {
         return yield * new Err.NodeNotFound();
       }
@@ -42,7 +45,7 @@ const implementation = (
       }
 
       return roots[root];
-    }),
+    })),
   };
 });
 

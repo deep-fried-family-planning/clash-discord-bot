@@ -6,17 +6,28 @@ import * as Err from '#src/internal/disreact/entity/error.ts';
 import * as Failure from '#src/internal/disreact/entity/failure.ts';
 import * as Hook from '#src/internal/disreact/entity/hook.ts';
 import * as Ix from '#src/internal/disreact/entity/interaction.ts';
+
+
 import * as Cv from '#src/internal/disreact/entity/interface-component.ts';
+import * as DevComponent from '#src/internal/disreact/entity/interface-component.ts';
 import * as Ev from '#src/internal/disreact/entity/interface-embed.ts';
-import * as LifeCycle from '#src/internal/disreact/entity/lifecycle.ts';
+import * as DevEmbed from '#src/internal/disreact/entity/interface-embed.ts';
+import * as DevHook from '#src/internal/disreact/entity/interface-hook.ts';
+import * as DevNode from '#src/internal/disreact/entity/interface-node.ts';
+
+
 import * as Node from '#src/internal/disreact/entity/node.ts';
 import * as Pipeline from '#src/internal/disreact/entity/pipeline.ts';
 import * as Root from '#src/internal/disreact/entity/root.ts';
 import * as Route from '#src/internal/disreact/entity/route.ts';
 import * as Tx from '#src/internal/disreact/entity/tx.ts';
+
+
 import * as UnsafeCall from '#src/internal/disreact/entity/unsafe-call.ts';
 import * as UnsafeHook from '#src/internal/disreact/entity/unsafe-hook.ts';
 import * as Unsafe from '#src/internal/disreact/entity/unsafe.ts';
+
+
 import * as VDialog from '#src/internal/disreact/entity/vdialog.ts';
 import * as VDocument from '#src/internal/disreact/entity/vdocument.ts';
 import * as VEvent from '#src/internal/disreact/entity/vevent.ts';
@@ -28,7 +39,6 @@ export {
   Ev,
   Cv,
   Constants,
-  LifeCycle,
   Cd,
   Ed,
   Ix,
@@ -47,4 +57,8 @@ export {
   UnsafeCall,
   UnsafeHook,
   Unsafe,
+  DevComponent,
+  DevEmbed,
+  DevHook,
+  DevNode,
 };

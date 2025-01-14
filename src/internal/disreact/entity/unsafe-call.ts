@@ -1,15 +1,12 @@
 import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import type {Hook} from '#src/internal/disreact/entity/index.ts';
-import { Unsafe} from '#src/internal/disreact/entity/index.ts';
-import {Tx} from '#src/internal/disreact/entity/types/index.ts';
-import console from 'node:console';
+import {type Hook, Tx, Unsafe} from '#src/internal/disreact/entity/index.ts';
 
 
 let call_count = 0,
     calls      = [] as Hook.UpdateCall[],
     next_node  = '',
     next_close = false,
-    next_defer = Tx.None as Tx.Defer;
+    next_defer = Tx.None;
 
 
 export const getCount = () => call_count;

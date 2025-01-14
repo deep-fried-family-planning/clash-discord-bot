@@ -4,16 +4,19 @@ import type {EA} from '#src/internal/types.ts';
 
 const implementation = E.gen(function * () {
   let permits = 1;
-  const mutex = yield * E.makeSemaphore(permits);
+  const semaphore = yield * E.makeSemaphore(permits);
+  const mutex = semaphore.withPermits(1);
 
   return {
-    permits: () => permits,
+    safelyRun: () => <A, E, R>(self: E.Effect<A, E, R>) => mutex(self),
+
     acquire: () => g(function * () {
-      yield * mutex.take(1);
+      yield * semaphore.take(1);
       permits--;
     }),
+
     release: () => g(function * () {
-      yield * mutex.release(1);
+      yield * semaphore.release(1);
       permits++;
     }),
   };
@@ -25,4 +28,9 @@ export class MutexBroker extends E.Tag('MutexManager')<
   EA<typeof implementation>
 >() {
   static singletonLayer = L.effect(this, implementation);
+
+  static fiberSafe = <A, E, R>(self: E.Effect<A, E, R>) => g(function * () {
+    const runner = yield * MutexBroker.safelyRun();
+    return yield * runner(self);
+  });
 }

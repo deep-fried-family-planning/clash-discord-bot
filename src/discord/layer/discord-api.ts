@@ -1,6 +1,6 @@
 import {TxFlag, TxType} from '#pure/dfx';
 import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord.ts';
-import {E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import type {ResponseError} from '@effect/platform/HttpClientError';
@@ -19,6 +19,7 @@ const api = E.gen(function * () {
 
   return {
     ...discord,
+
 
     executeWebhookJson: (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
       ...p[3],

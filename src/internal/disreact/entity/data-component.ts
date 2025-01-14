@@ -1,6 +1,7 @@
 import {type OptButton, type RestButton, type RestChannelSelect, type RestComponent, type RestDataComponent, type RestDataResolved, type RestMentionableSelect, type RestRoleSelect, type RestRow, type RestStringSelect, type RestText, type RestUserSelect, StyleB, StyleT, TypeC} from '#pure/dfx';
-import {D, flow, pipe} from '#pure/effect';
+import {D, pipe} from '#pure/effect';
 import type {snow} from '#src/discord/types.ts';
+import {NONE} from '#src/internal/disreact/entity/constants.ts';
 import type {Auth} from '#src/internal/disreact/entity/index.ts';
 import {Route} from '#src/internal/disreact/entity/index.ts';
 import {getRef} from '#src/internal/disreact/entity/route.ts';
@@ -142,9 +143,12 @@ export const encodeGrid = (grid: T[][]) => grid.map((row, rowIdx) => ({
   type      : TypeC.ACTION_ROW,
   components: row.map((cx, colIdx) => pipe(
     cx,
-    Route.updateRouted(flow(
+    Route.setRouted(pipe(
+      Route.Component.empty(),
+      Route.setRef(cx.ref ?? NONE),
       Route.setRow(rowIdx),
       Route.setCol(colIdx),
+      Route.setMod(cx.mod ?? NONE),
     )),
     encode,
   )),
