@@ -1,13 +1,11 @@
-import {DFFP_URL} from '#src/constants/dffp-alias.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
+import {IxRoot} from '#src/discord/ix-root.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {Route} from '#src/internal/disreact/entity/index.ts';
+import {Starter} from '#src/internal/disreact/initializer.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {UI} from 'dfx';
-import {URL} from 'node:url';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 export const SMOKE = {
@@ -31,39 +29,41 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
     return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
   }
 
-  return {
-    embeds: [{
-      author: {
-        name: 'Dev Omni',
-      },
-      title      : 'Dev',
-      description: 'The one board to rule them all',
-      image      : {
-        url: new URL(`${DFFP_URL}${pipe(
-          Route.Simulated.empty(),
-          Route.setRoot('Starter'),
-          Route.encodeUrl,
-        )}`),
-      },
-    }],
-    components: UI.grid([
-      [UI.button({
-        label    : 'Dev Mode',
-        custom_id: pipe(
-          Route.Component.empty(),
-          Route.setRow('0'),
-          Route.setCol('0'),
-          Route.encode,
-        ),
-      }), UI.button({
-        label    : 'V2 Omni Board Test',
-        custom_id: pipe(
-          Route.Component.empty(),
-          Route.setRow('0'),
-          Route.setCol('1'),
-          Route.encode,
-        ),
-      })],
-    ]),
-  };
+  // return {
+  //   embeds: [{
+  //     author: {
+  //       name: 'Dev Omni',
+  //     },
+  //     title      : 'Dev',
+  //     description: 'The one board to rule them all',
+  //     image      : {
+  //       url: new URL(`${DFFP_URL}${pipe(
+  //         Route.Simulated.empty(),
+  //         Route.setRoot('Starter'),
+  //         Route.encodeUrl,
+  //       )}`),
+  //     },
+  //   }],
+  //   components: UI.grid([
+  //     [UI.button({
+  //       label    : 'Dev Mode',
+  //       custom_id: pipe(
+  //         Route.Component.empty(),
+  //         Route.setRow('0'),
+  //         Route.setCol('0'),
+  //         Route.encode,
+  //       ),
+  //     }), UI.button({
+  //       label    : 'V2 Omni Board Test',
+  //       custom_id: pipe(
+  //         Route.Component.empty(),
+  //         Route.setRow('0'),
+  //         Route.setCol('1'),
+  //         Route.encode,
+  //       ),
+  //     })],
+  //   ]),
+  // };
+
+  return yield * IxRoot.synthesize({Starter});
 });

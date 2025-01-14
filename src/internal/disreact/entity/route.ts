@@ -71,7 +71,7 @@ export type Embed = D.TaggedEnum.Value<T, 'Embed'>;
 const T                  = D.taggedEnum<T>();
 const is                 = T.$is;
 export const match       = T.$match;
-const _Simulated         = '/s/:pipe_id/:root_id/:node_id/:prev_id/:mod';
+const _Simulated         = '/s/:pipe_id/:root_id/:node_id/:prev_id/:mod/:active/:token';
 const _Immediate         = '/i/:pipe_id/:root_id/:node_id/:prev_id/:mod';
 const _Direct            = '/d/:pipe_id/:root_id/:node_id/:prev_id/:defer/:ref/:row/:col/:mod';
 const _Component         = '/c/:ref/:row/:col/:mod';
@@ -106,7 +106,7 @@ const all = [
 ] as const;
 
 
-export const setQuery = (query: URLSearchParams) => match({
+export const setSearch = (query: URLSearchParams) => match({
   Simulated: (dr) => (((dr as Mutable<typeof dr>).query = query) && dr) || dr,
   Immediate: (dr) => (((dr as Mutable<typeof dr>).query = query) && dr) || dr,
   Direct   : (dr) => cannot(dr),
@@ -119,6 +119,42 @@ export const getDefer = match({
   Simulated: (self) => NONE,
   Immediate: (self) => NONE,
   Direct   : (self) => self.params.defer,
+  Component: (self) => NONE,
+  Embed    : (self) => NONE,
+});
+
+
+export const setActive = (active: num) => match({
+  Simulated: (self) => ((self.params.active = Math.trunc(active).toString()) && self) || self,
+  Immediate: (self) => NONE,
+  Direct   : (self) => NONE,
+  Component: (self) => NONE,
+  Embed    : (self) => NONE,
+});
+
+
+export const getActive = match({
+  Simulated: (self) => parseInt(self.params.active),
+  Immediate: (self) => 0,
+  Direct   : (self) => 0,
+  Component: (self) => 0,
+  Embed    : (self) => 0,
+});
+
+
+export const setToken = (token: str) => match({
+  Simulated: (self) => ((self.params.token = token) && self) || self,
+  Immediate: (self) => NONE,
+  Direct   : (self) => NONE,
+  Component: (self) => NONE,
+  Embed    : (self) => NONE,
+});
+
+
+export const getToken = match({
+  Simulated: (self) => self.params.token,
+  Immediate: (self) => NONE,
+  Direct   : (self) => NONE,
   Component: (self) => NONE,
   Embed    : (self) => NONE,
 });
@@ -308,7 +344,7 @@ export const decodeFromControllerEmbed = (ix: Ix.Rest) => {
 
   return pipe(
     maybe,
-    setQuery(url.searchParams),
+    setSearch(url.searchParams),
   ) as Simulated | Immediate | Direct;
 };
 

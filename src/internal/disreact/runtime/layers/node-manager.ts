@@ -4,7 +4,6 @@ import {Err, Root} from '#src/internal/disreact/entity/index.ts';
 import type {KeyNamedRoots} from '#src/internal/disreact/entity/root.ts';
 import type {rec, str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
-import {inspect} from 'node:util';
 
 
 const implementation = (
@@ -28,15 +27,14 @@ const implementation = (
   const semaphore = yield * E.makeSemaphore(1);
   const mutex     = semaphore.withPermits(1);
 
-  yield * E.logDebug('[Router]', inspect(roots, true, null, true));
-
   return {
     getNode: (root: str, node: str) => mutex(g(function * () {
       if (!(root in roots)) {
         return yield * new Err.NodeNotFound();
       }
 
-      if (node === NONE) {
+      if (node === NONE || root === node) {
+        yield * E.logTrace(`root ${root} ${node}`);
         return roots[root];
       }
 
@@ -44,7 +42,8 @@ const implementation = (
         return yield * new Err.NodeNotFound();
       }
 
-      return roots[root];
+      yield * E.logTrace(`child ${root} ${node}`);
+      return roots[root].children[node];
     })),
   };
 });

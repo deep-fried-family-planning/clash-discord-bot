@@ -83,7 +83,7 @@ export const decode = (rest: RestEmbed, row: num) => {
   const embedRoute = pipe(
     route,
     Route.setRow(row),
-    Route.setQuery(url.searchParams),
+    Route.setSearch(url.searchParams),
     Route.Embed.identity,
   );
 

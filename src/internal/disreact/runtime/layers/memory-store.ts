@@ -4,6 +4,7 @@ import {type Auth, type Ix, VDocument, type VEvent} from '#src/internal/disreact
 import type {rec, str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Cache} from 'effect';
 
 
 const implementation = () => E.gen(function * () {
@@ -14,19 +15,44 @@ const implementation = () => E.gen(function * () {
   let curr   = VDocument.makeEmpty();
   let events = [] as VEvent.VEvent[];
 
+  const ids_tokens = {} as rec<str>;
+
   const semaphore = yield * E.makeSemaphore(1);
   const mutex     = semaphore.withPermits(1);
 
+
+  const interactions = yield * Cache.make({
+    capacity  : 1000,
+    timeToLive: '12 minutes',
+    lookup    : () => E.succeed(),
+  });
+
+
   return {
-    allocate: (ix: Ix.Rest) => mutex(E.sync(() => {
-      interaction = ix;
-      rest        = VDocument.makeEmpty();
-      curr        = VDocument.makeEmpty();
-      events      = [];
+    allocate: (ix: Ix.Rest) => (E.gen(function * () {
+      interaction       = ix;
+      rest              = VDocument.makeEmpty();
+      curr              = VDocument.makeEmpty();
+      events            = [];
+      ids_tokens[ix.id] = ix.token;
+
+      // const key = { pk: `ix-${ix.id}`, sk: `ix`, }; const ttl = yield * pipe( DT.now, E.map(DT.addDuration('5 minutes')), E.map(DT.toEpochMillis), );  yield * E.fork(DynamoDBDocument.put({ TableName: process.env.DDB_OPERATIONS, Item     : { ...key, type : 'DiscordIx', token: ix.token, ttl  : ttl, }, }));
     })),
 
-    update: (fn: (v: VDocument.T) => VDocument.T) => mutex(E.sync(() => {
+    getIx: (id: str) => mutex(E.gen(function * () {
+      // const key = { pk: `ix-${id}`, sk: `ix`, }; return yield * E.fork( DynamoDBDocument.get({ TableName: process.env.DDB_OPERATIONS, Key      : key, }), );
+
+      if (id in ids_tokens) {
+        return ids_tokens[id];
+      }
+      else {
+        return null;
+      }
+    })),
+
+    update: (fn: (v: VDocument.T) => VDocument.T) => mutex(g(function * () {
       curr = fn(curr);
+      yield * E.logTrace(`document updated`);
       return curr;
     })),
 
@@ -53,18 +79,20 @@ const implementation = () => E.gen(function * () {
     })),
 
     saveDialogMessage: (id: str, message: Tx.Message) => mutex(g(function * () {
+      yield * E.logTrace('message saved');
+
       const key = {
         pk: `t-${id}`,
         sk: `t-${id}`,
       };
 
-      const ttl = yield *  pipe(
+      const ttl = yield * pipe(
         DT.now,
         E.map(DT.addDuration('5 minutes')),
         E.map(DT.toEpochMillis),
       );
 
-      yield * DynamoDBDocument.put({
+      yield * E.fork(DynamoDBDocument.put({
         TableName: process.env.DDB_OPERATIONS,
         Item     : {
           ...key,
@@ -72,22 +100,19 @@ const implementation = () => E.gen(function * () {
           message: JSON.stringify(message),
           ttl    : ttl,
         },
-      });
+      }));
 
       return message;
     })),
     loadDialogMessage: (id: str) => mutex(g(function * () {
+      yield * E.logTrace('message loaded');
+
       const key = {
         pk: `t-${id}`,
         sk: `t-${id}`,
       };
 
       const resp = yield * DynamoDBDocument.get({
-        TableName: process.env.DDB_OPERATIONS,
-        Key      : key,
-      });
-
-      yield * DynamoDBDocument.delete({
         TableName: process.env.DDB_OPERATIONS,
         Key      : key,
       });

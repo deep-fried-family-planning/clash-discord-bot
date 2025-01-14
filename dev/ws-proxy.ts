@@ -1,9 +1,9 @@
 import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 import {fromParameterStore} from '@effect-aws/ssm';
 import hapi from '@hapi/hapi';
 import Nes from '@hapi/nes';
 import {delay} from 'effect/Effect';
+import console from 'node:console';
 import {WebSocket} from 'ws';
 
 
@@ -55,7 +55,8 @@ server.subscription('/dev');
 await server.start();
 
 socket.onmessage = (event) => {
-    console.log('Received message', JSON.parse(event.data as str));
+    // console.log('Received message', JSON.parse(event.data as str));
+  console.log(new Date(Date.now()).toISOString());
     server.publish('/dev', event.data);
 };
 

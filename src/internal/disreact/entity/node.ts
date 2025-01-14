@@ -1,6 +1,6 @@
+import type { Tx} from '#src/internal/disreact/entity/index.ts';
 import type {Hook, VDialog, VMessage} from '#src/internal/disreact/entity/index.ts';
 import {Auth, Unsafe, UnsafeCall, UnsafeHook} from '#src/internal/disreact/entity/index.ts';
-import type {Tx} from '#src/internal/disreact/entity/types/index.ts';
 import type {num, rec, str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -39,7 +39,7 @@ export const createNode = (
     root_id  : root_id,
     node_id  : id ?? `n-${call_id}`,
     mount    : () => [...hooks],
-    respond  : fn,
+    render   : fn,
     children : {},
     defer    : output.defer,
   };

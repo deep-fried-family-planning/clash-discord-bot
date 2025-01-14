@@ -1,5 +1,5 @@
 import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import {type Hook, Tx, Unsafe} from '#src/internal/disreact/entity/index.ts';
+import {type Hook, Tx} from '#src/internal/disreact/entity/index.ts';
 
 
 let call_count = 0,
@@ -20,7 +20,7 @@ export const addCall = <A extends Hook.UpdateCall>(call: A) => {
 
 
 export const flushCalls = () => {
-  console.log(Unsafe.call_get(), 'flushing calls...');
+  // console.log(Unsafe.call_get(), 'flushing calls...');
   const temp = [...calls];
   calls = [];
   call_count = 0;
@@ -34,7 +34,7 @@ export const setNextDefer = (d: Tx.Defer) => next_defer = d;
 
 
 export const flushNext = () => {
-  console.log(Unsafe.call_get(), 'flushing next node...');
+  // console.log(Unsafe.call_get(), 'flushing next node...');
   const temp = next_node;
   const temp2 = next_close;
   const temp3 = {...next_defer};

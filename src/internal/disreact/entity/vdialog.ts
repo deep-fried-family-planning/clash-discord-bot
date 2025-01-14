@@ -1,8 +1,7 @@
-import {g, pipe} from '#pure/effect';
+import {g} from '#pure/effect';
 import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import type {Route} from '#src/internal/disreact/entity/index.ts';
-import {Cd, Ix, Tx} from '#src/internal/disreact/entity/index.ts';
-import {RouteManager} from '#src/internal/disreact/lifecycle/layers/route-manager.ts';
+import {Cd, Ix, Route, Tx} from '#src/internal/disreact/entity/index.ts';
+import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
 import type {bool, str} from '#src/internal/pure/types-pure.ts';
 import type {AnyE} from '#src/internal/types.ts';
 
@@ -71,8 +70,8 @@ export const makeFromRest = g(function * () {
 
 export const encodeToRestOrMemory = (route: Route.T) => (dialog: T) => {
   return {
-    custom_id: pipe(
-
-    ),
+    custom_id : Route.encode(route),
+    title     : dialog.title,
+    components: Cd.encodeGrid(dialog.components),
   } as Tx.Dialog;
 };

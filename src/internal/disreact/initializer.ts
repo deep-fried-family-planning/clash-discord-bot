@@ -1,16 +1,17 @@
-import {Auth} from '#src/internal/disreact/entity/index.ts';
-import {PrimaryButton, Row, SecondaryButton} from '#src/internal/disreact/entity/interface-component.ts';
+import {Auth, UnsafeCall} from '#src/internal/disreact/entity/index.ts';
+import {DangerButton, PrimaryButton, Row, SecondaryButton} from '#src/internal/disreact/entity/interface-component.ts';
 import {Controller} from '#src/internal/disreact/entity/interface-embed.ts';
 import {makeUseRoute, makeUseState} from '#src/internal/disreact/entity/interface-hook.ts';
-import {Entrypoint, Ephemeral} from '#src/internal/disreact/index.ts';
+import {Entrypoint, EphemeralEntrypoint} from '#src/internal/disreact/index.ts';
+import console from 'node:console';
 
 
 const Mutual = () => {
   const [title, setTitle] = makeUseState('nope');
-  const [nodes, setNext] = makeUseRoute({Test, Starter});
+  const [nodes, setNext] = makeUseRoute({Test });
 
 
-  return Ephemeral(
+  return EphemeralEntrypoint(
     Controller({
       title      : 'Mutual',
       description: title,
@@ -23,9 +24,9 @@ const Mutual = () => {
         },
       }),
       SecondaryButton({
-        label  : 'Next',
+        label  : 'Mutex',
         onClick: () => {
-          setNext(nodes.Starter);
+          setNext(nodes.Test);
         },
       }),
     ),
@@ -38,9 +39,9 @@ const Test = () => {
   const [next, setRoute] = makeUseRoute({Mutual});
 
 
-  return Ephemeral(
+  return EphemeralEntrypoint(
     Controller({
-      title      : 'Test',
+      title      : 'Mutex',
       description: title,
     }),
     Row(
@@ -52,9 +53,15 @@ const Test = () => {
         },
       }),
       SecondaryButton({
-        label  : 'Next',
+        label  : 'Test',
         onClick: () => {
           setRoute(next.Mutual);
+        },
+      }),
+      DangerButton({
+        label  : 'Close',
+        onClick: () => {
+          UnsafeCall.setNextClose(true);
         },
       }),
     ),
@@ -76,6 +83,7 @@ export const Starter = () => {
       PrimaryButton({
         label  : 'Hello World',
         onClick: () => {
+          console.log('hello world!!!');
           setTitle('it works!');
         },
       }),

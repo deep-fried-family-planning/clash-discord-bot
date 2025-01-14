@@ -2,9 +2,9 @@ import {createEffect} from '#src/internal/disreact/disreact.ts';
 import {DevComponent, DevEmbed, DevHook, DevNode} from '#src/internal/disreact/entity/index.ts';
 
 
-export const Entrypoint = DevNode.makeEntrypoint;
-export const Ephemeral  = DevNode.makeEphemeral;
-export const Dialog     = DevNode.makeDialog;
+export const Entrypoint          = DevNode.makeEntrypoint;
+export const EphemeralEntrypoint = DevNode.makeEphemeral;
+export const Dialog              = DevNode.makeDialog;
 
 
 export const Buttons = DevComponent.Row;

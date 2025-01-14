@@ -3,22 +3,11 @@ import type {EA} from '#src/internal/types.ts';
 
 
 const implementation = E.gen(function * () {
-  let permits = 1;
-  const semaphore = yield * E.makeSemaphore(permits);
+  const semaphore = yield * E.makeSemaphore(1);
   const mutex = semaphore.withPermits(1);
 
   return {
     safelyRun: () => <A, E, R>(self: E.Effect<A, E, R>) => mutex(self),
-
-    acquire: () => g(function * () {
-      yield * semaphore.take(1);
-      permits--;
-    }),
-
-    release: () => g(function * () {
-      yield * semaphore.release(1);
-      permits++;
-    }),
   };
 });
 

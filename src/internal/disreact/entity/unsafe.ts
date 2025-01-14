@@ -1,5 +1,4 @@
-import type {Hk} from '#src/internal/disreact/entity/index.ts';
-import type {Node} from '#src/internal/disreact/entity/lifecycle/index.ts';
+import type {Hook, Node} from '#src/internal/disreact/entity/index.ts';
 import type {rec} from '#src/internal/pure/types-pure.ts';
 
 
@@ -55,23 +54,23 @@ export const get_next_node = () => {
 };
 
 
-let internal_hk_registry = {} as rec<Hk.SyncCall>;
-let hook_calls           = [] as Hk.UpdateCall[];
+let internal_hk_registry = {} as rec<Hook.SyncCall>;
+let hook_calls           = [] as Hook.UpdateCall[];
 
 export const hk_registry   = () => ({...internal_hk_registry});
 export const hk_calls      = () => [...hook_calls];
 export const hk_flush      = () => hook_calls = [];
 export const hk_unregister = () => internal_hk_registry = {};
 
-export const hk_update = (hk: Hk.UpdateCall) => {
+export const hk_update = (hk: Hook.UpdateCall) => {
   hook_calls.push(hk);
 };
 
-export const hk_register = <A extends Hk.SyncCall>(hk: A): A => {
+export const hk_register = <A extends Hook.SyncCall>(hk: A): A => {
   internal_hk_registry[hk.id] = hk;
   return hk;
 };
 
-export const hk_getState = <A extends Hk.SyncCall>(hk: A) => internal_hk_registry[hk.id];
+export const hk_getState = <A extends Hook.SyncCall>(hk: A) => internal_hk_registry[hk.id];
 
-export const hk_setState = <A extends Hk.SyncCall>(hk: A) => internal_hk_registry[hk.id] = hk;
+export const hk_setState = <A extends Hook.SyncCall>(hk: A) => internal_hk_registry[hk.id] = hk;

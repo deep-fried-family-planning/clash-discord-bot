@@ -2,7 +2,6 @@ import {Kv} from '#pure/effect';
 import type {Hook, Tx} from '#src/internal/disreact/entity/index.ts';
 import {Node, UnsafeCall, UnsafeHook} from '#src/internal/disreact/entity/index.ts';
 import type {num, rec, str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
 
 
 export type DisReactRoot<A extends Node.FnOutput = Node.FnOutput> = {
@@ -59,8 +58,6 @@ const recurseFromRootInner = (
   UnsafeHook.flushHooks();
 
   root.children[node_id] = Node.createNode(root.root_id, node_fn, node_id);
-
-  console.log(root.children[node_id].mount());
 
   node_fn();
   const nodeFns = UnsafeHook.flushNodes();

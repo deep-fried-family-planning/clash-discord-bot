@@ -7,22 +7,24 @@ import type {EAR} from '#src/internal/types.ts';
 
 
 const makeEmptyParams = () => ({
-  root_id: NONE,
-  node_id: NONE,
-  pipe_id: NONE,
-  curr_id: NONE,
-  prev_id: NONE,
-  defer  : NONE,
+  pipe_id    : NONE,
+  root_id    : NONE,
+  node_id    : NONE,
+  last_id    : NONE,
+  curr_id    : NONE,
+  defer      : NONE,
+  prev_id    : NONE,
+  prev_active: NONE,
+  prev_token : NONE,
 });
 
 const makeEmptySearch = () => new URLSearchParams();
 
 
 const implementation = (baseUrl: str) => E.gen(function * () {
-  let params = makeEmptyParams(),
-      search = makeEmptySearch();
-
-  const router = {
+  const semaphore = yield * E.makeSemaphore(1);
+  const mutex     = semaphore.withPermits(1);
+  const router    = {
     parse   : Route.decode,
     parseId : Route.decodeFromData,
     parseUrl: Route.decodeFromControllerEmbed,
@@ -31,10 +33,9 @@ const implementation = (baseUrl: str) => E.gen(function * () {
     buildUrl: Route.encodeUrl(baseUrl),
   };
 
-  let original = {} as Ix.Rest;
-
-  const semaphore = yield * E.makeSemaphore(1);
-  const mutex     = semaphore.withPermits(1);
+  let params   = makeEmptyParams(),
+      search   = makeEmptySearch(),
+      original = {} as Ix.Rest;
 
   return {
     allocate: (rest: Ix.Rest) => mutex(E.sync(() => {
@@ -42,15 +43,10 @@ const implementation = (baseUrl: str) => E.gen(function * () {
       search   = makeEmptySearch();
       original = rest;
     })),
-
-    rest: () => mutex(E.succeed(original)),
-
+    rest     : () => mutex(E.succeed(original)),
     getParams: () => mutex(E.succeed({...params})),
-
     getSearch: () => mutex(E.succeed(new URLSearchParams(search))),
-
     getRouter: () => mutex(E.succeed(router)),
-
     setParams: (next: opt<typeof params>) => mutex(E.sync(() => {
       for (const [k, v] of Object.entries(next)) {
         if (!v) {
@@ -61,7 +57,6 @@ const implementation = (baseUrl: str) => E.gen(function * () {
         }
       }
     })),
-
     setSearch: (next?: typeof search) => mutex(E.sync(() => {
       search = next ?? search;
     })),

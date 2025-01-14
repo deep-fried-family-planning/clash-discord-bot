@@ -1,7 +1,6 @@
 import type {Hook} from '#src/internal/disreact/entity/index.ts';
-import {type Node, Unsafe} from '#src/internal/disreact/entity/index.ts';
+import type {Node} from '#src/internal/disreact/entity/index.ts';
 import type {num, str} from '#src/internal/pure/types-pure.ts';
-import console from 'node:console';
 
 
 let call_count = 0,
@@ -31,7 +30,7 @@ export const hydrateHook = <A extends Hook.SyncCall>(hook: A, call: num) => {
 
 
 export const flushHooks = () => {
-  console.log(Unsafe.call_get(), 'flushing hooks...');
+  // console.log(Unsafe.call_get(), 'flushing hooks...');
   const temp = [...hooks];
   hooks = [];
   call_count = 0;
@@ -41,7 +40,7 @@ export const flushHooks = () => {
 
 export const setNodes = (n: { [k in str]: Node.DisReactNodeFn }) => nodes = n;
 export const flushNodes = () => {
-  console.log(Unsafe.call_get(), 'flushing nodes...');
+  // console.log(Unsafe.call_get(), 'flushing nodes...');
   const temp = {...nodes};
   nodes = {};
   return temp;

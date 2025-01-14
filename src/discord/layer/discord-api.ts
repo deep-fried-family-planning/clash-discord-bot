@@ -74,7 +74,7 @@ export class DiscordApi extends E.Tag('DeepFryerDiscord')<
 
 export const DiscordLayerLive = pipe(
   DiscordApi.Live,
-  L.provideMerge(DiscordRESTMemoryLive),
-  L.provideMerge(NodeHttpClient.layerUndici),
-  L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
+  L.provide(DiscordRESTMemoryLive),
+  L.provide(NodeHttpClient.layerUndici),
+  L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
 );
