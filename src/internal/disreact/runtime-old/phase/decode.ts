@@ -1,10 +1,10 @@
 import {TxFlag} from '#pure/dfx';
 import {E} from '#pure/effect';
 import {Err, Failure, Ix, Route, VDocument, VEvent} from '#src/internal/disreact/entity/index.ts';
-import {annotatePhase} from '#src/internal/disreact/runtime/helpers.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
-import {pipelines} from '#src/internal/disreact/runtime/pipelines/pipelines.ts';
+import {annotatePhase} from '#src/internal/disreact/runtime-old/helpers.ts';
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
+import {pipelines} from '#src/internal/disreact/runtime-old/pipelines/pipelines.ts';
 
 
 const annotations = annotatePhase('decode');

@@ -1,7 +1,7 @@
 import {g, pipe} from '#pure/effect';
 import {Cd, Ed, Ix, VDialog, VEvent, VMessage} from '#src/internal/disreact/entity/index.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
 
 
 export type T = {

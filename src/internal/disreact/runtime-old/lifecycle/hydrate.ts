@@ -1,10 +1,10 @@
 import {E, g} from '#pure/effect';
 import type {Node} from '#src/internal/disreact/entity/index.ts';
 import {Hook, UnsafeCall, UnsafeHook} from '#src/internal/disreact/entity/index.ts';
-import {annotateLifeCycle} from '#src/internal/disreact/runtime/helpers.ts';
-import {MutexBroker} from '#src/internal/disreact/runtime/layers/mutex-broker.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
-import {intermediateRender} from '#src/internal/disreact/runtime/lifecycle/intermediate-render.ts';
+import {annotateLifeCycle} from '#src/internal/disreact/runtime-old/helpers.ts';
+import {MutexBroker} from '#src/internal/disreact/runtime-old/layers/mutex-broker.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
+import {intermediateRender} from '#src/internal/disreact/runtime-old/lifecycle/intermediate-render.ts';
 
 
 const annotations = annotateLifeCycle('hydrateFromRest');
@@ -41,7 +41,12 @@ export const hydrate = (node: Node.Node) => g(function * () {
   let idx = 0;
   for (const call of calls) {
     idx++;
+
+    if (call._tag === 'SetState') {
+
+    }
     yield * E.logTrace(call);
+    UnsafeHook.hydrateHook;
   }
 
   const rendered = yield * intermediateRender(node);

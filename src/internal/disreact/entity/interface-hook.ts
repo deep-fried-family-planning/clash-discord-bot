@@ -21,6 +21,7 @@ export const makeUseState = <A>(initial: A) => {
 
   const setState = (next: A) => {
     const update = Hook.Update.SetState({id: _id, next});
+    console.log('setState');
     UnsafeCall.addCall(update);
   };
 

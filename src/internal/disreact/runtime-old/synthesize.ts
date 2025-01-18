@@ -1,7 +1,7 @@
 import {E, Kv, pipe} from '#pure/effect';
 import {COL_NONE, NONE, ROW_NONE} from '#src/internal/disreact/entity/constants.ts';
 import {Hook, type Node, Route, Tx, VMessage} from '#src/internal/disreact/entity/index.ts';
-import {NodeManager} from '#src/internal/disreact/runtime/layers/node-manager.ts';
+import {NodeManager} from '#src/internal/disreact/runtime-old/layers/node-manager.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

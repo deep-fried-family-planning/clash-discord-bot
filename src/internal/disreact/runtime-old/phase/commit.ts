@@ -1,8 +1,8 @@
 import {E, pipe} from '#pure/effect';
 import {Route, Tx, VMessage} from '#src/internal/disreact/entity/index.ts';
-import {DiscordBroker} from '#src/internal/disreact/runtime/layers/discord-broker.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
+import {DiscordBroker} from '#src/internal/disreact/runtime-old/layers/discord-broker.ts';
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
 import console from 'node:console';
 
 

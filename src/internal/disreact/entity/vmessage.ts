@@ -2,7 +2,7 @@ import type {RestMessage} from '#pure/dfx';
 import {g, pipe} from '#pure/effect';
 import type {Route} from '#src/internal/disreact/entity/index.ts';
 import {Cd, Ed, Ix, Tx} from '#src/internal/disreact/entity/index.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
 import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
 
 

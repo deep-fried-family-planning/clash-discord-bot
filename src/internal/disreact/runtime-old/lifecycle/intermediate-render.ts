@@ -1,7 +1,7 @@
 import {E, g} from '#pure/effect';
 import {Auth, type Node, VDocument} from '#src/internal/disreact/entity/index.ts';
-import {annotateLifeCycle} from '#src/internal/disreact/runtime/helpers.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
+import {annotateLifeCycle} from '#src/internal/disreact/runtime-old/helpers.ts';
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
 
 
 const annotations = annotateLifeCycle('intermediateRender');

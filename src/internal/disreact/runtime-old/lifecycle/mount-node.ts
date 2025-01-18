@@ -1,7 +1,7 @@
 import {E, g} from '#pure/effect';
 import {type Node, UnsafeHook} from '#src/internal/disreact/entity/index.ts';
-import {annotateLifeCycle} from '#src/internal/disreact/runtime/helpers.ts';
-import {MutexBroker} from '#src/internal/disreact/runtime/layers/mutex-broker.ts';
+import {annotateLifeCycle} from '#src/internal/disreact/runtime-old/helpers.ts';
+import {MutexBroker} from '#src/internal/disreact/runtime-old/layers/mutex-broker.ts';
 
 
 const annotations = annotateLifeCycle('mountNode');

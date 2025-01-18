@@ -1,14 +1,14 @@
 import {E, pipe} from '#pure/effect';
 import {NONE} from '#src/internal/disreact/entity/constants.ts';
 import {Tx} from '#src/internal/disreact/entity/index.ts';
-import {DiscordBroker} from '#src/internal/disreact/runtime/layers/discord-broker.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
-import {NodeManager} from '#src/internal/disreact/runtime/layers/node-manager.ts';
-import {RouteManager} from '#src/internal/disreact/runtime/layers/route-manager.ts';
-import {hydrateFromRest} from '#src/internal/disreact/runtime/lifecycle/hydrate.ts';
-import {intermediateRender} from '#src/internal/disreact/runtime/lifecycle/intermediate-render.ts';
-import {mountNode} from '#src/internal/disreact/runtime/lifecycle/mount-node.ts';
-import {simulateMessage} from '#src/internal/disreact/runtime/lifecycle/simulate-event.ts';
+import {DiscordBroker} from '#src/internal/disreact/runtime-old/layers/discord-broker.ts';
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
+import {NodeManager} from '#src/internal/disreact/runtime-old/layers/node-manager.ts';
+import {RouteManager} from '#src/internal/disreact/runtime-old/layers/route-manager.ts';
+import {hydrateFromRest} from '#src/internal/disreact/runtime-old/lifecycle/hydrate.ts';
+import {intermediateRender} from '#src/internal/disreact/runtime-old/lifecycle/intermediate-render.ts';
+import {mountNode} from '#src/internal/disreact/runtime-old/lifecycle/mount-node.ts';
+import {simulateMessage} from '#src/internal/disreact/runtime-old/lifecycle/simulate-event.ts';
 import {Fiber} from 'effect';
 
 
@@ -37,7 +37,7 @@ const resolveSame = (defer: Tx.Defer) => {
 };
 
 
-export const simulateClick = E.fn(':simulateClick')(
+export const simulateClick = E.fn('simulateClick')(
   function * () {
     const params = yield * RouteManager.getParams();
     const node   = yield * NodeManager.getNode(params.root_id, params.node_id);

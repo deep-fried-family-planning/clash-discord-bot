@@ -7,20 +7,21 @@ import console from 'node:console';
 
 
 const Mutual = () => {
-  const [title, setTitle] = makeUseState('nope');
+  const [title, setTitle] = makeUseState(0);
   const [nodes, setNext] = makeUseRoute({Test });
 
 
   return EphemeralEntrypoint(
     Controller({
       title      : 'Mutual',
-      description: title,
+      description: `${title}`,
     }),
     Row(
       PrimaryButton({
-        label  : 'Hello World',
-        onClick: () => {
-          setTitle('it works!');
+        label  : `Does it work? ${title}`,
+        onClick: (event) => {
+          console.log(event);
+          setTitle(title + 1);
         },
       }),
       SecondaryButton({

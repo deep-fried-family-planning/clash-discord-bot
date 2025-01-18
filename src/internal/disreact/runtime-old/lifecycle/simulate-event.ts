@@ -1,12 +1,8 @@
 import {E} from '#pure/effect';
 import {Cd, Failure, type Node, UnsafeCall, VEvent} from '#src/internal/disreact/entity/index.ts';
-import {annotateLifeCycle} from '#src/internal/disreact/runtime/helpers.ts';
-import {MemoryStore} from '#src/internal/disreact/runtime/layers/memory-store.ts';
-import {MutexBroker} from '#src/internal/disreact/runtime/layers/mutex-broker.ts';
-import {hydrate} from '#src/internal/disreact/runtime/lifecycle/hydrate.ts';
-
-
-const annotations = annotateLifeCycle('simulateMessage');
+import {MemoryStore} from '#src/internal/disreact/runtime-old/layers/memory-store.ts';
+import {MutexBroker} from '#src/internal/disreact/runtime-old/layers/mutex-broker.ts';
+import {hydrate} from '#src/internal/disreact/runtime-old/lifecycle/hydrate.ts';
 
 
 export const simulateMessage = E.fn('simulateMessage')(
