@@ -1,6 +1,7 @@
-import {TxFlag, TxType} from '#pure/dfx';
-import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord.ts';
+import type {IxD, IxRE} from '#src/internal/discord.ts';
+import type {DA, Df} from '#src/internal/disreact/model/entities/index.ts';
 import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EA} from '#src/internal/types.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import type {ResponseError} from '@effect/platform/HttpClientError';
@@ -20,7 +21,6 @@ const api = E.gen(function * () {
   return {
     ...discord,
 
-
     executeWebhookJson: (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
       ...p[3],
       urlParams: {
@@ -29,35 +29,33 @@ const api = E.gen(function * () {
       },
     }).json as DE<Message>,
 
-    deferEntry: (ix: IxD) => discord.createInteractionResponse(ix.id, ix.token, {
-      type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-    }),
-
-    deferEntryEphemeral: (ix: IxD) => discord.createInteractionResponse(ix.id, ix.token, {
-      type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        flags: TxFlag.EPHEMERAL,
+    ixDefer: (id: str, token: str, df: Exclude<Df.T, Df.None | Df.Close>) => discord.createInteractionResponse(
+      id,
+      token,
+      df.rest,
+    ),
+    ixEdit: (app_id: str, token: str, res: DA.TxMessage) => discord.editOriginalInteractionResponse(
+      app_id,
+      token,
+      res as Partial<IxRE>,
+    ),
+    ixDelete: (app_id: str, token: str) => discord.deleteOriginalInteractionResponse(
+      app_id,
+      token,
+    ),
+    ixDirect: (id: str, token: str, res: DA.TxMessage) => discord.createInteractionResponse(
+      id,
+      token,
+      res as Discord.InteractionResponse,
+    ),
+    ixDialog: (id: str, token: str, res: Discord.InteractionCallbackModal) => discord.createInteractionResponse(
+      id,
+      token,
+      {
+        type: Discord.InteractionCallbackType.MODAL,
+        data: res,
       },
-    }),
-
-    deferUpdate: (ix: IxD) => discord.createInteractionResponse(ix.id, ix.token, {
-      type: TxType.DEFERRED_UPDATE_MESSAGE,
-    }),
-
-    openDialog: (ix: IxD, res: Discord.InteractionCallbackModal) => discord.createInteractionResponse(ix.id, ix.token, {
-      type: TxType.MODAL,
-      data: res,
-    }),
-
-    deleteMenu: (ix: IxD) => discord.deleteOriginalInteractionResponse(ix.application_id, ix.token),
-
-    entryMenu: (ix: IxD, res: IxR['data']) => discord.createInteractionResponse(ix.id, ix.token, {
-      type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        flags: MGF.EPHEMERAL,
-        ...res,
-      },
-    }),
+    ),
 
     editMenu: (ix: IxD, res: Partial<IxRE>) => discord.editOriginalInteractionResponse(ix.application_id, ix.token, res),
   };

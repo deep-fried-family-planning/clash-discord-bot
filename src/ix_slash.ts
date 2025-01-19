@@ -4,8 +4,8 @@ import {ixsRouter} from '#src/discord/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
 import type {IxD, IxRE} from '#src/internal/discord.ts';
+import {DeepFryerDisReact} from '#src/internal/disreact/initializer.ts';
 import {DT, E, L, pipe} from '#src/internal/pure/effect.ts';
-import {IxRouter} from '#src/shared.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
@@ -55,7 +55,7 @@ const h = (event: IxD) => pipe(
 
 export const handler = makeLambda(h, pipe(
   DiscordLayerLive,
-  L.provideMerge(IxRouter),
+  L.provideMerge(DeepFryerDisReact),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),

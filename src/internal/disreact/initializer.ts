@@ -1,30 +1,31 @@
+import {E, g} from '#pure/effect';
 import {Auth, UnsafeCall} from '#src/internal/disreact/entity/index.ts';
-import {DangerButton, PrimaryButton, Row, SecondaryButton} from '#src/internal/disreact/entity/interface-component.ts';
-import {Controller} from '#src/internal/disreact/entity/interface-embed.ts';
-import {makeUseRoute, makeUseState} from '#src/internal/disreact/entity/interface-hook.ts';
-import {Entrypoint, EphemeralEntrypoint} from '#src/internal/disreact/index.ts';
+import {makeUseState} from '#src/internal/disreact/entity/interface-hook.ts';
+import {CI, ConI, EI, HI} from '#src/internal/disreact/interface/index.ts';
+import {DisReact} from '#src/internal/disreact/runtime/create-disreact.ts';
 import console from 'node:console';
 
 
 const Mutual = () => {
   const [title, setTitle] = makeUseState(0);
-  const [nodes, setNext] = makeUseRoute({Test });
+  const [nodes, setNext] = HI.useNext({Test });
 
 
-  return EphemeralEntrypoint(
-    Controller({
+  return ConI.makePrivate(
+    EI.Header({
       title      : 'Mutual',
       description: `${title}`,
     }),
-    Row(
-      PrimaryButton({
+    CI.Row(
+      CI.PrimaryButton({
         label  : `Does it work? ${title}`,
-        onClick: (event) => {
+        onClick: (event) => g(function * () {
+          yield * E.logDebug('effect hello world!');
           console.log(event);
           setTitle(title + 1);
-        },
+        }),
       }),
-      SecondaryButton({
+      CI.SuccessButton({
         label  : 'Mutex',
         onClick: () => {
           setNext(nodes.Test);
@@ -37,29 +38,29 @@ const Mutual = () => {
 
 const Test = () => {
   const [title, setTitle] = makeUseState('nope');
-  const [next, setRoute] = makeUseRoute({Mutual});
+  const [next, setRoute] = HI.useNext({Mutual});
 
 
-  return EphemeralEntrypoint(
-    Controller({
+  return ConI.makePrivate(
+    EI.Header({
       title      : 'Mutex',
       description: title,
     }),
-    Row(
-      PrimaryButton({
-        auth   : [Auth.T.MFA()],
+    CI.Row(
+      CI.PrimaryButton({
+        auths  : [Auth.T.MFA()],
         label  : 'Hello World',
         onClick: () => {
           setTitle('it works!');
         },
       }),
-      SecondaryButton({
+      CI.SuccessButton({
         label  : 'Test',
         onClick: () => {
           setRoute(next.Mutual);
         },
       }),
-      DangerButton({
+      CI.DangerButton({
         label  : 'Close',
         onClick: () => {
           UnsafeCall.setNextClose(true);
@@ -72,23 +73,23 @@ const Test = () => {
 
 export const Starter = () => {
   const [title, setTitle] = makeUseState('nope');
-  const [next, setRoute] = makeUseRoute({Test, Mutual});
+  const [next, setRoute] = HI.useNext({Test, Mutual});
 
 
-  return Entrypoint(
-    Controller({
+  return ConI.makePublic(
+    EI.Header({
       title      : 'Starter',
       description: title,
     }),
-    Row(
-      PrimaryButton({
+    CI.Row(
+      CI.PrimaryButton({
         label  : 'Hello World',
         onClick: () => {
           console.log('hello world!!!');
           setTitle('it works!');
         },
       }),
-      SecondaryButton({
+      CI.SuccessButton({
         label  : 'Next',
         onClick: () => {
           setRoute(next.Test);
@@ -97,3 +98,6 @@ export const Starter = () => {
     ),
   );
 };
+
+
+export const DeepFryerDisReact = DisReact.makeLayer({Starter});

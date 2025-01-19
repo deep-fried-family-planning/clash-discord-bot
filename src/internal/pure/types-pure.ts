@@ -9,6 +9,7 @@ export type num = number;
 export type str = string;
 export type und = undefined;
 export type idk = unknown;
+export type unk = unknown;
 export type nul = null;
 export type int = number;
 export type bool = boolean;
@@ -34,6 +35,7 @@ export type nro<A> = { -readonly [k in keyof A]: A[k] };
 export type Immutable<A> = { readonly [k in keyof A]: A[k] };
 export type Mutable<A> = { -readonly [k in keyof A]: A[k] };
 export type mut<A> = { -readonly [k in keyof A]: A[k] };
+export type mopt<A> = opt<mut<A>>;
 export type rec<A> = {[k in str]: A};
 export type ornull<A> = A | null;
 

@@ -3,24 +3,19 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {createDisReactEffect} from '#src/internal/disreact/index.ts';
-import {Starter} from '#src/internal/disreact/initializer.ts';
+import {DeepFryerDisReact} from '#src/internal/disreact/initializer.ts';
+import type {DA} from '#src/internal/disreact/model/entities/index.ts';
+import {DisReact} from '#src/internal/disreact/runtime/create-disreact.ts';
 import {DT, E, g, L, Logger, LogLevel, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import type {Ix} from 'src/internal/disreact/entity';
 
 
-const disreact = createDisReactEffect(
-  {Starter},
-);
-
-
-const menu = (ix: Ix.Rest) => pipe(
+const menu = (ix: DA.Ix) => pipe(
   g(function * () {
-    yield * disreact.interact(ix);
+    yield * DisReact.interact(ix);
   }),
   E.catchAll((e) => E.logFatal('[catchAll]', e)),
   E.catchAllDefect((e) => E.logFatal('[catchAllDefect]', e)),
@@ -29,6 +24,7 @@ const menu = (ix: Ix.Rest) => pipe(
 
 const live = pipe(
   L.empty,
+  L.provideMerge(DeepFryerDisReact),
   L.provideMerge(ClashCache.Live),
   L.provideMerge(MenuCache.Live),
   L.provideMerge(ClashOfClans.Live),

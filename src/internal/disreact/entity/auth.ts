@@ -2,8 +2,9 @@ import {D, DT, pipe} from '#pure/effect';
 import type {snow} from '#src/discord/types.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {Auth} from '#src/internal/disreact/entity/index.ts';
+import type {DA} from '#src/internal/disreact/model/entities/index.ts';
 import type {obj, str} from '#src/internal/pure/types-pure.ts';
-import type {GuildMember, User} from 'dfx/types';
+import type {GuildMember} from 'dfx/types';
 import {Duration} from 'effect';
 
 
@@ -16,14 +17,35 @@ export type T = D.TaggedEnum<{
   Custom        : {name: str};
 }>;
 
+export type VerifiedEmail = D.TaggedEnum.Value<T, 'VerifiedEmail'>;
+export type MFA = D.TaggedEnum.Value<T, 'MFA'>;
+export type VerifiedMember = D.TaggedEnum.Value<T, 'VerifiedMember'>;
+export type ServerBooster = D.TaggedEnum.Value<T, 'ServerBooster'>;
+export type ServerDuration = D.TaggedEnum.Value<T, 'ServerDuration'>;
+export type Custom = D.TaggedEnum.Value<T, 'Custom'>;
 
 export const T = D.taggedEnum<T>();
 
+export const VerifiedEmail = T.VerifiedEmail;
+export const MFA = T.MFA;
+export const VerifiedMember = T.VerifiedMember;
+export const ServerBooster = T.ServerBooster;
+export const ServerDuration = T.ServerDuration;
+export const Custom = T.Custom;
+
+export const isVerifiedEmail = T.$is('VerifiedEmail');
+export const isMFA = T.$is('MFA');
+export const isVerifiedMember = T.$is('VerifiedMember');
+export const isServerBooster = T.$is('ServerBooster');
+export const isServerDuration = T.$is('ServerDuration');
+export const isCustom = T.$is('Custom');
 
 export const requiresCustomAuth = (auths?: T[]) => auths?.length && !!auths.find((auth) => auth._tag === 'Custom');
 
 
-export const addUserAuths = (user?: User) => (auths: T[]) => {
+export const empty = () => [] as T[];
+
+export const addUserAuths = (user?: DA.User) => (auths: T[]) => {
   if (user?.verified) auths.push(Auth.T.VerifiedEmail());
   if (user?.mfa_enabled) auths.push(Auth.T.MFA());
   return auths;
