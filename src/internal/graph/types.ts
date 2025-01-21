@@ -1,4 +1,4 @@
-import type {AnyKV, unix} from '#src/internal/pure/types-pure.ts';
+import type {AnyKV, epochms} from '#src/internal/pure/types-pure.ts';
 import {v4} from 'uuid';
 
 
@@ -11,7 +11,7 @@ export type IDKV<T > = Record<string, T>;
 
 export type _Model = {
     _id: UUID;
-    _tm: unix;
+    _tm: epochms;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,6 +1,6 @@
 import {E, g, L} from '#pure/effect';
-import {Err} from '#src/internal/disreact/entity/index.ts';
-import {In} from '#src/internal/disreact/model/entities/index.ts';
+import {In} from '#src/internal/disreact/virtual/entities/index.ts';
+import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
 import type {EA} from '#src/internal/types.ts';
 
 

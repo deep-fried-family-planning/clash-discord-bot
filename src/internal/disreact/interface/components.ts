@@ -1,9 +1,9 @@
 import type {E} from '#pure/effect';
 import {D} from '#pure/effect';
-import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import {type Auth, Err} from '#src/internal/disreact/entity/index.ts';
-import {Cm, DA} from '#src/internal/disreact/model/entities/index.ts';
-import {ComponentRoute} from '#src/internal/disreact/model/route/index.ts';
+import {Cm, DA, Rf} from '#src/internal/disreact/virtual/entities/index.ts';
+import type {Auth} from '#src/internal/disreact/virtual/kinds/index.ts';
+import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
+import {ComponentRoute} from '#src/internal/disreact/virtual/route/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -16,13 +16,13 @@ export type OnClickFn<A, B> = (
 
 
 export type T = D.TaggedEnum<{
-  Button       : {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.Button, str>} & Cm.Button['data'];
-  Select       : {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.Select, str>} & Cm.Select['data'];
-  UserSelect   : {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.UserSelect, str>} & Cm.UserSelect['data'];
-  RoleSelect   : {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.RoleSelect, str>} & Cm.RoleSelect['data'];
-  ChannelSelect: {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.ChannelSelect, str>} & Cm.ChannelSelect['data'];
-  MentionSelect: {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.MentionSelect, str>} & Cm.MentionSelect['data'];
-  Text         : {auths?: Auth.T[]; ref?: str; onClick?: OnClickFn<DA.Text, str>} & Cm.Text['data'];
+  Button       : {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.Button, str>} & Cm.Button['data'];
+  Select       : {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.Select, str>} & Cm.Select['data'];
+  UserSelect   : {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.UserSelect, str>} & Cm.UserSelect['data'];
+  RoleSelect   : {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.RoleSelect, str>} & Cm.RoleSelect['data'];
+  ChannelSelect: {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.ChannelSelect, str>} & Cm.ChannelSelect['data'];
+  MentionSelect: {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.MentionSelect, str>} & Cm.MentionSelect['data'];
+  Text         : {auths?: Auth.T[]; ref?: Rf.T; onClick?: OnClickFn<DA.Text, str>} & Cm.Text['data'];
 }>;
 
 export type Button = D.TaggedEnum.Value<T, 'Button'>;
@@ -72,14 +72,14 @@ const models = {
 
 
 export const asModel = (ci: T): Cm.T => {
-  const {_tag, auths = [], ref = NONE, onClick, ...data} = ci;
+  const {_tag, auths = [], ref = Rf.Default(), onClick, ...data} = ci;
 
   if (!(_tag in models)) {
     throw new Err.Critical();
   }
 
   const route      = ComponentRoute.empty();
-  route.params.ref = ref;
+  route.params.ref = Rf.encode(ref);
 
   return models[_tag]({
     auths,

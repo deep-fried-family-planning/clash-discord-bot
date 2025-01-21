@@ -1,10 +1,10 @@
 import {C, DT, E, g, L, pipe} from '#pure/effect';
-import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import {Err} from '#src/internal/disreact/entity/index.ts';
-import {Nd} from '#src/internal/disreact/model/entities/index.ts';
-import {DOM} from '#src/internal/disreact/model/index.ts';
+import {Df, Df, Nd} from '#src/internal/disreact/virtual/entities/index.ts';
+import {DOM} from '#src/internal/disreact/virtual/index.ts';
+import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
+import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
 import {SafeMutex} from '#src/internal/disreact/runtime/layers/safe-mutex.ts';
-import type {rec, str} from '#src/internal/pure/types-pure.ts';
+import type {num, rec, str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
@@ -32,6 +32,25 @@ const memCache = C.make({
     }
 
     return DOM.decode(JSON.parse(record.dom) as DOM.TEncoded);
+  }),
+});
+
+
+const tokenCache = C.make({
+  timeToLive: '5 minutes',
+  capacity  : 1000,
+  lookup    : E.fn('DisReactMemory.loadToken')(function * (id: str) {
+    const resp = yield * DynamoDBDocument.get({
+      TableName: process.env.DDB_OPERATIONS,
+      Key      : {
+        pk: `token-${id}`,
+        sk: 'now',
+      },
+    });
+
+    if (!resp.Item) {
+      return yield * new Err.MemoryUnavailable();
+    }
   }),
 });
 
@@ -68,6 +87,37 @@ const memory = E.fn('DisReactMemory')(function * (rootfns: Nd.KeyedFns) {
       },
     }));
   });
+
+
+  const tokens = yield * tokenCache;
+
+
+  const saveToken = E.fn('DisReactMemory.saveToken')(
+    function * (id: str, token: str, expires: num, defer: Df.T['_tag']) {
+
+    const ttl = yield * pipe(
+      DT.now,
+      E.map(DT.addDuration('5 minutes')),
+      E.map(DT.toEpochMillis),
+    );
+
+    const item = {
+      pk : `token-${id}`,
+      sk : 'now',
+      ttl,
+      token,
+      expires,
+      defer,
+    }
+
+    yield * tokens.set(id, {token});
+
+    yield * E.fork(DynamoDBDocument.put({
+      TableName: process.env.DDB_OPERATIONS,
+      Item     : ,
+    }));
+  }
+  );
 
 
   return {

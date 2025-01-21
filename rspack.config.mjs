@@ -107,7 +107,23 @@ export default defineConfig({
                 },
             }],
         }, {
+
             test   : /\.ts$/,
+            exclude: /node_modules/,
+            use    : [{
+                loader : 'builtin:swc-loader',
+                options: {
+                    jsc: {
+                        parser: {
+                            syntax: 'typescript',
+                        },
+                    },
+                    env: {targets},
+                },
+            }],
+        }, {
+
+            test   : /\.tsx?$/,
             exclude: /node_modules/,
             use    : [{
                 loader : 'builtin:swc-loader',

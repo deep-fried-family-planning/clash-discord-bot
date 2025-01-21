@@ -1,5 +1,5 @@
 import type {IxD, IxRE} from '#src/internal/discord.ts';
-import type {DA, Df} from '#src/internal/disreact/model/entities/index.ts';
+import type {DA, Df} from '#src/internal/disreact/virtual/entities/index.ts';
 import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EA} from '#src/internal/types.ts';

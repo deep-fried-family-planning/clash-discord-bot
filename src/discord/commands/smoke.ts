@@ -1,9 +1,9 @@
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
+import {Starter} from '#src/discord/initializer.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {Starter} from '#src/internal/disreact/initializer.ts';
-import {DisReact} from '#src/internal/disreact/runtime/create-disreact.ts';
+import {DisReact} from '#src/internal/disreact/create-disreact.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 

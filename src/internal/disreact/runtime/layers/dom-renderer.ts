@@ -1,9 +1,9 @@
 import {E, g, L, pipe} from '#pure/effect';
 import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {Err} from '#src/internal/disreact/entity/index.ts';
-import {DA, Df, In} from '#src/internal/disreact/model/entities/index.ts';
 import {DisReactContext} from '#src/internal/disreact/runtime/layers/disreact-context.ts';
 import {DisReactMemory} from '#src/internal/disreact/runtime/layers/disreact-memory.ts';
+import {DA, Df, In} from '#src/internal/disreact/virtual/entities/index.ts';
+import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
 import type {EAR} from '#src/internal/types.ts';
 import type {InteractionCallbackDatum, InteractionCallbackModal} from 'dfx/types';
 

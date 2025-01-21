@@ -1,5 +1,11 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <option name="OTHER_INDENT_OPTIONS">
+      <value>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </value>
+    </option>
     <option name="LINE_SEPARATOR" value="&#10;" />
     <CssCodeStyleSettings>
       <option name="HEX_COLOR_LOWER_CASE" value="true" />
@@ -12,7 +18,14 @@
       <option name="RUN_TF_FMT_ON_REFORMAT" value="true" />
     </HCL-Terraform>
     <HTMLCodeStyleSettings>
+      <option name="HTML_ATTRIBUTE_WRAP" value="4" />
+      <option name="HTML_TEXT_WRAP" value="0" />
+      <option name="HTML_ALIGN_ATTRIBUTES" value="false" />
       <option name="HTML_ALIGN_TEXT" value="true" />
+      <option name="HTML_QUOTE_STYLE" value="Single" />
+      <option name="HTML_ENFORCE_QUOTES" value="true" />
+      <option name="HTML_NEWLINE_BEFORE_FIRST_ATTRIBUTE" value="When multiline" />
+      <option name="HTML_NEWLINE_AFTER_LAST_ATTRIBUTE" value="When multiline" />
     </HTMLCodeStyleSettings>
     <JSON>
       <option name="PROPERTY_ALIGNMENT" value="2" />
@@ -35,6 +48,14 @@
       <option name="IMPORT_PREFER_ABSOLUTE_PATH" value="TRUE" />
       <option name="IMPORT_USE_NODE_RESOLUTION" value="GLOBAL" />
     </TypeScriptCodeStyleSettings>
+    <XML>
+      <option name="XML_ATTRIBUTE_WRAP" value="4" />
+      <option name="XML_TEXT_WRAP" value="0" />
+      <option name="XML_ALIGN_ATTRIBUTES" value="false" />
+    </XML>
+    <editorconfig>
+      <option name="ENABLED" value="false" />
+    </editorconfig>
     <yaml>
       <option name="ALIGN_VALUES_PROPERTIES" value="2" />
     </yaml>
@@ -66,7 +87,6 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="HTML">
-      <option name="RIGHT_MARGIN" value="0" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -74,7 +94,8 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="JSON">
-      <option name="RIGHT_MARGIN" value="0" />
+      <option name="RIGHT_MARGIN" value="120" />
+      <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -91,7 +112,7 @@
     <codeStyleSettings language="TypeScript">
       <option name="RIGHT_MARGIN" value="0" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
-      <option name="BLANK_LINES_AFTER_IMPORTS" value="2" />
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
       <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="WHILE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
@@ -101,6 +122,13 @@
       <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
       <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
       <option name="WRAP_COMMENTS" value="true" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="XML">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />

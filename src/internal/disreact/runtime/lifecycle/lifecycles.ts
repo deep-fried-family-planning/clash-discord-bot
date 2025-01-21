@@ -1,8 +1,8 @@
 import {E} from '#pure/effect';
-import type {Ev} from '#src/internal/disreact/model/entities/index.ts';
 import {DisReactMemory} from '#src/internal/disreact/runtime/layers/disreact-memory.ts';
 import {SafeMutex} from '#src/internal/disreact/runtime/layers/safe-mutex.ts';
 import {VDOMInstance} from '#src/internal/disreact/runtime/layers/vdom.ts';
+import type {Ev} from '#src/internal/disreact/virtual/entities/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

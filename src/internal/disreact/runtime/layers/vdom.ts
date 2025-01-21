@@ -1,6 +1,6 @@
 import {E, g, L} from '#pure/effect';
-import type {Co} from '#src/internal/disreact/model/entities/index.ts';
-import {type Nd, Un} from '#src/internal/disreact/model/entities/index.ts';
+import type {Co} from '#src/internal/disreact/virtual/entities/index.ts';
+import {type Nd, Un} from '#src/internal/disreact/virtual/entities/index.ts';
 import type {EAR} from '#src/internal/types.ts';
 
 

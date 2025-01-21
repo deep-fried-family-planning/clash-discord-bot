@@ -1,7 +1,6 @@
 import {D} from '#pure/effect';
-import {NONE} from '#src/internal/disreact/entity/constants.ts';
-import {type DA, Em, Rf} from '#src/internal/disreact/model/entities/index.ts';
-import {EmbedRoute, MainRoute} from '#src/internal/disreact/model/route/index.ts';
+import {type DA, Em, Rf} from '#src/internal/disreact/virtual/entities/index.ts';
+import {EmbedRoute, MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
 
 
 export type T = D.TaggedEnum<{
@@ -21,7 +20,7 @@ export const DialogLink = T.DialogLink;
 
 export const asModel = (ei: T): Em.T => {
   if (ei._tag === 'Header') {
-    const {_tag, ref = Rf.Default({id: NONE}), ...data} = ei;
+    const {_tag, ref = Rf.Default(), ...data} = ei;
     return Em.Main({
       route: MainRoute.empty(),
       data,
@@ -29,7 +28,7 @@ export const asModel = (ei: T): Em.T => {
     });
   }
   if (ei._tag === 'Body') {
-    const {_tag, ref = Rf.Default({id: NONE}), ...data} = ei;
+    const {_tag, ref = Rf.Default(), ...data} = ei;
     return Em.Basic({
       route: EmbedRoute.empty(),
       ref,

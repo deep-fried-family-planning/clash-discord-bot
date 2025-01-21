@@ -1,4 +1,4 @@
-import type {int, iso, unix, url} from '#src/internal/pure/types-pure.ts';
+import type {epochms, int, iso, url} from '#src/internal/pure/types-pure.ts';
 
 
 export type CK_War_Member = {
@@ -44,7 +44,7 @@ export type CK_War = {
     startTime           : iso;
     endTime             : iso;
     status_code         : int;
-    timestamp           : unix;
+    timestamp           : epochms;
     _response_retry     : 120;
     clan                : CK_War_Clan;
     opponent            : CK_War_Clan;

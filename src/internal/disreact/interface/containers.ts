@@ -1,7 +1,7 @@
 import {Ar} from '#pure/effect';
-import {NONE} from '#src/internal/disreact/entity/constants.ts';
 import {CI, EI} from '#src/internal/disreact/interface/index.ts';
-import {Co, Df} from '#src/internal/disreact/model/entities/index.ts';
+import {Co, Df} from '#src/internal/disreact/virtual/entities/index.ts';
+import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 

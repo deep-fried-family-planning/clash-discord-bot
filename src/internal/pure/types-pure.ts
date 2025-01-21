@@ -17,7 +17,7 @@ export type n_bool =
   | 0
   | 1;
 export type iso = string;
-export type unix = number;
+export type epochms = number;
 export type url = string;
 export type alias = Record<str, str>;
 export type ne = any;
