@@ -9,15 +9,16 @@ import {handler as lambda_task} from '#src/task.ts';
 import {stubLambdaContext} from './stub-lambda-context.ts';
 
 
+
 const lookup = {
-    ix_menu      : lambda_ix_menu,
-    ix_menu_close: lambda_ix_menu_close,
-    ix_slash     : lambda_ix_slash,
-    poll         : lambda_poll,
-    task         : lambda_task,
+  ix_menu      : lambda_ix_menu,
+  ix_menu_close: lambda_ix_menu_close,
+  ix_slash     : lambda_ix_slash,
+  poll         : lambda_poll,
+  task         : lambda_task,
 };
 
 
 export const wsBackendModel = async (kind: str, data: any) => {
-    await lookup[kind as keyof typeof lookup](data, stubLambdaContext);
+  await lookup[kind as keyof typeof lookup](data, stubLambdaContext);
 };

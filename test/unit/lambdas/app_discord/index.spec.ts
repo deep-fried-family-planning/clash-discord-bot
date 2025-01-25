@@ -1,5 +1,5 @@
 describe('test', () => {
-    it('does the thing', () => {
+  it('does the thing', () => {
 
-    });
+  });
 });

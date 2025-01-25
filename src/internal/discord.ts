@@ -1,25 +1,24 @@
 export type {
-    InteractionResponse as IxR,
-    EditWebhookMessageParams as IxRE,
+  InteractionResponse as IxR,
+  EditWebhookMessageParams as IxRE,
 
-    Interaction as IxD,
-    MessageComponentDatum as IxDc,
-    ModalSubmitDatum as IxDm,
-    ApplicationCommandDatum as IxDs,
+  Interaction as IxD,
+  MessageComponentDatum as IxDc,
+  ModalSubmitDatum as IxDm,
+  ApplicationCommandDatum as IxDs,
 } from 'dfx/types';
 
 
 export {
-    InteractionType as IXT,
-    InteractionCallbackType as IXRT,
+  InteractionType as IXT,
+  InteractionCallbackType as IXRT,
 
-    ApplicationCommandType as IXST,
-    ApplicationCommandOptionType as IXSOT,
+  ApplicationCommandType as IXST,
+  ApplicationCommandOptionType as IXSOT,
 
-    ComponentType as IXCT,
-    ButtonStyle as IXCBS,
-    TextInputStyle as IXCTS,
+  ComponentType as IXCT,
+  ButtonStyle as IXCBS,
+  TextInputStyle as IXCTS,
 
-    MessageFlag as MGF,
+  MessageFlag as MGF,
 } from 'dfx/types';
-

@@ -1,80 +1,81 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {BackB, PrimaryB, SingleS, SingleUserS} from '#src/discord/components/global-components.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import {makeId} from '#src/discord/store/type-rx.ts';
-import {asViewer} from '#src/discord/components/component-utils.ts';
-import type {St} from '#src/discord/store/derive-state.ts';
-import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import type {Ax} from '#src/discord/store/derive-action.ts';
-import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
+import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/constants/description.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asViewer} from '#src/discord/components/component-utils.ts';
+import {BackB, PrimaryB, SingleS, SingleUserS} from '#src/discord/components/global-components.ts';
+import type {Ax} from '#src/discord/store/derive-action.ts';
+import type {St} from '#src/discord/store/derive-state.ts';
+import {makeId} from '#src/discord/store/type-rx.ts';
 import {BotViewerDevB} from '#src/discord/view-reducers/bot-viewer-dev.ts';
-import {ClashCache} from "#src/clash/layers/clash-cash.ts";
+import {viewUserPlayerOptions} from '#src/discord/views/user-player-options.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {str} from '#src/internal/pure/types-pure.ts';
 
 
-export const DirectoryViewerB = PrimaryB.as(makeId(RK_OPEN, 'DV'), {
-    label: 'Directory',
+
+export const DirectoryViewerB        = PrimaryB.as(makeId(RK_OPEN, 'DV'), {
+  label: 'Directory',
 });
 export const DirectoryViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'DVA'), {
-    placeholder: PLACEHOLDER_SELECT_ACCOUNT,
+  placeholder: PLACEHOLDER_SELECT_ACCOUNT,
 });
-export const DirectoryViewerUserS = SingleUserS.as(makeId(RK_UPDATE, 'DVU'), {
-    placeholder: PLACEHOLDER_SELECT_ACCOUNT,
+export const DirectoryViewerUserS    = SingleUserS.as(makeId(RK_UPDATE, 'DVU'), {
+  placeholder: PLACEHOLDER_SELECT_ACCOUNT,
 });
 
 
 export const getPlayers = (user: str) => E.gen(function * () {
-    const records = yield * queryPlayersForUser({pk: user});
+  const records = yield * queryPlayersForUser({pk: user});
 
-    const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
+  const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
-    return viewUserPlayerOptions(records, players);
+  return viewUserPlayerOptions(records, players);
 });
 
 
 const view = (s: St, ax: Ax) => E.gen(function * () {
-    const selected = ax.selected.map((s) => s.value);
+  const selected = ax.selected.map((s) => s.value);
 
-    const User = DirectoryViewerUserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-    let Account = DirectoryViewerAccountS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  const User  = DirectoryViewerUserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  let Account = DirectoryViewerAccountS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
-    if (DirectoryViewerUserS.id.predicate === ax.id.predicate) {
-        Account = DirectoryViewerAccountS.render({
-            options: yield * getPlayers(User.values[0]),
-        });
-    }
+  if (DirectoryViewerUserS.id.predicate === ax.id.predicate) {
+    Account = DirectoryViewerAccountS.render({
+      options: yield * getPlayers(User.values[0]),
+    });
+  }
 
-    return {
-        ...s,
-        title      : 'Link Directory',
-        description: undefined,
+  return {
+    ...s,
+    title      : 'Link Directory',
+    description: undefined,
 
-        viewer: asViewer(
-            s.editor
-            ?? s.viewer
-            ?? Account.values[0]
-                ? {
-                    title: Account.values[0],
-                }
-                : {
-                    description: DESC_NO_ACCOUNT_SELECTED,
-                },
-        ),
-        editor: undefined,
-        status: undefined,
+    viewer: asViewer(
+      s.editor
+      ?? s.viewer
+      ?? Account.values[0]
+        ? {
+          title: Account.values[0],
+        }
+        : {
+          description: DESC_NO_ACCOUNT_SELECTED,
+        },
+    ),
+    editor: undefined,
+    status: undefined,
 
-        sel1: User,
-        sel2: Account.render({disabled: false}),
+    sel1: User,
+    sel2: Account.render({disabled: false}),
 
-        back: BackB.as(BotViewerDevB.id),
-    } satisfies St;
+    back: BackB.as(BotViewerDevB.id),
+  } satisfies St;
 });
 
 
 export const directoryViewerReducer = {
-    [DirectoryViewerB.id.predicate]       : view,
-    [DirectoryViewerUserS.id.predicate]   : view,
-    [DirectoryViewerAccountS.id.predicate]: view,
+  [DirectoryViewerB.id.predicate]       : view,
+  [DirectoryViewerUserS.id.predicate]   : view,
+  [DirectoryViewerAccountS.id.predicate]: view,
 };
