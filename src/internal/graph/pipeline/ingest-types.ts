@@ -1,56 +1,58 @@
+import type {_Model, CID, IGNAME, PID} from '#src/internal/graph/types.ts';
 import type {int, isodate} from '#src/internal/pure/types-pure.ts';
-import type {CID, IGNAME, PID, _Model} from '#src/internal/graph/types.ts';
 import type {Player} from 'clashofclans.js';
 
+
+
 export type DispatchedWar =
-    & _Model
+  & _Model
     & {
-        rules_size : int;
-        rules_atks : int;
-        rules_prep : isodate;
-        rules_start: isodate;
-        rules_end  : isodate;
-        clans      : DispatchedClan[];
-        players    : DispatchedPlayer[];
-        hits       : DispatchedHit[];
+      rules_size : int;
+      rules_atks : int;
+      rules_prep : isodate;
+      rules_start: isodate;
+      rules_end  : isodate;
+      clans      : DispatchedClan[];
+      players    : DispatchedPlayer[];
+      hits       : DispatchedHit[];
     };
 
 export type DispatchedClan =
-    & _Model
+  & _Model
     & {
-        cid  : CID;
-        name : IGNAME;
-        level: int;
-        stars: int;
-        dmg  : int;
+      cid  : CID;
+      name : IGNAME;
+      level: int;
+      stars: int;
+      dmg  : int;
     };
 
 export type DispatchedPlayer =
-    & _Model
+  & _Model
     & {
-        cid   : CID;
-        pid   : PID;
-        name  : IGNAME;
-        pos   : int;
-        th_lvl: int;
+      cid   : CID;
+      pid   : PID;
+      name  : IGNAME;
+      pos   : int;
+      th_lvl: int;
     };
 
 export type DispatchedHit =
-    & _Model
+  & _Model
     & {
-        a_pid   : PID;
-        d_pid   : PID;
-        order   : int;
-        stars   : int;
-        dmg_prct: int;
-        duration: int;
+      a_pid   : PID;
+      d_pid   : PID;
+      order   : int;
+      stars   : int;
+      dmg_prct: int;
+      duration: int;
     };
 
 export type DispatchedModel =
-    & _Model
+  & _Model
     & {
-        wars   : DispatchedWar[];
-        current: {
-            players: Player[];
-        };
+      wars   : DispatchedWar[];
+      current: {
+        players: Player[];
+      };
     };

@@ -1,37 +1,39 @@
-import {it} from '@effect/vitest';
-import {E} from '#src/internal/pure/effect.ts';
 import {type DClan, decodeDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {it} from '@effect/vitest';
+
+
 
 describe('DiscordClan', () => {
-    let testdata: Partial<DClan>;
+  let testdata: Partial<DClan>;
 
+  beforeEach(() => {
+    testdata = {
+      pk             : 's-1196596661804351519',
+      sk             : 'c-#2GR2G0PGG',
+      battle_opponent: 'c-',
+      countdown      : '1299263512920723508',
+      created        : '2024-11-12T02:28:57.309Z',
+      gsi_clan_tag   : 'c-#2GR2G0PGG',
+      gsi_server_id  : 's-1196596661804351519',
+      prep_opponent  : 'c-',
+      thread_battle  : '',
+      thread_prep    : '',
+      type           : 'DiscordClan',
+      updated        : '2024-11-12T02:28:57.309Z',
+      version        : '1.0.0',
+    };
+  });
+
+  describe('given a previous version record', () => {
     beforeEach(() => {
-        testdata = {
-            pk             : 's-1196596661804351519',
-            sk             : 'c-#2GR2G0PGG',
-            battle_opponent: 'c-',
-            countdown      : '1299263512920723508',
-            created        : '2024-11-12T02:28:57.309Z',
-            gsi_clan_tag   : 'c-#2GR2G0PGG',
-            gsi_server_id  : 's-1196596661804351519',
-            prep_opponent  : 'c-',
-            thread_battle  : '',
-            thread_prep    : '',
-            type           : 'DiscordClan',
-            updated        : '2024-11-12T02:28:57.309Z',
-            version        : '1.0.0',
-        };
+      testdata.verification = undefined;
     });
 
-    describe('given a previous version record', () => {
-        beforeEach(() => {
-            testdata.verification = undefined;
-        });
+    it.effect('when decoding to latest', () => E.gen(function * () {
+      const result = yield * decodeDiscordClan(testdata);
 
-        it.effect('when decoding to latest', () => E.gen(function * () {
-            const result = yield * decodeDiscordClan(testdata);
-
-            expect(result).toMatchInlineSnapshot(`
+      expect(result).toMatchInlineSnapshot(`
               {
                 "battle_opponent": "",
                 "countdown": "1299263512920723508",
@@ -49,12 +51,12 @@ describe('DiscordClan', () => {
                 "version": "1.0.0",
               }
             `);
-        }));
+    }));
 
-        it.effect('when encoding to latest', () => E.gen(function * () {
-            const result = yield * decodeDiscordClan(testdata);
+    it.effect('when encoding to latest', () => E.gen(function * () {
+      const result = yield * decodeDiscordClan(testdata);
 
-            expect(result).toMatchInlineSnapshot(`
+      expect(result).toMatchInlineSnapshot(`
               {
                 "battle_opponent": "",
                 "countdown": "1299263512920723508",
@@ -72,6 +74,6 @@ describe('DiscordClan', () => {
                 "version": "1.0.0",
               }
             `);
-        }));
-    });
+    }));
+  });
 });

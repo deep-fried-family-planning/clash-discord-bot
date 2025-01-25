@@ -1,109 +1,109 @@
+import {oneofus} from '#src/discord/commands/oneofus.ts';
+import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';
 import {DynamoDBDocument} from '@aws-sdk/lib-dynamodb';
-import {afterAll, beforeAll, describe, vi} from 'vitest';
-import {E} from '#src/internal/pure/effect.ts';
-import {oneofus} from '#src/discord/commands/oneofus.ts';
 import {Client} from 'clashofclans.js';
-import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
+import {afterAll, beforeAll, describe, vi} from 'vitest';
 
 
 /* eslint-disable */
 
 
-const base = new DynamoDB({region: 'us-east-1'});
+const base     = new DynamoDB({region: 'us-east-1'});
 const dynamoDB = DynamoDBDocument.from(base);
 
 
 process.env.DDB_OPERATIONS = 'qual-dffp-clash-discord-bot-operations';
 
 
-vi.mock('clashofclans.js', async (importActual) => {
-    const actual = await importActual();
+vi.mock('clashofclans.js', async(importActual) => {
+  const actual = await importActual();
 
-    actual.Client.prototype.getPlayer = vi.fn();
-    actual.Client.prototype.verifyPlayerToken = vi.fn();
+  actual.Client.prototype.getPlayer         = vi.fn();
+  actual.Client.prototype.verifyPlayerToken = vi.fn();
 
-    console.log(actual);
+  console.log(actual);
 
-    return actual;
+  return actual;
 });
 
 
 describe('[SLASH /oneofus]: player/discord account linking', () => {
-    const data = {
-        guild_id: '123',
-        member  : {
-            user: {
-                id: '123',
-            },
-            roles: [''],
-        },
-    };
-    const options = {
-        player_tag: '#0289PYLQGRJCUV',
-        api_token : '',
-    };
+  const data    = {
+    guild_id: '123',
+    member  : {
+      user : {
+        id: '123',
+      },
+      roles: [''],
+    },
+  };
+  const options = {
+    player_tag: '#0289PYLQGRJCUV',
+    api_token : '',
+  };
 
-    beforeAll(async () => {
-        await dynamoDB.put({
-            TableName: 'qual-dffp-clash-discord-bot-operations',
-            Item     : {
-                pk: 'u-123',
-                sk: 'p-#0289PYLQGRJCUV',
-            },
-        });
+  beforeAll(async() => {
+    await dynamoDB.put({
+      TableName: 'qual-dffp-clash-discord-bot-operations',
+      Item     : {
+        pk: 'u-123',
+        sk: 'p-#0289PYLQGRJCUV',
+      },
+    });
+  });
+
+  afterAll(async() => {
+    await dynamoDB.delete({
+      TableName: 'qual-dffp-clash-discord-bot-operations',
+      Key      : {
+        pk: 'u-123',
+        sk: 'p-#0289PYLQGRJCUV',
+      },
+    });
+    await dynamoDB.delete({
+      TableName: 'qual-dffp-clash-discord-bot-operations',
+      Key      : {
+        pk: 's-123',
+        sk: 'now',
+      },
+    });
+  });
+
+  describe('given unrecognized server', () => {
+    it('failure: when linking accounts', async() => {
+      const testable = E.provide(oneofus(data, options), LambdaLayer);
+
+      await expect(E.runPromise(testable)).rejects.toMatchInlineSnapshot(`[(FiberFailure) Error: the current server is not recognized]`);
+    });
+  });
+
+  describe('given recognized server', () => {
+    beforeAll(async() => {
+      await dynamoDB.put({
+        TableName: 'qual-dffp-clash-discord-bot-operations',
+        Item     : E.runSync(encodeDiscordServer(DiscordServer.make({
+          pk           : 's-123',
+          sk           : 'now',
+          type         : 'DiscordServer',
+          version      : '1.0.0',
+          created      : new Date(),
+          updated      : new Date(),
+          gsi_server_id: `s-123`,
+          admin        : '',
+          polling      : false,
+        }))),
+      });
     });
 
-    afterAll(async () => {
-        await dynamoDB.delete({
-            TableName: 'qual-dffp-clash-discord-bot-operations',
-            Key      : {
-                pk: 'u-123',
-                sk: 'p-#0289PYLQGRJCUV',
-            },
-        });
-        await dynamoDB.delete({
-            TableName: 'qual-dffp-clash-discord-bot-operations',
-            Key      : {
-                pk: 's-123',
-                sk: 'now',
-            },
-        });
-    });
+    it('success: when linking accounts', async() => {
+      Client.prototype.getPlayer.mockResolvedValue({tag: '#0289PYLQGRJCUV'});
+      Client.prototype.verifyPlayerToken.mockResolvedValue(true);
 
-    describe('given unrecognized server', () => {
-        it('failure: when linking accounts', async () => {
-            const testable = E.provide(oneofus(data, options), LambdaLayer);
+      const testable = E.provide(oneofus(data, options), LambdaLayer);
 
-            await expect(E.runPromise(testable)).rejects.toMatchInlineSnapshot(`[(FiberFailure) Error: the current server is not recognized]`);
-        });
-    });
-
-    describe('given recognized server', () => {
-        beforeAll(async () => {
-            await dynamoDB.put({
-                TableName: 'qual-dffp-clash-discord-bot-operations',
-                Item     : E.runSync(encodeDiscordServer(DiscordServer.make({
-                    pk           : 's-123',
-                    sk           : 'now',
-                    type         : 'DiscordServer',
-                    version      : '1.0.0',
-                    created      : new Date(),
-                    updated      : new Date(),
-                    gsi_server_id: `s-123`,
-                    admin        : '',
-                    polling      : false,
-                }))),
-            });
-        });
-
-        it('success: when linking accounts', async () => {
-            Client.prototype.getPlayer.mockResolvedValue({tag: '#0289PYLQGRJCUV'});
-            Client.prototype.verifyPlayerToken.mockResolvedValue(true);
-
-            const testable = E.provide(oneofus(data, options), LambdaLayer);
-
-            await expect(E.runPromise(testable)).resolves.toMatchInlineSnapshot(`
+      await expect(E.runPromise(testable)).resolves.toMatchInlineSnapshot(`
               {
                 "embeds": [
                   {
@@ -112,30 +112,30 @@ describe('[SLASH /oneofus]: player/discord account linking', () => {
                 ],
               }
             `);
-        });
     });
+  });
 
-    // describe('given caller server is linked', () => {
-    //     beforeEach(async () => {
-    //         await dynamoDB.put({
-    //             TableName: 'qual-dffp-clash-discord-bot-operations',
-    //             Item     : {
-    //                 pk: 'server-123',
-    //                 sk: 'now',
-    //             },
-    //         });
-    //     });
-    // });
+  // describe('given caller server is linked', () => {
+  //     beforeEach(async () => {
+  //         await dynamoDB.put({
+  //             TableName: 'qual-dffp-clash-discord-bot-operations',
+  //             Item     : {
+  //                 pk: 'server-123',
+  //                 sk: 'now',
+  //             },
+  //         });
+  //     });
+  // });
 
-    // it.skip('adrian\'s shit', async () => {
-    //     await dynamoDB.get({
-    //         TableName: 'find this NAME from either terraform files or AWS', // this is NOT an ARN or amazon resource number, just the name
-    //         Key      : {
-    //             pk: '',
-    //             sk: '',
-    //         },
-    //     });
-    //
-    //     // if this fails with resource not found, your creds work
-    // });
+  // it.skip('adrian\'s shit', async () => {
+  //     await dynamoDB.get({
+  //         TableName: 'find this NAME from either terraform files or AWS', // this is NOT an ARN or amazon resource number, just the name
+  //         Key      : {
+  //             pk: '',
+  //             sk: '',
+  //         },
+  //     });
+  //
+  //     // if this fails with resource not found, your creds work
+  // });
 });

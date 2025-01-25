@@ -21,35 +21,36 @@
 //
 
 
-import {it} from '@effect/vitest';
 import {CSL, E} from '#src/internal/pure/effect.ts';
+import {it} from '@effect/vitest';
+
 
 
 describe('links', () => {
-    const start = 'start';
-    const end = 'end';
+  const start = 'start';
+  const end   = 'end';
 
-    const configurable = [
-        'k1',
-        'k2',
-        'k3',
-        'k4',
-        'k5',
-        'k6',
-    ].map((k) => ({
-        k,
-        v: k,
-    }));
+  const configurable = [
+    'k1',
+    'k2',
+    'k3',
+    'k4',
+    'k5',
+    'k6',
+  ].map((k) => ({
+    k,
+    v: k,
+  }));
 
-    it.effect(' ', () => E.gen(function * () {
-        // const Start = makeMenu(start, UI.button, {label: 'Start'}, () => E.succeed({
-        //     content   : 'StartContent',
-        //     components: UI.singleColumn([UI.button({custom_id: ''})]),
-        // }));
-        //
-        // const Selectables = configurable.map(() => makeSelectSubmit());
+  it.effect(' ', () => E.gen(function * () {
+    // const Start = makeMenu(start, UI.button, {label: 'Start'}, () => E.succeed({
+    //     content   : 'StartContent',
+    //     components: UI.singleColumn([UI.button({custom_id: ''})]),
+    // }));
+    //
+    // const Selectables = configurable.map(() => makeSelectSubmit());
 
 
-        yield * CSL.log(['2025-11-13', '2024-11-12', '2025-11-12'].sort((a, b) => a.localeCompare(b)));
-    }));
+    yield * CSL.log(['2025-11-13', '2024-11-12', '2025-11-12'].sort((a, b) => a.localeCompare(b)));
+  }));
 });

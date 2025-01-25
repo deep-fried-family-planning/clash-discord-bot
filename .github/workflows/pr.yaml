@@ -1,67 +1,67 @@
-name: pr
+name       : pr
 
-on:
+on         :
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 concurrency:
-  group:              ${{ github.workflow }}-${{ github.ref }}
+  group             : ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
+jobs       :
 
 
-  verify:
-    name:    verify
+  verify  :
+    name   : verify
     runs-on: ubuntu-latest
-    steps:
+    steps  :
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache:             pnpm
+          cache            : pnpm
 
       - name: install
-        run:  pnpm install
+        run : pnpm install
       - name: type check
-        run:  pnpm run types
+        run : pnpm run types
       - name: unit test
-        run:  pnpm run unit
+        run : pnpm run unit
       - name: build
-        run: pnpm run build
+        run : pnpm run build
 
 
   validate:
-    name:    validate
-    needs:   [verify]
+    name   : validate
+    needs  : [ verify ]
     runs-on: ubuntu-latest
-    env:
+    env    :
       DFFP_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      DFFP_KEY:    ${{ secrets.AWS_ACCESS_KEY }}
-    steps:
+      DFFP_KEY   : ${{ secrets.AWS_ACCESS_KEY }}
+    steps  :
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
       - uses: tj-actions/changed-files@v45
-        id:   changed
+        id  : changed
         with:
           files: |
             terraform/**
             *.tf
 
-      - run:  echo "${{ steps.changed.outputs.any_changed == 'true' }}"
-      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
-        run:  echo "todo - terraform CICD credentials"
-      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
+      - run: echo "${{ steps.changed.outputs.any_changed == 'true' }}"
+      - if : ${{ steps.changed.outputs.any_changed == 'true' }}
+        run: echo "todo - terraform CICD credentials"
+      - if  : ${{ steps.changed.outputs.any_changed == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region:            'us-east-1'
-          aws-access-key-id:     ${{ env.DFFP_KEY_ID }}
+          aws-region           : 'us-east-1'
+          aws-access-key-id    : ${{ env.DFFP_KEY_ID }}
           aws-secret-access-key: ${{ env.DFFP_KEY }}
-      - if:   ${{ steps.changed.outputs.any_changed == 'true' }}
-        run:  terraform -chdir terraform workspace select qual
-      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
+      - if : ${{ steps.changed.outputs.any_changed == 'true' }}
+        run: terraform -chdir terraform workspace select qual
+      - if : ${{ steps.changed.outputs.any_changed == 'true' }}
         run: terraform -chdir terraform init
-      - if: ${{ steps.changed.outputs.any_changed == 'true' }}
+      - if : ${{ steps.changed.outputs.any_changed == 'true' }}
         run: terraform -chdir terraform validate
