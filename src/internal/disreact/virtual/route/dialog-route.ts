@@ -1,6 +1,7 @@
 import {D} from '#pure/effect';
-import {Templating} from '#src/internal/disreact/virtual/route/index.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import {Templating} from 'src/internal/disreact/virtual/route/index.ts';
+import type {str} from 'src/internal/pure/types-pure.ts';
+
 
 
 const template = '/:root/:node/:id/:active/:defer';

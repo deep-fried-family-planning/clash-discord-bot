@@ -1,9 +1,10 @@
 import {D, pipe} from '#pure/effect';
-import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Cm, Df, Em} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {DialogRoute, type MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {DA} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Cm, Df, Em} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {DialogRoute, type MainRoute} from 'src/internal/disreact/virtual/route/index.ts';
+import type {num, str} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type T = D.TaggedEnum<{
@@ -69,13 +70,13 @@ export const setCustomId = (custom_id: str) => T.$match({
 
 
 export const setOnSubmit = (onSubmit: () => void) => T.$match({
-  Message: (con) => Message({...con }),
+  Message: (con) => Message({...con}),
   Dialog : (con) => Dialog({...con, onSubmit}),
 });
 
 
 export const setOnOpen = (onOpen: () => void) => T.$match({
-  Message: (con) => Message({...con }),
+  Message: (con) => Message({...con}),
   Dialog : (con) => Dialog({...con, onOpen}),
 });
 
@@ -119,4 +120,31 @@ export const encodeDialog = (route: MainRoute.T) => (con: T) => {
       DialogRoute.encode,
     ),
   } as DA.TxDialog;
+};
+
+
+export const mapComponents = <
+  A extends T,
+>(
+  mapper: (c: Cm.T, row: num, col: num) => Cm.T,
+) => (
+  self: A,
+): A => pipe(
+  self,
+  setComponents(self.components.map((row, i) => row.map((c, j) => mapper(c, i, j)))),
+) as A;
+
+
+export const mapEmbeds = <
+  A extends T,
+>(
+  mapper: (c: Em.T) => Em.T,
+) => (
+  self: A,
+): A => {
+  if (!isMessage(self)) throw new Err.Critical();
+  return pipe(
+    self,
+    setEmbeds(self.embeds.map(mapper)),
+  ) as A;
 };

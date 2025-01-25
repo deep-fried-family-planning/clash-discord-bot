@@ -1,5 +1,6 @@
-import type {mopt, opt, str} from '#src/internal/pure/types-pure.ts';
 import {Discord} from 'dfx';
+import type {mopt, opt, str} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type Ix =
@@ -77,3 +78,8 @@ export const En = {
 export type User = Discord.User;
 export type GuildMember = Discord.GuildMember;
 export type Guild = Discord.Guild;
+
+
+export const COMPONENT_TYPE = Discord.ComponentType;
+export const BUTTON_STYLE = Discord.ButtonStyle;
+export const TEXT_INPUT_STYLE = Discord.TextInputStyle;

@@ -1,6 +1,5 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DeepFryerDisReact} from '#src/discord/initializer.ts';
 import {ixsRouter} from '#src/discord/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
@@ -27,24 +26,24 @@ const slash = (ix: IxD) => E.gen(function * () {
       }],
     } as Partial<IxRE>);
   })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
-    const userMessage = yield * logDiscordError([e]);
-
-    yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
-      ...userMessage,
-      embeds: [{
-        ...userMessage.embeds[0], // @ts-expect-error clashperk lib types
-        title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
-      }],
-    } as Partial<IxRE>);
-  })),
-  E.catchAllCause((error) => E.gen(function * () {
-    const e = Cause.prettyErrors(error);
-
-    const userMessage = yield * logDiscordError(e);
-
-    yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
-  })),
+  // E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
+  //   const userMessage = yield * logDiscordError([e]);
+  //
+  //   yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
+  //     ...userMessage,
+  //     embeds: [{
+  //       ...userMessage.embeds[0], // @ts-expect-error clashperk lib types
+  //       title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
+  //     }],
+  //   } as Partial<IxRE>);
+  // })),
+  // E.catchAllCause((error) => E.gen(function * () {
+  //   const e = Cause.prettyErrors(error);
+  //
+  //   const userMessage = yield * logDiscordError(e);
+  //
+  //   yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
+  // })),
 );
 
 
@@ -55,7 +54,7 @@ const h = (event: IxD) => pipe(
 
 export const handler = makeLambda(h, pipe(
   DiscordLayerLive,
-  L.provideMerge(DeepFryerDisReact),
+  // L.provideMerge(DeepFryerDisReact),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),

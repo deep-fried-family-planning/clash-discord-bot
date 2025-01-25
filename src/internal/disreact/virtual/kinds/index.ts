@@ -1,8 +1,7 @@
-import * as Auth from './auth.ts';
-import * as Err from './error.ts';
+import * as Err from 'src/internal/disreact/virtual/kinds/error.ts';
+
 
 
 export {
-  Auth,
   Err,
 };

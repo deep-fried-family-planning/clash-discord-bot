@@ -1,6 +1,7 @@
 import {D} from '#pure/effect';
-import type {num, unk} from '#src/internal/pure/types-pure.ts';
-import type {AnyE} from '#src/internal/types.ts';
+import type {num, unk} from 'src/internal/pure/types-pure.ts';
+import type {AnyE} from 'src/internal/types.ts';
+
 
 
 export type T = D.TaggedEnum<{

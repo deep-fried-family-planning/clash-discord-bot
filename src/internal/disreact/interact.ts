@@ -4,9 +4,10 @@ import {Renderer} from '#src/internal/disreact/runtime/layers/dom-renderer.ts';
 import {DOMInstance} from '#src/internal/disreact/runtime/layers/dom.ts';
 import {VDOMInstance} from '#src/internal/disreact/runtime/layers/vdom.ts';
 import {dismount, mount, simulate, update} from '#src/internal/disreact/runtime/lifecycle/lifecycles.ts';
-import {Co, type DA, Df, Ev, In} from '#src/internal/disreact/virtual/entities/index.ts';
-import {MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
 import {Fiber} from 'effect';
+import {Co, type DA, Df, Ev, In} from 'src/internal/disreact/virtual/entities/index.ts';
+import {MainRoute} from 'src/internal/disreact/virtual/route/index.ts';
+
 
 
 export const interact = E.fn('DisReact.interact')(

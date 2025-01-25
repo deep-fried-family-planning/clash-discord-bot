@@ -1,5 +1,6 @@
 import {D} from '#pure/effect';
-import {Templating} from '#src/internal/disreact/virtual/route/index.ts';
+import {Templating} from 'src/internal/disreact/virtual/route/index.ts';
+
 
 
 const template = '/:ref/:row/:col';

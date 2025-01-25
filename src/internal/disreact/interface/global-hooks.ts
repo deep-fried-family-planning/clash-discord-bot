@@ -1,5 +1,6 @@
-import type {Df} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Un} from '#src/internal/disreact/virtual/entities/index.ts';
+import type {Df} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Un} from 'src/internal/disreact/virtual/entities/index.ts';
+
 
 
 export const useClose = () => {

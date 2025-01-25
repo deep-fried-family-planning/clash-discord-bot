@@ -1,10 +1,8 @@
 {
   "compilerOptions": {
     "target"                      : "esnext",
-
     "jsx"                         : "react-jsx",
-    "jsxImportSource"             : "src/internal/disreact/jsx",
-
+    "jsxImportSource"             : "#disreact/dsx",
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
     "isolatedModules"             : true,
@@ -17,17 +15,11 @@
     "exactOptionalPropertyTypes"  : true,
     "baseUrl"                     : "./",
     "paths"                       : {
-      "@disreact"        : ["./src/internal/disreact/jsx"],
-      "@disreact-jsx/*"        : ["./src/internal/disreact/jsx/*"],
-      "#src"               : ["src"],
-      "#src/*"             : ["src/*"],
-      "#dfdis"             : ["src/internal/discord/index.ts"],
-      "#discord/*"         : ["src/internal/discord/*"],
-      "#discord/entities"  : ["src/internal/discord/entities"],
-      "#discord/entities/*": ["src/internal/discord/entities/*"],
-      "#pure/effect"       : ["src/internal/pure/effect.ts"],
-      "#pure/dfx"          : ["src/internal/pure/dfx.ts"],
-      "#disreact/*"        : ["./src/internal/disreact/*"]
+      "#disreact/dsx/*": ["src/disreact/dsx/*"],
+      "#disreact/*"    : ["src/disreact/*"],
+      "#src/*"         : ["src/*"],
+      "#pure/effect"   : ["src/internal/pure/effect.ts"],
+      "#pure/dfx"      : ["src/internal/pure/dfx.ts"]
     }
   }
 }

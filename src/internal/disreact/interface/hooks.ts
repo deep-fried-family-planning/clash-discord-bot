@@ -1,5 +1,6 @@
 import {Kv, pipe} from '#pure/effect';
-import {type Nd, Un} from '#src/internal/disreact/virtual/entities/index.ts';
+import {type Nd, Un} from 'src/internal/disreact/virtual/entities/index.ts';
+
 
 
 export const useNext = (nodes: Nd.KeyedFns) => {

@@ -1,13 +1,14 @@
 import type {E} from '#pure/effect';
 import {D, g} from '#pure/effect';
-import {DA, Rf} from '#src/internal/disreact/virtual/entities/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
-import {ComponentUnknownError} from '#src/internal/disreact/virtual/kinds/error.ts';
-import type {Auth} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {ComponentRoute} from '#src/internal/disreact/virtual/route/index.ts';
-import type {mut, num} from '#src/internal/pure/types-pure.ts';
 import {Discord} from 'dfx';
+import {DA, Rf} from 'src/internal/disreact/virtual/entities/index.ts';
+import {NONE} from 'src/internal/disreact/virtual/kinds/constants.ts';
+import {ComponentUnknownError} from 'src/internal/disreact/virtual/kinds/error.ts';
+import type {Auth} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {ComponentRoute} from 'src/internal/disreact/virtual/route/index.ts';
+import type {mut, num} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type Handler = (event: unknown) => void | E.Effect<void>;
@@ -31,15 +32,15 @@ export type ChannelSelect = D.TaggedEnum.Value<T, 'ChannelSelect'>;
 export type MentionSelect = D.TaggedEnum.Value<T, 'MentionSelect'>;
 export type Text = D.TaggedEnum.Value<T, 'Text'>;
 
-const T               = D.taggedEnum<T>();
+export const T = D.taggedEnum<T>();
 
-export const Button          = T.Button;
-export const Select          = T.Select;
-export const UserSelect      = T.UserSelect;
-export const RoleSelect      = T.RoleSelect;
-export const ChannelSelect   = T.ChannelSelect;
-export const MentionSelect   = T.MentionSelect;
-export const Text            = T.Text;
+export const Button        = T.Button;
+export const Select        = T.Select;
+export const UserSelect    = T.UserSelect;
+export const RoleSelect    = T.RoleSelect;
+export const ChannelSelect = T.ChannelSelect;
+export const MentionSelect = T.MentionSelect;
+export const Text          = T.Text;
 
 export const isButton        = T.$is('Button');
 export const isSelect        = T.$is('Select');

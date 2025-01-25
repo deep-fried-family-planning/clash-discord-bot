@@ -20,3 +20,12 @@ export * as MD from '#src/internal/pure/markdown.ts'; // discord flavored markdo
 
 export type Encode<T> = (t: unknown) => T;
 export type Decode<T> = (t: unknown) => T;
+
+
+export {inspect as nodeInspect} from 'node:util';
+import {inspect as nodeInspect} from 'node:util';
+
+export const inspectLog = <A>(title: string) => (thing: A) => {
+    console.log(title, nodeInspect(thing, false, null));
+    return thing;
+};

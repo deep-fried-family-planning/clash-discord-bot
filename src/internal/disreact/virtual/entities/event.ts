@@ -1,6 +1,7 @@
 import {D} from '#pure/effect';
-import type {Cm, Co, Cv, DA} from '#src/internal/disreact/virtual/entities/index.ts';
-import type {num, obj, str} from '#src/internal/pure/types-pure.ts';
+import type {Cm, Co, Cv, DA} from 'src/internal/disreact/virtual/entities/index.ts';
+import type {num, obj, str} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type T = D.TaggedEnum<{

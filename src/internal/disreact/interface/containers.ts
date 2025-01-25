@@ -1,8 +1,9 @@
 import {Ar} from '#pure/effect';
 import {CI, EI} from '#src/internal/disreact/interface/index.ts';
-import {Co, Df} from '#src/internal/disreact/virtual/entities/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {Co, Df} from 'src/internal/disreact/virtual/entities/index.ts';
+import {NONE} from 'src/internal/disreact/virtual/kinds/constants.ts';
+
 
 
 export type MessageParams = (EI.T | CI.T[])[];

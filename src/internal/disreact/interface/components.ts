@@ -1,17 +1,18 @@
 import type {E} from '#pure/effect';
 import {D} from '#pure/effect';
-import {Cm, DA, Rf} from '#src/internal/disreact/virtual/entities/index.ts';
-import type {Auth} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {ComponentRoute} from '#src/internal/disreact/virtual/route/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {Cm, DA, Rf} from 'src/internal/disreact/virtual/entities/index.ts';
+import type {Auth} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {ComponentRoute} from 'src/internal/disreact/virtual/route/index.ts';
+
 
 
 export type OnClickFn<A, B> = (
   event: {
     target: A;
     values: B[];
-  }
+  },
 ) => void | E.Effect<void>;
 
 
@@ -44,12 +45,12 @@ export const SecondaryButton = (p: Omit<Button, '_tag'>) => T.Button({...p, styl
 export const DangerButton    = (p: Omit<Button, '_tag'>) => T.Button({...p, style: DA.En.Button.DANGER});
 export const LinkButton      = (p: Omit<Button, '_tag'>) => T.Button({...p, style: DA.En.Button.LINK});
 export const PremiumButton   = (p: Omit<Button, '_tag'>) => T.Button({...p, style: DA.En.Button.PREMIUM});
-export const Select = (p: Omit<Select, '_tag'>) => [T.Select(p)];
-export const UserSelect    = (p: Omit<UserSelect, '_tag'>) => [T.UserSelect(p)];
-export const RoleSelect    = (p: Omit<RoleSelect, '_tag'>) => [T.RoleSelect(p)];
-export const ChannelSelect = (p: Omit<ChannelSelect, '_tag'>) => [T.ChannelSelect(p)];
-export const MentionSelect = (p: Omit<MentionSelect, '_tag'>) => [T.MentionSelect(p)];
-export const Text          = (p: Omit<Text, '_tag'>) => [T.Text(p)];
+export const Select          = (p: Omit<Select, '_tag'>) => [T.Select(p)];
+export const UserSelect      = (p: Omit<UserSelect, '_tag'>) => [T.UserSelect(p)];
+export const RoleSelect      = (p: Omit<RoleSelect, '_tag'>) => [T.RoleSelect(p)];
+export const ChannelSelect   = (p: Omit<ChannelSelect, '_tag'>) => [T.ChannelSelect(p)];
+export const MentionSelect   = (p: Omit<MentionSelect, '_tag'>) => [T.MentionSelect(p)];
+export const Text            = (p: Omit<Text, '_tag'>) => [T.Text(p)];
 
 
 const models = {

@@ -1,7 +1,8 @@
 import {E, g, L} from '#pure/effect';
-import {In} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
 import type {EA} from '#src/internal/types.ts';
+import {In} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+
 
 
 const context = g(function * () {

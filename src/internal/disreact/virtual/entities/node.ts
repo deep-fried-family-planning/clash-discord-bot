@@ -1,5 +1,6 @@
-import {type Co, Df, type Hk, Un} from '#src/internal/disreact/virtual/entities/index.ts';
-import type {num, rec, str} from '#src/internal/pure/types-pure.ts';
+import {type Co, Df, type Hk, Un} from 'src/internal/disreact/virtual/entities/index.ts';
+import type {num, rec, str} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type T<A extends Co.T = Co.T> = {

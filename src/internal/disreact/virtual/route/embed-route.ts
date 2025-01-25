@@ -1,7 +1,8 @@
 import {D} from '#pure/effect';
-import {DFFP_URL} from '#src/constants/dffp-alias.ts';
-import {Templating} from '#src/internal/disreact/virtual/route/index.ts';
-import type {mut, str} from '#src/internal/pure/types-pure.ts';
+import {DFFP_URL} from 'src/constants/dffp-alias.ts';
+import {Templating} from 'src/internal/disreact/virtual/route/index.ts';
+import type {mut, str} from 'src/internal/pure/types-pure.ts';
+
 
 
 const template = '/:type/:ref';

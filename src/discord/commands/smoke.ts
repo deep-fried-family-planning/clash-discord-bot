@@ -1,9 +1,9 @@
+import {JsxExample} from '#src/discord/jsx-example.tsx';
+import {DisReactDOM} from '#disreact/index.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {Starter} from '#src/discord/initializer.ts';
 import type {CommandSpec, IxDS, snow} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {DisReact} from '#src/internal/disreact/create-disreact.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
@@ -23,11 +23,11 @@ export const SMOKE = {
  *   /smoke]
  */
 export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
-  const [server, user] = yield * validateServer(data);
-
-  if (!user.roles.includes(server.admin as snow)) {
-    return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
-  }
+  // const [server, user] = yield * validateServer(data);
+  //
+  // if (!user.roles.includes(server.admin as snow)) {
+  //   return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
+  // }
 
   // return {
   //   embeds: [{
@@ -65,5 +65,5 @@ export const smoke = (data: IxD, _: IxDS<typeof SMOKE>) => E.gen(function * () {
   //   ]),
   // };
 
-  return yield * DisReact.synthesize({Starter});
+  return yield * DisReactDOM.synthesize(JsxExample);
 });

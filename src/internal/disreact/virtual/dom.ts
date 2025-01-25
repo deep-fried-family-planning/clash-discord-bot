@@ -1,10 +1,11 @@
-import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Co} from '#src/internal/disreact/virtual/entities/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
-import {pipe} from '#src/internal/pure/effect';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import {pipe} from '#pure/effect';
+import type {DA} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Co} from 'src/internal/disreact/virtual/entities/index.ts';
+import {NONE} from 'src/internal/disreact/virtual/kinds/constants.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {MainRoute} from 'src/internal/disreact/virtual/route/index.ts';
+import type {str} from 'src/internal/pure/types-pure.ts';
+
 
 
 export type T = {

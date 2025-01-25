@@ -1,5 +1,5 @@
-import {useNext} from '#disreact/interface/dev.ts';
-import {DA} from '#disreact/virtual/entities/index.ts';
+import {useNext} from 'src/internal/disreact/interface/dev.ts';
+import {DA} from 'src/internal/disreact/virtual/entities/index.ts';
 
 
 

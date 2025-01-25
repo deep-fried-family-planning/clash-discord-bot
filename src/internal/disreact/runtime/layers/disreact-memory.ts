@@ -1,12 +1,14 @@
 import {C, DT, E, g, L, pipe} from '#pure/effect';
-import {Df, Df, Nd} from '#src/internal/disreact/virtual/entities/index.ts';
-import {DOM} from '#src/internal/disreact/virtual/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
 import {SafeMutex} from '#src/internal/disreact/runtime/layers/safe-mutex.ts';
 import type {num, rec, str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import type {Df} from 'src/internal/disreact/virtual/entities/index.ts';
+import { Nd} from 'src/internal/disreact/virtual/entities/index.ts';
+import {DOM} from 'src/internal/disreact/virtual/index.ts';
+import {NONE} from 'src/internal/disreact/virtual/kinds/constants.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+
 
 
 const memCache = C.make({
@@ -94,7 +96,6 @@ const memory = E.fn('DisReactMemory')(function * (rootfns: Nd.KeyedFns) {
 
   const saveToken = E.fn('DisReactMemory.saveToken')(
     function * (id: str, token: str, expires: num, defer: Df.T['_tag']) {
-
     const ttl = yield * pipe(
       DT.now,
       E.map(DT.addDuration('5 minutes')),
@@ -102,21 +103,21 @@ const memory = E.fn('DisReactMemory')(function * (rootfns: Nd.KeyedFns) {
     );
 
     const item = {
-      pk : `token-${id}`,
-      sk : 'now',
+      pk: `token-${id}`,
+      sk: 'now',
       ttl,
       token,
       expires,
       defer,
-    }
+    };
 
-    yield * tokens.set(id, {token});
-
-    yield * E.fork(DynamoDBDocument.put({
-      TableName: process.env.DDB_OPERATIONS,
-      Item     : ,
-    }));
-  }
+    // yield * tokens.set(id, {token});
+    //
+    // yield * E.fork(DynamoDBDocument.put({
+    //   TableName: process.env.DDB_OPERATIONS,
+    //   Item     : ,
+    // }));
+  },
   );
 
 

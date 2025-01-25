@@ -33,17 +33,25 @@
       <option name="ARRAY_WRAPPING" value="5" />
     </JSON>
     <TypeScriptCodeStyleSettings version="0">
+      <option name="JSDOC_INCLUDE_TYPES" value="true" />
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
       <option name="SPACE_BEFORE_GENERATOR_MULT" value="true" />
-      <option name="FILE_NAME_STYLE" value="LISP_CASE" />
       <option name="ALIGN_OBJECT_PROPERTIES" value="2" />
       <option name="ALIGN_VAR_STATEMENTS" value="2" />
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
       <option name="REFORMAT_C_STYLE_COMMENTS" value="true" />
       <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
       <option name="VAR_DECLARATION_WRAP" value="0" />
       <option name="OBJECT_LITERAL_WRAP" value="0" />
       <option name="OBJECT_TYPES_WRAP" value="0" />
       <option name="IMPORTS_WRAP" value="0" />
+      <option name="ALIGN_UNION_TYPES" value="true" />
       <option name="USE_CHAINED_CALLS_GROUP_INDENTS" value="true" />
+      <option name="SPACE_BEFORE_ASYNC_ARROW_LPAREN" value="false" />
+      <option name="SPACES_WITHIN_OBJECT_TYPE_BRACES" value="false" />
+      <option name="BLANK_LINES_AROUND_FUNCTION" value="0" />
       <option name="IMPORT_SORT_MODULE_NAME" value="true" />
       <option name="IMPORT_PREFER_ABSOLUTE_PATH" value="TRUE" />
       <option name="IMPORT_USE_NODE_RESOLUTION" value="GLOBAL" />
@@ -102,6 +110,14 @@
         <option name="TAB_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
+    <codeStyleSettings language="JavaScript">
+      <option name="RIGHT_MARGIN" value="240" />
+      <indentOptions>
+        <option name="INDENT_SIZE" value="2" />
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
     <codeStyleSettings language="Mermaid">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
@@ -110,23 +126,39 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
-      <option name="RIGHT_MARGIN" value="0" />
+      <option name="RIGHT_MARGIN" value="240" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
       <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
+      <option name="BLANK_LINES_AROUND_CLASS" value="0" />
+      <option name="BLANK_LINES_AROUND_METHOD" value="0" />
+      <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />
       <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="WHILE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="FINALLY_ON_NEW_LINE" value="true" />
-      <option name="ALIGN_MULTILINE_TERNARY_OPERATION" value="true" />
-      <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
+      <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
+      <option name="SPACE_BEFORE_IF_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_WHILE_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_FOR_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_CATCH_PARENTHESES" value="false" />
+      <option name="SPACE_BEFORE_SWITCH_PARENTHESES" value="false" />
       <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
-      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
-      <option name="WRAP_COMMENTS" value="true" />
+      <option name="EXTENDS_KEYWORD_WRAP" value="1" />
+      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
         <option name="TAB_SIZE" value="2" />
       </indentOptions>
+      <arrangement>
+        <groups>
+          <group>
+            <type>OVERRIDDEN_METHODS</type>
+            <order>KEEP</order>
+          </group>
+        </groups>
+        <rules />
+      </arrangement>
     </codeStyleSettings>
     <codeStyleSettings language="XML">
       <indentOptions>

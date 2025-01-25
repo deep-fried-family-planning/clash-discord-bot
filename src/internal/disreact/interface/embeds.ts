@@ -1,6 +1,7 @@
 import {D} from '#pure/effect';
-import {type DA, Em, Rf} from '#src/internal/disreact/virtual/entities/index.ts';
-import {EmbedRoute, MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
+import {type DA, Em, Rf} from 'src/internal/disreact/virtual/entities/index.ts';
+import {EmbedRoute, MainRoute} from 'src/internal/disreact/virtual/route/index.ts';
+
 
 
 export type T = D.TaggedEnum<{

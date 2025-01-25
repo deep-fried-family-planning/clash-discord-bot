@@ -1,6 +1,7 @@
-import {Df, type Hk, type Nd} from '#src/internal/disreact/virtual/entities/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
-import type {mut} from '#src/internal/pure/types-pure.ts';
+import {Df, type Hk, type Nd} from 'src/internal/disreact/virtual/entities/index.ts';
+import {NONE} from 'src/internal/disreact/virtual/kinds/constants.ts';
+import type {mut} from 'src/internal/pure/types-pure.ts';
+
 
 
 let call_num = 0;

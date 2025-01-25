@@ -1,10 +1,11 @@
 import {E, Kv, pipe} from '#pure/effect';
 import {DisReactMemory} from '#src/internal/disreact/runtime/layers/disreact-memory.ts';
-import {Co, Df, type Nd} from '#src/internal/disreact/virtual/entities/index.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inspect} from 'node:util';
+import {Co, Df, type Nd} from 'src/internal/disreact/virtual/entities/index.ts';
+import {Err} from 'src/internal/disreact/virtual/kinds/index.ts';
+import {MainRoute} from 'src/internal/disreact/virtual/route/index.ts';
+
 
 
 export const synthesize = E.fn('DisReact.synthesize')(
