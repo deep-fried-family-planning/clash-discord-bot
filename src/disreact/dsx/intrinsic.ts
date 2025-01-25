@@ -1,8 +1,7 @@
 import type {JSX} from '#disreact/dsx/jsx-runtime.ts';
+import {BUTTON_STYLE, COMPONENT_TYPE, type TEXT_INPUT_STYLE} from '#disreact/runtime/codec.ts';
 import type {RestEmbed} from '#pure/dfx';
 import type {snow} from '#src/discord/types.ts';
-import {BUTTON_STYLE, COMPONENT_TYPE, type Emoji} from '#src/internal/disreact/virtual/entities/dapi.ts';
-import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {Discord} from 'dfx/index';
 
@@ -13,7 +12,7 @@ export type ActionRowProps = ActionRowAttributes & {
   children: ButtonProps[];
 };
 export type ActionRowOut = {
-  type      : typeof DA.En.CT.ACTION_ROW;
+  type      : typeof COMPONENT_TYPE.ACTION_ROW;
   components: ButtonOut[];
 };
 export type ActionRowIn = ActionRowOut;
@@ -25,7 +24,7 @@ export const createActionRowElement = (type: typeof ActionRowTag, props: ActionR
   };
 };
 
-export const encodeActionRowElement = (props: ActionRowAttributes): ActionRowOut => {
+export const encodeActionRowElement = (props: ActionRowProps): ActionRowOut => {
   return {
     type      : Discord.ComponentType.ACTION_ROW,
     components: props.children.map((c) => encodeButtonElement(c)),
@@ -44,7 +43,7 @@ export type ButtonAttributes = JSX.IntrinsicAttributes & {
   custom_id?: string;
   style?    : Discord.ButtonStyle;
   label?    : | und | string;
-  emoji?    : | und | Emoji;
+  emoji?    : | und | Discord.Emoji;
   sku_id?   : | und | snow;
   url?      : | und | string;
   disabled? : | und | boolean;
@@ -55,7 +54,7 @@ export type ButtonOut = {
   type      : Discord.ComponentType.BUTTON;
   style     : Discord.ButtonStyle;
   label?    : und | string;
-  emoji?    : und | Emoji;
+  emoji?    : und | Discord.Emoji;
   custom_id?: und | string;
   sku_id?   : und | snow;
   url?      : und | string;
@@ -276,7 +275,7 @@ export const TextTag = 'text';
 export const TextInputTag = 'textinput';
 export type TextInputAttributes = JSX.IntrinsicAttributes & {
   custom_id?  : string;
-  style?      : Discord.TextInputStyle;
+  style?      : TEXT_INPUT_STYLE;
   label       : string;
   min_length? : number;
   max_length? : number;
@@ -286,9 +285,9 @@ export type TextInputAttributes = JSX.IntrinsicAttributes & {
 };
 export type TextInputProps = TextInputAttributes;
 export type TextInputOut = {
-  type        : Discord.ComponentType.TEXT_INPUT;
+  type        : COMPONENT_TYPE;
   custom_id   : string;
-  style       : Discord.TextInputStyle;
+  style       : TEXT_INPUT_STYLE;
   label       : string;
   min_length? : number;
   max_length? : number;
@@ -307,9 +306,9 @@ export const createTextInputElement = (type: typeof TextTag, props: TextInputPro
 
 export const encodeTextInputElement = (props: TextInputAttributes): TextInputOut => {
   return {
-    type       : Discord.ComponentType.TEXT_INPUT,
+    type       : COMPONENT_TYPE.TEXT_INPUT,
     custom_id  : props.custom_id ?? '',
-    style      : props.style ?? Discord.TextInputStyle.SHORT,
+    style      : props.style ?? TEXT_INPUT_STYLE.SHORT,
     label      : props.label,
     min_length : props.min_length ?? 0,
     max_length : props.max_length ?? 4000,

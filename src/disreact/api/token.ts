@@ -1,9 +1,9 @@
+import {NONE} from '#disreact/runtime/codec.ts';
 import {D} from '#pure/effect';
 import type {snow} from '#src/discord/types.ts';
 import type {bool, epochms, str} from '#src/internal/pure/types-pure.ts';
 // import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
 // import {Df} from '#src/internal/disreact/virtual/entities/index.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
 
 
 

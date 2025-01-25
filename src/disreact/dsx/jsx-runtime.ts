@@ -3,6 +3,8 @@ import type {ActionRowAttributes, ButtonAttributes, DialogAttributes, EmbedAttri
 import {createElementMulti, createElementSingle} from '#src/disreact/dsx/create-element.ts';
 import type {Message} from 'dfx/types';
 
+
+
 export declare namespace JSX {
   export type Element = Message;
   export type ElementType = any;
@@ -25,12 +27,15 @@ export declare namespace JSX {
 }
 
 
+
 export const Fragment = undefined;
-export const jsx      = createElementSingle;
-export const jsxs     = createElementMulti;
-export const jsxDEV   = (type: any, props: any) => {
-  console.log('jsxDEV');
-  if ('children' in props) {
+
+export const jsx = createElementSingle;
+
+export const jsxs = createElementMulti;
+
+export const jsxDEV = (type: any, props: any) => {
+  if (props && 'children' in props) {
     if (Array.isArray(props.children)) {
       return jsxs(type, props);
     }

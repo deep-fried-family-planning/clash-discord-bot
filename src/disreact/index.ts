@@ -1,6 +1,5 @@
 import {JsxExample, SubComponent} from '#src/discord/jsx-example.tsx';
 import type {TagFunc} from '#disreact/dsx/types.ts';
-import {createRootMap} from '#disreact/model/root-map.ts';
 import {ContextManager} from '#disreact/runtime/layer/ContextManager.ts';
 import {Broker} from '#disreact/runtime/layer/DisReactBroker.ts';
 import {FiberDOM} from '#disreact/runtime/layer/FiberDOM.ts';

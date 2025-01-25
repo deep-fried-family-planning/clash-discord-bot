@@ -2,10 +2,17 @@
 import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, SelectOptionTag, TextInputTag, TextTag} from '#disreact/dsx/intrinsic.ts';
 import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
 import {Kv} from '#pure/effect';
-import {BUTTON_STYLE, COMPONENT_TYPE, TEXT_INPUT_STYLE} from '#src/internal/disreact/virtual/entities/dapi.ts';
-import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
+import {Discord} from 'dfx/index';
 
 
+
+export const NONE      = '-';
+export const BUTTON_STYLE     = Discord.ButtonStyle;
+export const COMPONENT_TYPE   = Discord.ComponentType;
+export const TEXT_INPUT_STYLE = Discord.TextInputStyle;
+export type BUTTON_STYLE     = Discord.ButtonStyle;
+export type COMPONENT_TYPE   = Discord.ComponentType;
+export type TEXT_INPUT_STYLE = Discord.TextInputStyle;
 
 export const encodeTreeAsMessage = (
   node: DisReactAbstractNode,

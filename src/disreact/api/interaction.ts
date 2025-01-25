@@ -3,7 +3,7 @@ import {inspect} from 'node:util';
 import {Cm, Co, DA, Df, Em, Ev} from '#src/internal/disreact/virtual/entities/index.ts';
 import {NONE} from '#src/internal/disreact/virtual/kinds/constants.ts';
 import {Auth, Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {ComponentRoute, DialogRoute, MainRoute} from '#src/internal/disreact/virtual/route/index.ts';
+import {ComponentRoute, DialogRoute, MainRoute} from '#disreact/runtime/route/index.ts';
 import type {num, obj, str} from '#src/internal/pure/types-pure.ts';
 
 
