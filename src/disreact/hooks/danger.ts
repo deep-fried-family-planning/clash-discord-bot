@@ -1,6 +1,6 @@
 
-import type {HookState} from '#disreact/model/hooks/hook-state.ts';
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
+import type {HookState} from '#src/disreact/model/hooks/hook-state.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
 import {globalValue} from 'effect/GlobalValue';
 
 
@@ -13,10 +13,10 @@ export const getActiveFiberId = () => todoCurrentFiberId;
 
 export const ActiveNodes = globalValue(
   Symbol.for('DR.ActiveNodes'),
-  () => new WeakMap<object, DisReactAbstractNode>(),
+  () => new WeakMap<object, DisReactNode>(),
 );
 
 export const GlobalHooks = globalValue(
   Symbol.for('DisReact.GlobalHooks'),
-  () => new WeakMap<DisReactAbstractNode, HookState>(),
+  () => new WeakMap<DisReactNode, HookState>(),
 );

@@ -15,9 +15,9 @@ import {E} from '#src/internal/pure/effect.ts';
 export const respond = E.fn('DisReact.respond')(function * (
   rest: Rest.Interaction,
 ) {
-  const restToken   = yield * Broker.saveToken(rest);
-  const info        = getInteractionRoutingInfo(rest);
-  const interaction = yield * Ix.decodeInteraction(rest);
+  const ix = yield * Ix.decodeInteraction(rest);
+  const restToken = yield * Broker.saveToken(rest);
+  const info      = getInteractionRoutingInfo(rest);
 
   yield * ContextManager.reallocate();
   yield * ContextManager.setKey('rest', rest);

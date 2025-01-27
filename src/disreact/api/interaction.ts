@@ -12,9 +12,9 @@ type Common = {
   token: Token.Token;
   defer: Defer.Defer;
   route: {
-    token: Token.Token;
-    root : string;
-    node : string;
+    // token: Token.Token;
+    root: string;
+    node: string;
   };
 };
 
@@ -48,9 +48,10 @@ const decodeMessageComponent = (rest: Rest.Interaction) => E.gen(function * () {
   return Click({
     rest,
     auths,
-    token: Token.make(rest),
-    defer: Defer.None(),
-    route: {
+    token : Token.make(rest),
+    defer : Defer.None(),
+    states: {},
+    route : {
       root: __DISREACT_NONE,
       node: __DISREACT_NONE,
     },
