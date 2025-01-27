@@ -1,5 +1,4 @@
-import {E, g, L, pipe} from '#pure/effect';
-import type {SafeMutex} from '#src/internal/disreact/runtime/layers/safe-mutex.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
 
 
@@ -14,7 +13,10 @@ const safeMutex = E.gen(function * () {
 });
 
 
-export class GlobalMutex extends E.Tag('DisReact.GlobalMutex')<SafeMutex, EA<typeof safeMutex>>() {
+export class GlobalMutex extends E.Tag('DisReact.GlobalMutex')<
+  GlobalMutex,
+  EA<typeof safeMutex>
+>() {
   static singleton = L.effect(this, pipe(
     safeMutex,
     E.cached,
@@ -27,5 +29,3 @@ export class GlobalMutex extends E.Tag('DisReact.GlobalMutex')<SafeMutex, EA<typ
     E.provide(GlobalMutex.singleton),
   );
 }
-
-// E.tap(E.logTrace('SafeMutex: locked')),

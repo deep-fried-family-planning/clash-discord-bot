@@ -1,18 +1,19 @@
-import {ContextManager} from '#disreact/runtime/layer/ContextManager.ts';
-import {Token} from '#disreact/api/index.ts';
-import {C, E, g, L, pipe} from '#pure/effect';
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
+import {ContextManager} from '#src/disreact/runtime/layer/ContextManager.ts';
+import type {Rest} from '#src/disreact/api/index.ts';
+import {Token} from '#src/disreact/api/index.ts';
+import {C, E, L, pipe} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
 
 
-const tokenCache = g(function * () {
+
+const tokenCache = E.gen(function * () {
   const tokens = yield * C.make({
     capacity  : 1000,
     timeToLive: '10 minutes',
     lookup    : () => E.succeed(Token.Unknown() as Token.Token),
   });
 
-  const setToken = (rest: Ix) => g(function * () {
+  const setToken = (rest: Rest.Interaction) => E.gen(function * () {
     const token = Token.make(rest);
     yield * tokens.set(token.id, token);
     return token;
@@ -20,8 +21,7 @@ const tokenCache = g(function * () {
 
   return {
     setToken: setToken,
-
-    getToken: (id: string) => g(function * () {
+    getToken: (id: string) => E.gen(function * () {
       const hasToken = yield * tokens.contains(id);
 
       if (!hasToken) return null;
@@ -34,8 +34,7 @@ const tokenCache = g(function * () {
       }
       return token;
     }),
-
-    saveToken: (rest: Ix) => {
+    saveToken: (rest: Rest.Interaction) => {
       return setToken(rest);
     },
   };
@@ -131,7 +130,7 @@ const renderResponse = E.gen(function * () {
 });
 
 
-const updateResponse =  E.gen(function * () {
+const updateResponse = E.gen(function * () {
   const context = yield * ContextManager.getAll();
 
   // if (!didDefer) return yield * new Err.Impossible();

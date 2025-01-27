@@ -1,48 +1,44 @@
-import {TxFlag, TxType} from '#pure/dfx';
-import {D} from '#pure/effect';
-import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
-import type {bool, mut, str} from '#src/internal/pure/types-pure.ts';
+import {Rest} from '#src/disreact/api/index.ts';
+import {D} from '#src/internal/pure/effect.ts';
+import type {bool} from '#src/internal/pure/types-pure.ts';
 
 
 
-export type T = D.TaggedEnum<{
+export type Defer = D.TaggedEnum<{
   None         : {done?: bool};
   Close        : {done?: bool};
-  Public       : {done?: bool; rest: {type: typeof DA.En.Rx['DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE']}};
-  PublicUpdate : {done?: bool; rest: {type: TxType['DEFERRED_UPDATE_MESSAGE']}};
-  Private      : {done?: bool; rest: {type: TxType['DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE']; data: {flags: TxFlag['EPHEMERAL']}}};
-  PrivateUpdate: {done?: bool; rest: {type: TxType['DEFERRED_UPDATE_MESSAGE']; data: {flags: TxFlag['EPHEMERAL']}}};
-  OpenDialog   : {done?: bool; rest: {type: TxType['MODAL']}};
+  Public       : {done?: bool; rest: typeof Rest.Public};
+  PublicUpdate : {done?: bool; rest: typeof Rest.PublicUpdate};
+  Private      : {done?: bool; rest: typeof Rest.Private};
+  PrivateUpdate: {done?: bool; rest: typeof Rest.PrivateUpdate};
+  OpenDialog   : {done?: bool; rest: typeof Rest.OpenDialog};
 }>;
 
-export type None = D.TaggedEnum.Value<T, 'None'>;
-export type Close = D.TaggedEnum.Value<T, 'Close'>;
-export type Public = D.TaggedEnum.Value<T, 'Public'>;
-export type PublicUpdate = D.TaggedEnum.Value<T, 'PublicUpdate'>;
-export type Private = D.TaggedEnum.Value<T, 'Private'>;
-export type PrivateUpdate = D.TaggedEnum.Value<T, 'PrivateUpdate'>;
-export type OpenDialog = D.TaggedEnum.Value<T, 'OpenDialog'>;
+export type None = D.TaggedEnum.Value<Defer, 'None'>;
+export type Close = D.TaggedEnum.Value<Defer, 'Close'>;
+export type Public = D.TaggedEnum.Value<Defer, 'Public'>;
+export type PublicUpdate = D.TaggedEnum.Value<Defer, 'PublicUpdate'>;
+export type Private = D.TaggedEnum.Value<Defer, 'Private'>;
+export type PrivateUpdate = D.TaggedEnum.Value<Defer, 'PrivateUpdate'>;
+export type OpenDialog = D.TaggedEnum.Value<Defer, 'OpenDialog'>;
 
-const T = D.taggedEnum<T>();
+export const Defer           = D.taggedEnum<Defer>();
+export const None            = () => Defer.None({}) as Defer;
+export const Close           = Defer.Close({});
+export const Public          = Defer.Public({rest: Rest.Public});
+export const PublicUpdate    = Defer.PublicUpdate({rest: Rest.PublicUpdate});
+export const Private         = Defer.Private({rest: Rest.Private});
+export const PrivateUpdate   = Defer.PrivateUpdate({rest: Rest.PrivateUpdate});
+export const OpenDialog      = Defer.OpenDialog({rest: Rest.OpenDialog});
+export const isNone          = Defer.$is('None');
+export const isClose         = Defer.$is('Close');
+export const isPublic        = Defer.$is('Public');
+export const isPublicUpdate  = Defer.$is('PublicUpdate');
+export const isPrivate       = Defer.$is('Private');
+export const isPrivateUpdate = Defer.$is('PrivateUpdate');
+export const isOpenDialog    = Defer.$is('OpenDialog');
 
-export const None          = T.None({}) as T;
-export const Close         = T.Close({});
-export const Public        = T.Public({rest: {type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE}});
-export const PublicUpdate  = T.PublicUpdate({rest: {type: TxType.DEFERRED_UPDATE_MESSAGE}});
-export const Private       = T.Private({rest: {type: TxType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {flags: TxFlag.EPHEMERAL}}});
-export const PrivateUpdate = T.PrivateUpdate({rest: {type: TxType.DEFERRED_UPDATE_MESSAGE, data: {flags: TxFlag.EPHEMERAL}}});
-export const OpenDialog    = T.OpenDialog({rest: {type: TxType.MODAL}});
-
-export const isNone          = T.$is('None');
-export const isClose         = T.$is('Close');
-export const isPublic        = T.$is('Public');
-export const isPublicUpdate  = T.$is('PublicUpdate');
-export const isPrivate       = T.$is('Private');
-export const isPrivateUpdate = T.$is('PrivateUpdate');
-export const isOpenDialog    = T.$is('OpenDialog');
-
-
-export const getEphemeral = T.$match({
+export const getEphemeral = Defer.$match({
   None         : () => false,
   Close        : () => false,
   Public       : () => false,
@@ -52,14 +48,14 @@ export const getEphemeral = T.$match({
   OpenDialog   : () => false,
 });
 
-
-export const setDone = (df: T) => {
-  (df as mut<typeof df>).done = true;
-  return df;
+export const setDone = (df: Defer) => {
+  return Defer[df._tag]({
+    ...df,
+    done: true,
+  } as never);
 };
 
-
-const lookup = {
+const decodings = {
   A: None,
   B: Close,
   C: Public,
@@ -69,16 +65,14 @@ const lookup = {
   G: OpenDialog,
 };
 
-
-export const decodeDefer = (tx: str) => {
-  if (tx in lookup) {
-    return lookup[tx as keyof typeof lookup];
+export const decodeDefer = (tx: string) => {
+  if (tx in decodings) {
+    return decodings[tx as keyof typeof decodings];
   }
   return None;
 };
 
-
-export const encodeDefer = T.$match({
+export const encodeDefer = Defer.$match({
   None         : () => 'A',
   Close        : () => 'B',
   Public       : () => 'C',

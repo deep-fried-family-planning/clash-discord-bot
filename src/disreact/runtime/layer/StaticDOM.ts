@@ -1,9 +1,7 @@
-import {createRootElement} from '#disreact/dsx/create-element.ts';
-import type {TagFunc} from '#disreact/dsx/types.ts';
-import {cloneFromRootMap, createRootMap} from '#disreact/model/root-map.ts';
-import {Token} from '#disreact/api/index.ts';
-import {C, E, g, L} from '#pure/effect';
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
+import {createRootElement} from '#src/disreact/dsx/create-element.ts';
+import type {TagFunc} from '#src/disreact/dsx/types';
+import {cloneFromRootMap, createRootMap} from '#src/disreact/model/static-graph/root-map.ts';
+import {E, g, L} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 
 

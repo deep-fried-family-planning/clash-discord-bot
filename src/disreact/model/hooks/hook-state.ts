@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#disreact/model/hooks/danger.ts';
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
+
+
+import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#src/disreact/model/hooks/danger.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
+
 
 
 export type HookStates = Record<string, HookState>;
-
 
 export type HookState = {
   id   : string;
@@ -12,7 +14,6 @@ export type HookState = {
   stack: any[]; // sync calls
   queue: any[]; // update/effect calls
 };
-
 
 export const emptyHookState = () => {
   return {
@@ -23,8 +24,7 @@ export const emptyHookState = () => {
   };
 };
 
-
-export const mountNode = (node: DisReactAbstractNode) => {
+export const mountNode = (node: DisReactNode) => {
   const state = node.state ?? emptyHookState();
 
   GlobalHooks.set(node, state);
@@ -32,8 +32,7 @@ export const mountNode = (node: DisReactAbstractNode) => {
   return state;
 };
 
-
-export const dismountNode = (node: DisReactAbstractNode) => {
+export const dismountNode = (node: DisReactNode) => {
   const current = GlobalHooks.get(node);
 
   GlobalHooks.delete(node);
@@ -45,8 +44,7 @@ export const dismountNode = (node: DisReactAbstractNode) => {
   return current;
 };
 
-
-export const setActiveRenderNode = (node: DisReactAbstractNode): void => {
+export const setActiveRenderNode = (node: DisReactNode): void => {
   const fiberId = getActiveFiberId();
 
   node.state!.pc = 0;

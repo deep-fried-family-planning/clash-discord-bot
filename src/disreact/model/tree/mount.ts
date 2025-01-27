@@ -1,8 +1,8 @@
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
 
 
 
-export const mountTree = (node: DisReactAbstractNode | null | undefined): void => {
+export const mountTree = (node: DisReactNode | null | undefined): void => {
   if (!node) {
     return;
   }

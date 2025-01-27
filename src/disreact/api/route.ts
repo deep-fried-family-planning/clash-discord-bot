@@ -1,4 +1,4 @@
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
+import type {Ix} from '#src/disreact/api/interaction.ts';
 
 
 

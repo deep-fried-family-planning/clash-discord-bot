@@ -1,8 +1,8 @@
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
 
 
 
-export const cloneTree = (node: DisReactAbstractNode, root = true): DisReactAbstractNode => {
+export const cloneTree = (node: DisReactNode, root = true): DisReactNode => {
   const clonedNode = node.clone();
 
   clonedNode.mount();

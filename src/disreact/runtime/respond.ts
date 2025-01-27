@@ -1,28 +1,23 @@
-import {getInteractionRoutingInfo} from '#disreact/api/route.ts';
-import {findOnClickTargets} from '#disreact/model/events/on-click.ts';
-import {decodeHooks} from '#disreact/model/hooks/hook-codec.ts';
-import {getSwitch, setSwitch} from '#disreact/model/static-graph/use-switch.ts';
-import {accumulateStates, dismountTree} from '#disreact/model/tree/dismount.ts';
-import {renderTree} from '#disreact/model/tree/render.ts';
-import {ContextManager} from '#disreact/runtime/layer/ContextManager.ts';
-import {Broker} from '#disreact/runtime/layer/DisReactBroker.ts';
-import {StaticDOM} from '#disreact/runtime/layer/StaticDOM.ts';
-import {E} from '#pure/effect';
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
-import {Err} from '#src/internal/disreact/virtual/kinds/index.ts';
-import {Discord} from 'dfx/index';
+import {Err, Ix, type Rest} from '#src/disreact/api/index.ts';
+import {getInteractionRoutingInfo} from '#src/disreact/api/route.ts';
+import {findOnClickTargets} from '#src/disreact/model/events/on-click.ts';
+import {decodeHooks} from '#src/disreact/model/hooks/hook-codec.ts';
+import {getSwitch, setSwitch} from '#src/disreact/model/static-graph/use-switch.ts';
+import {accumulateStates, dismountTree} from '#src/disreact/model/tree/dismount.ts';
+import {renderTree} from '#src/disreact/model/tree/render.ts';
+import {ContextManager} from '#src/disreact/runtime/layer/ContextManager.ts';
+import {Broker} from '#src/disreact/runtime/layer/DisReactBroker.ts';
+import {StaticDOM} from '#src/disreact/runtime/layer/StaticDOM.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 
 export const respond = E.fn('DisReact.respond')(function * (
-  rest: Ix,
+  rest: Rest.Interaction,
 ) {
-  if (rest.type === Discord.InteractionType.PING) return yield * new Err.Critical();
-  if (rest.type === Discord.InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE) return yield * new Err.Critical();
-  if (rest.type === Discord.InteractionType.APPLICATION_COMMAND) return yield * new Err.Critical();
-
-  const restToken = yield * Broker.saveToken(rest);
-  const info      = getInteractionRoutingInfo(rest);
+  const restToken   = yield * Broker.saveToken(rest);
+  const info        = getInteractionRoutingInfo(rest);
+  const interaction = yield * Ix.decodeInteraction(rest);
 
   yield * ContextManager.reallocate();
   yield * ContextManager.setKey('rest', rest);
@@ -61,26 +56,4 @@ export const respond = E.fn('DisReact.respond')(function * (
   const updatedHooks = accumulateStates(updateTree);
 
   // todo process useEffect
-});
-
-
-const cloneMount = E.fn('respond.cloneMount')(function * () {
-
-
-});
-
-
-const simulateEvent = E.fn('respond.simulateEvent')(function * () {
-
-
-});
-
-
-const dismountEffect = E.fn('respond.dismountEffect')(function * () {
-
-});
-
-
-const mountEffect = E.fn('respond.mountEffect')(function * () {
-
 });

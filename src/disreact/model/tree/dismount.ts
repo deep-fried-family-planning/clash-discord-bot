@@ -1,10 +1,10 @@
-import type {HookState, HookStates} from '#disreact/model/hooks/hook-state.ts';
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
+import type {HookState, HookStates} from '#src/disreact/model/hooks/hook-state.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
 
 
 
 export const dismountTree = (
-  node: DisReactAbstractNode | null | undefined,
+  node: DisReactNode | null | undefined,
   collectedStates: HookState[] = [],
 ): HookState[] => {
   if (!node) {
@@ -26,7 +26,7 @@ export const dismountTree = (
 
 
 export const accumulateStates = (
-  node: DisReactAbstractNode | null | undefined,
+  node: DisReactNode | null | undefined,
 ): HookStates => {
   if (!node) return {};
 

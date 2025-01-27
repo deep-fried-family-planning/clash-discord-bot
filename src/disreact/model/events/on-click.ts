@@ -1,7 +1,5 @@
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
-import {findNodeByProp} from '#disreact/model/tree/traversals.ts';
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {Rest} from '#src/disreact/api/index.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
 import type {Discord} from 'dfx/index';
 
 
@@ -11,12 +9,12 @@ type NotRow = Exclude<Discord.Component, Discord.ActionRow>;
 
 
 export const findOnClickTargets = (
-  rest: Ix,
-  clone: DisReactAbstractNode,
+  ix: Rest.Interaction,
+  clone: DisReactNode,
 ) => {
-  const restTarget = findRestTarget(rest.data.custom_id!, rest.message!.components! as Row[]);
+  const restTarget = findRestTarget(ix.data.custom_id, ix.message!.components as Row[]);
 
-  const attemptedByCustomId = findNodeByProp(clone, 'custom_id', rest.data.custom_id!);
+  const attemptedByCustomId = findNodeByProp(clone, 'custom_id', ix.data.custom_id);
 
   return {
     rest : restTarget,
@@ -25,8 +23,8 @@ export const findOnClickTargets = (
 };
 
 
-const findRestTarget = (
-  custom_id: str,
+export const findRestTarget = (
+  custom_id: string,
   components: Row[],
 ) => {
   let target: Discord.Button | Discord.SelectMenu | undefined;
@@ -43,8 +41,8 @@ const findRestTarget = (
         if ('value' in component) throw new Error('cannot call text input');
 
         target = component;
-        rdx = i;
-        cdx = j;
+        rdx    = i;
+        cdx    = j;
         break;
       }
     }

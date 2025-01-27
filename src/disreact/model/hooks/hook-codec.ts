@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type {HookState} from '#disreact/model/hooks/hook-state.ts';
-import type {rec} from '#src/internal/pure/types-pure.ts';
+import type {HookStates} from '#src/disreact/model/hooks/hook-state.ts';
 
 
 
-export const encodeHooks = (rec: rec<HookState>): URLSearchParams => {
+export const encodeHooks = (rec: HookStates): URLSearchParams => {
   const params = new URLSearchParams();
   const states = Object.values(rec);
 
@@ -16,8 +15,8 @@ export const encodeHooks = (rec: rec<HookState>): URLSearchParams => {
 };
 
 
-export const decodeHooks = (params: URLSearchParams): rec<HookState> => {
-  const states = {} as rec<HookState>;
+export const decodeHooks = (params: URLSearchParams): HookStates => {
+  const states = {} as HookStates;
 
   for (const [id, value] of params.entries()) {
     states[id] = JSON.parse(decodeURIComponent(value));

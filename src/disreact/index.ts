@@ -1,12 +1,10 @@
-import {JsxExample, SubComponent} from '#src/discord/jsx-example.tsx';
-import type {TagFunc} from '#disreact/dsx/types.ts';
-import {ContextManager} from '#disreact/runtime/layer/ContextManager.ts';
-import {Broker} from '#disreact/runtime/layer/DisReactBroker.ts';
-import {FiberDOM} from '#disreact/runtime/layer/FiberDOM.ts';
-import {StaticDOM} from '#disreact/runtime/layer/StaticDOM.ts';
-import {synthesize} from '#disreact/runtime/synthesize.ts';
-import {E,  L, pipe} from '#pure/effect';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import type {TagFunc} from '#src/disreact/dsx/types.ts';
+import {ContextManager} from '#src/disreact/runtime/layer/ContextManager.ts';
+import {Broker} from '#src/disreact/runtime/layer/DisReactBroker.ts';
+import {FiberDOM} from '#src/disreact/runtime/layer/FiberDOM.ts';
+import {StaticDOM} from '#src/disreact/runtime/layer/StaticDOM.ts';
+import {synthesize} from '#src/disreact/runtime/synthesize.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
 
 
@@ -22,7 +20,7 @@ export const createRoot = (
   );
 
   return {
-    synthesize: (root: str | TagFunc) => synthesize(root).pipe(E.provide(requirements)),
+    synthesize: (root: string | TagFunc) => synthesize(root).pipe(E.provide(requirements)),
   };
 };
 

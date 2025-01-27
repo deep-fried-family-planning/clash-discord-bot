@@ -1,28 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment */
-import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, SelectOptionTag, TextInputTag, TextTag} from '#disreact/dsx/intrinsic.ts';
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
-import {Kv} from '#pure/effect';
-import {Discord} from 'dfx/index';
+/* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument */
+import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, SelectOptionTag, TextInputTag, TextTag} from '#src/disreact/dsx/intrinsic.ts';
+import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
+import {__DISREACT_NONE} from '#src/disreact/api/constants.ts';
+import {Rest} from '#src/disreact/api/index.ts';
+import {Kv} from '#src/internal/pure/effect.ts';
 
 
-
-export const NONE      = '-';
-export const BUTTON_STYLE     = Discord.ButtonStyle;
-export const COMPONENT_TYPE   = Discord.ComponentType;
-export const TEXT_INPUT_STYLE = Discord.TextInputStyle;
-export type BUTTON_STYLE     = Discord.ButtonStyle;
-export type COMPONENT_TYPE   = Discord.ComponentType;
-export type TEXT_INPUT_STYLE = Discord.TextInputStyle;
 
 export const encodeTreeAsMessage = (
-  node: DisReactAbstractNode,
-) => {
+  node: DisReactNode,
+): Rest.Message => {
   return encodeTree(node);
 };
 
 
 
-export const encodeTree = (node: DisReactAbstractNode): any => {
+export const encodeTree = (node: DisReactNode): any => {
   switch (typeof node.type) {
     case 'string':
       return encodeElementNode(node);
@@ -41,14 +34,14 @@ export const encodeTree = (node: DisReactAbstractNode): any => {
 
 
 
-export const encodeElementNode = (node: DisReactAbstractNode) => {
+export const encodeElementNode = (node: DisReactNode) => {
   const props = filterValidProps(node.props);
   const nodes = node.nodes;
 
   switch (node.type) {
     case ActionRowTag: {
       return {
-        type      : COMPONENT_TYPE.ACTION_ROW,
+        type      : Rest.ComponentType.ACTION_ROW,
         components: nodes.filter((c) => c.type === ButtonTag || c.type === SelectMenuTag || c.type === TextTag || typeof c.type === 'function').flatMap((c) => encodeTree(c)),
       };
     }
@@ -56,9 +49,9 @@ export const encodeElementNode = (node: DisReactAbstractNode) => {
     case ButtonTag: {
       return {
         ...props,
-        type     : COMPONENT_TYPE.BUTTON,
+        type     : Rest.ComponentType.BUTTON,
         custom_id: props.custom_id ?? node.id,
-        style    : props.style ?? BUTTON_STYLE.PRIMARY,
+        style    : props.style ?? Rest.ButtonStyle.PRIMARY,
       };
     }
 
@@ -66,9 +59,9 @@ export const encodeElementNode = (node: DisReactAbstractNode) => {
       return {
         ...props,
         custom_id : props.custom_id ?? node.id,
-        title     : props.title ?? NONE,
+        title     : props.title ?? __DISREACT_NONE,
         components: nodes.filter((c) => c.type === TextTag || typeof c.type === 'function').flatMap((c) => ({
-          type      : COMPONENT_TYPE.ACTION_ROW,
+          type      : Rest.ComponentType.ACTION_ROW,
           components: [encodeTree(c)],
         })),
       };
@@ -104,51 +97,51 @@ export const encodeElementNode = (node: DisReactAbstractNode) => {
       return {
         ...props,
         custom_id: props.custom_id ?? node.id,
-        type     : COMPONENT_TYPE.TEXT_INPUT,
-        style    : props.style ?? TEXT_INPUT_STYLE.SHORT,
+        type     : Rest.ComponentType.TEXT_INPUT,
+        style    : props.style ?? Rest.TextInputStyle.SHORT,
       };
     }
 
     default:
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
       throw new Error(`<${node.type}/> not implemented`);
   }
 };
 
 
-export const encodeSelectMenuElement = (nodes: DisReactAbstractNode[], props: any) => {
+export const encodeSelectMenuElement = (nodes: DisReactNode[], props: any) => {
   const {string, options, user, role, channel, mention, default_values, channel_types, ...restProps} = props;
 
   switch (true) {
     case string:
       return {
         ...restProps,
-        type   : COMPONENT_TYPE.STRING_SELECT,
+        type   : Rest.ComponentType.STRING_SELECT,
         options: options ?? nodes.filter((c) => c.type === SelectOptionTag).flatMap((c) => encodeTree(c)),
       };
     case user:
       return {
         ...restProps,
-        type          : COMPONENT_TYPE.USER_SELECT,
+        type          : Rest.ComponentType.USER_SELECT,
         default_values: default_values ?? nodes.filter((c) => c.type === SelectOptionTag).flatMap((c) => encodeTree(c)),
       };
     case role:
       return {
         ...restProps,
-        type          : COMPONENT_TYPE.ROLE_SELECT,
+        type          : Rest.ComponentType.ROLE_SELECT,
         default_values: default_values ?? nodes.filter((c) => c.type === SelectOptionTag).flatMap((c) => encodeTree(c)),
       };
     case channel:
       return {
         ...restProps,
-        type          : COMPONENT_TYPE.CHANNEL_SELECT,
+        type          : Rest.ComponentType.CHANNEL_SELECT,
         default_values: default_values ?? nodes.filter((c) => c.type === SelectOptionTag).flatMap((c) => encodeTree(c)),
         channel_types : channel_types ?? [],
       };
     case mention:
       return {
         ...restProps,
-        type          : COMPONENT_TYPE.MENTIONABLE_SELECT,
+        type          : Rest.ComponentType.MENTIONABLE_SELECT,
         default_values: default_values ?? nodes.filter((c) => c.type === SelectOptionTag).flatMap((c) => encodeTree(c)),
       };
     default:

@@ -1,34 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
-import {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
-import {ElementNode} from '#disreact/model/nodes/element-node.ts';
-import {FunctionNode} from '#disreact/model/nodes/function-node.ts';
-import {ActionRowTag, ButtonTag, createActionRowElement, createButtonElement, createDialogElement, createEmbedElement, createMessageElement, createSelectMenuElement, createTextInputElement, DialogTag, EmbedTag, MessageTag, SelectMenuTag, TextTag} from '#src/disreact/dsx/intrinsic.ts';
+/* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
+import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, TextTag} from '#src/disreact/dsx/intrinsic.ts';
 import type {TagTypes} from '#src/disreact/dsx/types.ts';
+import {ElementNode, FunctionNode} from '#src/disreact/model/tree/node.ts';
 
 
 
 export const createIntrinsicElement = (type: string, props: any) => {
   switch (type) {
     case ActionRowTag:
-      return createActionRowElement(type, props);
-
     case ButtonTag:
-      return createButtonElement(type, props);
-
     case DialogTag:
-      return createDialogElement(type, props);
-
     case EmbedTag:
-      return createEmbedElement(type, props);
-
     case MessageTag:
-      return createMessageElement(type, props);
-
     case SelectMenuTag:
-      return createSelectMenuElement(type, props);
-
     case TextTag:
-      return createTextInputElement(type, props);
+      return {
+        type,
+        props,
+      };
 
     default:
       throw new Error(`Unknown tag type: ${type}`);
@@ -62,14 +51,8 @@ export const createElementMulti = (type: TagTypes, inputProps: {children: {}[]})
   const children = inputProps.children.flat();
   const props    = {...inputProps, children};
 
-
-
-  if (type instanceof ElementNode) {
-    console.log('type instanceof DisReactAbstractNode');
-  }
-
   switch (typeof type) {
-    case 'string':{
+    case 'string': {
       const created = createIntrinsicElement(type, props);
 
       return new ElementNode(type, created.props);
@@ -81,11 +64,7 @@ export const createElementMulti = (type: TagTypes, inputProps: {children: {}[]})
     case 'function': {
       const node = new FunctionNode(type, props);
 
-      // node.mount();
-
-      const output = node.render(props);
-
-      return output;
+      return node.render(props);
     }
   }
 };

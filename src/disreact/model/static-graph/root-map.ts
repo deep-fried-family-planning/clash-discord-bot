@@ -1,15 +1,14 @@
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
-import {FunctionNode} from '#disreact/model/nodes/function-node.ts';
-import {staticRender} from '#disreact/model/static-graph/static-tree.ts';
-import {cloneTree} from '#disreact/model/tree/clone.ts';
-import type {rec} from '#src/internal/pure/types-pure.ts';
+
+import {type DisReactNode, FunctionNode} from '#src/disreact/model/tree/node.ts';
+import {staticRender} from '#src/disreact/model/static-graph/static-tree.ts';
+import {cloneTree} from '#src/disreact/model/tree/clone.ts';
 
 
 
-export type RootMap = rec<rec<DisReactAbstractNode>>;
+export type RootMap = {[k in string]: {[k in string]: DisReactNode}};
 
 
-export const createRootMap = (roots: DisReactAbstractNode[], rootMaps: RootMap = {}) => {
+export const createRootMap = (roots: DisReactNode[], rootMaps: RootMap = {}) => {
   for (const root of roots) {
     if (root.name in rootMaps) throw new Error('Duplicate root name: ' + root.name);
 
@@ -35,7 +34,7 @@ export const createRootMap = (roots: DisReactAbstractNode[], rootMaps: RootMap =
 };
 
 
-const recurse = (rendered: DisReactAbstractNode, root: DisReactAbstractNode, rootMaps: RootMap) => {
+const recurse = (rendered: DisReactNode, root: DisReactNode, rootMaps: RootMap): void => {
   if (!rendered.switches) return;
 
   const nodes = rendered.switches;
@@ -63,14 +62,14 @@ const recurse = (rendered: DisReactAbstractNode, root: DisReactAbstractNode, roo
 };
 
 
-export const originalFromRootMap = (rootMap: RootMap, root: string, name: string) => {
+export const originalFromRootMap = (rootMap: RootMap, root: string, name: string): DisReactNode => {
   if (!(root in rootMap)) throw new Error('Root not found: ' + root);
   if (!(name in rootMap[root])) throw new Error('Node not found: ' + name);
   return rootMap[root][name];
 };
 
 
-export const cloneFromRootMap = (rootMap: RootMap, root: string, name: string) => {
+export const cloneFromRootMap = (rootMap: RootMap, root: string, name: string): DisReactNode => {
   if (!(root in rootMap)) throw new Error('Root not found: ' + root);
   if (!(name in rootMap[root])) throw new Error('Node not found: ' + name);
   return cloneTree(rootMap[root][name]);

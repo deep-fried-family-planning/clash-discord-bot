@@ -1,5 +1,5 @@
-import {Broker} from '#disreact/runtime/layer/DisReactBroker.ts';
-import {E, L} from '#pure/effect';
+import {Broker} from '#src/disreact/runtime/layer/DisReactBroker.ts';
+import {E, L} from '#src/internal/pure/effect.ts';
 import {Supervisor} from 'effect';
 
 
@@ -12,9 +12,9 @@ const program = () => E.gen(function * () {
   return {
     getSupervisor: () => supervisor,
     withMutex    : mutex,
-    renderDefer  : () => mutex(Broker.deferResponse()),
-    renderReply  : () => mutex(Broker.renderResponse()),
-    renderEdit   : () => mutex(Broker.updateResponse()),
+    renderDefer  : () => mutex(Broker.deferResponse),
+    renderReply  : () => mutex(Broker.renderResponse),
+    renderEdit   : () => mutex(Broker.updateResponse),
     // renderTarget : () => mutex(Broker),
   };
 });

@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access */
-import type {HookState} from '#disreact/model/hooks/hook-state.ts';
-import type {DisReactAbstractNode} from '#disreact/model/nodes/abstract-node.ts';
-import type {rec} from '#src/internal/pure/types-pure.ts';
+
+import type {HookState} from '#src/disreact/model/hooks/hook-state.ts';
+import {areNodesEqual, arePropsShallowEqual, type DisReactNode} from '#src/disreact/model/tree/node.ts';
+import type {rec} from '#src/internal/pure/pure.ts';
 
 
 
-export const renderTree = (node: DisReactAbstractNode, states?: rec<HookState>): DisReactAbstractNode => {
+export const renderTree = (node: DisReactNode, states?: rec<HookState>): DisReactNode => {
   if (states && node.name in states) {
     node.state = states[node.name];
   }
@@ -38,37 +38,4 @@ export const renderTree = (node: DisReactAbstractNode, states?: rec<HookState>):
   }
 
   return renderedNode;
-};
-
-
-const areNodesEqual = (nodeA: DisReactAbstractNode, nodeB: DisReactAbstractNode): boolean => {
-  if (nodeA === nodeB) return true;
-  if (nodeA.key !== nodeB.key) return false;
-  if (nodeA.type !== nodeB.type) return false;
-
-  return arePropsShallowEqual(nodeA.props, nodeB.props);
-};
-
-
-const arePropsShallowEqual = (objA: any, objB: any): boolean => {
-  if (objA === objB) return true;
-  if (typeof objA !== typeof objB) return false;
-  if (objA === null || objB === null) return false;
-  if (typeof objA !== 'object' || typeof objB !== 'object') return false;
-
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  for (const key of keysA) {
-    if (key === 'children') continue;
-    if (objA[key] !== objB[key]) {
-      return false;
-    }
-  }
-
-  return true;
 };

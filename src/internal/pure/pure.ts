@@ -4,7 +4,7 @@ import {Order as OrdN} from 'effect/Number';
 import {make as fromCompare} from 'effect/Order';
 import {Order as OrdS} from 'effect/String';
 
-
+export type rec<A> = {[k in string]: A};
 
 export {
   OrdN,

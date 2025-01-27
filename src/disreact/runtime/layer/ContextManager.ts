@@ -1,8 +1,7 @@
-import type {Token} from '#disreact/api/index.ts';
-import type {DisReactRoute} from '#disreact/api/route.ts';
-import {E, L} from '#pure/effect';
-import type {Ix} from '#src/internal/disreact/virtual/entities/dapi.ts';
-import type {Df} from '#src/internal/disreact/virtual/entities/index.ts';
+import type {Defer, Ix, Rest, Token} from '#src/disreact/api/index.ts';
+import type {DisReactRoute} from '#src/disreact/api/route.ts';
+import {E, L} from '#src/internal/pure/effect.ts';
+
 
 
 export type CurrentContext = ReturnType<typeof makeCurrent>;
@@ -13,14 +12,13 @@ type K = CurrentContextKey;
 
 
 const makeCurrent = () => ({
-  rest     : null as unknown as Ix,
-  restDefer: null as unknown as Df.T,
-  restToken: null as unknown as Token.Token,
-
-  activeDefer: null as unknown as Df.T,
+  rest       : null as unknown as Rest.Interaction,
+  restDefer  : null as unknown as Defer.Defer,
+  restToken  : null as unknown as Token.Token,
+  ix         : null as unknown as Ix.Ix,
+  activeDefer: null as unknown as Defer.Defer,
   activeToken: null as unknown as Token.Token,
-
-  info: null as unknown as DisReactRoute,
+  info       : null as unknown as DisReactRoute,
 });
 
 
@@ -45,7 +43,7 @@ export class ContextManager extends E.Tag('DisReact.FiberContext')<
   ContextManager,
   E.Effect.Success<typeof context>
 >() {
-  static Type = null as unknown as CurrentContext;
-  static Key = null as unknown as CurrentContextKey;
+  static Type      = null as unknown as CurrentContext;
+  static Key       = null as unknown as CurrentContextKey;
   static makeLayer = () => L.effect(this, context);
 }

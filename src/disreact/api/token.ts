@@ -1,32 +1,34 @@
-import {NONE} from '#disreact/runtime/codec.ts';
-import {D} from '#pure/effect';
-import type {snow} from '#src/discord/types.ts';
-import type {bool, epochms, str} from '#src/internal/pure/types-pure.ts';
-// import type {DA} from '#src/internal/disreact/virtual/entities/index.ts';
-// import {Df} from '#src/internal/disreact/virtual/entities/index.ts';
+import {ONE_MINUTE, SAFE_TTL_OFFSET_1_MIN} from '#src/disreact/api/constants.ts';
+import {Constants, Defer, type Rest} from '#src/disreact/api/index.ts';
+import {D} from '#src/internal/pure/effect.ts';
+import type {bool, str, unixdate} from '#src/internal/pure/types-pure.ts';
 
-
-
-const ONE_MINUTE = 60 * 1000;
-const SAFE_TTL_OFFSET_1_MIN = 60 * 1000;
 
 
 export type Token = D.TaggedEnum<{
-  Unknown: {id: snow; token: str; ttl: epochms; ephemeral: bool};
-  Active : {id: snow; token: str; ttl: epochms; ephemeral: bool};
-  Expired: {id: snow; token: str; ttl: epochms; ephemeral: bool};
+  Unknown: {id: str; token: str; ttl: unixdate; ephemeral: bool};
+  Active : {id: str; token: str; ttl: unixdate; ephemeral: bool};
+  Expired: {id: str; token: str; ttl: unixdate; ephemeral: bool};
 }>;
 
-
-const T = D.taggedEnum<Token>();
-
-
-export const Unknown = () => T.Unknown({id: '0', token: NONE, ttl: -1, ephemeral: false});
-export const Active = T.Active;
-export const Expired = T.Expired;
+export type Unknown = D.TaggedEnum.Value<Token, 'Unknown'>;
+export type Active = D.TaggedEnum.Value<Token, 'Active'>;
+export type Expired = D.TaggedEnum.Value<Token, 'Expired'>;
 
 
-export const make = (ix: DA.Ix) => {
+export const empty = () => ({
+  id       : Constants.__DISREACT_NONE_ID,
+  token    : Constants.__DISREACT_NONE,
+  ttl      : Constants.__DISREACT_NONE_NUM,
+  ephemeral: Constants.__DISREACT_NONE_BOOL,
+});
+
+export const Token   = D.taggedEnum<Token>();
+export const Unknown = () => Token.Unknown(empty());
+export const Active  = Token.Active;
+export const Expired = Token.Expired;
+
+export const make = (ix: Rest.Interaction) => {
   return Active({
     id       : ix.id,
     token    : ix.token,
@@ -35,20 +37,17 @@ export const make = (ix: DA.Ix) => {
   });
 };
 
-
-export const isActive = (tk: Token) => {
+export const isActive = (tk: Token): tk is Active => {
   if (tk._tag === 'Expired') return false;
   return tk.ttl - SAFE_TTL_OFFSET_1_MIN > Date.now();
 };
 
-
-export const isSameDefer = (defer: Df.T) => (tk: Token) => {
-  if (Df.isNone(defer)) return false;
-  if (Df.isClose(defer)) return false;
-  if (Df.isOpenDialog(defer)) return false;
-  return Df.getEphemeral(defer) === tk.ephemeral;
+export const isSameDefer = (defer: Defer.Defer) => (tk: Token) => {
+  if (Defer.isNone(defer)) return false;
+  if (Defer.isClose(defer)) return false;
+  if (Defer.isOpenDialog(defer)) return false;
+  return Defer.getEphemeral(defer) === tk.ephemeral;
 };
-
 
 export const invalidateByTTL = (tk: Token) => {
   if (tk._tag === 'Expired') return tk;
@@ -56,17 +55,15 @@ export const invalidateByTTL = (tk: Token) => {
   return Active(tk);
 };
 
-
 export const decompress = (tk: Token) => {
   return tk; // todo
 };
-
 
 export const decode = (encoded: str) => {
   const [id, token, ttl, ephemeral] = encoded.split('_');
 
   const tk = Active({
-    id       : id as snow,
+    id,
     token,
     ttl      : parseInt(ttl),
     ephemeral: ephemeral === 'true',
@@ -75,11 +72,9 @@ export const decode = (encoded: str) => {
   return invalidateByTTL(tk);
 };
 
-
 export const compress = (tk: Token) => {
-  return tk; // todo
+  return tk;
 };
-
 
 export const encode = ({_tag, ...data}: Token) => {
   return `${data.id}_${data.token}_${data.ttl}_${data.ephemeral}`; // todo
