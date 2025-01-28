@@ -106,4 +106,4 @@ export const LambdaLive = pipe(
 );
 
 
-export const handler = makeLambda(h, LambdaLive);
+export const handler = makeLambda(() => E.succeed({}), L.empty);

@@ -1,14 +1,14 @@
-import {ONE_MINUTE, SAFE_TTL_OFFSET_1_MIN} from '#src/disreact/api/constants.ts';
-import {Constants, Defer, type Rest} from '#src/disreact/api/index.ts';
+import {FOURTEEN_MINUTES, NONE, NONE_BOOL, NONE_ID, NONE_NUM, ONE_MINUTE, SAFE_TTL_OFFSET_1_MIN, TWO_SECONDS} from '#src/disreact/api/constants.ts';
+import {Defer, Rest} from '#src/disreact/api/index.ts';
 import {D} from '#src/internal/pure/effect.ts';
 import type {bool, str, unixdate} from '#src/internal/pure/types-pure.ts';
 
 
 
 export type Token = D.TaggedEnum<{
-  Unknown: {id: str; token: str; ttl: unixdate; ephemeral: bool};
-  Active : {id: str; token: str; ttl: unixdate; ephemeral: bool};
-  Expired: {id: str; token: str; ttl: unixdate; ephemeral: bool};
+  Unknown: {id: str; token: str; ttl: unixdate; ephemeral: bool; deferred?: boolean};
+  Active : {id: str; token: str; ttl: unixdate; ephemeral: bool; deferred?: boolean};
+  Expired: {id: str; token: str; ttl: unixdate; ephemeral: bool; deferred?: boolean};
 }>;
 
 export type Unknown = D.TaggedEnum.Value<Token, 'Unknown'>;
@@ -17,23 +17,35 @@ export type Expired = D.TaggedEnum.Value<Token, 'Expired'>;
 
 
 export const empty = () => ({
-  id       : Constants.__DISREACT_NONE_ID,
-  token    : Constants.__DISREACT_NONE,
-  ttl      : Constants.__DISREACT_NONE_NUM,
-  ephemeral: Constants.__DISREACT_NONE_BOOL,
+  id       : NONE_ID,
+  token    : NONE,
+  ttl      : NONE_NUM,
+  deferred : NONE_BOOL,
+  ephemeral: NONE_BOOL,
 });
 
 export const Token   = D.taggedEnum<Token>();
-export const Unknown = () => Token.Unknown(empty());
+export const Unknown = () => Token.Unknown(empty()) as Token;
 export const Active  = Token.Active;
 export const Expired = Token.Expired;
 
-export const make = (ix: Rest.Interaction) => {
+export const makeUndeferred = (ix: Rest.Interaction) => {
   return Active({
     id       : ix.id,
     token    : ix.token,
-    ttl      : Date.now() + ONE_MINUTE * 14,
-    ephemeral: false,
+    ttl      : Date.now() + TWO_SECONDS,
+    ephemeral: ix.message?.flags === Rest.MessageFlag.EPHEMERAL,
+  });
+};
+
+export const setDeferred = (tk: Token, defer: Defer.Defer) => {
+  if (Defer.isNone(defer)) return tk;
+  if (Defer.isClose(defer)) return tk;
+  if (Defer.isOpenDialog(defer)) return tk;
+  return Active({
+    ...tk,
+    ttl      : Date.now() + FOURTEEN_MINUTES,
+    ephemeral: Defer.getEphemeral(defer),
   });
 };
 
@@ -67,6 +79,7 @@ export const decode = (encoded: str) => {
     token,
     ttl      : parseInt(ttl),
     ephemeral: ephemeral === 'true',
+    deferred : true,
   });
 
   return invalidateByTTL(tk);

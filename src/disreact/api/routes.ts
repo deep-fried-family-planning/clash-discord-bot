@@ -1,5 +1,8 @@
-import {__DISREACT_NONE} from '#src/disreact/api/constants.ts';
+import {NONE} from '#src/disreact/api/constants.ts';
+import { Rest} from '#src/disreact/api/index.ts';
+import {Defer} from '#src/disreact/api/index.ts';
 import {CriticalFailure} from '#src/disreact/enum/errors.ts';
+import {decodeHooks, type HookStates} from '#src/disreact/model/hooks/hook-state.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {rec} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -19,7 +22,7 @@ const makeRoute = <A extends string>(template: A) => {
 
   const empty = () => {
     const acc = {} as rec<str>;
-    for (const k of keys) acc[k] = __DISREACT_NONE;
+    for (const k of keys) acc[k] = NONE;
     return acc as Params;
   };
 
@@ -48,7 +51,7 @@ const makeRoute = <A extends string>(template: A) => {
 };
 
 
-const main = makeRoute('/dr/:root/:node/:id/:defer');
+const main = makeRoute('/dr/:root/:node/:id/:defer/:ttl');
 
 
 export type Main = typeof main.Type;
@@ -73,15 +76,47 @@ export const encodeAsUrl = (params: rec<str>, search?: URLSearchParams) => {
 export const decodePath = (input: string) => E.gen(function * () {
   const params = main.parse(input);
   if (!params) return yield * new CriticalFailure();
-  return params;
+  return {
+    defer : Defer.decodeDefer(params.defer),
+    params,
+    search: new URLSearchParams(),
+  };
 });
 
 
-export const decodeUrl = (input: string) => E.gen(function * () {
-  const url    = new URL(input);
-  const params = yield * decodePath(url.pathname);
-  return {
-    params,
-    search: url.searchParams,
-  };
+export type FullRouting = {
+  params: Main;
+  defer : Defer.Defer;
+  search: URLSearchParams;
+  states: HookStates;
+};
+
+
+export const decodeUrl = (rest: Rest.Interaction) => E.gen(function * () {
+  if (rest.type === Rest.InteractionType.MESSAGE_COMPONENT) {
+    if (!rest.message?.embeds[0].image?.url) return yield * new CriticalFailure();
+
+    const url    = new URL(rest.message.embeds[0].image.url);
+    const parsed = yield * decodePath(url.pathname);
+
+    return {
+      ...parsed,
+      search: url.searchParams,
+      states: decodeHooks(url.searchParams),
+    } satisfies FullRouting;
+  }
+
+  if (rest.type === Rest.InteractionType.MODAL_SUBMIT) {
+    if (!('data' in rest)) return yield * new CriticalFailure();
+    if (!('custom_id' in rest.data)) return yield * new CriticalFailure();
+
+    const parsed = yield * decodePath(rest.data.custom_id);
+
+    return {
+      ...parsed,
+      states: {},
+    } satisfies FullRouting;
+  }
+
+  return yield * new CriticalFailure();
 });

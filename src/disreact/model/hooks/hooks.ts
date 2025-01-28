@@ -3,6 +3,7 @@
 
 
 import {getHookState} from '#src/disreact/model/hooks/hook-state.ts';
+import type {E} from '#src/internal/pure/effect.ts';
 
 
 
@@ -30,4 +31,44 @@ export const useState = <A>(initial: A): readonly [state: A, setState: (next: A)
       state.current = next;
     },
   ] as const;
+};
+
+type ueffect =
+  | (() => void)
+  | (() => () => void)
+  | (E.Effect<void>)
+  | (() => E.Effect<void>);
+
+export const useEffect = (
+  effect: ueffect,
+  deps: unknown[] = [],
+) => {
+  const hooks = getHookState();
+
+  const state = hooks.stack[hooks.pc++];
+
+  if (!state) {
+    const newState = {id: hooks.pc, deps};
+
+    hooks.stack.push(newState);
+    hooks.queue.push(effect);
+  }
+
+  // todo 2d frames of states
+};
+
+
+export const useRef = () => {
+  const hooks = getHookState();
+  const state = hooks.stack[hooks.pc++];
+
+  if (!state) {
+    const newState = {id: `${hooks.id}:${hooks.pc}`, current: null};
+
+    hooks.stack.push(newState);
+
+    return {current: null};
+  }
+
+  return {current: state.current};
 };

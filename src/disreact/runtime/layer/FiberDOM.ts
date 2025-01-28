@@ -1,5 +1,6 @@
+import type {Defer} from '#src/disreact/api/defer.ts';
 import {Broker} from '#src/disreact/runtime/layer/DisReactBroker.ts';
-import {E, L} from '#src/internal/pure/effect.ts';
+import {E, flow, L, pipe} from '#src/internal/pure/effect.ts';
 import {Supervisor} from 'effect';
 
 
@@ -11,10 +12,13 @@ const program = () => E.gen(function * () {
 
   return {
     getSupervisor: () => supervisor,
-    withMutex    : mutex,
-    renderDefer  : () => mutex(Broker.deferResponse),
-    renderReply  : () => mutex(Broker.renderResponse),
-    renderEdit   : () => mutex(Broker.updateResponse),
+
+    withMutex: mutex,
+
+    delete: () => pipe(Broker.deleteResponse, E.fork, mutex),
+    defer : flow(Broker.deferResponse, E.fork, mutex),
+    reply : () => pipe(Broker.renderResponse, E.fork, mutex),
+    update: () => pipe(Broker.updateResponse, E.fork, mutex),
     // renderTarget : () => mutex(Broker),
   };
 });

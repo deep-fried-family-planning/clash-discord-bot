@@ -1,4 +1,4 @@
-import {__DISREACT_NONE} from '#src/disreact/api/constants.ts';
+import {NONE} from '#src/disreact/api/constants.ts';
 import {Constants} from '#src/disreact/api/index.ts';
 import {D} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

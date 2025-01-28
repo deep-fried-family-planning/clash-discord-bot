@@ -1,4 +1,3 @@
-
 import {cloneTree, staticRender} from '#src/disreact/model/lifecycles.ts';
 import {type DisReactNode, FunctionNode} from '#src/disreact/model/node.ts';
 
@@ -36,15 +35,20 @@ export const createRootMap = (roots: DisReactNode[], rootMaps: RootMap = {}) => 
 const recurse = (rendered: DisReactNode, root: DisReactNode, rootMaps: RootMap): void => {
   if (!rendered.switches) return;
 
-  const nodes = rendered.switches;
-
   rendered.setRootMapParent(root);
   rootMaps[root.name][rendered.name] = rendered;
 
-  for (const node in nodes) {
-    if (node in rootMaps[root.name]) throw new Error('Duplicate node name: ' + node);
+  for (const node in rendered.switches) {
+    // if (node in rootMaps[root.name]) throw new Error('Duplicate node name: ' + node);
 
-    const tree = new FunctionNode(nodes[node], {});
+    if (node in rootMaps) {
+      continue;
+    }
+    if (node in rootMaps[root.name]) {
+      continue;
+    }
+
+    const tree = new FunctionNode(rendered.switches[node], {});
 
     tree.setRootMapParent(root);
 
@@ -71,5 +75,6 @@ export const originalFromRootMap = (rootMap: RootMap, root: string, name: string
 export const cloneFromRootMap = (rootMap: RootMap, root: string, name: string): DisReactNode => {
   if (!(root in rootMap)) throw new Error('Root not found: ' + root);
   if (!(name in rootMap[root])) throw new Error('Node not found: ' + name);
-  return cloneTree(rootMap[root][name]);
+
+  return cloneTree(rootMap[root][name], true);
 };

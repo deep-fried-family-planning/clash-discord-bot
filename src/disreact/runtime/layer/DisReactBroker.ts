@@ -1,176 +1,75 @@
+import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {Defer} from '#src/disreact/api/index.ts';
+import {CriticalFailure} from '#src/disreact/enum/errors.ts';
 import {ContextManager} from '#src/disreact/runtime/layer/ContextManager.ts';
-import type {Rest} from '#src/disreact/api/index.ts';
-import {Token} from '#src/disreact/api/index.ts';
-import {C, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {TTL} from '#src/disreact/runtime/types/index.ts';
+import {E, L} from '#src/internal/pure/effect';
 import type {EA} from '#src/internal/types.ts';
 
 
 
-const tokenCache = E.gen(function * () {
-  const tokens = yield * C.make({
-    capacity  : 1000,
-    timeToLive: '10 minutes',
-    lookup    : () => E.succeed(Token.Unknown() as Token.Token),
-  });
+export const deleteResponse = E.gen(function * () {
+  const context  = yield * ContextManager.getAll();
+  const tokens   = context.tokens;
+  const rightNow = TTL.rightNow();
 
-  const setToken = (rest: Rest.Interaction) => E.gen(function * () {
-    const token = Token.make(rest);
-    yield * tokens.set(token.id, token);
-    return token;
-  });
+  if (!TTL.isActiveBuffered(tokens.prev.ttl, rightNow)) {
+    yield * DiscordApi.deleteOriginalInteractionResponse(
+      context.app,
+      tokens.prev.value,
+    );
+  }
 
+  if (!TTL.isActive(tokens.rest.ttl, rightNow)) {
+    yield * DiscordApi.createInteractionResponse(
+      context.id,
+      tokens.rest.value,
+      tokens.rest.ephemeral
+        ? Defer.PrivateUpdate()
+        : Defer.PublicUpdate(),
+    );
+    yield * DiscordApi.deleteOriginalInteractionResponse(
+      context.app,
+      tokens.rest.value,
+    );
+  }
+
+  return yield * new CriticalFailure();
+});
+
+
+export const deferResponse = E.fn('DisReact.deferResponse')(function * () {
+  const context = yield * ContextManager.getAll();
+});
+
+
+export const renderResponse = E.gen(function * () {
+  const context = yield * ContextManager.getAll();
+});
+
+
+export const updateResponse = E.gen(function * () {
+  const context = yield * ContextManager.getAll();
+});
+
+
+const program = E.gen(function * () {
   return {
-    setToken: setToken,
-    getToken: (id: string) => E.gen(function * () {
-      const hasToken = yield * tokens.contains(id);
-
-      if (!hasToken) return null;
-
-      const token = yield * tokens.get(id);
-
-      if (!Token.isActive(token)) {
-        yield * tokens.invalidate(id);
-        return null;
-      }
-      return token;
-    }),
-    saveToken: (rest: Rest.Interaction) => {
-      return setToken(rest);
-    },
-  };
-});
-
-
-const deleteResponse = E.gen(function * () {
-  const context = yield * ContextManager.getAll();
-
-  // if (didDefer) return yield * new Err.Impossible();
-  //
-  // current  = Df.Close;
-  // didDefer = true;
-  //
-  // const failsafe = g(function * () {
-  //   yield * DiscordApi.ixDefer(ix.curr_id, ix.curr_token, Df.Private);
-  //   yield * DiscordApi.ixDelete(ix.app_id, ix.curr_token);
-  // });
-  //
-  // if (ix.prev_active > Date.now()) {
-  //   return yield * pipe(
-  //     DisReactMemory.load(ix.prev_id),
-  //     E.flatMap((dom) => E.asVoid(DiscordApi.ixDelete(ix.app_id, dom.token))),
-  //     E.catchTag('MemoryUnavailable', () => failsafe),
-  //     E.catchTag('MemoryExpired', () => failsafe),
-  //     E.fork,
-  //   );
-  // }
-  //
-  // return yield * pipe(
-  //   failsafe,
-  //   E.fork,
-  // );
-});
-
-
-const deferResponse = E.gen(function * () {
-  const context = yield * ContextManager.getAll();
-
-  // if (Df.isNone(defer)) return yield * new Err.Impossible();
-  // if (Df.isClose(defer)) return yield * new Err.Impossible();
-  // if (didDefer) return yield * new Err.Impossible();
-  //
-  // current  = defer;
-  // didDefer = true;
-  //
-  // if (Df.isOpenDialog(defer)) {
-  //   return yield * pipe(
-  //     E.void,
-  //     E.fork,
-  //   );
-  // }
-  //
-  // return yield * pipe(
-  //   DiscordApi.ixDefer(ix.curr_id, ix.curr_token, defer),
-  //   E.asVoid,
-  //   E.fork,
-  // );
-});
-
-
-const renderResponse = E.gen(function * () {
-  const context = yield * ContextManager.getAll();
-
-  // if (Df.isNone(current)) return yield * new Err.Impossible();
-  // if (Df.isClose(current)) return yield * new Err.Impossible();
-  //
-  // if (Df.isOpenDialog(current)) {
-  //   return yield * pipe(
-  //     DiscordApi.ixDialog(ix.curr_id, ix.curr_token, data as InteractionCallbackModal),
-  //     E.asVoid,
-  //     E.fork,
-  //   );
-  // }
-  //
-  // if (!didDefer) {
-  //   return yield * pipe(
-  //     DiscordApi.createInteractionResponse(ix.curr_id, ix.curr_token, {
-  //       type: Df.Public.rest.type,
-  //       data: data as InteractionCallbackDatum,
-  //     }),
-  //     E.asVoid,
-  //   );
-  // }
-  //
-  // return yield * pipe(
-  //   DiscordApi.ixEdit(ix.app_id, ix.curr_token, {
-  //     ...data as DA.TxMessage,
-  //     flags: ix.prev_ephemeral ? DA.En.MF.EPHEMERAL : undefined,
-  //   }),
-  //   E.asVoid,
-  // );
-});
-
-
-const updateResponse = E.gen(function * () {
-  const context = yield * ContextManager.getAll();
-
-  // if (!didDefer) return yield * new Err.Impossible();
-  // if (Df.isNone(current)) return yield * new Err.Impossible();
-  // if (Df.isClose(current)) return yield * new Err.Impossible();
-  //
-  // if (Df.isOpenDialog(current)) {
-  //   return yield * pipe(
-  //     DiscordApi.ixEdit(ix.app_id, ix.prev_id, data),
-  //     E.asVoid,
-  //     E.fork,
-  //   );
-  // }
-  //
-  // return yield * pipe(
-  //   DiscordApi.ixEdit(ix.app_id, ix.curr_token, data),
-  // );
-});
-
-
-const program = E.cachedFunction((app_id: string) => E.gen(function * () {
-  const tokens = yield * tokenCache;
-
-  return {
-    ...tokens,
-    app_id,
     deleteResponse,
     deferResponse,
     renderResponse,
     updateResponse,
   };
-}));
+});
 
 
 export class Broker extends E.Tag('DisReact.Broker')<
   Broker,
-  EA<ReturnType<EA<typeof program>>>
+  EA<typeof program>
+  // EA<ReturnType<EA<typeof program>>>
 >() {
-  static singleton = (app_id: string) => L.effect(this, pipe(
-    program,
-    E.flatMap((cached) => cached(app_id)),
+  static singleton = L.effect(this, program.pipe(
+    E.cached,
+    E.flatten,
   ));
 }

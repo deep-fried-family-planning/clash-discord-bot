@@ -5,7 +5,6 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 
-export const ActionRowTag = 'components';
 export type ActionRowAttributes = JSX.IntrinsicAttributes & {};
 export type ActionRowProps = ActionRowAttributes & {
   children: ButtonProps[];
@@ -17,10 +16,10 @@ export type ActionRowOut = {
 export type ActionRowIn = ActionRowOut;
 
 
-export const ButtonTag = 'button';
+
 export type ButtonAttributes = JSX.IntrinsicAttributes & {
   custom_id?: string;
-  style?    : Rest.ButtonStyle;
+  style?    : number;
   label?    : string | undefined;
   emoji?    : Rest.Emoji | undefined;
   sku_id?   : string | undefined;
@@ -42,7 +41,7 @@ export type ButtonOut = {
 export type ButtonIn = ButtonOut;
 
 
-export const DialogTag = 'dialog';
+
 export type DialogAttributes = JSX.IntrinsicAttributes & {
   custom_id?: string;
   title?    : str;
@@ -61,14 +60,13 @@ export type DialogIn = {
 };
 
 
-export const EmbedTag = 'embed';
-export type EmbedAttributes = {} & JSX.IntrinsicAttributes;
+export type EmbedAttributes = Rest.Embed & JSX.IntrinsicAttributes;
 export type EmbedProps = EmbedAttributes;
 export type EmbedOut = Rest.Embed;
 export type EmbedIn = EmbedOut;
 
 
-export const MessageTag = 'message';
+
 export type MessageAttributes = JSX.IntrinsicAttributes & {
   content?: string;
   embeds? : any[];
@@ -83,26 +81,14 @@ export type MessageOut = {
 };
 export type MessageIn = MessageOut;
 
-export const UserSelectTag = 'user';
-export const UserOptionTag = 'user';
 
-export const RoleSelectTag = 'role';
-export const RoleOptionTag = 'role';
 
-export const ChannelSelectTag = 'channel';
-export const ChannelOptionTag = 'option';
-
-export const MentionSelectTag = 'mention';
-
-export const SelectMenuTag   = 'select';
-export const SelectOptionTag = 'option';
 export type SelectMenuAttributes = JSX.IntrinsicAttributes & {
-  string? : boolean;
-  channel?: boolean;
-  user?   : boolean;
-  role?   : boolean;
-  mention?: boolean;
-
+  string?        : boolean;
+  channel?       : boolean;
+  user?          : boolean;
+  role?          : boolean;
+  mention?       : boolean;
   custom_id?     : string;
   options?       : [];
   channel_types? : [];
@@ -126,8 +112,8 @@ export type SelectMenuOut = {
 };
 export type SelectMenuIn = SelectMenuOut;
 
-export const TextTag      = 'text';
-export const TextInputTag = 'textinput';
+
+
 export type TextInputAttributes = JSX.IntrinsicAttributes & {
   custom_id?  : string;
   style?      : Rest.TextInputStyle;

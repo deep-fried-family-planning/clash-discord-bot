@@ -5,9 +5,11 @@ export type Snowflake = `${bigint}`;
 export type User = Discord.User;
 export type Guild = Discord.Guild;
 export type GuildMember = Discord.GuildMember;
+export type Channel = Discord.Channel;
 
 export type Message = Discord.Message;
 export type Dialog = Discord.InteractionCallbackModal;
+export type Response = Message | Dialog;
 
 export type Interaction =
   | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.APPLICATION_COMMAND; data: Discord.ApplicationCommandDatum}

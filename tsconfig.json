@@ -3,7 +3,7 @@
     "target"                      : "esnext",
     "lib"                         : ["esnext"],
     "jsx"                         : "react-jsx",
-    "jsxImportSource"             : "src/disreact/dsx",
+    "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
     "isolatedModules"             : true,

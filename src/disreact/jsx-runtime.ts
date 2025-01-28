@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type */
 import {createElementMulti, createElementSingle} from '#src/disreact/model/dsx/create-element.ts';
 import type {ActionRowAttributes, ButtonAttributes, DialogAttributes, EmbedAttributes, MessageAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/dsx/intrinsic.ts';
 import type {Message} from 'dfx/types';
 
-
+type Value = {value?: string} | {children: string};
 
 export declare namespace JSX {
   export type Element = Message;
@@ -15,14 +15,29 @@ export declare namespace JSX {
   }
 
   export interface IntrinsicElements {
-    actionrow : ActionRowAttributes;
-    button    : ButtonAttributes;
-    components: ActionRowAttributes;
-    dialog    : DialogAttributes;
-    embed     : EmbedAttributes;
-    message   : MessageAttributes;
-    select    : SelectMenuAttributes;
-    text      : TextInputAttributes;
+    actionrow  : ActionRowAttributes;
+    actions    : ActionRowAttributes;
+    components : ActionRowAttributes;
+    buttons    : ActionRowAttributes;
+    button     : ButtonAttributes;
+    success    : ButtonAttributes;
+    danger     : ButtonAttributes;
+    primary    : ButtonAttributes;
+    secondary  : ButtonAttributes;
+    link       : ButtonAttributes;
+    modal      : DialogAttributes;
+    dialog     : DialogAttributes;
+    embeds     : {};
+    embed      : EmbedAttributes;
+    title      : Value;
+    description: Value;
+    message    : MessageAttributes;
+    content    : Value;
+    select     : SelectMenuAttributes;
+    selectmenu : SelectMenuAttributes;
+    option     : {};
+    textinput  : TextInputAttributes;
+    text       : TextInputAttributes;
   }
 }
 

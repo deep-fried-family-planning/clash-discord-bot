@@ -32,3 +32,17 @@ export const mapNodes = (
     mapNodes(childNode, callback);
   }
 };
+
+
+export const findNearestFunctionParent = (node: DisReactNode): DisReactNode | null => {
+  let currentNode = node.parent;
+
+  while (currentNode) {
+    if (typeof currentNode.type === 'function') {
+      return currentNode;
+    }
+    currentNode = currentNode.parent;
+  }
+
+  return null;
+};

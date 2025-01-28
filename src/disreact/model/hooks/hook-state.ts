@@ -3,6 +3,7 @@
 
 import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#src/disreact/model/hooks/danger.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
+import {inspectLogWith} from '#src/internal/pure/pure.ts';
 
 
 
@@ -47,7 +48,9 @@ export const dismountNode = (node: DisReactNode) => {
 export const setActiveRenderNode = (node: DisReactNode): void => {
   const fiberId = getActiveFiberId();
 
-  node.state!.pc = 0;
+  if (node.state) {
+    node.state.pc = 0;
+  }
 
   ActiveNodes.set(fiberId, node);
 };
@@ -82,9 +85,13 @@ export const encodeHooks = (rec: HookStates): URLSearchParams => {
   const search = new URLSearchParams();
   const states = Object.values(rec);
 
+  inspectLogWith('decoded', rec);
+
   for (const state of states) {
     search.set(state.id, encodeURIComponent(JSON.stringify(state)));
   }
+
+  inspectLogWith('encoded', search);
 
   return search;
 };
@@ -93,9 +100,13 @@ export const encodeHooks = (rec: HookStates): URLSearchParams => {
 export const decodeHooks = (search: URLSearchParams): HookStates => {
   const states = {} as HookStates;
 
+  inspectLogWith('encoded', search);
+
   for (const [id, value] of search.entries()) {
     states[id] = JSON.parse(decodeURIComponent(value));
   }
+
+  inspectLogWith('decoded', states);
 
   return states;
 };

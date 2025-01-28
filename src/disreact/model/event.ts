@@ -1,5 +1,4 @@
 import type {ButtonProps, SelectMenuProps} from '#src/disreact/model/dsx/intrinsic.ts';
-import {D} from '#src/internal/pure/effect.ts';
 
 
 
@@ -34,5 +33,3 @@ export type MentionMenuClickEvent = {
   _tag  : 'MentionMenuClickEvent';
   values: {id: string; type: 'user' | 'role' | 'channel'}[];
 };
-
-export const ButtonClickEvent = D.tagged<ButtonClickEvent>('ButtonClickEvent');

@@ -71,7 +71,7 @@ export const accumulateStates = (
 
   const result = {} as HookStates;
 
-  if (node.name && node.state !== undefined) {
+  if (node.name && node.state !== undefined && node.state.stack.length) {
     result[node.name] = node.state;
   }
 
@@ -114,33 +114,61 @@ export const renderTree = (node: DisReactNode, states?: rec<HookState>): DisReac
   if (states && node.name in states) {
     node.state = states[node.name];
   }
-  const renderedNode = node.render(node.props);
 
-  if (!arePropsShallowEqual(node.props, renderedNode.props)) {
+  const rendered = node.render(node.props);
+  let resolved   = node;
+
+  if (!areNodesEqual(node, rendered)) {
+    console.log('render tree', 'not equal');
+
     node.dismount();
-    renderedNode.mount();
-  }
-  else {
-    node.setProps(renderedNode.props);
-  }
 
-  for (let i = 0; i < renderedNode.nodes.length; i++) {
-    const newChild     = renderedNode.nodes[i];
-    const currentChild = node.nodes[i];
+    rendered.mount();
 
-    if (areNodesEqual(currentChild, newChild)) {
-      currentChild.setProps(newChild.props);
-      renderedNode.nodes[i] = renderTree(currentChild);
+    if (node.isRoot) {
+      console.log('set absolute root');
+      rendered.setAbsoluteRoot();
     }
     else {
-      renderedNode.nodes[i] = renderTree(newChild);
-      renderedNode.nodes[i].setParent(renderedNode, i);
+      rendered.setParent(node.parent!, node.index);
     }
+
+    resolved = rendered;
+  }
+  else {
+    node.setProps(rendered.props);
+    resolved = node;
   }
 
-  if (node.parent) {
-    renderedNode.setParent(node.parent, node.index);
+  for (let i = 0; i < resolved.nodes.length; i++) {
+    const curr = resolved.nodes[i];
+
+    curr.setParent(resolved, i);
+
+    const next = renderTree(curr, states);
+
+    next.setParent(resolved, i);
+
+    // if (areNodesEqual(curr, next)) {
+    //   curr.setProps(next.props);
+    // }
+    // else {
+    //
+    // }
+    //
+    //
+    // const newChild     = rendered.nodes[i];
+    // const currentChild = node.nodes[i];
+    //
+    // if (areNodesEqual(currentChild, newChild)) {
+    //   currentChild.setProps(newChild.props);
+    //   rendered.nodes[i] = renderTree(currentChild);
+    // }
+    // else {
+    //   rendered.nodes[i] = renderTree(newChild);
+    //   rendered.nodes[i].setParent(rendered, i);
+    // }
   }
 
-  return renderedNode;
+  return resolved;
 };

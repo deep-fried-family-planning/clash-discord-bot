@@ -3,15 +3,17 @@
 
 
 import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
-import type {Switches} from '#src/disreact/model/hooks/danger.ts';
+import { GlobalPages, type Switches} from '#src/disreact/model/hooks/danger.ts';
 import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hooks/hook-state.ts';
+import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
+
 
 
 export abstract class DisReactNode {
-  public key           : string;
-  public id            : string;
-  public fullId        : string;
   public index         : number;
+  public id            : string;
+  public relative_id   : string;
+  public full_id       : string;
   public name          : string;
   public type          : string | TagFunc;
   public props         : any;
@@ -20,19 +22,20 @@ export abstract class DisReactNode {
   public nodes         : DisReactNode[];
   public switches      : Switches | undefined;
   public state         : HookState | undefined;
+  public isRoot        : boolean = false;
 
   public constructor(
     type: string | TagFunc,
     {children, ...props}: any,
   ) {
-    this.name   = typeof type === 'string' ? type : type.name;
-    this.type   = type;
-    this.props  = props;
-    this.nodes  = children ?? [];
-    this.id     = this.name;
-    this.fullId = '';
-    this.index  = 0;
-    this.key    = '';
+    this.name        = typeof type === 'string' ? type : type.name;
+    this.type        = type;
+    this.props       = props;
+    this.nodes       = children ?? [];
+    this.index       = 0;
+    this.id          = this.name;
+    this.relative_id = '';
+    this.full_id     = '';
   }
 
   public handleEvent(
@@ -41,26 +44,37 @@ export abstract class DisReactNode {
       target: any;
       values: string[];
     },
-  ) {
-    if (!(event.type in this.props)) return;
+  ): DisReactNode {
+    if (!(event.type in this.props)) {
+      throw new Error('No handler for event: ' + event.type + ' in ' + this.name);
+    }
 
-    setActiveRenderNode(this);
+    const functionNode = findNearestFunctionParent(this)!;
+
+    setActiveRenderNode(functionNode);
 
     this.props[event.type](event);
+
+    return functionNode;
   }
 
   public setAbsoluteRoot(): void {
-    this.id     = this.name;
-    this.fullId = this.id;
+    this.id      = this.name;
+    this.index   = 0;
+    this.full_id = this.id;
+    this.parent  = this;
+    this.isRoot  = true;
+    this.setParent(this);
   };
 
   public setRootMapParent(parent: DisReactNode): void {this.rootMapParent = parent};
 
   public setParent(parent: DisReactNode, index: number = 0): void {
-    this.parent = parent;
-    this.index  = index;
-    this.id     = this.parent.id + '.' + this.name + ':' + `${this.index}`;
-    this.fullId = this.parent.fullId + '.' + this.name + ':' + `${this.index}`;
+    this.parent      = parent;
+    this.index       = index;
+    this.id          = `${this.name}:${this.index}`;
+    this.relative_id = `${this.parent.id}:${this.id}`;
+    this.full_id     = `${this.parent.full_id}:${this.id}`;
   };
 
   public setProps(props: any): void {this.props = props}
@@ -109,9 +123,11 @@ export class FunctionNode extends DisReactNode {
 
 
 export const areNodesEqual = (nodeA: DisReactNode, nodeB: DisReactNode): boolean => {
-  if (nodeA === nodeB) return true;
-  if (nodeA.key !== nodeB.key) return false;
+  // if (nodeA === nodeB) return true;
+  // if (nodeA.key !== nodeB.key) return false;
   if (nodeA.type !== nodeB.type) return false;
+  if (nodeA.nodes.length !== nodeB.nodes.length) return false;
+  if (nodeA.name !== nodeB.name) return false;
   return arePropsShallowEqual(nodeA.props, nodeB.props);
 };
 
