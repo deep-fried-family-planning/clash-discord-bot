@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 
 import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#src/disreact/model/hooks/danger.ts';
-import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
+import type {DisReactNode} from '#src/disreact/model/node.ts';
 
 
 
@@ -75,4 +75,27 @@ export const getHookState = () => {
     return emptyHookState();
   }
   return state;
+};
+
+
+export const encodeHooks = (rec: HookStates): URLSearchParams => {
+  const search = new URLSearchParams();
+  const states = Object.values(rec);
+
+  for (const state of states) {
+    search.set(state.id, encodeURIComponent(JSON.stringify(state)));
+  }
+
+  return search;
+};
+
+
+export const decodeHooks = (search: URLSearchParams): HookStates => {
+  const states = {} as HookStates;
+
+  for (const [id, value] of search.entries()) {
+    states[id] = JSON.parse(decodeURIComponent(value));
+  }
+
+  return states;
 };

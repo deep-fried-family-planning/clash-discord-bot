@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
 
 
 
@@ -6,7 +6,7 @@ import {getHookState} from '#src/disreact/model/hooks/hook-state.ts';
 
 
 
-export const useStateTest = <A>(initial: A): readonly [state: A, setState: (next: A) => void] => {
+export const useState = <A>(initial: A): readonly [state: A, setState: (next: A) => void] => {
   const hooks = getHookState();
 
   const state = hooks.stack[hooks.pc++];

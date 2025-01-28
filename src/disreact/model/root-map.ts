@@ -1,11 +1,10 @@
 
-import {type DisReactNode, FunctionNode} from '#src/disreact/model/tree/node.ts';
-import {staticRender} from '#src/disreact/model/static-graph/static-tree.ts';
-import {cloneTree} from '#src/disreact/model/tree/clone.ts';
+import {cloneTree, staticRender} from '#src/disreact/model/lifecycles.ts';
+import {type DisReactNode, FunctionNode} from '#src/disreact/model/node.ts';
 
 
 
-export type RootMap = {[k in string]: {[k in string]: DisReactNode}};
+export type RootMap = { [k in string]: { [k in string]: DisReactNode } };
 
 
 export const createRootMap = (roots: DisReactNode[], rootMaps: RootMap = {}) => {

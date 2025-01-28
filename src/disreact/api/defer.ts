@@ -1,5 +1,5 @@
 import {Rest} from '#src/disreact/api/index.ts';
-import {D} from '#src/internal/pure/effect.ts';
+import {D, pipe} from '#src/internal/pure/effect.ts';
 import type {bool} from '#src/internal/pure/types-pure.ts';
 
 
@@ -24,12 +24,12 @@ export type OpenDialog = D.TaggedEnum.Value<Defer, 'OpenDialog'>;
 
 export const Defer           = D.taggedEnum<Defer>();
 export const None            = () => Defer.None({}) as Defer;
-export const Close           = Defer.Close({});
-export const Public          = Defer.Public({rest: Rest.Public});
-export const PublicUpdate    = Defer.PublicUpdate({rest: Rest.PublicUpdate});
-export const Private         = Defer.Private({rest: Rest.Private});
-export const PrivateUpdate   = Defer.PrivateUpdate({rest: Rest.PrivateUpdate});
-export const OpenDialog      = Defer.OpenDialog({rest: Rest.OpenDialog});
+export const Close           = () => Defer.Close({});
+export const Public          = () => Defer.Public({rest: Rest.Public});
+export const PublicUpdate    = () => Defer.PublicUpdate({rest: Rest.PublicUpdate});
+export const Private         = () => Defer.Private({rest: Rest.Private});
+export const PrivateUpdate   = () => Defer.PrivateUpdate({rest: Rest.PrivateUpdate});
+export const OpenDialog      = () => Defer.OpenDialog({rest: Rest.OpenDialog});
 export const isNone          = Defer.$is('None');
 export const isClose         = Defer.$is('Close');
 export const isPublic        = Defer.$is('Public');
@@ -56,7 +56,6 @@ export const setDone = (df: Defer) => {
 };
 
 const decodings = {
-  A: None,
   B: Close,
   C: Public,
   D: PublicUpdate,
@@ -67,9 +66,15 @@ const decodings = {
 
 export const decodeDefer = (tx: string) => {
   if (tx in decodings) {
-    return decodings[tx as keyof typeof decodings];
+    return pipe(
+      decodings[tx as keyof typeof decodings](),
+      setDone,
+    );
   }
-  return None;
+  return pipe(
+    None(),
+    setDone,
+  );
 };
 
 export const encodeDefer = Defer.$match({

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
-import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, TextTag} from '#src/disreact/dsx/intrinsic.ts';
-import type {TagTypes} from '#src/disreact/dsx/types.ts';
-import {ElementNode, FunctionNode} from '#src/disreact/model/tree/node.ts';
+import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, TextTag} from '#src/disreact/model/dsx/intrinsic.ts';
+import type {TagTypes} from '#src/disreact/model/dsx/types.ts';
+import {ElementNode, FunctionNode} from '#src/disreact/model/node.ts';
 
 
 
@@ -28,8 +28,12 @@ export const createIntrinsicElement = (type: string, props: any) => {
 
 export const createElementSingle = (type: TagTypes, props: {} | {children: {}}) => {
   if (!props) {
-    return createElementMulti(type, {children: []});
+    return createElementMulti(
+      type,
+      {children: []},
+    );
   }
+
   if ('children' in props) {
     switch (typeof props.children) {
       case 'undefined':
@@ -40,9 +44,23 @@ export const createElementSingle = (type: TagTypes, props: {} | {children: {}}) 
     if (props.children === null) {
       throw new Error('children must not be null');
     }
-    return createElementMulti(type, {...props, children: [props.children]});
+
+    return createElementMulti(
+      type,
+      {
+        ...props,
+        children: [props.children],
+      },
+    );
   }
-  return createElementMulti(type, {...props, children: []});
+
+  return createElementMulti(
+    type,
+    {
+      ...props,
+      children: [],
+    },
+  );
 };
 
 

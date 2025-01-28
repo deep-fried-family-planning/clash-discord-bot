@@ -7,7 +7,7 @@ import {Duration} from 'effect';
 
 
 
-export type Auth = D.TaggedEnum<{
+export type TAuth = D.TaggedEnum<{
   VerifiedEmail : {};
   MFA           : {};
   VerifiedMember: {};
@@ -16,14 +16,14 @@ export type Auth = D.TaggedEnum<{
   Custom        : {name: str};
 }>;
 
-export type VerifiedEmail = D.TaggedEnum.Value<Auth, 'VerifiedEmail'>;
-export type MFA = D.TaggedEnum.Value<Auth, 'MFA'>;
-export type VerifiedMember = D.TaggedEnum.Value<Auth, 'VerifiedMember'>;
-export type ServerBooster = D.TaggedEnum.Value<Auth, 'ServerBooster'>;
-export type ServerDuration = D.TaggedEnum.Value<Auth, 'ServerDuration'>;
-export type Custom = D.TaggedEnum.Value<Auth, 'Custom'>;
+export type VerifiedEmail = D.TaggedEnum.Value<TAuth, 'VerifiedEmail'>;
+export type MFA = D.TaggedEnum.Value<TAuth, 'MFA'>;
+export type VerifiedMember = D.TaggedEnum.Value<TAuth, 'VerifiedMember'>;
+export type ServerBooster = D.TaggedEnum.Value<TAuth, 'ServerBooster'>;
+export type ServerDuration = D.TaggedEnum.Value<TAuth, 'ServerDuration'>;
+export type Custom = D.TaggedEnum.Value<TAuth, 'Custom'>;
 
-export const Auth             = D.taggedEnum<Auth>();
+export const Auth             = D.taggedEnum<TAuth>();
 export const VerifiedEmail    = Auth.VerifiedEmail;
 export const MFA              = Auth.MFA;
 export const VerifiedMember   = Auth.VerifiedMember;
@@ -37,17 +37,17 @@ export const isServerBooster  = Auth.$is('ServerBooster');
 export const isServerDuration = Auth.$is('ServerDuration');
 export const isCustom         = Auth.$is('Custom');
 
-export const requiresCustomAuth = (auths?: Auth[]) => auths?.length && !!auths.find((auth) => auth._tag === 'Custom');
+export const requiresCustomAuth = (auths?: TAuth[]) => auths?.length && !!auths.find((auth) => auth._tag === 'Custom');
 
-export const empty = () => [] as Auth[];
+export const empty = () => [] as TAuth[];
 
-export const addUserAuths = (user?: Rest.User) => (auths: Auth[]) => {
+export const addUserAuths = (user?: Rest.User) => (auths: TAuth[]) => {
   if (user?.verified) auths.push(VerifiedEmail());
   if (user?.mfa_enabled) auths.push(MFA());
   return auths;
 };
 
-export const addMemberAuths = (member?: Rest.GuildMember) => (auths: Auth[]) => {
+export const addMemberAuths = (member?: Rest.GuildMember) => (auths: TAuth[]) => {
   if (member?.pending) auths.push(VerifiedMember());
   if (member?.premium_since) auths.push(ServerBooster());
   if (member?.joined_at) {
@@ -61,7 +61,7 @@ export const addMemberAuths = (member?: Rest.GuildMember) => (auths: Auth[]) => 
   return auths;
 };
 
-export const addAdminAuth = (server: DServer, member?: Rest.GuildMember) => (auths: Auth[]) => {
+export const addAdminAuth = (server: DServer, member?: Rest.GuildMember) => (auths: TAuth[]) => {
   if (member?.roles.includes(server.admin as Rest.Snowflake)) {
     auths.push(Auth.Custom({name: 'admin'}));
   }
@@ -70,7 +70,7 @@ export const addAdminAuth = (server: DServer, member?: Rest.GuildMember) => (aut
 };
 
 
-export const isSameAuth = (a: Auth) => (b: Auth) => {
+export const isSameAuth = (a: TAuth) => (b: TAuth) => {
   if (a._tag === 'ServerDuration' && b._tag === 'ServerDuration') {
     return pipe(
       a.duration,
@@ -86,4 +86,11 @@ export const isSameAuth = (a: Auth) => (b: Auth) => {
 };
 
 
-export const hasAllAuths = (a: Auth[], b: Auth[]) => b.every((auth) => a.find(isSameAuth(auth)));
+export const hasAllAuths = (a: TAuth[], b: TAuth[]) => b.every((auth) => a.find(isSameAuth(auth)));
+
+
+export const decodeAuths = (rest: Rest.Interaction) => pipe(
+  empty(),
+  addUserAuths(rest.user),
+  addMemberAuths(rest.member),
+);

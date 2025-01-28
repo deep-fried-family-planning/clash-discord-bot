@@ -9,7 +9,12 @@ export type GuildMember = Discord.GuildMember;
 export type Message = Discord.Message;
 export type Dialog = Discord.InteractionCallbackModal;
 
-export type Interaction = Discord.Interaction;
+export type Interaction =
+  | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.APPLICATION_COMMAND; data: Discord.ApplicationCommandDatum}
+  | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.MODAL_SUBMIT; data: Discord.ModalSubmitDatum}
+  | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.MESSAGE_COMPONENT; data: Discord.MessageComponentDatum}
+  | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE}
+  | Omit<Discord.Interaction, 'data'> & {type: typeof InteractionType.PING};
 
 
 export type Embed = Discord.Embed;
@@ -36,3 +41,36 @@ export const PublicUpdate  = {type: CallbackType.DEFERRED_UPDATE_MESSAGE};
 export const Private       = {type: CallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE, data: {flags: MessageFlag.EPHEMERAL}};
 export const PrivateUpdate = {type: CallbackType.DEFERRED_UPDATE_MESSAGE, data: {flags: MessageFlag.EPHEMERAL}};
 export const OpenDialog    = {type: CallbackType.MODAL};
+
+
+type NotRow = Exclude<Discord.Component, Discord.ActionRow>;
+
+export const findRestTarget = (
+  custom_id: string,
+  components: Discord.Component[],
+) => {
+  let target: Discord.Button | Discord.SelectMenu | undefined;
+  let rdx = 0;
+  let cdx = 0;
+
+  for (let i = 0; i < components.length; i++) {
+    const row = components[i];
+
+    if (!('components' in row)) throw new Error('cannot');
+
+    for (let j = 0; j < row.components.length; j++) {
+      const component = row.components[j] as NotRow;
+
+      if (component.custom_id === custom_id) {
+        if ('value' in component) throw new Error('cannot call text input');
+
+        target = component;
+        rdx    = i;
+        cdx    = j;
+        break;
+      }
+    }
+  }
+
+  return target;
+};

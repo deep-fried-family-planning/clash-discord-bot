@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type {JSX} from '#src/disreact/dsx/jsx-runtime.ts';
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {Rest} from '#src/disreact/api/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 

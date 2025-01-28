@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument */
-import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, SelectOptionTag, TextInputTag, TextTag} from '#src/disreact/dsx/intrinsic.ts';
-import type {DisReactNode} from '#src/disreact/model/tree/node.ts';
+/* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument,@typescript-eslint/restrict-template-expressions */
 import {__DISREACT_NONE} from '#src/disreact/api/constants.ts';
 import {Rest} from '#src/disreact/api/index.ts';
+import {ActionRowTag, ButtonTag, DialogTag, EmbedTag, MessageTag, SelectMenuTag, SelectOptionTag, TextInputTag, TextTag} from '#src/disreact/model/dsx/intrinsic.ts';
+import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {Kv} from '#src/internal/pure/effect.ts';
 
 
@@ -10,6 +10,13 @@ import {Kv} from '#src/internal/pure/effect.ts';
 export const encodeTreeAsMessage = (
   node: DisReactNode,
 ): Rest.Message => {
+  return encodeTree(node);
+};
+
+
+export const encodeTreeAsDialog = (
+  node: DisReactNode,
+): Rest.Dialog => {
   return encodeTree(node);
 };
 
@@ -103,14 +110,23 @@ export const encodeElementNode = (node: DisReactNode) => {
     }
 
     default:
-
       throw new Error(`<${node.type}/> not implemented`);
   }
 };
 
 
 export const encodeSelectMenuElement = (nodes: DisReactNode[], props: any) => {
-  const {string, options, user, role, channel, mention, default_values, channel_types, ...restProps} = props;
+  const {
+          string,
+          options,
+          user,
+          role,
+          channel,
+          mention,
+          default_values,
+          channel_types,
+          ...restProps
+        } = props;
 
   switch (true) {
     case string:
