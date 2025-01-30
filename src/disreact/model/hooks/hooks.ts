@@ -17,20 +17,9 @@ export const useState = <A>(initial: A): readonly [state: A, setState: (next: A)
 
     hooks.stack.push(newState);
 
-    return [
-      initial,
-      (next) => {
-        newState.current = next;
-      },
-    ] as const;
+    return [initial, (next) => {newState.current = next}] as const;
   }
-
-  return [
-    state.current,
-    (next) => {
-      state.current = next;
-    },
-  ] as const;
+  return [state.current, (next) => {state.current = next}] as const;
 };
 
 type ueffect =
@@ -56,7 +45,6 @@ export const useEffect = (
 
   // todo 2d frames of states
 };
-
 
 export const useRef = () => {
   const hooks = getHookState();

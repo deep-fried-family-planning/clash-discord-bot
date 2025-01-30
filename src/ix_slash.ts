@@ -3,13 +3,16 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ixsRouter} from '#src/discord/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
 import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
+import {DisReactDOM, DRROOT} from '#src/disreact/index.ts';
+import {OmniStart} from '#src/disreact/omni-board/omni-start.tsx';
 import type {IxD, IxRE} from '#src/internal/discord.ts';
 import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {latency} from '#src/ix_menu.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Cause} from 'effect';
+import {Cause, Console, Metric} from 'effect';
 
 
 
@@ -50,18 +53,21 @@ const slash = (ix: IxD) => E.gen(function * () {
 
 const h = (event: IxD) => pipe(
   slash(event),
+  E.withLogSpan('ix_slash'),
+  Metric.trackDuration(latency),
+  E.tap(() => pipe(
+    Metric.value(latency),
+    E.flatMap((v) => Console.log(v.sum / v.count)),
+  )),
 );
 
 
 export const handler = makeLambda(h, pipe(
   DiscordLayerLive,
+  L.provideMerge(DRROOT),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),
   L.provideMerge(SQS.defaultLayer),
   L.provideMerge(DynamoDBDocument.defaultLayer),
-  L.provideMerge(L.setTracerTiming(true)),
-  L.provideMerge(L.setTracerEnabled(true)),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-  L.provideMerge(DT.layerCurrentZoneLocal),
 ));

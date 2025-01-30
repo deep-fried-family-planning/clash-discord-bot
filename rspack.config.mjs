@@ -142,7 +142,7 @@ export default defineConfig({
 
   // plugins: [RsDoctor],
 
-  devtool: 'source-map',
+  devtool: 'eval-source-map',
 
   performance: {hints: 'warning'},
   stats      : {preset: 'errors-only', entrypoints: true, performance: true, children: true},

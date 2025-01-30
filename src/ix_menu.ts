@@ -1,25 +1,23 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {ixcRouter} from '#src/discord/ixc-router.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
-import type {Rest} from '#src/disreact/api/index.ts';
-import {DisReactDOM} from '#src/disreact/index.ts';
+import type {Rest} from '#src/disreact/enum/index.ts';
+import {DisReactDOM, DRROOT} from '#src/disreact/index.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import type {IxD} from '#src/internal/discord.ts';
-import {MGF} from '#src/internal/discord.ts';
-import {CSL, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Discord} from 'dfx';
-import {Cause} from 'effect';
+import {Array, Console, Metric } from 'effect';
 
 
+
+export const latency = Metric.timerWithBoundaries('timer', Array.range(1, 10));
 
 const menu = (ix: Rest.Interaction) => DisReactDOM.respond(ix).pipe(
+  // E.catchAllCause(Console.error),
+  // E.catchAllDefect(Console.error),
   // E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
   //   yield * CSL.error('[USER]');
   //   const userMessage = yield * logDiscordError([e]);
@@ -100,24 +98,31 @@ const menu = (ix: Rest.Interaction) => DisReactDOM.respond(ix).pipe(
   //     E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
   //   );
   // })),
+  E.awaitAllChildren,
+  E.withLogSpan('ix_menu'),
+  Metric.trackDuration(latency),
+  E.tap(() => pipe(
+    Metric.value(latency),
+    E.flatMap((v) => pipe(
+      Console.log(v.sum / v.count),
+      E.tap(Console.log(v.min)),
+    )),
+  )),
 );
 
 
 const live = pipe(
-  ClashCache.Live,
+  DRROOT,
+  L.provideMerge(ClashCache.Live),
   L.provideMerge(MenuCache.Live),
   L.provideMerge(L.mergeAll(
     ClashOfClans.Live,
     ClashKing.Live,
-    DiscordLayerLive,
+    // DiscordLayerLive,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
-    DynamoDBDocument.defaultLayer,
+    // DynamoDBDocument.defaultLayer,
   )),
-  L.provideMerge(L.setTracerTiming(true)),
-  L.provideMerge(L.setTracerEnabled(true)),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-  L.provideMerge(DT.layerCurrentZoneLocal),
 );
 
 

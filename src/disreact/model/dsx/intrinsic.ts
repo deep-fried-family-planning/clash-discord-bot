@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {Rest} from '#src/disreact/api/index.ts';
+import type {Rest} from '#src/disreact/enum/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -10,12 +10,10 @@ export type ActionRowProps = ActionRowAttributes & {
   children: ButtonProps[];
 };
 export type ActionRowOut = {
-  type      : typeof Rest.ComponentType.ACTION_ROW;
+  type      : typeof Rest.ACTION_ROW;
   components: ButtonOut[];
 };
 export type ActionRowIn = ActionRowOut;
-
-
 
 export type ButtonAttributes = JSX.IntrinsicAttributes & {
   custom_id?: string;
@@ -29,7 +27,7 @@ export type ButtonAttributes = JSX.IntrinsicAttributes & {
 };
 export type ButtonProps = ButtonAttributes;
 export type ButtonOut = {
-  type      : typeof Rest.ComponentType.BUTTON;
+  type      : typeof Rest.BUTTON;
   style     : Rest.ButtonStyle;
   label?    : string | undefined;
   emoji?    : Rest.Emoji | undefined;
@@ -38,13 +36,11 @@ export type ButtonOut = {
   url?      : string | undefined;
   disabled? : boolean | undefined;
 };
-export type ButtonIn = ButtonOut;
-
-
 
 export type DialogAttributes = JSX.IntrinsicAttributes & {
   custom_id?: string;
   title?    : str;
+  onSubmit? : () => void;
 };
 export type DialogProps = DialogAttributes & {
   children: TextInputProps[];
@@ -59,13 +55,10 @@ export type DialogIn = {
   components: TextInputIn[][];
 };
 
-
 export type EmbedAttributes = Rest.Embed & JSX.IntrinsicAttributes;
 export type EmbedProps = EmbedAttributes;
 export type EmbedOut = Rest.Embed;
 export type EmbedIn = EmbedOut;
-
-
 
 export type MessageAttributes = JSX.IntrinsicAttributes & {
   content?: string;
@@ -80,8 +73,6 @@ export type MessageOut = {
   components: ActionRowOut[];
 };
 export type MessageIn = MessageOut;
-
-
 
 export type SelectMenuAttributes = JSX.IntrinsicAttributes & {
   string?        : boolean;
@@ -111,8 +102,6 @@ export type SelectMenuOut = {
   disabled?      : boolean;
 };
 export type SelectMenuIn = SelectMenuOut;
-
-
 
 export type TextInputAttributes = JSX.IntrinsicAttributes & {
   custom_id?  : string;

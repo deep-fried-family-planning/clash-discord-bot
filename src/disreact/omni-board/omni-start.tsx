@@ -1,14 +1,13 @@
-import {Defer} from '#src/disreact/api/index.ts';
-import {ButtonStyle} from '#src/disreact/api/rest.ts';
-import {useDefer, usePage} from '#src/disreact/model/hooks/danger.ts';
+import {Rest} from '#src/disreact/enum/index.ts';
+import {usePage} from '#src/disreact/model/hooks/danger.ts';
 import {Linker} from '#src/disreact/omni-board/linker.tsx';
+import {OmniEditorModal} from '#src/disreact/omni-board/omni-editor-dialog.tsx';
 import {OmniTitleEmbed} from '#src/disreact/omni-board/omni-title-embed.tsx';
 
 
 
 export const OmniStart = () => {
-  const setSwitch = usePage([Linker]);
-  const setDefer  = useDefer();
+  const setPage = usePage([Linker, OmniEditorModal]);
 
   return (
     <message>
@@ -20,11 +19,17 @@ export const OmniStart = () => {
       </embeds>
       <components>
         <button
-          style={ButtonStyle.SUCCESS}
+          style={Rest.SUCCESS}
           label={'Link'}
           onClick={() => {
-            // setSwitch(Linker);
-            setDefer(Defer.Public());
+            setPage(Linker);
+          }}
+        />
+        <button
+          style={Rest.DANGER}
+          label={'Modal'}
+          onClick={() => {
+            setPage(OmniEditorModal);
           }}
         />
       </components>

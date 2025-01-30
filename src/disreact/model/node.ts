@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call */
 
 
 
 import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
-import { GlobalPages, type Switches} from '#src/disreact/model/hooks/danger.ts';
+import type {Switches} from '#src/disreact/model/hooks/danger.ts';
 import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hooks/hook-state.ts';
 import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
 
@@ -24,10 +24,7 @@ export abstract class DisReactNode {
   public state         : HookState | undefined;
   public isRoot        : boolean = false;
 
-  public constructor(
-    type: string | TagFunc,
-    {children, ...props}: any,
-  ) {
+  public constructor(type: string | TagFunc, {children, ...props}: any) {
     this.name        = typeof type === 'string' ? type : type.name;
     this.type        = type;
     this.props       = props;
@@ -42,13 +39,12 @@ export abstract class DisReactNode {
     event: {
       type  : 'onClick' | 'onSubmit';
       target: any;
-      values: string[];
+      values: any[];
     },
   ): DisReactNode {
     if (!(event.type in this.props)) {
       throw new Error('No handler for event: ' + event.type + ' in ' + this.name);
     }
-
     const functionNode = findNearestFunctionParent(this)!;
 
     setActiveRenderNode(functionNode);
@@ -119,37 +115,3 @@ export class FunctionNode extends DisReactNode {
 
   public dismount(): HookState {return this.state = dismountNode(this)!}
 }
-
-
-
-export const areNodesEqual = (nodeA: DisReactNode, nodeB: DisReactNode): boolean => {
-  // if (nodeA === nodeB) return true;
-  // if (nodeA.key !== nodeB.key) return false;
-  if (nodeA.type !== nodeB.type) return false;
-  if (nodeA.nodes.length !== nodeB.nodes.length) return false;
-  if (nodeA.name !== nodeB.name) return false;
-  return arePropsShallowEqual(nodeA.props, nodeB.props);
-};
-
-export const arePropsShallowEqual = (objA: any, objB: any): boolean => {
-  if (objA === objB) return true;
-  if (typeof objA !== typeof objB) return false;
-  if (objA === null || objB === null) return false;
-  if (typeof objA !== 'object' || typeof objB !== 'object') return false;
-
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
-
-  if (keysA.length !== keysB.length) {
-    return false;
-  }
-
-  for (const key of keysA) {
-    if (key === 'children') continue;
-    if (objA[key] !== objB[key]) {
-      return false;
-    }
-  }
-
-  return true;
-};

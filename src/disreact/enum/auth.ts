@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type {Rest} from '#src/disreact/api/index.ts';
+import type {Rest} from '#src/disreact/enum/index.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {D, DT, pipe} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {Duration} from 'effect';
-
-
 
 export type TAuth = D.TaggedEnum<{
   VerifiedEmail : {};
@@ -16,12 +14,7 @@ export type TAuth = D.TaggedEnum<{
   Custom        : {name: str};
 }>;
 
-export type VerifiedEmail = D.TaggedEnum.Value<TAuth, 'VerifiedEmail'>;
-export type MFA = D.TaggedEnum.Value<TAuth, 'MFA'>;
-export type VerifiedMember = D.TaggedEnum.Value<TAuth, 'VerifiedMember'>;
-export type ServerBooster = D.TaggedEnum.Value<TAuth, 'ServerBooster'>;
-export type ServerDuration = D.TaggedEnum.Value<TAuth, 'ServerDuration'>;
-export type Custom = D.TaggedEnum.Value<TAuth, 'Custom'>;
+export const empty = () => [] as TAuth[];
 
 export const Auth             = D.taggedEnum<TAuth>();
 export const VerifiedEmail    = Auth.VerifiedEmail;
@@ -30,16 +23,8 @@ export const VerifiedMember   = Auth.VerifiedMember;
 export const ServerBooster    = Auth.ServerBooster;
 export const ServerDuration   = Auth.ServerDuration;
 export const Custom           = Auth.Custom;
-export const isVerifiedEmail  = Auth.$is('VerifiedEmail');
-export const isMFA            = Auth.$is('MFA');
-export const isVerifiedMember = Auth.$is('VerifiedMember');
-export const isServerBooster  = Auth.$is('ServerBooster');
-export const isServerDuration = Auth.$is('ServerDuration');
-export const isCustom         = Auth.$is('Custom');
 
 export const requiresCustomAuth = (auths?: TAuth[]) => auths?.length && !!auths.find((auth) => auth._tag === 'Custom');
-
-export const empty = () => [] as TAuth[];
 
 export const addUserAuths = (user?: Rest.User) => (auths: TAuth[]) => {
   if (user?.verified) auths.push(VerifiedEmail());
@@ -65,10 +50,8 @@ export const addAdminAuth = (server: DServer, member?: Rest.GuildMember) => (aut
   if (member?.roles.includes(server.admin as Rest.Snowflake)) {
     auths.push(Auth.Custom({name: 'admin'}));
   }
-  ;
   return auths;
 };
-
 
 export const isSameAuth = (a: TAuth) => (b: TAuth) => {
   if (a._tag === 'ServerDuration' && b._tag === 'ServerDuration') {
@@ -85,9 +68,7 @@ export const isSameAuth = (a: TAuth) => (b: TAuth) => {
   return a._tag === b._tag;
 };
 
-
 export const hasAllAuths = (a: TAuth[], b: TAuth[]) => b.every((auth) => a.find(isSameAuth(auth)));
-
 
 export const decodeAuths = (rest: Rest.Interaction) => pipe(
   empty(),
