@@ -101,7 +101,6 @@
     </codeStyleSettings>
     <codeStyleSettings language="JSON">
       <option name="RIGHT_MARGIN" value="120" />
-      <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="2" />

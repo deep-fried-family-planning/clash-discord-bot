@@ -5,21 +5,6 @@ insert_final_newline     = true
 max_line_length          = unset
 trim_trailing_whitespace = true
 
-[*.json]
-indent_size  = tab
-indent_style = space
-
-[{tsconfig.json,tsconfig.*.json}]
-ij_json_property_alignment            = align_on_colon
-ij_json_array_wrapping                = off
-ij_json_object_wrapping               = off
-ij_json_keep_indents_on_empty_lines   = true
-ij_json_keep_line_breaks              = true
-ij_any_align_group_field_declarations = true
-ij_any_keep_line_breaks               = true
-ij_any_keep_indents_on_empty_lines    = true
-ij_any_keep_first_column_comment      = true
-
 [*]
 charset                     = utf-8
 end_of_line                 = lf
@@ -30,7 +15,7 @@ max_line_length             = 120
 tab_width                   = 4
 trim_trailing_whitespace    = true
 ij_continuation_indent_size = 8
-ij_formatter_off_tag = @formatter:off
+ij_formatter_off_tag        = @formatter:off
 ij_formatter_on_tag         = @formatter:on
 ij_formatter_tags_enabled   = true
 ij_smart_tabs               = false
@@ -615,3 +600,18 @@ ij_yaml_sequence_on_new_line               = false
 ij_yaml_space_before_colon                 = false
 ij_yaml_spaces_within_braces               = true
 ij_yaml_spaces_within_brackets             = true
+
+[*.json]
+indent_size  = tab
+indent_style = space
+
+[{tsconfig.json,tsconfig.*.json}]
+ij_json_property_alignment            = align_on_colon
+ij_json_array_wrapping                = off
+ij_json_object_wrapping               = off
+ij_json_keep_indents_on_empty_lines   = true
+ij_json_keep_line_breaks              = true
+ij_any_align_group_field_declarations = true
+ij_any_keep_line_breaks               = true
+ij_any_keep_indents_on_empty_lines    = true
+ij_any_keep_first_column_comment      = true
