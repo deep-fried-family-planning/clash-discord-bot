@@ -1,4 +1,4 @@
-import {oneofus} from '#src/discord/commands/oneofus.ts';
+import {oneofus} from '#src/internal/discord-old/commands/oneofus.ts';
 import {DiscordServer, encodeDiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDB} from '@aws-sdk/client-dynamodb';

@@ -1,0 +1,97 @@
+import {SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.ts';
+import {LABEL_TITLE_ROSTER_ADMIN} from '#src/constants/label.ts';
+import {PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
+import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
+import type {St} from '#src/internal/discord-old/store/derive-state.ts';
+import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
+import {DateTimeEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-date-time-editor.ts';
+import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-editor.ts';
+import {ClanSelectB} from '#src/internal/discord-old/view-reducers/old/clan-select.ts';
+import {RosterS, RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
+import {rosterDelete} from '#src/dynamo/operations/roster.ts';
+import {E} from '#src/internal/pure/effect.ts';
+
+
+
+export const RosterViewerAdminB = AdminB.as(makeId(RK_OPEN, 'RVA'));
+const Submit                    = SubmitB.as(makeId(RK_SUBMIT, 'RVA'));
+const Delete                    = DeleteB.as(makeId(RK_DELETE, 'RVA'));
+const ConfirmDelete             = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVA'));
+const TypeS                     = SingleS.as(makeId(RK_UPDATE, 'RCT'), {
+  placeholder: PLACEHOLDER_ROSTER_TYPE,
+  options    : SELECT_ROSTER_TYPE,
+});
+
+
+const view = (s: St, ax: Ax) => E.gen(function * () {
+  const selected = ax.selected.map((s) => s.value);
+
+  const Roster = RosterS.fromMap(s.cmap);
+  const Type   = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+
+  const isEditDisabled
+          = (Submit.clicked(ax)
+    || Delete.clicked(ax)
+    || ConfirmDelete.clicked(ax))
+    ? {disabled: true}
+    : {};
+
+  if (ConfirmDelete.clicked(ax)) {
+    yield * rosterDelete({pk: s.server_id, sk: Roster.values[0]});
+  }
+
+  return {
+    ...s,
+
+    title      : LABEL_TITLE_ROSTER_ADMIN,
+    description: unset,
+
+    viewer: unset,
+    editor: asEditor(s.editor ?? s.viewer),
+    status:
+      Submit.clicked(ax) ? asSuccess({description: 'Roster Edited'})
+        : Delete.clicked(ax) ? asConfirm({description: 'Are you sure?'})
+          : ConfirmDelete.clicked(ax) ? asSuccess({description: 'Roster Deleted'})
+            : unset,
+
+    navigate: Roster.render({disabled: true}),
+    sel2    : Type.render(isEditDisabled),
+    row3    : [
+      EmbedEditorB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
+      DateTimeEditorB.fwd(RosterViewerAdminB.id).render({
+        ...isEditDisabled,
+        label: 'Search Date/Time',
+      }),
+      ClanSelectB.fwd(RosterViewerAdminB.id).render(isEditDisabled),
+    ],
+
+    back  : BackB.as(RosterViewerB.id),
+    submit: Submit.render({
+      disabled:
+        Submit.clicked(ax)
+        || Delete.clicked(ax)
+        || ConfirmDelete.clicked(ax)
+        || Type.values.length === 0,
+    }),
+    delete:
+      (
+        Delete.clicked(ax)
+          ? ConfirmDelete
+          : Delete
+      ).render({
+        disabled: ConfirmDelete.clicked(ax),
+      }),
+  } satisfies St;
+});
+
+
+export const rosterViewerAdminReducer = {
+  [RosterViewerAdminB.id.predicate]: view,
+  [Submit.id.predicate]            : view,
+  [Delete.id.predicate]            : view,
+  [ConfirmDelete.id.predicate]     : view,
+  [TypeS.id.predicate]             : view,
+};

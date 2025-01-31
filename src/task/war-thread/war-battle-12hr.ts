@@ -1,6 +1,6 @@
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import type {snflk} from '#src/discord/types.ts';
-import {dBold, dCrss, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/discord/util/markdown.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import type {snflk} from '#src/internal/discord-old/types.ts';
+import {dBold, dCrss, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {dedupeL, filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';

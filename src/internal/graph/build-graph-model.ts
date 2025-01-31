@@ -1,5 +1,5 @@
 import {ClashKing} from '#src/clash/clashking.ts';
-import type {SharedOptions} from '#src/discord/types.ts';
+import type {SharedOptions} from '#src/internal/discord-old/types.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {fetchWarEntities} from '#src/internal/graph/fetch-war-entities.ts';
 import {deriveModel} from '#src/internal/graph/pipeline/derive.ts';

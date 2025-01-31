@@ -1,5 +1,5 @@
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {makeLambda} from '@effect-aws/lambda';
