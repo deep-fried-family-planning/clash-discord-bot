@@ -1,9 +1,5 @@
 {
-    "extends"        : ["./tsconfig.json"],
-    "include"        : ["dev", "src"],
-    "compilerOptions": {
-        "noEmit"           : true,
-        "noErrorTruncation": true,
-        "skipLibCheck"     : true
-    }
+  "extends": ["./tsconfig.json"], "include": ["dev", "src"], "compilerOptions": {
+  "noEmit": true, "noErrorTruncation": true, "skipLibCheck": true
+}
 }

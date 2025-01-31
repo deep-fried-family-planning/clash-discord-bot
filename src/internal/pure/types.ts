@@ -1,9 +1,9 @@
 export type None =
-    | undefined
-    | null;
+  | undefined
+  | null;
 
 export type Maybe<T> =
-    | T
-    | None;
+  | T
+  | None;
 
 export type Just<T> = Exclude<T, None>;

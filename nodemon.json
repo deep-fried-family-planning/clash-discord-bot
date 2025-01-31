@@ -1,10 +1,13 @@
 {
-    "verbose": true,
-    "delay": 3000,
-    "ignore": [
-        "**/test/**",
-        "**/docs/**"
-    ],
-    "ext": ".ts",
-    "watch": ["src"]
+  "verbose": false,
+  "delay"  : 1000,
+  "ignore" : [
+    "**/test/**",
+    "**/docs/**",
+    "**/terraform/**"
+  ],
+  "ext"    : "ts,tsx",
+  "watch"  : [
+    "src"
+  ]
 }

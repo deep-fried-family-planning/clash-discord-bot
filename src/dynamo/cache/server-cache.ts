@@ -1,42 +1,42 @@
-import {C, CSL, L} from '#src/internal/pure/effect.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
-import {type DServer, getDiscordServer, scanDiscordServers} from '#src/dynamo/schema/discord-server.ts';
 import type {CompKey} from '#src/dynamo/dynamo.ts';
+import {type DServer, getDiscordServer, scanDiscordServers} from '#src/dynamo/schema/discord-server.ts';
+import {C, CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {EA} from '#src/internal/types.ts';
 
 
-const cache = E.gen(function* () {
-    const cache = yield * C.make({
-        capacity  : 50,
-        timeToLive: process.env.LAMBDA_ENV === 'qual'
-            ? '1 minutes'
-            : '15 minutes',
 
-        lookup: (key: CompKey<DServer>['pk']) => E.gen(function* () {
-            yield * CSL.log('cache miss!');
+const cache = E.gen(function * () {
+  const cache = yield * C.make({
+    capacity  : 50,
+    timeToLive: process.env.LAMBDA_ENV === 'qual'
+      ? '1 minutes'
+      : '15 minutes',
 
-            const record = yield * getDiscordServer({pk: key, sk: 'now'});
+    lookup: (key: CompKey<DServer>['pk']) => E.gen(function * () {
+      yield * CSL.log('cache miss!');
 
-            return record;
-        }),
-    });
+      const record = yield * getDiscordServer({pk: key, sk: 'now'});
 
-    const servers = yield * scanDiscordServers();
+      return record;
+    }),
+  });
 
-    yield * pipe(
-        servers,
-        mapL((server) => cache.set(server.pk, server)),
-        E.allWith({concurrency: 'unbounded'}),
-    );
+  const servers = yield * scanDiscordServers();
 
-    return cache;
+  yield * pipe(
+    servers,
+    mapL((server) => cache.set(server.pk, server)),
+    E.allWith({concurrency: 'unbounded'}),
+  );
+
+  return cache;
 });
 
 
 export class ServerCache extends E.Tag('DeepFryerServerCache')<
-    ServerCache,
-    EA<typeof cache>
+  ServerCache,
+  EA<typeof cache>
 >() {
-    static Live = L.effect(this, cache);
+  static Live = L.effect(this, cache);
 }

@@ -1,21 +1,23 @@
 {
-    "compilerOptions": {
-        "target"                      : "esnext",
-        "lib"                         : ["esnext"],
-        "module"                      : "esnext",
-        "moduleResolution"            : "bundler",
-        "isolatedModules"             : true,
-        "esModuleInterop"             : true,
-        "allowSyntheticDefaultImports": true,
-        "verbatimModuleSyntax"        : true,
-        "allowArbitraryExtensions"    : true,
-        "allowImportingTsExtensions"  : true,
-        "strict"                      : true,
-        "exactOptionalPropertyTypes"  : true,
-        "baseUrl"                     : "./",
-        "paths"                       : {
-            "#src"  : ["src"],
-            "#src/*": ["src/*"]
-        }
+  "compilerOptions": {
+    "target"                      : "esnext",
+    "lib"                         : ["esnext"],
+    "module"                      : "esnext",
+    "moduleResolution"            : "bundler",
+    "jsx"                         : "react-jsx",
+    "jsxImportSource"             : "src/disreact",
+    "isolatedModules"             : true,
+    "esModuleInterop"             : true,
+    "allowSyntheticDefaultImports": true,
+    "verbatimModuleSyntax"        : true,
+    "allowArbitraryExtensions"    : true,
+    "allowImportingTsExtensions"  : true,
+    "strict"                      : true,
+    "exactOptionalPropertyTypes"  : true,
+    "baseUrl"                     : "./",
+    "paths"                       : {
+      "#src"  : ["src"],
+      "#src/*": ["src/*"]
     }
+  }
 }

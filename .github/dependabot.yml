@@ -4,11 +4,11 @@ version: 2
 updates:
 
   - package-ecosystem: npm
-    directory: /
-    schedule:
+    directory        : /
+    schedule         :
       interval: weekly
 
   - package-ecosystem: terraform
-    directory: /terraform
-    schedule:
+    directory        : /terraform
+    schedule         :
       interval: weekly

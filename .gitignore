@@ -1,6 +1,6 @@
 .code
 .DS_store
-.idea
+.pnpm
 .husky/_
 .terraform
 dist
@@ -12,3 +12,5 @@ node_modules
 locals.tf
 terraform.tfstate.d
 .secret.tfvars
+test/unit/scratch
+src/scratch
