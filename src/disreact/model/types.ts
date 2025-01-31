@@ -75,6 +75,7 @@ export type EmbedOut = Rest.Embed;
 export type EmbedIn = EmbedOut;
 
 export type MessageAttributes = JSX.IntrinsicAttributes & {
+  public? : boolean;
   content?: string;
   embeds? : any[];
 };

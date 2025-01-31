@@ -1,6 +1,7 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
+import {DeepFryerModel} from '#src/discord/deep-fryer-model.ts';
 import {ixcRouter} from '#src/internal/discord-old/ixc-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -102,7 +103,8 @@ const menu = (ix: IxD) => ixcRouter(ix).pipe(
 
 
 const live = pipe(
-  ClashCache.Live,
+  DeepFryerModel,
+  L.provideMerge(ClashCache.Live),
   L.provideMerge(MenuCache.Live),
   L.provideMerge(L.mergeAll(
     ClashOfClans.Live,
