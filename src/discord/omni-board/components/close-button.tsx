@@ -7,7 +7,7 @@ export const CloseButton = () => {
   const setPage = usePage([]);
 
   return (
-    <secondary
+    <button
       label={'Close'}
       onClick={() => setPage(PAGE.CLOSE)}
     />

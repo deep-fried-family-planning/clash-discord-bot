@@ -17,7 +17,7 @@ export const OmniPrivate = () => {
         />
       </embeds>
       <components>
-        <success
+        <button
           label={'Link'}
           onClick={() => setPage(Link)}
         />

@@ -35,7 +35,7 @@ const makeRoute = <A extends string>(template: A) => {
   return {Type: null as unknown as Params, template, keys, test, exec, empty, parse, build};
 };
 
-const main = makeRoute('/:root/:node/:type/:flags/:id/:ttl/:token');
+const main = makeRoute('/jsx/:root/:node/:type/:flags/:id/:ttl/:token');
 
 export type Main = typeof main.Type;
 

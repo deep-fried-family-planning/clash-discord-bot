@@ -76,6 +76,10 @@ export const staticRender = (root: DisReactNode, beforeRender?: (node: DisReactN
 
     for (let i = 0; i < node.nodes.length; i++) {
       const child = node.nodes[i];
+      if (!child.setParent) {
+        console.log(node);
+        console.log(child);
+      }
       child.setParent(node, i);
       renderNode(child);
     }

@@ -12,11 +12,11 @@ export const OmniPublic = () => {
       <embeds>
         <Header
           title={'Omni Board'}
-          description={''}
+          description={'V2 - JSX Pragma'}
         />
       </embeds>
       <components>
-        <primary
+        <button
           label={'Start'}
           onClick={() => setPage(OmniPrivate)}
         />

@@ -17,7 +17,7 @@ export const Link = () => {
         />
       </embeds>
       <components>
-        <secondary
+        <button
           label={'Back'}
           onClick={() => setPage(OmniPrivate)}
         />
