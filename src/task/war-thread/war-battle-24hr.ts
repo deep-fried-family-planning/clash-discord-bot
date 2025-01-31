@@ -1,5 +1,5 @@
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/discord/util/markdown.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';

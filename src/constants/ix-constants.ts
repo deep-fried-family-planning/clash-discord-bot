@@ -1,4 +1,4 @@
-import type {CommandSpec} from '#src/discord/types.ts';
+import type {CommandSpec} from '#src/internal/discord-old/types.ts';
 
 
 

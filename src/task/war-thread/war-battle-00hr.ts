@@ -1,5 +1,5 @@
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
-import {dHdr1, dLinesS, dtRel} from '#src/discord/util/markdown.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {dHdr1, dLinesS, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {makeTask} from '#src/task/war-thread/common.ts';
 

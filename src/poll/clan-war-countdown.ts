@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import type {DClan} from '#src/dynamo/schema/discord-clan.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

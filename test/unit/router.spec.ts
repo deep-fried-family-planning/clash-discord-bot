@@ -1,6 +1,6 @@
-import {reducerAccounts} from '#src/discord/ixc/reducers/reducer-accounts.ts';
-import {parseCustomId} from '#src/discord/store/id.ts';
-import {IXCDELIM} from '#src/discord/store/types.ts';
+import {reducerAccounts} from '#src/internal/discord-old/ixc/reducers/reducer-accounts.ts';
+import {parseCustomId} from '#src/internal/discord-old/store/id.ts';
+import {IXCDELIM} from '#src/internal/discord-old/store/types.ts';
 import {E} from '#src/internal/pure/effect';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {filterKV, replaceKV} from '#src/internal/pure/pure-kv.ts';

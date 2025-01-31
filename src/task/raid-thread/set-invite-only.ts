@@ -1,4 +1,4 @@
-import {DiscordApi} from '#src/discord/layer/discord-api.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {DiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {g, S} from '#src/internal/pure/effect';
 import {MD} from '#src/internal/pure/pure';

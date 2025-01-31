@@ -1,4 +1,4 @@
-import {dtNowIso} from '#src/discord/util/markdown.ts';
+import {dtNowIso} from '#src/internal/discord-old/util/markdown.ts';
 import {encodeRosterId, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
 import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
 import {E} from '#src/internal/pure/effect.ts';

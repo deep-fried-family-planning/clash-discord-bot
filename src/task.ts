@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
+import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {CSL, E, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {SetInviteOnly} from '#src/task/raid-thread/set-invite-only.ts';

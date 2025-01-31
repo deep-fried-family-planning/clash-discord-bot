@@ -1,9 +1,9 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {ixcRouter} from '#src/discord/ixc-router.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/discord/layer/discord-api.ts';
-import {logDiscordError} from '#src/discord/layer/log-discord-error.ts';
+import {ixcRouter} from '#src/internal/discord-old/ixc-router.ts';
+import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
+import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {MGF} from '#src/internal/discord.ts';
