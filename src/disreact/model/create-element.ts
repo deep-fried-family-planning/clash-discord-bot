@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 import {Tags} from '#src/disreact/enum/index.ts';
-import type {TagTypes} from '#src/disreact/model/dsx/types.ts';
+import type {TagTypes} from '#src/disreact/model/types.ts';
 import {ElementNode, FunctionNode} from '#src/disreact/model/node.ts';
 
 
@@ -9,8 +9,6 @@ export const createIntrinsicElement = (type: string, props: any) => {
   if (!(type in Tags)) throw new Error(`Unknown tag type: ${type}`);
   return {type, props};
 };
-
-
 
 export const createElementSingle = (type: TagTypes, props: {} | {children: {}}) => {
   if (!props) return createElementMulti(type, {children: []});
@@ -30,8 +28,6 @@ export const createElementSingle = (type: TagTypes, props: {} | {children: {}}) 
   }
   return createElementMulti(type, {...props, children: []});
 };
-
-
 
 export const createElementMulti = (type: TagTypes, inputProps: {children: {}[]}) => {
   const children = inputProps.children.flat();

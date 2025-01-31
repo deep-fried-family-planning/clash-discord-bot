@@ -1,5 +1,5 @@
-import {usePage} from '#src/disreact/model/hooks/danger.ts';
-import {OmniStart} from '#src/disreact/omni-board/omni-start.tsx';
+import {usePage} from '#src/disreact/model/danger.ts';
+import {OmniStart} from '#src/omni-board/omni-start.tsx';
 
 
 

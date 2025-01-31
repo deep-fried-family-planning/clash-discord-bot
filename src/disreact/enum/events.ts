@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 import {Rest} from '#src/disreact/enum/index.ts';
-import type {ButtonAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/dsx/intrinsic.ts';
+import type {ButtonAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/types.ts';
 import {D} from '#src/internal/pure/effect.ts';
 
 
@@ -34,10 +34,10 @@ export const decodeEvent = (target: Rest.Button | Rest.SelectMenu) => {
         values: [],
       });
     case Rest.SELECT_MENU:
-      return ButtonClick({
+      return SelectMenuClick({
         id    : target.custom_id!,
         type  : 'onClick',
-        target,
+        target: target as never,
         values: [],
       });
     case Rest.USER_SELECT:

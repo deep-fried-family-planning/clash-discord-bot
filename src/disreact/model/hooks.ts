@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
-
-
-
-import {getHookState} from '#src/disreact/model/hooks/hook-state.ts';
+import {getHookState} from '#src/disreact/model/hook-state.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 

@@ -1,5 +1,5 @@
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {OmniStart} from '#src/disreact/omni-board/omni-start.tsx';
+import {OmniStart} from '#src/omni-board/omni-start.tsx';
 import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
 import {validateServer} from '#src/discord/util/validation.ts';
 import {DisReactDOM} from '#src/disreact/index.ts';

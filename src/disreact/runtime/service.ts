@@ -1,8 +1,8 @@
 
 import type {Events, Routes} from '#src/disreact/enum/index.ts';
 import {type Auth, Doken, Rest} from '#src/disreact/enum/index.ts';
-import {createRootElement} from '#src/disreact/model/dsx/create-element.ts';
-import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
+import {createRootElement} from '#src/disreact/model/create-element.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
 import {cloneTree, createRootMap} from '#src/disreact/model/traversal.ts';
 import {C, D, E, Kv, L, pipe} from '#src/internal/pure/effect.ts';
 import type {EA, EAR} from '#src/internal/types.ts';
@@ -118,15 +118,19 @@ const staticDOM = (initial: TagFunc[]) => E.gen(function * () {
   const rootElements = initial.map((type) => createRootElement(type, {}));
   const rootMap      = createRootMap(rootElements);
 
-  yield * E.logTrace('staticDOM.rootMap', pipe(rootMap, Kv.mapEntries((v, k) => [k, Object.keys(v)])));
+  // yield * E.logTrace('staticDOM.rootMap', pipe(rootMap, Kv.mapEntries((v, k) => [k, Object.keys(v)])));
 
   return {
     checkout: (root: string, node: string) => E.gen(function * () {
       if (!(root in rootMap)) {
-        return yield * new CriticalFailure({why: `${root}/${node}: Root not found`});
+        return yield * new CriticalFailure({
+          why: `${root}/${node}: Root not found`,
+        });
       }
       if (!(node in rootMap[root])) {
-        return yield * new CriticalFailure({why: `${root}/${node}: Node not found`});
+        return yield * new CriticalFailure({
+          why: `${root}/${node}: Node not found`,
+        });
       }
       return cloneTree(rootMap[root][node], true);
     }),

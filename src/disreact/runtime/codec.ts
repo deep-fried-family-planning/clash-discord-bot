@@ -1,7 +1,7 @@
 import {Auth, Doken, Events, NONE, Rest} from '#src/disreact/enum/index.ts';
 import {decodeUrl, encodeAsPath, encodeAsUrl} from '#src/disreact/enum/routes.ts';
-import {encodeEntireTree} from '#src/disreact/model/dsx/encode-element.ts';
-import {encodeHooks} from '#src/disreact/model/hooks/hook-state.ts';
+import {encodeEntireTree} from '#src/disreact/model/encode-element.ts';
+import {encodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {accumulateStates} from '#src/disreact/model/traversal.ts';
 import {CriticalFailure, InteractionContext} from '#src/disreact/runtime/service.ts';
@@ -10,11 +10,19 @@ import {inspect} from '#src/internal/pure/pure.ts';
 import type {Discord} from 'dfx/index';
 
 
+const unsupported = [
+  Rest.PING,
+  Rest.AUTOCOMPLETE,
+  Rest.COMMAND,
+];
+
 
 export const decodeInteraction = E.fn('DisReact.decodeInteraction')(function * (rest: Rest.Interaction) {
-  if (rest.type === Rest.PING) return yield * new CriticalFailure({});
-  if (rest.type === Rest.AUTOCOMPLETE) return yield * new CriticalFailure({});
-  if (rest.type === Rest.COMMAND) return yield * new CriticalFailure({});
+  if (unsupported.includes(rest.type)) {
+    return yield * new CriticalFailure({
+      why: 'unsupported interaction type',
+    });
+  }
 
   const context = yield * InteractionContext.free();
   context.rest  = rest;

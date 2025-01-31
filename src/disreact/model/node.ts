@@ -2,9 +2,9 @@
 
 
 
-import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
-import type {Switches} from '#src/disreact/model/hooks/danger.ts';
-import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hooks/hook-state.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
+import type {Switches} from '#src/disreact/model/danger.ts';
+import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hook-state.ts';
 import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
 
 

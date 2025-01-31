@@ -11,15 +11,12 @@ export const encodeTree = (node: DisReactNode): any => {
   switch (typeof node.type) {
     case 'string':
       return encodeElementNode(node);
-
     case 'function': {
       switch (node.nodes.length) {
         case 0:
           return null;
-
         case 1:
           return encodeTree(node.nodes[0]);
-
         default:
           return node.nodes.flatMap((child) => encodeTree(child));
       }
@@ -36,7 +33,6 @@ export const encodeElementNode = (node: DisReactNode) => {
     case Tags.title: {
       return node.props.value ?? node.props.content ?? node.nodes[0].type;
     }
-
     case Tags.text:
     case Tags.textinput: {
       return {
@@ -46,7 +42,6 @@ export const encodeElementNode = (node: DisReactNode) => {
         style    : props.style ?? Rest.SHORT,
       };
     }
-
     case Tags.success:
     case Tags.danger:
     case Tags.primary:
@@ -68,7 +63,6 @@ export const encodeElementNode = (node: DisReactNode) => {
         }[node.type],
       };
     }
-
     case Tags.buttons: {
       const children = filterBy(Tags.buttons, [Tags.button], nodes);
       return {
@@ -76,7 +70,6 @@ export const encodeElementNode = (node: DisReactNode) => {
         components: children.flatMap((child) => encodeTree(child)),
       };
     }
-
     case Tags.actionrow:
     case Tags.actions:
     case Tags.components: {
@@ -86,7 +79,6 @@ export const encodeElementNode = (node: DisReactNode) => {
         components: children.flatMap((child) => encodeTree(child)),
       };
     }
-
     case Tags.message: {
       const children = filterBy(Tags.message, [Tags.content, Tags.embeds, Tags.embed, Tags.actionrow, Tags.actions, Tags.components, Tags.buttons], nodes);
       const content  = children.find((c) => c.type === Tags.content)?.props.value;
@@ -98,12 +90,10 @@ export const encodeElementNode = (node: DisReactNode) => {
         components: children.filter((c) => c.type === Tags.components).flatMap((c) => encodeTree(c)),
       };
     }
-
     case Tags.embeds: {
       const children = filterBy(Tags.embeds, [Tags.embed], nodes);
       return children.flatMap((child) => encodeTree(child));
     }
-
     case Tags.embed: {
       const children = filterBy(Tags.embed, [Tags.title, Tags.description], nodes);
       return {
@@ -114,7 +104,6 @@ export const encodeElementNode = (node: DisReactNode) => {
         ),
       };
     }
-
     case Tags.modal:
     case Tags.dialog: {
       const children = filterBy(Tags.dialog, [Tags.text, Tags.textinput], nodes);
@@ -128,13 +117,11 @@ export const encodeElementNode = (node: DisReactNode) => {
         })),
       };
     }
-
     case Tags.selectmenu:
     case Tags.select: {
       const children = filterBy(Tags.select, [Tags.option], nodes);
       return encodeSelectMenuElement(children, props);
     }
-
     default:
       throw new Error(`<${node.type}/> not implemented`);
   }
@@ -189,7 +176,6 @@ export const filterValidProperty = (a: any, k: any): boolean => {
     case 'undefined':
     case 'symbol':
       return false;
-
     case 'string':
       switch (k) {
         case 'children':
@@ -200,7 +186,6 @@ export const filterValidProperty = (a: any, k: any): boolean => {
         default:
           return true;
       }
-
     default:
       return true;
   }

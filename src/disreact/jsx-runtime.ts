@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type */
-import {createElementMulti, createElementSingle} from '#src/disreact/model/dsx/create-element.ts';
-import type {ActionRowAttributes, ButtonAttributes, DialogAttributes, EmbedAttributes, MessageAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/dsx/intrinsic.ts';
+import {createElementMulti, createElementSingle} from '#src/disreact/model/create-element.ts';
+import type {ActionRowAttributes, ButtonAttributes, DialogAttributes, EmbedAttributes, MessageAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/types.ts';
 import type {Message} from 'dfx/types';
 
 type Value = {value?: string} | {children: string};

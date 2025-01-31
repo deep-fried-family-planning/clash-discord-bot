@@ -1,10 +1,10 @@
 import {Doken, NONE, Rest, Tags} from '#src/disreact/enum/index.ts';
-import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
-import {CLOSE_SWITCH, GlobalPages} from '#src/disreact/model/hooks/danger.ts';
-import {decodeHooks} from '#src/disreact/model/hooks/hook-state.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
+import {CLOSE_SWITCH, GlobalPages} from '#src/disreact/model/danger.ts';
+import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
-import {OmniStart} from '#src/disreact/omni-board/omni-start.tsx';
+import {OmniStart} from '#src/omni-board/omni-start.tsx';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
 import {CriticalFailure, DiscordDOM, DokenCache, FiberDOM, InteractionContext, StaticDOM} from '#src/disreact/runtime/service.ts';
 import {E, flow, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
@@ -37,20 +37,16 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
   const currDoken = Doken.decode(ix.route.params);
   currDoken.app   = ix.rest.application_id;
 
-
   const cloned       = yield * StaticDOM.checkout(root, node);
   const hydrated     = renderTree(cloned, decodeHooks(ix.route.search));
   const isCurrDialog = hydrated.nodes[0].type === Tags.dialog;
-
 
   const target  = findNodeById(hydrated, ix.event)!;
   const nearest = target.handleEvent(ix.event);
   const page    = GlobalPages.get(nearest) ?? NONE;
 
-
   let next: DisReactNode;
   let doken: Doken.T;
-
 
   if (page === CLOSE_SWITCH) {
     if (currDoken.status === 'expired') {
@@ -66,7 +62,6 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
     }
   }
 
-
   if (page === node) {
     next = renderTree(hydrated);
   }
@@ -75,10 +70,11 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
     next = renderTree(yield * StaticDOM.checkout(root, page));
   }
 
-
   if (next.nodes[0].type === Tags.dialog) {
     if (isCurrDialog) {
-      return yield * new CriticalFailure({why: `${root}/${node} => ${root}/${page}: dialog render conflict`});
+      return yield * new CriticalFailure({
+        why: `${root}/${node} => ${root}/${page}: dialog render conflict`,
+      });
     }
     doken         = restDoken;
     doken.type    = Rest.OPEN;

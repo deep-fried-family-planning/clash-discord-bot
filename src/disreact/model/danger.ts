@@ -1,5 +1,5 @@
-import type {TagFunc} from '#src/disreact/model/dsx/types.ts';
-import {getActiveRenderNode, type HookState} from '#src/disreact/model/hooks/hook-state.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
+import {getActiveRenderNode, type HookState} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {CriticalFailure} from '#src/disreact/runtime/service.ts';
 import type {rec} from '#src/internal/pure/pure.ts';
@@ -10,22 +10,6 @@ import {globalValue} from 'effect/GlobalValue';
 export const CLOSE_SWITCH = 'CLOSE_SWITCH';
 
 export type Switches = { [k in string]: TagFunc };
-
-// export type GlobalRef = {
-//   rest   : { [k in string]: object };
-//   props  : { [k in string]: object };
-//   discord: {
-//     user   : Rest.User;
-//     guild  : Rest.Guild;
-//     channel: Rest.Channel;
-//     member : Rest.GuildMember;
-//   };
-// };
-
-// export const GlobalRefs = globalValue(
-//   Symbol.for('DisReact.GlobalRefs'),
-//   () => new WeakMap<DisReactNode, GlobalRef>(),
-// );
 
 const todoCurrentFiberId = {};
 

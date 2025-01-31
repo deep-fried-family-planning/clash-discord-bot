@@ -1,8 +1,8 @@
 import {Rest} from '#src/disreact/enum/index.ts';
-import {usePage} from '#src/disreact/model/hooks/danger.ts';
-import {Linker} from '#src/disreact/omni-board/linker.tsx';
-import {OmniEditorModal} from '#src/disreact/omni-board/omni-editor-dialog.tsx';
-import {OmniTitleEmbed} from '#src/disreact/omni-board/omni-title-embed.tsx';
+import {usePage} from '#src/disreact/model/danger.ts';
+import {Linker} from '#src/omni-board/linker.tsx';
+import {OmniEditorModal} from '#src/omni-board/omni-editor-dialog.tsx';
+import {OmniTitleEmbed} from '#src/omni-board/omni-title-embed.tsx';
 
 
 
