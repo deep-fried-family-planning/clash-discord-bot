@@ -1,6 +1,6 @@
 import {Doken, NONE, PAGE, Rest, Tags} from '#src/disreact/runtime/enum/index.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';
-import {GlobalPages} from '#src/disreact/model/danger.ts';
+import {GlobalPages} from '#src/disreact/model/hooks/danger.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';

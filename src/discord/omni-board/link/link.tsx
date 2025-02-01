@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/discord/omni-board/components/close-button.tsx';
 import {Header} from '#src/discord/omni-board/components/header.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-import {usePage} from '#src/disreact/model/danger.ts';
+import {usePage} from '#src/disreact/model/hooks/danger.ts';
 
 
 

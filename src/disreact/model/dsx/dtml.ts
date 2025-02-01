@@ -16,4 +16,4 @@ export const title       = 'title';
 export const description = 'description';
 export const field       = 'field';
 export const footer      = 'footer';
-export const string = 'string';
+export const string      = 'string';

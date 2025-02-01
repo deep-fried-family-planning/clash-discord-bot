@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
 
 
-import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#src/disreact/model/danger.ts';
+import {ActiveNodes, getActiveFiberId, GlobalHooks} from '#src/disreact/model/hooks/danger.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 
 

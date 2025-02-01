@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/discord/omni-board/components/close-button.tsx';
 import {Header} from '#src/discord/omni-board/components/header.tsx';
 import {Link} from '#src/discord/omni-board/link/link.tsx';
-import {usePage} from '#src/disreact/model/danger.ts';
+import {usePage} from '#src/disreact/model/hooks/danger.ts';
 
 
 
@@ -9,20 +9,19 @@ export const OmniPrivate = () => {
   const setPage = usePage([Link]);
 
   return (
-    <message>
-      <embeds>
-        <Header
-          title={'Welcome!'}
-          description={''}
-        />
-      </embeds>
-      <components>
+    <message ephemeral>
+      <Header
+        title={'Welcome!'}
+        description={''}
+      />
+      <buttons>
         <button
+          primary
           label={'Link'}
           onClick={() => setPage(Link)}
         />
         <CloseButton/>
-      </components>
+      </buttons>
     </message>
   );
 };

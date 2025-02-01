@@ -3,7 +3,7 @@
 
 
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {Switches} from '#src/disreact/model/danger.ts';
+import type {Switches} from '#src/disreact/model/hooks/danger.ts';
 import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hook-state.ts';
 import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';

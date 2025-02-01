@@ -1,26 +1,30 @@
 import {Header} from '#src/discord/omni-board/components/header.tsx';
-import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-import {usePage} from '#src/disreact/model/danger.ts';
+// import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
+// import {usePage} from '#src/disreact/model/danger.ts';
 
 
 
 export const OmniPublic = () => {
-  const setPage = usePage([OmniPrivate]);
+  // const setPage = usePage([OmniPrivate]);
 
   return (
     <message public>
-      <embeds>
-        <Header
-          title={'Omni Board'}
-          description={'V2 - JSX Pragma'}
-        />
-      </embeds>
-      <components>
+      <Header
+        title={'Omni Board'}
+        description={'V2 - JSX Pragma'}
+      />
+      <buttons>
         <button
+          primary
           label={'Start'}
-          onClick={() => setPage(OmniPrivate)}
+          // onClick={() => setPage(OmniPrivate)}
         />
-      </components>
+        <button secondary>
+          <emoji
+            name={'ope'}
+          />
+        </button>
+      </buttons>
     </message>
   );
 };

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {DAction} from '#src/disreact/runtime/enum/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
@@ -19,20 +18,10 @@ type n0t4000 = number;
 
 type Handler<Event> = (event: Event) => void | E.Effect<void>;
 
+export type DTMLChildren<C> = C | C[];
 
-export type DSXTree = {
-  tag: JSX.ElementType;
-};
-
-
-
-export type DTMLEmojiElement = {
-  id?      : string;
-  name?    : string;
-  animated?: boolean;
-};
-
-
+export type DTMLEmojiElement =
+  | {name: string};
 
 export type DTMLSlashCommandElement = {
   command                   : boolean;
@@ -346,29 +335,22 @@ export type DTMLTextElement = {
 
 
 
-export type DTMLComponentRowElement = {};
+export type DTMLComponentRowElement = {
+  children: DTMLButtonElement | DTMLButtonElement[];
+};
 
 
 export type DTMLEmbedElement = {
-  color?: number | string;
+  color?  : number | string;
+  children: DTMLEmbedDescriptionElement[];
 };
-export type DTMLEmbedTitleElement = {
-
-};
-export type DTMLEmbedDescriptionElement = {
-
-};
-export type DTMLEmbedFieldElement = {
-
-};
-export type DTMLEmbedFooterElement = {
-
-};
+export type DTMLEmbedTitleElement = {};
+export type DTMLEmbedDescriptionElement = {};
+export type DTMLEmbedFieldElement = {};
+export type DTMLEmbedFooterElement = {};
 
 
-export type DTMLMessageContentElement = {
-
-};
+export type DTMLMessageContentElement = {};
 export type DTMLPublicMessageElement = {
   public    : boolean;
   custom_id?: s1t100;
@@ -376,6 +358,7 @@ export type DTMLPublicMessageElement = {
 export type DTMLEphemeralMessageElement = {
   ephemeral : boolean;
   custom_id?: s1t100;
+  children? : DTMLChildren<DTMLMessageContentElement | DTMLComponentRowElement | DTMLMenuElement | DTMLEmbedElement>;
 };
 export type DTMLMessageElement =
   | DTMLPublicMessageElement
@@ -426,50 +409,24 @@ export type DFMDNestedElement =
   | DFMDAnchorElement
   | DFMDElement;
 export type DFMDElement = {
- children: string | DFMDNestedElement[];
+  children: string | DFMDNestedElement[];
 };
 
 
-
-export type Intrinsic = {
-  command    : DTMLCommandElement;
-  param      : DTMLParameterElement;
-  choice     : DTMLChoiceElement;
-  buttons    : DTMLComponentRowElement;
-  button     : DTMLButtonElement;
-  menu       : DTMLMenuElement;
-  option     : DTMLOptionElement;
-  value      : DTMLValueElement;
-  emoji      : DTMLEmojiElement;
-  text       : DTMLTextElement;
-  message    : DTMLMessageElement;
-  content    : DTMLMessageContentElement;
-  modal      : DTMLModalElement;
-  embed      : DTMLEmbedElement;
-  title      : DTMLEmbedTitleElement;
-  description: DTMLEmbedDescriptionElement;
-  field      : DTMLEmbedFieldElement;
-  footer     : DTMLEmbedFooterElement;
-
-  dfmd      : DFMDElement;
-  at        : DFMDMentionElement;
-  a         : DFMDAnchorElement;
-  mask      : DFMDElement;
-  p         : DFMDElement;
-  br        : DFMDElement;
-  b         : DFMDElement;
-  i         : DFMDElement;
-  u         : DFMDElement;
-  s         : DFMDElement;
-  details   : DFMDElement;
-  code      : DFMDElement;
-  pre       : DFMDElement;
-  blockquote: DFMDElement;
-  h1        : DFMDElement;
-  h2        : DFMDElement;
-  h3        : DFMDElement;
-  small     : DFMDElement;
-  ol        : DFMDElement;
-  ul        : DFMDElement;
-  li        : DFMDElement;
-};
+export type DTMLElement =
+  | DTMLCommandElement
+  | DTMLParameterElement
+  | DTMLButtonElement
+  | DTMLMenuElement
+  | DTMLTextElement
+  | DTMLMessageElement
+  | DTMLModalElement
+  | DTMLEmbedElement
+  | DTMLUserMentionElement
+  | DTMLRoleMentionElement
+  | DTMLChannelMentionElement
+  | DTMLEveryoneMentionElement
+  | DTMLHereMentionElement
+  | DFMDAnchorElement
+  | DFMDNestedElement
+  | DFMDElement;
