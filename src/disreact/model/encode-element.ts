@@ -2,6 +2,7 @@
 import {NONE, Rest, Tags} from '#src/disreact/enum/index.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {Kv, pipe} from '#src/internal/pure/effect.ts';
+import console from 'node:console';
 
 
 
@@ -25,6 +26,7 @@ export const encodeTree = (node: DisReactNode): any => {
 };
 
 export const encodeElementNode = (node: DisReactNode) => {
+  console.log(node.type);
   const props = filterValidProps(node.props);
   const nodes = node.nodes;
 
@@ -193,19 +195,18 @@ export const filterValidProperty = (a: any, k: any): boolean => {
 
 export const filterValidProps = Kv.filter(filterValidProperty);
 
-export const filterBy = (parentTag: string, tags: string[], nodes: DisReactNode[]) => {
-  const next = [] as DisReactNode[];
+export const filterBy = (parentTag: string, tags: string[], nodes: DisReactNode[], returnNodes: DisReactNode[] = []) => {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     if (typeof node.type === 'string') {
       if (tags.includes(node.type)) {
-        next.push(node);
+        returnNodes.push(node);
       }
       else console.warn(`<${node.type}/> cannot be a child of <${parentTag}/>`);
     }
     if (typeof node.type === 'function') {
-      filterBy(parentTag, tags, node.nodes);
+      filterBy(parentTag, tags, node.nodes, returnNodes);
     }
   }
-  return next;
+  return returnNodes;
 };

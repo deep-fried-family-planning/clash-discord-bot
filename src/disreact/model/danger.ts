@@ -1,3 +1,4 @@
+import {PAGE} from '#src/disreact/enum/index.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';
 import {getActiveRenderNode, type HookState} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
@@ -36,8 +37,8 @@ export const usePage = (views: rec<TagFunc> | TagFunc[]) => {
     if (!node || !node.switches) {
       throw new CriticalFailure({why: 'No node or switches'});
     }
-    if (next === false) {
-      GlobalPages.set(node, CLOSE_SWITCH);
+    if (next === false || next === PAGE.CLOSE) {
+      GlobalPages.set(node, PAGE.CLOSE);
       return;
     }
     const resolved = typeof next === 'function'

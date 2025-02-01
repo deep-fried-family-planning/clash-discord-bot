@@ -65,6 +65,27 @@ export const accumulateStates = (node: DisReactNode | null | undefined): HookSta
   return result;
 };
 
+export const accumulateStatesIntoArray = (
+  node: DisReactNode | null | undefined,
+): HookState[] => {
+  if (!node) {
+    return [];
+  }
+
+  const result: HookState[] = [];
+
+  if (node.state !== undefined && node.state.stack.length > 0) {
+    result.push(node.state);
+  }
+
+  for (const child of node.nodes) {
+    result.push(...accumulateStatesIntoArray(child));
+  }
+
+  return result;
+};
+
+
 export const staticRender = (root: DisReactNode, beforeRender?: (node: DisReactNode) => void, afterRender?: (node: DisReactNode) => void): void => {
   const renderNode = (node: DisReactNode): void => {
     if (beforeRender) {
@@ -96,6 +117,8 @@ export const renderTree = (node: DisReactNode, states?: rec<HookState>): DisReac
   }
   const rendered = node.render(node.props);
   let resolved   = node;
+
+
 
   if (!areNodesEqual(node, rendered)) {
     node.dismount();
@@ -167,10 +190,10 @@ export const areNodesEqual = (nodeA: DisReactNode, nodeB: DisReactNode): boolean
 };
 
 export const arePropsShallowEqual = (objA: any, objB: any): boolean => {
-  if (objA === objB) return true;
-  if (typeof objA !== typeof objB) return false;
   if (objA === null || objB === null) return false;
   if (typeof objA !== 'object' || typeof objB !== 'object') return false;
+  if (objA === objB) return true;
+  if (typeof objA !== typeof objB) return false;
 
   const keysA = Object.keys(objA);
   const keysB = Object.keys(objB);

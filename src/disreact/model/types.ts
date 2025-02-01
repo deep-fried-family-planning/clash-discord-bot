@@ -3,6 +3,7 @@
 
 import type {Rest} from '#src/disreact/enum/index.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
+import type {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 
@@ -37,7 +38,7 @@ export type ButtonAttributes = JSX.IntrinsicAttributes & {
   sku_id?   : string | undefined;
   url?      : string | undefined;
   disabled? : boolean | undefined;
-  onClick?  : () => void;
+  onClick?  : (event: any) => void | E.Effect<void, any, any>;
 };
 export type ButtonProps = ButtonAttributes;
 export type ButtonOut = {

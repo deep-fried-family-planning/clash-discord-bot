@@ -6,6 +6,7 @@ import type {TagFunc} from '#src/disreact/model/types.ts';
 import type {Switches} from '#src/disreact/model/danger.ts';
 import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hook-state.ts';
 import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
+import console from 'node:console';
 
 
 
@@ -46,6 +47,7 @@ export abstract class DisReactNode {
       throw new Error('No handler for event: ' + event.type + ' in ' + this.name);
     }
     const functionNode = findNearestFunctionParent(this)!;
+    console.log(functionNode.name);
 
     setActiveRenderNode(functionNode);
 

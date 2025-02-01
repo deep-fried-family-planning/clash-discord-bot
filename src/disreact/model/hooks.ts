@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
 import {getHookState} from '#src/disreact/model/hook-state.ts';
 import type {E} from '#src/internal/pure/effect.ts';
+import console from 'node:console';
 
 
 
@@ -33,7 +34,11 @@ export const useEffect = (
 
   const state = hooks.stack[hooks.pc++];
 
+  console.log(state);
+
   if (!state) {
+    console.log(state);
+
     const newState = {id: hooks.pc, deps};
 
     hooks.stack.push(newState);

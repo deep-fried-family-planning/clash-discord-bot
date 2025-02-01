@@ -1,9 +1,10 @@
-import {Doken, NONE, Rest, Tags} from '#src/disreact/enum/index.ts';
-import type {TagFunc} from '#src/disreact/model/types.ts';
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import {Doken, NONE, PAGE, Rest, Tags} from '#src/disreact/enum/index.ts';
 import {CLOSE_SWITCH, GlobalPages} from '#src/disreact/model/danger.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
-import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
+import {accumulateStatesIntoArray, dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
 import {CriticalFailure, DiscordDOM, DokenCache, FiberDOM, InteractionContext, StaticDOM} from '#src/disreact/runtime/service.ts';
 import {E, flow, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
@@ -36,8 +37,28 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
   const currDoken = Doken.decode(ix.route.params);
   currDoken.app   = ix.rest.application_id;
 
-  const cloned       = yield * StaticDOM.checkout(root, node);
-  const hydrated     = renderTree(cloned, decodeHooks(ix.route.search));
+  const cloned   = yield * StaticDOM.checkout(root, node);
+  const decodedStates = decodeHooks(ix.route.search);
+  yield * E.logTrace('decoded', JSON.stringify(decodedStates, null, 2));
+  const hydrated = renderTree(cloned, decodedStates);
+
+
+  const statesArray = accumulateStatesIntoArray(hydrated);
+  yield * E.logTrace('statesArray', JSON.stringify(statesArray, null, 2));
+
+  for (const state of statesArray) {
+    for (const enqueued of state.queue) {
+      if (E.isEffect(enqueued)) {
+        yield * enqueued;
+      }
+      else {
+        yield * E.promise(async () => await enqueued);
+      }
+      yield * enqueued;
+    }
+  }
+
+
   const isCurrDialog = hydrated.nodes[0].type === Tags.dialog;
 
   const target  = findNodeById(hydrated, ix.event)!;
@@ -47,7 +68,7 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
   let next: DisReactNode;
   let doken: Doken.T;
 
-  if (page === CLOSE_SWITCH) {
+  if (page === PAGE.CLOSE) {
     if (currDoken.status === 'expired') {
       // yield * pipe(DiscordDOM.deferRender(restDoken), E.fork);
       yield * pipe(DiscordDOM.dismount(restDoken), E.fork);
