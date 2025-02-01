@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-argument,@typescript-eslint/restrict-template-expressions,@typescript-eslint/no-unsafe-member-access */
-import {NONE, Rest, Tags} from '#src/disreact/enum/index.ts';
+import {NONE, Rest, Tags} from '#src/disreact/runtime/enum/index.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {Kv, pipe} from '#src/internal/pure/effect.ts';
 

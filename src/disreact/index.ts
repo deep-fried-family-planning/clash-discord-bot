@@ -1,11 +1,15 @@
-import {Doken, NONE, Rest, Tags} from '#src/disreact/enum/index.ts';
+import {Doken, NONE, PAGE, Rest, Tags} from '#src/disreact/runtime/enum/index.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';
-import {CLOSE_SWITCH, GlobalPages} from '#src/disreact/model/danger.ts';
+import {GlobalPages} from '#src/disreact/model/danger.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
+import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
-import {CriticalFailure, DiscordDOM, DokenCache, FiberDOM, InteractionContext, StaticDOM} from '#src/disreact/runtime/service.ts';
+import {DokenCache} from '#src/disreact/runtime/service/DokenCache.ts';
+import {FiberDOM} from '#src/disreact/runtime/service/FiberDOM.ts';
+import {InteractionContext} from '#src/disreact/runtime/service/InteractionContext.ts';
+import {StaticDOM} from '#src/disreact/runtime/service/StaticDOM.ts';
 import {E, flow, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {NodeHttpClient} from '@effect/platform-node';
@@ -25,7 +29,6 @@ export const synthesize = E.fn('DisReact.synthesize')(function * (type: string |
 
   return yield * encodeInteraction(rendered);
 });
-
 
 export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interaction) {
   const ix        = yield * decodeInteraction(rest);
@@ -47,7 +50,7 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
   let next: DisReactNode;
   let doken: Doken.T;
 
-  if (page === CLOSE_SWITCH) {
+  if (page === PAGE.CLOSE) {
     if (currDoken.status === 'expired') {
       // yield * pipe(DiscordDOM.deferRender(restDoken), E.fork);
       yield * pipe(DiscordDOM.dismount(restDoken), E.fork);
@@ -121,6 +124,7 @@ const disReactDOM = () => E.gen(function * () {
       E.provide(pipe(
         InteractionContext.makeLayer(),
         L.provideMerge(FiberDOM.makeLayer()),
+        L.provide(Logger.minimumLogLevel(LogLevel.All)),
       )),
     ),
   };
@@ -142,7 +146,6 @@ export class DisReactDOM extends E.Tag('DisReact.DisReactDOM')<
     L.provideMerge(
       pipe(
         Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
-        L.provideMerge(Logger.minimumLogLevel(config.logLevel ?? LogLevel.All)),
         L.provideMerge(L.setTracerTiming(true)),
         L.provideMerge(L.setTracerEnabled(true)),
       ),
@@ -153,13 +156,6 @@ export class DisReactDOM extends E.Tag('DisReact.DisReactDOM')<
         L.merge(DiscordDOM.singletonLayer),
         L.merge(StaticDOM.singletonLayer(config.types)),
         L.merge(DokenCache.singletonLayer),
-      ),
-    ),
-    L.provide(
-      pipe(
-        DiscordRESTMemoryLive,
-        L.provide(NodeHttpClient.layerUndici),
-        L.provide(DiscordConfig.layer({token: RDT.make(config.bot)})),
       ),
     ),
   );

@@ -125,7 +125,6 @@
     <codeStyleSettings language="TypeScript">
       <option name="RIGHT_MARGIN" value="240" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
-      <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
       <option name="BLANK_LINES_AROUND_CLASS" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />
@@ -133,9 +132,10 @@
       <option name="WHILE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="FINALLY_ON_NEW_LINE" value="true" />
-      <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
+      <option name="ALIGN_MULTILINE_FOR" value="false" />
       <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
       <option name="EXTENDS_KEYWORD_WRAP" value="1" />
+      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
       <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

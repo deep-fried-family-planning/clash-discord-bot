@@ -1,5 +1,5 @@
-import {Auth, Doken, Events, NONE, Rest} from '#src/disreact/enum/index.ts';
-import {decodeUrl, encodeAsPath, encodeAsUrl} from '#src/disreact/enum/routes.ts';
+import {DAuth, Doken, Events, NONE, Rest} from '#src/disreact/runtime/enum/index.ts';
+import {decodeUrl, encodeAsPath, encodeAsUrl} from '#src/disreact/runtime/enum/droute.ts';
 import {encodeEntireTree} from '#src/disreact/model/encode-element.ts';
 import {encodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
@@ -26,7 +26,7 @@ export const decodeInteraction = E.fn('DisReact.decodeInteraction')(function * (
 
   const context = yield * InteractionContext.free();
   context.rest  = rest;
-  context.auths = Auth.decodeAuths(rest);
+  context.auths = DAuth.decodeAuths(rest);
   context.route = yield * decodeUrl(rest);
 
   if (rest.type === Rest.InteractionType.MESSAGE_COMPONENT) {

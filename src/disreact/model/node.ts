@@ -2,10 +2,11 @@
 
 
 
-import type {TagFunc} from '#src/disreact/model/types.ts';
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {Switches} from '#src/disreact/model/danger.ts';
 import {dismountNode, emptyHookState, type HookState, mountNode, releaseActiveRenderNode, setActiveRenderNode} from '#src/disreact/model/hook-state.ts';
 import {findNearestFunctionParent} from '#src/disreact/model/traversal.ts';
+import type {TagFunc} from '#src/disreact/model/types.ts';
 
 
 
@@ -22,7 +23,8 @@ export abstract class DisReactNode {
   public nodes         : DisReactNode[];
   public switches      : Switches | undefined;
   public state         : HookState | undefined;
-  public isRoot        : boolean = false;
+  public isRoot        : boolean    = false;
+  public isMounted     : boolean = false;
 
   public constructor(type: string | TagFunc, {children, ...props}: any) {
     this.name        = typeof type === 'string' ? type : type.name;

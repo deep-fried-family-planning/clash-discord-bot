@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
-import {Tags} from '#src/disreact/enum/index.ts';
+import {Tags} from '#src/disreact/runtime/enum/index.ts';
 import type {TagTypes} from '#src/disreact/model/types.ts';
 import {ElementNode, FunctionNode} from '#src/disreact/model/node.ts';
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type {Rest} from '#src/disreact/enum/index.ts';
+import type {Rest} from '#src/disreact/runtime/enum/index.ts';
 import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {D, DT, pipe} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

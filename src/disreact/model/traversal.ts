@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-explicit-any */
-import {type Events, Tags} from '#src/disreact/enum/index.ts';
+import {type Events, Tags} from '#src/disreact/runtime/enum/index.ts';
 import type {HookState, HookStates} from '#src/disreact/model/hook-state.ts';
 import {type DisReactNode, FunctionNode} from '#src/disreact/model/node.ts';
 import type {rec} from '#src/internal/pure/pure.ts';

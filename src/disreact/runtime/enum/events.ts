@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import {Rest} from '#src/disreact/enum/index.ts';
+import {Rest} from '#src/disreact/runtime/enum/index.ts';
 import type {ButtonAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/types.ts';
 import {D} from '#src/internal/pure/effect.ts';
 

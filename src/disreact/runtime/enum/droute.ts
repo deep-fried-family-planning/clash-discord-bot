@@ -1,5 +1,6 @@
-import {NONE, Rest} from '#src/disreact/enum/index.ts';
-import {CriticalFailure, DokenCache} from '#src/disreact/runtime/service.ts';
+import {NONE, Rest} from '#src/disreact/runtime/enum/index.ts';
+import {DokenCache} from '#src/disreact/runtime/service/DokenCache.ts';
+import {CriticalFailure } from '#src/disreact/runtime/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {rec} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

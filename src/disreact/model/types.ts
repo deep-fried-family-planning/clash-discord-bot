@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-empty-object-type */
 
 
-import type {Rest} from '#src/disreact/enum/index.ts';
+import type {Rest} from '#src/disreact/runtime/enum/index.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-
 
 
 export type TagFunc = (props: any) => any;
@@ -15,9 +14,7 @@ export type TagTypes =
   | undefined
   | TagFunc;
 
-export type SharedAttributes = {
-
-};
+export type SharedAttributes = {};
 
 export type ActionRowAttributes = JSX.IntrinsicAttributes & {};
 export type ActionRowProps = ActionRowAttributes & {

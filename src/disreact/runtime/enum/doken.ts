@@ -1,4 +1,4 @@
-import {NONE, Rest} from '#src/disreact/enum/index.ts';
+import {NONE, Rest} from '#src/disreact/runtime/enum/index.ts';
 
 
 
