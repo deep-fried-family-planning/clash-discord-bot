@@ -15,7 +15,6 @@ type i0t6000 = number;
 type n1t4000 = number;
 type n0t4000 = number;
 
-
 type Handler<Event> = (event: Event) => void | E.Effect<void>;
 
 export type DTMLChildren<C> = C | C[];
@@ -411,6 +410,7 @@ export type DFMDNestedElement =
 export type DFMDElement = {
   children: string | DFMDNestedElement[];
 };
+
 
 
 export type DTMLElement =

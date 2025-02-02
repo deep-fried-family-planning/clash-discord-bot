@@ -1,5 +1,5 @@
 import {PAGE} from '#src/disreact/runtime/enum/index.ts';
-import {usePage} from '#src/disreact/model/hooks/danger.ts';
+import {usePage} from '#src/disreact/model/hooks/fiber-dispatch.ts';
 
 
 

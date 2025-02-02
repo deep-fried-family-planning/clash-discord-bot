@@ -1,3 +1,4 @@
+import type {DTMLButtonElement, DTMLChannelMenuElement, DTMLMentionMenuElement, DTMLModalElement, DTMLRoleMenuElement, DTMLStringMenuElement, DTMLUserMenuElement} from '#src/disreact/model/dsx/types.ts';
 import type {Rest} from '#src/disreact/runtime/enum/index.ts';
 import {Data} from 'effect';
 
@@ -26,35 +27,43 @@ export type MessageContextCommand = {
 };
 
 export type ButtonClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLButtonElement;
 };
 
 export type SelectClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLStringMenuElement;
 };
 
 export type UserClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLUserMenuElement;
 };
 
 export type RoleClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLRoleMenuElement;
 };
 
 export type ChannelClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLChannelMenuElement;
 };
 
 export type MentionClick = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLMentionMenuElement;
 };
 
 export type CommandSubmit = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLModalElement;
 };
 
 export type MessageSubmit = {
-  rest: Rest.Interaction;
+  rest  : Rest.Interaction;
+  target: DTMLModalElement;
 };
 
 export type Interactable = Data.TaggedEnum<{

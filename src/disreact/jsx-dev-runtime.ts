@@ -1,4 +1,4 @@
-import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/dsx/pragma.tsx';
+import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/pragma.tsx';
 
 export const Fragment = __Fragment;
 export const jsx      = _jsx;

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-redundant-type-constituents */
-import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/dsx/pragma.tsx';
+import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/pragma.tsx';
 import type {DFMDAnchorElement, DFMDElement, DFMDMentionElement, DTMLButtonElement, DTMLChoiceElement, DTMLCommandElement, DTMLComponentRowElement, DTMLEmbedDescriptionElement, DTMLEmbedElement, DTMLEmbedFieldElement, DTMLEmbedFooterElement, DTMLEmbedTitleElement, DTMLEmojiElement, DTMLMenuElement, DTMLMessageContentElement, DTMLMessageElement, DTMLModalElement, DTMLOptionElement, DTMLParameterElement, DTMLTextElement, DTMLValueElement} from '#src/disreact/model/dsx/types.ts';
 
 
@@ -8,7 +8,6 @@ export const Fragment = __Fragment;
 export const jsx      = _jsx;
 export const jsxs     = _jsxs;
 export const jsxDEV   = _jsx;
-
 
 
 declare global {
@@ -46,30 +45,22 @@ declare global {
 
 
   export namespace JSX {
-    type ElementType = DSX.ElementType;
+    type ElementType =
+      | ((props: any) => Element)
+      | keyof IntrinsicElements
+      | string
+      | number
+      | bigint
+      | boolean
+      | null
+      | undefined
+      | symbol;
 
     type Element = any;
-
-    interface ElementClass {
-      render(): DSX.Node;
-    }
-
-    interface ElementAttributesProperty {
-      props: any;
-    }
-
-    interface ElementChildrenAttribute {
-      children: any;
-    }
-
-    interface IntrinsicAttributes {
-
-    }
-
-    interface IntrinsicClassAttributes {
-
-    }
-
+    interface ElementAttributesProperty {props: any}
+    interface ElementChildrenAttribute {children?: any}
+    interface IntrinsicAttributes {}
+    interface IntrinsicClassAttributes {}
     interface IntrinsicElements {
       command    : DTMLCommandElement;
       param      : DTMLParameterElement;
@@ -89,29 +80,26 @@ declare global {
       description: DTMLEmbedDescriptionElement;
       field      : DTMLEmbedFieldElement;
       footer     : DTMLEmbedFooterElement;
-
-      dfmd      : DFMDElement;
-      span      : DFMDElement;
-      at        : DFMDMentionElement;
-      a         : DFMDAnchorElement;
-      mask      : DFMDElement;
-      p         : DFMDElement;
-      br        : DFMDElement;
-      b         : DFMDElement;
-      i         : DFMDElement;
-      u         : DFMDElement;
-      s         : DFMDElement;
-      details   : DFMDElement;
-      code      : DFMDElement;
-      pre       : DFMDElement;
-      blockquote: DFMDElement;
-      h1        : DFMDElement;
-      h2        : DFMDElement;
-      h3        : DFMDElement;
-      small     : DFMDElement;
-      ol        : DFMDElement;
-      ul        : DFMDElement;
-      li        : DFMDElement;
+      at         : DFMDMentionElement;
+      a          : DFMDAnchorElement;
+      mask       : DFMDElement;
+      p          : DFMDElement;
+      br         : DFMDElement;
+      b          : DFMDElement;
+      i          : DFMDElement;
+      u          : DFMDElement;
+      s          : DFMDElement;
+      details    : DFMDElement;
+      code       : DFMDElement;
+      pre        : DFMDElement;
+      blockquote : DFMDElement;
+      h1         : DFMDElement;
+      h2         : DFMDElement;
+      h3         : DFMDElement;
+      small      : DFMDElement;
+      ol         : DFMDElement;
+      ul         : DFMDElement;
+      li         : DFMDElement;
     }
   }
 }
