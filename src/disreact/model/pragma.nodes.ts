@@ -27,7 +27,7 @@ export type PragmaFunction = Common & {
   props   : Record<string, any>;
   children: Pragma[];
   render  : RenderFunction;
-  state   : FiberState;
+  state?  : FiberState;
 };
 
 export type Pragma =

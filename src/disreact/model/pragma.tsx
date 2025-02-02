@@ -21,6 +21,35 @@ export const _jsx = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma
 };
 
 export const _jsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
+  const children = props.children;
+  delete props.children;
+  switch (typeof type){
+    case 'string':
+      return {
+        kind    : 'intrinsic',
+        name    : type,
+        props   : props,
+        children: children,
+
+      }
+    case 'function':
+      return {
+        kind    : 'function',
+        name    : type.name,
+        props   : props,
+        children: [type(props)],
+        render  : type,
+      }
+
+    case 'boolean':
+
+    case 'number':
+    case 'bigint':
+    case 'symbol':
+    case 'object':
+    case 'undefined':
+
+  }
   if (!type)
     return props.children;
 

@@ -3,9 +3,15 @@ import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {describe, expect, it} from 'vitest';
 
 describe('pragma', () => {
-  it('renders', async () => {
-    const result = jsx(OmniPublic, {});
+  it('renders intrinsic', async () => {
 
-    await expect(result).toMatchFileSnapshot('./.snap/.pragma.spec.tsx.snap');
+
+    await expect(jsx('embed')).toMatchFileSnapshot('./.snap/.pragma.spec.tsx.intrinsic');
+  });
+
+  it('renders tree', async () => {
+
+
+    await expect(<OmniPublic></OmniPublic>).toMatchFileSnapshot('./.snap/.pragma.spec.tsx.json');
   });
 });
