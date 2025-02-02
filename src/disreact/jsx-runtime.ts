@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-redundant-type-constituents */
-import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/pragma.tsx';
-import type {DFMDAnchorElement, DFMDElement, DFMDMentionElement, DTMLButtonElement, DTMLChoiceElement, DTMLCommandElement, DTMLComponentRowElement, DTMLEmbedDescriptionElement, DTMLEmbedElement, DTMLEmbedFieldElement, DTMLEmbedFooterElement, DTMLEmbedTitleElement, DTMLEmojiElement, DTMLMenuElement, DTMLMessageContentElement, DTMLMessageElement, DTMLModalElement, DTMLOptionElement, DTMLParameterElement, DTMLTextElement, DTMLValueElement} from '#src/disreact/model/dsx/types.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type,@typescript-eslint/no-redundant-type-constituents,@typescript-eslint/no-unsafe-assignment */
+import {_dsx, _dsxs, _Fragment} from '#src/disreact/dsx/pragma.tsx';
+import type {DFMDAnchorElement, DFMDElement, DFMDMentionElement, DTMLButtonElement, DTMLChoiceElement, DTMLCommandElement, DTMLComponentRowElement, DTMLEmbedDescriptionElement, DTMLEmbedElement, DTMLEmbedFieldElement, DTMLEmbedFooterElement, DTMLEmbedTitleElement, DTMLEmojiElement, DTMLMenuElement, DTMLMessageContentElement, DTMLMessageElement, DTMLModalElement, DTMLOptionElement, DTMLParameterElement, DTMLTextElement, DTMLValueElement} from '#src/disreact/dsx/types.ts';
 
 
 
-export const Fragment = __Fragment;
-export const jsx      = _jsx;
-export const jsxs     = _jsxs;
-export const jsxDEV   = _jsx;
+export const Fragment = _Fragment;
+export const jsx      = _dsx;
+export const jsxs     = _dsxs;
+export const jsxDEV   = _dsx;
+
 
 
 declare global {
@@ -42,8 +43,11 @@ declare global {
       props: P;
     };
   }
+}
 
 
+
+declare global {
   export namespace JSX {
     type ElementType =
       | ((props: any) => Element)

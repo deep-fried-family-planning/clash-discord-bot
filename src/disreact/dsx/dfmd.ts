@@ -1,4 +1,3 @@
-export const dfmd       = 'dfmd';
 export const at         = 'at';
 export const a          = 'a';
 export const mask       = 'mask';

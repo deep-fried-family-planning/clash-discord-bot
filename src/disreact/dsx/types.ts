@@ -292,7 +292,6 @@ export type DTMLMenuElement =
 
 
 export type DTMLOptionElement = {
-  string      : boolean;
   label       : s1t100;
   value       : s1t100;
   description?: s1t100;

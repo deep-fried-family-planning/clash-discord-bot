@@ -1,30 +1,14 @@
-import type {DTMLButtonElement, DTMLChannelMenuElement, DTMLMentionMenuElement, DTMLModalElement, DTMLRoleMenuElement, DTMLStringMenuElement, DTMLUserMenuElement} from '#src/disreact/model/dsx/types.ts';
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+import type {DTMLButtonElement, DTMLChannelMenuElement, DTMLMentionMenuElement, DTMLModalElement, DTMLRoleMenuElement, DTMLStringMenuElement, DTMLUserMenuElement} from '#src/disreact/dsx/types.ts';
 import type {Rest} from '#src/disreact/runtime/enum/index.ts';
 import {Data} from 'effect';
 
-export type CommandAutoComplete = {
-  rest: Rest.Interaction;
-};
-
-export type GlobalSlashCommand = {
-  rest: Rest.Interaction;
-};
-
-export type GuildSlashCommand = {
-  rest: Rest.Interaction;
-};
-
-export type UserSlashCommand = {
-  rest: Rest.Interaction;
-};
-
-export type UserContextCommand = {
-  rest: Rest.Interaction;
-};
-
-export type MessageContextCommand = {
-  rest: Rest.Interaction;
-};
+export type CommandAutoComplete = {};
+export type GlobalSlashCommand = {};
+export type GuildSlashCommand = {};
+export type UserSlashCommand = {};
+export type UserContextCommand = {};
+export type MessageContextCommand = {};
 
 export type ButtonClick = {
   rest  : Rest.Interaction;

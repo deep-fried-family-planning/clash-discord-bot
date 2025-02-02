@@ -1,4 +1,4 @@
-import {DFMD, DTML} from '#src/disreact/model/dsx/html.ts';
+import {DFMD, DTML} from '#src/disreact/dsx/config.ts';
 import {it} from '@effect/vitest';
 
 

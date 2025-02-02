@@ -8,7 +8,7 @@ export const Header: DSX.FC<Props> = (props) => {
     <embed>
       <title>{props.title}</title>
       <description>
-        <b>{props.description}</b>
+        {props.description}
       </description>
     </embed>
   );

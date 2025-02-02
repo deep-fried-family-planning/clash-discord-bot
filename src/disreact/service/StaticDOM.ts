@@ -1,5 +1,5 @@
-import {Critical} from '#src/disreact/runtime/service/debug.ts';
-import {createRootElement} from '#src/disreact/model/dsx/create-element.ts';
+import {Critical} from '#src/disreact/internal/debug.ts';
+import {createRootElement} from '#src/disreact/dsx/create-element.ts';
 import {cloneTree, createRootMap} from '#src/disreact/model/traversal.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';
 import {E, L} from '#src/internal/pure/effect.ts';

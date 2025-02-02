@@ -13,8 +13,6 @@ export type FiberState = {
   interaction ?: any;
 };
 
-
-
 export const emptyState = (
   id: string,
   component: any,
@@ -35,16 +33,19 @@ export const emptyState = (
 const useState = (fiber: FiberState) => (initial: any) => {
   const current = fiber.stack[fiber.pc++];
 
-  if (!current)
+  if (!current) {
     fiber.stack[fiber.pc] = {s: initial};
+  }
 
   const state = fiber.stack[fiber.pc];
 
   const setState = (next: any) => {
-    if (typeof next === 'function')
+    if (typeof next === 'function') {
       state.s = next(state.s);
-    else
+    }
+    else {
       state.s = next;
+    }
   };
 
   return [state.s, setState];
@@ -55,8 +56,9 @@ const useState = (fiber: FiberState) => (initial: any) => {
 const useReducer = (fiber: FiberState) => (reducer: any, initialState: any) => {
   const current = fiber.stack[fiber.pc++];
 
-  if (!current)
+  if (!current) {
     fiber.stack[fiber.pc] = {s: initialState};
+  }
 
   const state = fiber.stack[fiber.pc];
 
@@ -94,7 +96,6 @@ const useEffect = (fiber: FiberState) => (effect: any, deps?: any[]) => {
 // todo
 const useLayoutEffect = (fiber: FiberState) => () => {};
 
-
 export const attachHooks = (fiber: FiberState) => ({
   useState  : useState(fiber),
   useReducer: useReducer(fiber),
@@ -112,6 +113,7 @@ export const encodeHooks = (rec: Record<string, FiberState>): URLSearchParams =>
   }
   return search;
 };
+
 
 // todo
 export const decodeHooks = (search: URLSearchParams): Record<string, FiberState> => {

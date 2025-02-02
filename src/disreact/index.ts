@@ -4,17 +4,14 @@ import {GlobalPages} from '#src/disreact/model/hooks/fiber-dispatch.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
-import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
+import {DiscordDOM} from '#src/disreact/service/DiscordDOM.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
-import {DokenCache} from '#src/disreact/runtime/service/DokenCache.ts';
-import {FiberDOM} from '#src/disreact/runtime/service/FiberDOM.ts';
-import {InteractionContext} from '#src/disreact/runtime/service/InteractionContext.ts';
-import {StaticDOM} from '#src/disreact/runtime/service/StaticDOM.ts';
-import {E, flow, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {DokenCache} from '#src/disreact/service/DokenCache.ts';
+import {FiberDOM} from '#src/disreact/service/FiberDOM.ts';
+import {InteractionContext} from '#src/disreact/service/InteractionContext.ts';
+import {StaticDOM} from '#src/disreact/service/StaticDOM.ts';
+import {E, flow, L, Logger, LogLevel, pipe } from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
-import {NodeHttpClient} from '@effect/platform-node';
-import {DiscordRESTMemoryLive} from 'dfx';
-import {DiscordConfig} from 'dfx/index';
 
 
 

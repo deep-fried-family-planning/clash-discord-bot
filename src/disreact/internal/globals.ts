@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type {attachHooks, FiberState} from '#src/disreact/internal/dispatch-hooks.ts';
+import type {attachHooks, FiberState} from '#src/disreact/internal/hooks.ts';
 import {Fiber, GlobalValue as GV, Option, pipe} from 'effect';
 
 
@@ -40,4 +40,12 @@ export const _activeFiber = () => {
 
 export const DisReactDispatcher = {
   current: null as null | ReturnType<typeof attachHooks>,
+};
+
+
+
+export const getDispatcher = () => {
+  if (DisReactDispatcher.current === null)
+    throw new Error('Hooks cannot be called from outside the render function.');
+  return DisReactDispatcher.current;
 };

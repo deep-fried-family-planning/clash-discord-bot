@@ -1,4 +1,4 @@
-import {DoNotLog} from '#src/disreact/runtime/service/debug.ts';
+import {DoNotLog} from '#src/disreact/internal/debug.ts';
 import type {Doken} from '#src/disreact/runtime/enum/index.ts';
 import {Rest} from '#src/disreact/runtime/enum/index.ts';
 import {E, flow, L, pipe} from '#src/internal/pure/effect.ts';

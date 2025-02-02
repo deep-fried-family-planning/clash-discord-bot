@@ -1,6 +1,9 @@
-import {__Fragment, _jsx, _jsxs} from '#src/disreact/model/pragma.tsx';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import {_Fragment, _dsx, _dsxs} from '#src/disreact/dsx/pragma.tsx';
 
-export const Fragment = __Fragment;
-export const jsx      = _jsx;
-export const jsxs     = _jsxs;
-export const jsxDEV   = _jsx;
+
+
+export const Fragment = _Fragment;
+export const jsx      = _dsx;
+export const jsxs     = _dsxs;
+export const jsxDEV   = _dsx;
