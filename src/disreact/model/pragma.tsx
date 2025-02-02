@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions */
+import {children} from '#src/disreact/model/dsx/html.ts';
 import type {Pragma} from '#src/disreact/model/pragma.nodes.ts';
 
 
@@ -55,3 +56,14 @@ export const _jsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =
 
   return type;
 };
+
+export const jsxrest = (pragma: Pragma | Pragma[]) => {
+  if(Array.isArray(pragma)) throw new Error('Pragmas must be an array!');
+  if(pragma.kind === 'text') throw new Error()
+  if(pragma.kind === 'intrinsic') throw new Error()
+  if(pragma.kind === 'function') {
+    return pragma.children
+  }
+
+
+}

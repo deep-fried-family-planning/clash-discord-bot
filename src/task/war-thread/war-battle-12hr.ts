@@ -45,7 +45,7 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
         dSpoi,
       )}`),
       dHdr2('Reminders'),
-      '1. Always use hero/power potions if not max',
+      '1. Always use hero/power potions if not max(need thicc bois)',
       '2. ALWAYS bring a poison spell',
       `3. ${dBold('[CWL] Check thread pinned messages for most updated base calls.')}`,
     ),
