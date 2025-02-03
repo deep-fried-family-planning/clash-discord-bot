@@ -4,7 +4,7 @@ import {dtml} from '#src/disreact/dsx/index.ts';
 
 
 
-export const _jsxe = (node: any): any => {
+export const dsxencode = (node: any): any => {
   const next = unwrapFunctions(node);
 
   return next.map((n: any) => encodeInner(n));

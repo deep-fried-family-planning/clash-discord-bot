@@ -1,23 +1,50 @@
+import type {RenderFunction} from '#src/disreact/dsx/types.ts';
 import {Critical} from '#src/disreact/internal/debug.ts';
-import {createRootElement} from '#src/disreact/dsx/create-element.ts';
-import {cloneTree, createRootMap} from '#src/disreact/model/traversal.ts';
-import type {TagFunc} from '#src/disreact/model/types.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 
-const make = (initial: TagFunc[]) => E.gen(function * () {
-  const rootElements = initial.map((type) => createRootElement(type, {}));
-  const rootMap      = createRootMap(rootElements);
+const make = (
+  initialMessages: RenderFunction[] = [],
+  initialModals: RenderFunction[] = [],
+) => E.gen(function * () {
+  const messages = {} as Record<string, RenderFunction>;
+  const modals   = {} as Record<string, RenderFunction>;
+
+  for (const dsx of initialMessages) {
+    messages[dsx.name] = dsx;
+  }
+  for (const dsx of initialModals) {
+    modals[dsx.name] = dsx;
+  }
 
   return {
-    checkout: (root: string, node: string) => E.gen(function * () {
-      if (!(root in rootMap)) {
-        return yield * new Critical({why: `${root}/${node}: Root not found`});
+    addMessageRoot: (dsx: RenderFunction) => {
+      if (dsx.name in messages) {
+        return;
       }
-      if (!(node in rootMap[root])) {
-        return yield * new Critical({why: `${root}/${node}: Node not found`});
+      messages[dsx.name] = dsx;
+    },
+    addModalRoot: (dsx: RenderFunction) => {
+      if (dsx.name in modals) {
+        return;
       }
-      return cloneTree(rootMap[root][node], true);
+      modals[dsx.name] = dsx;
+    },
+    checkoutMessageRoot: (dsx: string | RenderFunction) => E.gen(function * () {
+      const name = typeof dsx === 'string' ? dsx : dsx.name;
+
+      if (name in messages) {
+        return messages[name];
+      }
+      return yield * new Critical({why: `<${name}/> does not exist as a root message component`});
+    }),
+    checkoutModalRoot: (dsx: string | RenderFunction) => E.gen(function * () {
+      const name = typeof dsx === 'string' ? dsx : dsx.name;
+
+      if (name in messages) {
+        return messages[name];
+      }
+      return yield * new Critical({why: `<${name}/> does not exist as a root message component`});
     }),
   };
 });

@@ -1,4 +1,5 @@
 import {Header} from '#src/discord/omni-board/components/header.tsx';
+import {useState} from '#src/disreact/interface.ts';
 // import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 // import {usePage} from '#src/disreact/model/danger.ts';
 
@@ -6,6 +7,8 @@ import {Header} from '#src/discord/omni-board/components/header.tsx';
 
 export const OmniPublic = () => {
   // const setPage = usePage([OmniPrivate]);
+
+  const [num, setNum] = useState(0);
 
   return (
     <message public>

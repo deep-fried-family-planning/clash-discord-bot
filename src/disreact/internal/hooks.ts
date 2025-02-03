@@ -2,30 +2,35 @@
 
 
 
+import type {PragmaFunction} from '#src/disreact/dsx/types.ts';
+
+
+export type EventState = {
+
+};
+
+
 export type FiberState = {
-  id           : string;
-  pc           : number;
-  stack        : any[];
-  sync         : any[];
-  async        : any[];
-  component?   : any;
-  rc           : number;
-  interaction ?: any;
+  id        : string;
+  pc        : number;
+  stack     : any[];
+  sync      : any[];
+  async     : any[];
+  component?: any;
+  rc        : number;
+  nextpage? : null | string;
 };
 
 export const emptyState = (
   id: string,
-  component: any,
-  interaction: any,
 ): FiberState => ({
   id,
-  pc   : 0,
-  stack: [],
-  sync : [],
-  async: [],
-  rc   : 0,
-  component,
-  interaction,
+  pc      : 0,
+  stack   : [],
+  sync    : [],
+  async   : [],
+  rc      : 0,
+  nextpage: null as null | string,
 });
 
 
@@ -96,10 +101,26 @@ const useEffect = (fiber: FiberState) => (effect: any, deps?: any[]) => {
 // todo
 const useLayoutEffect = (fiber: FiberState) => () => {};
 
+
+
+const usePage = (fiber: FiberState) => () => {
+  return {
+    next: (next: PragmaFunction) => {
+      fiber.nextpage = next.name;
+    },
+    close: () => {
+      fiber.nextpage = null;
+    },
+  };
+};
+
+
+
 export const attachHooks = (fiber: FiberState) => ({
   useState  : useState(fiber),
   useReducer: useReducer(fiber),
   useEffect : useEffect(fiber),
+  usePage   : usePage(fiber),
 });
 
 

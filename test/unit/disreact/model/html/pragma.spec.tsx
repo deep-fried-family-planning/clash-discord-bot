@@ -1,5 +1,5 @@
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import {_jsxe} from '#src/disreact/dsx/pragma-encoder.ts';
+import {dsxencode} from '#src/disreact/dsx/pragma-encoder.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 
 describe('pragma', () => {
@@ -19,7 +19,7 @@ describe('pragma', () => {
   });
 
   it('encodes message', () => {
-    expect(_jsxe(<OmniPublic/>)).toMatchInlineSnapshot(`
+    expect(dsxencode(<OmniPublic/>)).toMatchInlineSnapshot(`
       [
         {
           "components": [
@@ -68,9 +68,17 @@ describe('pragma', () => {
                     "children": [
                       {
                         "children": [
-                          "Omni Board",
+                          {
+                            "id": "string:0",
+                            "id_full": "",
+                            "id_step": "",
+                            "index": 0,
+                            "kind": "text",
+                            "name": "string",
+                            "value": "Omni Board",
+                          },
                         ],
-                        "id": "",
+                        "id": "title:0",
                         "id_full": "",
                         "id_step": "",
                         "index": 0,
@@ -80,18 +88,26 @@ describe('pragma', () => {
                       },
                       {
                         "children": [
-                          "V2 - JSX Pragma",
+                          {
+                            "id": "string:0",
+                            "id_full": "",
+                            "id_step": "",
+                            "index": 0,
+                            "kind": "text",
+                            "name": "string",
+                            "value": "V2 - JSX Pragma",
+                          },
                         ],
-                        "id": "",
+                        "id": "description:1",
                         "id_full": "",
                         "id_step": "",
-                        "index": 0,
+                        "index": 1,
                         "kind": "intrinsic",
                         "name": "description",
                         "props": {},
                       },
                     ],
-                    "id": "",
+                    "id": "embed:0",
                     "id_full": "",
                     "id_step": "",
                     "index": 0,
@@ -100,7 +116,7 @@ describe('pragma', () => {
                     "props": {},
                   },
                 ],
-                "id": "",
+                "id": "Header:0",
                 "id_full": "",
                 "id_step": "",
                 "index": 0,
@@ -116,7 +132,7 @@ describe('pragma', () => {
                 "children": [
                   {
                     "children": [],
-                    "id": "",
+                    "id": "button:0",
                     "id_full": "",
                     "id_step": "",
                     "index": 0,
@@ -131,7 +147,7 @@ describe('pragma', () => {
                     "children": [
                       {
                         "children": [],
-                        "id": "",
+                        "id": "emoji:0",
                         "id_full": "",
                         "id_step": "",
                         "index": 0,
@@ -142,10 +158,10 @@ describe('pragma', () => {
                         },
                       },
                     ],
-                    "id": "",
+                    "id": "button:1",
                     "id_full": "",
                     "id_step": "",
-                    "index": 0,
+                    "index": 1,
                     "kind": "intrinsic",
                     "name": "button",
                     "props": {
@@ -154,16 +170,16 @@ describe('pragma', () => {
                     },
                   },
                 ],
-                "id": "",
+                "id": "buttons:1",
                 "id_full": "",
                 "id_step": "",
-                "index": 0,
+                "index": 1,
                 "kind": "intrinsic",
                 "name": "buttons",
                 "props": {},
               },
             ],
-            "id": "",
+            "id": "message:0",
             "id_full": "",
             "id_step": "",
             "index": 0,

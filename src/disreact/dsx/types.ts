@@ -1,6 +1,47 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any */
+import type {FiberState} from '#src/disreact/internal/hooks.ts';
 import type {DAction} from '#src/disreact/runtime/enum/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
+
+
+export type RenderFunction = (props: any) => any;
+
+type Common = {
+  index  : number;
+  name   : string;
+  id     : string;
+  id_step: string;
+  id_full: string;
+  isRoot?: boolean;
+};
+
+export type PragmaText = Common & {
+  kind : 'text';
+  name : 'string';
+  value: string;
+};
+
+export type PragmaElement = Common & {
+  kind    : 'intrinsic';
+  name    : keyof JSX.IntrinsicElements;
+  props   : Record<string, any>;
+  children: Pragma[];
+};
+
+export type PragmaFunction = Common & {
+  kind    : 'function';
+  props   : Record<string, any>;
+  children: Pragma[];
+  render  : RenderFunction;
+  state?  : FiberState;
+};
+
+export type Pragma =
+  | PragmaText
+  | PragmaElement
+  | PragmaFunction;
+
+
 
 type s0t4000 = string;
 type s0t150 = string;
@@ -61,7 +102,7 @@ export type DTMLStringParameterElement = {
   min_length?               : i0t6000;
   max_length?               : i1t6000;
   autocomplete?             : boolean;
-  onAutoComplete?           : Handler<DAction.CommandAutoComplete>;
+  onautocomplete?           : Handler<DAction.CommandAutoComplete>;
   children?                 : DTMLStringChoiceElement[];
 };
 export type DTMLIntegerParameterElement = {
@@ -74,7 +115,7 @@ export type DTMLIntegerParameterElement = {
   min_value?                : number;
   max_value?                : number;
   autocomplete?             : boolean;
-  onAutoComplete?           : Handler<DAction.CommandAutoComplete>;
+  onautocomplete?           : Handler<DAction.CommandAutoComplete>;
   children?                 : DTMLIntegerChoiceElement[];
 };
 export type DTMLNumberParameterElement = {
@@ -88,7 +129,7 @@ export type DTMLNumberParameterElement = {
   min_value?                : number;
   max_value?                : number;
   autocomplete?             : boolean;
-  onAutoComplete?           : Handler<DAction.CommandAutoComplete>;
+  onautocomplete?           : Handler<DAction.CommandAutoComplete>;
   children?                 : DTMLNumberChoiceElement[];
 };
 export type DTMLBooleanParameterElement = {
@@ -184,7 +225,7 @@ export type DTMLSuccessButtonElement = {
   label?    : s0t80;
   emoji?    : DTMLEmojiElement;
   disabled? : boolean;
-  onClick?  : Handler<DAction.ButtonClick>;
+  onclick?  : Handler<DAction.ButtonClick>;
   children? : DTMLEmojiElement;
 };
 export type DTMLDangerButtonElement = {
@@ -193,7 +234,7 @@ export type DTMLDangerButtonElement = {
   label?    : s0t80;
   emoji?    : DTMLEmojiElement;
   disabled? : boolean;
-  onClick?  : Handler<DAction.ButtonClick>;
+  onclick?  : Handler<DAction.ButtonClick>;
   children? : DTMLEmojiElement;
 };
 export type DTMLPrimaryButtonElement = {
@@ -202,7 +243,7 @@ export type DTMLPrimaryButtonElement = {
   label?    : s0t80;
   emoji?    : DTMLEmojiElement;
   disabled? : boolean;
-  onClick?  : Handler<DAction.ButtonClick>;
+  onclick?  : Handler<DAction.ButtonClick>;
   children? : DTMLEmojiElement;
 };
 export type DTMLSecondaryButtonElement = {
@@ -211,7 +252,7 @@ export type DTMLSecondaryButtonElement = {
   label?    : s0t80;
   emoji?    : DTMLEmojiElement;
   disabled? : boolean;
-  onClick?  : Handler<DAction.ButtonClick>;
+  onclick?  : Handler<DAction.ButtonClick>;
   children? : DTMLEmojiElement;
 };
 export type DTMLLinkButtonElement = {
@@ -248,7 +289,7 @@ export type DTMLStringMenuElement = {
   min_values? : i1t25;
   max_values? : i1t25;
   disabled?   : boolean;
-  onClick?    : Handler<DAction.SelectClick>;
+  onclick?    : Handler<DAction.SelectClick>;
 };
 export type DTMLUserMenuElement = {
   user           : boolean;
@@ -256,7 +297,7 @@ export type DTMLUserMenuElement = {
   placeholder?   : s0t150;
   default_values?: DTMLUserValueElement[];
   disabled?      : boolean;
-  onClick?       : Handler<DAction.UserClick>;
+  onclick?       : Handler<DAction.UserClick>;
 };
 export type DTMLRoleMenuElement = {
   role           : boolean;
@@ -264,7 +305,7 @@ export type DTMLRoleMenuElement = {
   placeholder?   : s0t150;
   default_values?: DTMLRoleValueElement[];
   disabled?      : boolean;
-  onClick?       : Handler<DAction.RoleClick>;
+  onclick?       : Handler<DAction.RoleClick>;
 };
 export type DTMLChannelMenuElement = {
   channel        : boolean;
@@ -273,14 +314,14 @@ export type DTMLChannelMenuElement = {
   placeholder?   : s0t150;
   default_values?: DTMLChannelValueElement[];
   disabled?      : boolean;
-  onClick?       : Handler<DAction.ChannelClick>;
+  onclick?       : Handler<DAction.ChannelClick>;
 };
 export type DTMLMentionMenuElement = {
   mention     : boolean;
   custom_id?  : s1t100;
   placeholder?: s0t150;
   disabled?   : boolean;
-  onClick?    : Handler<DAction.MentionClick>;
+  onclick?    : Handler<DAction.MentionClick>;
 };
 export type DTMLMenuElement =
   | DTMLStringMenuElement
@@ -367,7 +408,7 @@ export type DTMLMessageElement =
 export type DTMLModalElement = {
   custom_id?: s1t100;
   title     : s1t45;
-  onSubmit? : Handler<DAction.MessageSubmit>;
+  onsubmit? : Handler<DAction.MessageSubmit>;
 };
 
 

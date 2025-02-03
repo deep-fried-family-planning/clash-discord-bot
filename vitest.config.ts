@@ -11,7 +11,8 @@ export default defineConfig({
     expandSnapshotDiff: true,
     chaiConfig        : {
       includeStack     : true,
-      truncateThreshold: 0,
+      truncateThreshold: Infinity,
+      showDiff         : true,
     },
     coverage: {
       provider       : 'istanbul',

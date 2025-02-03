@@ -1,4 +1,4 @@
-import {children, key, onClick, onDeselect, onSelect, onSubmit, ref} from '#src/disreact/dsx/dattributes.ts';
+import {children, key, onautocomplete, onclick, ondeselect, onselect, onsubmit, ref} from '#src/disreact/dsx/dattributes.ts';
 import {a, at, b, blockquote, br, code, details, h1, h2, h3, i, li, mask, ol, p, pre, s, small, u, ul} from '#src/disreact/dsx/dfmd.ts';
 import {button, buttons, choice, command, content, description, embed, emoji, field, footer, menu, message, modal, option, param, string, text, title, value} from '#src/disreact/dsx/dtml.ts';
 
@@ -49,11 +49,12 @@ export const children_allowlist = {
 };
 
 export const encode_denylist = {
-  [onClick]   : null,
-  [onSelect]  : null,
-  [onDeselect]: null,
-  [onSubmit]  : null,
-  [children]  : null,
-  [ref]       : null,
-  [key]       : null,
+  [onclick]       : null,
+  [onselect]      : null,
+  [ondeselect]    : null,
+  [onsubmit]      : null,
+  [onautocomplete]: null,
+  [children]      : null,
+  [ref]           : null,
+  [key]           : null,
 };

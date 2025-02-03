@@ -12,3 +12,7 @@ export const useReducer = (reducer: (state: any, action: any) => any, initialSta
 export const useEffect = (effect: any, deps: any[]) => {
   getDispatcher().useEffect(effect, deps);
 };
+
+export const usePage = () => {
+  return getDispatcher().usePage();
+};
