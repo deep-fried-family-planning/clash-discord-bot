@@ -119,8 +119,22 @@ export const dispatchEvent = (node: Pragma, event: DEvent, original: Pragma = no
 
 
 
-export const hydrateRoot = (node: Pragma, states: Hooks): Pragma => {
+export const hydrateRoot = (node: Pragma, states: {[k: string]: Hooks}): Pragma => {
+  if (node.kind === 'text') {
+    return node;
+  }
+  if (node.kind === 'intrinsic') {
+    node.children = setIds(node.children, node).map((child) => hydrateRoot(child, states));
+    return node;
+  }
 
+  if (node.id_full in states) {
+    node.state = states[node.id_full];
+    node.stack = structuredClone(node.state.stack);
+  }
+
+  node.children = renderFunctionNode(node).map((child) => hydrateRoot(child, states));
+  return node;
 };
 
 
@@ -201,7 +215,9 @@ const renderNodes = (parent: Pragma, cs: Pragma[], rs: Pragma[]): Pragma[] => {
 const renderFunctionNode = (node: PragmaFunction) => {
   __prep(node.id_full, node.state);
 
-  const children = node.render(node.props) as any[];
+  const output = node.render(node.props) as any[];
+
+  const children = Array.isArray(output) ? output : [output] as any[];
   const rendered = setIds(children, node);
   node.state     = __get(node.id_full);
   node.stack     = structuredClone(node.state.stack);

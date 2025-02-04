@@ -10,5 +10,5 @@ export {
 } from './globals.ts';
 export * from './hooks.ts';
 export * from './lifecycle.ts';
-export * from './traversal.ts';
+export * from 'src/disreact/internal/todos.ts';
 export * from './debug.ts';

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
-import type {PragmaFunction} from '#src/disreact/dsx/types.ts';
+import type {PragmaFunction, RenderFunction} from '#src/disreact/dsx/types.ts';
 import console from 'node:console';
 
 
@@ -109,7 +109,7 @@ const useLayoutEffect = (fiber: Hooks) => () => {};
 
 
 
-const usePage = (fiber: Hooks) => () => {
+const usePage = (fiber: Hooks) => (fns: RenderFunction[]) => {
   return {
     next: (next: PragmaFunction) => {
       fiber.nextpage = next.name;
@@ -151,3 +151,20 @@ export const decodeHooks = (search: URLSearchParams): Record<string, Hooks> => {
   }
   return states;
 };
+
+
+
+encodeHooks();
+(() => {})();
+(() => {}).name = '';
+encodeHooks;
+
+
+// another file
+
+
+encodeHooks;
+
+
+
+encodeHooks.name = 'AvgYE';

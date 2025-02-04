@@ -1,8 +1,23 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unnecessary-condition */
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
+import type {Pragma} from '#src/disreact/dsx/types.ts';
 import {__free, __mallocnull} from '#src/disreact/internal/globals.ts';
-import {cloneTree, dispatchEvent, initialRender, rerenderRoot} from '#src/disreact/internal/lifecycle.ts';
+import {cloneTree, dispatchEvent, hydrateRoot, initialRender, rerenderRoot} from '#src/disreact/internal/lifecycle.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
+
+
+
+const nofunc = (node: Pragma): Pragma => {
+  if ('props' in node && node.props && typeof node.props === 'object') {
+    delete node.props['onclick'];
+  }
+
+  if ('children' in node && node.children.length > 0) {
+    node.children = node.children.map((child) => nofunc(child));
+  }
+
+  return node; // Return the modified node
+};
 
 
 
@@ -33,14 +48,25 @@ describe('lifecycle', () => {
     expect(clone).toEqual(rendered);
   });
 
-
   describe('given an initially rendered tree', () => {
     it('when rerendering the tree', () => {
       given.component = jsx(OmniPublic, {});
       given.initial   = initialRender(given.component);
       const actual    = rerenderRoot(given.initial);
 
-      expect(JSON.stringify(actual, null, 2)).toEqual(JSON.stringify(given.initial, null, 2));
+      expect(nofunc(actual)).toEqual(nofunc(given.initial));
+    });
+  });
+
+  describe('given empty hydration state', () => {
+    it('when hydrating a root', () => {
+      given.component = jsx(OmniPublic, {});
+      given.clone     = cloneTree(given.component);
+
+      const expected = initialRender(given.component);
+      const actual   = hydrateRoot(given.clone, {});
+
+      expect(nofunc(actual)).toStrictEqual(nofunc(expected));
     });
   });
 

@@ -112,11 +112,7 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
         id_full : '',
         props   : props,
         children: [],
-        render  : (next: any) => {
-          const output       = type(next);
-          const nextchildren = Array.isArray(output) ? output : [output];
-          return nextchildren;
-        },
+        render  : type,
       };
     }
 

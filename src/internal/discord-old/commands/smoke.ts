@@ -1,4 +1,6 @@
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
+import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
+import {synthesize} from '#src/disreact/index.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
 import type {IxD} from '#src/internal/discord.ts';
@@ -7,8 +9,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 
-export const SMOKE
-               = {
+export const SMOKE = {
   type       : 1,
   name       : 'smoke',
   description: 'devs & inner circle ONLY!!!',
