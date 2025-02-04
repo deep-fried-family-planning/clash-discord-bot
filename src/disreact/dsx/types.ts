@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any */
-import type {FiberState} from '#src/disreact/internal/hooks.ts';
+import type {Hooks} from '#src/disreact/internal/hooks.ts';
 import type {DAction} from '#src/disreact/runtime/enum/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
@@ -33,7 +33,8 @@ export type PragmaFunction = Common & {
   props   : Record<string, any>;
   children: Pragma[];
   render  : RenderFunction;
-  state?  : FiberState;
+  state?  : Hooks;
+  stack?  : Hooks['stack'];
 };
 
 export type Pragma =
@@ -408,7 +409,7 @@ export type DTMLMessageElement =
 export type DTMLModalElement = {
   custom_id?: s1t100;
   title     : s1t45;
-  onsubmit? : Handler<DAction.MessageSubmit>;
+  onsubmit? : Handler<DAction.SubmitClick>;
 };
 
 

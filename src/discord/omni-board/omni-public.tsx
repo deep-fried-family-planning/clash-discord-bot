@@ -20,7 +20,7 @@ export const OmniPublic = () => {
         <button
           primary
           label={'Start'}
-          // onClick={() => setPage(OmniPrivate)}
+          onclick={() => setNum(num + 1)}
         />
         <button secondary label={'Help'}>
           <emoji

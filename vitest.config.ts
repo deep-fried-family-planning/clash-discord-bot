@@ -11,7 +11,7 @@ export default defineConfig({
     expandSnapshotDiff: true,
     chaiConfig        : {
       includeStack     : true,
-      truncateThreshold: Infinity,
+      truncateThreshold: 0,
       showDiff         : true,
     },
     coverage: {
@@ -25,6 +25,9 @@ export default defineConfig({
         perFile: true,
       },
     },
-    logHeapUsage: true,
+    logHeapUsage   : true,
+    testTimeout    : 0,
+    hookTimeout    : 0,
+    teardownTimeout: 0,
   },
 });

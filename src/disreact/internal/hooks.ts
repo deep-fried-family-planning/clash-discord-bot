@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
-
-
-
 import type {PragmaFunction} from '#src/disreact/dsx/types.ts';
+import console from 'node:console';
 
 
-export type EventState = {
 
-};
-
-
-export type FiberState = {
+export type Hooks = {
   id        : string;
   pc        : number;
   stack     : any[];
@@ -23,7 +17,7 @@ export type FiberState = {
 
 export const emptyState = (
   id: string,
-): FiberState => ({
+): Hooks => ({
   id,
   pc      : 0,
   stack   : [],
@@ -35,8 +29,8 @@ export const emptyState = (
 
 
 
-const useState = (fiber: FiberState) => (initial: any) => {
-  const current = fiber.stack[fiber.pc++];
+const useState = (fiber: Hooks) => (initial: any) => {
+  const current = fiber.stack[fiber.pc];
 
   if (!current) {
     fiber.stack[fiber.pc] = {s: initial};
@@ -51,15 +45,22 @@ const useState = (fiber: FiberState) => (initial: any) => {
     else {
       state.s = next;
     }
+    console.log(state);
   };
+
+  fiber;
+
+  fiber.pc++;
+
+  console.log(fiber);
 
   return [state.s, setState];
 };
 
 
 
-const useReducer = (fiber: FiberState) => (reducer: any, initialState: any) => {
-  const current = fiber.stack[fiber.pc++];
+const useReducer = (fiber: Hooks) => (reducer: any, initialState: any) => {
+  const current = fiber.stack[fiber.pc];
 
   if (!current) {
     fiber.stack[fiber.pc] = {s: initialState};
@@ -71,13 +72,15 @@ const useReducer = (fiber: FiberState) => (reducer: any, initialState: any) => {
     state.s = reducer(state.s, action);
   };
 
+  fiber.pc++;
+
   return [state.s, dispatch];
 };
 
 
 // todo
-const useEffect = (fiber: FiberState) => (effect: any, deps?: any[]) => {
-  const current = fiber.stack[fiber.pc++];
+const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
+  const current = fiber.stack[fiber.pc];
 
   if (deps)
     for (const dep of deps) {
@@ -95,15 +98,18 @@ const useEffect = (fiber: FiberState) => (effect: any, deps?: any[]) => {
 
   if (fiber.rc === undefined)
     fiber.async.push(effect);
+
+
+  fiber.pc++;
 };
 
 
 // todo
-const useLayoutEffect = (fiber: FiberState) => () => {};
+const useLayoutEffect = (fiber: Hooks) => () => {};
 
 
 
-const usePage = (fiber: FiberState) => () => {
+const usePage = (fiber: Hooks) => () => {
   return {
     next: (next: PragmaFunction) => {
       fiber.nextpage = next.name;
@@ -116,7 +122,7 @@ const usePage = (fiber: FiberState) => () => {
 
 
 
-export const attachHooks = (fiber: FiberState) => ({
+export const attachHooks = (fiber: Hooks) => ({
   useState  : useState(fiber),
   useReducer: useReducer(fiber),
   useEffect : useEffect(fiber),
@@ -125,7 +131,7 @@ export const attachHooks = (fiber: FiberState) => ({
 
 
 // todo
-export const encodeHooks = (rec: Record<string, FiberState>): URLSearchParams => {
+export const encodeHooks = (rec: Record<string, Hooks>): URLSearchParams => {
   const search = new URLSearchParams();
   const states = Object.values(rec);
 
@@ -137,8 +143,8 @@ export const encodeHooks = (rec: Record<string, FiberState>): URLSearchParams =>
 
 
 // todo
-export const decodeHooks = (search: URLSearchParams): Record<string, FiberState> => {
-  const states = {} as Record<string, FiberState>;
+export const decodeHooks = (search: URLSearchParams): Record<string, Hooks> => {
+  const states = {} as Record<string, Hooks>;
 
   for (const [id, value] of search.entries()) {
     states[id] = JSON.parse(decodeURIComponent(value));
