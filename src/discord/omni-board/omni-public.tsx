@@ -1,5 +1,5 @@
 import {Header} from '#src/discord/omni-board/components/header.tsx';
-import {useEffect, useReducer, useState} from '#src/disreact/interface/hooks.ts';
+import {useEffect, useReducer, useState} from '#src/disreact/interface/hook.ts';
 import {E} from '#src/internal/pure/effect.ts';
 // import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 // import {usePage} from '#src/disreact/model/danger.ts';
