@@ -4,28 +4,15 @@ import {GlobalPages} from '#src/disreact/model/hooks/fiber-dispatch.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
-import {DiscordDOM} from '#src/disreact/internal/layer/DiscordDOM.ts';
+import {DiscordDOM} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
-import {DokenMemory} from '#src/disreact/internal/layer/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
 import {FiberDOM} from '#src/disreact/internal/layer/FiberDOM.ts';
 import {InteractionContext} from '#src/disreact/runtime/service/InteractionContext.ts';
 import {StaticDOM} from '#src/disreact/internal/layer/StaticDOM.ts';
 import {E, flow, L, Logger, LogLevel, pipe } from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 
-
-
-export const synthesize = E.fn('DisReact.synthesize')(function * (type: string | TagFunc) {
-  yield * InteractionContext.free();
-
-  const cloned = typeof type === 'string'
-    ? yield * StaticDOM.checkout(type, type)
-    : yield * StaticDOM.checkout(type.name, type.name);
-
-  const rendered = renderTree(cloned);
-
-  return yield * encodeInteraction(rendered);
-});
 
 export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interaction) {
   const ix        = yield * decodeInteraction(rest);

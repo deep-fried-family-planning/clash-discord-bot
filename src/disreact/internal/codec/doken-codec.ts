@@ -1,5 +1,5 @@
 import type {DecodedRoute} from '#src/disreact/internal/codec/route-codec.ts';
-import {DokenMemory} from '#src/disreact/internal/layer/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

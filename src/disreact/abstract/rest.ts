@@ -70,6 +70,8 @@ export type Interaction =
   | Omit<Discord.Interaction, 'data'> & {type: InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE}
   | Omit<Discord.Interaction, 'data'> & {type: InteractionType.PING};
 
+export type Ix = Interaction;
+
 type NotRow = Exclude<Component, ActionRow>;
 
 export const findTarget = (custom_id: string, components: Component[]): Button | SelectMenu | undefined => {
