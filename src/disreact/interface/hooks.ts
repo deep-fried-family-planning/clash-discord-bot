@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any */
 import type {RenderFn} from '#src/disreact/internal/types.ts';
-import {__hooks} from '#src/disreact/internal/globals.ts';
+import {__hooks} from '#src/disreact/internal/dsx/globals.ts';
 
 
 

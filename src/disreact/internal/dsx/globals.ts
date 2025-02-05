@@ -1,4 +1,4 @@
-import {attachHooks, emptyHooks} from '#src/disreact/internal/hooks.ts';
+import {attachHooks, emptyHooks} from '#src/disreact/internal/dsx/hooks.ts';
 import type {Hooks, IxCtx, IxId} from '#src/disreact/internal/types.ts';
 import {GlobalValue as GV} from 'effect';
 

@@ -5,7 +5,7 @@
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
     "jsx"                         : "react-jsx",
-    "jsxImportSource"             : "src/disreact",
+    "jsxImportSource"             : "src/disreact/interface",
     "isolatedModules"             : true,
     "esModuleInterop"             : true,
     "allowSyntheticDefaultImports": true,

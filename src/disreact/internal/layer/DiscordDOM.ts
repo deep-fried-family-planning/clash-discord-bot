@@ -1,6 +1,6 @@
 import type {Doken} from '#src/disreact/abstract/index.ts';
 import {Rest} from '#src/disreact/abstract/index.ts';
-import {DoNotLog} from '#src/disreact/internal/debug.ts';
+import {DoNotLog} from '#src/disreact/internal/codec/debug.ts';
 import {E, flow, L, pipe} from '#src/internal/pure/effect.ts';
 import {DiscordREST} from 'dfx';
 

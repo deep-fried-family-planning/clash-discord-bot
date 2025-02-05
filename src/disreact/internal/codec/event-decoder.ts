@@ -13,7 +13,7 @@ const unsupported = [
 
 
 
-export const makeDEvent = (rest: Rest.Interaction) => E.gen(function* () {
+export const decodeEvent = (rest: Rest.Interaction) => E.gen(function* () {
   if (unsupported.includes(rest.type)) {
     return yield * new Critical({why: '[Codec]: Unsupported interaction'});
   }
@@ -90,28 +90,4 @@ export const makeDEvent = (rest: Rest.Interaction) => E.gen(function* () {
   }
 
   return yield * new Critical({why: '[Codec]: Unsupported interaction'});
-});
-
-
-
-export const decodeDoken = () => E.gen(function * () {
-
-});
-
-
-
-export const decodeRoute = () => E.gen(function * () {
-
-});
-
-
-
-export const encodeMessage = () => E.gen(function * () {
-
-});
-
-
-
-export const encodeDialog = () => E.gen(function * () {
-
 });

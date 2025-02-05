@@ -1,10 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
 import {encode_denylist} from '#src/disreact/internal/dsx/config.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
+import type {Pragma} from '#src/disreact/internal/index.ts';
+
+
+export type EncodedMessage = {
+  content   : string;
+  embeds    : any[];
+  components: any[];
+  flags     : number;
+};
+export type EncodedDialog = {
+  custom_id : string;
+  title     : string;
+  components: any[];
+};
+export type EncodedRoot =
+  | EncodedMessage
+  | EncodedDialog;
 
 
 
-export const dsxencode = (node: any): any => {
+export const encodeDsx = (node: Pragma): EncodedRoot => {
   const next = unwrapFunctions(node);
 
   return next.map((n: any) => encodeInner(n));

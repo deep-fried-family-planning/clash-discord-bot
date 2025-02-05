@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unnecessary-condition */
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Pragma} from '#src/disreact/internal/types.ts';
-import {__free, __mallocnull} from '#src/disreact/internal/globals.ts';
-import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/lifecycle.ts';
-import {jsx} from '#src/disreact/jsx-runtime.ts';
+import {__free, __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/dsx/lifecycle.ts';
+import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 
 
 
@@ -46,14 +46,12 @@ describe('lifecycle', () => {
     expect(clone).toEqual(rendered);
   });
 
-  describe('given an initially rendered tree', () => {
-    it('when rerendering the tree', () => {
-      given.component = jsx(OmniPublic, {});
-      given.initial   = initialRender(given.component);
-      const actual    = rerenderRoot(given.initial);
+  it('when rerendering', () => {
+    given.component = jsx(OmniPublic, {});
+    given.initial   = initialRender(given.component);
+    const actual    = rerenderRoot(given.initial);
 
-      expect(nofunc(actual)).toEqual(nofunc(given.initial));
-    });
+    expect(nofunc(actual)).toEqual(nofunc(given.initial));
   });
 
   describe('given empty hydration state', () => {
@@ -92,7 +90,6 @@ describe('lifecycle', () => {
               "s": 0,
             },
           ],
-          "OmniPublic:0:message:0:Header:0": [],
         }
       `);
       expect(actualStacks).toMatchInlineSnapshot(`
@@ -102,7 +99,6 @@ describe('lifecycle', () => {
               "s": 1,
             },
           ],
-          "OmniPublic:0:message:0:Header:0": [],
         }
       `);
     });

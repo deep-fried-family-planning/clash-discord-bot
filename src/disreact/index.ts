@@ -7,7 +7,7 @@ import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traver
 import {DiscordDOM} from '#src/disreact/internal/layer/DiscordDOM.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
 import {DokenMemory} from '#src/disreact/internal/layer/DokenMemory.ts';
-import {FiberDOM} from '#src/disreact/runtime/service/FiberDOM.ts';
+import {FiberDOM} from '#src/disreact/internal/layer/FiberDOM.ts';
 import {InteractionContext} from '#src/disreact/runtime/service/InteractionContext.ts';
 import {StaticDOM} from '#src/disreact/internal/layer/StaticDOM.ts';
 import {E, flow, L, Logger, LogLevel, pipe } from '#src/internal/pure/effect.ts';

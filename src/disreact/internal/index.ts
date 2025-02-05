@@ -7,8 +7,8 @@ export {
   __get,
   __dismount,
   __hooks,
-} from './globals.ts';
-export * from './hooks.ts';
-export * from './lifecycle.ts';
+} from '#src/disreact/internal/dsx/globals.ts';
+export * from 'src/disreact/internal/dsx/hooks.ts';
+export * from 'src/disreact/internal/dsx/lifecycle.ts';
 export * from 'src/disreact/internal/todos.ts';
-export * from './debug.ts';
+export * from 'src/disreact/internal/codec/debug.ts';

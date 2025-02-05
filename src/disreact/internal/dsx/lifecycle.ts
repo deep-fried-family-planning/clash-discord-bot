@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment */
 import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
-import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/globals.ts';
-import type {T} from '#src/disreact/internal/ix/devent.ts';
+import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/dsx/globals.ts';
+import type {T} from '#src/disreact/abstract/event.ts';
 import type {Hooks, HooksById, StacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
@@ -310,6 +310,8 @@ export const collectStates = (node: Pragma, states: HooksById = {}): HooksById =
 
 export const reduceToStacks = (hooks: Record<string, Hooks>): StacksById => {
   return Object.fromEntries(
-    Object.entries(hooks).map(([key, value]) => [key, value.stack]),
+    Object.entries(hooks)
+      .filter(([_, value]) => value.stack.length)
+      .map(([key, value]) => [key, value.stack]),
   );
 };

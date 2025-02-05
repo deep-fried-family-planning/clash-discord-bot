@@ -1,12 +1,12 @@
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
+import {encodeDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
 import {dsx} from '#src/disreact/internal/dsx/index.ts';
-import {dsxencode} from '#src/disreact/internal/encode.ts';
-import { __mallocnull} from '#src/disreact/internal/globals.ts';
-import {initialRender} from '#src/disreact/internal/lifecycle.ts';
+import { __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
+import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
 import type {Pragma} from '#src/disreact/internal/types.ts';
-import {jsx} from '#src/disreact/jsx-runtime.ts';
+import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 
-describe('pragma', () => {
+describe('dsx', () => {
   it('renders intrinsic', () => {
     expect(jsx('embed')).toMatchInlineSnapshot(`
       {
@@ -25,7 +25,7 @@ describe('pragma', () => {
   it('encodes message', () => {
     __mallocnull();
     const rendered = initialRender(dsx(OmniPublic, {}) as Pragma);
-    expect(dsxencode(rendered)).toMatchInlineSnapshot(`
+    expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
           "components": [

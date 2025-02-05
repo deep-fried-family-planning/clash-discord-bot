@@ -1,6 +1,6 @@
 import {dsx} from '#src/disreact/internal/dsx/index.ts';
 import type {Pragma, RenderFn} from '#src/disreact/internal/types.ts';
-import {Critical} from '#src/disreact/internal/debug.ts';
+import {Critical} from '#src/disreact/internal/codec/debug.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 
