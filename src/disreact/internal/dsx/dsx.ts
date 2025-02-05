@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions */
-import type {Pragma} from '#src/disreact/dsx/types.ts';
+import type {Pragma} from '#src/disreact/internal/types.ts';
 
 
 

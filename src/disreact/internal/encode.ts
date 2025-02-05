@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
-import {encode_denylist} from '#src/disreact/dsx/config.ts';
-import {dtml} from '#src/disreact/dsx/index.ts';
+import {encode_denylist} from '#src/disreact/internal/dsx/config.ts';
+import {DTML} from '#src/disreact/internal/dsx/index.ts';
 
 
 
@@ -43,20 +43,20 @@ const encodeInner = (node: any): any => {
   let acc        = {} as any;
 
   switch (node.name) {
-    case dtml.command:
-    case dtml.param:
-    case dtml.choice: {
+    case DTML.command:
+    case DTML.param:
+    case DTML.choice: {
       acc = node.props;
       return acc;
     }
 
-    case dtml.buttons: {
+    case DTML.buttons: {
       acc.type       = 1;
       acc.components = children.button;
       return acc;
     }
 
-    case dtml.button: {
+    case DTML.button: {
       const {primary, secondary, success, danger, link, premium, ...props} = node.props;
       if (primary) acc.style = 1;
       if (secondary) acc.style = 2;
@@ -70,16 +70,16 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case dtml.menu: {
+    case DTML.menu: {
       return acc;
     }
 
 
-    case dtml.option: {
+    case DTML.option: {
       return acc;
     }
 
-    case dtml.value: {
+    case DTML.value: {
       const {user, role, channel, id} = node.props;
       if (user) acc.type = 'user';
       if (role) acc.type = 'role';
@@ -88,11 +88,11 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case dtml.emoji: {
+    case DTML.emoji: {
       return node.props;
     }
 
-    case dtml.text: {
+    case DTML.text: {
       const {paragraph, ...props} = node.props;
       if (paragraph) acc.type = 2;
       else acc.type = 1;
@@ -100,7 +100,7 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case dtml.message: {
+    case DTML.message: {
       children.embed ??= [];
       children.buttons ??= [];
       acc            = node.props;
@@ -110,31 +110,31 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case dtml.content: {
+    case DTML.content: {
       return acc;
     }
-    case dtml.modal: {
+    case DTML.modal: {
       return acc;
     }
-    case dtml.embed: {
+    case DTML.embed: {
       acc.title       = children.title[0];
       acc.description = children.description[0];
       return acc;
     }
-    case dtml.title:
+    case DTML.title:
       acc = children.string[0];
       return acc;
 
-    case dtml.description:
+    case DTML.description:
       acc = children.string[0];
       return acc;
 
-    case dtml.field:
-    case dtml.footer: {
+    case DTML.field:
+    case DTML.footer: {
       return acc;
     }
 
-    case dtml.string: {
+    case DTML.string: {
       return node.value;
     }
 
@@ -145,12 +145,17 @@ const encodeInner = (node: any): any => {
 
 
 const encodeProps = (props: any): any => {
-  if (!props) return {};
+  if (!props) {
+    return {};
+  }
+
   const acc = {} as any;
+
   for (const k of Object.keys(props as object)) {
     if (!(k in encode_denylist)) {
       acc[k] = props[k];
     }
   }
+
   return acc;
 };

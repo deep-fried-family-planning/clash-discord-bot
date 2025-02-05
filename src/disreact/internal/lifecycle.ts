@@ -1,12 +1,51 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment */
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/dsx/dattributes.ts';
-import {dsxid} from '#src/disreact/dsx/pragma.tsx';
-import type {Pragma, PragmaElement, PragmaFunction, PragmaText} from '#src/disreact/dsx/types.ts';
-import type {DEvent} from '#src/disreact/enum/devent.ts';
+import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
+import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/globals.ts';
-import type {Hooks} from '#src/disreact/internal/hooks.ts';
+import type {T} from '#src/disreact/internal/ix/devent.ts';
+import type {Hooks, HooksById, StacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
+
+
+
+export type RenderFn = (props: any) => any;
+
+type Common = {
+  index  : number;
+  name   : string;
+  id     : string;
+  id_step: string;
+  id_full: string;
+  isRoot?: boolean;
+};
+
+export type PragmaText = Common & {
+  kind : 'text';
+  name : 'string';
+  value: string;
+};
+
+export type PragmaElement = Common & {
+  kind    : 'intrinsic';
+  name    : keyof JSX.IntrinsicElements;
+  props   : Record<string, any>;
+  children: Pragma[];
+};
+
+export type PragmaFunction = Common & {
+  kind    : 'function';
+  props   : Record<string, any>;
+  children: Pragma[];
+  render  : RenderFn;
+  state?  : Hooks;
+  stack?  : Hooks['stack'];
+};
+
+export type Pragma =
+  | PragmaText
+  | PragmaElement
+  | PragmaFunction;
 
 
 
@@ -18,23 +57,11 @@ export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
   }
 
   if (node.kind === 'intrinsic') {
-    const {
-            children: _,
-            props,
-            ...rest
-          } = baseClone as PragmaElement;
+    const {children: _, props, ...rest} = baseClone as PragmaElement;
 
     const clone = structuredClone(rest);
 
-    const {
-            [onclick]       : __,
-            [onselect]      : ___,
-            [ondeselect]    : ____,
-            [onsubmit]      : ______,
-            [oninvoke]      : _______,
-            [onautocomplete]: ________,
-            ...restProps
-          } = props;
+    const {[onclick]: __, [onselect]: ___, [ondeselect]: ____, [onsubmit]: ______, [oninvoke]: _______, [onautocomplete]: ________, ...restProps} = props;
 
     const clonedProps = structuredClone(restProps);
 
@@ -92,7 +119,7 @@ export const initialRender = (node: Pragma, parent?: Pragma): Pragma => {
 
 
 
-export const dispatchEvent = (node: Pragma, event: DEvent, original: Pragma = node): Pragma => {
+export const dispatchEvent = (node: Pragma, event: T, original: Pragma = node): Pragma => {
   console.log('[dispatchEvent]', node.id_step);
   if ('props' in node) {
     if (node.id_step === event.id && node.props[event.type]) {
@@ -263,4 +290,26 @@ const setIds = (children: Pragma[], parent: Pragma) => {
     children[i]       = dsxid(children[i], parent);
   }
   return children;
+};
+
+
+
+export const collectStates = (node: Pragma, states: HooksById = {}): HooksById => {
+  if (node.kind === 'function' && node.state) {
+    states[node.state.id] = node.state;
+  }
+
+  if ('children' in node && Array.isArray(node.children)) {
+    for (const child of node.children) {
+      collectStates(child, states);
+    }
+  }
+
+  return states;
+};
+
+export const reduceToStacks = (hooks: Record<string, Hooks>): StacksById => {
+  return Object.fromEntries(
+    Object.entries(hooks).map(([key, value]) => [key, value.stack]),
+  );
 };

@@ -1,15 +1,15 @@
-import {Doken, NONE, PAGE, Rest, Tags} from '#src/disreact/runtime/enum/index.ts';
+import {Doken, NONE, PAGE, Rest } from '#src/disreact/runtime/enum/index.ts';
 import type {TagFunc} from '#src/disreact/model/types.ts';
 import {GlobalPages} from '#src/disreact/model/hooks/fiber-dispatch.ts';
 import {decodeHooks} from '#src/disreact/model/hook-state.ts';
 import type {DisReactNode} from '#src/disreact/model/node.ts';
 import {dismountTree, findNodeById, renderTree} from '#src/disreact/model/traversal.ts';
-import {DiscordDOM} from '#src/disreact/service/DiscordDOM.ts';
+import {DiscordDOM} from '#src/disreact/internal/layer/DiscordDOM.ts';
 import {decodeInteraction, encodeInteraction} from '#src/disreact/runtime/codec.ts';
-import {DokenCache} from '#src/disreact/service/DokenCache.ts';
-import {FiberDOM} from '#src/disreact/service/FiberDOM.ts';
-import {InteractionContext} from '#src/disreact/service/InteractionContext.ts';
-import {StaticDOM} from '#src/disreact/service/StaticDOM.ts';
+import {DokenMemory} from '#src/disreact/internal/layer/DokenMemory.ts';
+import {FiberDOM} from '#src/disreact/runtime/service/FiberDOM.ts';
+import {InteractionContext} from '#src/disreact/runtime/service/InteractionContext.ts';
+import {StaticDOM} from '#src/disreact/internal/layer/StaticDOM.ts';
 import {E, flow, L, Logger, LogLevel, pipe } from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 
@@ -51,12 +51,12 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
     if (currDoken.status === 'expired') {
       // yield * pipe(DiscordDOM.deferRender(restDoken), E.fork);
       yield * pipe(DiscordDOM.dismount(restDoken), E.fork);
-      yield * pipe(DokenCache.destroy(currDoken), E.fork);
+      yield * pipe(DokenMemory.destroy(currDoken), E.fork);
       return;
     }
     else {
       yield * pipe(DiscordDOM.dismount(currDoken), E.fork);
-      yield * pipe(DokenCache.destroy(currDoken), E.fork);
+      yield * pipe(DokenMemory.destroy(currDoken), E.fork);
       return;
     }
   }
@@ -92,8 +92,8 @@ export const respond = E.fn('DisReact.respond')(function * (rest: Rest.Interacti
     const encoded = yield * encodeInteraction(next, doken, root);
 
     yield * pipe(DiscordDOM.renderReply(doken, encoded), E.fork);
-    yield * pipe(DokenCache.save(doken), E.fork);
-    yield * pipe(DokenCache.destroy(currDoken), E.fork);
+    yield * pipe(DokenMemory.save(doken), E.fork);
+    yield * pipe(DokenMemory.destroy(currDoken), E.fork);
     return;
   }
 
@@ -150,9 +150,9 @@ export class DisReactDOM extends E.Tag('DisReact.DisReactDOM')<
     L.provideMerge(
       pipe(
         L.effect(this, disReactDOM()),
-        L.merge(DiscordDOM.singletonLayer),
+        L.merge(DiscordDOM.Live),
         L.merge(StaticDOM.singletonLayer(config.types)),
-        L.merge(DokenCache.singletonLayer),
+        L.merge(DokenMemory.singletonLayer),
       ),
     ),
   );

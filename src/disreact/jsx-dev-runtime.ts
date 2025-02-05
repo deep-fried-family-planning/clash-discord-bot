@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import {fragment, dsx, dsxs} from '#src/disreact/dsx/pragma.tsx';
+
+import {fragment, dsx, dsxs} from '#src/disreact/internal/dsx/dsx.ts';
 
 
 

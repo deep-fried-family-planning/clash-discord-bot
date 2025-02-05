@@ -1,7 +1,9 @@
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import {dsxencode} from '#src/disreact/dsx/encode.ts';
+import {dsx} from '#src/disreact/internal/dsx/index.ts';
+import {dsxencode} from '#src/disreact/internal/encode.ts';
 import { __mallocnull} from '#src/disreact/internal/globals.ts';
 import {initialRender} from '#src/disreact/internal/lifecycle.ts';
+import type {Pragma} from '#src/disreact/internal/types.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 
 describe('pragma', () => {
@@ -22,7 +24,7 @@ describe('pragma', () => {
 
   it('encodes message', () => {
     __mallocnull();
-    const rendered = initialRender(<OmniPublic/>);
+    const rendered = initialRender(dsx(OmniPublic, {}) as Pragma);
     expect(dsxencode(rendered)).toMatchInlineSnapshot(`
       [
         {

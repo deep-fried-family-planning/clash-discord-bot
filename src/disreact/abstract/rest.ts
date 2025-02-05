@@ -5,14 +5,14 @@ import {ButtonStyle, ChannelFlag, ChannelType, ComponentType, EventType, Interac
 
 export {
   Discord,
-  CallbackType,
-  InteractionType,
-  ComponentType,
-  MessageFlag,
-  ButtonStyle,
-  TextInputStyle,
-  ChannelType,
-  ChannelFlag,
+  CallbackType as Tx,
+  InteractionType as Rx,
+  ComponentType as Cx,
+  MessageFlag as Mx,
+  ButtonStyle as Bx,
+  TextInputStyle as Ts,
+  ChannelType as Ct,
+  ChannelFlag as Cf,
   EventType,
 };
 

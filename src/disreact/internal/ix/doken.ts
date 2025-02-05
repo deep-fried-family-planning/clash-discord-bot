@@ -1,6 +1,4 @@
-import {NONE, Rest} from '#src/disreact/runtime/enum/index.ts';
-
-
+import {NONE_STR, Rest} from '#src/disreact/abstract/index.ts';
 
 const TWO_SECONDS_MS      = 2 * 1000;
 const FOURTEEN_MINUTES_MS = 14 * 60 * 1000;
@@ -20,7 +18,7 @@ export type T = {
   token : string;
   ttl   : number;
   status: DokenStatus;
-  type  : Rest.CallbackType;
+  type  : Rest.Tx;
   flags : number;
 };
 
@@ -29,8 +27,8 @@ const deferTTL   = () => Date.now() + FOURTEEN_MINUTES_MS;
 
 export const makeEmpty = (): T => ({
   app   : '',
-  id    : NONE,
-  token : NONE,
+  id    : NONE_STR,
+  token : NONE_STR,
   ttl   : 0,
   status: 'none',
   type  : Rest.DEFER_SOURCE,
@@ -80,19 +78,19 @@ export const encode = (doken?: T): TDokenEncoded => doken
     flags: `${doken.flags}`,
   }
   : {
-    id   : NONE,
-    token: NONE,
+    id   : NONE_STR,
+    token: NONE_STR,
     ttl  : '0',
     type : '0',
     flags: '0',
   };
 
 export const decode = (encoded: TDokenEncoded): T => invalidateTTL({
-  app   : NONE,
+  app   : NONE_STR,
   id    : encoded.id,
   token : encoded.token,
   ttl   : parseInt(encoded.ttl),
   status: 'deferred',
-  type  : parseInt(encoded.type) as unknown as Rest.CallbackType,
+  type  : parseInt(encoded.type) as unknown as Rest.Tx,
   flags : parseInt(encoded.flags),
 });

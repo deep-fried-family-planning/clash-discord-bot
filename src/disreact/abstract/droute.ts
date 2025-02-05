@@ -1,5 +1,4 @@
-import {NONE, Rest} from '#src/disreact/runtime/enum/index.ts';
-import {DokenCache} from '#src/disreact/service/DokenCache.ts';
+import {DokenMemory} from '#src/disreact/internal/layer/DokenMemory.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {rec} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -61,7 +60,7 @@ const decodePath = (input: string) => E.gen(function * () {
   yield * E.logTrace('params', params);
 
   if (params.id !== NONE) {
-    yield * E.fork(DokenCache.lookup(params.id));
+    yield * E.fork(DokenMemory.lookup(params.id));
   }
   return params;
 });

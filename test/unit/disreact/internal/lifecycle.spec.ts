@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unnecessary-condition */
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import type {Pragma} from '#src/disreact/dsx/types.ts';
+import type {Pragma} from '#src/disreact/internal/types.ts';
 import {__free, __mallocnull} from '#src/disreact/internal/globals.ts';
-import {cloneTree, dispatchEvent, hydrateRoot, initialRender, rerenderRoot} from '#src/disreact/internal/lifecycle.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/lifecycle.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 
 
@@ -16,7 +16,7 @@ const nofunc = (node: Pragma): Pragma => {
     node.children = node.children.map((child) => nofunc(child));
   }
 
-  return node; // Return the modified node
+  return node;
 };
 
 
@@ -29,9 +29,7 @@ describe('lifecycle', () => {
     __mallocnull();
   });
 
-  afterEach(() => {
-    __free();
-  });
+  afterEach(__free);
 
   it('when cloning a node', () => {
     given.component = jsx(OmniPublic, {});
@@ -84,19 +82,28 @@ describe('lifecycle', () => {
       const actual     = dispatchEvent(given.initial, given.event);
       const rerendered = rerenderRoot(actual);
 
-      expect(before.state.stack).toMatchInlineSnapshot(`
-        [
-          {
-            "s": 0,
-          },
-        ]
+      const beforeStacks = reduceToStacks(collectStates(before));
+      const actualStacks = reduceToStacks(collectStates(rerendered));
+
+      expect(beforeStacks).toMatchInlineSnapshot(`
+        {
+          "OmniPublic:0": [
+            {
+              "s": 0,
+            },
+          ],
+          "OmniPublic:0:message:0:Header:0": [],
+        }
       `);
-      expect(rerendered.state.stack).toMatchInlineSnapshot(`
-        [
-          {
-            "s": 1,
-          },
-        ]
+      expect(actualStacks).toMatchInlineSnapshot(`
+        {
+          "OmniPublic:0": [
+            {
+              "s": 1,
+            },
+          ],
+          "OmniPublic:0:message:0:Header:0": [],
+        }
       `);
     });
 

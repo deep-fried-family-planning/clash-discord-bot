@@ -11,6 +11,7 @@ export const text        = 'text';
 export const message     = 'message';
 export const content     = 'content';
 export const modal       = 'modal';
+export const dialog      = 'dialog';
 export const embed       = 'embed';
 export const title       = 'title';
 export const description = 'description';

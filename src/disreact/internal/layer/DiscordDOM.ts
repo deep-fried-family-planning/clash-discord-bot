@@ -1,8 +1,8 @@
+import type {Doken} from '#src/disreact/abstract/index.ts';
+import {Rest} from '#src/disreact/abstract/index.ts';
 import {DoNotLog} from '#src/disreact/internal/debug.ts';
-import type {Doken} from '#src/disreact/runtime/enum/index.ts';
-import {Rest} from '#src/disreact/runtime/enum/index.ts';
 import {E, flow, L, pipe} from '#src/internal/pure/effect.ts';
-import {DiscordREST} from 'dfx/DiscordREST';
+import {DiscordREST} from 'dfx';
 
 
 
@@ -22,9 +22,11 @@ const make = pipe(DiscordREST, E.map((rest) => {
   };
 }));
 
+
+
 export class DiscordDOM extends E.Tag('DisReact.DiscordDOM')<
   DiscordDOM,
   E.Effect.Success<typeof make>
 >() {
-  static singletonLayer = L.effect(this, make);
+  static Live = L.effect(this, make);
 }

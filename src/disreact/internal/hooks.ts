@@ -1,21 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
-import type {PragmaFunction, RenderFunction} from '#src/disreact/dsx/types.ts';
-import console from 'node:console';
+import type {Hooks, PragmaFunction, RenderFn} from '#src/disreact/internal/types.ts';
 
 
 
-export type Hooks = {
-  id        : string;
-  pc        : number;
-  stack     : any[];
-  sync      : any[];
-  async     : any[];
-  component?: any;
-  rc        : number;
-  nextpage? : null | string;
-};
-
-export const emptyState = (
+export const emptyHooks = (
   id: string,
 ): Hooks => ({
   id,
@@ -45,14 +33,9 @@ const useState = (fiber: Hooks) => (initial: any) => {
     else {
       state.s = next;
     }
-    console.log(state);
   };
 
-  fiber;
-
   fiber.pc++;
-
-  console.log(fiber);
 
   return [state.s, setState];
 };
@@ -96,8 +79,9 @@ const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
 
   const state = fiber.stack[fiber.pc];
 
-  if (fiber.rc === undefined)
+  if (fiber.rc === undefined) {
     fiber.async.push(effect);
+  }
 
 
   fiber.pc++;
@@ -108,8 +92,12 @@ const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
 const useLayoutEffect = (fiber: Hooks) => () => {};
 
 
+const useDoken = (fiber: Hooks) => () => {
 
-const usePage = (fiber: Hooks) => (fns: RenderFunction[]) => {
+};
+
+
+const usePage = (fiber: Hooks) => (fns: RenderFn[]) => {
   return {
     next: (next: PragmaFunction) => {
       fiber.nextpage = next.name;
@@ -151,20 +139,3 @@ export const decodeHooks = (search: URLSearchParams): Record<string, Hooks> => {
   }
   return states;
 };
-
-
-
-encodeHooks();
-(() => {})();
-(() => {}).name = '';
-encodeHooks;
-
-
-// another file
-
-
-encodeHooks;
-
-
-
-encodeHooks.name = 'AvgYE';

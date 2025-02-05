@@ -1,16 +1,14 @@
-import {attachHooks, emptyState, type Hooks} from '#src/disreact/internal/hooks.ts';
+import {attachHooks, emptyHooks} from '#src/disreact/internal/hooks.ts';
+import type {Hooks, IxCtx, IxId} from '#src/disreact/internal/types.ts';
 import {GlobalValue as GV} from 'effect';
-import console from 'node:console';
 
 
 
-export const __null = Symbol('DisReact.__null');
-
-export const __ptr = {current: null as unknown as symbol};
-
+export const __null     = Symbol('DisReact.__null');
+export const __ptr      = {current: null as unknown as IxId};
 export const __dispatch = {current: null as null | ReturnType<typeof attachHooks>};
-
-export const __state = GV.globalValue(Symbol.for('DisReact.__hooks'), () => new WeakMap<symbol, Map<string, Hooks>>());
+export const __state    = GV.globalValue(Symbol.for('DisReact.__state'), () => new WeakMap<IxId, Map<string, Hooks>>());
+export const __ix       = GV.globalValue(Symbol.for('DisReact.__ix'), () => new WeakMap<IxId, IxCtx>());
 
 
 
@@ -38,6 +36,8 @@ export const __pointto = (symbol: symbol) => {
   __ptr.current = symbol;
 };
 
+
+
 export const __prep = (id: string, state?: Hooks) => {
   console.debug('[__prep]', id);
   const states = __state.get(__ptr.current);
@@ -48,7 +48,7 @@ export const __prep = (id: string, state?: Hooks) => {
 
   if (!state) {
     console.debug('[__prep]: no state', id);
-    const next = emptyState(id);
+    const next = emptyHooks(id);
     states.set(id, next);
     __dispatch.current = attachHooks(next);
     return next;
@@ -64,7 +64,7 @@ export const __prep = (id: string, state?: Hooks) => {
 export const __get = (id: string) => {
   console.debug('[__get]', id);
   __dispatch.current = null;
-  const states = __state.get(__ptr.current);
+  const states       = __state.get(__ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -82,13 +82,13 @@ export const __mount = (id: string) => {
   if (!states) {
     throw new Error('Unregistered interaction');
   }
-  return states.set(id, emptyState(id));
+  return states.set(id, emptyHooks(id));
 };
 
 export const __dismount = (id: string) => {
   console.debug('[dismount]', id);
   __dispatch.current = null;
-  const states = __state.get(__ptr.current);
+  const states       = __state.get(__ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
