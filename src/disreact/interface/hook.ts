@@ -16,6 +16,10 @@ export const useEffect = (effect: any, deps: any[]) => {
   __hooks().useEffect(effect, deps);
 };
 
+export const useInteraction = () => {
+  return;
+};
+
 export const usePage = (fns: RenderFn[]) => {
   return __hooks().usePage(fns);
 };

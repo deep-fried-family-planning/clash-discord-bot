@@ -13,25 +13,22 @@ export type LocalDokenMemoryConfig = {
 
 
 export const makeLocalDokenMemory = (config: LocalDokenMemoryConfig) => pipe(
-  L.effect(
-    DokenMemory,
-    E.gen(function * () {
-      const cache = yield * Cache.make({
-        capacity  : config.capacity ?? 1000,
-        timeToLive: config.timeToLive ?? '12 minutes',
-        lookup    : () => E.succeed(Doken.makeEmpty()),
-      });
+  L.effect(DokenMemory, E.gen(function * () {
+    const cache = yield * Cache.make({
+      capacity  : config.capacity ?? 1000,
+      timeToLive: config.timeToLive ?? '12 minutes',
+      lookup    : () => E.succeed(Doken.makeEmpty()),
+    });
 
-      return {
-        kind   : 'local' as const,
-        save   : (doken) => cache.set(doken.id, doken),
-        load   : (id) => cache.get(id),
-        free   : (id) => cache.invalidate(id),
-        memSave: (doken) => cache.set(doken.id, doken),
-        memLoad: (id) => cache.get(id),
-        memFree: (id) => cache.invalidate(id),
-      };
-    }),
-  ),
+    return {
+      kind   : 'local' as const,
+      save   : (doken) => cache.set(doken.id, doken),
+      load   : (id) => cache.get(id),
+      free   : (id) => cache.invalidate(id),
+      memSave: (doken) => cache.set(doken.id, doken),
+      memLoad: (id) => cache.get(id),
+      memFree: (id) => cache.invalidate(id),
+    };
+  })),
   L.memoize,
 );

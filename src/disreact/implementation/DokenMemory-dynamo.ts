@@ -3,9 +3,10 @@ import {DokenMemoryError} from '#src/disreact/interface/error.ts';
 import {DokenMemory} from '#src/disreact/interface/service.ts';
 import {C, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Console, Exit} from 'effect';
+import {Exit} from 'effect';
 
 
+const asCause = E.catchAll((e: Error) => new DokenMemoryError({cause: e}));
 
 const makeDokenKey = (id: string) => ({
   pk: `t-${id}`,
@@ -14,68 +15,65 @@ const makeDokenKey = (id: string) => ({
 
 
 
-const cacheSpec = (TableName: string) => C.makeWith({
-  capacity: 1000,
+const make = (TableName: string) => E.gen(function * () {
+  const dynamo = yield * DynamoDBDocument;
 
-  lookup: (id: string) => E.gen(function * () {
-    const resp = yield * pipe(
-      DynamoDBDocument.get({
-        TableName,
-        Key: makeDokenKey(id),
-      }),
-      E.catchAll(() => E.fail(new DokenMemoryError())),
-    );
+  const ddbPut = (d: Doken.T) => pipe(
+    dynamo.put({
+      TableName,
+      Item: {...makeDokenKey(d.id), ...d},
+    }),
+    asCause,
+  );
 
-    if (resp.Item) {
-      return resp.Item as Doken.T;
-    }
+  const ddbGet = (id: string) => pipe(
+    dynamo.get({
+      TableName,
+      Key: makeDokenKey(id),
+    }),
+    asCause,
+    E.map(({Item}) => Item ? Item as Doken.T : Doken.makeEmpty()),
+  );
 
-    return Doken.makeEmpty();
-  }),
+  const ddbDelete = (id: string) => pipe(
+    dynamo.delete({
+      TableName,
+      Key: makeDokenKey(id),
+    }),
+    asCause,
+  );
 
-  timeToLive: (exit) => {
-    if (Exit.isFailure(exit)) {
-      return '0 millis' as const;
-    }
+  const cache = yield * C.makeWith({
+    capacity  : 1000,
+    lookup    : ddbGet,
+    timeToLive: Exit.match({
+      onFailure: () => '0 millis',
+      onSuccess: (d) => `${d.ttl - Date.now()} millis` as const,
+    }),
+  });
 
-    return `${exit.value.ttl - Date.now()} millis` as const;
-  },
+  const save    = (d: Doken.T) => cache.set(d.id, d).pipe(E.tap(ddbPut(d)));
+  const load    = (id: string) => cache.get(id);
+  const free    = (id: string) => cache.invalidate(id).pipe(E.tap(ddbDelete(id)));
+  const memLoad = (id: string) => cache.contains(id).pipe(E.flatMap((has) => has ? cache.get(id) : E.succeed(Doken.makeEmpty())));
+  const memFree = (id: string) => cache.invalidate(id);
+  const memSave = (d: Doken.T) => cache.set(d.id, d);
+
+  return {
+    kind: 'dynamo' as const,
+    load,
+    memLoad,
+    free,
+    memFree,
+    save,
+    memSave,
+  };
 });
 
 
 
-export const makeDynamoDokenMemory = (TableName: string) => pipe(
-  L.effect(DokenMemory, E.gen(function * () {
-    const cache = yield * cacheSpec(TableName);
-
-    return {
-      kind: 'dynamo' as const,
-      save: (doken: Doken.T) => pipe(
-        cache.set(doken.id, doken),
-        E.tap(DynamoDBDocument.put({TableName, Item: {...makeDokenKey(doken.id), ...doken}})),
-      ),
-      load: (id: string) => cache.get(id).pipe(E.tap(() => cache.cacheStats.pipe(E.flatMap(Console.log)))),
-      free: (id) => pipe(
-        cache.invalidate(id),
-        E.tap(DynamoDBDocument.delete({
-          TableName,
-          Key: makeDokenKey(id),
-        })),
-      ),
-      memSave: (doken: Doken.T) => cache.set(doken.id, doken),
-      memLoad: (id) => cache.get(id),
-      memFree: (id) => cache.invalidate(id),
-    };
-  })),
+export const makeDokenMemoryDynamo = (TableName: string) => pipe(
+  L.effect(DokenMemory, make(TableName)),
   L.provide(DynamoDBDocument.defaultLayer),
   L.memoize,
 );
-
-
-
-// export class DokenMemory extends E.Tag('DisReact.DokenMemory')<
-//   DokenMemory,
-//   EAR<typeof dynamo>
-// >() {
-//   static makeLayer = (TableName: string) => L.effect(this, dynamo(TableName));
-// }

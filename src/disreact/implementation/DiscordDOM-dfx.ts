@@ -1,5 +1,6 @@
 import type {Doken} from '#src/disreact/abstract/index.ts';
 import {Rest} from '#src/disreact/abstract/index.ts';
+import {DiscordDOM} from '#src/disreact/interface/service.ts';
 import {DoNotLog} from '#src/disreact/internal/codec/debug.ts';
 import {E, flow, L, pipe} from '#src/internal/pure/effect.ts';
 import {DiscordREST} from 'dfx';
@@ -12,21 +13,15 @@ const make = pipe(DiscordREST, E.map((rest) => {
   const Edit   = flow(rest.editOriginalInteractionResponse, DoNotLog);
 
   return {
-    acknowledge: (doken: Doken.T) => Create(doken.id, doken.token, {type: Rest.DEFER_UPDATE}),
-    defer      : (doken: Doken.T) => Create(doken.id, doken.token, doken.flags === 0 ? {type: doken.type} : {type: doken.type, data: {flags: Rest.EPHEMERAL}}),
-    create     : (doken: Doken.T, encoded: Rest.Response) => Create(doken.id, doken.token, {type: doken.type, data: encoded}),
-    reply      : (doken: Doken.T, encoded: Rest.Response) => Edit(doken.app, doken.token, encoded),
-    update     : (doken: Doken.T, encoded: Rest.Message) => Edit(doken.app, doken.token, encoded),
-    dismount   : (doken: Doken.T) => Delete(doken.app, doken.token),
-    render     : (channel_id: string) => rest.createMessage(channel_id),
+    acknowledge: (d: Doken.T) => Create(d.id, d.token, {type: Rest.DEFER_UPDATE}),
+    defer      : (d: Doken.T) => Create(d.id, d.token, d.flags === 0 ? {type: d.type} : {type: d.type, data: {flags: Rest.EPHEMERAL}}),
+    create     : (d: Doken.T, encoded: Rest.Response) => Create(d.id, d.token, {type: d.type, data: encoded}),
+    reply      : (d: Doken.T, encoded: Rest.Response) => Edit(d.app, d.token, encoded),
+    update     : (d: Doken.T, encoded: Rest.Message) => Edit(d.app, d.token, encoded),
+    dismount   : (d: Doken.T) => Delete(d.app, d.token),
+    // render     : (channel_id: string) => rest.createMessage(channel_id),
   };
 }));
 
 
-
-export class DiscordDOM extends E.Tag('DisReact.DiscordDOM')<
-  DiscordDOM,
-  E.Effect.Success<typeof make>
->() {
-  static Live = L.effect(this, make);
-}
+export const makeDiscordDOMDFX = L.effect(DiscordDOM, make);

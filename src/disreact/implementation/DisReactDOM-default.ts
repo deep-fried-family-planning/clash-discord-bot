@@ -1,1 +1,1 @@
-export const makeDefaultDisReactDOM = () => {};
+export const makeDisReactDOMDefault = () => {};

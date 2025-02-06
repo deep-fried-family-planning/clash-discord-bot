@@ -4,51 +4,42 @@ const TWO_SECONDS_MS      = 2 * 1000;
 const FOURTEEN_MINUTES_MS = 14 * 60 * 1000;
 const TWO_MINUTES_MS      = 2 * 60 * 1000;
 
-export type DokenStatus =
-  | 'active'
-  | 'deferred'
-  | 'deleted'
-  | 'done'
-  | 'expired'
-  | 'none';
-
 export type T = {
-  app   : string;
-  id    : string;
-  token : string;
-  ttl   : number;
-  status: DokenStatus;
-  type  : Rest.Tx;
-  flags : number;
+  app  : string;
+  id   : string;
+  token: string;
+  ttl  : number;
+  type : Rest.Tx;
+  flags: number;
 };
 
-const initialTTL = () => Date.now() + TWO_SECONDS_MS;
-const deferTTL   = () => Date.now() + FOURTEEN_MINUTES_MS;
+export type TEncoded = {
+  id   : string;
+  token: string;
+  ttl  : string;
+  type : string;
+  flags: string;
+};
+
+export const initialTTL = () => Date.now() + TWO_SECONDS_MS;
+export const deferTTL   = () => Date.now() + FOURTEEN_MINUTES_MS;
 
 export const makeEmpty = (): T => ({
-  app   : '',
-  id    : NONE_STR,
-  token : NONE_STR,
-  ttl   : 0,
-  status: 'none',
-  type  : Rest.DEFER_SOURCE,
-  flags : 0,
+  app  : '',
+  id   : NONE_STR,
+  token: NONE_STR,
+  ttl  : 0,
+  type : Rest.DEFER_SOURCE,
+  flags: 0,
 });
 
 export const makeFromRest = (rest: Rest.Interaction): T => ({
-  app   : rest.application_id,
-  id    : rest.id,
-  token : rest.token,
-  status: 'active',
-  type  : Rest.DEFER_SOURCE,
-  ttl   : initialTTL(),
-  flags : 0,
-});
-
-export const makeDeferred = (doken: T): T => ({
-  ...doken,
-  status: 'deferred',
-  ttl   : deferTTL(),
+  app  : rest.application_id,
+  id   : rest.id,
+  token: rest.token,
+  type : Rest.DEFER_SOURCE,
+  ttl  : initialTTL(),
+  flags: 0,
 });
 
 export const invalidateTTL = (doken: T): T => {
@@ -61,15 +52,7 @@ export const invalidateTTL = (doken: T): T => {
   };
 };
 
-type TDokenEncoded = {
-  id   : string;
-  token: string;
-  ttl  : string;
-  type : string;
-  flags: string;
-};
-
-export const encode = (doken?: T): TDokenEncoded => doken
+export const encode = (doken?: T): TEncoded => doken
   ? {
     id   : doken.id,
     token: doken.token,
@@ -85,7 +68,7 @@ export const encode = (doken?: T): TDokenEncoded => doken
     flags: '0',
   };
 
-export const decode = (encoded: TDokenEncoded): T => invalidateTTL({
+export const decode = (encoded: TEncoded): T => invalidateTTL({
   app   : NONE_STR,
   id    : encoded.id,
   token : encoded.token,
