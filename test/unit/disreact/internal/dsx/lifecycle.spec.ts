@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unnecessary-condition */
-import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Pragma} from '#src/disreact/internal/types.ts';
 import {__free, __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
 import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/dsx/lifecycle.ts';
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 
 
@@ -32,14 +32,14 @@ describe('lifecycle', () => {
   afterEach(__free);
 
   it('when cloning a node', () => {
-    given.component = jsx(OmniPublic, {});
+    given.component = jsx(TestMessage, {});
     const clone     = cloneTree(given.component);
 
     expect(clone).toEqual(given.component);
   });
 
   it('when cloning a tree', () => {
-    given.component = jsx(OmniPublic, {});
+    given.component = jsx(TestMessage, {});
     const rendered  = initialRender(given.component);
     const clone     = cloneTree(rendered);
 
@@ -47,7 +47,7 @@ describe('lifecycle', () => {
   });
 
   it('when rerendering', () => {
-    given.component = jsx(OmniPublic, {});
+    given.component = jsx(TestMessage, {});
     given.initial   = initialRender(given.component);
     const actual    = rerenderRoot(given.initial);
 
@@ -56,7 +56,7 @@ describe('lifecycle', () => {
 
   describe('given empty hydration state', () => {
     it('when hydrating a root', () => {
-      given.component = jsx(OmniPublic, {});
+      given.component = jsx(TestMessage, {});
       given.clone     = cloneTree(given.component);
 
       const expected = initialRender(given.component);
@@ -68,7 +68,7 @@ describe('lifecycle', () => {
 
   describe('given an interaction event', () => {
     it('when dispatching an event', () => {
-      given.component = jsx(OmniPublic, {});
+      given.component = jsx(TestMessage, {});
       given.clone     = cloneTree(given.component);
       given.initial   = rerenderRoot(initialRender(given.clone));
       given.event     = {
@@ -85,7 +85,7 @@ describe('lifecycle', () => {
 
       expect(beforeStacks).toMatchInlineSnapshot(`
         {
-          "OmniPublic:0": [
+          "TestMessage:0": [
             {
               "s": 0,
             },
@@ -94,7 +94,7 @@ describe('lifecycle', () => {
       `);
       expect(actualStacks).toMatchInlineSnapshot(`
         {
-          "OmniPublic:0": [
+          "TestMessage:0": [
             {
               "s": 1,
             },
@@ -106,7 +106,7 @@ describe('lifecycle', () => {
 
     describe('given event.id does not match any node.id', () => {
       beforeEach(() => {
-        given.component = jsx(OmniPublic, {});
+        given.component = jsx(TestMessage, {});
         given.clone     = cloneTree(given.component);
         given.initial   = rerenderRoot(initialRender(given.clone));
         given.event     = {
@@ -125,7 +125,7 @@ describe('lifecycle', () => {
 
     describe('given event.type is not in any node.props', () => {
       it('when dispatching an event', () => {
-        given.component  = jsx(OmniPublic, {});
+        given.component  = jsx(TestMessage, {});
         given.clone      = cloneTree(given.component);
         given.initial    = rerenderRoot(initialRender(given.clone));
         given.event      = {
@@ -141,18 +141,18 @@ describe('lifecycle', () => {
 
 
   it('when rendering an initial tree', () => {
-    given.component = jsx(OmniPublic, {});
+    given.component = jsx(TestMessage, {});
     const clone     = cloneTree(given.component);
     const render    = initialRender(clone);
 
     expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
       "{
         "kind": "function",
-        "name": "OmniPublic",
+        "name": "TestMessage",
         "index": 0,
-        "id": "OmniPublic:0",
-        "id_step": "OmniPublic:0",
-        "id_full": "OmniPublic:0",
+        "id": "TestMessage:0",
+        "id_step": "TestMessage:0",
+        "id_full": "TestMessage:0",
         "props": {},
         "isRoot": true,
         "children": [
@@ -161,8 +161,8 @@ describe('lifecycle', () => {
             "name": "message",
             "index": 0,
             "id": "message:0",
-            "id_step": "OmniPublic:0:message:0",
-            "id_full": "OmniPublic:0:message:0",
+            "id_step": "TestMessage:0:message:0",
+            "id_full": "TestMessage:0:message:0",
             "props": {
               "public": true
             },
@@ -173,7 +173,7 @@ describe('lifecycle', () => {
                 "index": 0,
                 "id": "Header:0",
                 "id_step": "message:0:Header:0",
-                "id_full": "OmniPublic:0:message:0:Header:0",
+                "id_full": "TestMessage:0:message:0:Header:0",
                 "props": {
                   "title": "Omni Board",
                   "description": "V2 - JSX Pragma"
@@ -185,7 +185,7 @@ describe('lifecycle', () => {
                     "index": 0,
                     "id": "embed:0",
                     "id_step": "Header:0:embed:0",
-                    "id_full": "OmniPublic:0:message:0:Header:0:embed:0",
+                    "id_full": "TestMessage:0:message:0:Header:0:embed:0",
                     "props": {},
                     "children": [
                       {
@@ -194,14 +194,14 @@ describe('lifecycle', () => {
                         "index": 0,
                         "id": "title:0",
                         "id_step": "embed:0:title:0",
-                        "id_full": "OmniPublic:0:message:0:Header:0:embed:0:title:0",
+                        "id_full": "TestMessage:0:message:0:Header:0:embed:0:title:0",
                         "props": {},
                         "children": [
                           {
                             "kind": "text",
                             "name": "string",
                             "id_step": "title:0:string:0",
-                            "id_full": "OmniPublic:0:message:0:Header:0:embed:0:title:0:string:0",
+                            "id_full": "TestMessage:0:message:0:Header:0:embed:0:title:0:string:0",
                             "value": "Omni Board",
                             "index": 0,
                             "id": "string:0"
@@ -214,14 +214,14 @@ describe('lifecycle', () => {
                         "index": 1,
                         "id": "description:1",
                         "id_step": "embed:0:description:1",
-                        "id_full": "OmniPublic:0:message:0:Header:0:embed:0:description:1",
+                        "id_full": "TestMessage:0:message:0:Header:0:embed:0:description:1",
                         "props": {},
                         "children": [
                           {
                             "kind": "text",
                             "name": "string",
                             "id_step": "description:1:string:0",
-                            "id_full": "OmniPublic:0:message:0:Header:0:embed:0:description:1:string:0",
+                            "id_full": "TestMessage:0:message:0:Header:0:embed:0:description:1:string:0",
                             "value": "V2 - JSX Pragma",
                             "index": 0,
                             "id": "string:0"
@@ -232,7 +232,7 @@ describe('lifecycle', () => {
                   }
                 ],
                 "state": {
-                  "id": "OmniPublic:0:message:0:Header:0",
+                  "id": "TestMessage:0:message:0:Header:0",
                   "pc": 0,
                   "stack": [],
                   "sync": [],
@@ -248,7 +248,7 @@ describe('lifecycle', () => {
                 "index": 1,
                 "id": "buttons:1",
                 "id_step": "message:0:buttons:1",
-                "id_full": "OmniPublic:0:message:0:buttons:1",
+                "id_full": "TestMessage:0:message:0:buttons:1",
                 "props": {},
                 "children": [
                   {
@@ -257,7 +257,7 @@ describe('lifecycle', () => {
                     "index": 0,
                     "id": "button:0",
                     "id_step": "buttons:1:button:0",
-                    "id_full": "OmniPublic:0:message:0:buttons:1:button:0",
+                    "id_full": "TestMessage:0:message:0:buttons:1:button:0",
                     "props": {
                       "primary": true,
                       "label": "Start"
@@ -270,7 +270,7 @@ describe('lifecycle', () => {
                     "index": 1,
                     "id": "button:1",
                     "id_step": "buttons:1:button:1",
-                    "id_full": "OmniPublic:0:message:0:buttons:1:button:1",
+                    "id_full": "TestMessage:0:message:0:buttons:1:button:1",
                     "props": {
                       "secondary": true,
                       "label": "Help"
@@ -282,7 +282,7 @@ describe('lifecycle', () => {
                         "index": 0,
                         "id": "emoji:0",
                         "id_step": "button:1:emoji:0",
-                        "id_full": "OmniPublic:0:message:0:buttons:1:button:1:emoji:0",
+                        "id_full": "TestMessage:0:message:0:buttons:1:button:1:emoji:0",
                         "props": {
                           "name": "ope"
                         },
@@ -296,7 +296,7 @@ describe('lifecycle', () => {
           }
         ],
         "state": {
-          "id": "OmniPublic:0",
+          "id": "TestMessage:0",
           "pc": 0,
           "stack": [
             {

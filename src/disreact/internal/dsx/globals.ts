@@ -1,5 +1,8 @@
+import type {Rest} from '#src/disreact/abstract/index.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/internal/dsx/hooks.ts';
+import {Safety} from '#src/disreact/internal/layer/Safety.ts';
 import type {Hooks, IxCtx, IxId} from '#src/disreact/internal/types.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {GlobalValue as GV} from 'effect';
 
 
@@ -15,6 +18,11 @@ export const __ix       = GV.globalValue(Symbol.for('DisReact.__ix'), () => new 
 export const __mallocnull = () => {
   console.debug('[__mallocnull]');
   __state.set(__null, new Map());
+  __ix.set(__null, {
+    rest: {} as unknown as Rest.Interaction,
+    root: '',
+    next: '',
+  });
   __ptr.current = __null;
 };
 
@@ -32,8 +40,27 @@ export const __free = () => {
   __ptr.current = __null;
 };
 
-export const __pointto = (symbol: symbol) => {
+export const __acquire = (symbol: symbol) => Safety.limit(E.sync(() => {
   __ptr.current = symbol;
+}));
+
+export const __release = () => Safety.limit(E.sync(() => {
+  __ptr.current = __null;
+}));
+
+export const __ctxwrite = (ctx: IxCtx) => {
+  console.debug('[__ctxwrite]');
+  __ix.set(__ptr.current, ctx);
+  return ctx;
+};
+
+export const __ctxread = () => {
+  console.debug('[__ctxread]');
+  const ctx = __ix.get(__ptr.current);
+  if (!ctx) {
+    throw new Error('Unregistered interaction');
+  }
+  return ctx;
 };
 
 

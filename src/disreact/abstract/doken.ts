@@ -42,14 +42,11 @@ export const makeFromRest = (rest: Rest.Interaction): T => ({
   flags: 0,
 });
 
-export const invalidateTTL = (doken: T): T => {
+export const validateTTL = (doken: T): T | null => {
   if ((doken.ttl - TWO_MINUTES_MS) > Date.now()) {
     return doken;
   }
-  return {
-    ...doken,
-    status: 'expired',
-  };
+  return null;
 };
 
 export const encode = (doken?: T): TEncoded => doken
@@ -67,13 +64,3 @@ export const encode = (doken?: T): TEncoded => doken
     type : '0',
     flags: '0',
   };
-
-export const decode = (encoded: TEncoded): T => invalidateTTL({
-  app   : NONE_STR,
-  id    : encoded.id,
-  token : encoded.token,
-  ttl   : parseInt(encoded.ttl),
-  status: 'deferred',
-  type  : parseInt(encoded.type) as unknown as Rest.Tx,
-  flags : parseInt(encoded.flags),
-});

@@ -1,7 +1,5 @@
 import {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
-import {Critical} from '#src/disreact/internal/index.ts';
-import {E} from '#src/internal/pure/effect.ts';
 
 
 
@@ -13,18 +11,17 @@ const unsupported = [
 
 
 
-export const decodeEvent = (rest: Rest.Interaction) => E.gen(function* () {
+export const decodeEvent = (rest: Rest.Interaction) => {
   if (unsupported.includes(rest.type)) {
-    return yield * new Critical({why: '[Codec]: Unsupported interaction'});
+    throw new Error('Unsupported event');
   }
 
   if (rest.type === Rest.Rx.MODAL_SUBMIT) {
     const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
 
     if (!target) {
-      return yield * new Critical({why: '[Codec]: Unsupported modal submit'});
+      throw new Error('Unsupported modal submit');
     }
-
     return DEvent.SubmitClick({
       id    : rest.data.custom_id,
       rest,
@@ -33,11 +30,12 @@ export const decodeEvent = (rest: Rest.Interaction) => E.gen(function* () {
     });
   }
 
+
   if (rest.type === Rest.Rx.MESSAGE_COMPONENT) {
     const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
 
     if (!target) {
-      return yield * new Critical({why: '[Codec]: Unsupported message click'});
+      throw new Error('Unsupported message click');
     }
     if (rest.data.component_type === Rest.Cx.BUTTON) {
       return DEvent.ButtonClick({
@@ -89,5 +87,5 @@ export const decodeEvent = (rest: Rest.Interaction) => E.gen(function* () {
     }
   }
 
-  return yield * new Critical({why: '[Codec]: Unsupported interaction'});
-});
+  throw new Error('Unsupported event');
+};

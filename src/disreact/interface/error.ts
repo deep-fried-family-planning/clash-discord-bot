@@ -9,6 +9,10 @@ export class DisReactCodecError extends Data.TaggedError('DisReact.DisReactCodec
   cause: Error;
 }> {}
 
+export class BadInteraction extends Data.TaggedError('DisReact.BadInteraction')<{
+  cause?: Error | string;
+}> {}
+
 export class StaticDOMError extends Data.TaggedError('DisReact.StaticDOMError')<{
   cause: Error;
 }> {}

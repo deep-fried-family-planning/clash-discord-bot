@@ -1,81 +1,88 @@
-import {type Doken, Rest} from '#src/disreact/abstract/index.ts';
-import { NONE_STR} from '#src/disreact/abstract/index.ts';
+import {deferTTL, initialTTL, type T} from '#src/disreact/abstract/doken.ts';
+import {Doken, NONE_STR, Rest} from '#src/disreact/abstract/index.ts';
 import {DokenMemory} from '#src/disreact/interface/service.ts';
 import type {DecodedRoute} from '#src/disreact/internal/codec/route-codec.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-export const makeFromRest = (rest: Rest.Interaction): T => ({
-  app   : rest.application_id,
-  id    : rest.id,
-  token : rest.token,
-  status: 'active',
-  type  : Rest.DEFER_SOURCE,
-  ttl   : initialTTL(),
-  flags : 0,
+
+
+export const makeContingencyDoken = (rest: Rest.Interaction): T => ({
+  app  : rest.application_id,
+  id   : rest.id,
+  token: rest.token,
+  type : Rest.DEFER_SOURCE,
+  ttl  : initialTTL(),
+  flags: 0,
 });
+
+
 
 export const makeDeferred = (doken: T): T => ({
   ...doken,
-  status: 'deferred',
-  ttl   : deferTTL(),
+  ttl: deferTTL(),
 });
 
-export const invalidateTTL = (doken: T): T => {
-  if ((doken.ttl - TWO_MINUTES_MS) > Date.now()) {
-    return doken;
-  }
+
+
+export const encodeMessageDoken = (doken: Doken.T): Doken.TEncoded => {
   return {
-    ...doken,
-    status: 'expired',
-  };
-};
-export const encode = (doken?: T): TDokenEncoded => doken
-  ? {
     id   : doken.id,
     token: doken.token,
     ttl  : `${doken.ttl}`,
     type : `${doken.type}`,
     flags: `${doken.flags}`,
-  }
-  : {
-    id   : NONE_STR,
-    token: NONE_STR,
-    ttl  : '0',
-    type : '0',
-    flags: '0',
   };
+};
 
 
-export const decode = (encoded: TDokenEncoded): T => invalidateTTL({
-  app   : NONE_STR,
-  id    : encoded.id,
-  token : encoded.token,
-  ttl   : parseInt(encoded.ttl),
-  status: 'deferred',
-  type  : parseInt(encoded.type) as unknown as Rest.Tx,
-  flags : parseInt(encoded.flags),
+
+export const decodeMessageDoken = (route: DecodedRoute) => Doken.validateTTL({
+  app  : NONE_STR,
+  id   : route.params.id,
+  token: route.params.id,
+  ttl  : parseInt(route.params.ttl),
+  type : parseInt(route.params.type) as unknown as Rest.Tx,
+  flags: parseInt(route.params.flags),
 });
 
 
 
-export const encodeMessageDoken = () => {
+export const encodeDialogDoken = (doken: Doken.T) => E.gen(function * () {
+  yield * E.fork(DokenMemory.save(doken));
 
-};
-
-
-
-export const decodeMessageDoken = (route: DecodedRoute) => {
-
-};
-
-
-
-export const encodeDialogDoken = (doken: Doken.T) => {
-
-};
+  return {
+    id   : doken.id,
+    token: NONE_STR,
+    ttl  : `${doken.ttl}`,
+    type : `${doken.type}`,
+    flags: `${doken.flags}`,
+  };
+});
 
 
 
 export const decodeDialogDoken = (route: DecodedRoute) => E.gen(function * () {
-  yield * E.fork(DokenMemory.lookup(route.params.id));
+  if (route.params.token !== NONE_STR) {
+    throw new Error('Impossible to decode dialog doken with actual token');
+  }
+
+  const decoded = Doken.validateTTL({
+    app  : NONE_STR,
+    id   : route.params.id,
+    token: NONE_STR,
+    ttl  : parseInt(route.params.ttl),
+    type : parseInt(route.params.type) as unknown as Rest.Tx,
+    flags: parseInt(route.params.flags),
+  });
+
+  if (!decoded) {
+    return null;
+  }
+
+  yield * nonblockingCachePrep(route.params.id);
+
+  return decoded;
 });
+
+
+const nonblockingCachePrep = (id: string) => E.fork(DokenMemory.load(id));

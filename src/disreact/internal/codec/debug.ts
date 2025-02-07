@@ -1,5 +1,5 @@
 import {E, LG, LL} from '#src/internal/pure/effect.ts';
-import {Data} from 'effect';
+import {Data, DateTime, Duration} from 'effect';
 
 export class DevDebug extends Data.TaggedError('DisReact.DevDebug')<Record<string, unknown>> {}
 
@@ -14,3 +14,9 @@ export const DoNotLog = E.provide(LG.minimumLogLevel(LL.None));
 export const Latency = {};
 
 export const InstanceTimestamp = () => (new Date(Date.now())).toISOString();
+
+import { performance } from 'node:perf_hooks';
+
+performance;
+
+DateTime;

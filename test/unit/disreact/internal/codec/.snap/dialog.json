@@ -1,0 +1,15 @@
+{
+  "title": "test title",
+  "custom_id": "TestDialog:0:modal:0",
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "label": "test text",
+          "type": 1
+        }
+      ]
+    }
+  ]
+}

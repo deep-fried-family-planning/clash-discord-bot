@@ -3,6 +3,7 @@ import type {Pragma, RenderFn} from '#src/disreact/internal/types.ts';
 import {Critical} from '#src/disreact/internal/codec/debug.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
+import {pipe} from 'effect';
 
 
 
@@ -64,8 +65,13 @@ export class StaticDOM extends E.Tag('DisReact.StaticDOM')<
   StaticDOM,
   EAR<typeof make>
 >() {
-  static makeLayer = (messageFns: RenderFn[] = [], initialModals: RenderFn[] = []) => L.effect(
-    this,
-    make(messageFns, initialModals),
+  static makeLayer = (
+    messageFns: RenderFn[] = [],
+    initialModals: RenderFn[] = [],
+  ) => pipe(
+    L.effect(StaticDOM, make(messageFns, initialModals)),
+    L.memoize,
+    L.unwrapEffect,
+    L.extendScope,
   );
 }

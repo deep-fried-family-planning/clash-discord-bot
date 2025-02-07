@@ -1,10 +1,10 @@
-import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
+import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
+import {__mallocnull} from '#src/disreact/internal/dsx/globals.ts';
 import {dsx} from '#src/disreact/internal/dsx/index.ts';
-import { __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
 import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
 import type {Pragma} from '#src/disreact/internal/types.ts';
-import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 describe('dsx', () => {
   it('renders intrinsic', () => {
@@ -24,7 +24,7 @@ describe('dsx', () => {
 
   it('encodes message', () => {
     __mallocnull();
-    const rendered = initialRender(dsx(OmniPublic, {}) as Pragma);
+    const rendered = initialRender(dsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
@@ -63,7 +63,7 @@ describe('dsx', () => {
   });
 
   it('renders tree', () => {
-    expect(jsx(OmniPublic)).toMatchInlineSnapshot(`
+    expect(jsx(TestMessage)).toMatchInlineSnapshot(`
       {
         "children": [],
         "id": "",
@@ -71,7 +71,7 @@ describe('dsx', () => {
         "id_step": "",
         "index": 0,
         "kind": "function",
-        "name": "OmniPublic",
+        "name": "TestMessage",
         "props": {},
         "render": [Function],
       }

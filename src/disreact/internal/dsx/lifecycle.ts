@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
 import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/dsx/globals.ts';
 import type {T} from '#src/disreact/abstract/event.ts';
+import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import type {Hooks, HooksById, StacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
@@ -12,12 +13,14 @@ import console from 'node:console';
 export type RenderFn = (props: any) => any;
 
 type Common = {
-  index  : number;
-  name   : string;
-  id     : string;
-  id_step: string;
-  id_full: string;
-  isRoot?: boolean;
+  index     : number;
+  name      : string;
+  id        : string;
+  id_step   : string;
+  id_full   : string;
+  isRoot?   : boolean;
+  isModal?  : boolean;
+  isMessage?: boolean;
 };
 
 export type PragmaText = Common & {
@@ -250,6 +253,13 @@ const renderFunctionNode = (node: PragmaFunction) => {
   node.stack     = structuredClone(node.state.stack);
   node.state.pc  = 0;
   node.state.rc++;
+
+  if (children.some((child) => child.name === DTML.dialog || child.name === DTML.modal)) {
+    node.isModal = true;
+  }
+  if (children.some((child) => child.name === DTML.message)) {
+    node.isMessage = true;
+  }
 
   return rendered;
 };

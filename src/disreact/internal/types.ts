@@ -6,10 +6,10 @@ import type {E} from '#src/internal/pure/effect.ts';
 export type IxId = symbol;
 
 export type IxCtx = {
-  id  : IxId;
-  rest: Rest.Interaction;
-  root: string;
-  next: string;
+  rest     : Rest.Interaction;
+  root     : string;
+  next     : string;
+  ephemeral: boolean;
 };
 
 export type HooksById = Record<string, Hooks>;
@@ -433,6 +433,7 @@ export type DTMLModalElement = {
   custom_id?: s1t100;
   title     : s1t45;
   onsubmit? : Handler<DEvent.SubmitClick>;
+  children  : any;
 };
 
 

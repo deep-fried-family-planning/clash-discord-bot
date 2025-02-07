@@ -1,0 +1,28 @@
+{
+  "embeds": [
+    {
+      "title": "Omni Board",
+      "description": "V2 - JSX Pragma"
+    }
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "label": "Start",
+          "style": 1,
+          "type": 2
+        },
+        {
+          "label": "Help",
+          "style": 6,
+          "emoji": {
+            "name": "ope"
+          },
+          "type": 2
+        }
+      ]
+    }
+  ]
+}

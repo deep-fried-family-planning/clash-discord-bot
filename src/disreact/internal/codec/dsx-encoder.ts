@@ -8,7 +8,8 @@ export type EncodedMessage = {
   content   : string;
   embeds    : any[];
   components: any[];
-  flags     : number;
+  flags?    : number | undefined;
+  public?   : boolean | undefined;
 };
 export type EncodedDialog = {
   custom_id : string;
@@ -21,7 +22,29 @@ export type EncodedRoot =
 
 
 
-export const encodeDsx = (node: Pragma): EncodedRoot => {
+export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
+  const [encoded] = encodeDsx(node) as EncodedMessage[];
+
+  const {public: p, ...rest} = encoded;
+
+  if (p) {
+    rest.flags = undefined;
+  }
+
+  return rest;
+};
+
+
+
+export const encodeDialogDsx = (node: Pragma): EncodedDialog => {
+  const [encoded] = encodeDsx(node);
+
+  return encoded as EncodedDialog;
+};
+
+
+
+export const encodeDsx = (node: Pragma): EncodedRoot[] => {
   const next = unwrapFunctions(node);
 
   return next.map((n: any) => encodeInner(n));
@@ -131,6 +154,9 @@ const encodeInner = (node: any): any => {
       return acc;
     }
     case DTML.modal: {
+      acc.title = node.props.title;
+      acc.custom_id = node.props.custom_id ?? node.id_step;
+      acc.components = children.text.map((c: any) => ({type: 1, components: [c]}));
       return acc;
     }
     case DTML.embed: {

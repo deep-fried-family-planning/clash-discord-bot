@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
-import type {Hooks, PragmaFunction, RenderFn} from '#src/disreact/internal/types.ts';
+import type {Hooks, PragmaFunction, RenderFn, StacksById} from '#src/disreact/internal/types.ts';
 
 
 
@@ -116,26 +116,3 @@ export const attachHooks = (fiber: Hooks) => ({
   useEffect : useEffect(fiber),
   usePage   : usePage(fiber),
 });
-
-
-// todo
-export const encodeHooks = (rec: Record<string, Hooks>): URLSearchParams => {
-  const search = new URLSearchParams();
-  const states = Object.values(rec);
-
-  for (const state of states) {
-    search.set(state.id, encodeURIComponent(JSON.stringify(state)));
-  }
-  return search;
-};
-
-
-// todo
-export const decodeHooks = (search: URLSearchParams): Record<string, Hooks> => {
-  const states = {} as Record<string, Hooks>;
-
-  for (const [id, value] of search.entries()) {
-    states[id] = JSON.parse(decodeURIComponent(value));
-  }
-  return states;
-};
