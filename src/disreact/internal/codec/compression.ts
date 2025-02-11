@@ -4,7 +4,7 @@ import * as pako from 'pako';
 
 
 export const compressStack = (data: Record<string, any>): string => {
-  const binary     = MsgPack.encode(data);
+  const binary     = MsgPack.encode(data, {useBigInt64: true, maxDepth: 1000, ignoreUndefined: true, initialBufferSize: 4096, sortKeys: true});
   const compressed = pako.deflate(binary);
   return b64UrlSafe(compressed);
 };

@@ -1,5 +1,6 @@
+import {StaticGraphError} from '#src/disreact/interface/error.ts';
 import {dsx, dsxid} from '#src/disreact/internal/dsx/index.ts';
-import {Critical, type Pragma, type RenderFn} from '#src/disreact/internal/index.ts';
+import type {Pragma, RenderFn} from '#src/disreact/internal/index.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
 
@@ -65,14 +66,17 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
     };
   }
 
+  yield * E.addFinalizer(() => E.log('static graph: closed'));
+
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
       const name = typeof fn === 'string' ? fn : fn.name;
 
-      if (name in staticGraphMap) {
-        return dsxid(dsx(staticGraphMap[name].render) as Pragma);
+      if (!(name in staticGraphMap)) {
+        return yield * new StaticGraphError({why: `${name} is not in the static graph`});
       }
-      return yield * new Critical({why: `${name} is not in the static graph`});
+
+      return dsxid(dsx(staticGraphMap[name].render) as Pragma);
     }),
   };
 });
@@ -84,6 +88,6 @@ export class StaticGraph extends E.Tag('DisReact.StaticGraph')<
   E.Effect.Success<ReturnType<typeof make>>
 >() {
   static singleton = (config: StaticGraphConfig) => pipe(
-    L.effect(this, make(config)),
+    L.effect(this, make(config).pipe(E.cached, E.flatten)),
   );
 }

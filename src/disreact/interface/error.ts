@@ -13,8 +13,9 @@ export class BadInteraction extends Data.TaggedError('DisReact.BadInteraction')<
   cause?: Error | string;
 }> {}
 
-export class StaticDOMError extends Data.TaggedError('DisReact.StaticDOMError')<{
-  cause: Error;
+export class StaticGraphError extends Data.TaggedError('DisReact.StaticGraphError')<{
+  cause?: Error;
+  why?  : string;
 }> {}
 
 export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{

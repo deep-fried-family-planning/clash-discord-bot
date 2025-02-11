@@ -99,7 +99,7 @@ export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
 
 
 
-export const encodeDialogInteraction = (root: Pragma, params: DecodedRoute['params'], doken: Doken.T) => E.gen(function * () {
+export const encodeDialogInteraction = (root: Pragma, doken: Doken.T) => E.gen(function * () {
   const cloned      = cloneTree(root);
   const dialog      = encodeDialogDsx(cloned);
   const dialogDoken = yield * encodeDialogDoken(doken);
@@ -108,7 +108,7 @@ export const encodeDialogInteraction = (root: Pragma, params: DecodedRoute['para
     {
       params: {
         ...dialogDoken,
-        root: params.root,
+        root: cloned.name,
       },
       search: new URLSearchParams(),
     },

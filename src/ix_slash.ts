@@ -66,4 +66,5 @@ export const handler = makeLambda(h, pipe(
   L.provideMerge(L.setTracerEnabled(true)),
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
   L.provideMerge(DT.layerCurrentZoneLocal),
+  L.provideMerge(L.scope),
 ));

@@ -2,9 +2,9 @@
 import {CLOSE, Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {makeDeferred} from '#src/disreact/internal/codec/doken-codec.ts';
-import {encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
+import {encodeDialogInteraction, encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {collectStates, Critical, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
+import {collectStates, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
 import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/internal/runtime/DisReactFrame.ts';
 import {closeEvent, isSameRoot} from '#src/disreact/internal/runtime/flows/utils.ts';
@@ -21,7 +21,7 @@ export const clickEvent = E.gen(function * () {
   const hydrated = hydrateRoot(clone, ix.rx.states);
   yield * flushHooks(hydrated);
 
-  const afterEvent = dispatchEvent(hydrated, ix.event); // todo run after effects
+  const afterEvent = dispatchEvent(hydrated, ix.event);
   ix.context       = HookDispatch.__ctxread();
 
   if (ix.context.next === CLOSE) {
@@ -38,7 +38,7 @@ export const clickEvent = E.gen(function * () {
       yield * DokenMemory.save(ix.doken);
     }
 
-    const rerendered = rerenderRoot(afterEvent); // todo run effects
+    const rerendered = rerenderRoot(afterEvent);
     yield * flushHooks(rerendered);
     const finalRender = rerenderRoot(rerendered);
 
@@ -49,12 +49,22 @@ export const clickEvent = E.gen(function * () {
   }
   else {
     const nextClone = yield * StaticGraph.cloneRoot(ix.context.next);
-    const rendered  = rerenderRoot(nextClone); // todo run after effects
-    yield * flushHooks(rendered);
+    const rendered  = rerenderRoot(nextClone);
+
 
     if (rendered.isModal) {
-      return yield * new Critical({why: 'unimplemented'});
+      ix.restDoken.type = Rest.Tx.MODAL;
+
+      if (ix.doken) {
+        const encoded = yield * encodeDialogInteraction(rendered, ix.doken);
+        yield * DiscordDOM.create(ix.restDoken, encoded);
+        return;
+      }
+      const encoded = yield * encodeDialogInteraction(rendered, ix.restDoken);
+      yield * DiscordDOM.create(ix.restDoken, encoded);
+      return;
     }
+
 
     if (afterEvent.isEphemeral !== rendered.isEphemeral) {
       ix.restDoken.type  = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
@@ -73,6 +83,7 @@ export const clickEvent = E.gen(function * () {
       yield * DokenMemory.save(ix.doken);
     }
 
+    yield * flushHooks(rendered);
     const finalRender = rerenderRoot(rendered);
     const encoded     = encodeMessageInteraction(finalRender, ix.doken); // todo run after effects
 

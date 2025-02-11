@@ -34,7 +34,7 @@ const live = pipe(
   //   DynamoDBDocument.defaultLayer,
   // )),
 
-  L.provide(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.None)))),
+  L.provide(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.All)))),
   L.provide(DiscordRESTMemoryLive.pipe(
     L.provide(Logger.minimumLogLevel(LogLevel.None)),
     L.provide(NodeHttpClient.layerUndici),
@@ -46,6 +46,7 @@ const live = pipe(
   L.provideMerge(L.setTracerEnabled(true)),
   // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
   L.provideMerge(DT.layerCurrentZoneLocal),
+  L.provideMerge(L.scope),
 );
 
 
