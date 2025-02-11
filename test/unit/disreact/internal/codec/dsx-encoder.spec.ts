@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
-import {__free, __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
 import {cloneTree, initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
 import {TestDialog} from 'test/unit/disreact/internal/dsx/.components/test-dialog.tsx';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
@@ -15,10 +15,10 @@ describe('dsx-encoder', () => {
 
   beforeEach(() => {
     given = {};
-    __mallocnull();
+    HookDispatch.__mallocnull();
   });
 
-  afterEach(__free);
+  afterEach(HookDispatch.__free);
 
   it('when encoding a message', async () => {
     given.component = jsx(TestMessage, {});

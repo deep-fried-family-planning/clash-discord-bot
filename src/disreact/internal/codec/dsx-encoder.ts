@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
-import {encode_denylist} from '#src/disreact/internal/dsx/config.ts';
+import {encode_denylist} from '#src/disreact/internal/dsx-intrinsic/config.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import type {Pragma} from '#src/disreact/internal/index.ts';
 

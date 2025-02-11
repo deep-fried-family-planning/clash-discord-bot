@@ -1,13 +1,13 @@
 import {CLOSE, Doken, NONE_STR} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {IxContext, type IxCtx} from '#src/disreact/internal/layer/IxContext.ts';
+import {IxScope, type IxCtx} from '#src/disreact/internal/runtime/IxScope.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 
 
 
 export const closeEvent = E.gen(function * () {
-  const ix = yield * IxContext.read();
+  const ix = yield * IxScope.read();
 
   if (ix.doken) {
     console.log('ix.doken', ix.doken);

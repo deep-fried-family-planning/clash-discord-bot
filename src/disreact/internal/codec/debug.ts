@@ -15,8 +15,8 @@ export const Latency = {};
 
 export const InstanceTimestamp = () => (new Date(Date.now())).toISOString();
 
-import { performance } from 'node:perf_hooks';
-
-performance;
-
-DateTime;
+// import { performance } from 'node:perf_hooks';
+//
+// performance;
+//
+// DateTime;

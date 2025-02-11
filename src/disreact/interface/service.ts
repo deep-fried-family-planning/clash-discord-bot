@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {Doken, Rest} from '#src/disreact/abstract/index.ts';
 import {makeDfx} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
 import {makeDokenMemoryDynamo} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
@@ -14,9 +15,9 @@ export class DiscordDOM extends E.Tag('DisReact.DiscordDOM')<
   {
     acknowledge: (d: Doken.T) => E.Effect<void, DiscordRESTError>;
     defer      : (d: Doken.T) => E.Effect<void, DiscordRESTError>;
-    create     : (d: Doken.T, encoded: Rest.Response) => E.Effect<void, DiscordRESTError>;
-    reply      : (d: Doken.T, encoded: Rest.Response) => E.Effect<void, DiscordRESTError>;
-    update     : (d: Doken.T, encoded: Rest.Message) => E.Effect<void, DiscordRESTError>;
+    create     : (d: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
+    reply      : (d: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
+    update     : (d: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
     dismount   : (d: Doken.T) => E.Effect<void, DiscordRESTError>;
   }
 >() {

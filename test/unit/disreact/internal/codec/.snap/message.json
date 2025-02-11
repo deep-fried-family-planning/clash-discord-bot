@@ -12,15 +12,17 @@
         {
           "label": "Start",
           "style": 1,
-          "type": 2
+          "type": 2,
+          "custom_id": "buttons:1:button:0"
         },
         {
           "label": "Help",
-          "style": 6,
+          "style": 2,
           "emoji": {
             "name": "ope"
           },
-          "type": 2
+          "type": 2,
+          "custom_id": "buttons:1:button:1"
         }
       ]
     }

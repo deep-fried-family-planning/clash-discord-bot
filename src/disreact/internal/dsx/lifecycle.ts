@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
 import type {T} from '#src/disreact/abstract/event.ts';
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
+import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx-intrinsic/datt.ts';
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
-import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/dsx/globals.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
+import {Critical, Impossible} from '#src/disreact/internal/index.ts';
 import type {Hooks, HooksById, HookStacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
@@ -84,9 +85,13 @@ export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
 
   const {children: _, render, state, ...rest} = baseClone as PragmaFunction;
   const clone                                 = structuredClone(rest) as PragmaFunction;
-  const {['async']: effects, ...restState}    = state!;
-  clone.state                                 = structuredClone(restState);
-  clone.state!.async                          = effects;
+  const {['async']: effects, ...restState}    = state ?? {};
+  if (state) {
+    // @ts-expect-error todo fix later
+    clone.state        = structuredClone(restState);
+    // @ts-expect-error todo fix later
+    clone.state!.async = effects;
+  }
 
   return {
     ...clone,
@@ -127,7 +132,6 @@ export const initialRender = (node: Pragma, parent?: Pragma): Pragma => {
 
 
 export const dispatchEvent = (node: Pragma, event: T, original: Pragma = node): Pragma => {
-  console.log('[dispatchEvent]', node.id_step);
   if ('props' in node) {
     if (node.id_step === event.id && node.props[event.type]) {
       if (typeof node.props[event.type] === 'function') {
@@ -148,7 +152,7 @@ export const dispatchEvent = (node: Pragma, event: T, original: Pragma = node): 
     }
   }
 
-  throw new Error(`No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`);
+  throw new Critical({why: `No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`});
 };
 
 
@@ -195,20 +199,20 @@ const renderNodes = (parent: Pragma, cs: Pragma[], rs: Pragma[]): Pragma[] => {
     const r = rs.at(i);
 
     if (!c && !r) {
-      throw new Error('Impossible');
+      throw new Impossible({});
     }
     if (!c && r) {
-      __mount(r.id_full);
+      HookDispatch.__mount(r.id_full);
       children.push(initialRender(r, parent));
       continue;
     }
     if (c && !r) {
-      __dismount(c.id_full);
+      HookDispatch.__dismount(c.id_full);
       continue;
     }
     if (c && r) {
       if (!isSameNode(c, r)) {
-        __dismount(c.id_full);
+        HookDispatch.__dismount(c.id_full);
         children.push(initialRender(r, parent));
       }
       else if (c.kind === 'text') {
@@ -243,13 +247,13 @@ const renderNodes = (parent: Pragma, cs: Pragma[], rs: Pragma[]): Pragma[] => {
 };
 
 const renderFunctionNode = (node: PragmaFunction) => {
-  __prep(node.id_full, node.state);
+  HookDispatch.__prep(node.id_full, node.state);
 
   const output = node.render(node.props) as any[];
 
   const children = Array.isArray(output) ? output : [output] as any[];
   const rendered = setIds(children, node);
-  node.state     = __get(node.id_full);
+  node.state     = HookDispatch.__get(node.id_full);
   node.stack     = structuredClone(node.state.stack);
   node.state.pc  = 0;
   node.state.rc++;
@@ -284,6 +288,7 @@ const hasSameProps = (c: Pragma, r: Pragma) => {
   const rprops = Data.struct((r as PragmaFunction | PragmaElement).props);
   const equals = Equal.equals(cprops, rprops);
   console.debug('[hasSameProps]', cprops, rprops, equals);
+  console.debug('[hasSameProps]', equals);
   return equals;
 };
 
@@ -291,7 +296,8 @@ const hasSameState = (c: Pragma) => {
   const connected = Data.array((c as PragmaFunction).state!.stack.map(Data.struct));
   const last      = Data.array((c as PragmaFunction).stack!.map(Data.struct));
   const equals    = Equal.equals(connected, last);
-  console.debug('[hasSameState]', connected, last, equals);
+  console.debug('[hasSameState]', connected, last);
+  console.debug('[hasSameState]', equals);
   return equals;
 };
 

@@ -1,6 +1,6 @@
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
-import {__mallocnull} from '#src/disreact/internal/dsx/globals.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
 import {dsx} from '#src/disreact/internal/dsx/index.ts';
 import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
 import type {Pragma} from '#src/disreact/internal/types.ts';
@@ -23,8 +23,8 @@ describe('dsx', () => {
   });
 
   it('encodes message', () => {
-    __mallocnull();
-    const rendered = initialRender(dsx(TestMessage, {}) as Pragma);
+    HookDispatch.__mallocnull();
+    const rendered = initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
@@ -32,17 +32,19 @@ describe('dsx', () => {
             {
               "components": [
                 {
+                  "custom_id": "buttons:1:button:0",
                   "emoji": undefined,
                   "label": "Start",
                   "style": 1,
                   "type": 2,
                 },
                 {
+                  "custom_id": "buttons:1:button:1",
                   "emoji": {
                     "name": "ope",
                   },
                   "label": "Help",
-                  "style": 6,
+                  "style": 2,
                   "type": 2,
                 },
               ],

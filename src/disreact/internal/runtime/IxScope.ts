@@ -47,8 +47,6 @@ const empty = () => ({
 const make = E.gen(function * () {
   let self = null as unknown as IxCtx;
 
-  const defer = yield * Deferred.make<boolean>();
-
   const semaphore = yield * E.makeSemaphore(1);
   const mutex     = semaphore.withPermits(1);
 
@@ -59,16 +57,13 @@ const make = E.gen(function * () {
     save: (next: IxCtx) => self = next,
 
     mutex: () => mutex,
-
-    completeDefer: () => Deferred.succeed(defer, true),
-    awaitDefer   : () => Deferred.await(defer),
   };
 });
 
 
 
-export class IxContext extends E.Tag('DisReact.IxContext')<
-  IxContext,
+export class IxScope extends E.Tag('DisReact.IxScope')<
+  IxScope,
   E.Effect.Success<typeof make>
 >() {
   static makeLayer = () => L.effect(this, make);

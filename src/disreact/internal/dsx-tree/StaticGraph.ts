@@ -1,4 +1,4 @@
-import {dsx} from '#src/disreact/internal/dsx/index.ts';
+import {dsx, dsxid} from '#src/disreact/internal/dsx/index.ts';
 import {Critical, type Pragma, type RenderFn} from '#src/disreact/internal/index.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
@@ -66,11 +66,13 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
   }
 
   return {
-    cloneRoot: (fn: RenderFn) => E.gen(function * () {
-      if (fn.name in staticGraphMap) {
-        return dsx(staticGraphMap[fn.name].render) as Pragma;
+    cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
+      const name = typeof fn === 'string' ? fn : fn.name;
+
+      if (name in staticGraphMap) {
+        return dsxid(dsx(staticGraphMap[name].render) as Pragma);
       }
-      return yield * new Critical({why: `${fn.name} is not in the static graph`});
+      return yield * new Critical({why: `${name} is not in the static graph`});
     }),
   };
 });
@@ -79,9 +81,7 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
 
 export class StaticGraph extends E.Tag('DisReact.StaticGraph')<
   StaticGraph,
-  {
-    cloneRoot: (fn: RenderFn) => E.Effect<Pragma, Critical>;
-  }
+  E.Effect.Success<ReturnType<typeof make>>
 >() {
   static singleton = (config: StaticGraphConfig) => pipe(
     L.effect(this, make(config)),

@@ -3,8 +3,8 @@ import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {IxContext} from '#src/disreact/internal/layer/IxContext.ts';
-import {StaticDOM} from '#src/disreact/internal/layer/StaticDOM.ts';
+import {StaticGraph} from '#src/disreact/internal/dsx-tree/StaticGraph.ts';
+import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
 import type {RenderFn} from '#src/disreact/internal/types.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
@@ -13,12 +13,17 @@ import * as process from 'node:process';
 
 export const runtimeLayer = pipe(
   L.empty,
-  L.provideMerge(IxContext.makeLayer()),
-  L.provideMerge(StaticDOM.makeLayer([
-    OmniPublic,
-    OmniPrivate,
-    Link,
-  ])),
+  L.provideMerge(IxScope.makeLayer()),
+  L.provideMerge(StaticGraph.singleton({
+    persistent: [
+      OmniPublic,
+    ],
+    ephemeral: [
+      OmniPrivate,
+      Link,
+    ],
+    dialog: [],
+  })),
   L.provideMerge(DiscordDOM.defaultLayer),
   L.provideMerge(DokenMemory.dynamoLayer(process.env.DDB_OPERATIONS)),
 );
@@ -35,8 +40,8 @@ export type DisReactRuntimeConfig = {
 };
 
 
-export class DisReactRuntime extends E.Tag('DisReact.Runtime')<
-  DisReactRuntime,
+export class IxRuntime extends E.Tag('DisReact.IxRuntime')<
+  IxRuntime,
   {
     interact      : (rest: Rest.Ix) => void;
     synthesizeRoot: (fn: RenderFn) => Rest.Message;

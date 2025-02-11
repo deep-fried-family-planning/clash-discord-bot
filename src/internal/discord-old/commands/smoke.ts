@@ -4,6 +4,7 @@ import {synthesize} from '#src/disreact/internal/runtime/synthesize.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import type {Message} from 'dfx/types';
 
 
 
@@ -40,5 +41,5 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function 
   //   }],
   // };
 
-  return yield * synthesize(OmniPublic);
+  return (yield * synthesize(OmniPublic)) as unknown as Message;
 });

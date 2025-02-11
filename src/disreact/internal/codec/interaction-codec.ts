@@ -4,9 +4,10 @@ import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/internal/codec/ds
 import {decodeEvent} from '#src/disreact/internal/codec/event-decoder.ts';
 import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDialogRouting, encodeMessageRouting} from '#src/disreact/internal/codec/route-codec.ts';
 import {decodeStacks, encodeStacks} from '#src/disreact/internal/codec/stack-codec.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
-import {__malloc, cloneTree, collectStates, reduceToStacks} from '#src/disreact/internal/index.ts';
-import type {Pragma, HookStacksById} from '#src/disreact/internal/types.ts';
+import {cloneTree, collectStates, reduceToStacks} from '#src/disreact/internal/index.ts';
+import type {HookStacksById, Pragma} from '#src/disreact/internal/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';
@@ -32,7 +33,7 @@ export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * ()
   const contingencyDoken = makeContingencyDoken(rest);
   contingencyDoken.app   = rest.application_id;
   const event            = decodeEvent(rest);
-  const symbol           = __malloc(rest.id);
+  const symbol           = HookDispatch.__malloc(rest.id);
 
   if (event.type === DATT.onclick) {
     const route = decodeMessageRouting(rest);

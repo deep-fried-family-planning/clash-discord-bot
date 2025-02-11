@@ -7,7 +7,8 @@
       "components": [
         {
           "label": "test text",
-          "type": 1
+          "type": 1,
+          "custom_id": "modal:0:text:0"
         }
       ]
     }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unnecessary-condition */
-import type {Pragma} from '#src/disreact/internal/types.ts';
-import {__free, __mallocnull} from '#src/disreact/internal/dsx/globals.ts';
-import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/dsx/lifecycle.ts';
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/dsx/lifecycle.ts';
+import type {Pragma} from '#src/disreact/internal/types.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 
@@ -26,10 +26,10 @@ describe('lifecycle', () => {
 
   beforeEach(() => {
     given = {};
-    __mallocnull();
+    HookDispatch.__mallocnull();
   });
 
-  afterEach(__free);
+  afterEach(HookDispatch.__free);
 
   it('when cloning a node', () => {
     given.component = jsx(TestMessage, {});
@@ -118,7 +118,7 @@ describe('lifecycle', () => {
 
       it('when dispatching an event', () => {
         const actual = () => dispatchEvent(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "never" having a handler for type "onclick" was not found]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[DisReact.Critical]`);
       });
     });
 
@@ -134,7 +134,7 @@ describe('lifecycle', () => {
         } as any;
         given.event.type = 'never';
         const actual     = () => dispatchEvent(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "never" was not found]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[DisReact.Critical]`);
       });
     });
   });

@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call */
 import {CLOSE, Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {makeDeferred} from '#src/disreact/internal/codec/doken-codec.ts';
 import {encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {closeEvent, isSameRoot} from '#src/disreact/internal/flows/utils.ts';
-import {__acquire, __ctxread, __ctxwrite, collectStates, Critical, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
-import {IxContext} from '#src/disreact/internal/layer/IxContext.ts';
-import {StaticDOM} from '#src/disreact/internal/layer/StaticDOM.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
+import {StaticGraph} from '#src/disreact/internal/dsx-tree/StaticGraph.ts';
+import {collectStates, Critical, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
+import {closeEvent, isSameRoot} from '#src/disreact/internal/runtime/flows/utils.ts';
+import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';
@@ -13,11 +15,11 @@ import {inspect} from 'node:util';
 
 
 export const clickEvent = E.gen(function * () {
-  const ix = yield * IxContext.read();
-  __acquire(ix.pointer);
-  __ctxwrite(ix.context);
+  const ix = yield * IxScope.read();
+  HookDispatch.__acquire(ix.pointer);
+  HookDispatch.__ctxwrite(ix.context);
 
-  const clone = yield * StaticDOM.checkoutRoot(ix.rx.params.root);
+  const clone = yield * StaticGraph.cloneRoot(ix.rx.params.root);
 
   console.log('ix.rx.states', inspect(ix.rx.states, false, null));
   const hydrated = hydrateRoot(clone, ix.rx.states);  // todo run mount effects
@@ -25,7 +27,7 @@ export const clickEvent = E.gen(function * () {
   yield * flushHooks(hydrated);
 
   const afterEvent = dispatchEvent(hydrated, ix.event); // todo run after effects
-  ix.context       = __ctxread();
+  ix.context       = HookDispatch.__ctxread();
 
   console.log('ix.context', ix.context);
   yield * E.logFatal('ix.context', ix.context);
@@ -58,7 +60,7 @@ export const clickEvent = E.gen(function * () {
     return;
   }
 
-  const nextClone = yield * StaticDOM.checkoutRoot(ix.context.next);
+  const nextClone = yield * StaticGraph.cloneRoot(ix.context.next);
   const rendered  = rerenderRoot(nextClone); // todo run after effects
 
 
@@ -87,7 +89,7 @@ export const clickEvent = E.gen(function * () {
   }
 
   const finalRender = rerenderRoot(rendered);
-  const encoded = encodeMessageInteraction(finalRender, ix.doken); // todo run after effects
+  const encoded     = encodeMessageInteraction(finalRender, ix.doken); // todo run after effects
 
   yield * DiscordDOM.reply(ix.doken, encoded);
 });

@@ -1,15 +1,15 @@
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import {decodeInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {clickEvent} from '#src/disreact/internal/flows/click-event.ts';
-import {submitEvent} from '#src/disreact/internal/flows/submit-event.ts';
+import {clickEvent} from '#src/disreact/internal/runtime/flows/click-event.ts';
+import {submitEvent} from '#src/disreact/internal/runtime/flows/submit-event.ts';
 import {emptyHooks} from '#src/disreact/internal/index.ts';
-import {IxContext} from '#src/disreact/internal/layer/IxContext.ts';
+import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 
 
 export const interact = (rest: Rest.Ix) => E.gen(function * () {
-  const ix     = yield * IxContext.free();
+  const ix     = yield * IxScope.free();
   const data   = yield * decodeInteraction(rest);
   ix.start_ms  = data.start_ms;
   ix.pointer   = data.symbol;
@@ -34,7 +34,7 @@ export const interact = (rest: Rest.Ix) => E.gen(function * () {
     ix.rx.states[id].rc    = 1;
   }
 
-  yield * IxContext.save(ix);
+  yield * IxScope.save(ix);
 
   switch (ix.event.type) {
     case 'onclick': {

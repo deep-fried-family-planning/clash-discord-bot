@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
 import {CLOSE} from '#src/disreact/abstract/index.ts';
-import {__ctxread} from '#src/disreact/internal/index.ts';
+import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
 import type {Hooks, RenderFn} from '#src/disreact/internal/types.ts';
 
 
@@ -114,7 +114,7 @@ const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
 
 
 const useIxData = (_: Hooks) => () => {
-  const ctx = __ctxread();
+  const ctx = HookDispatch.__ctxread();
 
   return ctx.rest;
 };
@@ -122,7 +122,7 @@ const useIxData = (_: Hooks) => () => {
 
 
 const usePage = (_: Hooks) => (_: RenderFn[]) => {
-  const ctx = __ctxread();
+  const ctx = HookDispatch.__ctxread();
 
   return {
     next: (next: RenderFn) => {

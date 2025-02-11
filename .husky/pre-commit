@@ -1,4 +1,3 @@
 #!/usr/bin/env sh
 
 pnpm run types
-#pnpm run lint
