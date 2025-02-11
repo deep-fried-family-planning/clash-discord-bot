@@ -23,13 +23,15 @@ export const interact = (rest: Rest.Ix) => E.gen(function * () {
   ix.root      = data.params.root;
   ix.rx.states = {};
 
-  ix.context   = {
+  ix.context = {
     next: ix.rx.params.root,
+    rest: ix.rest,
   };
 
   for (const [id, stack] of Object.entries(ix.stacks)) {
     ix.rx.states[id]       = emptyHooks(id);
     ix.rx.states[id].stack = stack;
+    ix.rx.states[id].rc    = 1;
   }
 
   yield * IxContext.save(ix);

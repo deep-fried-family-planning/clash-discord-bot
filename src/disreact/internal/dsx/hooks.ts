@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
 import {CLOSE} from '#src/disreact/abstract/index.ts';
 import {__ctxread} from '#src/disreact/internal/index.ts';
-import type {Hooks, PragmaFunction, RenderFn, HookStacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, RenderFn} from '#src/disreact/internal/types.ts';
 
 
 
@@ -63,11 +63,11 @@ const useReducer = (fiber: Hooks) => (reducer: any, initialState: any) => {
 };
 
 
-// todo
+
 const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
   const current = fiber.stack[fiber.pc];
 
-  if (deps)
+  if (deps) {
     for (const dep of deps) {
       switch (typeof dep) {
         case 'symbol':
@@ -75,18 +75,48 @@ const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
           throw new Error('Unsupported Dependency Type');
       }
     }
+  }
 
-  if (!current)
+  if (!current) {
     fiber.stack[fiber.pc] = deps ? {d: deps} : {};
+  }
 
   const state = fiber.stack[fiber.pc];
 
-  if (fiber.rc === undefined) {
+  if (fiber.rc === 0) {
     fiber.async.push(effect);
   }
-
+  else if (deps) {
+    if (state.d.length === 0 && deps.length === 0) {
+      fiber.async.push(effect);
+    }
+    else if (state.d?.length !== deps.length) {
+      throw new Error('Laws of Hooks Violation');
+    }
+    else {
+      let changed = false;
+      for (let i = 0; i < deps.length; i++) {
+        if (deps[i] !== state.d[i]) {
+          changed = true;
+          break;
+        }
+      }
+      if (changed) {
+        fiber.async.push(effect);
+        state.d = deps;
+      }
+    }
+  }
 
   fiber.pc++;
+};
+
+
+
+const useIxData = (_: Hooks) => () => {
+  const ctx = __ctxread();
+
+  return ctx.rest;
 };
 
 
@@ -111,4 +141,5 @@ export const attachHooks = (fiber: Hooks) => ({
   useReducer: useReducer(fiber),
   useEffect : useEffect(fiber),
   usePage   : usePage(fiber),
+  useIxData : useIxData(fiber),
 });

@@ -12,7 +12,8 @@ export type IxGlobals = {
 
 
 export type GlobalContext = {
-  next: string;
+  next : string;
+  rest?: Rest.Ix | null;
 };
 
 

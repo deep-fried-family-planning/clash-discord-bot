@@ -2,6 +2,7 @@ import type {Rest} from '#src/disreact/abstract/index.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/internal/dsx/hooks.ts';
 import type {GlobalContext, Hooks, InteractionHooks, IxId} from '#src/disreact/internal/types.ts';
 import {GlobalValue as GV} from 'effect';
+import {inspect} from 'node:util';
 
 
 
@@ -92,7 +93,7 @@ export const __prep = (id: string, state?: Hooks) => {
     return next;
   }
   else {
-    console.debug('[__prep]: state found', state);
+    console.debug('[__prep]: state found', inspect(state, false, null));
     states.set(id, state);
     __dispatch.current = attachHooks(state);
     return state;

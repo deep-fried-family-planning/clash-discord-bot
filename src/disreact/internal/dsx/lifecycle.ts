@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
+import type {T} from '#src/disreact/abstract/event.ts';
 import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/dsx/globals.ts';
-import type {T} from '#src/disreact/abstract/event.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import type {Hooks, HooksById, HookStacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
@@ -82,8 +82,11 @@ export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
     } as PragmaElement;
   }
 
-  const {children: _, render, ...rest} = baseClone as PragmaFunction;
-  const clone                          = structuredClone(rest);
+  const {children: _, render, state, ...rest} = baseClone as PragmaFunction;
+  const clone                                 = structuredClone(rest) as PragmaFunction;
+  const {['async']: effects, ...restState}    = state!;
+  clone.state                                 = structuredClone(restState);
+  clone.state!.async                          = effects;
 
   return {
     ...clone,

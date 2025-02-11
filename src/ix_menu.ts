@@ -7,6 +7,7 @@ import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import console from 'node:console';
 import * as process from 'node:process';
 
 
@@ -14,12 +15,9 @@ import * as process from 'node:process';
 const menu = (ix: IxD) => pipe(
   E.gen(function * () {
     yield * E.logTrace('ix_menu', ix.data);
-    yield * interact(ix as any);
+    yield * interact(ix as any).pipe(E.awaitAllChildren, E.catchAll((e) => E.sync(() => {console.error(e)})));
   }),
-  E.catchAll((e) => E.logError(e)),
-  E.catchAllCause((e) => E.logError(e)),
-  E.catchAllDefect((e) => E.logError(e)),
-  E.awaitAllChildren,
+  E.catchAllDefect((e) => E.sync(() => {console.error(e)})),
 );
 
 
@@ -42,7 +40,7 @@ const live = pipe(
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
   )),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
   L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   L.provideMerge(L.setTracerTiming(true)),
   L.provideMerge(L.setTracerEnabled(true)),

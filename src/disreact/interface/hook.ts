@@ -12,12 +12,12 @@ export const useReducer = (reducer: (state: any, action: any) => any, initialSta
   return __hooks().useReducer(reducer, initialState) as any;
 };
 
-export const useEffect = (effect: any, deps: any[]) => {
+export const useEffect = (effect: any, deps?: any[]) => {
   __hooks().useEffect(effect, deps);
 };
 
-export const useInteraction = () => {
-  return;
+export const useIxData = () => {
+  return __hooks().useIxData() as any;
 };
 
 export const usePage = (fns: RenderFn[]) => {
