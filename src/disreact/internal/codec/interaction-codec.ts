@@ -4,7 +4,7 @@ import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/internal/codec/ds
 import {decodeEvent} from '#src/disreact/internal/codec/event-decoder.ts';
 import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDialogRouting, encodeMessageRouting} from '#src/disreact/internal/codec/route-codec.ts';
 import {decodeStacks, encodeStacks} from '#src/disreact/internal/codec/stack-codec.ts';
-import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
+import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
 import {cloneTree, collectStates, reduceToStacks} from '#src/disreact/internal/index.ts';
 import type {HookStacksById, Pragma} from '#src/disreact/internal/types.ts';

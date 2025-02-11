@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return,@typescript-eslint/no-explicit-any */
-import {HookDispatch} from '#src/disreact/internal/dsx-hooks/HookDispatch.ts';
+import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import type {RenderFn} from '#src/disreact/internal/types.ts';
 
 

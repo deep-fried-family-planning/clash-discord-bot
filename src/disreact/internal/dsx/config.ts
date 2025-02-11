@@ -1,6 +1,6 @@
-import {children, key, onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit, ref} from '#src/disreact/internal/dsx-intrinsic/datt.ts';
-import {a, at, b, blockquote, br, code, details, h1, h2, h3, i, li, mask, ol, p, pre, s, small, u, ul} from '#src/disreact/internal/dsx-intrinsic/dfmd.ts';
-import {button, buttons, choice, command, content, description, dialog, embed, emoji, field, footer, menu, message, modal, option, param, string, text, title, value} from '#src/disreact/internal/dsx-intrinsic/dtml.ts';
+import {children, key, onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit, ref} from '#src/disreact/internal/dsx/datt.ts';
+import {a, at, b, blockquote, br, code, details, h1, h2, h3, i, li, mask, ol, p, pre, s, small, u, ul} from '#src/disreact/internal/dsx/dfmd.ts';
+import {button, buttons, choice, command, content, description, dialog, embed, emoji, field, footer, menu, message, modal, option, param, string, text, title, value} from '#src/disreact/internal/dsx/dtml.ts';
 
 
 const inf = Infinity;

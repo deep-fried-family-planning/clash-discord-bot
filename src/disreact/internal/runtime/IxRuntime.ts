@@ -3,7 +3,7 @@ import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {StaticGraph} from '#src/disreact/internal/dsx-tree/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
 import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
 import type {RenderFn} from '#src/disreact/internal/types.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
