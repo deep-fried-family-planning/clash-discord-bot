@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {Auth, DEvent, Doken, Rest} from '#src/disreact/abstract/index.ts';
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import type {DecodedRoute} from '#src/disreact/internal/codec/route-codec.ts';
 import type {GlobalContext, HooksById, HookStacksById, InteractionHooks, IxId} from '#src/disreact/internal/dsx/types.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
-import {Deferred} from 'effect';
 
 
 export type IxCtx = ReturnType<typeof empty>;
@@ -62,8 +62,8 @@ const make = E.gen(function * () {
 
 
 
-export class IxScope extends E.Tag('DisReact.IxScope')<
-  IxScope,
+export class DisReactFrame extends E.Tag('DisReact.Frame')<
+  DisReactFrame,
   E.Effect.Success<typeof make>
 >() {
   static makeLayer = () => L.effect(this, make);

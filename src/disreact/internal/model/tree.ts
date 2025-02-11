@@ -16,21 +16,18 @@ export type TreeId = {
 export type Tree = {
   id: TreeId;
 
-  e: {
-    cs: Tree[];
-    up: Tree | null;
-    dn: Tree | null;
-    lt: Tree | null;
-    rt: Tree | null;
+  rise : Tree | null;
+  down : Tree | null;
+  prev : Tree | null;
+  next : Tree | null;
+  nodes: Tree[];
+
+  fn?: {
+    render: (p: Record<string, any>) => E.Effect<Tree[], any, any>;
+    state : any;
+    stack : any[];
   };
 
-  v: {
-    props  : Record<string, any>;
-    string?: string;
-    fn?: {
-      render: (p: Record<string, any>) => E.Effect<Tree[], any, any>;
-      state : any;
-      stack : any[];
-    };
-  };
+  props: Record<string, any>;
+  value: string;
 };

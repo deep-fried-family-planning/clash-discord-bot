@@ -16,8 +16,8 @@ const make = E.gen(function * () {
 
 
 
-export class Safety extends E.Tag('DisReact.Safety')<
-  Safety,
+export class DisReactMutex extends E.Tag('DisReact.Mutex')<
+  DisReactMutex,
   EA<typeof make>
 >() {
   static globalLayer = pipe(
@@ -28,8 +28,8 @@ export class Safety extends E.Tag('DisReact.Safety')<
   );
 
   static limit = <A, E, R>(self: E.Effect<A, E, R>) => pipe(
-    Safety.youShallNotPass(),
+    DisReactMutex.youShallNotPass(),
     E.flatMap((permit) => permit(self)),
-    E.provide(Safety.globalLayer),
+    E.provide(DisReactMutex.globalLayer),
   );
 }

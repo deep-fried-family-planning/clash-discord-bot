@@ -3,13 +3,13 @@ import {decodeInteraction} from '#src/disreact/internal/codec/interaction-codec.
 import {clickEvent} from '#src/disreact/internal/runtime/flows/click-event.ts';
 import {submitEvent} from '#src/disreact/internal/runtime/flows/submit-event.ts';
 import {emptyHooks} from '#src/disreact/internal/index.ts';
-import {IxScope} from '#src/disreact/internal/runtime/DisReactFrame.ts';
+import {DisReactFrame} from '#src/disreact/internal/runtime/DisReactFrame.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 
 
 export const interact = (rest: Rest.Ix) => E.gen(function * () {
-  const ix     = yield * IxScope.free();
+  const ix     = yield * DisReactFrame.free();
   const data   = yield * decodeInteraction(rest);
   ix.start_ms  = data.start_ms;
   ix.pointer   = data.symbol;
@@ -34,7 +34,7 @@ export const interact = (rest: Rest.Ix) => E.gen(function * () {
     ix.rx.states[id].rc    = 1;
   }
 
-  yield * IxScope.save(ix);
+  yield * DisReactFrame.save(ix);
 
   switch (ix.event.type) {
     case 'onclick': {
