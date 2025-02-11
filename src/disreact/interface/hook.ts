@@ -16,8 +16,8 @@ export const useEffect = (effect: any, deps?: any[]) => {
   HookDispatch.__hooks().useEffect(effect, deps);
 };
 
-export const useIxData = () => {
-  return HookDispatch.__hooks().useIxData();
+export const useIx = () => {
+  return HookDispatch.__hooks().useIx();
 };
 
 export const usePage = (fns: RenderFn[]) => {
