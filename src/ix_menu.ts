@@ -11,10 +11,16 @@ import * as process from 'node:process';
 
 
 
-const menu = (ix: IxD) => E.gen(function * () {
-  yield * E.logTrace('ix_menu', ix.data);
-  yield * interact(ix as any);
-});
+const menu = (ix: IxD) => pipe(
+  E.gen(function * () {
+    yield * E.logTrace('ix_menu', ix.data);
+    yield * interact(ix as any);
+  }),
+  E.catchAll((e) => E.logError(e)),
+  E.catchAllCause((e) => E.logError(e)),
+  E.catchAllDefect((e) => E.logError(e)),
+  E.awaitAllChildren,
+);
 
 
 const live = pipe(
@@ -36,6 +42,8 @@ const live = pipe(
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
   )),
+  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+  L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   L.provideMerge(L.setTracerTiming(true)),
   L.provideMerge(L.setTracerEnabled(true)),
   // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),

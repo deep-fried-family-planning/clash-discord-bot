@@ -81,6 +81,7 @@ export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
   const message      = encodeMessageDsx(root);
   const messageDoken = encodeMessageDoken(doken);
 
+  console.log(inspect(stacks, false, null));
   console.log(inspect(message, false, null));
 
   return encodeMessageRouting(

@@ -17,7 +17,7 @@ export const OmniPublic = () => {
       <buttons>
         <button
           primary
-          label={'Start'}
+          label={`Start ${num}`}
           onclick={() => setNum(num + 1)}
         />
         <button secondary label={'Help'}>

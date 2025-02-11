@@ -39,7 +39,7 @@ export const encodeMessageDoken = (doken: Doken.T): Doken.TEncoded => {
 export const decodeMessageDoken = (route: DecodedRoute) => Doken.validateTTL({
   app  : NONE_STR,
   id   : route.params.id,
-  token: route.params.id,
+  token: route.params.token,
   ttl  : parseInt(route.params.ttl),
   type : parseInt(route.params.type) as unknown as Rest.Tx,
   flags: parseInt(route.params.flags),

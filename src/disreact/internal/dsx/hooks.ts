@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
+import {CLOSE} from '#src/disreact/abstract/index.ts';
+import {__ctxread} from '#src/disreact/internal/index.ts';
 import type {Hooks, PragmaFunction, RenderFn, HookStacksById} from '#src/disreact/internal/types.ts';
 
 
@@ -88,22 +90,16 @@ const useEffect = (fiber: Hooks) => (effect: any, deps?: any[]) => {
 };
 
 
-// todo
-const useLayoutEffect = (fiber: Hooks) => () => {};
 
+const usePage = (_: Hooks) => (_: RenderFn[]) => {
+  const ctx = __ctxread();
 
-const useDoken = (fiber: Hooks) => () => {
-
-};
-
-
-const usePage = (fiber: Hooks) => (fns: RenderFn[]) => {
   return {
     next: (next: RenderFn) => {
-      fiber.nextpage = next.name;
+      ctx.next = next.name;
     },
     close: () => {
-      fiber.nextpage = null;
+      ctx.next = CLOSE;
     },
   };
 };

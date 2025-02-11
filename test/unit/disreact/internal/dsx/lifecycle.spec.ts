@@ -312,7 +312,8 @@ describe('lifecycle', () => {
           {
             "s": 0
           }
-        ]
+        ],
+        "isMessage": true
       }"
     `);
   });

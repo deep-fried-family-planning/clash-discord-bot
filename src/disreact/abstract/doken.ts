@@ -1,4 +1,4 @@
-import {NONE_STR, Rest} from '#src/disreact/abstract/index.ts';
+import {NONE_INT, NONE_STR, Rest} from '#src/disreact/abstract/index.ts';
 
 const TWO_SECONDS_MS      = 2 * 1000;
 const FOURTEEN_MINUTES_MS = 14 * 60 * 1000;
@@ -43,6 +43,12 @@ export const makeFromRest = (rest: Rest.Interaction): T => ({
 });
 
 export const validateTTL = (doken: T): T | null => {
+  if (doken.id === NONE_STR) {
+    return null;
+  }
+  if (doken.ttl === NONE_INT) {
+    return null;
+  }
   if ((doken.ttl - TWO_MINUTES_MS) > Date.now()) {
     return doken;
   }

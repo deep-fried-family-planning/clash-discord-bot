@@ -1,9 +1,11 @@
-import {dsx} from '#src/disreact/internal/dsx/index.ts';
+import {dsx, dsxid} from '#src/disreact/internal/dsx/index.ts';
 import type {Pragma, RenderFn} from '#src/disreact/internal/types.ts';
 import {Critical} from '#src/disreact/internal/codec/debug.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {pipe} from 'effect';
+import console from 'node:console';
+import {inspect} from 'node:util';
 
 
 
@@ -54,7 +56,11 @@ const make = (messageFns: RenderFn[] = [], modalFns: RenderFn[] = []) => E.gen(f
         return yield * new Critical({why: `<${name}/> does not exist as a root message component`});
       }
 
-      return dsx(messages[name], {}) as Pragma;
+      const output = dsxid(dsx(messages[name], {}) as Pragma);
+
+      console.log('checkoutRoot', inspect(output, false, null));
+
+      return output;
     }),
   };
 });

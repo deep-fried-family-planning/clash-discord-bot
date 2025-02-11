@@ -215,16 +215,12 @@ const renderNodes = (parent: Pragma, cs: Pragma[], rs: Pragma[]): Pragma[] => {
         if (!hasSameProps(c, r)) {
           c.props = (r as PragmaElement).props;
         }
-        c.children = renderNodes(c, c.children, c.children);
+        c.children = renderNodes(c, c.children, (r as PragmaElement).children);
         children.push(c);
-        // else {
-        //   (r as PragmaElement).children = renderNodes(c, (c).children, (r as PragmaElement).children);
-        //   children.push(r);
-        // }
       }
       else if (hasSameProps(c, r)) {
         if (hasSameState(c)) {
-          c.children = renderNodes(c, c.children, (r as PragmaFunction).children);
+          c.children = renderNodes(c, c.children, c.children);
           children.push(c);
         }
         else {
