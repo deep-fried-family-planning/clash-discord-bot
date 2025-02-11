@@ -1,8 +1,6 @@
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/internal/dsx/hooks.ts';
-import {Safety} from '#src/disreact/internal/layer/Safety.ts';
-import type {Hooks, IxCtx, IxId} from '#src/disreact/internal/types.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import type {GlobalContext, Hooks, InteractionHooks, IxId} from '#src/disreact/internal/types.ts';
 import {GlobalValue as GV} from 'effect';
 
 
@@ -10,53 +8,66 @@ import {GlobalValue as GV} from 'effect';
 export const __null     = Symbol('DisReact.__null');
 export const __ptr      = {current: null as unknown as IxId};
 export const __dispatch = {current: null as null | ReturnType<typeof attachHooks>};
-export const __state    = GV.globalValue(Symbol.for('DisReact.__state'), () => new WeakMap<IxId, Map<string, Hooks>>());
-export const __ix       = GV.globalValue(Symbol.for('DisReact.__ix'), () => new WeakMap<IxId, IxCtx>());
+export const __ixState = GV.globalValue(Symbol.for('DisReact.__state'), () => new WeakMap<IxId, Map<string, Hooks>>());
+export const __ixEvent = GV.globalValue(Symbol.for('DisReact.__ix'), () => new WeakMap<IxId, GlobalContext>());
 
 
 
 export const __mallocnull = () => {
   console.debug('[__mallocnull]');
-  __state.set(__null, new Map());
-  __ix.set(__null, {
-    rest: {} as unknown as Rest.Interaction,
-    root: '',
+  __ixState.set(__null, new Map());
+  __ixEvent.set(__null, {
     next: '',
   });
   __ptr.current = __null;
 };
 
+
+
 export const __malloc = (id: string) => {
   console.debug('[__malloc]', id);
   const pointer = Symbol(`DisReact.${id}`);
-  __state.set(pointer, new Map());
+
+  __ixState.set(pointer, new Map());
   __ptr.current = pointer;
+
   return pointer;
 };
 
+
+
 export const __free = () => {
   console.debug('[__free]');
-  __state.delete(__ptr.current);
+  __ixState.delete(__ptr.current);
   __ptr.current = __null;
 };
 
-export const __acquire = (symbol: symbol) => Safety.limit(E.sync(() => {
+
+
+export const __acquire = (symbol: symbol) => {
   __ptr.current = symbol;
-}));
+  return __ptr.current;
+};
 
-export const __release = () => Safety.limit(E.sync(() => {
+
+
+export const __release = () => {
   __ptr.current = __null;
-}));
+};
 
-export const __ctxwrite = (ctx: IxCtx) => {
+
+
+export const __ctxwrite = (ctx: GlobalContext) => {
   console.debug('[__ctxwrite]');
-  __ix.set(__ptr.current, ctx);
+  __ixEvent.set(__ptr.current, ctx);
   return ctx;
 };
 
+
+
 export const __ctxread = () => {
   console.debug('[__ctxread]');
-  const ctx = __ix.get(__ptr.current);
+  const ctx = __ixEvent.get(__ptr.current);
   if (!ctx) {
     throw new Error('Unregistered interaction');
   }
@@ -67,7 +78,7 @@ export const __ctxread = () => {
 
 export const __prep = (id: string, state?: Hooks) => {
   console.debug('[__prep]', id);
-  const states = __state.get(__ptr.current);
+  const states = __ixState.get(__ptr.current);
 
   if (!states) {
     throw new Error('Unregistered interaction');
@@ -88,10 +99,12 @@ export const __prep = (id: string, state?: Hooks) => {
   }
 };
 
+
+
 export const __get = (id: string) => {
   console.debug('[__get]', id);
   __dispatch.current = null;
-  const states       = __state.get(__ptr.current);
+  const states       = __ixState.get(__ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -103,24 +116,30 @@ export const __get = (id: string) => {
   return state;
 };
 
+
+
 export const __mount = (id: string) => {
   console.debug('[__mount]', id);
-  const states = __state.get(__ptr.current);
+  const states = __ixState.get(__ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
   return states.set(id, emptyHooks(id));
 };
 
+
+
 export const __dismount = (id: string) => {
   console.debug('[dismount]', id);
   __dispatch.current = null;
-  const states       = __state.get(__ptr.current);
+  const states       = __ixState.get(__ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
   return states.delete(id);
 };
+
+
 
 export const __hooks = () => {
   console.debug('[__hooks]');

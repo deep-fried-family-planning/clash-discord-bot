@@ -1,28 +1,27 @@
 import {CloseButton} from '#src/discord/omni-board/components/close-button.tsx';
 import {Header} from '#src/discord/omni-board/components/header.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-import {usePage} from '#src/disreact/model/hooks/fiber-dispatch.ts';
+import {usePage} from '#src/disreact/interface/hook.ts';
 
 
 
 export const Link = () => {
-  const setPage = usePage([OmniPrivate]);
+  const page = usePage([OmniPrivate]);
 
   return (
-    <message>
-      <embeds>
-        <Header
-          title={'Link Management'}
-          description={'Use the buttons below to link new accounts and manage your settings with DeepFryer.'}
-        />
-      </embeds>
-      <components>
+    <message ephemeral>
+      <Header
+        title={'Link Management'}
+        description={'Use the buttons below to link new accounts and manage your settings with DeepFryer.'}
+      />
+      <buttons>
         <button
+          secondary
           label={'Back'}
-          onClick={() => setPage(OmniPrivate)}
+          onclick={() => page.next(OmniPrivate)}
         />
         <CloseButton/>
-      </components>
+      </buttons>
     </message>
-  )
-}
+  );
+};

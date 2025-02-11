@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DeepFryerModel} from '#src/discord/deep-fryer-model.ts';
+import {runtimeLayer} from '#src/disreact/internal/make-runtime.ts';
 import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -55,7 +55,7 @@ const h = (event: IxD) => pipe(
 
 
 export const handler = makeLambda(h, pipe(
-  DeepFryerModel,
+  runtimeLayer,
   L.provideMerge(DiscordLayerLive),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),

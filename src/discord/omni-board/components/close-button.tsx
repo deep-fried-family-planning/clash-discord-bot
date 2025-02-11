@@ -1,18 +1,15 @@
-import {PAGE} from '#src/disreact/runtime/enum/index.ts';
-import {usePage} from '#src/disreact/model/hooks/fiber-dispatch.ts';
+import {usePage} from '#src/disreact/interface/hook.ts';
 
 
 
 export const CloseButton = () => {
-  const setPage = usePage([]);
+  const page = usePage([]);
 
   return (
     <button
       primary
       label={'Close'}
-      onClick={() => setPage(PAGE.CLOSE)}
-    >
-
-    </button>
+      onclick={() => page.close()}
+    />
   )
 }

@@ -1,5 +1,4 @@
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import {DisReactDOM} from '#src/disreact/index.ts';
 import type {CommandSpec} from '#src/internal/discord-old/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -19,5 +18,5 @@ export const OMNI_BOARD
  * @desc [SLASH /omni-board]
  */
 export const omniBoard = (data: IxD) => E.gen(function * () {
-  return yield * DisReactDOM.synthesize(OmniPublic);
+  // return yield * DisReactDOM.synthesize(OmniPublic);
 });

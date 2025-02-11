@@ -9,7 +9,7 @@ import {pipe} from 'effect';
 
 
 
-const make = E.gen(function * () {
+export const makeDfx = E.gen(function * () {
   const rest = yield * DiscordREST;
 
   const Create = flow(rest.createInteractionResponse, DoNotLog);
@@ -38,12 +38,3 @@ const make = E.gen(function * () {
     dismount,
   };
 });
-
-
-
-export const DFXDiscordDOM = pipe(
-  L.effect(DiscordDOM, make),
-  L.memoize,
-  L.unwrapEffect,
-  L.extendScope,
-);

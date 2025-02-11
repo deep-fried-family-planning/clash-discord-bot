@@ -70,8 +70,5 @@ export class StaticDOM extends E.Tag('DisReact.StaticDOM')<
     initialModals: RenderFn[] = [],
   ) => pipe(
     L.effect(StaticDOM, make(messageFns, initialModals)),
-    L.memoize,
-    L.unwrapEffect,
-    L.extendScope,
   );
 }

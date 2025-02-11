@@ -4,7 +4,7 @@ import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {__dismount, __get, __mount, __prep} from '#src/disreact/internal/dsx/globals.ts';
 import type {T} from '#src/disreact/abstract/event.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
-import type {Hooks, HooksById, StacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, HooksById, HookStacksById} from '#src/disreact/internal/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
 
@@ -13,14 +13,15 @@ import console from 'node:console';
 export type RenderFn = (props: any) => any;
 
 type Common = {
-  index     : number;
-  name      : string;
-  id        : string;
-  id_step   : string;
-  id_full   : string;
-  isRoot?   : boolean;
-  isModal?  : boolean;
-  isMessage?: boolean;
+  index       : number;
+  name        : string;
+  id          : string;
+  id_step     : string;
+  id_full     : string;
+  isRoot?     : boolean;
+  isModal?    : boolean;
+  isMessage?  : boolean;
+  isEphemeral?: boolean;
 };
 
 export type PragmaText = Common & {
@@ -214,7 +215,7 @@ const renderNodes = (parent: Pragma, cs: Pragma[], rs: Pragma[]): Pragma[] => {
         if (!hasSameProps(c, r)) {
           c.props = (r as PragmaElement).props;
         }
-        c.children = renderNodes(c, c.children, (r as PragmaElement).children);
+        c.children = renderNodes(c, c.children, c.children);
         children.push(c);
         // else {
         //   (r as PragmaElement).children = renderNodes(c, (c).children, (r as PragmaElement).children);
@@ -259,6 +260,9 @@ const renderFunctionNode = (node: PragmaFunction) => {
   }
   if (children.some((child) => child.name === DTML.message)) {
     node.isMessage = true;
+    if (children.some((child) => child.props.ephemeral)) {
+      node.isEphemeral = true;
+    }
   }
 
   return rendered;
@@ -318,7 +322,7 @@ export const collectStates = (node: Pragma, states: HooksById = {}): HooksById =
   return states;
 };
 
-export const reduceToStacks = (hooks: Record<string, Hooks>): StacksById => {
+export const reduceToStacks = (hooks: Record<string, Hooks>): HookStacksById => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

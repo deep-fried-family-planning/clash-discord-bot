@@ -1,36 +1,24 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {DeepFryerModel} from '#src/discord/deep-fryer-model.ts';
-import {DisReactDOM} from '#src/disreact/index.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {ixcRouter} from '#src/internal/discord-old/ixc-router.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {interact} from '#src/disreact/internal/interact.ts';
+import {runtimeLayer} from '#src/disreact/internal/make-runtime.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {MGF} from '#src/internal/discord.ts';
-import {CSL, DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
-import config from '@commitlint/config-conventional';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {SQS} from '@effect-aws/client-sqs';
+import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
-import {Discord, DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
-import {Cause} from 'effect';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import * as process from 'node:process';
 
 
 
 const menu = (ix: IxD) => E.gen(function * () {
   yield * E.logTrace('ix_menu', ix.data);
-  yield * DisReactDOM.respond(ix as any);
+  yield * interact(ix as any);
 });
 
 
 const live = pipe(
-  DeepFryerModel,
+  runtimeLayer,
   // L.provideMerge(ClashCache.Live),
   // L.provideMerge(MenuCache.Live),
   // L.provideMerge(L.mergeAll(
@@ -41,6 +29,7 @@ const live = pipe(
   //   SQS.defaultLayer,
   //   DynamoDBDocument.defaultLayer,
   // )),
+
   L.provide(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.None)))),
   L.provide(DiscordRESTMemoryLive.pipe(
     L.provide(Logger.minimumLogLevel(LogLevel.None)),

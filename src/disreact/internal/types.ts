@@ -3,17 +3,29 @@ import type {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 
+export type IxGlobals = {
+  handler?: E.Effect<void, any, any>;
+  context: {
+    next?: string | null | undefined | false;
+  };
+};
+
+
+export type GlobalContext = {
+  next: string;
+};
+
+
+
 export type IxId = symbol;
 
-export type IxCtx = {
-  rest     : Rest.Interaction;
-  root     : string;
-  next     : string;
-  ephemeral: boolean;
+export type InteractionHooks = {
+  rest: Rest.Interaction;
+  next: string;
 };
 
 export type HooksById = Record<string, Hooks>;
-export type StacksById = Record<string, Hooks['stack']>;
+export type HookStacksById = Record<string, Hooks['stack']>;
 export type Hooks = {
   id        : string;
   pc        : number;

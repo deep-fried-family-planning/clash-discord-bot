@@ -18,7 +18,7 @@ export type EncodedRoute =
 
 
 
-const main = makeRoute('/jsx/:root/:type/:flags/:id/:ttl/:token');
+const main = makeRoute('/dsx/:root/:type/:flags/:id/:ttl/:token');
 
 
 

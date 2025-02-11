@@ -1,49 +1,36 @@
 import {Header} from '#src/discord/omni-board/components/header.tsx';
-import {useEffect, useReducer, useState} from '#src/disreact/interface/hook.ts';
-import {E} from '#src/internal/pure/effect.ts';
-// import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-// import {usePage} from '#src/disreact/model/danger.ts';
-
-
-
-// const useRefRest = () => {
-//   const thing = useState()
-//   useReducer()
-// }
-
-
-//
-// const AuthCheck = (props: {auths: TAuth[], children: JSX.ElementType}) => {
-//
-//   const rest = useInteraction() as Rest.Interaction;
-//
-//   return rest.user?.mfa_enabled ? props.children : null;
-// }
+import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
+import {usePage, useState} from '#src/disreact/interface/hook.ts';
 
 
 
 export const OmniPublic = () => {
-  // const setPage = usePage([OmniPrivate]);
+  const page          = usePage([OmniPrivate]);
   const [num, setNum] = useState(0);
 
   return (
-      <message public>
-        <Header
-          title={'Omni Board'}
-          description={'V2 - JSX Pragma'}
+    <message public>
+      <Header
+        title={'Omni Board'}
+        description={'V2 - JSX Pragma'}
+      />
+      <buttons>
+        <button
+          primary
+          label={'Start'}
+          onclick={() => setNum(num + 1)}
         />
-        <buttons>
-          <button
-            primary
-            label={'Start'}
-            onclick={() => setNum(num + 1)}
+        <button secondary label={'Help'}>
+          <emoji
+            name={'💩'}
           />
-          <button secondary label={'Help'}>
-            <emoji
-              name={'ope'}
-            />
-          </button>
-        </buttons>
-      </message>
+        </button>
+        <button
+          secondary
+          label={'Entry'}
+          onclick={() => page.next(OmniPrivate)}
+        />
+      </buttons>
+    </message>
   );
 };

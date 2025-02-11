@@ -1,9 +1,9 @@
-import type {DEvent, Doken, Rest} from '#src/disreact/abstract/index.ts';
-import {DFXDiscordDOM} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
+import type {Doken, Rest} from '#src/disreact/abstract/index.ts';
+import {makeDfx} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
 import {makeDokenMemoryDynamo} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
 import {makeLocalDokenMemory} from '#src/disreact/implementation/DokenMemory-local.ts';
-import type {DisReactCodecError, DokenMemoryError} from '#src/disreact/interface/error.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import type {DokenMemoryError} from '#src/disreact/interface/error.ts';
+import {E, L} from '#src/internal/pure/effect.ts';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
 import type {Cause} from 'effect';
 
@@ -20,7 +20,7 @@ export class DiscordDOM extends E.Tag('DisReact.DiscordDOM')<
     dismount   : (d: Doken.T) => E.Effect<void, DiscordRESTError>;
   }
 >() {
-  static defaultLayer = DFXDiscordDOM;
+  static defaultLayer = L.effect(this, makeDfx);
 }
 
 

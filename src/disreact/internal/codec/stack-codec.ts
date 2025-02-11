@@ -1,9 +1,9 @@
-import type {Hooks, StacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, HookStacksById} from '#src/disreact/internal/types.ts';
 import {flow} from 'effect';
 
 
 
-export const encodeStacks = (rec: StacksById): URLSearchParams => {
+export const encodeStacks = (rec: HookStacksById): URLSearchParams => {
   const search  = new URLSearchParams();
   const entries = Object.entries(rec);
 
@@ -15,8 +15,8 @@ export const encodeStacks = (rec: StacksById): URLSearchParams => {
 
 
 
-export const decodeStacks = (search: URLSearchParams): StacksById => {
-  const states = {} as StacksById;
+export const decodeStacks = (search: URLSearchParams): HookStacksById => {
+  const states = {} as HookStacksById;
 
   for (const [id, value] of search.entries()) {
     states[id] = simpleDecode(value) as Hooks['stack'];

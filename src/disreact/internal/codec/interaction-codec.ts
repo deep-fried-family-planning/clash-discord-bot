@@ -6,8 +6,10 @@ import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDial
 import {decodeStacks, encodeStacks} from '#src/disreact/internal/codec/stack-codec.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
 import {__malloc, cloneTree, collectStates, reduceToStacks} from '#src/disreact/internal/index.ts';
-import type {Pragma, StacksById} from '#src/disreact/internal/types.ts';
+import type {Pragma, HookStacksById} from '#src/disreact/internal/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import console from 'node:console';
+import {inspect} from 'node:util';
 
 
 
@@ -18,12 +20,14 @@ export type DecodedInteraction = {
   doken           : Doken.T | null;
   event           : DEvent.T;
   params          : DecodedRoute['params'];
-  stacks          : StacksById;
+  stacks          : HookStacksById;
 };
 
 
 
 export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * () {
+  yield * E.logInfo('decodeInteraction', inspect(rest.message, false, null));
+
   const start_ms         = Date.now();
   const contingencyDoken = makeContingencyDoken(rest);
   contingencyDoken.app   = rest.application_id;
@@ -69,7 +73,7 @@ export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * ()
 
 
 
-export const encodeMessageInteraction = (root: Pragma, params: DecodedRoute['params'], doken: Doken.T) => {
+export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
   const cloned       = cloneTree(root);
   const states       = collectStates(cloned);
   const stacks       = reduceToStacks(states);
@@ -77,11 +81,13 @@ export const encodeMessageInteraction = (root: Pragma, params: DecodedRoute['par
   const message      = encodeMessageDsx(root);
   const messageDoken = encodeMessageDoken(doken);
 
+  console.log(inspect(message, false, null));
+
   return encodeMessageRouting(
     {
       params: {
         ...messageDoken,
-        root: params.root,
+        root: root.name,
       },
       search,
     },

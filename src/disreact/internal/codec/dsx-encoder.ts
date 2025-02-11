@@ -103,10 +103,11 @@ const encodeInner = (node: any): any => {
       if (success) acc.style = 3;
       if (danger) acc.style = 4;
       if (link) acc.style = 5;
-      if (secondary) acc.style = 6;
+      if (premium) acc.style = 6;
       acc       = {...props, ...acc};
       acc.emoji = children.emoji?.[0];
       acc.type  = 2;
+      acc.custom_id = node.props.custom_id ?? node.id_step;
       return acc;
     }
 
@@ -137,6 +138,7 @@ const encodeInner = (node: any): any => {
       if (paragraph) acc.type = 2;
       else acc.type = 1;
       acc = {...props, ...acc};
+      acc.custom_id = node.props.custom_id ?? node.id_step;
       return acc;
     }
 

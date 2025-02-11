@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
-import type {Hooks, PragmaFunction, RenderFn, StacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, PragmaFunction, RenderFn, HookStacksById} from '#src/disreact/internal/types.ts';
 
 
 
@@ -99,7 +99,7 @@ const useDoken = (fiber: Hooks) => () => {
 
 const usePage = (fiber: Hooks) => (fns: RenderFn[]) => {
   return {
-    next: (next: PragmaFunction) => {
+    next: (next: RenderFn) => {
       fiber.nextpage = next.name;
     },
     close: () => {

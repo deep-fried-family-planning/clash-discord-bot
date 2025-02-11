@@ -1,5 +1,7 @@
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
+
+
 const make = pipe(E.makeSemaphore(1), E.map((semaphore) => {
   const mutex = semaphore.withPermits(1);
 
@@ -8,6 +10,8 @@ const make = pipe(E.makeSemaphore(1), E.map((semaphore) => {
     mut  : semaphore.withPermits(1),
   };
 }));
+
+
 
 export class FiberDOM extends E.Tag('DisReact.FiberDOM')<
   FiberDOM,

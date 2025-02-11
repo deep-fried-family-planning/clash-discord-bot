@@ -75,5 +75,4 @@ const make = (TableName: string) => E.gen(function * () {
 export const makeDokenMemoryDynamo = (TableName: string) => pipe(
   L.effect(DokenMemory, make(TableName)),
   L.provide(DynamoDBDocument.defaultLayer),
-  L.memoize,
 );
