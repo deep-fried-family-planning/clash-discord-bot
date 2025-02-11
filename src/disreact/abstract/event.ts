@@ -1,6 +1,6 @@
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import type {DATT} from '#src/disreact/internal/dsx/index.ts';
-import type {DTMLButtonElement, DTMLChannelMenuElement, DTMLMentionMenuElement, DTMLModalElement, DTMLRoleMenuElement, DTMLStringMenuElement, DTMLUserMenuElement} from '#src/disreact/internal/types.ts';
+import type {DTMLButtonElement, DTMLChannelMenuElement, DTMLMentionMenuElement, DTMLModalElement, DTMLRoleMenuElement, DTMLStringMenuElement, DTMLUserMenuElement} from '#src/disreact/internal/dsx/types.ts';
 import {Data} from 'effect';
 
 

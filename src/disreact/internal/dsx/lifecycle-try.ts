@@ -1,6 +1,6 @@
 import type {T} from '#src/disreact/abstract/event.ts';
 import {cloneTree, dispatchEvent, hydrateRoot, initialRender, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
-import type {HooksById} from '#src/disreact/internal/types.ts';
+import type {HooksById} from '#src/disreact/internal/dsx/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

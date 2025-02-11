@@ -4,8 +4,8 @@ import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
-import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
-import type {RenderFn} from '#src/disreact/internal/types.ts';
+import {IxScope} from '#src/disreact/internal/runtime/DisReactFrame.ts';
+import type {RenderFn} from '#src/disreact/internal/dsx/types.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
 
@@ -40,8 +40,8 @@ export type DisReactRuntimeConfig = {
 };
 
 
-export class IxRuntime extends E.Tag('DisReact.IxRuntime')<
-  IxRuntime,
+export class DisReactRuntime extends E.Tag('DisReact.IxRuntime')<
+  DisReactRuntime,
   {
     interact      : (rest: Rest.Ix) => void;
     synthesizeRoot: (fn: RenderFn) => Rest.Message;

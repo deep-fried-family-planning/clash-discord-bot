@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {runtimeLayer} from '#src/disreact/internal/runtime/IxRuntime.ts';
+import {runtimeLayer} from '#src/disreact/internal/runtime/DisReactRuntime.ts';
 import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';

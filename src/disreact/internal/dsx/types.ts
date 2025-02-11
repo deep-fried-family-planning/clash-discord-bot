@@ -3,13 +3,6 @@ import type {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 
-export type IxGlobals = {
-  handler?: E.Effect<void, any, any>;
-  context: {
-    next?: string | null | undefined | false;
-  };
-};
-
 
 export type GlobalContext = {
   next : string;
@@ -39,45 +32,6 @@ export type Hooks = {
 };
 
 export type RenderFn = (props: any) => any;
-
-
-
-type Common = {
-  index  : number;
-  name   : string;
-  id     : string;
-  id_step: string;
-  id_full: string;
-  isRoot?: boolean;
-};
-
-export type PragmaText = Common & {
-  kind : 'text';
-  name : 'string';
-  value: string;
-};
-
-export type PragmaElement = Common & {
-  kind    : 'intrinsic';
-  name    : keyof JSX.IntrinsicElements;
-  props   : Record<string, any>;
-  children: Pragma[];
-};
-
-export type PragmaFunction = Common & {
-  kind    : 'function';
-  props   : Record<string, any>;
-  children: Pragma[];
-  render  : RenderFn;
-  state?  : Hooks;
-  stack?  : Hooks['stack'];
-};
-
-export type Pragma =
-  | PragmaText
-  | PragmaElement
-  | PragmaFunction;
-
 
 
 type s0t4000 = string;

@@ -3,7 +3,7 @@ import {decodeInteraction} from '#src/disreact/internal/codec/interaction-codec.
 import {clickEvent} from '#src/disreact/internal/runtime/flows/click-event.ts';
 import {submitEvent} from '#src/disreact/internal/runtime/flows/submit-event.ts';
 import {emptyHooks} from '#src/disreact/internal/index.ts';
-import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
+import {IxScope} from '#src/disreact/internal/runtime/DisReactFrame.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

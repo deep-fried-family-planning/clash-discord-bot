@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access */
-import {Impossible} from '#src/disreact/internal/index.ts';
-import type {Pragma} from '#src/disreact/internal/types.ts';
+import {Impossible, type Pragma} from '#src/disreact/internal/index.ts';
 
 
 

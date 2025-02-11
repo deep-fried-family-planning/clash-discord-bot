@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return */
 import {CLOSE} from '#src/disreact/abstract/index.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import type {Hooks, RenderFn} from '#src/disreact/internal/types.ts';
+import type {Hooks, RenderFn} from '#src/disreact/internal/dsx/types.ts';
 
 
 

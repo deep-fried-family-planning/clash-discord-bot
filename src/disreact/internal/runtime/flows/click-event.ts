@@ -7,7 +7,7 @@ import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
 import {collectStates, Critical, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
 import {closeEvent, isSameRoot} from '#src/disreact/internal/runtime/flows/utils.ts';
-import {IxScope} from '#src/disreact/internal/runtime/IxScope.ts';
+import {IxScope} from '#src/disreact/internal/runtime/DisReactFrame.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';

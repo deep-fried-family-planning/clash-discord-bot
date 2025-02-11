@@ -5,7 +5,7 @@ import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from 
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import {Critical, Impossible} from '#src/disreact/internal/index.ts';
-import type {Hooks, HooksById, HookStacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, HooksById, HookStacksById} from '#src/disreact/internal/dsx/types.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
 

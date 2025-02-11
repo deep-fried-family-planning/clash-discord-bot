@@ -6,8 +6,8 @@ import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDial
 import {decodeStacks, encodeStacks} from '#src/disreact/internal/codec/stack-codec.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
-import {cloneTree, collectStates, reduceToStacks} from '#src/disreact/internal/index.ts';
-import type {HookStacksById, Pragma} from '#src/disreact/internal/types.ts';
+import {cloneTree, collectStates, type Pragma, reduceToStacks} from '#src/disreact/internal/index.ts';
+import type {HookStacksById } from '#src/disreact/internal/dsx/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/internal/index.ts';
-import type {GlobalContext, Hooks} from '#src/disreact/internal/types.ts';
+import type {GlobalContext, Hooks} from '#src/disreact/internal/dsx/types.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {globalValue} from 'effect/GlobalValue';
 

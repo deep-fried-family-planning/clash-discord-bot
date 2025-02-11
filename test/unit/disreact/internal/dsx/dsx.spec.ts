@@ -3,7 +3,7 @@ import {encodeDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import {dsx} from '#src/disreact/internal/dsx/index.ts';
 import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
-import type {Pragma} from '#src/disreact/internal/types.ts';
+import type {Pragma} from '#src/disreact/internal/dsx/types.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 describe('dsx', () => {

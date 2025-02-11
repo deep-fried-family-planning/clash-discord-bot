@@ -1,6 +1,6 @@
 import {CLOSE, Doken, NONE_STR} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {IxScope, type IxCtx} from '#src/disreact/internal/runtime/IxScope.ts';
+import {IxScope, type IxCtx} from '#src/disreact/internal/runtime/DisReactFrame.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 

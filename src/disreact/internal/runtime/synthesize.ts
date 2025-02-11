@@ -4,7 +4,7 @@ import {encodeMessageInteraction} from '#src/disreact/internal/codec/interaction
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
 import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
-import type {RenderFn} from '#src/disreact/internal/types.ts';
+import type {RenderFn} from '#src/disreact/internal/dsx/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

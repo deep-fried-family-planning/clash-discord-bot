@@ -1,4 +1,4 @@
-import type {Hooks, HookStacksById} from '#src/disreact/internal/types.ts';
+import type {Hooks, HookStacksById} from '#src/disreact/internal/dsx/types.ts';
 import {flow} from 'effect';
 
 
