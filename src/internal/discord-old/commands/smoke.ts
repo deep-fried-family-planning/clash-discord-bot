@@ -1,6 +1,6 @@
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import {synthesize} from '#src/disreact/internal/synthesize.ts';
+import {synthesize} from '#src/disreact/internal/runtime/synthesize.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';

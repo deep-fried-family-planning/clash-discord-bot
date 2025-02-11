@@ -17,7 +17,7 @@ export const useEffect = (effect: any, deps?: any[]) => {
 };
 
 export const useIxData = () => {
-  return __hooks().useIxData() as any;
+  return __hooks().useIxData();
 };
 
 export const usePage = (fns: RenderFn[]) => {

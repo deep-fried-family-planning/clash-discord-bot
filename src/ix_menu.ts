@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {interact} from '#src/disreact/internal/interact.ts';
-import {runtimeLayer} from '#src/disreact/internal/make-runtime.ts';
+import {interact} from '#src/disreact/internal/runtime/interact.ts';
+import {runtimeLayer} from '#src/disreact/internal/runtime/DisReactRuntime.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
