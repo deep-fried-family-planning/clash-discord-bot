@@ -27,7 +27,7 @@ export type DecodedInteraction = {
 
 
 export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * () {
-  yield * E.logInfo('decodeInteraction', inspect(rest.message, false, null));
+  yield * E.logInfo('decodeInteraction', inspect(rest, false, null));
 
   const start_ms         = Date.now();
   const contingencyDoken = makeContingencyDoken(rest);

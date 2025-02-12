@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
+import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import {encode_denylist} from '#src/disreact/internal/dsx/config.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import type {Pragma} from '#src/disreact/internal/index.ts';
@@ -79,8 +80,8 @@ const encodeInner = (node: any): any => {
     children[c.name].push(encodeInner(c));
   }
 
-  node.props     = encodeProps(node.props);
-  let acc        = {} as any;
+  node.props = encodeProps(node.props);
+  let acc = {} as any;
 
   switch (node.name) {
     case DTML.command:
@@ -91,7 +92,7 @@ const encodeInner = (node: any): any => {
     }
 
     case DTML.buttons: {
-      acc.type       = 1;
+      acc.type = 1;
       acc.components = children.button;
       return acc;
     }
@@ -104,9 +105,9 @@ const encodeInner = (node: any): any => {
       if (danger) acc.style = 4;
       if (link) acc.style = 5;
       if (premium) acc.style = 6;
-      acc       = {...props, ...acc};
+      acc = {...props, ...acc};
       acc.emoji = children.emoji?.[0];
-      acc.type  = 2;
+      acc.type = 2;
       acc.custom_id = node.props.custom_id ?? node.id_step;
       return acc;
     }
@@ -135,8 +136,9 @@ const encodeInner = (node: any): any => {
 
     case DTML.text: {
       const {paragraph, ...props} = node.props;
-      if (paragraph) acc.type = 2;
-      else acc.type = 1;
+      if (paragraph) acc.style = 2;
+      else acc.style = 1;
+      acc.type = 4;
       acc = {...props, ...acc};
       acc.custom_id = node.props.custom_id ?? node.id_step;
       return acc;
@@ -145,9 +147,9 @@ const encodeInner = (node: any): any => {
     case DTML.message: {
       children.embed ??= [];
       children.buttons ??= [];
-      acc            = node.props;
-      acc.flags      = node.props.ephemeral ? 64 : undefined;
-      acc.embeds     = children.embed;
+      acc = node.props;
+      acc.flags = node.props.ephemeral ? 64 : undefined;
+      acc.embeds = children.embed;
       acc.components = children.buttons;
       return acc;
     }
@@ -157,12 +159,12 @@ const encodeInner = (node: any): any => {
     }
     case DTML.modal: {
       acc.title = node.props.title;
-      acc.custom_id = node.props.custom_id ?? node.id_step;
+      acc.custom_id = node.props.custom_id ?? NONE_STR;
       acc.components = children.text.map((c: any) => ({type: 1, components: [c]}));
       return acc;
     }
     case DTML.embed: {
-      acc.title       = children.title[0];
+      acc.title = children.title[0];
       acc.description = children.description[0];
       return acc;
     }

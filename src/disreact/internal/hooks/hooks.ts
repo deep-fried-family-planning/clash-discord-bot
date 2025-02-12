@@ -1,8 +1,7 @@
 import type {Hooks} from '#src/disreact/internal/dsx/types.ts';
 import {_useEffect} from '#src/disreact/internal/hooks/use-effect.ts';
-import {_useIx} from '#src/disreact/internal/hooks/use-ix.ts';
-import {_usePage} from '#src/disreact/internal/hooks/use-page.ts';
 import {_useReducer, _useState} from '#src/disreact/internal/hooks/use-reducer.ts';
+import {_useIx, _usePage} from '#src/disreact/internal/hooks/use-util.ts';
 
 
 

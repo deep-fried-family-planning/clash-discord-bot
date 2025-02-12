@@ -18,6 +18,8 @@ const makeDokenKey = (id: string) => ({
 const make = (TableName: string) => E.gen(function * () {
   const dynamo = yield * DynamoDBDocument;
 
+  yield * E.logInfo(`dynamo table: ${TableName}`);
+
   const ddbPut = (d: Doken.T) => pipe(
     dynamo.put({
       TableName,

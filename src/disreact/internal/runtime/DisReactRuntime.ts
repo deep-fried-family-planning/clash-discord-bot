@@ -1,3 +1,4 @@
+import {LinkDialog} from '#src/discord/omni-board/link/link-dialog.tsx';
 import {Link} from '#src/discord/omni-board/link/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
@@ -22,7 +23,9 @@ export const runtimeLayer = pipe(
       OmniPrivate,
       Link,
     ],
-    dialog: [],
+    dialog: [
+      LinkDialog,
+    ],
   })),
   L.provideMerge(DiscordDOM.defaultLayer),
   L.provideMerge(DokenMemory.dynamoLayer(process.env.DDB_OPERATIONS)),

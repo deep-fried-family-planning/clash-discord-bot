@@ -1,12 +1,13 @@
 import {CloseButton} from '#src/discord/omni-board/components/close-button.tsx';
 import {Header} from '#src/discord/omni-board/components/header.tsx';
+import {LinkDialog} from '#src/discord/omni-board/link/link-dialog.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {usePage} from '#src/disreact/interface/hook.ts';
 
 
 
 export const Link = () => {
-  const page = usePage([OmniPrivate]);
+  const page = usePage([OmniPrivate, LinkDialog]);
 
   return (
     <message ephemeral>
@@ -21,6 +22,11 @@ export const Link = () => {
           onclick={() => page.next(OmniPrivate)}
         />
         <CloseButton/>
+        <button
+          secondary
+          label={'Modal'}
+          onclick={() => page.next(LinkDialog)}
+        />
       </buttons>
     </message>
   );

@@ -71,6 +71,7 @@ export const clickEvent = E.gen(function * () {
       ix.restDoken.flags = 64;
       ix.doken           = makeDeferred(ix.restDoken);
       yield * DiscordDOM.defer(ix.restDoken);
+      yield * E.logInfo(ix.doken);
       yield * DokenMemory.save(ix.doken);
     }
     else if (ix.doken) {
@@ -80,6 +81,7 @@ export const clickEvent = E.gen(function * () {
       ix.restDoken.type = Rest.Tx.DEFERRED_UPDATE_MESSAGE;
       ix.doken          = makeDeferred(ix.restDoken);
       yield * DiscordDOM.defer(ix.restDoken);
+      yield * E.logInfo(ix.doken);
       yield * DokenMemory.save(ix.doken);
     }
 

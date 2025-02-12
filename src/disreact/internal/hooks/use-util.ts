@@ -4,6 +4,14 @@ import type {RenderFn} from '#src/disreact/internal/index.ts';
 
 
 
+export const _useIx = () => () => {
+  const ctx = HookDispatch.__ctxread();
+
+  return ctx.rest;
+};
+
+
+
 export const _usePage = () => (_: RenderFn[]) => {
   const ctx = HookDispatch.__ctxread();
 

@@ -1,5 +1,6 @@
 import {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
+import {target} from 'dfx/Helpers/interactions';
 
 
 
@@ -17,16 +18,16 @@ export const decodeEvent = (rest: Rest.Interaction) => {
   }
 
   if (rest.type === Rest.Rx.MODAL_SUBMIT) {
-    const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
+    // const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
 
-    if (!target) {
-      throw new Error('Unsupported modal submit');
-    }
+    // if (!target) {
+    //   throw new Error('Unsupported modal submit');
+    // }
     return DEvent.SubmitClick({
       id    : rest.data.custom_id,
       rest,
       type  : DATT.onsubmit,
-      target: target as never,
+      target: {} as never,
     });
   }
 
