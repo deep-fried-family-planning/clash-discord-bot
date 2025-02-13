@@ -1,5 +1,6 @@
 import {StaticGraphError} from '#src/disreact/interface/error.ts';
 import {dsx, dsxid} from '#src/disreact/internal/dsx/index.ts';
+import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
 import type {Pragma, RenderFn} from '#src/disreact/internal/index.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
@@ -70,6 +71,8 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
 
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
+      HookDispatch.__mallocnull();
+
       const name = typeof fn === 'string' ? fn : fn.name;
 
       if (!(name in staticGraphMap)) {
@@ -87,7 +90,9 @@ export class StaticGraph extends E.Tag('DisReact.StaticGraph')<
   StaticGraph,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
-  static singleton = (config: StaticGraphConfig) => pipe(
-    L.effect(this, make(config).pipe(E.cached, E.flatten)),
-  );
+  static readonly singleton = (config: StaticGraphConfig) => L.effect(this, pipe(
+    make(config),
+    E.cached,
+    E.flatten,
+  ));
 }

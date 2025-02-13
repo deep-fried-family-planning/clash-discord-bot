@@ -66,5 +66,5 @@ export class DisReactFrame extends E.Tag('DisReact.Frame')<
   DisReactFrame,
   E.Effect.Success<typeof make>
 >() {
-  static makeLayer = () => L.effect(this, make);
+  static readonly makeLayer = () => L.effect(this, make);
 }

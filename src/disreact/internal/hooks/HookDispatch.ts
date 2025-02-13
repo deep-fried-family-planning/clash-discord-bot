@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
-import {attachHooks, emptyHooks} from '#src/disreact/internal/index.ts';
 import type {GlobalContext, Hooks} from '#src/disreact/internal/dsx/types.ts';
+import {attachHooks, emptyHooks} from '#src/disreact/internal/index.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {globalValue} from 'effect/GlobalValue';
 
@@ -34,11 +34,11 @@ const emptyNodeHookState = (): NodeHookState => ({
 
 
 
-const nullptr  = Symbol('DisReact.nullptr');
-const ptr      = {current: null as unknown as symbol};
+const nullptr = Symbol('DisReact.nullptr');
+const ptr = {current: null as unknown as symbol};
 const dispatch = {current: null as null | ReturnType<typeof attachHooks>};
-const main     = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, GlobalContext>());
-const node     = globalValue(Symbol.for('DisReact.node'), () => new WeakMap<symbol, Map<string, Hooks>>());
+const main = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, GlobalContext>());
+const node = globalValue(Symbol.for('DisReact.node'), () => new WeakMap<symbol, Map<string, Hooks>>());
 
 
 
@@ -104,7 +104,7 @@ const __prep = (id: string, state?: Hooks) => {
 
 const __get = (id: string) => {
   dispatch.current = null;
-  const states     = node.get(ptr.current);
+  const states = node.get(ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -125,7 +125,7 @@ const __mount = (id: string) => {
 
 const __dismount = (id: string) => {
   dispatch.current = null;
-  const states     = node.get(ptr.current);
+  const states = node.get(ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -151,21 +151,20 @@ export class HookDispatch extends E.Tag('DisReact.HookDispatch')<
   HookDispatch,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
-  static makeLayer = (id: symbol) => L.effect(this, make(id));
+  static readonly makeLayer = (id: symbol) => L.effect(this, make(id));
 
-  static emptyMainHookState = emptyMainHookState;
-  static emptyNodeHookState = emptyNodeHookState;
-
-  static __mallocnull = __mallocnull;
-  static __malloc     = __malloc;
-  static __free       = __free;
-  static __acquire    = __acquire;
-  static __release    = __release;
-  static __ctxwrite   = __ctxwrite;
-  static __ctxread    = __ctxread;
-  static __prep       = __prep;
-  static __get        = __get;
-  static __mount      = __mount;
-  static __dismount   = __dismount;
-  static __hooks      = __hooks;
+  static readonly emptyMainHookState = emptyMainHookState;
+  static readonly emptyNodeHookState = emptyNodeHookState;
+  static readonly __mallocnull = __mallocnull;
+  static readonly __malloc = __malloc;
+  static readonly __free = __free;
+  static readonly __acquire = __acquire;
+  static readonly __release = __release;
+  static readonly __ctxwrite = __ctxwrite;
+  static readonly __ctxread = __ctxread;
+  static readonly __prep = __prep;
+  static readonly __get = __get;
+  static readonly __mount = __mount;
+  static readonly __dismount = __dismount;
+  static readonly __hooks = __hooks;
 }

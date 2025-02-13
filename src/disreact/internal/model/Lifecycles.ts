@@ -14,5 +14,5 @@ export class Lifecycles extends E.Tag('DisReact.Lifecycles')<
   Lifecycles,
   E.Effect.Success<typeof make>
 >() {
-  static singleton = L.effect(this, make);
+  static readonly singleton = L.effect(this, make);
 }

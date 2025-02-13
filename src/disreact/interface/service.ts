@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type {Doken, Rest} from '#src/disreact/abstract/index.ts';
+import type {Doken} from '#src/disreact/abstract/index.ts';
 import {makeDfx} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
 import {makeDokenMemoryDynamo} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
 import {makeLocalDokenMemory} from '#src/disreact/implementation/DokenMemory-local.ts';
@@ -47,6 +47,6 @@ export class DokenMemory extends E.Tag('DisReact.DokenMemory')<
     memSave: (d: Doken.T) => E.Effect<void, DokenError>;
   }
 >() {
-  static localLayer  = makeLocalDokenMemory;
+  static localLayer = makeLocalDokenMemory;
   static dynamoLayer = makeDokenMemoryDynamo;
 }
