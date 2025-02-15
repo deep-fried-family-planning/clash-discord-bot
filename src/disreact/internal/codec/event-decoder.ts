@@ -1,16 +1,11 @@
 import {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import {DATT} from '#src/disreact/internal/dsx/index.ts';
-import {target} from 'dfx/Helpers/interactions';
-
-
 
 const unsupported = [
   Rest.Rx.PING,
   Rest.Rx.APPLICATION_COMMAND_AUTOCOMPLETE,
   Rest.Rx.APPLICATION_COMMAND,
 ];
-
-new TextEncoder().encode().buffer;
 
 export const decodeEvent = (rest: Rest.Interaction) => {
   if (unsupported.includes(rest.type)) {

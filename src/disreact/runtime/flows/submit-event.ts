@@ -20,7 +20,9 @@ export const submitEvent = E.gen(function * () {
   const cloneDialog = yield * StaticGraph.cloneRoot(frame.rx.params.root);
   const hydratedDialog = hydrateRoot(cloneDialog, {});
 
-  dispatchEvent(hydratedDialog, frame.rx.event);
+  console.log('hydratedDialog', hydratedDialog);
+
+  dispatchEvent(hydratedDialog, frame.event);
 
   frame.context = HookDispatch.__ctxread();
 

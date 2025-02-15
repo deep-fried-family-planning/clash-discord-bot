@@ -133,6 +133,7 @@ export const initialRender = (node: Pragma, parent?: Pragma): Pragma => {
 
 export const dispatchEvent = (node: Pragma, event: T, original: Pragma = node): Pragma => {
   if ('props' in node) {
+    console.log('props', event);
     if (node.id_step === event.id && node.props[event.type]) {
       if (typeof node.props[event.type] === 'function') {
         node.props[event.type](event);
