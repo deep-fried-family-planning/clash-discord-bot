@@ -23,6 +23,7 @@ export {
   Metric as Metric,
   Order as ORD,
   Option as O,
+  Option as OPT,
   Equal as EQ,
 
   Cron,

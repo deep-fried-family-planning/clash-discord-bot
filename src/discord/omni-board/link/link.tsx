@@ -1,5 +1,5 @@
-import {CloseButton} from '#src/discord/omni-board/components/close-button.tsx';
-import {Header} from '#src/discord/omni-board/components/header.tsx';
+import {CloseButton} from '#src/discord/components/close-button.tsx';
+import {Header} from '#src/discord/components/header.tsx';
 import {LinkDialog} from '#src/discord/omni-board/link/link-dialog.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {usePage} from '#src/disreact/interface/hook.ts';

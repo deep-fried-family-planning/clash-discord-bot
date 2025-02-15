@@ -16,7 +16,7 @@ export type TreeId = {
 export type Tree = {
   id: TreeId;
 
-  rise : Tree | null;
+  up   : Tree | null;
   down : Tree | null;
   prev : Tree | null;
   next : Tree | null;

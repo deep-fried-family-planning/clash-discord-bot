@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type,@typescript-eslint/no-explicit-any */
+
 import type {DEvent, Rest} from '#src/disreact/abstract/index.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 
 
 export type GlobalContext = {
-  next : string;
-  rest?: Rest.Ix | null;
+  next     : string;
+  nextProps: any;
+  rest?    : Rest.Ix | null;
 };
 
 
@@ -440,7 +441,7 @@ export type DFMDNestedElement =
   | DFMDAnchorElement
   | DFMDElement;
 export type DFMDElement = {
-  children: string | DFMDNestedElement[];
+  children?: string | string[] | DFMDNestedElement | DFMDNestedElement[];
 };
 
 

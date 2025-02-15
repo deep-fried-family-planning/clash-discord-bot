@@ -1,6 +1,8 @@
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
+import {DT, OPT} from '#src/internal/pure/effect.ts';
 import type {rec} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
+import {flow} from 'effect';
 import {inject, parse as makeParser, type RouteParams} from 'regexparam';
 
 
@@ -32,3 +34,7 @@ export const makeRoute = <A extends string>(template: A) => {
     encode: (params: Params) => inject<A>(template, params),
   };
 };
+
+
+
+export const makeDateTime = flow(DT.make, OPT.getOrThrow);

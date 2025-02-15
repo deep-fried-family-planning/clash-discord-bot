@@ -1,4 +1,4 @@
-import {Header} from '#src/discord/omni-board/components/header.tsx';
+import {Header} from '#src/discord/components/header.tsx';
 import {useState} from '#src/disreact/interface/hook.ts';
 
 
@@ -12,6 +12,21 @@ export const TestMessage = () => {
         title={'Omni Board'}
         description={'V2 - JSX Pragma'}
       />
+      <embed>
+        <title>{'Test Title - NOT markdown'}</title>
+        <description>
+          <h3>{'H3'}</h3>
+          <small>
+            <p>
+              <at user id={'123456'}/>{'welcome!'}
+            </p>
+          </small>
+          <br/>
+          <u>${'not a link'}</u>
+
+
+        </description>
+      </embed>
       <buttons>
         <button
           primary

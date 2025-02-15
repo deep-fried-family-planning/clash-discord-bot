@@ -116,7 +116,7 @@ const view = (s: St, ax: Ax) => E.gen(function * () {
           ).fill(0),
           mapL(() => ({})),
           mapL(
-            // @ts-ignore
+            // @ts-expect-error deprecated anyway
             ['cwl', 'cwl-at-large'].includes(roster.roster_type) ? approximateRoundStartTimesCWL(s, roster)
               : approximateRoundStartTimesODCWL(s, roster),
           ),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/internal/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type {Auth, DEvent, Doken, Rest} from '#src/disreact/abstract/index.ts';
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import type {DecodedRoute} from '#src/disreact/internal/codec/route-codec.ts';
@@ -48,7 +47,7 @@ const make = E.gen(function * () {
   let self = null as unknown as IxCtx;
 
   const semaphore = yield * E.makeSemaphore(1);
-  const mutex     = semaphore.withPermits(1);
+  const mutex = semaphore.withPermits(1);
 
   return {
     Type: null as unknown as typeof self,

@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access */
+
 import type {T} from '#src/disreact/abstract/event.ts';
 import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/datt.ts';
+import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/internal/dsx/attributes.ts';
 import {dsxid} from '#src/disreact/internal/dsx/dsx.ts';
 import {DTML} from '#src/disreact/internal/dsx/index.ts';
 import {Critical, Impossible} from '#src/disreact/internal/index.ts';

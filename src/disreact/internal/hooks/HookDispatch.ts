@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import type {GlobalContext, Hooks} from '#src/disreact/internal/dsx/types.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/internal/index.ts';
@@ -8,12 +7,21 @@ import {globalValue} from 'effect/GlobalValue';
 
 
 export type MainHookState = {
-  next    : string;
-  handler?: Promise<void> | E.Effect<void>;
+  next     : string;
+  nextProps: any;
+  handler? : Promise<void> | E.Effect<void>;
+  store?: {
+    id          : string;
+    initialState: any;
+    reducer     : any;
+    stack       : any[];
+    queue       : any[];
+  };
 };
 
 const emptyMainHookState = (): MainHookState => ({
-  next: NONE_STR,
+  next     : NONE_STR,
+  nextProps: {},
 });
 
 
@@ -37,7 +45,7 @@ const emptyNodeHookState = (): NodeHookState => ({
 const nullptr = Symbol('DisReact.nullptr');
 const ptr = {current: null as unknown as symbol};
 const dispatch = {current: null as null | ReturnType<typeof attachHooks>};
-const main = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, GlobalContext>());
+const main = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, MainHookState>());
 const node = globalValue(Symbol.for('DisReact.node'), () => new WeakMap<symbol, Map<string, Hooks>>());
 
 

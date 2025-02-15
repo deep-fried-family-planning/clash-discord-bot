@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access */
 import {Impossible, type Pragma} from '#src/disreact/internal/index.ts';
 
 
@@ -85,24 +84,6 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
     }
 
     case 'function': {
-      // for (let i = 0; i < nextchildren.length; i++) {
-      //   let c = nextchildren[i] as any;
-      //
-      //   if (typeof nextchildren[i] === 'string') {
-      //     c = {
-      //       kind   : 'text',
-      //       name   : 'string',
-      //       id_step: '',
-      //       id_full: '',
-      //       value  : nextchildren[i],
-      //     };
-      //   }
-      //
-      //   c.index         = i;
-      //   c.id            = `${c.name}:${i}`;
-      //   nextchildren[i] = c;
-      // }
-
       return {
         kind    : 'function',
         name    : type.name,

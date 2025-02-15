@@ -1,4 +1,4 @@
-import {Header} from '#src/discord/omni-board/components/header.tsx';
+import {Header} from '#src/discord/components/header.tsx';
 import {useState} from '#src/disreact/interface/hook.ts';
 
 

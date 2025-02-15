@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call */
 import {CLOSE, Rest} from '#src/disreact/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {makeDeferred} from '#src/disreact/internal/codec/doken-codec.ts';
@@ -23,6 +22,8 @@ export const clickEvent = E.gen(function * () {
 
   const afterEvent = dispatchEvent(hydrated, frame.event);
   frame.context = HookDispatch.__ctxread();
+
+  yield * flushContext;
 
   if (frame.context.next === CLOSE) {
     return yield * closeEvent;
@@ -111,4 +112,33 @@ export const flushHooks = (root: Pragma) => E.gen(function * () {
   }
 
   return root;
+});
+
+
+
+export const flushContext = E.gen(function * () {
+  const ctx = HookDispatch.__ctxread();
+
+  if (!ctx.store || !ctx.store.queue.length) {
+    return;
+  }
+  const state = ctx.store.stack.pop()!;
+
+  while (ctx.store.queue.length) {
+    const action = ctx.store.queue.shift()!;
+
+    const next = ctx.store.reducer(state, action);
+    let nextState: any;
+
+    if (E.isEffect(next)) {
+      nextState = yield * next;
+    }
+    else if (next.constructor.name === 'AsyncFunction') {
+      nextState = yield * E.tryPromise(async () => await next());
+    }
+    else {
+      nextState = next;
+    }
+    ctx.store.stack.push(nextState);
+  }
 });

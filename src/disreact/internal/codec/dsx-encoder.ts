@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return */
 import {NONE_STR} from '#src/disreact/abstract/index.ts';
 import {encode_denylist} from '#src/disreact/internal/dsx/config.ts';
-import {DTML} from '#src/disreact/internal/dsx/index.ts';
+import {DFMD, DTML} from '#src/disreact/internal/dsx/index.ts';
 import type {Pragma} from '#src/disreact/internal/index.ts';
+import console from 'node:console';
 
 
 export type EncodedMessage = {
@@ -75,13 +75,18 @@ const unwrapFunctions = (node: any): any => {
 const encodeInner = (node: any): any => {
   const children = {} as any;
 
+  const allChildren = [] as any[];
+
   for (const c of node.children ?? []) {
+    const child = encodeInner(c);
+    allChildren.push(child);
     children[c.name] ??= [];
-    children[c.name].push(encodeInner(c));
+    children[c.name].push(child);
   }
 
   node.props = encodeProps(node.props);
   let acc = {} as any;
+
 
   switch (node.name) {
     case DTML.command:
@@ -113,12 +118,12 @@ const encodeInner = (node: any): any => {
     }
 
     case DTML.menu: {
+      acc.options = children.option;
       return acc;
     }
 
-
     case DTML.option: {
-      return acc;
+      return node.props;
     }
 
     case DTML.value: {
@@ -157,36 +162,141 @@ const encodeInner = (node: any): any => {
     case DTML.content: {
       return acc;
     }
+
     case DTML.modal: {
       acc.title = node.props.title;
       acc.custom_id = node.props.custom_id ?? NONE_STR;
       acc.components = children.text.map((c: any) => ({type: 1, components: [c]}));
       return acc;
     }
+
     case DTML.embed: {
       acc.title = children.title[0];
-      acc.description = children.description[0];
+      acc.description = children.description.join('');
       return acc;
     }
-    case DTML.title:
-      acc = children.string[0];
-      return acc;
 
-    case DTML.description:
+    case DTML.title:{
       acc = children.string[0];
       return acc;
+    }
+
+    case DTML.description:{
+      // acc = children.string[0];
+      return allChildren.join('');
+    }
 
     case DTML.field:
     case DTML.footer: {
+      acc.fields = children.field;
       return acc;
     }
 
     case DTML.string: {
       return node.value;
     }
+  }
 
-    default:
-      return {};
+  if (node.name in DFMD) {
+    node.children = allChildren;
+    acc = encodeDFMD(node);
+    return acc;
+  }
+
+  throw new Error();
+};
+
+
+const encodeDFMD = (node: any): any => {
+  console.log(node);
+
+  node.children = node.children ?? [];
+
+  switch (node.name) {
+    case DTML.string: {
+      return node.value;
+    }
+
+    case DFMD.at: {
+      const {everyone, here, user, role, channel, id} = node.props;
+      switch (true) {
+        case everyone: return '@everyone';
+        case here: return '@here';
+        case user: return `@${id}`;
+        case role: return `@&${id}`;
+        case channel: return `#${id}`;
+        default: return '';
+      }
+    }
+    case DFMD.a: {
+      const {href, embed} = node.props;
+      if (node.children.length) {
+        return;
+      }
+
+      return '';
+    }
+    case DFMD.mask: {
+      return node.children.join(' ');
+    }
+    case DFMD.p: {
+      return node.children.join(' ');
+    }
+    case DFMD.br: {
+      return '\n';
+    }
+    case DFMD.b: {
+      return `**${node.children.join('')}**`;
+    }
+    case DFMD.i: {
+      return `*${node.children.join('')}*`;
+    }
+    case DFMD.u: {
+      return `__${node.children.join('')}__`;
+    }
+    case DFMD.s: {
+      return `~~${node.children.join('')}~~`;
+    }
+    case DFMD.details: {
+      return `||${node.children.join('')}||`;
+    }
+    case DFMD.code: {
+      return `\`${node.children.join('')}\``;
+    }
+    case DFMD.pre: {
+      const {syntax} = node.props;
+      if (syntax) {
+        return `\n\`\`\`${syntax}\n${node.children.join('')}\n\`\`\``;
+      }
+      return `\n\`\`\`\n${node.children.join(' ')}\n\`\`\``;
+    }
+    case DFMD.blockquote: {
+      return `\n> ${node.children.join(' ')}`;
+    }
+    case DFMD.h1: {
+      return `\n# ${node.children.join(' ')}`;
+    }
+    case DFMD.h2: {
+      return `\n## ${node.children.join(' ')}`;
+    }
+    case DFMD.h3: {
+      return `\n### ${node.children.join(' ')}`;
+    }
+    case DFMD.small: {
+      return `\n-# ${node.children.join(' ')}`;
+    }
+    case DFMD.ol: {
+      return (node.children as string[]).reduce((acc, c, i) => `${acc}\n${i + 1}. ${c}`, ' ');
+    }
+    case DFMD.ul: {
+      return node.children.join('\n* ');
+    }
+    case DFMD.li: {
+      return node.children.join('');
+    }
+    default: {
+      throw new Error();
+    }
   }
 };
 

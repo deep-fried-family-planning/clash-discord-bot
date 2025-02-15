@@ -10,7 +10,7 @@ const unsupported = [
   Rest.Rx.APPLICATION_COMMAND,
 ];
 
-
+new TextEncoder().encode().buffer;
 
 export const decodeEvent = (rest: Rest.Interaction) => {
   if (unsupported.includes(rest.type)) {
