@@ -1,12 +1,12 @@
-import {LinkDialog} from '#src/discord/omni-board/link/link-dialog.tsx';
-import {Link} from '#src/discord/omni-board/link/link.tsx';
+import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
+import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import type {Rest} from '#src/disreact/abstract/index.ts';
+import type {Rest} from '#src/disreact/codec/abstract/index.ts';
+import type {RenderFn} from '#src/disreact/dsx/lifecycle.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
-import type {RenderFn} from '#src/disreact/internal/dsx/types.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
 

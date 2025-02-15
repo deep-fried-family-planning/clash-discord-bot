@@ -1,10 +1,11 @@
-import {Rest} from '#src/disreact/abstract/index.ts';
+import {Rest} from '#src/disreact/codec/abstract/index.ts';
+import {Critical} from '#src/disreact/codec/debug.ts';
+import {dispatchEvent, hydrateRoot, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {makeDeferred} from '#src/disreact/internal/codec/doken-codec.ts';
-import {encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {Critical, dispatchEvent, hydrateRoot, rerenderRoot} from '#src/disreact/internal/index.ts';
-import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
+import {makeDeferred} from '#src/disreact/codec/doken-codec.ts';
+import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
+import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
+import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {flushHooks} from '#src/disreact/runtime/flows/click-event.ts';
 import {isSameRoot} from '#src/disreact/runtime/flows/utils.ts';

@@ -1,6 +1,6 @@
-import type {Rest} from '#src/disreact/abstract/index.ts';
-import {decodeInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {emptyHooks} from '#src/disreact/internal/index.ts';
+import type {Rest} from '#src/disreact/codec/abstract/index.ts';
+import {decodeInteraction} from '#src/disreact/codec/interaction-codec.ts';
+import {emptyHooks} from '#src/disreact/hooks/hooks.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {clickEvent} from '#src/disreact/runtime/flows/click-event.ts';
 import {submitEvent} from '#src/disreact/runtime/flows/submit-event.ts';

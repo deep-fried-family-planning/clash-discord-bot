@@ -1,10 +1,9 @@
-import {NONE_INT, NONE_STR} from '#src/disreact/abstract/index.ts';
-import {Tx} from '#src/disreact/abstract/rest.ts';
-import {encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
-import {initialRender} from '#src/disreact/internal/dsx/lifecycle.ts';
-import type {RenderFn} from '#src/disreact/internal/dsx/types.ts';
+import {NONE_INT, NONE_STR} from '#src/disreact/codec/abstract/index.ts';
+import {Tx} from '#src/disreact/codec/abstract/rest.ts';
+import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
+import {initialRender, type RenderFn} from '#src/disreact/dsx/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
+import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 
@@ -12,7 +11,7 @@ import {E} from '#src/internal/pure/effect.ts';
 export const synthesize = (fn: RenderFn) => E.gen(function * () {
   HookDispatch.__mallocnull();
 
-  const root     = yield * StaticGraph.cloneRoot(fn);
+  const root = yield * StaticGraph.cloneRoot(fn);
   const rendered = initialRender(root);
 
 

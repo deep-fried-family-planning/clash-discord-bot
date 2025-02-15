@@ -1,4 +1,4 @@
-import {CLOSE, Doken, NONE_STR} from '#src/disreact/abstract/index.ts';
+import {CLOSE, NONE_STR} from '#src/disreact/codec/abstract/index.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {DisReactFrame, type IxCtx} from '#src/disreact/runtime/DisReactFrame.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -22,10 +22,10 @@ export const closeEvent = E.gen(function * () {
 });
 
 
-export const isClose    = (ix: IxCtx) => ix.context.next === CLOSE;
+export const isClose = (ix: IxCtx) => ix.context.next === CLOSE;
 export const isSameRoot = (ix: IxCtx) => ix.context.next === NONE_STR || ix.context.next === ix.rx.params.root;
-export const isClick    = (ix: IxCtx) => ix.event.type === 'onclick';
-export const isSubmit   = (ix: IxCtx) => ix.event.type === 'onsubmit';
+export const isClick = (ix: IxCtx) => ix.event.type === 'onclick';
+export const isSubmit = (ix: IxCtx) => ix.event.type === 'onsubmit';
 
 
 

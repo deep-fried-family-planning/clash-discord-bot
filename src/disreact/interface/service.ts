@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type {Doken} from '#src/disreact/abstract/index.ts';
-import {makeDfx} from '#src/disreact/implementation/DiscordDOM-dfx.ts';
-import {makeDokenMemoryDynamo} from '#src/disreact/implementation/DokenMemory-dynamo.ts';
-import {makeLocalDokenMemory} from '#src/disreact/implementation/DokenMemory-local.ts';
+import type {Doken} from '#src/disreact/codec/abstract/index.ts';
+import {makeDfx} from '#src/disreact/interface/implementation/DiscordDOM-dfx.ts';
+import {makeDokenMemoryDynamo} from '#src/disreact/interface/implementation/DokenMemory-dynamo.ts';
+import {makeLocalDokenMemory} from '#src/disreact/interface/implementation/DokenMemory-local.ts';
 import type {DokenMemoryError} from '#src/disreact/interface/error.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {DiscordRESTError} from 'dfx/DiscordREST';

@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-assignment */
+
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
-import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/internal/dsx/lifecycle.ts';
-import type {Pragma} from '#src/disreact/internal/dsx/types.ts';
+import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
+import type {Pragma} from '#src/disreact/dsx/types.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 

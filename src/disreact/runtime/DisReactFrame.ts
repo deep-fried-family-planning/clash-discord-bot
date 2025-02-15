@@ -1,7 +1,7 @@
-import type {Auth, DEvent, Doken, Rest} from '#src/disreact/abstract/index.ts';
-import {NONE_STR} from '#src/disreact/abstract/index.ts';
-import type {DecodedRoute} from '#src/disreact/internal/codec/route-codec.ts';
-import type {GlobalContext, HooksById, HookStacksById, InteractionHooks, IxId} from '#src/disreact/internal/dsx/types.ts';
+import type {Auth, DEvent, Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
+import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
+import type {DecodedRoute} from '#src/disreact/codec/route-codec.ts';
+import type {GlobalContext, HooksById, HookStacksById, InteractionHooks, IxId} from '#src/disreact/dsx/types.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 
 

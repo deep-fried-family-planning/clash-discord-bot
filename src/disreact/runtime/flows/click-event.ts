@@ -1,10 +1,10 @@
-import {CLOSE, Rest} from '#src/disreact/abstract/index.ts';
+import {CLOSE, Rest} from '#src/disreact/codec/abstract/index.ts';
+import {makeDeferred} from '#src/disreact/codec/doken-codec.ts';
+import {encodeDialogInteraction, encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
+import {collectStates, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {makeDeferred} from '#src/disreact/internal/codec/doken-codec.ts';
-import {encodeDialogInteraction, encodeMessageInteraction} from '#src/disreact/internal/codec/interaction-codec.ts';
-import {HookDispatch} from '#src/disreact/internal/hooks/HookDispatch.ts';
-import {collectStates, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/internal/index.ts';
-import {StaticGraph} from '#src/disreact/internal/model/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {closeEvent, isSameRoot} from '#src/disreact/runtime/flows/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -131,7 +131,7 @@ export const flushContext = E.gen(function * () {
     let nextState: any;
 
     if (E.isEffect(next)) {
-      nextState = yield * next;
+      nextState = yield * (next as E.Effect<void>);
     }
     else if (next.constructor.name === 'AsyncFunction') {
       nextState = yield * E.tryPromise(async () => await next());
