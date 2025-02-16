@@ -1,8 +1,10 @@
+import type {Rest} from '#src/disreact/codec/abstract/index.ts';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import type {GlobalContext, Hooks} from '#src/disreact/dsx/types.ts';
+import type {Hooks} from '#src/disreact/dsx/types.ts';
 import {attachHooks, emptyHooks} from '#src/disreact/hooks/hooks.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {globalValue} from 'effect/GlobalValue';
+import console from 'node:console';
 
 
 
@@ -17,11 +19,13 @@ export type MainHookState = {
     stack       : any[];
     queue       : any[];
   };
+  rest: Rest.Interaction;
 };
 
 const emptyMainHookState = (): MainHookState => ({
   next     : NONE_STR,
   nextProps: {},
+  rest     : null as unknown as Rest.Interaction,
 });
 
 
@@ -77,8 +81,9 @@ const __release = () => {
   ptr.current = nullptr;
 };
 
-const __ctxwrite = (ctx: GlobalContext) => {
+const __ctxwrite = (ctx: MainHookState) => {
   main.set(ptr.current, ctx);
+  console.log('write', ctx);
   return ctx;
 };
 
@@ -87,6 +92,7 @@ const __ctxread = () => {
   if (!ctx) {
     throw new Error('Unregistered interaction');
   }
+  console.log('read', ctx);
   return ctx;
 };
 

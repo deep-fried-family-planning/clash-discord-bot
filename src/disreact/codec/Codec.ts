@@ -1,31 +1,13 @@
-import type {Rest} from '#src/disreact/codec/abstract/index.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
+import {Refinement} from 'effect/Predicate';
+import type { Out, Routing } from './schema';
 
 
 
-export type CodecMenuRoute = {
-  version  : string;
-  root     : string;
-  portal?  : string;
-  id       : string;
-  value    : string;
-  ttl      : number;
-  type     : number;
-  ephemeral: number;
-};
-
-export type CodecCommandRoute = {
-
-};
-
-
-
-export class Codec extends E.Tag('DisReact.Codec')<
+export class Codec extends E.Tag('Effect')<
   Codec,
   {
-    decodeCommand: (rest: Rest.Ix) => CodecCommandRoute;
-    decodeMessage: (rest: Rest.Message) => CodecMenuRoute;
-    decodeDialog : (rest: Rest.Ix) => CodecMenuRoute;
+    encodeDialog: (data: ) => E.Effect<Out.DialogOut>;
   }
 >() {
 

@@ -14,7 +14,7 @@ export type TreeId = {
 
 
 export type Tree = {
-  id: TreeId;
+  _id: TreeId;
 
   up   : Tree | null;
   down : Tree | null;

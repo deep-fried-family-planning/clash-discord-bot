@@ -1,5 +1,6 @@
 import {runtimeLayer} from '#src/disreact/runtime/DisReactRuntime.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
@@ -39,6 +40,8 @@ const live = pipe(
     L.provide(NodeHttpClient.layerUndici),
     L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
   )),
+  L.provideMerge(MenuCache.Live),
+  L.provideMerge(DynamoDBDocument.defaultLayer),
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
   L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   L.provideMerge(L.setTracerTiming(true)),

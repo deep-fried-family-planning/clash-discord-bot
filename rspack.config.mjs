@@ -26,6 +26,7 @@ export default defineConfig({
     'ix_slash/index'     : {import: 'src/ix_slash.ts'},
     'poll/index'         : {import: 'src/poll.ts'},
     'task/index'         : {import: 'src/task.ts'},
+    'test/index'         : {import: 'src/discord/omni-board/info-panel.tsx'},
   },
 
   output: {

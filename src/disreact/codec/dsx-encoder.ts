@@ -1,9 +1,12 @@
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import {encode_denylist} from '#src/disreact/dsx/config.ts';
-import {DFMD, DTML} from '#src/disreact/dsx/index.ts';
+import {encode_denylist} from '#src/disreact/codec/abstract/config.ts';
+import {encodeMap} from '#src/disreact/codec/schema/dom-intrinsic.ts';
 import type {Pragma} from '#src/disreact/dsx/lifecycle.ts';
 import console from 'node:console';
-
+import * as DTML from './abstract/dtml.ts';
+import * as DFMD from './abstract/dfmd.ts';
+import * as Attr from './abstract/attributes.ts';
+import * as Intrinsic from '#src/disreact/codec/schema/dom-intrinsic.ts';
 
 export type EncodedMessage = {
   content   : string;
@@ -87,46 +90,17 @@ const encodeInner = (node: any): any => {
   node.props = encodeProps(node.props);
   let acc = {} as any;
 
+  if (node.name in DTML) {
+
+  }
+
 
   switch (node.name) {
-    case DTML.command:
-    case DTML.param:
-    case DTML.choice: {
-      acc = node.props;
-      return acc;
-    }
-
-    case DTML.buttons: {
-      acc.type = 1;
-      acc.components = children.button;
-      return acc;
-    }
-
-    case DTML.button: {
-      const {primary, secondary, success, danger, link, premium, ...props} = node.props;
-      if (primary) acc.style = 1;
-      if (secondary) acc.style = 2;
-      if (success) acc.style = 3;
-      if (danger) acc.style = 4;
-      if (link) acc.style = 5;
-      if (premium) acc.style = 6;
-      acc = {...props, ...acc};
-      acc.emoji = children.emoji?.[0];
-      acc.type = 2;
-      acc.custom_id = node.props.custom_id ?? node.id_step;
-      return acc;
-    }
-
-    case DTML.menu: {
-      acc.options = children.option;
-      return acc;
-    }
-
-    case DTML.option: {
+    case DTML.$option: {
       return node.props;
     }
 
-    case DTML.value: {
+    case DTML.$default: {
       const {user, role, channel, id} = node.props;
       if (user) acc.type = 'user';
       if (role) acc.type = 'role';
@@ -135,11 +109,11 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.emoji: {
+    case DTML.$emoji: {
       return node.props;
     }
 
-    case DTML.text: {
+    case DTML.$textarea: {
       const {paragraph, ...props} = node.props;
       if (paragraph) acc.style = 2;
       else acc.style = 1;
@@ -149,7 +123,7 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.message: {
+    case DTML.$message: {
       children.embed ??= [];
       children.buttons ??= [];
       acc = node.props;
@@ -159,41 +133,23 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.content: {
-      return acc;
-    }
-
-    case DTML.modal: {
+    case DTML.$modal: {
       acc.title = node.props.title;
       acc.custom_id = node.props.custom_id ?? NONE_STR;
       acc.components = children.text.map((c: any) => ({type: 1, components: [c]}));
       return acc;
     }
 
-    case DTML.embed: {
+    case DTML.$embed: {
       acc.title = children.title[0];
-      acc.description = children.description.join('');
+      acc.description = children.description?.join('');
       return acc;
     }
 
-    case DTML.title:{
-      acc = children.string[0];
-      return acc;
-    }
-
-    case DTML.description:{
-      // acc = children.string[0];
-      return allChildren.join('');
-    }
-
-    case DTML.field:
-    case DTML.footer: {
+    case DTML.$field:
+    case DTML.$footer: {
       acc.fields = children.field;
       return acc;
-    }
-
-    case DTML.string: {
-      return node.value;
     }
   }
 
@@ -213,22 +169,24 @@ const encodeDFMD = (node: any): any => {
   node.children = node.children ?? [];
 
   switch (node.name) {
-    case DTML.string: {
-      return node.value;
-    }
-
-    case DFMD.at: {
+    case  DFMD.$at: {
       const {everyone, here, user, role, channel, id} = node.props;
       switch (true) {
-        case everyone: return '@everyone';
-        case here: return '@here';
-        case user: return `@${id}`;
-        case role: return `@&${id}`;
-        case channel: return `#${id}`;
-        default: return '';
+        case everyone:
+          return '@everyone';
+        case here:
+          return '@here';
+        case user:
+          return `@${id}`;
+        case role:
+          return `@&${id}`;
+        case channel:
+          return `#${id}`;
+        default:
+          return '';
       }
     }
-    case DFMD.a: {
+    case DFMD.$a: {
       const {href, embed} = node.props;
       if (node.children.length) {
         return;
@@ -236,62 +194,62 @@ const encodeDFMD = (node: any): any => {
 
       return '';
     }
-    case DFMD.mask: {
+    case DFMD.$mask: {
       return node.children.join(' ');
     }
-    case DFMD.p: {
+    case DFMD.$p: {
       return node.children.join(' ');
     }
-    case DFMD.br: {
+    case DFMD.$br: {
       return '\n';
     }
-    case DFMD.b: {
+    case DFMD.$b: {
       return `**${node.children.join('')}**`;
     }
-    case DFMD.i: {
+    case DFMD.$i: {
       return `*${node.children.join('')}*`;
     }
-    case DFMD.u: {
+    case DFMD.$u: {
       return `__${node.children.join('')}__`;
     }
-    case DFMD.s: {
+    case DFMD.$s: {
       return `~~${node.children.join('')}~~`;
     }
-    case DFMD.details: {
+    case DFMD.$details: {
       return `||${node.children.join('')}||`;
     }
-    case DFMD.code: {
+    case DFMD.$code: {
       return `\`${node.children.join('')}\``;
     }
-    case DFMD.pre: {
+    case DFMD.$pre: {
       const {syntax} = node.props;
       if (syntax) {
         return `\n\`\`\`${syntax}\n${node.children.join('')}\n\`\`\``;
       }
       return `\n\`\`\`\n${node.children.join(' ')}\n\`\`\``;
     }
-    case DFMD.blockquote: {
+    case DFMD.$blockquote: {
       return `\n> ${node.children.join(' ')}`;
     }
-    case DFMD.h1: {
+    case DFMD.$h1: {
       return `\n# ${node.children.join(' ')}`;
     }
-    case DFMD.h2: {
+    case DFMD.$h2: {
       return `\n## ${node.children.join(' ')}`;
     }
-    case DFMD.h3: {
+    case DFMD.$h3: {
       return `\n### ${node.children.join(' ')}`;
     }
-    case DFMD.small: {
+    case DFMD.$small: {
       return `\n-# ${node.children.join(' ')}`;
     }
-    case DFMD.ol: {
+    case DFMD.$ol: {
       return (node.children as string[]).reduce((acc, c, i) => `${acc}\n${i + 1}. ${c}`, ' ');
     }
-    case DFMD.ul: {
+    case DFMD.$ul: {
       return node.children.join('\n* ');
     }
-    case DFMD.li: {
+    case DFMD.$li: {
       return node.children.join('');
     }
     default: {
@@ -309,10 +267,17 @@ const encodeProps = (props: any): any => {
   const acc = {} as any;
 
   for (const k of Object.keys(props as object)) {
-    if (!(k in encode_denylist)) {
+    if (!(k in Attr)) {
       acc[k] = props[k];
     }
   }
 
   return acc;
+};
+
+
+const encodeAttributes = (node: any): any => {
+  node.children = node.children ?? [];
+
+  const encoded = Intrinsic.encodeAttributes(node.name as Intrinsic.ElementTag, node.props);
 };

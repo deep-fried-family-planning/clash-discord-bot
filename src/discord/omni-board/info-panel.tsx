@@ -1,42 +1,38 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
+import {InfoEmbed} from '#src/discord/omni-board/info-embed.tsx';
+import {translations} from '#src/discord/omni-board/translations.ts';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import {useEffect, useState} from '#src/disreact/interface/hook.ts';
+import { useIx, useState} from '#src/disreact/interface/hook.ts';
 
 
 
 export const InfoPanel = () => {
-  const [infoKind, setInfoKind] = useState('About');
+  const [infoKind, setInfoKind] = useState('about');
   const [infoId, setInfoId] = useState(NONE_STR);
   const [infoOptions, setInfoOptions] = useState([]);
-
-  useEffect(
-    () => {
-
-    },
-    [infoKind, infoId],
-  );
+  const ix = useIx();
 
   return (
     <message ephemeral>
       <embed>
-        <title>{'Info'}</title>
+        <title>{translations.INFO}</title>
       </embed>
-      <embed>
-        <title>{'Info'}</title>
-        <description>
-          {'Info'}
-        </description>
-      </embed>
-      <menu string>
-        <option label={'About'} value={'About'}/>
-        <option label={'Help'} value={'Help'}/>
-        <option label={'Settings'} value={'Settings'}/>
+      <InfoEmbed embedId={infoId}/>
+      <menu
+        string
+        onclick={(event) => {
+          ix
+        }}
+      >
+        <option label={translations.ABOUT} value={'ABOUT'} default={infoKind === 'ABOUT'}/>
+        <option label={translations.SERVER_GUIDE} value={'SERVER_GUIDE'} default={infoKind === 'SERVER_GUIDE'}/>
+        <option label={translations.RULES} value={'RULES'} default={infoKind === 'RULES'}/>
       </menu>
-      <menu string>
-        {infoOptions.map((iO) => (
-          <option/>
-        ))}
-      </menu>
+      {/*<menu string>*/}
+      {/*  {infoOptions.map((iO) => (*/}
+      {/*    <option/>*/}
+      {/*  ))}*/}
+      {/*</menu>*/}
       <NavBar/>
     </message>
   );

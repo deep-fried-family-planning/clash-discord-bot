@@ -1,3 +1,4 @@
+import {InfoPanel} from '#src/discord/omni-board/info-panel.tsx';
 import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
@@ -22,6 +23,7 @@ export const runtimeLayer = pipe(
     ephemeral: [
       OmniPrivate,
       Link,
+      InfoPanel,
     ],
     dialog: [
       LinkDialog,

@@ -1,4 +1,4 @@
-import {b64ToBn, bnToB64} from '#src/disreact/codec/schema/bigint-codec.ts';
+import {b64ToBn, bnToB64} from '#src/disreact/codec/abstract/bigint-codec.ts';
 import {describe, expect, it} from 'vitest';
 
 

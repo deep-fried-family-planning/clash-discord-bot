@@ -1,4 +1,4 @@
-import {Impossible} from '#src/disreact/codec/debug.ts';
+// import {Impossible} from '#src/disreact/codec/debug.ts';
 import type {Pragma} from '#src/disreact/dsx/lifecycle.ts';
 
 
@@ -114,7 +114,7 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
     }
 
     default: {
-      throw new Impossible({why: 'Unknown Tag'});
+      throw new Error('Unknown Tag');
     }
   }
 };

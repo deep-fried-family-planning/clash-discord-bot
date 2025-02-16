@@ -1,6 +1,6 @@
-import * as DATT from '#src/disreact/dsx/attributes.ts';
-import * as DFMD from '#src/disreact/dsx/dfmd.ts';
-import * as DTML from '#src/disreact/dsx/dtml.ts';
+import * as DATT from '#src/disreact/codec/abstract/attributes.ts';
+import * as DFMD from '#src/disreact/codec/abstract/dfmd.ts';
+import * as DTML from '#src/disreact/codec/abstract/dtml.ts';
 
 export {
   DATT,

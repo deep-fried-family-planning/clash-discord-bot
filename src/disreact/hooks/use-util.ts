@@ -7,7 +7,7 @@ import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 export const _useIx = () => () => {
   const ctx = HookDispatch.__ctxread();
 
-  return (ctx as any).rest;
+  return ctx.rest;
 };
 
 

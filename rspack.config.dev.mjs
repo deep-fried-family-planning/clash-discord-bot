@@ -6,12 +6,12 @@ import {rspack} from '@rspack/core';
 export default defineConfig({
   ...config,
 
-  mode   : 'development',
-  devtool: 'eval-source-map',
-  cache  : true,
+  mode : 'development',
+  // devtool: 'eval-source-map',
+  cache: true,
 
   optimization: {
-    ...config,
+    ...config.optimization,
     minimizer: [new rspack.SwcJsMinimizerRspackPlugin({
       minimizerOptions: {
         module: true,

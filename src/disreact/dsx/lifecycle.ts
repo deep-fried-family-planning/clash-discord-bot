@@ -1,7 +1,7 @@
 import type {T} from '#src/disreact/codec/abstract/event.ts';
 import {Critical, Impossible} from '#src/disreact/codec/debug.ts';
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/dsx/attributes.ts';
-import {dsxid} from '#src/disreact/dsx/dsx.ts';
+import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/codec/abstract/attributes.ts';
+import {dsx, dsxid} from '#src/disreact/dsx/dsx.ts';
 import {DTML} from '#src/disreact/dsx/index.ts';
 import type {Hooks, HooksById, HookStacksById} from '#src/disreact/dsx/types.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
@@ -51,6 +51,42 @@ export type Pragma =
   | PragmaElement
   | PragmaFunction;
 
+
+export const dsxFragment = undefined;
+
+export const dsxSingleOrNone = (type: any, props: any) => {
+  if (type === undefined) {
+    return {};
+  }
+  if (type === null) {
+    return null;
+  }
+  const typeOf = typeof type;
+  if (typeOf === 'string') {
+
+  }
+  if (typeOf === 'function') {
+
+  }
+  if (typeOf === 'boolean') {
+
+  }
+  if (typeOf === 'number') {
+
+  }
+  if (typeOf === 'bigint') {
+
+  }
+  if (typeOf === 'symbol') {
+
+  }
+  if (typeOf === 'object') {
+    type;
+  }
+  return {
+
+  };
+};
 
 
 export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
@@ -132,7 +168,6 @@ export const initialRender = (node: Pragma, parent?: Pragma): Pragma => {
 
 export const dispatchEvent = (node: Pragma, event: T, original: Pragma = node): Pragma => {
   if ('props' in node) {
-    console.log('props', event);
     if (node.id_step === event.id && node.props[event.type]) {
       if (typeof node.props[event.type] === 'function') {
         node.props[event.type](event);

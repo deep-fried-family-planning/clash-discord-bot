@@ -4,14 +4,6 @@ import type {E} from '#src/internal/pure/effect.ts';
 
 
 
-export type GlobalContext = {
-  next     : string;
-  nextProps: any;
-  rest?    : Rest.Ix | null;
-};
-
-
-
 export type IxId = symbol;
 
 export type InteractionHooks = {
@@ -280,6 +272,7 @@ export type DTMLStringMenuElement = {
   max_values? : i1t25;
   disabled?   : boolean;
   onclick?    : Handler<DEvent.SelectClick>;
+  children?   : DTMLOptionElement[];
 };
 export type DTMLUserMenuElement = {
   user           : boolean;
@@ -288,6 +281,7 @@ export type DTMLUserMenuElement = {
   default_values?: DTMLUserValueElement[];
   disabled?      : boolean;
   onclick?       : Handler<DEvent.UserClick>;
+  children?      : DTMLValueElement[];
 };
 export type DTMLRoleMenuElement = {
   role           : boolean;
@@ -296,6 +290,7 @@ export type DTMLRoleMenuElement = {
   default_values?: DTMLRoleValueElement[];
   disabled?      : boolean;
   onclick?       : Handler<DEvent.RoleClick>;
+  children?      : DTMLValueElement[];
 };
 export type DTMLChannelMenuElement = {
   channel        : boolean;
@@ -305,6 +300,7 @@ export type DTMLChannelMenuElement = {
   default_values?: DTMLChannelValueElement[];
   disabled?      : boolean;
   onclick?       : Handler<DEvent.ChannelClick>;
+  children?      : DTMLValueElement[];
 };
 export type DTMLMentionMenuElement = {
   mention     : boolean;
@@ -312,6 +308,7 @@ export type DTMLMentionMenuElement = {
   placeholder?: s0t150;
   disabled?   : boolean;
   onclick?    : Handler<DEvent.MentionClick>;
+  children?   : DTMLValueElement[];
 };
 export type DTMLMenuElement =
   | DTMLStringMenuElement

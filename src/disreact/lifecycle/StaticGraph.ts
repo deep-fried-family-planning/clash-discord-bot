@@ -71,7 +71,7 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
 
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
-      HookDispatch.__mallocnull();
+      // HookDispatch.__mallocnull();
 
       const name = typeof fn === 'string' ? fn : fn.name;
 

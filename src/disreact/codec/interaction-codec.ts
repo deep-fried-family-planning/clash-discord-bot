@@ -75,8 +75,8 @@ export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * ()
 
 
 export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
-  const cloned       = cloneTree(root);
-  const states       = collectStates(cloned);
+  // const cloned       = cloneTree(root);
+  const states       = collectStates(root);
   const stacks       = reduceToStacks(states);
   const search       = encodeStacks(stacks);
   const message      = encodeMessageDsx(root);
