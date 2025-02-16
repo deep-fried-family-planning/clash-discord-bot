@@ -12,33 +12,27 @@ export const TestMessage = () => {
         title={'Omni Board'}
         description={'V2 - JSX Pragma'}
       />
-      <embed>
-        <title>{'Test Title - NOT markdown'}</title>
-        <description>
+      <embed title={'Test Title - NOT markdown'}>
           <h3>{'H3'}</h3>
           <small>
             <p>
-              <at user id={'123456'}/>{'welcome!'}
+              <at user={'123456'}/>{'welcome!'}
             </p>
           </small>
           <br/>
-          <u>${'not a link'}</u>
-
-
-        </description>
+          <u>{'not a link'}</u>
       </embed>
-      <buttons>
-        <button
-          primary
+      <actions>
+        <primary
           label={'Start'}
           onclick={() => setNum(num + 1)}
         />
-        <button secondary label={'Help'}>
+        <secondary label={'Help'}>
           <emoji
             name={'ope'}
           />
-        </button>
-      </buttons>
+        </secondary>
+      </actions>
     </message>
   );
 };

@@ -188,7 +188,7 @@ export const UserSelectAttributes = Struct({
   min_values    : optional(Int.pipe(between(1, 25))),
   max_values    : optional(Int.pipe(between(1, 25))),
   disabled      : optional(Bool),
-  default_values: optional(Arr(Str).pipe(minItems(0), maxItems(25))),
+  default_values: optional(Arr(Str).pipe(maxItems(25))),
 });
 
 export const RoleSelectAttributes = Struct({
@@ -197,7 +197,7 @@ export const RoleSelectAttributes = Struct({
   min_values    : optional(Int.pipe(between(1, 25))),
   max_values    : optional(Int.pipe(between(1, 25))),
   disabled      : optional(Bool),
-  default_values: optional(Arr(Str).pipe(minItems(0), maxItems(25))),
+  default_values: optional(Arr(Str).pipe(maxItems(25))),
 });
 
 export const ChannelSelectAttributes = Struct({
@@ -206,7 +206,7 @@ export const ChannelSelectAttributes = Struct({
   min_values    : optional(Int.pipe(between(1, 25))),
   max_values    : optional(Int.pipe(between(1, 25))),
   disabled      : optional(Bool),
-  default_values: optional(Arr(Str).pipe(minItems(0), maxItems(25))),
+  default_values: optional(Arr(Str).pipe(maxItems(25))),
   channel_types : optional(Arr(Int)),
 });
 
@@ -216,7 +216,7 @@ export const MentionSelectAttributes = Struct({
   min_values    : optional(Int.pipe(between(1, 25))),
   max_values    : optional(Int.pipe(between(1, 25))),
   disabled      : optional(Bool),
-  default_values: optional(Arr(DefaultValueAttributes).pipe(minItems(0), maxItems(25))),
+  default_values: optional(Arr(DefaultValueAttributes).pipe(maxItems(25))),
 });
 
 export const EmbedVideoAttributes = Struct({

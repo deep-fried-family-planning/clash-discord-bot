@@ -1,7 +1,7 @@
+import {$onautocomplete, $onclick, $ondeselect, $oninvoke, $onselect, $onsubmit} from '#src/disreact/codec/abstract/attributes.ts';
 import type {T} from '#src/disreact/codec/abstract/event.ts';
 import {Critical, Impossible} from '#src/disreact/codec/debug.ts';
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/codec/abstract/attributes.ts';
-import {dsx, dsxid} from '#src/disreact/dsx/dsx.ts';
+import {dsxid} from '#src/disreact/dsx/dsx.ts';
 import {DTML} from '#src/disreact/dsx/index.ts';
 import type {Hooks, HooksById, HookStacksById} from '#src/disreact/dsx/types.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
@@ -52,43 +52,6 @@ export type Pragma =
   | PragmaFunction;
 
 
-export const dsxFragment = undefined;
-
-export const dsxSingleOrNone = (type: any, props: any) => {
-  if (type === undefined) {
-    return {};
-  }
-  if (type === null) {
-    return null;
-  }
-  const typeOf = typeof type;
-  if (typeOf === 'string') {
-
-  }
-  if (typeOf === 'function') {
-
-  }
-  if (typeOf === 'boolean') {
-
-  }
-  if (typeOf === 'number') {
-
-  }
-  if (typeOf === 'bigint') {
-
-  }
-  if (typeOf === 'symbol') {
-
-  }
-  if (typeOf === 'object') {
-    type;
-  }
-  return {
-
-  };
-};
-
-
 export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
   const baseClone = dsxid(node, parent);
 
@@ -101,11 +64,19 @@ export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
 
     const clone = structuredClone(rest);
 
-    const {[onclick]: __, [onselect]: ___, [ondeselect]: ____, [onsubmit]: ______, [oninvoke]: _______, [onautocomplete]: ________, ...restProps} = props;
+    const {
+      [$onclick]       : __,
+      [$onselect]      : ___,
+      [$ondeselect]    : ____,
+      [$onsubmit]      : ______,
+      [$oninvoke]      : _______,
+      [$onautocomplete]: ________,
+      ...restProps
+    } = props;
 
     const clonedProps = structuredClone(restProps);
 
-    for (const fn of [onclick, onselect, ondeselect, onsubmit, oninvoke, onautocomplete]) {
+    for (const fn of [$onclick, $onselect, $ondeselect, $onsubmit, $oninvoke, $onautocomplete]) {
       if (props[fn]) {
         clonedProps[fn] = props[fn];
       }
@@ -120,12 +91,12 @@ export const cloneTree = (node: Pragma, parent?: Pragma): Pragma => {
 
   const {children: _, render, state, ...rest} = baseClone as PragmaFunction;
   const clone = structuredClone(rest) as PragmaFunction;
-  const {['async']: effects, ...restState} = state ?? {};
+  const {['async']: effects, ...restState} = state ?? {} as Hooks;
   if (state) {
-    // @ts-expect-error todo fix later
-    clone.state = structuredClone(restState);
-    // @ts-expect-error todo fix later
-    clone.state!.async = effects;
+    clone.state = {
+      ...structuredClone(restState),
+      async: effects,
+    };
   }
 
   return {
@@ -293,10 +264,10 @@ const renderFunctionNode = (node: PragmaFunction) => {
   node.state.pc = 0;
   node.state.rc++;
 
-  if (children.some((child) => child.name === DTML.dialog || child.name === DTML.modal)) {
+  if (children.some((child) => child.name === DTML.$dialog || child.name === DTML.$modal)) {
     node.isModal = true;
   }
-  if (children.some((child) => child.name === DTML.message)) {
+  if (children.some((child) => child.name === DTML.$message)) {
     node.isMessage = true;
     if (children.some((child) => child.props.ephemeral)) {
       node.isEphemeral = true;

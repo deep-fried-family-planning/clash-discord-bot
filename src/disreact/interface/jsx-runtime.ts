@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
+import type {Elements} from '#src/disreact/codec/schema/dom-intrinsic.ts';
 import {dsx, dsxs, fragment} from '#src/disreact/dsx/dsx.ts';
-import type {DFMDAnchorElement, DFMDElement, DFMDMentionElement, DTMLButtonElement, DTMLChoiceElement, DTMLCommandElement, DTMLComponentRowElement, DTMLEmbedDescriptionElement, DTMLEmbedElement, DTMLEmbedFieldElement, DTMLEmbedFooterElement, DTMLEmbedTitleElement, DTMLEmojiElement, DTMLMenuElement, DTMLMessageContentElement, DTMLMessageElement, DTMLModalElement, DTMLOptionElement, DTMLParameterElement, DTMLTextElement, DTMLValueElement} from '#src/disreact/dsx/types.ts';
 
 
 
@@ -63,47 +63,8 @@ declare global {
     type Element = any;
     interface ElementAttributesProperty {props: any}
     interface ElementChildrenAttribute {children?: any}
-    interface IntrinsicAttributes {}
+    interface IntrinsicAttributes {children?: any}
     interface IntrinsicClassAttributes {}
-    interface IntrinsicElements {
-      command    : DTMLCommandElement;
-      param      : DTMLParameterElement;
-      choice     : DTMLChoiceElement;
-      buttons    : DTMLComponentRowElement;
-      button     : DTMLButtonElement;
-      menu       : DTMLMenuElement;
-      option     : DTMLOptionElement;
-      value      : DTMLValueElement;
-      emoji      : DTMLEmojiElement;
-      text       : DTMLTextElement;
-      message    : DTMLMessageElement;
-      content    : DTMLMessageContentElement;
-      modal      : DTMLModalElement;
-      embed      : DTMLEmbedElement;
-      title      : DTMLEmbedTitleElement;
-      description: DTMLEmbedDescriptionElement;
-      field      : DTMLEmbedFieldElement;
-      footer     : DTMLEmbedFooterElement;
-      at         : DFMDMentionElement;
-      a          : DFMDAnchorElement;
-      mask       : DFMDElement;
-      p          : DFMDElement;
-      br         : DFMDElement;
-      b          : DFMDElement;
-      i          : DFMDElement;
-      u          : DFMDElement;
-      s          : DFMDElement;
-      details    : DFMDElement;
-      code       : DFMDElement;
-      pre        : DFMDElement;
-      blockquote : DFMDElement;
-      h1         : DFMDElement;
-      h2         : DFMDElement;
-      h3         : DFMDElement;
-      small      : DFMDElement;
-      ol         : DFMDElement;
-      ul         : DFMDElement;
-      li         : DFMDElement;
-    }
+    interface IntrinsicElements extends Elements {}
   }
 }

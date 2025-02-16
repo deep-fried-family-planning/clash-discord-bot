@@ -44,7 +44,6 @@ export const dsx = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[
 
 export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
   const children = props.children.flat();
-
   // @ts-expect-error convenience lol
   delete props.children;
 
@@ -52,11 +51,9 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
     case 'undefined': {
       return children;
     }
-
     case 'string': {
       for (let i = 0; i < children.length; i++) {
         let c = children[i] as any;
-
         if (typeof children[i] === 'string') {
           c = {
             kind   : 'text',
@@ -66,12 +63,10 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
             value  : children[i],
           };
         }
-
         c.index = i;
         c.id = `${c.name}:${i}`;
         children[i] = c;
       }
-
       return {
         kind    : 'intrinsic',
         name    : type as keyof JSX.IntrinsicElements,
@@ -83,7 +78,6 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
         children: children,
       };
     }
-
     case 'function': {
       return {
         kind    : 'function',
@@ -97,7 +91,6 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
         render  : type,
       };
     }
-
     case 'boolean':
     case 'number':
     case 'bigint':

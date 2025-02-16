@@ -1,12 +1,10 @@
+import {$a, $at, $b, $blockquote, $br, $code, $details, $h1, $h2, $h3, $i, $li, $mask, $ol, $p, $pre, $s, $small, $u, $ul} from '#src/disreact/codec/abstract/dfmd.ts';
+import {$default, $embed, $emoji, $field, $footer, $message, $modal, $option, $textarea} from '#src/disreact/codec/abstract/dtml.ts';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import {encode_denylist} from '#src/disreact/codec/abstract/config.ts';
-import {encodeMap} from '#src/disreact/codec/schema/dom-intrinsic.ts';
 import type {Pragma} from '#src/disreact/dsx/lifecycle.ts';
 import console from 'node:console';
-import * as DTML from './abstract/dtml.ts';
-import * as DFMD from './abstract/dfmd.ts';
 import * as Attr from './abstract/attributes.ts';
-import * as Intrinsic from '#src/disreact/codec/schema/dom-intrinsic.ts';
+import * as DFMD from './abstract/dfmd.ts';
 
 export type EncodedMessage = {
   content   : string;
@@ -34,7 +32,6 @@ export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
   if (p) {
     rest.flags = undefined;
   }
-
   return rest;
 };
 
@@ -44,6 +41,87 @@ export const encodeDialogDsx = (node: Pragma): EncodedDialog => {
   const [encoded] = encodeDsx(node);
 
   return encoded as EncodedDialog;
+};
+
+
+export const dsxEncode = (node: Pragma) => {
+  if (node.kind === 'text') {
+    return node.value;
+  }
+  const queue = [] as any[][];
+  const visited = [] as any[];
+
+  if (node.kind === 'function') {
+    for (const c of node.children) {
+      queue.push([c, c.children]);
+    }
+  }
+  else {
+    queue.push([node, node.children]);
+  }
+
+  const accumulator = [] as any[][];
+
+  // while (queue.length) {
+  //
+  // }
+
+
+  do {
+    const [parent, children] = queue.pop() as any;
+
+    console.log('parent', parent.name);
+
+    if (parent.kind === 'text') {
+      throw new Error();
+    }
+    if (parent.kind === 'function') {
+      throw new Error();
+    }
+
+    parent.acc ??= {};
+    parent.acc.tag = parent.name;
+    parent.acc.props = parent.props;
+    parent.acc.children ??= [] as any[];
+
+    for (let i = 0; i < children.length; i++) {
+      const c = children[i];
+
+      if (c.kind === 'text') {
+        parent.acc.children.push(c.value);
+      }
+      if (c.kind === 'function') {
+        queue.push([parent, children.slice(i + 1)]);
+        queue.push([parent, c.children]);
+        break;
+      }
+      if (c.kind === 'intrinsic') {
+        c.acc ??= {};
+        c.tag ??= c.name;
+
+        queue.push([c, c.children]);
+        parent.acc.children.push(c.acc);
+      }
+    }
+
+    accumulator.push(parent.acc);
+  }
+  while (queue.length);
+
+  console.log('ACCUMULATION');
+
+  // do {
+  //   const parent = accumulator.pop();
+  //
+  //   console.log(parent);
+  //   // for (const c of children) {
+  //   //   console.log(c.acc);
+  //   // }
+  //   // console.log('---');
+  // } while (accumulator.length);
+
+
+  return accumulator[0];
 };
 
 
@@ -90,17 +168,14 @@ const encodeInner = (node: any): any => {
   node.props = encodeProps(node.props);
   let acc = {} as any;
 
-  if (node.name in DTML) {
-
-  }
 
 
   switch (node.name) {
-    case DTML.$option: {
+    case $option: {
       return node.props;
     }
 
-    case DTML.$default: {
+    case $default: {
       const {user, role, channel, id} = node.props;
       if (user) acc.type = 'user';
       if (role) acc.type = 'role';
@@ -109,11 +184,11 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.$emoji: {
+    case $emoji: {
       return node.props;
     }
 
-    case DTML.$textarea: {
+    case $textarea: {
       const {paragraph, ...props} = node.props;
       if (paragraph) acc.style = 2;
       else acc.style = 1;
@@ -123,7 +198,7 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.$message: {
+    case $message: {
       children.embed ??= [];
       children.buttons ??= [];
       acc = node.props;
@@ -133,21 +208,21 @@ const encodeInner = (node: any): any => {
       return acc;
     }
 
-    case DTML.$modal: {
+    case $modal: {
       acc.title = node.props.title;
       acc.custom_id = node.props.custom_id ?? NONE_STR;
       acc.components = children.text.map((c: any) => ({type: 1, components: [c]}));
       return acc;
     }
 
-    case DTML.$embed: {
+    case $embed: {
       acc.title = children.title[0];
       acc.description = children.description?.join('');
       return acc;
     }
 
-    case DTML.$field:
-    case DTML.$footer: {
+    case $field:
+    case $footer: {
       acc.fields = children.field;
       return acc;
     }
@@ -169,7 +244,7 @@ const encodeDFMD = (node: any): any => {
   node.children = node.children ?? [];
 
   switch (node.name) {
-    case  DFMD.$at: {
+    case  $at: {
       const {everyone, here, user, role, channel, id} = node.props;
       switch (true) {
         case everyone:
@@ -186,7 +261,7 @@ const encodeDFMD = (node: any): any => {
           return '';
       }
     }
-    case DFMD.$a: {
+    case $a: {
       const {href, embed} = node.props;
       if (node.children.length) {
         return;
@@ -194,62 +269,62 @@ const encodeDFMD = (node: any): any => {
 
       return '';
     }
-    case DFMD.$mask: {
+    case $mask: {
       return node.children.join(' ');
     }
-    case DFMD.$p: {
+    case $p: {
       return node.children.join(' ');
     }
-    case DFMD.$br: {
+    case $br: {
       return '\n';
     }
-    case DFMD.$b: {
+    case $b: {
       return `**${node.children.join('')}**`;
     }
-    case DFMD.$i: {
+    case $i: {
       return `*${node.children.join('')}*`;
     }
-    case DFMD.$u: {
+    case $u: {
       return `__${node.children.join('')}__`;
     }
-    case DFMD.$s: {
+    case $s: {
       return `~~${node.children.join('')}~~`;
     }
-    case DFMD.$details: {
+    case $details: {
       return `||${node.children.join('')}||`;
     }
-    case DFMD.$code: {
+    case $code: {
       return `\`${node.children.join('')}\``;
     }
-    case DFMD.$pre: {
+    case $pre: {
       const {syntax} = node.props;
       if (syntax) {
         return `\n\`\`\`${syntax}\n${node.children.join('')}\n\`\`\``;
       }
       return `\n\`\`\`\n${node.children.join(' ')}\n\`\`\``;
     }
-    case DFMD.$blockquote: {
+    case $blockquote: {
       return `\n> ${node.children.join(' ')}`;
     }
-    case DFMD.$h1: {
+    case $h1: {
       return `\n# ${node.children.join(' ')}`;
     }
-    case DFMD.$h2: {
+    case $h2: {
       return `\n## ${node.children.join(' ')}`;
     }
-    case DFMD.$h3: {
+    case $h3: {
       return `\n### ${node.children.join(' ')}`;
     }
-    case DFMD.$small: {
+    case $small: {
       return `\n-# ${node.children.join(' ')}`;
     }
-    case DFMD.$ol: {
+    case $ol: {
       return (node.children as string[]).reduce((acc, c, i) => `${acc}\n${i + 1}. ${c}`, ' ');
     }
-    case DFMD.$ul: {
+    case $ul: {
       return node.children.join('\n* ');
     }
-    case DFMD.$li: {
+    case $li: {
       return node.children.join('');
     }
     default: {
@@ -276,8 +351,8 @@ const encodeProps = (props: any): any => {
 };
 
 
-const encodeAttributes = (node: any): any => {
-  node.children = node.children ?? [];
-
-  const encoded = Intrinsic.encodeAttributes(node.name as Intrinsic.ElementTag, node.props);
-};
+// const encodeAttributes = (node: any): any => {
+//   node.children = node.children ?? [];
+//
+//   const encoded = Intrinsic.encodeAttributes(node.name as Intrinsic.ElementTag, node.props);
+// };

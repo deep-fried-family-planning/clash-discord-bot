@@ -1,5 +1,5 @@
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
-import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx-encoder.ts';
+import {dsxEncode, encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {cloneTree, initialRender} from '#src/disreact/dsx/lifecycle.ts';
 import {TestDialog} from 'test/unit/disreact/internal/dsx/.components/test-dialog.tsx';
@@ -23,7 +23,7 @@ describe('dsx-encoder', () => {
     given.component = jsx(TestMessage, {});
     const rendered  = initialRender(given.component);
     const clone     = cloneTree(rendered);
-    const actual    = encodeMessageDsx(clone);
+    const actual    = dsxEncode(clone);
 
     await expect(tojson(actual)).toMatchFileSnapshot('./.snap/message.json');
   });
@@ -32,7 +32,7 @@ describe('dsx-encoder', () => {
     given.component = jsx(TestDialog, {});
     const rendered  = initialRender(given.component);
     const clone     = cloneTree(rendered);
-    const actual    = encodeDialogDsx(clone);
+    const actual    = dsxEncode(clone);
 
     await expect(tojson(actual)).toMatchFileSnapshot('./.snap/dialog.json');
   });

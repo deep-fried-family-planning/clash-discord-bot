@@ -1,25 +1,27 @@
+import {$onclick} from '#src/disreact/codec/abstract/attributes.ts';
+import {$channels, $danger, $mentions, $primary, $roles, $secondary, $select, $success, $users} from '#src/disreact/codec/abstract/dtml.ts';
 import {Rest} from '#src/disreact/codec/abstract/index.ts';
 import {DateTime} from 'effect';
-import {DOMEvent, Routing} from './schema';
+import {DOMEvent} from './schema';
 
 
 
 export const decodeInteractionInput = (rest: Rest.Interaction, givenStart = Date.now()) => {
   const rightNow = DateTime.unsafeMake(givenStart);
 
-  if (rest.type === Rest.Rx.PING) {
+  if (rest.type === Rest.PING) {
     throw new Error('Unsupported: Ping');
   }
 
-  if (rest.type === Rest.Rx.APPLICATION_COMMAND_AUTOCOMPLETE) {
+  if (rest.type === Rest.AUTOCOMPLETE) {
     throw new Error('Unsupported: ApplicationCommandAutocomplete');
   }
 
-  if (rest.type === Rest.Rx.APPLICATION_COMMAND) {
+  if (rest.type === Rest.COMMAND) {
     throw new Error('Unsupported: ApplicationCommand');
   }
 
-  if (rest.type === Rest.Rx.MODAL_SUBMIT) {
+  if (rest.type === Rest.SUBMIT) {
     throw new Error('Unsupported: ModalSubmit');
   }
 
@@ -27,81 +29,61 @@ export const decodeInteractionInput = (rest: Rest.Interaction, givenStart = Date
 };
 
 
+const styleToButtonTag = {
+  [Rest.PRIMARY]  : $primary,
+  [Rest.SECONDARY]: $secondary,
+  [Rest.SUCCESS]  : $success,
+  [Rest.DANGER]   : $danger,
+};
 
-const decodeMessageComponent = (rightNow: any, rest: any) => {
+
+const createEvent = (rest: any) => {
   const components = {} as any;
-
   for (let i = 0; i < rest.message.components.length; i++) {
     for (let j = 0; j < rest.message.components[i].components.length; j++) {
       components[rest.message.components[i].components[j].custom_id] = rest.message.components[i].components[j];
     }
   }
+  const component = components[rest.data.custom_id];
 
-  const target = components[rest.data.custom_id];
+  const event = {
+    rest,
+    cmap  : components,
+    target: {
+      id   : rest.data.custom_id,
+      value: component,
+    },
+  } as any;
 
-  const id = Symbol(`DisReact.Ptr.${rest.id}`);
-
-  // const parsedCustomId = Routing.parseCustomId(rest.data.custom_id);
-
-  switch (rest.data.component_type) {
-    case Rest.Cx.BUTTON: {
-      return DOMEvent.Button.make({
-        id,
-        type: 'onclick',
-        data: rest.data,
-        target,
-      });
-    }
-    case Rest.Cx.STRING_SELECT: {
-      return DOMEvent.StringSelect.make({
-        id,
-        type    : 'onclick',
-        data    : rest.data,
-        target,
-        values  : rest.data.values,
-        selected: target.options.filter((option: any) => rest.data.values.includes(option.value)),
-      });
-    }
-    case Rest.Cx.USER_SELECT: {
-      return DOMEvent.UserSelect.make({
-        id,
-        type : 'onclick',
-        data : rest.data,
-        target,
-        users: rest.data.values.map((value: any) => ({type: 'user', id: value})),
-      });
-    }
-    case Rest.Cx.ROLE_SELECT: {
-      return DOMEvent.RoleSelect.make({
-        id,
-        type : 'onclick',
-        data : rest.data,
-        target,
-        roles: rest.data.values.map((value: any) => ({type: 'role', id: value})),
-      });
-    }
-    case Rest.Cx.CHANNEL_SELECT: {
-      return DOMEvent.ChannelSelect.make({
-        id,
-        type    : 'onclick',
-        data    : rest.data,
-        target,
-        channels: rest.data.values.map((value: any) => ({type: 'channel', id: value})),
-      });
-    }
-    case Rest.Cx.MENTIONABLE_SELECT: {
-      return DOMEvent.MentionSelect.make({
-        id,
-        type    : 'onclick',
-        data    : rest.data,
-        target,
-        mentions: [] as any[],
-        users   : [] as any[],
-        roles   : [] as any[],
-        channels: [] as any[],
-      });
-    }
-    default:
-      throw new Error(`Unsupported: MessageComponent (type: ${rest.data.component_type})`);
+  if (rest.data.component_type === Rest.BUTTON) {
+    event.target.handle = $onclick;
+    event.target.tag = styleToButtonTag[component.style as never];
+    return DOMEvent.Button.make(event);
   }
+  if (rest.data.component_type === Rest.SELECT_MENU) {
+    event.target.handle = $onclick;
+    event.target.tag = $select;
+    return DOMEvent.StringSelect.make(event);
+  }
+  if (rest.data.component_type === Rest.USER_SELECT) {
+    event.target.handle = $onclick;
+    event.target.tag = $users;
+    return DOMEvent.UserSelect.make(event);
+  }
+  if (rest.data.component_type === Rest.ROLE_SELECT) {
+    event.target.handle = $onclick;
+    event.target.tag = $roles;
+    return DOMEvent.RoleSelect.make(event);
+  }
+  if (rest.data.component_type === Rest.CHANNEL_SELECT) {
+    event.target.handle = $onclick;
+    event.target.tag = $channels;
+    return DOMEvent.ChannelSelect.make(event);
+  }
+  if (rest.data.component_type === Rest.MENTION_SELECT) {
+    event.target.handle = $onclick;
+    event.target.tag = $mentions;
+    return DOMEvent.MentionSelect.make(event);
+  }
+  throw new Error('Unsupported message component');
 };

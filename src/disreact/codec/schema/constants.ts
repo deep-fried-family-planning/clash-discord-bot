@@ -1,4 +1,9 @@
-export const NONE = 'NONE';
+export const NONE = '-';
+export const NOT_SET = '-n';
+export const ANONYMOUS_FUNCTION = '-a';
+export const TEXT_NODE = '-t';
+export const NONE_IDX = -1;
+export const NONE_IDXS = '-1';
 
 export const Unknown = 'Unknown';
 export const CommandSubmitEvent = 'CommandSubmitEvent';

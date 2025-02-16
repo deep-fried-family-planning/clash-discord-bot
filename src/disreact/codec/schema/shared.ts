@@ -1,5 +1,5 @@
 import {S} from '#src/internal/pure/effect.ts';
-import {Int, optional, transform, String, Boolean, maxLength, Redacted, DateTimeUtcFromNumber, NumberFromString, Number, Array} from 'effect/Schema';
+import {Int, optional, transform, String, Boolean, maxLength, Redacted, DateTimeUtcFromNumber, NumberFromString, Number, Array, Any} from 'effect/Schema';
 
 
 
@@ -43,3 +43,6 @@ export const DateTimeUtcFromNumberFromString = transform(
 
 
 export const tempAny = () => ({} as any);
+
+
+export const AnyRest = Any;
