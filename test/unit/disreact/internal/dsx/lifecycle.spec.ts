@@ -1,10 +1,10 @@
 
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, reduceToStacks, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
-import type {Pragma} from '#src/disreact/dsx/types.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
-
+import {it} from '@effect/vitest';
 
 
 const nofunc = (node: Pragma): Pragma => {
@@ -38,24 +38,24 @@ describe('lifecycle', () => {
     expect(clone).toEqual(given.component);
   });
 
-  it('when cloning a tree', () => {
+  it.live('when cloning a tree', E.fn(function * () {
     given.component = jsx(TestMessage, {});
-    const rendered  = initialRender(given.component);
+    const rendered  = yield * initialRender(given.component);
     const clone     = cloneTree(rendered);
 
     expect(clone).toEqual(rendered);
-  });
+  }));
 
-  it('when rerendering', () => {
+  it.live('when rerendering', E.fn(function * () {
     given.component = jsx(TestMessage, {});
-    given.initial   = initialRender(given.component);
-    const actual    = rerenderRoot(given.initial);
+    given.initial   = yield * initialRender(given.component);
+    const actual    = yield * rerenderRoot(given.initial);
 
     expect(nofunc(actual)).toEqual(nofunc(given.initial));
-  });
+  }));
 
   describe('given empty hydration state', () => {
-    it('when hydrating a root', () => {
+    it('when hydrating a root', E.fn(function * () {
       given.component = jsx(TestMessage, {});
       given.clone     = cloneTree(given.component);
 
@@ -63,14 +63,14 @@ describe('lifecycle', () => {
       const actual   = hydrateRoot(given.clone, {});
 
       expect(nofunc(actual)).toStrictEqual(nofunc(expected));
-    });
+    }));
   });
 
   describe('given an interaction event', () => {
-    it('when dispatching an event', () => {
+    it('when dispatching an event', E.fn(function * () {
       given.component = jsx(TestMessage, {});
-      given.clone     = cloneTree(given.component);
-      given.initial   = rerenderRoot(initialRender(given.clone));
+      given.clone     = yield * cloneTree(given.component);
+      given.initial   = yield * rerenderRoot(yield * initialRender(given.clone));
       given.event     = {
         id  : 'buttons:1:button:0',
         type: 'onclick',
@@ -78,7 +78,7 @@ describe('lifecycle', () => {
 
       const before     = cloneTree(given.initial);
       const actual     = dispatchEvent(given.initial, given.event);
-      const rerendered = rerenderRoot(actual);
+      const rerendered = yield * rerenderRoot(actual);
 
       const beforeStacks = reduceToStacks(collectStates(before));
       const actualStacks = reduceToStacks(collectStates(rerendered));
@@ -101,7 +101,7 @@ describe('lifecycle', () => {
           ],
         }
       `);
-    });
+    }));
 
 
     describe('given event.id does not match any node.id', () => {
@@ -140,10 +140,10 @@ describe('lifecycle', () => {
   });
 
 
-  it('when rendering an initial tree', () => {
+  it.live('when rendering an initial tree', E.fn(function * () {
     given.component = jsx(TestMessage, {});
     const clone     = cloneTree(given.component);
-    const render    = initialRender(clone);
+    const render    = yield * initialRender(clone);
 
     expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
       "{
@@ -244,11 +244,156 @@ describe('lifecycle', () => {
               },
               {
                 "kind": "intrinsic",
-                "name": "buttons",
+                "name": "embed",
                 "index": 1,
-                "id": "buttons:1",
-                "id_step": "message:0:buttons:1",
-                "id_full": "TestMessage:0:message:0:buttons:1",
+                "id": "embed:1",
+                "id_step": "message:0:embed:1",
+                "id_full": "TestMessage:0:message:0:embed:1",
+                "props": {},
+                "children": [
+                  {
+                    "kind": "intrinsic",
+                    "name": "title",
+                    "index": 0,
+                    "id": "title:0",
+                    "id_step": "embed:1:title:0",
+                    "id_full": "TestMessage:0:message:0:embed:1:title:0",
+                    "props": {},
+                    "children": [
+                      {
+                        "kind": "text",
+                        "name": "string",
+                        "id_step": "title:0:string:0",
+                        "id_full": "TestMessage:0:message:0:embed:1:title:0:string:0",
+                        "value": "Test Title - NOT markdown",
+                        "index": 0,
+                        "id": "string:0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "intrinsic",
+                    "name": "description",
+                    "index": 1,
+                    "id": "description:1",
+                    "id_step": "embed:1:description:1",
+                    "id_full": "TestMessage:0:message:0:embed:1:description:1",
+                    "props": {},
+                    "children": [
+                      {
+                        "kind": "intrinsic",
+                        "name": "h3",
+                        "index": 0,
+                        "id": "h3:0",
+                        "id_step": "description:1:h3:0",
+                        "id_full": "TestMessage:0:message:0:embed:1:description:1:h3:0",
+                        "props": {},
+                        "children": [
+                          {
+                            "kind": "text",
+                            "name": "string",
+                            "id_step": "h3:0:string:0",
+                            "id_full": "TestMessage:0:message:0:embed:1:description:1:h3:0:string:0",
+                            "value": "H3",
+                            "index": 0,
+                            "id": "string:0"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "intrinsic",
+                        "name": "small",
+                        "index": 1,
+                        "id": "small:1",
+                        "id_step": "description:1:small:1",
+                        "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1",
+                        "props": {},
+                        "children": [
+                          {
+                            "kind": "intrinsic",
+                            "name": "p",
+                            "index": 0,
+                            "id": "p:0",
+                            "id_step": "small:1:p:0",
+                            "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0",
+                            "props": {},
+                            "children": [
+                              {
+                                "kind": "intrinsic",
+                                "name": "at",
+                                "index": 0,
+                                "id": "at:0",
+                                "id_step": "p:0:at:0",
+                                "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0:at:0",
+                                "props": {
+                                  "user": true,
+                                  "id": "123456"
+                                },
+                                "children": []
+                              },
+                              {
+                                "kind": "text",
+                                "name": "string",
+                                "id_step": "p:0:string:1",
+                                "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0:string:1",
+                                "value": "welcome!",
+                                "index": 1,
+                                "id": "string:1"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "intrinsic",
+                        "name": "br",
+                        "index": 2,
+                        "id": "br:2",
+                        "id_step": "description:1:br:2",
+                        "id_full": "TestMessage:0:message:0:embed:1:description:1:br:2",
+                        "props": {},
+                        "children": []
+                      },
+                      {
+                        "kind": "intrinsic",
+                        "name": "u",
+                        "index": 3,
+                        "id": "u:3",
+                        "id_step": "description:1:u:3",
+                        "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3",
+                        "props": {},
+                        "children": [
+                          {
+                            "kind": "text",
+                            "name": "string",
+                            "id_step": "u:3:string:0",
+                            "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3:string:0",
+                            "value": "$",
+                            "index": 0,
+                            "id": "string:0"
+                          },
+                          {
+                            "kind": "text",
+                            "name": "string",
+                            "id_step": "u:3:string:1",
+                            "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3:string:1",
+                            "value": "not a link",
+                            "index": 1,
+                            "id": "string:1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "intrinsic",
+                "name": "buttons",
+                "index": 2,
+                "id": "buttons:2",
+                "id_step": "message:0:buttons:2",
+                "id_full": "TestMessage:0:message:0:buttons:2",
                 "props": {},
                 "children": [
                   {
@@ -256,8 +401,8 @@ describe('lifecycle', () => {
                     "name": "button",
                     "index": 0,
                     "id": "button:0",
-                    "id_step": "buttons:1:button:0",
-                    "id_full": "TestMessage:0:message:0:buttons:1:button:0",
+                    "id_step": "buttons:2:button:0",
+                    "id_full": "TestMessage:0:message:0:buttons:2:button:0",
                     "props": {
                       "primary": true,
                       "label": "Start"
@@ -269,8 +414,8 @@ describe('lifecycle', () => {
                     "name": "button",
                     "index": 1,
                     "id": "button:1",
-                    "id_step": "buttons:1:button:1",
-                    "id_full": "TestMessage:0:message:0:buttons:1:button:1",
+                    "id_step": "buttons:2:button:1",
+                    "id_full": "TestMessage:0:message:0:buttons:2:button:1",
                     "props": {
                       "secondary": true,
                       "label": "Help"
@@ -282,7 +427,7 @@ describe('lifecycle', () => {
                         "index": 0,
                         "id": "emoji:0",
                         "id_step": "button:1:emoji:0",
-                        "id_full": "TestMessage:0:message:0:buttons:1:button:1:emoji:0",
+                        "id_full": "TestMessage:0:message:0:buttons:2:button:1:emoji:0",
                         "props": {
                           "name": "ope"
                         },
@@ -316,5 +461,5 @@ describe('lifecycle', () => {
         "isMessage": true
       }"
     `);
-  });
+  }));
 });

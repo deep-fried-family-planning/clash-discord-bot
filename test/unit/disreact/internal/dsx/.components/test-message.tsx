@@ -1,9 +1,10 @@
 import {Header} from '#src/discord/components/header.tsx';
 import {useState} from '#src/disreact/interface/hook.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 
 
-export const TestMessage = () => {
+export const TestMessage = () => E.gen(function * () {
   const [num, setNum] = useState(0);
 
   return (
@@ -41,4 +42,4 @@ export const TestMessage = () => {
       </buttons>
     </message>
   );
-};
+});
