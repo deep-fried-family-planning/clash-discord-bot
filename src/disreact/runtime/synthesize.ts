@@ -12,7 +12,7 @@ export const synthesize = (fn: RenderFn) => E.gen(function * () {
   HookDispatch.__mallocnull();
 
   const root = yield * StaticGraph.cloneRoot(fn);
-  const rendered = initialRender(root);
+  const rendered = yield * initialRender(root);
 
 
   const encoded = encodeMessageInteraction(

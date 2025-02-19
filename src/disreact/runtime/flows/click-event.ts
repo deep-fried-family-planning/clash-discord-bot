@@ -17,7 +17,7 @@ export const clickEvent = E.gen(function * () {
   HookDispatch.__ctxwrite(frame.context);
 
   const clone = yield * StaticGraph.cloneRoot(frame.rx.params.root);
-  const hydrated = hydrateRoot(clone, frame.rx.states);
+  const hydrated = yield * hydrateRoot(clone, frame.rx.states);
   yield * flushHooks(hydrated);
 
   const afterEvent = dispatchEvent(hydrated, frame.event);
@@ -39,9 +39,9 @@ export const clickEvent = E.gen(function * () {
       yield * DokenMemory.save(frame.doken);
     }
 
-    const rerendered = rerenderRoot(afterEvent);
+    const rerendered = yield * rerenderRoot(afterEvent);
     yield * flushHooks(rerendered);
-    const finalRender = rerenderRoot(rerendered);
+    const finalRender = yield * rerenderRoot(rerendered);
 
     const encoded = encodeMessageInteraction(finalRender, frame.doken);
 
@@ -50,7 +50,7 @@ export const clickEvent = E.gen(function * () {
   }
   else {
     const nextClone = yield * StaticGraph.cloneRoot(frame.context.next);
-    const rendered = rerenderRoot(nextClone);
+    const rendered = yield * rerenderRoot(nextClone);
 
 
     if (rendered.isModal) {
@@ -85,7 +85,7 @@ export const clickEvent = E.gen(function * () {
     }
 
     yield * flushHooks(rendered);
-    const finalRender = rerenderRoot(rendered);
+    const finalRender = yield * rerenderRoot(rendered);
     const encoded = encodeMessageInteraction(finalRender, frame.doken);
 
     yield * DiscordDOM.reply(frame.doken, encoded);

@@ -62,7 +62,7 @@ declare global {
 
     type Element = any;
     interface ElementAttributesProperty {props: any}
-    interface ElementChildrenAttribute {children?: any}
+    interface ElementChildrenAttribute {children: any}
     interface IntrinsicAttributes {}
     interface IntrinsicClassAttributes {}
     interface IntrinsicElements {

@@ -25,7 +25,7 @@ export const interact = (rest: Rest.Ix) => E.gen(function * () {
 
   frame.context = {
     next     : frame.rx.params.root,
-    rest     : frame.rest,
+    rest     : rest,
     nextProps: {},
   };
 

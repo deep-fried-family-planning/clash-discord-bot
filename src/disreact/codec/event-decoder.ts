@@ -47,6 +47,7 @@ export const decodeEvent = (rest: Rest.Interaction) => {
         rest,
         type  : DATT.onclick,
         target: target as never,
+        data  : rest.data,
       });
     }
     if (rest.data.component_type === Rest.Cx.USER_SELECT) {
@@ -55,6 +56,7 @@ export const decodeEvent = (rest: Rest.Interaction) => {
         rest,
         type  : DATT.onclick,
         target: target as never,
+        data  : rest.data,
       });
     }
     if (rest.data.component_type === Rest.Cx.ROLE_SELECT) {
@@ -63,6 +65,7 @@ export const decodeEvent = (rest: Rest.Interaction) => {
         rest,
         type  : DATT.onclick,
         target: target as never,
+        data  : rest.data,
       });
     }
     if (rest.data.component_type === Rest.Cx.CHANNEL_SELECT) {
@@ -71,6 +74,7 @@ export const decodeEvent = (rest: Rest.Interaction) => {
         rest,
         type  : DATT.onclick,
         target: target as never,
+        data  : rest.data,
       });
     }
     if (rest.data.component_type === Rest.Cx.MENTIONABLE_SELECT) {
@@ -79,6 +83,7 @@ export const decodeEvent = (rest: Rest.Interaction) => {
         rest,
         type  : DATT.onclick,
         target: target as never,
+        data  : rest.data,
       });
     }
   }

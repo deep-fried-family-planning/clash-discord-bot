@@ -1,5 +1,6 @@
 import {runtimeLayer} from '#src/disreact/runtime/DisReactRuntime.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
@@ -32,8 +33,8 @@ const live = pipe(
   //   SQS.defaultLayer,
   //   DynamoDBDocument.defaultLayer,
   // )),
-
-  L.provide(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.All)))),
+  L.provideMerge(MenuCache.Live),
+  L.provideMerge(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.All)))),
   L.provide(DiscordRESTMemoryLive.pipe(
     L.provide(Logger.minimumLogLevel(LogLevel.None)),
     L.provide(NodeHttpClient.layerUndici),

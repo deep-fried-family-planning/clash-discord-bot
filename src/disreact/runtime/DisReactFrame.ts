@@ -2,6 +2,7 @@ import type {Auth, DEvent, Doken, Rest} from '#src/disreact/codec/abstract/index
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
 import type {DecodedRoute} from '#src/disreact/codec/route-codec.ts';
 import type {GlobalContext, HooksById, HookStacksById, InteractionHooks, IxId} from '#src/disreact/dsx/types.ts';
+import type {MainHookState} from '#src/disreact/hooks/HookDispatch.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 
 
@@ -11,7 +12,7 @@ export type IxCtx = ReturnType<typeof empty>;
 const empty = () => ({
   start_ms   : Date.now(),
   pointer    : null as unknown as IxId,
-  context    : null as unknown as GlobalContext,
+  context    : null as unknown as MainHookState,
   isEphemeral: null as unknown as boolean,
 
   global: {

@@ -172,7 +172,7 @@ const encodeInner = (node: any): any => {
 
     case DTML.embed: {
       acc.title = children.title[0];
-      acc.description = children.description.join('');
+      acc.description = children.description?.join('');
       return acc;
     }
 

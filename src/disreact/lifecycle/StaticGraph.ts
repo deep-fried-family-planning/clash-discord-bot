@@ -3,6 +3,7 @@ import {StaticGraphError} from '#src/disreact/interface/error.ts';
 import {dsx, dsxid} from '#src/disreact/dsx/index.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
+import console from 'node:console';
 
 
 
@@ -67,11 +68,13 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
     };
   }
 
+  console.log(staticGraphMap);
+
   yield * E.addFinalizer(() => E.log('static graph: closed'));
 
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
-      HookDispatch.__mallocnull();
+      // HookDispatch.__mallocnull();
 
       const name = typeof fn === 'string' ? fn : fn.name;
 
