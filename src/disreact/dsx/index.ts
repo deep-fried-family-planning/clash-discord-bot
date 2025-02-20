@@ -1,6 +1,6 @@
-import * as DATT from '#src/disreact/codec/schema/constants/reserved.ts';
-import * as DFMD from '#src/disreact/codec/schema/constants/dfmd.ts';
-import * as DTML from '#src/disreact/codec/schema/constants/dtml.ts';
+import * as DATT from '#src/disreact/codec/schema/common/reserved.ts';
+import * as DFMD from '#src/disreact/codec/schema/common/dfmd.ts';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
 
 export {
   DATT,

@@ -3,7 +3,7 @@ import {makeDeferred} from '#src/disreact/codec/doken-codec.ts';
 import {encodeDialogInteraction, encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
 import {collectStates, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
+import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {StaticGraph} from '#src/disreact/dsx/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {closeEvent, isSameRoot} from '#src/disreact/runtime/flows/utils.ts';

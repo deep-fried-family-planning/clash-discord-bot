@@ -1,6 +1,7 @@
-import {CustomId, DisReactPointer} from '#src/disreact/codec/schema/common-schema.ts';
+import {CustomId, DisReactPointer} from '#src/disreact/codec/schema/common/common.ts';
+import type { Schema} from 'effect/Schema';
 import {Any, Array, mutable, String, Struct, tag, Union, Boolean} from 'effect/Schema';
-import {All, Reserved} from './constants';
+import {All, Reserved} from 'src/disreact/codec/schema/common/common.ts';
 
 
 
@@ -50,10 +51,22 @@ export const ChannelSelectEvent = Struct({
   channel_ids: Array(String),
 });
 
+export const MentionSelectEvent = Struct({
+  kind     : tag(All.MentionSelectEventTag),
+  key      : tag(Reserved.onselect),
+  custom_id: CustomId,
+  rest     : Any,
+  mentions : Array(Struct({
+    id  : String,
+    type: String,
+  })),
+});
+
 
 
 export const Frame = Struct({
   pointer: Struct({
+    id     : String,
     current: DisReactPointer,
   }),
 
@@ -75,3 +88,12 @@ export const Frame = Struct({
 
   rest: Any,
 });
+
+
+
+export type ButtonEvent = Schema.Type<typeof ButtonEvent>;
+export type SelectEvent = Schema.Type<typeof SelectEvent>;
+export type UserSelectEvent = Schema.Type<typeof UserSelectEvent>;
+export type RoleSelectEvent = Schema.Type<typeof RoleSelectEvent>;
+export type ChannelSelectEvent = Schema.Type<typeof ChannelSelectEvent>;
+export type MentionSelectEvent = Schema.Type<typeof MentionSelectEvent>;

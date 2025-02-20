@@ -3,7 +3,7 @@ import {Header} from '#src/discord/components/header.tsx';
 import {InfoPanel} from '#src/discord/omni-board/info-panel.tsx';
 import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-import {usePage} from '#src/disreact/interface/hook.ts';
+import {usePage} from '#src/disreact/hook.ts';
 
 
 

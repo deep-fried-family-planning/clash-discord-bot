@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
 import {Header} from '#src/discord/components/header.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
-import {useEffect, usePage, useState} from '#src/disreact/interface/hook.ts';
+import {useEffect, usePage, useState} from '#src/disreact/hook.ts';
 import console from 'node:console';
 
 

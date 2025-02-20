@@ -1,5 +1,5 @@
 
-import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';

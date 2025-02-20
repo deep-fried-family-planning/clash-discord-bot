@@ -1,7 +1,6 @@
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import {encode_denylist} from '#src/disreact/codec/schema/constants/config.ts';
 import type {Pragma} from '#src/disreact/dsx/lifecycle.ts';
-import {All, DFMD, DTML} from './schema/constants';
+import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/schema/common/index.ts';
 
 
 
@@ -299,12 +298,10 @@ const encodeDFMD = (node: any): any => {
   case DFMD.ul: {
     return node.children.join('\n* ');
   }
-  case DFMD.li: {
+  case DFMD.li:
     return node.children.join('');
   }
-  default:
-    throw new Error();
-  }
+  throw new Error(`Unrecognized markdown tag: ${node.name}`);
 };
 
 
@@ -384,7 +381,7 @@ const encodeProps = (props: any): any => {
   const acc = {} as any;
 
   for (const k of Object.keys(props as object)) {
-    if (!(k in encode_denylist)) {
+    if (!(k in Reserved)) {
       acc[k] = props[k];
     }
   }

@@ -1,7 +1,7 @@
 import {Rest} from '#src/disreact/codec/abstract/index.ts';
 import {Critical} from '#src/disreact/codec/debug.ts';
 import {dispatchEvent, hydrateRoot, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
-import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
+import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {makeDeferred} from '#src/disreact/codec/doken-codec.ts';
 import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';

@@ -1,8 +1,8 @@
 import type {Doken} from '#src/disreact/codec/abstract/index.ts';
-import {makeDfx} from '#src/disreact/interface/implementation/DiscordDOM-dfx.ts';
-import {makeDokenMemoryDynamo} from '#src/disreact/interface/implementation/DokenMemory-dynamo.ts';
-import {makeLocalDokenMemory} from '#src/disreact/interface/implementation/DokenMemory-local.ts';
-import type {DokenMemoryError} from '#src/disreact/interface/error.ts';
+import {makeDfx} from '#src/disreact/runtime/implementation/DiscordDOM-dfx.ts';
+import {makeDokenMemoryDynamo} from '#src/disreact/runtime/implementation/DokenMemory-dynamo.ts';
+import {makeLocalDokenMemory} from '#src/disreact/runtime/implementation/DokenMemory-local.ts';
+import type {DokenMemoryError} from '#src/disreact/error.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
 import type {Cause} from 'effect';

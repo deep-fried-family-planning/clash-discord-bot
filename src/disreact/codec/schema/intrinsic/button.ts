@@ -1,7 +1,7 @@
-import {ButtonLabel, ConformantCustomId, EmojiStruct, IntrinsicKind, SkuId} from '#src/disreact/codec/schema/common-schema.ts';
+import {ButtonLabel, ConformantCustomId, EmojiStruct, IntrinsicKind, SkuId} from '#src/disreact/codec/schema/common/common.ts';
 import type { Schema} from 'effect/Schema';
 import {Any, Boolean, Int, Literal, optional, String, Struct, Union, Unknown} from 'effect/Schema';
-import * as DTML from '#src/disreact/codec/schema/constants/dtml.ts';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
 
 
 

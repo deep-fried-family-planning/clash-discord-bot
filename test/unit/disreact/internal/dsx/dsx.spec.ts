@@ -1,4 +1,4 @@
-import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {dsxRuntime} from '#src/disreact/dsx/index.ts';

@@ -1,7 +1,7 @@
 import {encodeDialogDsx, encodeMessageDsx, encodeRoot} from '#src/disreact/codec/dsx-encoder.ts';
 import {cloneTree, initialRender} from '#src/disreact/dsx/lifecycle.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
+import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {expect, it} from '@effect/vitest';
 import {TestDialog} from 'test/unit/disreact/internal/dsx/.components/test-dialog.tsx';

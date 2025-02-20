@@ -1,7 +1,7 @@
 import {Header} from '#src/discord/components/header.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {translations} from '#src/discord/omni-board/translations.ts';
-import {usePage, useState} from '#src/disreact/interface/hook.ts';
+import {usePage, useState} from '#src/disreact/hook.ts';
 
 
 

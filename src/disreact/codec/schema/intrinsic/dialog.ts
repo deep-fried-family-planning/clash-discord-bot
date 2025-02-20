@@ -1,4 +1,4 @@
-import {CustomId} from '#src/disreact/codec/schema/common-schema.ts';
+import {CustomId} from '#src/disreact/codec/schema/common/common.ts';
 import {DTML} from '#src/disreact/dsx/index.ts';
 import {Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
 

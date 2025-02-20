@@ -1,5 +1,5 @@
 import {Doken} from '#src/disreact/codec/abstract/index.ts';
-import {DokenMemory} from '#src/disreact/interface/service.ts';
+import {DokenMemory} from '#src/disreact/service.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {Cache, type Duration, pipe} from 'effect';
 

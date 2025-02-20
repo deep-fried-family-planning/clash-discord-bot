@@ -1,4 +1,4 @@
-import {SnowFlake} from '#src/disreact/codec/schema/common-schema.ts';
+import {SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
 import {DFMD} from '#src/disreact/dsx/index.ts';
 import {Boolean, Literal, optional, type Schema, String, Struct} from 'effect/Schema';
 

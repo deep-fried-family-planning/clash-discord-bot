@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
 import type {IntrinsicMap} from '#src/disreact/codec/schema/intrinsic/index.ts';
 import {dsxRuntime, dsxs, fragment} from '#src/disreact/dsx/dsx-runtime.ts';
-import type {DFMDAnchorElement, DFMDElement, DFMDMentionElement, DTMLButtonElement, DTMLChoiceElement, DTMLCommandElement, DTMLComponentRowElement, DTMLEmbedDescriptionElement, DTMLEmbedElement, DTMLEmbedFieldElement, DTMLEmbedFooterElement, DTMLEmbedTitleElement, DTMLEmojiElement, DTMLMenuElement, DTMLMessageContentElement, DTMLMessageElement, DTMLModalElement, DTMLOptionElement, DTMLParameterElement, DTMLTextElement, DTMLValueElement} from '#src/disreact/dsx/types.ts';
 
 
 
@@ -58,8 +57,7 @@ declare global {
       | bigint
       | boolean
       | null
-      | undefined
-      | symbol;
+      | undefined;
 
     type Element = any;
     interface ElementAttributesProperty {

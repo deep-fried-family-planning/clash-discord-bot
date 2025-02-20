@@ -10,8 +10,6 @@ type PropsM = {children: Pragma[]};
 
 export const fragment = undefined;
 
-
-
 export const dsxRuntime = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
   if (!props) {
     return dsxs(
@@ -40,98 +38,99 @@ export const dsxRuntime = (type: JSX.ElementType, props: PropsS = {}): Pragma | 
   );
 };
 
-
-
 export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
   const children = props.children.flat();
-
   // @ts-expect-error convenience lol
   delete props.children;
 
   switch (typeof type) {
-    case 'undefined': {
-      return children;
-    }
+  case 'undefined':
+    return children;
 
-    case 'string': {
-      for (let i = 0; i < children.length; i++) {
-        let c = children[i] as any;
+  case 'string':
+    return {
+      kind    : 'intrinsic',
+      name    : type as keyof JSX.IntrinsicElements,
+      index   : 0,
+      id      : '',
+      id_step : '',
+      id_full : '',
+      props   : props,
+      children: connectIntrinsicChildren(children),
+    };
 
-        if (typeof children[i] === 'string') {
-          c = {
-            kind   : 'text',
-            name   : 'string',
-            id_step: '',
-            id_full: '',
-            value  : children[i],
-          };
-        }
+  case 'function':
+    return {
+      kind    : 'function',
+      name    : type.name,
+      index   : 0,
+      id      : '',
+      id_step : '',
+      id_full : '',
+      props   : props,
+      children: [],
+      render  : type,
+    };
 
-        c.index = i;
-        c.id = `${c.name}:${i}`;
-        children[i] = c;
-      }
+  case 'boolean':
+  case 'number':
+  case 'bigint':
+  case 'symbol':
+    return {
+      kind    : 'text',
+      name    : 'string',
+      index   : 0,
+      id      : '',
+      id_step : '',
+      id_full : '',
+      value   : String(type),
+      children: [],
+    };
+  }
+  throw new Error(`Unknown Tag: ${type}`);
+};
 
-      return {
-        kind    : 'intrinsic',
-        name    : type as keyof JSX.IntrinsicElements,
-        index   : 0,
-        id      : '',
-        id_step : '',
-        id_full : '',
-        props   : props,
-        children: children,
-      };
-    }
 
-    case 'function': {
-      return {
-        kind    : 'function',
-        name    : type.name,
-        index   : 0,
-        id      : '',
-        id_step : '',
-        id_full : '',
-        props   : props,
-        children: [],
-        render  : type,
-      };
-    }
 
-    case 'boolean':
-    case 'number':
-    case 'bigint':
-    case 'symbol': {
-      return {
+const connectIntrinsicChildren = (children: (Pragma | string)[]) => {
+  for (let i = 0; i < children.length; i++) {
+    let c = children[i];
+
+    if (typeof c === 'string') {
+      c = {
         kind    : 'text',
         name    : 'string',
-        index   : 0,
-        id      : '',
+        index   : i,
+        id      : `string:${i}`,
         id_step : '',
         id_full : '',
-        value   : String(type),
+        value   : c,
         children: [],
       };
     }
-
-    default: {
-      throw new Impossible({why: 'Unknown Tag'});
+    else {
+      c.index     = i;
+      c.id        = `${c.name}:${i}`;
     }
+
+    children[i] = c;
   }
+
+  return children as Pragma[];
 };
 
 
 
 export const dsxid = <T extends Pragma>(node: T, parent?: Pragma): T => {
   if (!parent) {
-    node.index = 0;
-    node.id = `${node.name}:${node.index}`;
+    node.index   = 0;
+    node.id      = `${node.name}:${node.index}`;
     node.id_step = `${node.name}:${node.index}`;
     node.id_full = `${node.name}:${node.index}`;
-    node.isRoot = true;
+    node.isRoot  = true;
   }
   else {
-    node.id = `${node.name}:${node.index}`;
+    node.id      = `${node.name}:${node.index}`;
     node.id_step = `${parent.id}:${node.id}`;
     node.id_full = `${parent.id_full}:${node.id}`;
   }

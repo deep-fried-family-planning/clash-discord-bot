@@ -17,3 +17,9 @@ export const isKnownConstant     = (str: string): str is keyof All => str in all
 export const isMarkupTag         = (str: string): str is keyof DTML => str in dtml;
 export const isMarkdownTag       = (str: string): str is keyof DFMD => str in dfmd;
 export const isReservedAttribute = (str: string): str is keyof Reserved => str in reserved;
+
+const inf = Infinity;
+// |  |
+// | --- |
+//
+// let λ, φ, τ, π;
