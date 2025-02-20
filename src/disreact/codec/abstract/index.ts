@@ -1,18 +1,18 @@
 import * as Doken from '#src/disreact/codec/abstract/doken.ts';
 import * as DEvent from '#src/disreact/codec/abstract/event.ts';
-import * as ATTR from '#src/disreact/dsx/attributes.ts';
-import * as DFMD from '#src/disreact/dsx/dfmd.ts';
-import * as DTML from '#src/disreact/dsx/dtml.ts';
+import * as ATTR from '#src/disreact/codec/schema/constants/reserved.ts';
+import * as DFMD from '#src/disreact/codec/schema/constants/dfmd.ts';
+import * as DTML from '#src/disreact/codec/schema/constants/dtml.ts';
 import * as Auth from 'src/disreact/codec/abstract/auth.ts';
 import * as Rest from 'src/disreact/codec/abstract/rest.ts';
 
 export {
-  ATTR,
+  // ATTR,
   Auth,
   DEvent,
-  DFMD,
+  // DFMD,
   Doken,
-  DTML,
+  // DTML,
   Rest,
 };
 

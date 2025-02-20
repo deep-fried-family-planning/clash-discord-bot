@@ -3,7 +3,7 @@ import {Tx} from '#src/disreact/codec/abstract/rest.ts';
 import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
 import {initialRender, type RenderFn} from '#src/disreact/dsx/lifecycle.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/dsx/StaticGraph.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

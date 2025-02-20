@@ -1,6 +1,6 @@
 import type {Pragma, RenderFn} from '#src/disreact/dsx/lifecycle.ts';
 import {StaticGraphError} from '#src/disreact/interface/error.ts';
-import {dsx, dsxid} from '#src/disreact/dsx/index.ts';
+import {dsxRuntime, dsxid} from '#src/disreact/dsx/index.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
@@ -82,7 +82,7 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
         return yield * new StaticGraphError({why: `${name} is not in the static graph`});
       }
 
-      return dsxid(dsx(staticGraphMap[name].render) as Pragma);
+      return dsxid(dsxRuntime(staticGraphMap[name].render) as Pragma);
     }),
   };
 });

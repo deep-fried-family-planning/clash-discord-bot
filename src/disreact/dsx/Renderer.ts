@@ -10,8 +10,8 @@ const make = E.gen(function * () {
 
 
 
-export class Lifecycles extends E.Tag('DisReact.Lifecycles')<
-  Lifecycles,
+export class Renderer extends E.Tag('DisReact.Renderer')<
+  Renderer,
   E.Effect.Success<typeof make>
 >() {
   static readonly singleton = L.effect(this, make);

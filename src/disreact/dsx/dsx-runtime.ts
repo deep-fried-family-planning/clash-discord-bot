@@ -12,7 +12,7 @@ export const fragment = undefined;
 
 
 
-export const dsx = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
+export const dsxRuntime = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
   if (!props) {
     return dsxs(
       type,
@@ -103,13 +103,14 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
     case 'bigint':
     case 'symbol': {
       return {
-        kind   : 'text',
-        name   : 'string',
-        index  : 0,
-        id     : '',
-        id_step: '',
-        id_full: '',
-        value  : String(type),
+        kind    : 'text',
+        name    : 'string',
+        index   : 0,
+        id      : '',
+        id_step : '',
+        id_full : '',
+        value   : String(type),
+        children: [],
       };
     }
 

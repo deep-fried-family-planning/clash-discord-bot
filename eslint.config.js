@@ -63,6 +63,7 @@ const config = [
         reportUnusedDisableDirectives: true,
       },
       rules: {
+        'no-fallthrough'                                   : [0],
         'require-yield'                                    : [1],
         '@typescript-eslint/consistent-type-imports'       : [2],
         '@typescript-eslint/no-unnecessary-type-parameters': [0],
@@ -96,7 +97,8 @@ const config = [
       ...style,
       rules: {
         ...style.rules,
-        '@stylistic/key-spacing': ['error', {
+        '@stylistic/yield-star-spacing': [0],
+        '@stylistic/key-spacing'       : ['error', {
           singleLine: {beforeColon: false, afterColon: true},
           multiLine : {beforeColon: false, afterColon: true, align: 'colon', mode: 'strict'},
         }],

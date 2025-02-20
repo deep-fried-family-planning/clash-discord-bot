@@ -5,11 +5,8 @@ type Props = {
 
 export const Header: DSX.FC<Props> = (props) => {
   return (
-    <embed>
-      <title>{props.title}</title>
-      <description>
-        {props.description}
-      </description>
+    <embed title={props.title}>
+      {props.description}
     </embed>
   );
 };

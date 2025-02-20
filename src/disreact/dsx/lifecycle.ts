@@ -1,7 +1,7 @@
 import type {T} from '#src/disreact/codec/abstract/event.ts';
 import {Critical, Impossible} from '#src/disreact/codec/debug.ts';
-import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/dsx/attributes.ts';
-import {dsxid} from '#src/disreact/dsx/dsx.ts';
+import {onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit} from '#src/disreact/codec/schema/constants/reserved.ts';
+import {dsxid} from '#src/disreact/dsx/dsx-runtime.ts';
 import {DTML} from '#src/disreact/dsx/index.ts';
 import type {Hooks, HooksById, HookStacksById} from '#src/disreact/dsx/types.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';

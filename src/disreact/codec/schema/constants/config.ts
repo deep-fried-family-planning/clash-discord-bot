@@ -1,6 +1,6 @@
-import {children, key, onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit, ref} from '#src/disreact/dsx/attributes.ts';
-import {a, at, b, blockquote, br, code, details, h1, h2, h3, i, li, mask, ol, p, pre, s, small, u, ul} from '#src/disreact/dsx/dfmd.ts';
-import {button, buttons, choice, command, content, description, dialog, embed, emoji, field, footer, menu, message, modal, option, param, string, text, title, value} from '#src/disreact/dsx/dtml.ts';
+import {children, key, onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit, ref} from '#src/disreact/codec/schema/constants/reserved.ts';
+import {a, at, b, blockquote, br, code, details, h1, h2, h3, i, li, mask, ol, p, pre, s, small, u, ul} from '#src/disreact/codec/schema/constants/dfmd.ts';
+import {button, buttons, choice, command, content, description, dialog, embed, emoji, field, footer, menu, message, modal, option, param, string, text, title, value} from '#src/disreact/codec/schema/constants/dtml.ts';
 
 
 const inf = Infinity;

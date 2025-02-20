@@ -1,5 +1,4 @@
 import {BitField, CustomId, InteractionToken, Locale, SnowFlake} from '#src/disreact/codec/schema/common-schema.ts';
-import {DIALOG_IN } from '#src/disreact/codec/schema/constants.ts';
 import {DTML} from '#src/disreact/dsx/index.ts';
 import {pipe, S} from '#src/internal/pure/effect.ts';
 import {Record} from 'effect';
@@ -19,7 +18,7 @@ export const TextOut = S.Struct({
 export type TextOut = S.Schema.Type<typeof TextOut>;
 
 
-export const DialogData = S.TaggedStruct(DIALOG_IN, {
+export const DialogData = S.TaggedStruct('DIALOG_IN', {
   custom_id : CustomId,
   components: pipe(
     S.Struct({

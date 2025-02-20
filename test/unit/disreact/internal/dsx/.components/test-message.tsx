@@ -4,7 +4,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 
-export const TestMessage = () => E.gen(function * () {
+export const TestMessage = () => E.gen(function* () {
   const [num, setNum] = useState(0);
 
   return (
@@ -13,33 +13,30 @@ export const TestMessage = () => E.gen(function * () {
         title={'Omni Board'}
         description={'V2 - JSX Pragma'}
       />
-      <embed>
-        <title>{'Test Title - NOT markdown'}</title>
-        <description>
-          <h3>{'H3'}</h3>
-          <small>
-            <p>
-              <at user id={'123456'}/>{'welcome!'}
-            </p>
-          </small>
-          <br/>
-          <u>${'not a link'}</u>
-
-
-        </description>
+      <embed title={'Test Title - NOT markdown'}>
+        <h3>{'H3'}</h3>
+        <small>
+          <p>
+            <at user={'123456'}/>
+            {'welcome!'}
+          </p>
+        </small>
+        <br/>
+        <u>${'not a link'}</u>
       </embed>
-      <buttons>
+      <actions>
         <button
           primary
           label={'Start'}
           onclick={() => setNum(num + 1)}
         />
-        <button secondary label={'Help'}>
-          <emoji
-            name={'ope'}
-          />
-        </button>
-      </buttons>
+        <secondary label={'Help'} onclick={() => console.log('help')}/>
+      </actions>
+      <select onselect={(e) => console.log(e)}>
+        <option value={'1'} label={'1'}/>
+        <option value={'2'} label={'2'}/>
+        <option value={'3'} label={'3'} default/>
+      </select>
     </message>
   );
 });

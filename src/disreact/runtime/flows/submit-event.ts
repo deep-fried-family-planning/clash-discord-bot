@@ -5,7 +5,7 @@ import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
 import {makeDeferred} from '#src/disreact/codec/doken-codec.ts';
 import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/dsx/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {flushHooks} from '#src/disreact/runtime/flows/click-event.ts';
 import {isSameRoot} from '#src/disreact/runtime/flows/utils.ts';

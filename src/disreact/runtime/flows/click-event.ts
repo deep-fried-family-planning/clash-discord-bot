@@ -4,7 +4,7 @@ import {encodeDialogInteraction, encodeMessageInteraction} from '#src/disreact/c
 import {collectStates, dispatchEvent, hydrateRoot, type Pragma, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/interface/service.ts';
-import {StaticGraph} from '#src/disreact/lifecycle/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/dsx/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {closeEvent, isSameRoot} from '#src/disreact/runtime/flows/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';

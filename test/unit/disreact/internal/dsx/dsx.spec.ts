@@ -1,7 +1,7 @@
 import {jsx} from '#src/disreact/interface/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {dsx} from '#src/disreact/dsx/index.ts';
+import {dsxRuntime} from '#src/disreact/dsx/index.ts';
 import {initialRender} from '#src/disreact/dsx/lifecycle.ts';
 import type {Pragma} from '#src/disreact/dsx/types.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
