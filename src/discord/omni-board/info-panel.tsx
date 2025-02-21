@@ -67,13 +67,16 @@ export const InfoPanel = () => E.gen(function * () {
         ))}
       </select>
       <NavBar/>
-      <buttons>
+      <actions>
+        <select>
+
+        </select>
         <button
           primary
           label={'Back'}
           onclick={() => page.next(Link)}
         />
-      </buttons>
+      </actions>
     </message>
   );
 });

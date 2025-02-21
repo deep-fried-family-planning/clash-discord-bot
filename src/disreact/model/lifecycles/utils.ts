@@ -1,4 +1,4 @@
-import * as Codec from '#src/disreact/codec/index.ts';
+import {Reserved} from '#src/disreact/codec/constants';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
 
@@ -9,7 +9,7 @@ export const deepClone = structuredClone;
 
 export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T => {
   if (!parent) {
-    node.meta.idx   = 0;
+    node.meta.idx     = 0;
     node.meta.id      = `${node._name}:${node.meta.idx}`;
     node.meta.step_id = `${node._name}:${node.meta.idx}`;
     node.meta.full_id = `${node._name}:${node.meta.idx}`;
@@ -26,27 +26,27 @@ export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T 
 
 
 const intrinsicPropFunctionKeys = [
-  Codec.Common.Reserved.onclick,
-  Codec.Common.Reserved.onselect,
-  Codec.Common.Reserved.ondeselect,
-  Codec.Common.Reserved.onsubmit,
-  Codec.Common.Reserved.oninvoke,
-  Codec.Common.Reserved.onautocomplete,
+  Reserved.onclick,
+  Reserved.onselect,
+  Reserved.ondeselect,
+  Reserved.onsubmit,
+  Reserved.oninvoke,
+  Reserved.onautocomplete,
 ];
 
 
 
 export const removeReservedIntrinsicProps = (props: any) => {
   const {
-          [Codec.Common.Reserved.onclick]       : _onclick,
-          [Codec.Common.Reserved.onselect]      : _onselect,
-          [Codec.Common.Reserved.ondeselect]    : _ondeselect,
-          [Codec.Common.Reserved.onsubmit]      : _onsubmit,
-          [Codec.Common.Reserved.oninvoke]      : _oninvoke,
-          [Codec.Common.Reserved.onautocomplete]: _onautocomplete,
-          [Codec.Common.Reserved.children]      : _children,
-          [Codec.Common.Reserved.ref]           : _ref,
-          [Codec.Common.Reserved.key]           : _key,
+          [Reserved.onclick]       : _onclick,
+          [Reserved.onselect]      : _onselect,
+          [Reserved.ondeselect]    : _ondeselect,
+          [Reserved.onsubmit]      : _onsubmit,
+          [Reserved.oninvoke]      : _oninvoke,
+          [Reserved.onautocomplete]: _onautocomplete,
+          [Reserved.children]      : _children,
+          [Reserved.ref]           : _ref,
+          [Reserved.key]           : _key,
           ...rest
         } = props;
 
@@ -57,9 +57,9 @@ export const removeReservedIntrinsicProps = (props: any) => {
 
 export const removeReservedFunctionProps = (props: any) => {
   const {
-          [Codec.Common.Reserved.children]: _children,
-          [Codec.Common.Reserved.ref]     : _ref,
-          [Codec.Common.Reserved.key]     : _key,
+          [Reserved.children]: _children,
+          [Reserved.ref]     : _ref,
+          [Reserved.key]     : _key,
           ...rest
         } = props;
 

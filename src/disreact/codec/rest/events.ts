@@ -1,5 +1,5 @@
 import {CustomId} from '#src/disreact/codec/constants/common.ts';
-import {Any, Array, Boolean, String, Struct, tag} from 'effect/Schema';
+import {Any, Array, Boolean, type Schema, String, Struct, tag, Union} from 'effect/Schema';
 import {All, Reserved} from 'src/disreact/codec/constants/index.ts';
 import * as Rest from 'src/disreact/codec/rest/rest.ts';
 
@@ -155,3 +155,17 @@ export const decodeEvent = (rest: Rest.Interaction) => {
 
   throw new Error('Unsupported event');
 };
+
+
+
+export const Type = Union(
+  ButtonEvent,
+  SelectEvent,
+  UserSelectEvent,
+  RoleSelectEvent,
+  ChannelSelectEvent,
+  MentionSelectEvent,
+  SubmitEvent,
+);
+
+export type Type = Schema.Type<typeof Type>;

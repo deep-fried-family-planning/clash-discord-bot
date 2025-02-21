@@ -1,7 +1,7 @@
 import type {NodeState} from '#src/disreact/codec/entities/index.ts';
 import {CLOSE} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Globals from './globals.ts';
+import * as Globals from '#src/disreact/model/globals/globals.ts';
 
 
 

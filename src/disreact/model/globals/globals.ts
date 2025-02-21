@@ -2,7 +2,7 @@
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
 import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
 import * as RootState from '#src/disreact/codec/entities/root-state.ts';
-import * as Hooks from './hooks.ts';
+import * as Hooks from '#src/disreact/model/globals/hooks.ts';
 
 
 const __pointer = {current: null as null | Pointer.Type};

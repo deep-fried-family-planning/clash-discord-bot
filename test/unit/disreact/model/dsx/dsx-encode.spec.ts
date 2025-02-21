@@ -1,6 +1,6 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/dsx/dsx-encode.ts';
-import * as Globals from '#src/disreact/model/hooks/globals.ts';
+import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/dsx/element-encode.ts';
+import * as Globals from '#src/disreact/model/globals/globals.ts';
 import {cloneTree, initialRender} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';

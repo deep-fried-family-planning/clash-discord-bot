@@ -2,6 +2,7 @@ import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Codec from '../../codec/index.ts';
 import * as Utils from './utils.ts';
 import * as All from '#src/disreact/codec/constants/all.ts';
+import { Reserved } from '#src/disreact/codec/constants/index.ts';
 
 
 export const cloneTree = (node: Pragma, parent?: Pragma) => {
@@ -56,12 +57,12 @@ export const cloneNode = <T extends Pragma>(node: T): T => {
 
 
 const intrinsicPropFunctionKeys = [
-  Codec.Common.Reserved.onclick,
-  Codec.Common.Reserved.onselect,
-  Codec.Common.Reserved.ondeselect,
-  Codec.Common.Reserved.onsubmit,
-  Codec.Common.Reserved.oninvoke,
-  Codec.Common.Reserved.onautocomplete,
+  Reserved.onclick,
+  Reserved.onselect,
+  Reserved.ondeselect,
+  Reserved.onsubmit,
+  Reserved.oninvoke,
+  Reserved.onautocomplete,
 ];
 
 export const cloneIntrinsicProps = (props: any) => {

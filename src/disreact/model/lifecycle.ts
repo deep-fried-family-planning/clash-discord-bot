@@ -1,4 +1,4 @@
-/* eslint-disable no-case-declarations */
+/* eslint-disable no-case-declarations,@typescript-eslint/no-unnecessary-condition */
 import * as All from '#src/disreact/codec/constants/all.ts';
 import {DTML} from '#src/disreact/codec/constants/index.ts';
 import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
@@ -8,7 +8,7 @@ import type * as TextElement from '#src/disreact/codec/entities/text-element.ts'
 import {E} from '#src/internal/pure/effect.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
-import * as Globals from './hooks/globals.ts';
+import * as Globals from '#src/disreact/model/globals/globals.ts';
 import * as Lifecycles from './lifecycles/index.ts';
 
 
@@ -39,7 +39,9 @@ export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, a
     } as IntrinsicElement.Type;
 
   case All.FunctionElementTag:
-    const children = yield* effectRenderNode(node);
+    Globals.mountNode(base.meta.full_id, (base as any).state);
+
+    const children = yield* effectRenderNode(base);
 
     return {
       ...base,
@@ -88,8 +90,10 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: NodeState.Type})
     return node;
   }
 
-  if (node.meta.full_id in states) {
-    node.state       = states[node.meta.full_id];
+  const state = states[node.meta.full_id];
+
+  if (state) {
+    node.state       = state;
     node.state.prior = structuredClone(node.state.stack);
   }
 

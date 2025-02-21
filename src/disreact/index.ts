@@ -1,5 +1,5 @@
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Globals from './model/hooks/globals.ts';
+import * as Globals from '#src/disreact/model/globals/globals.ts';
 
 
 

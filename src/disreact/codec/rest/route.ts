@@ -1,4 +1,4 @@
-import {decodeSync, encodeSync, mutable, NumberFromString, String, Struct, TemplateLiteralParser, transform} from 'effect/Schema';
+import {decodeSync, encodeSync, mutable, NumberFromString, type Schema, String, Struct, TemplateLiteralParser, transform} from 'effect/Schema';
 import * as Doken from 'src/disreact/codec/rest/doken.ts';
 
 
@@ -7,9 +7,11 @@ export const Params =
                mutable(Struct({
                  origin: String,
                  root  : String,
-                 doken : Doken.Type,
+                 doken : mutable(Doken.Type),
                  hash  : String,
                }));
+
+export type Params = Schema.Type<typeof Params>;
 
 
 
@@ -96,7 +98,7 @@ export const DialogParser =
 
 export const DialogRoute = transform(DialogParser, Params, {
   strict: true,
-  encode: (a, b) => {
+  encode: (a) => {
     return [
       '/dsx/',
       a.root,

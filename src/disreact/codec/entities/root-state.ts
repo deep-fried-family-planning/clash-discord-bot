@@ -1,6 +1,6 @@
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
-import * as Compression from '#src/disreact/codec/compression.ts';
+import * as Compression from '#src/disreact/codec/rest/compression.ts';
 
 
 
@@ -32,7 +32,7 @@ export const make = (): Type => ({
 
 export const ROOT_PROPS_KEY = '.rootProps';
 
-export const hashRoot = (root: Type) => {
+export const makeHash = (root: Type) => {
   const acc = {} as any;
   acc[ROOT_PROPS_KEY] = root.props;
 

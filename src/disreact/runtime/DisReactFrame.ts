@@ -42,17 +42,10 @@ const empty = () => ({
 
 
 const make = E.gen(function* () {
-  let self = null as unknown as IxCtx;
-
   const semaphore = yield* E.makeSemaphore(1);
   const mutex     = semaphore.withPermits(1);
 
   return {
-    Type: null as unknown as typeof self,
-    free: () => self = empty(),
-    read: () => self,
-    save: (next: IxCtx) => self = next,
-
     mutex: () => mutex,
   };
 });

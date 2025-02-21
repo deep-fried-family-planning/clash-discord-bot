@@ -4,7 +4,7 @@ import * as Cache from 'effect/Cache';
 import * as F from 'effect/Function';
 import * as L from 'effect/Layer';
 import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
-import * as Globals from 'src/disreact/model/hooks/globals.ts';
+import * as Globals from '#src/disreact/model/globals/globals.ts';
 
 
 

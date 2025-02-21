@@ -1,4 +1,4 @@
-import {makeCompressionMap} from '#src/disreact/codec/compression-map.ts';
+import {makeCompressionMap} from '#src/disreact/codec/rest/compression-map.ts';
 
 
 

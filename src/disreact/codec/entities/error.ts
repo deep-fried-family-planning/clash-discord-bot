@@ -5,8 +5,9 @@ export class DiscordApiError extends Data.TaggedError('DisReact.DiscordApiError'
 }> {}
 
 export class DisReactCodecError extends Data.TaggedError('DisReact.DisReactCodecError')<{
-  stage: 'encode' | 'decode';
-  cause: Error;
+  stage : 'encode' | 'decode';
+  cause?: Error;
+  why?  : string;
 }> {}
 
 export class BadInteraction extends Data.TaggedError('DisReact.BadInteraction')<{

@@ -5,7 +5,7 @@ import type {DateTime} from 'effect';
 import {pipe} from 'effect';
 import * as D from 'effect/Duration';
 import * as S from 'effect/Schema';
-import {DateTimeUtcFromNumber, decodeSync, encodeSync, equivalence, mutable, NumberFromString, optional, type Schema, String, Struct, tag, transformLiterals} from 'effect/Schema';
+import {DateTimeUtcFromNumber, equivalence, mutable, NumberFromString, optional, type Schema, String, Struct, tag, transformLiterals} from 'effect/Schema';
 
 
 export const TWO_HALF_SECONDS = D.millis(2500);
@@ -17,6 +17,7 @@ export const FRESH   = 'Fresh';
 export const SPENT   = 'Spent';
 export const ACTIVE  = 'Active';
 export const EXPIRED = 'Expired';
+export const STATIC  = 'Static';
 
 
 export type Status = Schema.Type<typeof Status>;
@@ -26,6 +27,7 @@ export const Status = transformLiterals(
   ['1', SPENT],
   ['2', ACTIVE],
   ['3', EXPIRED],
+  ['4', STATIC],
 );
 
 
@@ -46,12 +48,8 @@ export type Type = Schema.Type<typeof MutableType>;
 
 
 
-export const equals = equivalence(Type);
-export const encode = encodeSync(Type);
-export const decode = decodeSync(Type);
-
-
-
+export const equals        = equivalence(Type);
+export const isStatic      = (doken: Type) => doken.status === 'Static';
 export const isEphemeral   = (doken: Type) => doken.ephemeral === 1;
 export const isFresh       = (doken: Type) => doken.status === 'Fresh';
 export const isSpent       = (doken: Type) => doken.status === 'Spent';
@@ -64,9 +62,22 @@ export const isUpdateDefer = (doken: Type) => doken.type === Tx.DEFERRED_UPDATE_
 
 
 
+export const makeStatic = () => Type.make(
+  {
+    _tag     : 'Doken',
+    id       : '0',
+    ttl      : DT.unsafeMake(0),
+    ephemeral: 0,
+    type     : 0,
+    status   : 'Static',
+  },
+);
+
+
+
 export const makeFresh = (config: {
   rest : any;
-  time?: DateTime.Utc;
+  time?: DateTime.Utc | undefined;
 }) =>
   pipe(
     O.fromNullable(config.time),
@@ -84,7 +95,7 @@ export const makeFresh = (config: {
       ),
       onNone: () => pipe(
         DT.now,
-        E.map((now) => DT.addDuration(now, TWO_HALF_SECONDS)),
+        E.map((now) => DT.addDuration(now, TWO_SECONDS)),
       ),
     }),
     E.map((dt) => Type.make(
@@ -105,11 +116,11 @@ export const makeFresh = (config: {
 
 export const makeFromParams = (config: {
   id       : string;
-  ttl      : number;
+  ttl      : DateTime.Utc;
   ephemeral: number;
   type     : number;
-  app_id?  : string;
-  token?   : RDT.Redacted;
+  app_id?  : string | undefined;
+  token?   : RDT.Redacted | undefined;
 }) =>
   pipe(
     DT.make(config.ttl),
@@ -132,7 +143,6 @@ export const makeFromParams = (config: {
               type     : config.type,
               status   : 'Active',
             },
-            true,
           ),
         ),
         onFalse: () => E.succeed(

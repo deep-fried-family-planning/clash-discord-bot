@@ -6,7 +6,7 @@ import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
-import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';

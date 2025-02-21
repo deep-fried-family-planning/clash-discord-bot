@@ -13,39 +13,30 @@ type PropsM = {children: Pragma[]};
 
 export const fragment = undefined;
 
+
+
 export const dsx = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
   if (!props) {
-    return dsxs(
-      type,
-      {children: []},
-    );
+    return dsxs(type, {children: []});
   }
 
   if (!props.children) {
-    return dsxs(
-      type,
-      {...props, children: []},
-    );
+    return dsxs(type, {...props, children: []});
   }
 
-  if (Array.isArray(props.children)) {
-    return dsxs(
-      type,
-      {...props, children: props.children.flat()},
-    );
+  if (props.children instanceof Array) {
+    return dsxs(type, {...props, children: props.children.flat()});
   }
 
-  return dsxs(
-    type,
-    {...props, children: [props.children]},
-  );
+  return dsxs(type, {...props, children: [props.children]});
 };
+
+
 
 export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
   const children = props.children.flat();
 
-  // @ts-expect-error convenience lol
-  delete props.children;
+  delete (props as Partial<PropsM>).children;
 
   switch (typeof type) {
   case 'undefined':
