@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
-import type {IntrinsicMap} from '#src/disreact/codec/schema/intrinsic/index.ts';
-import {dsx, dsxs, fragment} from '#src/disreact/model/lifecycles/dsx-create.ts';
+import type {IntrinsicMap} from '#src/disreact/codec/intrinsic/index.ts';
+import {dsx, dsxs, fragment} from '#src/disreact/model/dsx/dsx-create.ts';
 
 
 

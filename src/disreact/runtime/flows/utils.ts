@@ -1,4 +1,4 @@
-import {CLOSE, NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
+import {CLOSE, NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {DisReactFrame, type IxCtx} from '#src/disreact/runtime/DisReactFrame.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';

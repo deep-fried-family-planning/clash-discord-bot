@@ -1,8 +1,8 @@
-import type {Doken, Rest} from '#src/disreact/codec/schema/rest/index.ts';
-import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
-import type {DisReactPointer} from '#src/disreact/codec/schema/common/common.ts';
+import type {Doken, Rest} from '#src/disreact/codec/rest/index.ts';
+import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
+import type {DisReactPointer} from '#src/disreact/codec/constants/common.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
-import type {NodeState, RootState} from '../codec/schema/entities';
+import type {NodeState, RootState} from '../codec/entities';
 
 
 export type IxCtx = ReturnType<typeof empty>;

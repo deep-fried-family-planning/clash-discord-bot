@@ -1,7 +1,7 @@
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Codec from '../../codec/index.ts';
 import * as Utils from './utils.ts';
-import * as All from '../../codec/schema/common/all.ts';
+import * as All from '#src/disreact/codec/constants/all.ts';
 
 
 export const cloneTree = (node: Pragma, parent?: Pragma) => {

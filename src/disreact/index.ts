@@ -1,4 +1,4 @@
-import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 
 

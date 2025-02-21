@@ -1,2 +1,2 @@
-export * as Common from './schema/common/index.ts';
-export * as Entities from '#src/disreact/codec/schema/entities/index.ts';
+export * as Common from '#src/disreact/codec/constants/index.ts';
+export * as Entities from '#src/disreact/codec/entities/index.ts';

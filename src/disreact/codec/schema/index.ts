@@ -1,1 +1,1 @@
-export * as Common from './common/index.ts';
+export * as Common from '#src/disreact/codec/constants/index.ts';

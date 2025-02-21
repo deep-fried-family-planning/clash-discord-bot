@@ -1,6 +1,6 @@
-import {Doken, Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import {Doken, Rest} from '#src/disreact/codec/rest/index.ts';
 import {BadInteraction} from '#src/disreact/error.ts';
-import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import {dispatchEvent, hydrateRoot, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
@@ -8,7 +8,7 @@ import {flushHooks} from '#src/disreact/runtime/flows/click-event.ts';
 import {isSameRoot} from '#src/disreact/runtime/flows/utils.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import type {FunctionElement} from 'src/disreact/codec/schema/entities';
+import type {FunctionElement} from 'src/disreact/codec/entities';
 
 
 

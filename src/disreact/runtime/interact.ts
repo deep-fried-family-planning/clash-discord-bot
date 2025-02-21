@@ -1,9 +1,9 @@
-import type {Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {clickEvent} from '#src/disreact/runtime/flows/click-event.ts';
 import {submitEvent} from '#src/disreact/runtime/flows/submit-event.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {NodeState} from '../codec/schema/entities';
+import {NodeState} from '../codec/entities';
 
 
 

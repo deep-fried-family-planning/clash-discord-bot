@@ -1,5 +1,5 @@
 
-import {fragment, dsx, dsxs} from '#src/disreact/model/lifecycles/dsx-create.ts';
+import {fragment, dsx, dsxs} from '#src/disreact/model/dsx/dsx-create.ts';
 
 
 

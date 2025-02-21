@@ -1,4 +1,4 @@
-import {Doken, Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import {Doken, Rest} from '#src/disreact/codec/rest/index.ts';
 import {DokenMemoryError} from '#src/disreact/error.ts';
 import {C, E, L, LG, LL, RDT} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';

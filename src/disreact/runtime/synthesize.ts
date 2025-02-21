@@ -1,6 +1,6 @@
-import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
-import {Tx} from '#src/disreact/codec/schema/rest/rest.ts';
-import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
+import {Tx} from '#src/disreact/codec/rest/rest.ts';
+import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import {initialRender, type RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {E, RDT} from '#src/internal/pure/effect.ts';

@@ -3,7 +3,7 @@ import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
-import type {Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
