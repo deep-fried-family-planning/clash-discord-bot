@@ -1,9 +1,9 @@
-import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/lifecycles/dsx-encode.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import {cloneTree, initialRender} from '#src/disreact/model/lifecycle.ts';
+import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/lifecycles/dsx-encode.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {expect, it} from '@effect/vitest';
+import {it} from '@effect/vitest';
 import {TestDialog} from 'test/unit/disreact/model/.components/test-dialog.tsx';
 import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
 
@@ -26,9 +26,8 @@ describe('dsx-encoder', () => {
   it.effect('when encoding a message', E.fn(function* () {
     given.component = jsx(TestMessage, {});
     const rendered  = yield* initialRender(given.component);
-    console.log(tojson(rendered));
-    const clone  = cloneTree(rendered);
-    const actual = encodeMessageDsx(clone);
+    const clone     = cloneTree(rendered);
+    const actual    = encodeMessageDsx(clone);
 
     yield* E.promise(async () => {await expect(tojson(actual)).toMatchFileSnapshot('./.snap/message.json')});
   }));
