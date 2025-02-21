@@ -1,10 +1,10 @@
-import type * as Button from 'src/disreact/codec/intrinsic/button.ts';
-import type * as Dialog from 'src/disreact/codec/intrinsic/dialog.ts';
-import type * as Embed from 'src/disreact/codec/intrinsic/embed.ts';
-import type * as Select from 'src/disreact/codec/intrinsic/select.ts';
-import type * as Message from 'src/disreact/codec/intrinsic/message.ts';
-import type * as Markdown from 'src/disreact/codec/intrinsic/markdown.ts';
-import type * as Command from 'src/disreact/codec/intrinsic/command.ts';
+import * as Button from 'src/disreact/codec/intrinsic/button.ts';
+import * as Dialog from 'src/disreact/codec/intrinsic/dialog.ts';
+import * as Embed from 'src/disreact/codec/intrinsic/embed.ts';
+import * as Select from 'src/disreact/codec/intrinsic/select.ts';
+import * as Message from 'src/disreact/codec/intrinsic/message.ts';
+import * as Markdown from 'src/disreact/codec/intrinsic/markdown.ts';
+import * as Command from 'src/disreact/codec/intrinsic/command.ts';
 
 export * as Button from 'src/disreact/codec/intrinsic/button.ts';
 export * as Command from 'src/disreact/codec/intrinsic/command.ts';
@@ -49,4 +49,16 @@ export type IntrinsicTuple =
 
 export type IntrinsicMap = {
   [K in IntrinsicTuple as K[0]]: K[1];
+};
+
+
+
+export const dsxDEV_validators = {
+  ...Button.dsxDEV_validators,
+  ...Command.dsxDEV_validators,
+  ...Dialog.dsxDEV_validators,
+  ...Embed.dsxDEV_validators,
+  ...Markdown.dsxDEV_validators,
+  ...Message.dsxDEV_validators,
+  ...Select.dsxDEV_validators,
 };

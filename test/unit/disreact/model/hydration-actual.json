@@ -43,7 +43,7 @@
           ],
           "meta": {
             "full_id": "TestMessage:0:message:0:Header:0",
-            "graphName": ".not-set",
+            "graph_id": "",
             "id": "Header:0",
             "idx": 0,
             "isModal": undefined,
@@ -331,7 +331,7 @@
   ],
   "meta": {
     "full_id": "TestMessage:0",
-    "graphName": ".not-set",
+    "graph_id": "",
     "id": "TestMessage:0",
     "idx": 0,
     "isModal": undefined,

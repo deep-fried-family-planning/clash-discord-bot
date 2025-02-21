@@ -59,6 +59,7 @@ export const makeFromHash = (hash: string) => {
     default:
       root.state[k] = NodeState.make();
       root.state[k].stack = v;
+      NodeState.savePrior(root.state[k]);
     }
   }
 

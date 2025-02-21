@@ -1,6 +1,6 @@
 import {CustomId, EmojiStruct, SnowFlake} from '#src/disreact/codec/constants/common.ts';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
-import {Any, Array, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
+import {Any, Array, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown, validateSync} from 'effect/Schema';
 
 
 
@@ -113,3 +113,15 @@ export type UsersAttributes = Schema.Type<typeof UsersAttributes>;
 export type RolesAttributes = Schema.Type<typeof RolesAttributes>;
 export type ChannelsAttributes = Schema.Type<typeof ChannelsAttributes>;
 export type MentionsAttributes = Schema.Type<typeof MentionsAttributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DTML.select]  : validateSync(Attributes),
+  [DTML.option]  : validateSync(OptionAttributes),
+  [DTML.$default]: validateSync(DefaultValueAttributes),
+  [DTML.users]   : validateSync(UsersAttributes),
+  [DTML.roles]   : validateSync(RolesAttributes),
+  [DTML.channels]: validateSync(ChannelsAttributes),
+  [DTML.mentions]: validateSync(MentionsAttributes),
+};

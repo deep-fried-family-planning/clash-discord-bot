@@ -1,12 +1,14 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as Element from '#src/disreact/codec/entities/element.ts';
 import type * as FunctionComponent from '#src/disreact/codec/entities/function-component.ts';
+import type * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import type * as TextElement from '#src/disreact/codec/entities/text-element.ts';
 
 
 
 export type Type = {
-  _kind: string;
+  _kind: ReturnType<typeof getKind>;
   _tag : typeof All.FunctionElementTag;
   _name: string;
   meta: {
@@ -14,19 +16,23 @@ export type Type = {
     id          : string;
     step_id     : string;
     full_id     : string;
+    graph_id?   : string;
     isModal?    : boolean | undefined;
     isRoot?     : boolean | undefined;
     isMessage?  : boolean | undefined;
     isEphemeral?: boolean | undefined;
-    graphName   : string;
   };
   props   : any;
   state   : NodeState.Type;
   render  : FunctionComponent.Type;
-  children: Element.Type[];
+  children: (
+    | Type
+    | IntrinsicElement.Type
+    | TextElement.Type
+    )[];
 };
 
-
+export const is = (type: any): type is Type => type._tag === All.FunctionElementTag;
 
 export const make = (type: FunctionComponent.Type, props: any): Type => {
   return {
@@ -44,36 +50,44 @@ export const make = (type: FunctionComponent.Type, props: any): Type => {
 
 
 const getName = (type: FunctionComponent.Type) => {
-  if (type.displayName) {
+  if (type.displayName)
     return type.displayName;
-  }
 
-  if (type.name) {
+  if (type.name)
     return type.name;
-  }
 
-  return All.NotSet;
+  return All.AnonymousName;
 };
 
 
 
 const getKind = (type: FunctionComponent.Type) => {
-  return type.isSync ? All.SyncFunctionTag
-    : type.isEffect ? All.EffectFunctionTag
-      : type.constructor.name === All.AsyncFunctionConstructorName ? All.AsyncFunctionTag
-        : All.SyncOrEffectFunctionTag;
+  if (type.isSync)
+    return All.SyncFunctionTag;
+
+  if (type.isEffect)
+    return All.EffectFunctionTag;
+
+  if (type.constructor.name === All.AsyncFunctionConstructorName)
+    return All.AsyncFunctionTag;
+
+  return All.SyncOrEffectFunctionTag;
 };
 
 
 
-const getMeta = (type: FunctionComponent.Type) => {
+const getMeta = (type: FunctionComponent.Type): Type['meta'] => {
   return {
-    idx      : 0,
-    id       : All.NotSet,
-    step_id  : '',
-    full_id  : '',
-    isModal  : type.isModal,
-    isRoot   : type.isRoot,
-    graphName: All.NotSet,
+    idx     : All.Zero,
+    id      : All.Empty,
+    step_id : All.Empty,
+    full_id : All.Empty,
+    isModal : type.isModal,
+    isRoot  : type.isRoot,
+    graph_id: All.Empty,
   };
 };
+
+
+
+export const dsxDEV_make = make;

@@ -1,5 +1,5 @@
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
-import {Any, Boolean, Literal, optional, type Schema, Struct} from 'effect/Schema';
+import {Any, Boolean, Literal, optional, type Schema, Struct, validateSync} from 'effect/Schema';
 
 
 
@@ -25,3 +25,11 @@ export type ActionRowTag = Schema.Type<typeof ActionRowTag>;
 
 export type Attributes = Schema.Type<typeof Attributes>;
 export type ActionRowAttributes = Schema.Type<typeof ActionRowAttributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DTML.message]: validateSync(Attributes),
+  [DTML.actions]: validateSync(ActionRowAttributes),
+  [DTML.buttons]: validateSync(ActionRowAttributes),
+};

@@ -1,5 +1,5 @@
 import {ButtonLabel, ConformantCustomId, EmojiStruct, IntrinsicKind, SkuId} from '#src/disreact/codec/constants/common.ts';
-import type { Schema} from 'effect/Schema';
+import {type Schema, validateSync} from 'effect/Schema';
 import {Any, Boolean, Int, Literal, optional, String, Struct, Union, Unknown} from 'effect/Schema';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
 
@@ -33,17 +33,11 @@ export const EventData = Struct({});
 
 
 export const ButtonTag = Literal(DTML.button);
-
 export const PrimaryButtonTag = Literal(DTML.primary);
-
 export const SecondaryButtonTag = Literal(DTML.secondary);
-
 export const SuccessTag = Literal(DTML.success);
-
 export const DangerTag = Literal(DTML.danger);
-
 export const LinkTag = Literal(DTML.link);
-
 export const PremiumTag = Literal(DTML.premium);
 
 
@@ -150,3 +144,15 @@ export type SuccessAttributes = Schema.Type<typeof SuccessAttributes>;
 export type DangerAttributes = Schema.Type<typeof DangerAttributes>;
 export type LinkAttributes = Schema.Type<typeof LinkAttributes>;
 export type PremiumAttributes = Schema.Type<typeof PremiumAttributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DTML.button]   : validateSync(Attributes),
+  [DTML.primary]  : validateSync(PrimaryAttributes),
+  [DTML.secondary]: validateSync(SecondaryAttributes),
+  [DTML.success]  : validateSync(SuccessAttributes),
+  [DTML.danger]   : validateSync(DangerAttributes),
+  [DTML.link]     : validateSync(LinkAttributes),
+  [DTML.premium]  : validateSync(PremiumAttributes),
+};

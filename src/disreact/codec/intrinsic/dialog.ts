@@ -1,6 +1,6 @@
 import {CustomId} from '#src/disreact/codec/constants/common.ts';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
-import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
+import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown, validateSync} from 'effect/Schema';
 
 
 
@@ -36,3 +36,13 @@ export type TextInputTag = Schema.Type<typeof TextInputTag>;
 
 export type Attributes = Schema.Type<typeof Attributes>;
 export type TextInputAttributes = Schema.Type<typeof TextInputAttributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DTML.dialog]   : validateSync(Attributes),
+  [DTML.modal]    : validateSync(Attributes),
+  [DTML.text]     : validateSync(TextInputAttributes),
+  [DTML.textarea] : validateSync(TextInputAttributes),
+  [DTML.textinput]: validateSync(TextInputAttributes),
+};

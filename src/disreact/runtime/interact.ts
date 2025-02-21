@@ -2,50 +2,51 @@ import {BadInteraction} from '#src/disreact/codec/entities/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
 import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec, Constants} from '../codec';
 import type {FunctionElement} from '../codec/entities/index.ts';
 import * as Globals from '../model/globals/globals.ts';
-import * as Lifecycle from '../model/lifecycle.ts';
 
 
 
-export const interact = E.fn(function* (rest: Rest.Ix) {
-  const frame = yield* Codec.decodeInteraction(rest);
+export const interact = E.fn(
+  function* (rest: Rest.Ix) {
+    const frame = yield* Codec.decodeInteraction(rest);
 
-  Globals.setPointer(frame.pointer);
-  Globals.mountRoot(frame.pointer, frame.state);
+    Globals.setPointer(frame.pointer);
+    Globals.mountRoot(frame.pointer, frame.state);
 
-  const root = yield* StaticGraph.cloneRoot(frame.params.root);
+    const root = yield* StaticGraph.cloneRoot(frame.params.root);
 
-  switch (frame.event.kind) {
-  case Constants.All.ButtonEventTag:
-  case Constants.All.SelectEventTag:
-  case Constants.All.UserSelectEventTag:
-  case Constants.All.RoleSelectEventTag:
-  case Constants.All.ChannelSelectEventTag:
-  case Constants.All.MentionSelectEventTag:
-    return yield* processClick(frame, root);
+    switch (frame.event.kind) {
+    case Constants.All.ButtonEventTag:
+    case Constants.All.SelectEventTag:
+    case Constants.All.UserSelectEventTag:
+    case Constants.All.RoleSelectEventTag:
+    case Constants.All.ChannelSelectEventTag:
+    case Constants.All.MentionSelectEventTag:
+      return yield* processClick(frame, root);
 
-  case Constants.All.SubmitEventTag:
-    return yield* processSubmit(frame, root);
-  }
+    case Constants.All.SubmitEventTag:
+      return yield* processSubmit(frame, root);
+    }
 
-  return yield* new BadInteraction({why: 'unsupported interaction'});
-},
+    return yield* new BadInteraction({why: 'unsupported interaction'});
+  },
   E.provide(DisReactFrame.makeLayer()),
 );
 
 
 
 const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
-  const hydrated = yield* Lifecycle.hydrateRoot(root, frame.state.state);
+  const hydrated = yield* Lifecycles.hydrateRoot(root, frame.state.state);
 
   yield* flushHooks(hydrated);
 
-  const afterEvent = Lifecycle.dispatchEvent(hydrated, frame.event) as any;
+  const afterEvent = Lifecycles.invokeIntrinsicTarget(hydrated, frame.event) as any;
   frame.state      = Globals.readRoot(frame.pointer);
 
 
@@ -84,11 +85,11 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
       yield* E.fork(DiscordDOM.defer(frame.dokens.fresh).pipe(localMutex));
     }
 
-    const rerendered = yield* Lifecycle.rerenderRoot(afterEvent);
+    const rerendered = yield* Lifecycles.rerenderRoot(afterEvent);
 
     yield* flushHooks(rerendered);
 
-    const finalRender = yield* Lifecycle.rerenderRoot(rerendered);
+    const finalRender = yield* Lifecycles.rerenderRoot(rerendered);
     const encoded     = Codec.encodeMessage(frame, finalRender);
 
     return yield* E.fork(DiscordDOM.reply(frame.dokens.rest ?? frame.dokens.fresh, encoded).pipe(localMutex));
@@ -96,7 +97,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
 
   const nextClone = yield* StaticGraph.cloneRoot(frame.state.graph.next);
-  const rendered  = yield* Lifecycle.rerenderRoot(nextClone);
+  const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 
 
   if ((rendered as FunctionElement.Type).meta.isModal) {
@@ -132,7 +133,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
   yield* flushHooks(rendered);
 
-  const finalRender = yield* Lifecycle.rerenderRoot(rendered);
+  const finalRender = yield* Lifecycles.rerenderRoot(rendered);
   const encoded     = Codec.encodeMessage(frame, finalRender);
 
   return yield* E.fork(DiscordDOM.reply(frame.dokens.rest ?? frame.dokens.fresh, encoded).pipe(localMutex));
@@ -149,7 +150,7 @@ const processSubmit = E.fn(
 
 
 export const flushHooks = (root: Pragma) => E.gen(function* () {
-  const states = Lifecycle.collectStates(root);
+  const states = Lifecycles.collectStates(root);
 
   for (const id in states) {
     for (const effect of states[id].queue) {

@@ -30,18 +30,14 @@ export const make = (): Type => ({
   },
 });
 
-
-
 export const savePrior = (node: Type) => {
   node.prior = structuredClone(node.stack);
   return node;
 };
 
-
-
-export const hasChanged = (node: Type) => {
+export const isSameState = (node: Type) => {
   const stackData = Data.array(node.stack.map((s) => Data.struct(s)));
   const priorData = Data.array(node.prior.map((s) => Data.struct(s)));
 
-  return !Equal.equals(stackData, priorData);
+  return Equal.equals(stackData, priorData);
 };

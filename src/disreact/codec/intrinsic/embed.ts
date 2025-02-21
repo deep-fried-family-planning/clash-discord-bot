@@ -1,5 +1,5 @@
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
-import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct} from 'effect/Schema';
+import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, validateSync} from 'effect/Schema';
 
 
 
@@ -41,3 +41,11 @@ export type FooterTag = Schema.Type<typeof FooterTag>;
 export type FieldAttributes = Schema.Type<typeof FieldAttributes>;
 export type FooterAttributes = Schema.Type<typeof FooterAttributes>;
 export type Attributes = Schema.Type<typeof Attributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DTML.embed] : validateSync(Attributes),
+  [DTML.field] : validateSync(FieldAttributes),
+  [DTML.footer]: validateSync(FooterAttributes),
+};

@@ -5,6 +5,14 @@ import * as Rest from 'src/disreact/codec/rest/rest.ts';
 
 
 
+export const SynthesizeEvent =
+               Struct({
+                 kind: tag(All.SynthesizeEventTag),
+                 type: tag(All.Empty),
+               });
+
+
+
 export const ButtonEvent =
                Struct({
                  kind: tag(All.ButtonEventTag),
@@ -84,6 +92,45 @@ export const SubmitEvent =
 
 
 
+export const Type =
+               Union(
+                 SynthesizeEvent,
+                 ButtonEvent,
+                 SelectEvent,
+                 UserSelectEvent,
+                 RoleSelectEvent,
+                 ChannelSelectEvent,
+                 MentionSelectEvent,
+                 SubmitEvent,
+               );
+
+
+
+export type SynthesizeEvent = Schema.Type<typeof SynthesizeEvent>;
+export type NonSyntheticEvent = Exclude<Type, SynthesizeEvent>;
+export type ButtonEvent = Schema.Type<typeof ButtonEvent>;
+export type SelectEvent = Schema.Type<typeof SelectEvent>;
+export type UserSelectEvent = Schema.Type<typeof UserSelectEvent>;
+export type RoleSelectEvent = Schema.Type<typeof RoleSelectEvent>;
+export type ChannelSelectEvent = Schema.Type<typeof ChannelSelectEvent>;
+export type MentionSelectEvent = Schema.Type<typeof MentionSelectEvent>;
+export type AnySelectEvent = SelectEvent | UserSelectEvent | RoleSelectEvent | ChannelSelectEvent | MentionSelectEvent;
+export type SubmitEvent = Schema.Type<typeof SubmitEvent>;
+export type Type = Schema.Type<typeof Type>;
+
+
+
+export const isSynthesizeEvent = (event: Type): event is SynthesizeEvent => event.kind === All.SynthesizeEventTag;
+export const isButtonEvent = (event: Type): event is ButtonEvent => event.kind === All.ButtonEventTag;
+export const isSelectEvent = (event: Type): event is SelectEvent => event.kind === All.SelectEventTag;
+export const isUserSelectEvent = (event: Type): event is UserSelectEvent => event.kind === All.UserSelectEventTag;
+export const isRoleSelectEvent = (event: Type): event is RoleSelectEvent => event.kind === All.RoleSelectEventTag;
+export const isChannelSelectEvent = (event: Type): event is ChannelSelectEvent => event.kind === All.ChannelSelectEventTag;
+export const isMentionSelectEvent = (event: Type): event is MentionSelectEvent => event.kind === All.MentionSelectEventTag;
+export const isSubmitEvent = (event: Type): event is SubmitEvent => event.kind === All.SubmitEventTag;
+
+
+
 const unsupported = [
   Rest.Rx.PING,
   Rest.Rx.APPLICATION_COMMAND_AUTOCOMPLETE,
@@ -155,17 +202,3 @@ export const decodeEvent = (rest: Rest.Interaction) => {
 
   throw new Error('Unsupported event');
 };
-
-
-
-export const Type = Union(
-  ButtonEvent,
-  SelectEvent,
-  UserSelectEvent,
-  RoleSelectEvent,
-  ChannelSelectEvent,
-  MentionSelectEvent,
-  SubmitEvent,
-);
-
-export type Type = Schema.Type<typeof Type>;

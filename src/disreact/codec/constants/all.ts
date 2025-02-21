@@ -81,6 +81,7 @@ export const image       = 'image';
 export const thumbnail   = 'thumbnail';
 export const author      = 'author';
 
+export const SynthesizeEventTag    = 'SynthesizeEvent';
 export const CommandEventTag       = 'CommandEvent';
 export const AutoCompleteEventTag  = 'AutoCompleteEvent';
 export const ButtonEventTag        = 'ButtonEvent';
@@ -100,12 +101,14 @@ export const TextElementTag      = 'TextElement';
 
 export const AsyncFunctionConstructorName = 'AsyncFunction';
 
-export const SyncFunctionTag = 'Sync';
-export const AsyncFunctionTag = 'Async';
+export const SyncFunctionTag         = 'Sync';
+export const AsyncFunctionTag        = 'Async';
 export const SyncOrEffectFunctionTag = 'SyncOrEffect';
-export const EffectFunctionTag = 'Effect';
+export const EffectFunctionTag       = 'Effect';
 
 export const NamelessFunction = '';
-export const AnonymousName = 'Anonymous';
-export const NotSet        = '.not-set';
-export const NotSetInt = -1;
+export const AnonymousName    = 'Anonymous';
+export const NotSet           = '.not-set';
+export const NotSetInt        = -1;
+export const Empty            = '';
+export const Zero             = 0;

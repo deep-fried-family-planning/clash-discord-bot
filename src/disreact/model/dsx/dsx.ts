@@ -3,40 +3,28 @@ import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
 import * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
 import * as TextElement from '#src/disreact/codec/entities/text-element.ts';
-
-
-
-type PropsS = {children?: Pragma | null} | null;
-type PropsM = {children: Pragma[]};
+import * as Props from '#src/disreact/codec/entities/props.ts';
 
 
 
 export const fragment = undefined;
 
+export const dsx = (type: JSX.ElementType, props: Props.Type<Pragma> = {}): Pragma | Pragma[] => {
+  if (Props.hasChild(props)) {
+    if (Props.hasChildren(props)) {
+      return dsxs(type, {...props, children: props.children.flat()});
+    }
 
-
-export const dsx = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
-  if (!props) {
-    return dsxs(type, {children: []});
+    return dsxs(type, {...props, children: [props.children]});
   }
 
-  if (!props.children) {
-    return dsxs(type, {...props, children: []});
-  }
-
-  if (props.children instanceof Array) {
-    return dsxs(type, {...props, children: props.children.flat()});
-  }
-
-  return dsxs(type, {...props, children: [props.children]});
+  return dsxs(type, {...props, children: []});
 };
 
-
-
-export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
+export const dsxs = (type: JSX.ElementType, props: Props.Children<Pragma>): Pragma | Pragma[] => {
   const children = props.children.flat();
 
-  delete (props as Partial<PropsM>).children;
+  delete (props as Props.Type<Pragma>).children;
 
   switch (typeof type) {
   case 'undefined':
@@ -59,8 +47,6 @@ export const dsxs = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] =>
 
   throw new Error(`Unknown Tag: ${type}`);
 };
-
-
 
 const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
   for (let i = 0; i < children.length; i++) {

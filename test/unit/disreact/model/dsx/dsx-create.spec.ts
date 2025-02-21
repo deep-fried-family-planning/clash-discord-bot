@@ -1,7 +1,8 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/model/dsx/element-encode.ts';
 import * as Globals from '#src/disreact/model/globals/globals.ts';
-import {initialRender, type Pragma} from '#src/disreact/model/lifecycle.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
@@ -17,7 +18,7 @@ describe('dsx', () => {
         "children": [],
         "meta": {
           "full_id": "",
-          "id": ".not-set",
+          "id": "",
           "idx": 0,
           "step_id": "",
         },
@@ -30,7 +31,7 @@ describe('dsx', () => {
     const Null = Globals.nullifyPointer();
     Globals.mountRoot(Null);
 
-    const rendered = yield* initialRender(jsx(TestMessage, {}) as Pragma);
+    const rendered = yield* Lifecycles.initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
@@ -112,8 +113,8 @@ describe('dsx', () => {
         "children": [],
         "meta": {
           "full_id": "",
-          "graphName": ".not-set",
-          "id": ".not-set",
+          "graph_id": "",
+          "id": "",
           "idx": 0,
           "isModal": undefined,
           "isRoot": undefined,

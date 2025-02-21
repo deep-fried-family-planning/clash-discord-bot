@@ -1,5 +1,5 @@
 import {SnowFlake} from '#src/disreact/codec/constants/common.ts';
-import {Boolean, Literal, optional, type Schema, String, Struct} from 'effect/Schema';
+import {Boolean, Literal, optional, type Schema, String, Struct, validateSync} from 'effect/Schema';
 import * as DFMD from '#src/disreact/codec/constants/dfmd.ts';
 
 
@@ -40,7 +40,6 @@ export const BreakAttributes = Struct({});
 
 export const PrePostFixTag = Literal(
   DFMD.p,
-  DFMD.br,
   DFMD.b,
   DFMD.i,
   DFMD.u,
@@ -105,3 +104,33 @@ export type PrefixAttributes = Schema.Type<typeof PrefixAttributes>;
 export type BlockQuoteAttributes = Schema.Type<typeof BlockQuoteAttributes>;
 export type BlockCodeAttributes = Schema.Type<typeof BlockCodeAttributes>;
 export type IndentAttributes = Schema.Type<typeof IndentAttributes>;
+
+
+
+export const dsxDEV_validators = {
+  [DFMD.at]  : validateSync(AtMentionAttributes),
+  [DFMD.a]   : validateSync(AnchorAttributes),
+  [DFMD.mask]: validateSync(AnchorMaskAttributes),
+  [DFMD.br]  : validateSync(BreakAttributes),
+
+  [DFMD.p]      : validateSync(PrePostFixAttributes),
+  [DFMD.b]      : validateSync(PrePostFixAttributes),
+  [DFMD.i]      : validateSync(PrePostFixAttributes),
+  [DFMD.u]      : validateSync(PrePostFixAttributes),
+  [DFMD.s]      : validateSync(PrePostFixAttributes),
+  [DFMD.details]: validateSync(PrePostFixAttributes),
+  [DFMD.code]   : validateSync(PrePostFixAttributes),
+
+  [DFMD.h1]   : validateSync(PrefixAttributes),
+  [DFMD.h2]   : validateSync(PrefixAttributes),
+  [DFMD.h3]   : validateSync(PrefixAttributes),
+  [DFMD.small]: validateSync(PrefixAttributes),
+
+  [DFMD.blockquote]: validateSync(BlockQuoteAttributes),
+
+  [DFMD.pre]: validateSync(BlockCodeAttributes),
+
+  [DFMD.ol]: validateSync(IndentAttributes),
+  [DFMD.ul]: validateSync(IndentAttributes),
+  [DFMD.li]: validateSync(IndentAttributes),
+};
