@@ -1,13 +1,14 @@
 {
   "title": "test title",
-  "custom_id": "TestDialog:0:modal:0",
+  "custom_id": "-",
   "components": [
     {
       "type": 1,
       "components": [
         {
           "label": "test text",
-          "type": 1,
+          "style": 1,
+          "type": 4,
           "custom_id": "modal:0:text:0"
         }
       ]

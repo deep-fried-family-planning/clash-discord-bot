@@ -23,7 +23,7 @@ describe('dsx-encoder', () => {
 
   afterEach(HookDispatch.__free);
 
-  it.live('when encoding a message', E.fn(function* () {
+  it.effect('when encoding a message', E.fn(function* () {
     given.component = jsx(TestMessage, {});
     const rendered  = yield* initialRender(given.component);
     console.log(tojson(rendered));
@@ -33,7 +33,7 @@ describe('dsx-encoder', () => {
     yield* E.promise(async () => {await expect(tojson(actual)).toMatchFileSnapshot('./.snap/message.json')});
   }));
 
-  it('when encoding a dialog', E.fn(function* () {
+  it.effect('when encoding a dialog', E.fn(function* () {
     given.component = jsx(TestDialog, {});
     const rendered  = yield* initialRender(given.component);
     const clone     = cloneTree(rendered);

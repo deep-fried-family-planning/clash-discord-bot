@@ -26,7 +26,7 @@ describe('dsx', () => {
     `);
   });
 
-  it.live('encodes message', E.fn(function * () {
+  it.effect('encodes message', E.fn(function * () {
     HookDispatch.__mallocnull();
     const rendered = yield *  initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`

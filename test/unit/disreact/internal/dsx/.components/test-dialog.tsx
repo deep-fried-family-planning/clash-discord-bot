@@ -1,7 +1,4 @@
-import {Header} from '#src/discord/components/header.tsx';
-import {useState} from '#src/disreact/hook.ts';
-
-
+import {useState} from '#src/disreact/index.ts';
 
 export const TestDialog = () => {
   const [num, setNum] = useState(0);
