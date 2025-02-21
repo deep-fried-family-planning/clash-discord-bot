@@ -19,17 +19,13 @@ const staticGraph = StaticGraph.singleton({
   dialog   : [],
 });
 
-
-
-const mockDiscord = L.scoped(DiscordDOM, E.gen(function* () {
-  return {
-    discard : vi.fn(),
-    defer   : vi.fn(),
-    create  : vi.fn(),
-    reply   : vi.fn(),
-    update  : vi.fn(),
-    dismount: vi.fn(),
-  };
+const mockDiscord = L.scoped(DiscordDOM, E.succeed({
+  discard : vi.fn(),
+  defer   : vi.fn(),
+  create  : vi.fn(),
+  reply   : vi.fn(),
+  update  : vi.fn(),
+  dismount: vi.fn(),
 }));
 
 
@@ -38,24 +34,23 @@ describe('DisReact.interact', () => {
   it.effect('when processing interaction', E.fn(function* () {
     const discordDOM = yield* DiscordDOM;
 
-    const actual = yield*
-      pipe(
-        interact({
-          id   : 'testixid',
-          token: 'testtoken',
-          type : 3,
-          data : {
-            custom_id     : 'actions:2:button:0',
-            component_type: 2,
-          },
-          message: synthesized,
-        }),
-        E.awaitAllChildren,
-        E.provide(pipe(
-          staticGraph,
-          L.provideMerge(DokenMemory.localLayer({})),
-        )),
-      );
+    yield* pipe(
+      interact({
+        id   : 'testixid',
+        token: 'testtoken',
+        type : 3,
+        data : {
+          custom_id     : 'actions:2:button:0',
+          component_type: 2,
+        },
+        message: synthesized,
+      }),
+      E.awaitAllChildren,
+      E.provide(pipe(
+        staticGraph,
+        L.provideMerge(DokenMemory.localLayer({})),
+      )),
+    );
 
     expect(discordDOM.defer).toHaveBeenCalledTimes(1);
     expect(discordDOM.reply).toHaveBeenCalledTimes(1);
