@@ -269,6 +269,7 @@ const hasSameState = (c: FunctionElement.Type) => {
 const setIds = (children: Pragma[], parent: Pragma) => {
   for (let i = 0; i < children.length; i++) {
     children[i].meta.idx = i;
+    children[i].meta.id  = `${parent._name}:${i}`;
     children[i]          = Lifecycles.linkNodeToParent(children[i], parent);
   }
   return children;

@@ -68,10 +68,10 @@ const getKind = (type: FunctionComponent.Type) => {
 
 const getMeta = (type: FunctionComponent.Type) => {
   return {
-    idx      : All.NotSetInt,
+    idx      : 0,
     id       : All.NotSet,
-    step_id  : All.NotSet,
-    full_id  : All.NotSet,
+    step_id  : '',
+    full_id  : '',
     isModal  : type.isModal,
     isRoot   : type.isRoot,
     graphName: All.NotSet,

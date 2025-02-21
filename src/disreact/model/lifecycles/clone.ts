@@ -4,7 +4,7 @@ import * as Utils from './utils.ts';
 import * as All from '../../codec/schema/common/all.ts';
 
 
-export const cloneTree = (node: Pragma, parent = node) => {
+export const cloneTree = (node: Pragma, parent?: Pragma) => {
   const base  = Utils.linkNodeToParent(node, parent);
   const clone = cloneNode(base);
 

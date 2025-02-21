@@ -1,8 +1,7 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
-import {initialRender} from '#src/disreact/model/lifecycle.ts';
-import type {Pragma} from '#src/disreact/model/types.ts';
+import {initialRender, type Pragma} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 import {it} from '@effect/vitest';
@@ -17,10 +16,10 @@ describe('dsx', () => {
         "_tag": "IntrinsicElement",
         "children": [],
         "meta": {
-          "full_id": ".not-set",
+          "full_id": "",
           "id": ".not-set",
-          "idx": -1,
-          "step_id": ".not-set",
+          "idx": 0,
+          "step_id": "",
         },
         "props": {},
       }
@@ -108,13 +107,13 @@ describe('dsx', () => {
         "_tag": "FunctionElement",
         "children": [],
         "meta": {
-          "full_id": ".not-set",
+          "full_id": "",
           "graphName": ".not-set",
           "id": ".not-set",
-          "idx": -1,
+          "idx": 0,
           "isModal": undefined,
           "isRoot": undefined,
-          "step_id": ".not-set",
+          "step_id": "",
         },
         "props": {},
         "render": [Function],

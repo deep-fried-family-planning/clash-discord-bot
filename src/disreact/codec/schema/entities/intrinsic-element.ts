@@ -25,9 +25,9 @@ export const make = (type: string, props: any): Type => {
     _name: type,
     meta : {
       id     : All.NotSet,
-      idx    : All.NotSetInt,
-      step_id: All.NotSet,
-      full_id: All.NotSet,
+      idx    : 0,
+      step_id: '',
+      full_id: '',
     },
     props,
     children: [] as any[],

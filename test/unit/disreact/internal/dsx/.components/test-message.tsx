@@ -40,3 +40,5 @@ export const TestMessage = () => E.gen(function* () {
     </message>
   );
 });
+
+TestMessage.displayName = 'TestMessage';

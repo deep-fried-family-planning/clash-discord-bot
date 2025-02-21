@@ -26,9 +26,9 @@ export const make = (type: string): Type => {
     _name: 'string',
     meta : {
       id     : All.NotSet,
-      idx    : All.NotSetInt,
-      step_id: All.NotSet,
-      full_id: All.NotSet,
+      idx    : 0,
+      step_id: '',
+      full_id: '',
     },
     value   : type,
     props   : {},

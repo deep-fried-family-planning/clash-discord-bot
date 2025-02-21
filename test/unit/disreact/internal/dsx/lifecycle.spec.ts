@@ -1,15 +1,15 @@
-
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 import {it} from '@effect/vitest';
+import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 
 
 const nofunc = (node: Pragma): Pragma => {
   if ('props' in node && node.props && typeof node.props === 'object') {
     delete node.props['onclick'];
+    delete node.props['onselect'];
   }
 
   if ('children' in node && node.children.length > 0) {
@@ -38,47 +38,49 @@ describe('lifecycle', () => {
     expect(clone).toEqual(given.component);
   });
 
-  it.live('when cloning a tree', E.fn(function * () {
+  it.effect('when cloning a tree', E.fn(function* () {
     given.component = jsx(TestMessage, {});
-    const rendered  = yield * initialRender(given.component);
+    const rendered  = yield* initialRender(given.component);
     const clone     = cloneTree(rendered);
 
     expect(clone).toEqual(rendered);
   }));
 
-  it.live('when rerendering', E.fn(function * () {
+  it.effect('when rerendering', E.fn(function* () {
     given.component = jsx(TestMessage, {});
-    given.initial   = yield * initialRender(given.component);
-    const actual    = yield * rerenderRoot(given.initial);
+    given.initial   = yield* initialRender(given.component);
+    const actual    = yield* rerenderRoot(given.initial);
 
     expect(nofunc(actual)).toEqual(nofunc(given.initial));
   }));
 
   describe('given empty hydration state', () => {
-    it('when hydrating a root', E.fn(function * () {
+    it.effect('when hydrating a root', E.fn(function* () {
       given.component = jsx(TestMessage, {});
       given.clone     = cloneTree(given.component);
 
-      const expected = initialRender(given.component);
-      const actual   = hydrateRoot(given.clone, {});
+      const expected = yield * initialRender(given.component);
+      const actual   = yield * hydrateRoot(given.clone, {});
 
+      yield* E.promise(async () => await expect(expected).toMatchFileSnapshot('hydration-expected.json'));
+      yield* E.promise(async () => await expect(actual).toMatchFileSnapshot('hydration-actual.json'));
       expect(nofunc(actual)).toStrictEqual(nofunc(expected));
     }));
   });
 
   describe('given an interaction event', () => {
-    it('when dispatching an event', E.fn(function * () {
+    it.effect('when dispatching an event', E.fn(function* () {
       given.component = jsx(TestMessage, {});
-      given.clone     = yield * cloneTree(given.component);
-      given.initial   = yield * rerenderRoot(yield * initialRender(given.clone));
+      given.clone     = cloneTree(given.component);
+      given.initial   = yield* rerenderRoot(yield* initialRender(given.clone));
       given.event     = {
-        id  : 'buttons:1:button:0',
+        id  : 'actions:2:button:0',
         type: 'onclick',
       } as any;
 
       const before     = cloneTree(given.initial);
       const actual     = dispatchEvent(given.initial, given.event);
-      const rerendered = yield * rerenderRoot(actual);
+      const rerendered = yield* rerenderRoot(actual);
 
       const beforeStacks = reduceToStacks(collectStates(before));
       const actualStacks = reduceToStacks(collectStates(rerendered));
@@ -105,29 +107,27 @@ describe('lifecycle', () => {
 
 
     describe('given event.id does not match any node.id', () => {
-      beforeEach(() => {
+      it.effect('when dispatching an event', E.fn(function * () {
         given.component = jsx(TestMessage, {});
         given.clone     = cloneTree(given.component);
-        given.initial   = rerenderRoot(initialRender(given.clone));
+        given.initial   = yield * rerenderRoot(yield * initialRender(given.clone));
         given.event     = {
           id  : 'buttons:1:button:0',
           type: 'onclick',
         } as any;
         given.event.id  = 'never';
-      });
 
-      it('when dispatching an event', () => {
         const actual = () => dispatchEvent(given.initial, given.event);
         expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "never" having a handler for type "onclick" was not found]`);
-      });
+      }));
     });
 
 
     describe('given event.type is not in any node.props', () => {
-      it('when dispatching an event', () => {
+      it.effect('when dispatching an event', E.fn(function* () {
         given.component  = jsx(TestMessage, {});
         given.clone      = cloneTree(given.component);
-        given.initial    = rerenderRoot(initialRender(given.clone));
+        given.initial    = yield* rerenderRoot(yield* initialRender(given.clone));
         given.event      = {
           id  : 'buttons:1:button:0',
           type: 'onclick',
@@ -135,17 +135,16 @@ describe('lifecycle', () => {
         given.event.type = 'never';
         const actual     = () => dispatchEvent(given.initial, given.event);
         expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "never" was not found]`);
-      });
+      }));
     });
-  });
 
 
-  it.live('when rendering an initial tree', E.fn(function * () {
-    given.component = jsx(TestMessage, {});
-    const clone     = cloneTree(given.component);
-    const render    = yield * initialRender(clone);
+    it.effect('when rendering an initial tree', E.fn(function* () {
+      given.component = jsx(TestMessage, {});
+      const clone     = cloneTree(given.component);
+      const render    = yield* initialRender(clone);
 
-    expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
+      expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
       "{
         "_kind": "SyncOrEffect",
         "_tag": "FunctionElement",
@@ -500,5 +499,6 @@ describe('lifecycle', () => {
         ]
       }"
     `);
-  }));
+    }));
+  });
 });
