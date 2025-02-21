@@ -128,11 +128,11 @@ export const makeFromParams = (config: {
     DT.make(config.ttl),
     O.getOrThrow,
     E.succeed,
-    E.tap(E.logFatal('before')),
+    // E.tap(E.logFatal('before')),
     E.flatMap((dt) => pipe(
       DT.subtractDuration(dt, TWO_MINUTES),
       DT.isFuture,
-      E.tap(E.logFatal('after')),
+      // E.tap(E.logFatal('after')),
       E.if({
         onTrue: () => E.succeed(
           Type.make(

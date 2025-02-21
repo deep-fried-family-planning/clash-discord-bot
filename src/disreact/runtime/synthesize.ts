@@ -7,8 +7,6 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 export const synthesize = (fn: RenderFn) => E.gen(function* () {
-  yield * E.logFatal(fn.name);
-
   const frame = Codec.makeStaticFrame(fn.name);
 
   const Null = Globals.nullifyPointer();
