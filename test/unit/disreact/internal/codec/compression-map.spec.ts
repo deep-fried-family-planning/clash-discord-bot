@@ -155,6 +155,18 @@ describe('makeCompressionMap', () => {
     const output = makeCompressionMap(message);
     expect(output).toMatchInlineSnapshot(`
       {
+        "application_id": "1256809603715436606",
+        "author.avatar": "5f71735406403cdc51158038e24bb671",
+        "author.avatar_decoration_data": null,
+        "author.bot": true,
+        "author.clan": null,
+        "author.discriminator": "5344",
+        "author.global_name": null,
+        "author.id": "1256809603715436606",
+        "author.primary_guild": null,
+        "author.public_flags": 524288,
+        "author.username": "QualDeepFryer",
+        "channel_id": "1317321691809972254",
         "components[0].components[0].custom_id": "buttons:1:button:0",
         "components[0].components[0].id": 2,
         "components[0].components[0].label": "Back",

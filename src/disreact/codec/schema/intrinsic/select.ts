@@ -1,5 +1,5 @@
-import {ConformantCustomId, CustomId, EmojiStruct, SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
-import {DTML} from '#src/disreact/model/index.ts';
+import {CustomId, EmojiStruct, SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
 import {Any, Array, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
 
 

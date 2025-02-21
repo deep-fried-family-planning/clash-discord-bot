@@ -34,7 +34,7 @@ const slash = (ix: IxD) => E.gen(function * () {
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
       ...userMessage,
       embeds: [{
-        ...userMessage.embeds[0], // @ts-expect-error clashperk lib types
+        ...userMessage.embeds[0],
         title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
       }],
     } as Partial<IxRE>);

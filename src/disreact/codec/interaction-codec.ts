@@ -1,16 +1,16 @@
-import type {DEvent, Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
+import type {Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
 import {decodeDialogDoken, decodeMessageDoken, encodeDialogDoken, encodeMessageDoken, makeContingencyDoken} from '#src/disreact/codec/doken-codec.ts';
 import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {decodeEvent} from '#src/disreact/codec/event-decoder.ts';
 import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDialogRouting, encodeMessageRouting} from '#src/disreact/codec/route-codec.ts';
 import {decodeStacks, encodeStacks} from '#src/disreact/codec/stack-codec.ts';
-import {cloneTree, collectStates, type Pragma, reduceToStacks} from '#src/disreact/model/lifecycle.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
-import {DATT} from '#src/disreact/model/index.ts';
-import type {HookStacksById } from '#src/disreact/model/types.ts';
+import {cloneTree, collectStates, type Pragma, reduceToStacks} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';
+import type {NodeState} from './entities';
+import {Reserved} from './schema/common';
 
 
 
@@ -19,15 +19,15 @@ export type DecodedInteraction = {
   symbol          : symbol;
   contingencyDoken: Doken.T;
   doken           : Doken.T | null;
-  event           : DEvent.T;
+  event           : any;
   params          : DecodedRoute['params'];
-  stacks          : HookStacksById;
+  stacks          : { [K in string]: NodeState.Type['stack'] };
 };
 
 
 
-export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * () {
-  yield * E.logInfo('decodeInteraction', inspect(rest, false, null));
+export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function* () {
+  yield* E.logInfo('decodeInteraction', inspect(rest, false, null));
 
   const start_ms         = Date.now();
   const contingencyDoken = makeContingencyDoken(rest);
@@ -35,7 +35,7 @@ export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * ()
   const event            = decodeEvent(rest);
   const symbol           = HookDispatch.__malloc(rest.id);
 
-  if (event.type === DATT.onclick) {
+  if (event.type === Reserved.onclick) {
     const route = decodeMessageRouting(rest);
     const doken = decodeMessageDoken(route);
 
@@ -55,7 +55,7 @@ export const decodeInteraction = (rest: Rest.Interaction) => E.gen(function * ()
   }
 
   const route = decodeDialogRouting(rest);
-  const doken = yield * decodeDialogDoken(route);
+  const doken = yield* decodeDialogDoken(route);
 
   if (doken) {
     doken.app = rest.application_id;
@@ -89,7 +89,7 @@ export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
     {
       params: {
         ...messageDoken,
-        root: root.name,
+        root: root._name,
       },
       search,
     },
@@ -99,16 +99,16 @@ export const encodeMessageInteraction = (root: Pragma, doken: Doken.T) => {
 
 
 
-export const encodeDialogInteraction = (root: Pragma, doken: Doken.T) => E.gen(function * () {
+export const encodeDialogInteraction = (root: Pragma, doken: Doken.T) => E.gen(function* () {
   const cloned      = cloneTree(root);
   const dialog      = encodeDialogDsx(cloned);
-  const dialogDoken = yield * encodeDialogDoken(doken);
+  const dialogDoken = yield* encodeDialogDoken(doken);
 
   return encodeDialogRouting(
     {
       params: {
         ...dialogDoken,
-        root: cloned.name,
+        root: cloned._name,
       },
       search: new URLSearchParams(),
     },

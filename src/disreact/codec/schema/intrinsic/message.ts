@@ -1,6 +1,5 @@
-import {DTML} from '#src/disreact/model/index.ts';
-import {Any, Boolean, optional, type Schema} from 'effect/Schema';
-import {Literal, Struct} from 'effect/Schema';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
+import {Any, Boolean, Literal, optional, type Schema, Struct} from 'effect/Schema';
 
 
 
@@ -16,9 +15,7 @@ export const Attributes = Struct({
 
 export const ActionRowTag = Literal(DTML.actions, DTML.buttons);
 
-export const ActionRowAttributes = Struct({
-
-});
+export const ActionRowAttributes = Struct({});
 
 
 

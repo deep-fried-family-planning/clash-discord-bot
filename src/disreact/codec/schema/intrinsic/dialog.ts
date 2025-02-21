@@ -1,6 +1,6 @@
 import {CustomId} from '#src/disreact/codec/schema/common/common.ts';
-import {DTML} from '#src/disreact/model/index.ts';
-import {Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
+import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, Unknown} from 'effect/Schema';
 
 
 
@@ -10,6 +10,7 @@ export const Attributes = Struct({
   custom_id: optional(String),
   title    : String,
   onsubmit : optional(Unknown),
+  children : optional(Any),
 });
 
 

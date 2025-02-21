@@ -1,7 +1,5 @@
 import {BitField, CustomId, InteractionToken, Locale, SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
-import {DTML} from '#src/disreact/model/index.ts';
 import {pipe, S} from '#src/internal/pure/effect.ts';
-import {Record} from 'effect';
 
 
 
@@ -27,8 +25,8 @@ export const DialogData = S.TaggedStruct('DIALOG_IN', {
         TextOut,
         S.Array,
         S.itemsCount(1),
-      )},
-    ),
+      ),
+    }),
     S.Array,
     S.maxItems(5),
   ),
@@ -76,15 +74,11 @@ export const InteractionBody = S.Struct({
   ),
 
   channel_id: SnowFlake,
-  channel   : S.optional(S.Struct({
-
-  })),
+  channel   : S.optional(S.Struct({})),
 
   guild_id    : SnowFlake,
   guild_locale: Locale,
-  guild       : S.Struct({
-
-  }),
+  guild       : S.Struct({}),
 
   locale: Locale,
   member: S.Struct({}),
@@ -115,9 +109,7 @@ export const MessageOut = S.Struct({
   flags  : S.Int,
   content: S.String.pipe(S.maxLength(2000), S.optional),
   embeds : pipe(
-    S.Struct({
-
-    }),
+    S.Struct({}),
   ),
 });
 

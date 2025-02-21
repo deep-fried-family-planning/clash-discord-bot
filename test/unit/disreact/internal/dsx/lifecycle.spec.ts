@@ -147,262 +147,273 @@ describe('lifecycle', () => {
 
     expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
       "{
-        "kind": "function",
-        "name": "TestMessage",
-        "index": 0,
-        "id": "TestMessage:0",
-        "id_step": "TestMessage:0",
-        "id_full": "TestMessage:0",
+        "_kind": "SyncOrEffect",
+        "_tag": "FunctionElement",
+        "_name": "TestMessage",
+        "meta": {
+          "idx": 0,
+          "id": "TestMessage:0",
+          "step_id": "TestMessage:0",
+          "full_id": "TestMessage:0",
+          "isRoot": true,
+          "graphName": ".not-set"
+        },
+        "state": {
+          "pc": 0,
+          "stack": [
+            {
+              "s": 0
+            }
+          ],
+          "prior": [
+            {
+              "s": 0
+            }
+          ],
+          "rc": 1,
+          "circular": {
+            "node": null,
+            "refs": []
+          },
+          "queue": []
+        },
         "props": {},
-        "isRoot": true,
         "children": [
           {
-            "kind": "intrinsic",
-            "name": "message",
-            "index": 0,
-            "id": "message:0",
-            "id_step": "TestMessage:0:message:0",
-            "id_full": "TestMessage:0:message:0",
+            "_tag": "IntrinsicElement",
+            "_name": "message",
+            "meta": {
+              "id": "message:0",
+              "idx": 0,
+              "step_id": "TestMessage:0:message:0",
+              "full_id": "TestMessage:0:message:0"
+            },
             "props": {
               "public": true
             },
             "children": [
               {
-                "kind": "function",
-                "name": "Header",
-                "index": 0,
-                "id": "Header:0",
-                "id_step": "message:0:Header:0",
-                "id_full": "TestMessage:0:message:0:Header:0",
+                "_kind": "SyncOrEffect",
+                "_tag": "FunctionElement",
+                "_name": "Header",
+                "meta": {
+                  "idx": 0,
+                  "id": "Header:0",
+                  "step_id": "message:0:Header:0",
+                  "full_id": "TestMessage:0:message:0:Header:0",
+                  "graphName": ".not-set"
+                },
                 "props": {
                   "title": "Omni Board",
                   "description": "V2 - JSX Pragma"
                 },
-                "children": [
-                  {
-                    "kind": "intrinsic",
-                    "name": "embed",
-                    "index": 0,
-                    "id": "embed:0",
-                    "id_step": "Header:0:embed:0",
-                    "id_full": "TestMessage:0:message:0:Header:0:embed:0",
-                    "props": {},
-                    "children": [
-                      {
-                        "kind": "intrinsic",
-                        "name": "title",
-                        "index": 0,
-                        "id": "title:0",
-                        "id_step": "embed:0:title:0",
-                        "id_full": "TestMessage:0:message:0:Header:0:embed:0:title:0",
-                        "props": {},
-                        "children": [
-                          {
-                            "kind": "text",
-                            "name": "string",
-                            "id_step": "title:0:string:0",
-                            "id_full": "TestMessage:0:message:0:Header:0:embed:0:title:0:string:0",
-                            "value": "Omni Board",
-                            "index": 0,
-                            "id": "string:0"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "intrinsic",
-                        "name": "description",
-                        "index": 1,
-                        "id": "description:1",
-                        "id_step": "embed:0:description:1",
-                        "id_full": "TestMessage:0:message:0:Header:0:embed:0:description:1",
-                        "props": {},
-                        "children": [
-                          {
-                            "kind": "text",
-                            "name": "string",
-                            "id_step": "description:1:string:0",
-                            "id_full": "TestMessage:0:message:0:Header:0:embed:0:description:1:string:0",
-                            "value": "V2 - JSX Pragma",
-                            "index": 0,
-                            "id": "string:0"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
                 "state": {
-                  "id": "TestMessage:0:message:0:Header:0",
                   "pc": 0,
                   "stack": [],
-                  "sync": [],
-                  "async": [],
+                  "prior": [],
                   "rc": 1,
-                  "nextpage": null
+                  "queue": [],
+                  "circular": {
+                    "node": null,
+                    "refs": []
+                  }
                 },
-                "stack": []
-              },
-              {
-                "kind": "intrinsic",
-                "name": "embed",
-                "index": 1,
-                "id": "embed:1",
-                "id_step": "message:0:embed:1",
-                "id_full": "TestMessage:0:message:0:embed:1",
-                "props": {},
                 "children": [
                   {
-                    "kind": "intrinsic",
-                    "name": "title",
-                    "index": 0,
-                    "id": "title:0",
-                    "id_step": "embed:1:title:0",
-                    "id_full": "TestMessage:0:message:0:embed:1:title:0",
-                    "props": {},
+                    "_tag": "IntrinsicElement",
+                    "_name": "embed",
+                    "meta": {
+                      "id": "embed:0",
+                      "idx": 0,
+                      "step_id": "Header:0:embed:0",
+                      "full_id": "TestMessage:0:message:0:Header:0:embed:0"
+                    },
+                    "props": {
+                      "title": "Omni Board"
+                    },
                     "children": [
                       {
-                        "kind": "text",
-                        "name": "string",
-                        "id_step": "title:0:string:0",
-                        "id_full": "TestMessage:0:message:0:embed:1:title:0:string:0",
-                        "value": "Test Title - NOT markdown",
-                        "index": 0,
-                        "id": "string:0"
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "intrinsic",
-                    "name": "description",
-                    "index": 1,
-                    "id": "description:1",
-                    "id_step": "embed:1:description:1",
-                    "id_full": "TestMessage:0:message:0:embed:1:description:1",
-                    "props": {},
-                    "children": [
-                      {
-                        "kind": "intrinsic",
-                        "name": "h3",
-                        "index": 0,
-                        "id": "h3:0",
-                        "id_step": "description:1:h3:0",
-                        "id_full": "TestMessage:0:message:0:embed:1:description:1:h3:0",
-                        "props": {},
-                        "children": [
-                          {
-                            "kind": "text",
-                            "name": "string",
-                            "id_step": "h3:0:string:0",
-                            "id_full": "TestMessage:0:message:0:embed:1:description:1:h3:0:string:0",
-                            "value": "H3",
-                            "index": 0,
-                            "id": "string:0"
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "intrinsic",
-                        "name": "small",
-                        "index": 1,
-                        "id": "small:1",
-                        "id_step": "description:1:small:1",
-                        "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1",
-                        "props": {},
-                        "children": [
-                          {
-                            "kind": "intrinsic",
-                            "name": "p",
-                            "index": 0,
-                            "id": "p:0",
-                            "id_step": "small:1:p:0",
-                            "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0",
-                            "props": {},
-                            "children": [
-                              {
-                                "kind": "intrinsic",
-                                "name": "at",
-                                "index": 0,
-                                "id": "at:0",
-                                "id_step": "p:0:at:0",
-                                "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0:at:0",
-                                "props": {
-                                  "user": true,
-                                  "id": "123456"
-                                },
-                                "children": []
-                              },
-                              {
-                                "kind": "text",
-                                "name": "string",
-                                "id_step": "p:0:string:1",
-                                "id_full": "TestMessage:0:message:0:embed:1:description:1:small:1:p:0:string:1",
-                                "value": "welcome!",
-                                "index": 1,
-                                "id": "string:1"
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "intrinsic",
-                        "name": "br",
-                        "index": 2,
-                        "id": "br:2",
-                        "id_step": "description:1:br:2",
-                        "id_full": "TestMessage:0:message:0:embed:1:description:1:br:2",
+                        "_tag": "TextElement",
+                        "_name": "string",
+                        "meta": {
+                          "id": "string:0",
+                          "idx": 0,
+                          "step_id": "embed:0:string:0",
+                          "full_id": "TestMessage:0:message:0:Header:0:embed:0:string:0"
+                        },
+                        "value": "V2 - JSX Pragma",
                         "props": {},
                         "children": []
-                      },
-                      {
-                        "kind": "intrinsic",
-                        "name": "u",
-                        "index": 3,
-                        "id": "u:3",
-                        "id_step": "description:1:u:3",
-                        "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3",
-                        "props": {},
-                        "children": [
-                          {
-                            "kind": "text",
-                            "name": "string",
-                            "id_step": "u:3:string:0",
-                            "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3:string:0",
-                            "value": "$",
-                            "index": 0,
-                            "id": "string:0"
-                          },
-                          {
-                            "kind": "text",
-                            "name": "string",
-                            "id_step": "u:3:string:1",
-                            "id_full": "TestMessage:0:message:0:embed:1:description:1:u:3:string:1",
-                            "value": "not a link",
-                            "index": 1,
-                            "id": "string:1"
-                          }
-                        ]
                       }
                     ]
                   }
                 ]
               },
               {
-                "kind": "intrinsic",
-                "name": "buttons",
-                "index": 2,
-                "id": "buttons:2",
-                "id_step": "message:0:buttons:2",
-                "id_full": "TestMessage:0:message:0:buttons:2",
+                "_tag": "IntrinsicElement",
+                "_name": "embed",
+                "meta": {
+                  "id": "embed:1",
+                  "idx": 1,
+                  "step_id": "message:0:embed:1",
+                  "full_id": "TestMessage:0:message:0:embed:1"
+                },
+                "props": {
+                  "title": "Test Title - NOT markdown"
+                },
+                "children": [
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "h3",
+                    "meta": {
+                      "id": "h3:0",
+                      "idx": 0,
+                      "step_id": "embed:1:h3:0",
+                      "full_id": "TestMessage:0:message:0:embed:1:h3:0"
+                    },
+                    "props": {},
+                    "children": [
+                      {
+                        "_tag": "TextElement",
+                        "_name": "string",
+                        "meta": {
+                          "id": "string:0",
+                          "idx": 0,
+                          "step_id": "h3:0:string:0",
+                          "full_id": "TestMessage:0:message:0:embed:1:h3:0:string:0"
+                        },
+                        "value": "H3",
+                        "props": {},
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "small",
+                    "meta": {
+                      "id": "small:1",
+                      "idx": 1,
+                      "step_id": "embed:1:small:1",
+                      "full_id": "TestMessage:0:message:0:embed:1:small:1"
+                    },
+                    "props": {},
+                    "children": [
+                      {
+                        "_tag": "IntrinsicElement",
+                        "_name": "p",
+                        "meta": {
+                          "id": "p:0",
+                          "idx": 0,
+                          "step_id": "small:1:p:0",
+                          "full_id": "TestMessage:0:message:0:embed:1:small:1:p:0"
+                        },
+                        "props": {},
+                        "children": [
+                          {
+                            "_tag": "IntrinsicElement",
+                            "_name": "at",
+                            "meta": {
+                              "id": "at:0",
+                              "idx": 0,
+                              "step_id": "p:0:at:0",
+                              "full_id": "TestMessage:0:message:0:embed:1:small:1:p:0:at:0"
+                            },
+                            "props": {
+                              "user": "123456"
+                            },
+                            "children": []
+                          },
+                          {
+                            "_tag": "TextElement",
+                            "_name": "string",
+                            "meta": {
+                              "id": "string:1",
+                              "idx": 1,
+                              "step_id": "p:0:string:1",
+                              "full_id": "TestMessage:0:message:0:embed:1:small:1:p:0:string:1"
+                            },
+                            "value": "welcome!",
+                            "props": {},
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "br",
+                    "meta": {
+                      "id": "br:2",
+                      "idx": 2,
+                      "step_id": "embed:1:br:2",
+                      "full_id": "TestMessage:0:message:0:embed:1:br:2"
+                    },
+                    "props": {},
+                    "children": []
+                  },
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "u",
+                    "meta": {
+                      "id": "u:3",
+                      "idx": 3,
+                      "step_id": "embed:1:u:3",
+                      "full_id": "TestMessage:0:message:0:embed:1:u:3"
+                    },
+                    "props": {},
+                    "children": [
+                      {
+                        "_tag": "TextElement",
+                        "_name": "string",
+                        "meta": {
+                          "id": "string:0",
+                          "idx": 0,
+                          "step_id": "u:3:string:0",
+                          "full_id": "TestMessage:0:message:0:embed:1:u:3:string:0"
+                        },
+                        "value": "$",
+                        "props": {},
+                        "children": []
+                      },
+                      {
+                        "_tag": "TextElement",
+                        "_name": "string",
+                        "meta": {
+                          "id": "string:1",
+                          "idx": 1,
+                          "step_id": "u:3:string:1",
+                          "full_id": "TestMessage:0:message:0:embed:1:u:3:string:1"
+                        },
+                        "value": "not a link",
+                        "props": {},
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "_tag": "IntrinsicElement",
+                "_name": "actions",
+                "meta": {
+                  "id": "actions:2",
+                  "idx": 2,
+                  "step_id": "message:0:actions:2",
+                  "full_id": "TestMessage:0:message:0:actions:2"
+                },
                 "props": {},
                 "children": [
                   {
-                    "kind": "intrinsic",
-                    "name": "button",
-                    "index": 0,
-                    "id": "button:0",
-                    "id_step": "buttons:2:button:0",
-                    "id_full": "TestMessage:0:message:0:buttons:2:button:0",
+                    "_tag": "IntrinsicElement",
+                    "_name": "button",
+                    "meta": {
+                      "id": "button:0",
+                      "idx": 0,
+                      "step_id": "actions:2:button:0",
+                      "full_id": "TestMessage:0:message:0:actions:2:button:0"
+                    },
                     "props": {
                       "primary": true,
                       "label": "Start"
@@ -410,55 +421,83 @@ describe('lifecycle', () => {
                     "children": []
                   },
                   {
-                    "kind": "intrinsic",
-                    "name": "button",
-                    "index": 1,
-                    "id": "button:1",
-                    "id_step": "buttons:2:button:1",
-                    "id_full": "TestMessage:0:message:0:buttons:2:button:1",
+                    "_tag": "IntrinsicElement",
+                    "_name": "secondary",
+                    "meta": {
+                      "id": "secondary:1",
+                      "idx": 1,
+                      "step_id": "actions:2:secondary:1",
+                      "full_id": "TestMessage:0:message:0:actions:2:secondary:1"
+                    },
                     "props": {
-                      "secondary": true,
                       "label": "Help"
                     },
-                    "children": [
-                      {
-                        "kind": "intrinsic",
-                        "name": "emoji",
-                        "index": 0,
-                        "id": "emoji:0",
-                        "id_step": "button:1:emoji:0",
-                        "id_full": "TestMessage:0:message:0:buttons:2:button:1:emoji:0",
-                        "props": {
-                          "name": "ope"
-                        },
-                        "children": []
-                      }
-                    ]
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "_tag": "IntrinsicElement",
+                "_name": "select",
+                "meta": {
+                  "id": "select:3",
+                  "idx": 3,
+                  "step_id": "message:0:select:3",
+                  "full_id": "TestMessage:0:message:0:select:3"
+                },
+                "props": {},
+                "children": [
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "option",
+                    "meta": {
+                      "id": "option:0",
+                      "idx": 0,
+                      "step_id": "select:3:option:0",
+                      "full_id": "TestMessage:0:message:0:select:3:option:0"
+                    },
+                    "props": {
+                      "value": "1",
+                      "label": "1"
+                    },
+                    "children": []
+                  },
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "option",
+                    "meta": {
+                      "id": "option:1",
+                      "idx": 1,
+                      "step_id": "select:3:option:1",
+                      "full_id": "TestMessage:0:message:0:select:3:option:1"
+                    },
+                    "props": {
+                      "value": "2",
+                      "label": "2"
+                    },
+                    "children": []
+                  },
+                  {
+                    "_tag": "IntrinsicElement",
+                    "_name": "option",
+                    "meta": {
+                      "id": "option:2",
+                      "idx": 2,
+                      "step_id": "select:3:option:2",
+                      "full_id": "TestMessage:0:message:0:select:3:option:2"
+                    },
+                    "props": {
+                      "value": "3",
+                      "label": "3",
+                      "default": true
+                    },
+                    "children": []
                   }
                 ]
               }
             ]
           }
-        ],
-        "state": {
-          "id": "TestMessage:0",
-          "pc": 0,
-          "stack": [
-            {
-              "s": 0
-            }
-          ],
-          "sync": [],
-          "async": [],
-          "rc": 1,
-          "nextpage": null
-        },
-        "stack": [
-          {
-            "s": 0
-          }
-        ],
-        "isMessage": true
+        ]
       }"
     `);
   }));

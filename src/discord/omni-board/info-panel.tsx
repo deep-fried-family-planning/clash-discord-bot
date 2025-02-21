@@ -1,7 +1,7 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import {useIx, usePage, useState} from '#src/disreact/hook.ts';
+import {useIx, usePage, useState} from '#src/disreact/index.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
@@ -42,34 +42,30 @@ export const InfoPanel = () => E.gen(function * () {
 
   return (
     <message ephemeral>
-      <embed>
-        <title>{'Info'}</title>
+      <embed title={'Info'}>
       </embed>
-      <embed>
-        <title>{embed.title}</title>
-        <description>{embed.description}</description>
+      <embed title={embed.title}>
+        {embed.description}
       </embed>
-      <menu
-        string
-        onclick={(event) => {
-          setInfoKind(event.data.values[0]);
+      <select
+        onselect={(event: any) => {
+          setInfoKind(event.values[0]);
           setEmbedId(NONE_STR);
         }}
       >
         <option label={'About'} value={'about'}/>
         <option label={'Help'} value={'help'}/>
         <option label={'Settings'} value={'settings'}/>
-      </menu>
-      <menu
-        string
-        onclick={(event) => {
-          setEmbedId(event.data.values[0])
+      </select>
+      <select
+        onselect={(event: any) => {
+          setEmbedId(event.values[0])
         }}
       >
         {infos.map((i) => (
           <option label={i.label} value={i.value} description={i.description} default={i.default}/>
         ))}
-      </menu>
+      </select>
       <NavBar/>
       <buttons>
         <button

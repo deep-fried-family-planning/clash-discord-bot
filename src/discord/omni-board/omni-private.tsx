@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
 import {Header} from '#src/discord/components/header.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
-import {useEffect, usePage, useState} from '#src/disreact/hook.ts';
+import {useEffect, usePage, useState} from '#src/disreact/index.ts';
 import console from 'node:console';
 
 
@@ -18,7 +18,7 @@ export const OmniPrivate = () => {
         title={'Welcome!'}
         description={'Empty'}
       />
-      <buttons>
+      <actions>
         <button
           primary
           label={'Link'}
@@ -30,7 +30,7 @@ export const OmniPrivate = () => {
           onclick={() => setNum(num + 1)}
         />
         <CloseButton/>
-      </buttons>
+      </actions>
     </message>
   );
 };

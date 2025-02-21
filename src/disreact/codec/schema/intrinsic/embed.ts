@@ -1,6 +1,5 @@
-import {DTML} from '#src/disreact/model/index.ts';
-import {Any, type Schema} from 'effect/Schema';
-import {Literal, optional, String, Struct, Boolean, Int} from 'effect/Schema';
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
+import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct} from 'effect/Schema';
 
 
 

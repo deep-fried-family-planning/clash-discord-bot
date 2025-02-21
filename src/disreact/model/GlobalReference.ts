@@ -53,10 +53,4 @@ export class GlobalReference extends E.Tag('DisReact.GlobalReference')<
     L.memoize,
     L.unwrapEffect,
   );
-
-  static readonly __nullify = () => {
-    const Null = Globals.nullifyPointer();
-
-    Globals.mountRoot(Null);
-  };
 }

@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
 import * as NodeState from '../codec/entities/node-state.ts';
 import * as Pointer from '../codec/entities/pointer.ts';
 import * as RootState from '../codec/entities/root-state.ts';
 
 
 
-const __pointer = {current: null as null | Pointer.Type};
-
-const __roots = new WeakMap<Pointer.Type, RootState.Type>();
-
+const __pointer  = {current: null as null | Pointer.Type};
+const __roots    = new WeakMap<Pointer.Type, RootState.Type>();
 const __dispatch = {current: null as any};
 
 
@@ -67,21 +66,19 @@ export const mountNode = (id: string) => {
   const node = NodeState.make();
   const root = readRoot();
 
-  root.state.set(id, node);
+  root.state[id] = node;
 
   return node;
 };
 
 export const dismountNode = (id: string) => {
-  const node = readRoot().state.get(id);
-
-  readRoot().state.delete(id);
-
+  const node = readRoot().state[id];
+  delete readRoot().state[id];
   return node;
 };
 
 export const readNode = (id: string) => {
-  const node = readRoot().state.get(id);
+  const node = readRoot().state[id];
 
   if (!node) {
     throw new Error(`Internal: Node not found for id ${id}`);

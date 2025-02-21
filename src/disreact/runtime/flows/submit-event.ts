@@ -10,6 +10,7 @@ import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {flushHooks} from '#src/disreact/runtime/flows/click-event.ts';
 import {isSameRoot} from '#src/disreact/runtime/flows/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import type { FunctionElement } from '#src/disreact/codec/entities';
 
 
 
@@ -19,7 +20,7 @@ export const submitEvent = E.gen(function * () {
   HookDispatch.__ctxwrite(frame.context);
 
   const cloneDialog = yield * StaticGraph.cloneRoot(frame.rx.params.root);
-  const hydratedDialog = hydrateRoot(cloneDialog, {});
+  const hydratedDialog = yield * hydrateRoot(cloneDialog, {});
 
   console.log('hydratedDialog', hydratedDialog);
 
@@ -34,9 +35,9 @@ export const submitEvent = E.gen(function * () {
     });
   }
 
-  const nextClone = yield * StaticGraph.cloneRoot(frame.context.next);
+  const nextClone = yield * StaticGraph.cloneRoot(frame.context.graph.next);
 
-  if (nextClone.isModal) {
+  if ((nextClone as FunctionElement.Type).meta.isModal) {
     return yield * new Critical({
       why: 'page.next cannot be called with a dialog from a dialog',
     });
@@ -52,11 +53,11 @@ export const submitEvent = E.gen(function * () {
     yield * DokenMemory.save(frame.doken);
   }
 
-  const nextRender = rerenderRoot(nextClone);
+  const nextRender = yield * rerenderRoot(nextClone);
 
   yield * flushHooks(nextRender);
 
-  const finalRender = rerenderRoot(nextRender);
+  const finalRender = yield * rerenderRoot(nextRender);
   const encoded = encodeMessageInteraction(finalRender, frame.doken);
 
   yield * DiscordDOM.reply(frame.doken, encoded);

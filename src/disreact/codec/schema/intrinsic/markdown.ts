@@ -1,6 +1,6 @@
 import {SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
-import {DFMD} from '#src/disreact/model/index.ts';
 import {Boolean, Literal, optional, type Schema, String, Struct} from 'effect/Schema';
+import * as DFMD from '#src/disreact/codec/schema/common/dfmd.ts';
 
 
 

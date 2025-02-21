@@ -1,6 +1,5 @@
-import {DTML} from '#src/disreact/model/index.ts';
 import {Literal, type Schema, Struct} from 'effect/Schema';
-
+import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
 
 
 export const Tag = Literal(DTML.command);

@@ -10,11 +10,11 @@ export const LinkDialog = () => {
         console.log('SUBMIT');
       }}
     >
-      <text label={'Testing1'}/>
-      <text label={'Testing2'}/>
-      <text label={'Testing3'}/>
-      <text label={'Testing4'}/>
-      <text label={'Testing5'}/>
+      <text label={'Testing1'} value={''}/>
+      <text label={'Testing2'} value={''}/>
+      <text label={'Testing3'} value={''}/>
+      <text label={'Testing4'} value={''}/>
+      <text label={'Testing5'} value={''}/>
     </modal>
   );
 };

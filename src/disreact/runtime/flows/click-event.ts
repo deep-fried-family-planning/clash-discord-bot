@@ -50,10 +50,10 @@ export const clickEvent = E.gen(function * () {
   }
   else {
     const nextClone = yield * StaticGraph.cloneRoot(frame.context.graph.next);
-    const rendered: FunctionElement.Type = yield * rerenderRoot(nextClone) as any;
+    const rendered = yield * rerenderRoot(nextClone);
 
 
-    if (rendered.meta.isModal) {
+    if ((rendered as FunctionElement.Type).meta.isModal) {
       frame.restDoken.type = Rest.Tx.MODAL;
 
       if (frame.doken) {
@@ -65,7 +65,7 @@ export const clickEvent = E.gen(function * () {
     }
 
 
-    if (afterEvent.meta.isEphemeral !== rendered.meta.isEphemeral) {
+    if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.Type).meta.isEphemeral) {
       frame.restDoken.type = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
       frame.restDoken.flags = 64;
       frame.doken = makeDeferred(frame.restDoken);

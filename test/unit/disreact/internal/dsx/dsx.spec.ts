@@ -1,30 +1,35 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/codec/dsx-encoder.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
-import {dsxRuntime} from '#src/disreact/model/index.ts';
 import {initialRender} from '#src/disreact/model/lifecycle.ts';
 import type {Pragma} from '#src/disreact/model/types.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
+import {it} from '@effect/vitest';
+
+
 
 describe('dsx', () => {
   it('renders intrinsic', () => {
     expect(jsx('embed')).toMatchInlineSnapshot(`
       {
+        "_name": "embed",
+        "_tag": "IntrinsicElement",
         "children": [],
-        "id": "",
-        "id_full": "",
-        "id_step": "",
-        "index": 0,
-        "kind": "intrinsic",
-        "name": "embed",
+        "meta": {
+          "full_id": ".not-set",
+          "id": ".not-set",
+          "idx": -1,
+          "step_id": ".not-set",
+        },
         "props": {},
       }
     `);
   });
 
-  it('encodes message', () => {
+  it.live('encodes message', E.fn(function * () {
     HookDispatch.__mallocnull();
-    const rendered = initialRender(jsx(TestMessage, {}) as Pragma);
+    const rendered = yield *  initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
@@ -32,20 +37,40 @@ describe('dsx', () => {
             {
               "components": [
                 {
-                  "custom_id": "buttons:1:button:0",
+                  "custom_id": "actions:2:button:0",
                   "emoji": undefined,
                   "label": "Start",
                   "style": 1,
                   "type": 2,
                 },
                 {
-                  "custom_id": "buttons:1:button:1",
-                  "emoji": {
-                    "name": "ope",
-                  },
+                  "custom_id": "actions:2:secondary:1",
                   "label": "Help",
                   "style": 2,
                   "type": 2,
+                },
+              ],
+              "type": 1,
+            },
+            {
+              "components": [
+                {
+                  "options": [
+                    {
+                      "label": "1",
+                      "value": "1",
+                    },
+                    {
+                      "label": "2",
+                      "value": "2",
+                    },
+                    {
+                      "default": true,
+                      "label": "3",
+                      "value": "3",
+                    },
+                  ],
+                  "type": 3,
                 },
               ],
               "type": 1,
@@ -54,7 +79,18 @@ describe('dsx', () => {
           "embeds": [
             {
               "description": "V2 - JSX Pragma",
+              "fields": undefined,
+              "footer": undefined,
               "title": "Omni Board",
+            },
+            {
+              "description": "
+      ### H3
+      -#  welcome!
+      __$not a link__",
+              "fields": undefined,
+              "footer": undefined,
+              "title": "Test Title - NOT markdown",
             },
           ],
           "flags": undefined,
@@ -62,20 +98,37 @@ describe('dsx', () => {
         },
       ]
     `);
-  });
+  }));
 
   it('renders tree', () => {
     expect(jsx(TestMessage)).toMatchInlineSnapshot(`
       {
+        "_kind": "SyncOrEffect",
+        "_name": "TestMessage",
+        "_tag": "FunctionElement",
         "children": [],
-        "id": "",
-        "id_full": "",
-        "id_step": "",
-        "index": 0,
-        "kind": "function",
-        "name": "TestMessage",
+        "meta": {
+          "full_id": ".not-set",
+          "graphName": ".not-set",
+          "id": ".not-set",
+          "idx": -1,
+          "isModal": undefined,
+          "isRoot": undefined,
+          "step_id": ".not-set",
+        },
         "props": {},
         "render": [Function],
+        "state": {
+          "circular": {
+            "node": null,
+            "refs": [],
+          },
+          "pc": 0,
+          "prior": [],
+          "queue": [],
+          "rc": 0,
+          "stack": [],
+        },
       }
     `);
   });

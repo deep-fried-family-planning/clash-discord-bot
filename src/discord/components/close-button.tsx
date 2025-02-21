@@ -1,4 +1,4 @@
-import {useEffect, usePage, useState} from '#src/disreact/hook.ts';
+import {useEffect, usePage, useState} from '#src/disreact/index.ts';
 import console from 'node:console';
 
 

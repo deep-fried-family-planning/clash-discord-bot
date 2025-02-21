@@ -3,7 +3,7 @@ import {Header} from '#src/discord/components/header.tsx';
 import {InfoPanel} from '#src/discord/omni-board/info-panel.tsx';
 import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
-import {usePage} from '#src/disreact/hook.ts';
+import {usePage} from '#src/disreact/index.ts';
 
 
 
@@ -16,7 +16,7 @@ export const Link = () => {
         title={'Link Management'}
         description={'Use the buttons below to link new accounts and manage your settings with DeepFryer.'}
       />
-      <buttons>
+      <actions>
         <button
           secondary
           label={'Back'}
@@ -33,7 +33,7 @@ export const Link = () => {
           label={'Yield*'}
           onclick={() => page.next(InfoPanel)}
         />
-      </buttons>
+      </actions>
     </message>
   );
 };

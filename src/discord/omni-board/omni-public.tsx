@@ -1,12 +1,12 @@
 import {Header} from '#src/discord/components/header.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {translations} from '#src/discord/omni-board/translations.ts';
-import {usePage, useState} from '#src/disreact/hook.ts';
+import {usePage, useState} from '#src/disreact/index.ts';
 
 
 
 export const OmniPublic = () => {
-  const page = usePage([OmniPrivate]);
+  const page          = usePage([OmniPrivate]);
   const [num, setNum] = useState(0);
 
   return (
@@ -15,24 +15,21 @@ export const OmniPublic = () => {
         title={translations.OMNI_BOARD}
         description={'V2 - JSX Pragma'}
       />
-      <buttons>
-        <button
-          primary
+      <actions>
+        <primary
           label={`Start ${num}`}
           onclick={() => setNum(num + 1)}
         />
-        <button
-          secondary
+        <secondary
           label='Help'
-        >
-          <emoji name='💩'/>
-        </button>
-        <button
-          secondary
+          emoji={{name: '💩'}}
+          onclick={() => {}}
+        />
+        <danger
           label='Entry'
           onclick={() => page.next(OmniPrivate)}
         />
-      </buttons>
+      </actions>
     </message>
   );
 };

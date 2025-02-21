@@ -4,12 +4,12 @@ import {CloseButton} from '#src/discord/components/close-button.tsx';
 
 export const NavBar = () => {
   return (
-    <buttons>
+    <actions>
       <button
         primary
         label={'Home'}
       />
       <CloseButton/>
-    </buttons>
+    </actions>
   );
 };

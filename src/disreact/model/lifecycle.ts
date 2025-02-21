@@ -100,7 +100,7 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: NodeState.Type})
 
 
 
-export const rerenderRoot = (root: Pragma) => E.gen(function* () {
+export const rerenderRoot = (root: Pragma): E.Effect<Pragma, any> => E.gen(function* () {
   if (root._tag === All.TextElementTag) {
     return root;
   }
