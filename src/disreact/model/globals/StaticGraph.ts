@@ -68,7 +68,7 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
     };
   }
 
-  yield * E.addFinalizer(() => E.log('static graph: closed'));
+  // yield * E.addFinalizer(() => E.log('static graph: closed'));
 
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
