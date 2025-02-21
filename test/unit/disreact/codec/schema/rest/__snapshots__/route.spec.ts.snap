@@ -16,7 +16,7 @@ exports[`Route - Dialog > when decoding 1`] = `
 }
 `;
 
-exports[`Route - Dialog > when encoding 1`] = `"/dsx/root/0/0/id/0"`;
+exports[`Route - Dialog > when encoding 1`] = `"dsx/root/0/0/id/0"`;
 
 exports[`Route - Message > when decoding 1`] = `
 {
@@ -35,4 +35,4 @@ exports[`Route - Message > when decoding 1`] = `
 }
 `;
 
-exports[`Route - Message > when encoding 1`] = `"/dsx/root/0/0/id/0/2/token/hash"`;
+exports[`Route - Message > when encoding 1`] = `"dsx/root/0/0/id/0/2/token/hash"`;

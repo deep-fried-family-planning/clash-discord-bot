@@ -17,7 +17,7 @@ export type Params = Schema.Type<typeof Params>;
 
 export const MessageParser =
                TemplateLiteralParser(
-                 '/dsx/',
+                 'dsx/',
                  String,
                  '/',
                  String,
@@ -39,7 +39,7 @@ export const MessageRoute = transform(MessageParser, Params, {
   strict: true,
   encode: (a) => {
     return [
-      '/dsx/',
+      'dsx/',
       a.root,
       '/',
       a.doken.ephemeral,
@@ -84,7 +84,7 @@ export const decodeMessageRoute = decodeSync(MessageRoute);
 
 export const DialogParser =
                TemplateLiteralParser(
-                 '/dsx/',
+                 'dsx/',
                  String,
                  '/',
                  String,
@@ -100,7 +100,7 @@ export const DialogRoute = transform(DialogParser, Params, {
   strict: true,
   encode: (a) => {
     return [
-      '/dsx/',
+      'dsx/',
       a.root,
       '/',
       a.doken.ephemeral,

@@ -34,7 +34,9 @@ export const interact = E.fn(function* (rest: Rest.Ix) {
   }
 
   return yield* new BadInteraction({why: 'unsupported interaction'});
-});
+},
+  E.provide(DisReactFrame.makeLayer()),
+);
 
 
 
@@ -78,8 +80,8 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
       frame.dokens.fresh.type = Rest.Tx.DEFERRED_UPDATE_MESSAGE;
       frame.dokens.fresh      = yield* Doken.activate({doken: frame.dokens.fresh});
 
-      yield* E.fork(DokenMemory.save(frame.dokens.rest!));
-      yield* E.fork(DiscordDOM.defer(frame.dokens.rest!).pipe(localMutex));
+      yield* E.fork(DokenMemory.save(frame.dokens.fresh));
+      yield* E.fork(DiscordDOM.defer(frame.dokens.fresh).pipe(localMutex));
     }
 
     const rerendered = yield* Lifecycle.rerenderRoot(afterEvent);

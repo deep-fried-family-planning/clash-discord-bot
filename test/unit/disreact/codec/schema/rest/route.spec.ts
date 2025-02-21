@@ -37,7 +37,7 @@ describe('Route - Message', (it) => {
   }));
 
   it.effect('when decoding', E.fn(function* () {
-    const actual = Route.decodeMessageRoute('/dsx/root/0/0/id/0/2/token/hash');
+    const actual = Route.decodeMessageRoute('dsx/root/0/0/id/0/2/token/hash');
 
     expect(actual).toMatchSnapshot();
   }));
@@ -67,7 +67,7 @@ describe('Route - Dialog', (it) => {
   }));
 
   it.effect('when decoding', E.fn(function* () {
-    const actual = Route.decodeDialogRoute('/dsx/root/0/0/id/0');
+    const actual = Route.decodeDialogRoute('dsx/root/0/0/id/0');
 
     expect(actual).toMatchSnapshot();
   }));

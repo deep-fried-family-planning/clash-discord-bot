@@ -95,5 +95,6 @@ export class StaticGraph extends E.Tag('DisReact.StaticGraph')<
     make(config),
     E.cached,
     E.flatten,
+    E.scoped,
   ));
 }

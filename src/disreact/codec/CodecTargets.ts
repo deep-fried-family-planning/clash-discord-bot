@@ -4,11 +4,12 @@ type Todo = any;
 
 
 export const getRouteFromMessage = (message: Todo): string => {
-  return new URL(message.embeds[0].image.url).pathname;
+  return new URL(message.embeds[0].image.url).pathname.slice(1);
 };
 
 export const setRouteForMessage = (message: Todo, route: string): Todo => {
-  message.embeds[0].url = new URL(`https://dffp.org/${route}`).href;
+  message.embeds[0].image ??= {};
+  message.embeds[0].image.url = new URL(`https://dffp.org/${route}`).href;
   return message;
 };
 

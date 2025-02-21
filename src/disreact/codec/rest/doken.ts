@@ -66,10 +66,12 @@ export const makeStatic = () => Type.make(
   {
     _tag     : 'Doken',
     id       : '0',
+    app_id   : 'static',
     ttl      : DT.unsafeMake(0),
     ephemeral: 0,
     type     : 0,
     status   : 'Static',
+    token    : RDT.make('static'),
   },
 );
 
