@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
-import * as NodeState from '../codec/entities/node-state.ts';
-import * as Pointer from '../codec/entities/pointer.ts';
-import * as RootState from '../codec/entities/root-state.ts';
+import * as NodeState from '#src/disreact/codec/schema/entities/node-state.ts';
+import * as Pointer from '#src/disreact/codec/schema/entities/pointer.ts';
+import * as RootState from '#src/disreact/codec/schema/entities/root-state.ts';
 
 
 

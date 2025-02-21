@@ -98,6 +98,7 @@ const config = [
       rules: {
         ...style.rules,
         '@stylistic/yield-star-spacing': [0],
+        '@stylistic/operator-linebreak': [0],
         '@stylistic/key-spacing'       : ['error', {
           singleLine: {beforeColon: false, afterColon: true},
           multiLine : {beforeColon: false, afterColon: true, align: 'colon', mode: 'strict'},

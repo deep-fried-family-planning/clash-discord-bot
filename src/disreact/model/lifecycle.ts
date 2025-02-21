@@ -1,13 +1,13 @@
 /* eslint-disable no-case-declarations */
-import {Critical, Impossible} from '#src/disreact/codec/debug.ts';
-import {HookDispatch, type NodeHookState} from '#src/disreact/model/HookDispatch.ts';
+import type * as FunctionElement from '#src/disreact/codec/schema/entities/function-element.ts';
+import type * as IntrinsicElement from '#src/disreact/codec/schema/entities/intrinsic-element.ts';
+import type * as NodeState from '#src/disreact/codec/schema/entities/node-state.ts';
+import type * as TextElement from '#src/disreact/codec/schema/entities/text-element.ts';
+import {BadInteraction} from '#src/disreact/error.ts';
+import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
-import type * as FunctionElement from '../codec/entities/function-element.ts';
-import type * as IntrinsicElement from '../codec/entities/intrinsic-element.ts';
-import type * as NodeState from '../codec/entities/node-state.ts';
-import type * as TextElement from '../codec/entities/text-element.ts';
 import * as All from '../codec/schema/common/all.ts';
 import {DTML} from '../codec/schema/common/index.ts';
 import * as Lifecycles from './lifecycles/index.ts';
@@ -75,7 +75,7 @@ export const dispatchEvent = (node: Pragma, event: any, original: Pragma = node)
     }
   }
 
-  throw new Critical({why: `No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`});
+  throw new Error(`No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`);
 };
 
 
@@ -122,7 +122,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     const r = rss.at(i);
 
     if (!c && !r) {
-      throw new Impossible({});
+      throw new Error();
     }
     if (!c && r) {
       HookDispatch.__mount(r.meta.full_id);

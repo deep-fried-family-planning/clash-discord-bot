@@ -1,6 +1,6 @@
-import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
-import * as Compression from '../compression.ts';
+import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
+import * as NodeState from '#src/disreact/codec/schema/entities/node-state.ts';
+import * as Compression from 'src/disreact/codec/compression.ts';
 
 
 

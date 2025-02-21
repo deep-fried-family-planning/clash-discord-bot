@@ -1,7 +1,7 @@
-import {CLOSE} from '#src/disreact/codec/abstract/index.ts';
+import {CLOSE} from '#src/disreact/codec/schema/rest/index.ts';
 import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import type {NodeState} from '../codec/entities/index.ts';
+import type {NodeState} from '#src/disreact/codec/schema/entities/index.ts';
 
 
 

@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as FunctionElement from '../codec/entities/function-element.ts';
-import * as IntrinsicElement from '../codec/entities/intrinsic-element.ts';
-import * as TextElement from '../codec/entities/text-element.ts';
+import * as FunctionElement from '#src/disreact/codec/schema/entities/function-element.ts';
+import * as IntrinsicElement from '#src/disreact/codec/schema/entities/intrinsic-element.ts';
+import * as TextElement from '#src/disreact/codec/schema/entities/text-element.ts';
 
 
 

@@ -10,6 +10,7 @@ export class DisReactCodecError extends Data.TaggedError('DisReact.DisReactCodec
 }> {}
 
 export class BadInteraction extends Data.TaggedError('DisReact.BadInteraction')<{
+  why?  : string;
   cause?: Error | string;
 }> {}
 

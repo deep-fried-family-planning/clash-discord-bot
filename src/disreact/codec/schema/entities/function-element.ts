@@ -1,7 +1,7 @@
-import * as All from '../schema/common/all.ts';
-import type * as Element from './element.ts';
-import type * as FunctionComponent from './function-component.ts';
-import * as NodeState from './node-state.ts';
+import * as All from 'src/disreact/codec/schema/common/all.ts';
+import type * as Element from 'src/disreact/codec/schema/entities/element.ts';
+import type * as FunctionComponent from 'src/disreact/codec/schema/entities/function-component.ts';
+import * as NodeState from 'src/disreact/codec/schema/entities/node-state.ts';
 
 
 

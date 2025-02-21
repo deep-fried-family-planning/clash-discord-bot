@@ -1,12 +1,11 @@
-import {NONE_INT, NONE_STR, Rest} from '#src/disreact/codec/abstract/index.ts';
-import {Tx} from '#src/disreact/codec/abstract/rest.ts';
 import {SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
+import {Tx} from '#src/disreact/codec/schema/rest/rest.ts';
 import {DT, E, O, RDT} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
 import {pipe} from 'effect';
 import * as D from 'effect/Duration';
 import * as S from 'effect/Schema';
-import {between, DateTimeUtcFromNumber, decodeSync, encodeSync, equivalence, mutable, NumberFromString, optional, type Schema, String, Struct, tag, transformLiterals} from 'effect/Schema';
+import {DateTimeUtcFromNumber, decodeSync, encodeSync, equivalence, mutable, NumberFromString, optional, type Schema, String, Struct, tag, transformLiterals} from 'effect/Schema';
 
 
 export const TWO_HALF_SECONDS = D.millis(2500);
@@ -37,7 +36,7 @@ export const Type = Struct({
   app_id   : optional(SnowFlake),
   token    : optional(S.Redacted(String)),
   ttl      : DateTimeUtcFromNumber,
-  ephemeral: NumberFromString.pipe(between(0, 1)),
+  ephemeral: NumberFromString,
   type     : NumberFromString,
   status   : Status,
 });
@@ -98,7 +97,7 @@ export const makeFresh = (config: {
           type     : 0,
           status   : 'Fresh',
         },
-      ),
+      ) as Type,
     ),
   );
 
@@ -183,56 +182,3 @@ export const spend = (config: {
       status: 'Spent',
     },
   );
-
-
-
-export type T = {
-  app  : string;
-  id   : string;
-  token: string;
-  ttl  : number;
-  type : Rest.Tx;
-  flags: number;
-};
-
-export type TEncoded = {
-  id   : string;
-  token: string;
-  ttl  : string;
-  type : string;
-  flags: string;
-};
-
-export const initialTTL = () => Date.now() + 0;
-export const deferTTL   = () => Date.now() + 0;
-
-export const makeEmpty = (): T => ({
-  app  : '',
-  id   : NONE_STR,
-  token: NONE_STR,
-  ttl  : 0,
-  type : Rest.DEFER_SOURCE,
-  flags: 0,
-});
-
-export const makeFromRest = (rest: Rest.Interaction): T => ({
-  app  : rest.application_id,
-  id   : rest.id,
-  token: rest.token,
-  type : Rest.DEFER_SOURCE,
-  ttl  : initialTTL(),
-  flags: 0,
-});
-
-export const validateTTL = (doken: T): T | null => {
-  if (doken.id === NONE_STR) {
-    return null;
-  }
-  if (doken.ttl === NONE_INT) {
-    return null;
-  }
-  if ((doken.ttl - 0) > Date.now()) {
-    return doken;
-  }
-  return null;
-};

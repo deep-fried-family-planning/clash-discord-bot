@@ -3,7 +3,7 @@ import {pipe} from 'effect';
 import * as Cache from 'effect/Cache';
 import * as F from 'effect/Function';
 import * as L from 'effect/Layer';
-import * as Pointer from '../codec/entities/pointer.ts';
+import * as Pointer from '#src/disreact/codec/schema/entities/pointer.ts';
 import * as Globals from './globals.ts';
 
 

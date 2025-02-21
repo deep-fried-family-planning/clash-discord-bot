@@ -50,4 +50,6 @@ const live = pipe(
 );
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const handler = makeLambda(menu, live);

@@ -118,7 +118,7 @@ describe('lifecycle', () => {
 
       it('when dispatching an event', () => {
         const actual = () => dispatchEvent(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[DisReact.Critical]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "never" having a handler for type "onclick" was not found]`);
       });
     });
 
@@ -134,7 +134,7 @@ describe('lifecycle', () => {
         } as any;
         given.event.type = 'never';
         const actual     = () => dispatchEvent(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[DisReact.Critical]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "never" was not found]`);
       });
     });
   });

@@ -1,11 +1,11 @@
-import type {Rest} from '#src/disreact/codec/abstract/index.ts';
-import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
+import type {Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
 import {attachHooks} from '#src/disreact/model/hooks.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {globalValue} from 'effect/GlobalValue';
 import console from 'node:console';
-import { RootState } from '../codec/entities';
-import { NodeState } from '../codec/entities';
+import { RootState } from '../codec/schema/entities';
+import { NodeState } from '../codec/schema/entities';
 
 
 /**

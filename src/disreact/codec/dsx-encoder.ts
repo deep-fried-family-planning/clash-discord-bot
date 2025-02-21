@@ -1,4 +1,4 @@
-import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
+import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/schema/common/index.ts';
 

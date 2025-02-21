@@ -1,9 +1,8 @@
-import type {Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
-import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import type {DecodedRoute} from '#src/disreact/codec/route-codec.ts';
+import type {Doken, Rest} from '#src/disreact/codec/schema/rest/index.ts';
+import {NONE_STR} from '#src/disreact/codec/schema/rest/index.ts';
 import type {DisReactPointer} from '#src/disreact/codec/schema/common/common.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
-import type {NodeState, RootState} from '../codec/entities';
+import type {NodeState, RootState} from '../codec/schema/entities';
 
 
 export type IxCtx = ReturnType<typeof empty>;
@@ -23,17 +22,17 @@ const empty = () => ({
 
   rx: {
     rest  : null as unknown as Rest.Interaction,
-    params: null as unknown as DecodedRoute['params'],
+    params: null as unknown as any,
     event : null as unknown as any,
-    doken : null as unknown as Doken.T | null,
+    doken : null as unknown as Doken.Type | null,
     states: null as unknown as { [k in string]: NodeState.Type },
   },
 
-  restDoken: null as unknown as Doken.T,
-  doken    : null as unknown as Doken.T | null,
+  restDoken: null as unknown as Doken.Type,
+  doken    : null as unknown as Doken.Type | null,
   rest     : null as unknown as Rest.Interaction,
   event    : null as unknown as any,
-  params   : null as unknown as DecodedRoute['params'],
+  params   : null as unknown as any,
   stacks   : null as unknown as { [k in string]: NodeState.Type['stack'] },
   states   : null as unknown as { [k in string]: NodeState.Type },
   root     : NONE_STR,

@@ -1,5 +1,5 @@
 import * as All from '#src/disreact/codec/schema/common/all.ts';
-import type * as Element from './element.ts';
+import type * as Element from 'src/disreact/codec/schema/entities/element.ts';
 
 
 
