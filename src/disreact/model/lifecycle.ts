@@ -56,7 +56,6 @@ export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, a
 
 export const dispatchEvent = (node: Pragma, event: any, original: Pragma = node): Pragma => {
   if ('props' in node) {
-    console.log('props', event);
     if (node.meta.step_id === event.id && node.props[event.type]) {
       if (typeof node.props[event.type] === 'function') {
         node.props[event.type](event);
@@ -225,12 +224,12 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
 
 
 const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
-  console.debug('[isSameNode]', a.meta.step_id, b.meta.step_id);
+  // console.debug('[isSameNode]', a.meta.step_id, b.meta.step_id);
   if (a._tag !== b._tag) return false;
   if (a._name !== b._name) return false;
   if (a.meta.id !== b.meta.id) return false;
   if (a._tag === All.TextElementTag) return a.value === (b as TextElement.Type).value;
-  console.debug('[isSameNode]: true');
+  // console.debug('[isSameNode]: true');
   return true;
 };
 
@@ -238,8 +237,8 @@ const hasSameProps = (c: Pragma, r: Pragma) => {
   const cprops = Data.struct((c).props);
   const rprops = Data.struct((r).props);
   const equals = Equal.equals(cprops, rprops);
-  console.debug('[hasSameProps]', cprops, rprops, equals);
-  console.debug('[hasSameProps]', equals);
+  // console.debug('[hasSameProps]', cprops, rprops, equals);
+  // console.debug('[hasSameProps]', equals);
   return equals;
 };
 
@@ -247,8 +246,8 @@ const hasSameState = (c: FunctionElement.Type) => {
   const connected = Data.array((c).state.stack.map(Data.struct));
   const last      = Data.array((c).state.prior.map(Data.struct));
   const equals    = Equal.equals(connected, last);
-  console.debug('[hasSameState]', connected, last);
-  console.debug('[hasSameState]', equals);
+  // console.debug('[hasSameState]', connected, last);
+  // console.debug('[hasSameState]', equals);
   return equals;
 };
 
