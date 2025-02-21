@@ -1,15 +1,14 @@
 /* eslint-disable no-case-declarations */
+import * as All from '#src/disreact/codec/constants/all.ts';
+import {DTML} from '#src/disreact/codec/constants/index.ts';
 import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
 import type * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
 import type * as NodeState from '#src/disreact/codec/entities/node-state.ts';
 import type * as TextElement from '#src/disreact/codec/entities/text-element.ts';
-import {BadInteraction} from '#src/disreact/error.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Data, Equal} from 'effect';
 import console from 'node:console';
-import * as All from '#src/disreact/codec/constants/all.ts';
-import {DTML} from '#src/disreact/codec/constants/index.ts';
+import * as Globals from './hooks/globals.ts';
 import * as Lifecycles from './lifecycles/index.ts';
 
 
@@ -121,26 +120,33 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     const c = css.at(i);
     const r = rss.at(i);
 
-    if (!c && !r) {
-      throw new Error();
-    }
+    if (!c && !r) throw new Error();
+
     if (!c && r) {
-      HookDispatch.__mount(r.meta.full_id);
+      Globals.mountNode(r.meta.full_id);
+
       children.push(yield* initialRender(r, parent));
+
       continue;
     }
+
     if (c && !r) {
-      HookDispatch.__dismount(c.meta.full_id);
+      Globals.dismountNode(c.meta.full_id);
+
       continue;
     }
+
     if (c && r) {
       if (!isSameNode(c, r)) {
-        HookDispatch.__dismount(c.meta.full_id);
+        Globals.dismountNode(c.meta.full_id);
+
         children.push(yield* initialRender(r, parent));
       }
+
       else if (c._tag === All.TextElementTag) {
         children.push(c);
       }
+
       else if (c._tag === All.IntrinsicElementTag) {
         if (!hasSameProps(c, r)) {
           c.props = r.props;
@@ -148,6 +154,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
         c.children = yield* renderNodes(c, c.children, r.children);
         children.push(c);
       }
+
       else if (hasSameProps(c, r)) {
         if (hasSameState(c)) {
           c.children = yield* renderNodes(c, c.children, c.children);
@@ -159,6 +166,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
           children.push(c);
         }
       }
+
       else {
         const nextchildren = yield* effectRenderNode(c);
         c.children         = yield* renderNodes(c, c.children, nextchildren);
@@ -169,31 +177,6 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
   return children;
 });
 
-const renderFunctionNode = (node: FunctionElement.Type) => {
-  HookDispatch.__prep(node.meta.full_id, node.state);
-
-  const output = node.render(node.props) as any[];
-
-  const children   = Array.isArray(output) ? output : [output] as any[];
-  const rendered   = setIds(children, node);
-  node.state       = HookDispatch.__get(node.meta.full_id);
-  node.state.stack = structuredClone(node.state.stack);
-  node.state.pc    = 0;
-  node.state.rc++;
-
-  if (children.some((child) => child.name === DTML.dialog || child.name === DTML.modal)) {
-    node.meta.isModal = true;
-  }
-  if (children.some((child) => child.name === DTML.message)) {
-    node.meta.isMessage = true;
-    if (children.some((child) => child.props.ephemeral)) {
-      node.meta.isEphemeral = true;
-    }
-  }
-
-  return rendered;
-};
-
 const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(function* () {
   if (node._tag === All.TextElementTag) {
     return [];
@@ -202,7 +185,8 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
     return node.children;
   }
 
-  HookDispatch.__prep(node.meta.full_id, node.state);
+  Globals.mountNode(node.meta.full_id, node.state);
+  Globals.setDispatch(node.state);
 
   const output = node.render(node.props);
 
@@ -216,7 +200,7 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
 
   const linked = setIds(normalized, node);
 
-  node.state       = HookDispatch.__get(node.meta.full_id);
+  node.state       = Globals.readNode(node.meta.full_id);
   node.state.prior = structuredClone(node.state.stack);
   node.state.pc    = 0;
   node.state.rc++;

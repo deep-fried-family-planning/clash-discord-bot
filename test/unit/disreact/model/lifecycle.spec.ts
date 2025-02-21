@@ -1,5 +1,5 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
+import * as Globals from '#src/disreact/model/hooks/globals.ts';
 import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
@@ -25,11 +25,15 @@ describe('lifecycle', () => {
   let given: any;
 
   beforeEach(() => {
-    given = {};
-    HookDispatch.__mallocnull();
+    given      = {};
+    const Null = Globals.nullifyPointer();
+    Globals.mountRoot(Null);
   });
 
-  afterEach(HookDispatch.__free);
+  afterEach(() => {
+    Globals.dismountRoot();
+    Globals.unsetPointer();
+  });
 
   it('when cloning a node', () => {
     given.component = jsx(TestMessage, {});
@@ -59,8 +63,8 @@ describe('lifecycle', () => {
       given.component = jsx(TestMessage, {});
       given.clone     = cloneTree(given.component);
 
-      const expected = yield * initialRender(given.component);
-      const actual   = yield * hydrateRoot(given.clone, {});
+      const expected = yield* initialRender(given.component);
+      const actual   = yield* hydrateRoot(given.clone, {});
 
       yield* E.promise(async () => await expect(expected).toMatchFileSnapshot('hydration-expected.json'));
       yield* E.promise(async () => await expect(actual).toMatchFileSnapshot('hydration-actual.json'));
@@ -107,10 +111,10 @@ describe('lifecycle', () => {
 
 
     describe('given event.id does not match any node.id', () => {
-      it.effect('when dispatching an event', E.fn(function * () {
+      it.effect('when dispatching an event', E.fn(function* () {
         given.component = jsx(TestMessage, {});
         given.clone     = cloneTree(given.component);
-        given.initial   = yield * rerenderRoot(yield * initialRender(given.clone));
+        given.initial   = yield* rerenderRoot(yield* initialRender(given.clone));
         given.event     = {
           id  : 'buttons:1:button:0',
           type: 'onclick',

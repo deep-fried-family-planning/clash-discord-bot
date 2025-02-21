@@ -1,24 +1,24 @@
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
+import * as Globals from './model/hooks/globals.ts';
 
 
 
 export const useState = <T>(initial: T): readonly [state: T, setState: (next: T | ((prev: T) => T)) => void] => {
-  return HookDispatch.__hooks().useState(initial) as any;
+  return Globals.getDispatch().useState(initial);
 };
 
 export const useReducer = (reducer: (state: any, action: any) => any, initialState: any) => {
-  return HookDispatch.__hooks().useReducer(reducer, initialState) as any;
+  return Globals.getDispatch().useReducer(reducer, initialState);
 };
 
 export const useEffect = (effect: any, deps?: any[]) => {
-  HookDispatch.__hooks().useEffect(effect, deps);
+  Globals.getDispatch().useEffect(effect, deps);
 };
 
 export const useIx = () => {
-  return HookDispatch.__hooks().useIx();
+  return Globals.getDispatch().useIx();
 };
 
 export const usePage = (fns: RenderFn[]) => {
-  return HookDispatch.__hooks().usePage(fns);
+  return Globals.getDispatch().usePage(fns);
 };

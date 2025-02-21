@@ -1,10 +1,10 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {encodeDsx} from '#src/disreact/model/dsx/dsx-encode.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
+import * as Globals from '#src/disreact/model/hooks/globals.ts';
 import {initialRender, type Pragma} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
 import {it} from '@effect/vitest';
+import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
 
 
 
@@ -26,9 +26,11 @@ describe('dsx', () => {
     `);
   });
 
-  it.effect('encodes message', E.fn(function * () {
-    HookDispatch.__mallocnull();
-    const rendered = yield *  initialRender(jsx(TestMessage, {}) as Pragma);
+  it.effect('encodes message', E.fn(function* () {
+    const Null = Globals.nullifyPointer();
+    Globals.mountRoot(Null);
+
+    const rendered = yield* initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {
@@ -97,6 +99,8 @@ describe('dsx', () => {
         },
       ]
     `);
+    Globals.dismountRoot();
+    Globals.unsetPointer();
   }));
 
   it('renders tree', () => {

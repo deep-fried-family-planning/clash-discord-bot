@@ -1,7 +1,7 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
-import {cloneTree, initialRender} from '#src/disreact/model/lifecycle.ts';
 import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/dsx/dsx-encode.ts';
+import * as Globals from '#src/disreact/model/hooks/globals.ts';
+import {cloneTree, initialRender} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {TestDialog} from 'test/unit/disreact/model/.components/test-dialog.tsx';
@@ -17,11 +17,15 @@ describe('dsx-encoder', () => {
   let given: any;
 
   beforeEach(() => {
-    given = {};
-    HookDispatch.__mallocnull();
+    given      = {};
+    const Null = Globals.nullifyPointer();
+    Globals.mountRoot(Null);
   });
 
-  afterEach(HookDispatch.__free);
+  afterEach(() => {
+    Globals.dismountRoot();
+    Globals.unsetPointer();
+  });
 
   it.effect('when encoding a message', E.fn(function* () {
     given.component = jsx(TestMessage, {});

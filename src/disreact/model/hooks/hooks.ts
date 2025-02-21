@@ -1,7 +1,7 @@
-import {CLOSE} from '#src/disreact/codec/rest/index.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
-import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import type {NodeState} from '#src/disreact/codec/entities/index.ts';
+import {CLOSE} from '#src/disreact/codec/rest/index.ts';
+import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
+import * as Globals from './globals.ts';
 
 
 
@@ -100,7 +100,7 @@ const useEffect = (fiber: NodeState.Type) => (effect: any, deps?: any[]) => {
 
 
 const useIx = () => () => {
-  const root = HookDispatch.__ctxread();
+  const root = Globals.readRoot();
 
   return root.rest;
 };
@@ -108,7 +108,7 @@ const useIx = () => () => {
 
 
 const usePage = () => (_: RenderFn[]) => {
-  const root = HookDispatch.__ctxread();
+  const root = Globals.readRoot();
 
   return {
     next: (next: RenderFn, props: any = {}) => {

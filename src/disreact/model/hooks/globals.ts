@@ -2,14 +2,10 @@
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
 import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
 import * as RootState from '#src/disreact/codec/entities/root-state.ts';
+import * as Hooks from './hooks.ts';
 
 
-
-const __pointer  = {current: null as null | Pointer.Type};
-const __roots    = new WeakMap<Pointer.Type, RootState.Type>();
-const __dispatch = {current: null as any};
-
-
+const __pointer = {current: null as null | Pointer.Type};
 
 export const getPointer = () => {
   if (!__pointer.current) {
@@ -32,16 +28,15 @@ export const nullifyPointer = () => {
 };
 
 
+const __roots = new WeakMap<Pointer.Type, RootState.Type>();
 
-export const mountRoot = (ptr: Pointer.Type) => {
-  const root = RootState.make();
+export const mountRoot = (ptr: Pointer.Type, hydration = RootState.make()) => {
+  __roots.set(ptr, hydration);
 
-  __roots.set(ptr, root);
-
-  return root;
+  return hydration;
 };
 
-export const dismountRoot = (ptr: Pointer.Type) => {
+export const dismountRoot = (ptr = getPointer()) => {
   const root = __roots.get(ptr);
 
   __roots.delete(ptr);
@@ -49,8 +44,7 @@ export const dismountRoot = (ptr: Pointer.Type) => {
   return root;
 };
 
-export const readRoot = () => {
-  const ptr  = getPointer();
+export const readRoot = (ptr = getPointer()) => {
   const root = __roots.get(ptr);
 
   if (!root) {
@@ -60,10 +54,7 @@ export const readRoot = () => {
   return root;
 };
 
-
-
-export const mountNode = (id: string) => {
-  const node = NodeState.make();
+export const mountNode = (id: string, node = NodeState.make()) => {
   const root = readRoot();
 
   root.state[id] = node;
@@ -85,4 +76,19 @@ export const readNode = (id: string) => {
   }
 
   return node;
+};
+
+
+
+const __dispatch = {current: null as any};
+
+export const getDispatch = () => {
+  if (!__dispatch.current) {
+    throw new Error('Invalid: Called outside DisReact render functions.');
+  }
+  return __dispatch.current;
+};
+
+export const setDispatch = (state: any) => {
+  __dispatch.current = Hooks.attachHooks(state); ;
 };

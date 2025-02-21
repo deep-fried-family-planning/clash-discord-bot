@@ -1,6 +1,5 @@
 import {Doken, Rest} from '#src/disreact/codec/rest/index.ts';
 import {BadInteraction} from '#src/disreact/error.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import {dispatchEvent, hydrateRoot, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
@@ -9,22 +8,21 @@ import {isSameRoot} from '#src/disreact/runtime/flows/utils.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {FunctionElement} from 'src/disreact/codec/entities';
+import * as Globals from '../../model/hooks/globals.ts';
 
 
 
 export const submitEvent = E.gen(function* () {
   const frame = yield* DisReactFrame.read();
-  HookDispatch.__acquire(frame.pointer);
-  HookDispatch.__ctxwrite(frame.context);
+  Globals.setPointer(frame.pointer);
+  Globals.mountRoot(frame.pointer, frame.context);
 
   const cloneDialog    = yield* StaticGraph.cloneRoot(frame.rx.params.root);
   const hydratedDialog = yield* hydrateRoot(cloneDialog, {});
 
-  console.log('hydratedDialog', hydratedDialog);
-
   dispatchEvent(hydratedDialog, frame.event);
 
-  frame.context = HookDispatch.__ctxread();
+  frame.context = Globals.readRoot(frame.pointer);
 
 
   if (isSameRoot(frame)) {

@@ -1,15 +1,12 @@
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import {Tx} from '#src/disreact/codec/rest/rest.ts';
-import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 import {initialRender, type RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
-import {E, RDT} from '#src/internal/pure/effect.ts';
-import {DateTime} from 'effect';
+import {E} from '#src/internal/pure/effect.ts';
+import * as Globals from '../model/hooks/globals.ts';
 
 
 
 export const synthesize = (fn: RenderFn) => E.gen(function* () {
-  HookDispatch.__mallocnull();
+  Globals.nullifyPointer();
 
   const root     = yield* StaticGraph.cloneRoot(fn);
   const rendered = yield* initialRender(root);
