@@ -1,7 +1,7 @@
 import {E, L, RDT} from '#src/internal/pure/effect.ts';
 import {layer} from '@effect/vitest';
 import {DateTime, Logger, LogLevel, pipe, TestContext} from 'effect';
-import * as Route from '../../../../../../../src/disreact/codec/schema/rest/route.ts';
+import * as Route from '#src/disreact/codec/schema/rest/route.ts';
 
 
 

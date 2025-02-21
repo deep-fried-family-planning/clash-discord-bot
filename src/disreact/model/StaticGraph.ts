@@ -1,4 +1,4 @@
-import {dsx} from '#src/disreact/model/dsx-runtime.ts';
+import {dsx} from '#src/disreact/model/lifecycles/dsx-create.ts';
 import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraphError} from '#src/disreact/error.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';

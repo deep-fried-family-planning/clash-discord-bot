@@ -3,7 +3,7 @@ import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
-import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
+import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
 
 
 const nofunc = (node: Pragma): Pragma => {
