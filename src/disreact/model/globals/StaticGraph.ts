@@ -68,8 +68,6 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
     };
   }
 
-  console.log(staticGraphMap);
-
   yield * E.addFinalizer(() => E.log('static graph: closed'));
 
   return {
