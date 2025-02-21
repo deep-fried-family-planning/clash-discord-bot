@@ -1,5 +1,5 @@
-import {DEvent, Rest} from '#src/disreact/codec/abstract/index.ts';
-import {DATT} from '#src/disreact/dsx/index.ts';
+import {Rest} from '#src/disreact/codec/abstract/index.ts';
+import {ButtonEvent, ChannelSelectEvent, MentionSelectEvent, RoleSelectEvent, SelectEvent, SubmitEvent, UserSelectEvent} from '#src/disreact/codec/schema/frame.ts';
 
 const unsupported = [
   Rest.Rx.PING,
@@ -13,16 +13,9 @@ export const decodeEvent = (rest: Rest.Interaction) => {
   }
 
   if (rest.type === Rest.Rx.MODAL_SUBMIT) {
-    // const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
-
-    // if (!target) {
-    //   throw new Error('Unsupported modal submit');
-    // }
-    return DEvent.SubmitClick({
-      id    : rest.data.custom_id,
+    return SubmitEvent.make({
+      id: rest.data.custom_id,
       rest,
-      type  : DATT.onsubmit,
-      target: {} as never,
     });
   }
 
@@ -34,56 +27,45 @@ export const decodeEvent = (rest: Rest.Interaction) => {
       throw new Error('Unsupported message click');
     }
     if (rest.data.component_type === Rest.Cx.BUTTON) {
-      return DEvent.ButtonClick({
-        id    : rest.data.custom_id,
+      return ButtonEvent.make({
+        id: rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
       });
     }
     if (rest.data.component_type === Rest.Cx.STRING_SELECT) {
-      return DEvent.SelectClick({
-        id    : rest.data.custom_id,
+      return SelectEvent.make({
+        id     : rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
-        data  : rest.data,
+        options: (target as any).options.filter((option: any) => rest.data.values!.includes(option.value)),
+        values : rest.data.values as any,
       });
     }
     if (rest.data.component_type === Rest.Cx.USER_SELECT) {
-      return DEvent.UserClick({
-        id    : rest.data.custom_id,
+      return UserSelectEvent.make({
+        id      : rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
-        data  : rest.data,
+        user_ids: rest.data.values as any,
       });
     }
     if (rest.data.component_type === Rest.Cx.ROLE_SELECT) {
-      return DEvent.RoleClick({
-        id    : rest.data.custom_id,
+      return RoleSelectEvent.make({
+        id      : rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
-        data  : rest.data,
+        role_ids: rest.data.values as any,
       });
     }
     if (rest.data.component_type === Rest.Cx.CHANNEL_SELECT) {
-      return DEvent.ChannelClick({
-        id    : rest.data.custom_id,
+      return ChannelSelectEvent.make({
+        id         : rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
-        data  : rest.data,
+        channel_ids: rest.data.values as any,
       });
     }
     if (rest.data.component_type === Rest.Cx.MENTIONABLE_SELECT) {
-      return DEvent.MentionClick({
-        id    : rest.data.custom_id,
+      return MentionSelectEvent.make({
+        id      : rest.data.custom_id,
         rest,
-        type  : DATT.onclick,
-        target: target as never,
-        data  : rest.data,
+        mentions: rest.data.values as any,
       });
     }
   }

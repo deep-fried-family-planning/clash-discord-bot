@@ -1,13 +1,16 @@
-import type { Rest } from '#src/disreact/codec/abstract/index.ts';
+import type {Rest} from '#src/disreact/codec/abstract/index.ts';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import type {GlobalContext, Hooks} from '#src/disreact/dsx/types.ts';
-import {attachHooks, emptyHooks} from '#src/disreact/hooks/hooks.ts';
+import {attachHooks} from '#src/disreact/model/hooks.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {globalValue} from 'effect/GlobalValue';
 import console from 'node:console';
+import { RootState } from '../codec/entities';
+import { NodeState } from '../codec/entities';
 
 
-
+/**
+ * @deprecated
+ */
 export type MainHookState = {
   next     : string;
   nextProps: any;
@@ -22,41 +25,33 @@ export type MainHookState = {
   };
 };
 
-const emptyMainHookState = (): MainHookState => ({
-  next     : NONE_STR,
-  nextProps: {},
-  rest     : null as unknown as Rest.Interaction,
-});
 
-
-
+/**
+ * @deprecated
+ */
 export type NodeHookState = {
+  id   : string;
   pc   : number;
   stack: any[];
   queue: any[];
+  sync : any[];
+  async: any[];
   rc   : number;
 };
 
-const emptyNodeHookState = (): NodeHookState => ({
-  pc   : 0,
-  stack: [],
-  queue: [],
-  rc   : 0,
-});
 
 
-
-const nullptr = Symbol('DisReact.nullptr');
-const ptr = {current: null as unknown as symbol};
+const nullptr  = Symbol('DisReact.nullptr');
+const ptr      = {current: null as unknown as symbol};
 const dispatch = {current: null as null | ReturnType<typeof attachHooks>};
-const main = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, MainHookState>());
-const node = globalValue(Symbol.for('DisReact.node'), () => new WeakMap<symbol, Map<string, Hooks>>());
+const main     = globalValue(Symbol.for('DisReact.main'), () => new WeakMap<symbol, RootState.Type>());
+const node     = globalValue(Symbol.for('DisReact.node'), () => new WeakMap<symbol, Map<string, NodeState.Type>>());
 
 
 
 const __mallocnull = () => {
   ptr.current = nullptr;
-  main.set(nullptr, HookDispatch.emptyMainHookState());
+  main.set(nullptr, RootState.make());
   node.set(nullptr, new Map());
 };
 
@@ -81,7 +76,7 @@ const __release = () => {
   ptr.current = nullptr;
 };
 
-const __ctxwrite = (ctx: MainHookState) => {
+const __ctxwrite = (ctx: RootState.Type) => {
   main.set(ptr.current, ctx);
   return ctx;
 };
@@ -95,7 +90,7 @@ const __ctxread = () => {
   return ctx;
 };
 
-const __prep = (id: string, state?: Hooks) => {
+const __prep = (id: string, state?: NodeState.Type) => {
   const states = node.get(ptr.current);
 
   if (!states) {
@@ -103,7 +98,7 @@ const __prep = (id: string, state?: Hooks) => {
   }
 
   if (!state) {
-    const next = emptyHooks(id);
+    const next = NodeState.make();
     states.set(id, next);
     dispatch.current = attachHooks(next);
     return next;
@@ -117,7 +112,7 @@ const __prep = (id: string, state?: Hooks) => {
 
 const __get = (id: string) => {
   dispatch.current = null;
-  const states = node.get(ptr.current);
+  const states     = node.get(ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -133,12 +128,12 @@ const __mount = (id: string) => {
   if (!states) {
     throw new Error('Unregistered interaction');
   }
-  return states.set(id, emptyHooks(id));
+  return states.set(id, NodeState.make());
 };
 
 const __dismount = (id: string) => {
   dispatch.current = null;
-  const states = node.get(ptr.current);
+  const states     = node.get(ptr.current);
   if (!states) {
     throw new Error('Unregistered interaction');
   }
@@ -166,18 +161,16 @@ export class HookDispatch extends E.Tag('DisReact.HookDispatch')<
 >() {
   static readonly makeLayer = (id: symbol) => L.effect(this, make(id));
 
-  static readonly emptyMainHookState = emptyMainHookState;
-  static readonly emptyNodeHookState = emptyNodeHookState;
-  static readonly __mallocnull = __mallocnull;
-  static readonly __malloc = __malloc;
-  static readonly __free = __free;
-  static readonly __acquire = __acquire;
-  static readonly __release = __release;
-  static readonly __ctxwrite = __ctxwrite;
-  static readonly __ctxread = __ctxread;
-  static readonly __prep = __prep;
-  static readonly __get = __get;
-  static readonly __mount = __mount;
-  static readonly __dismount = __dismount;
-  static readonly __hooks = __hooks;
+  static readonly __mallocnull       = __mallocnull;
+  static readonly __malloc           = __malloc;
+  static readonly __free             = __free;
+  static readonly __acquire          = __acquire;
+  static readonly __release          = __release;
+  static readonly __ctxwrite         = __ctxwrite;
+  static readonly __ctxread          = __ctxread;
+  static readonly __prep             = __prep;
+  static readonly __get              = __get;
+  static readonly __mount            = __mount;
+  static readonly __dismount         = __dismount;
+  static readonly __hooks            = __hooks;
 }

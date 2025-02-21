@@ -1,5 +1,5 @@
 import {BitField, CustomId, InteractionToken, Locale, SnowFlake} from '#src/disreact/codec/schema/common/common.ts';
-import {DTML} from '#src/disreact/dsx/index.ts';
+import {DTML} from '#src/disreact/model/index.ts';
 import {pipe, S} from '#src/internal/pure/effect.ts';
 import {Record} from 'effect';
 

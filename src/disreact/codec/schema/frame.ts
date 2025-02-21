@@ -1,24 +1,24 @@
 import {CustomId, DisReactPointer} from '#src/disreact/codec/schema/common/common.ts';
 import type { Schema} from 'effect/Schema';
 import {Any, Array, mutable, String, Struct, tag, Union, Boolean} from 'effect/Schema';
-import {All, Reserved} from 'src/disreact/codec/schema/common/common.ts';
+import {All, Reserved} from 'src/disreact/codec/schema/common/index.ts';
 
 
 
 export const ButtonEvent = Struct({
-  kind     : tag(All.ButtonEventTag),
-  key      : tag(Reserved.onclick),
-  custom_id: CustomId,
-  rest     : Any,
+  kind: tag(All.ButtonEventTag),
+  type: tag(Reserved.onclick),
+  id  : CustomId,
+  rest: Any,
 });
 
 export const SelectEvent = Struct({
-  kind     : tag(All.SelectEventTag),
-  key      : tag(Reserved.onselect),
-  custom_id: CustomId,
-  rest     : Any,
-  values   : Array(String),
-  options  : Array(Struct({
+  kind   : tag(All.SelectEventTag),
+  type   : tag(Reserved.onselect),
+  id     : CustomId,
+  rest   : Any,
+  values : Array(String),
+  options: Array(Struct({
     value      : String,
     label      : String,
     emoji      : Any,
@@ -28,38 +28,45 @@ export const SelectEvent = Struct({
 });
 
 export const UserSelectEvent = Struct({
-  kind     : tag(All.UserSelectEventTag),
-  key      : tag(Reserved.onselect),
-  custom_id: CustomId,
-  rest     : Any,
-  user_ids : Array(String),
+  kind    : tag(All.UserSelectEventTag),
+  type    : tag(Reserved.onselect),
+  id      : CustomId,
+  rest    : Any,
+  user_ids: Array(String),
 });
 
 export const RoleSelectEvent = Struct({
-  kind     : tag(All.RoleSelectEventTag),
-  key      : tag(Reserved.onselect),
-  custom_id: CustomId,
-  rest     : Any,
-  role_ids : Array(String),
+  kind    : tag(All.RoleSelectEventTag),
+  type    : tag(Reserved.onselect),
+  id      : CustomId,
+  rest    : Any,
+  role_ids: Array(String),
 });
 
 export const ChannelSelectEvent = Struct({
   kind       : tag(All.ChannelSelectEventTag),
-  key        : tag(Reserved.onselect),
-  custom_id  : CustomId,
+  type       : tag(Reserved.onselect),
+  id         : CustomId,
   rest       : Any,
   channel_ids: Array(String),
 });
 
 export const MentionSelectEvent = Struct({
-  kind     : tag(All.MentionSelectEventTag),
-  key      : tag(Reserved.onselect),
-  custom_id: CustomId,
-  rest     : Any,
-  mentions : Array(Struct({
+  kind    : tag(All.MentionSelectEventTag),
+  type    : tag(Reserved.onselect),
+  id      : CustomId,
+  rest    : Any,
+  mentions: Array(Struct({
     id  : String,
     type: String,
   })),
+});
+
+export const SubmitEvent = Struct({
+  kind: tag(All.SubmitEventTag),
+  type: tag(Reserved.onsubmit),
+  id  : CustomId,
+  rest: Any,
 });
 
 

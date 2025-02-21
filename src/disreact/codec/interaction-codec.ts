@@ -4,10 +4,10 @@ import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx-encoder
 import {decodeEvent} from '#src/disreact/codec/event-decoder.ts';
 import {decodeDialogRouting, type DecodedRoute, decodeMessageRouting, encodeDialogRouting, encodeMessageRouting} from '#src/disreact/codec/route-codec.ts';
 import {decodeStacks, encodeStacks} from '#src/disreact/codec/stack-codec.ts';
-import {cloneTree, collectStates, type Pragma, reduceToStacks} from '#src/disreact/dsx/lifecycle.ts';
-import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {DATT} from '#src/disreact/dsx/index.ts';
-import type {HookStacksById } from '#src/disreact/dsx/types.ts';
+import {cloneTree, collectStates, type Pragma, reduceToStacks} from '#src/disreact/model/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {DATT} from '#src/disreact/model/index.ts';
+import type {HookStacksById } from '#src/disreact/model/types.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
 import {inspect} from 'node:util';

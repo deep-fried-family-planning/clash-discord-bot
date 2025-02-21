@@ -1,15 +1,8 @@
 import * as Doken from '#src/disreact/codec/abstract/doken.ts';
-import * as DEvent from '#src/disreact/codec/abstract/event.ts';
-import * as ATTR from '#src/disreact/codec/schema/common/reserved.ts';
-import * as DFMD from '#src/disreact/codec/schema/common/dfmd.ts';
-import * as DTML from '#src/disreact/codec/schema/common/dtml.ts';
-import * as Auth from 'src/disreact/codec/abstract/auth.ts';
 import * as Rest from 'src/disreact/codec/abstract/rest.ts';
 
 export {
   // ATTR,
-  Auth,
-  DEvent,
   // DFMD,
   Doken,
   // DTML,
@@ -22,3 +15,4 @@ export const CLOSE = '.close';
 export const ROOT = '.root';
 export const RELAY = '.relay';
 export const DASH3 = '---';
+export const ANONYMOUS = 'Anonymous';

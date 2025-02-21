@@ -1,9 +1,9 @@
-import type {Pragma, RenderFn} from '#src/disreact/dsx/lifecycle.ts';
+import {dsx} from '#src/disreact/model/dsx-runtime.ts';
+import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraphError} from '#src/disreact/error.ts';
-import {dsxRuntime, dsxid} from '#src/disreact/dsx/index.ts';
-import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import console from 'node:console';
+import * as Lifecycles from './lifecycles/index.ts';
 
 
 
@@ -74,15 +74,13 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
 
   return {
     cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
-      // HookDispatch.__mallocnull();
-
       const name = typeof fn === 'string' ? fn : fn.name;
 
       if (!(name in staticGraphMap)) {
         return yield * new StaticGraphError({why: `${name} is not in the static graph`});
       }
 
-      return dsxid(dsxRuntime(staticGraphMap[name].render) as Pragma);
+      return Lifecycles.linkNodeToParent(dsx(staticGraphMap[name].render) as Pragma);
     }),
   };
 });

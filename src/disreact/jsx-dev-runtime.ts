@@ -1,9 +1,9 @@
 
-import {fragment, dsxRuntime, dsxs} from '#src/disreact/dsx/dsx-runtime.ts';
+import {fragment, dsx, dsxs} from '#src/disreact/model/dsx-runtime.ts';
 
 
 
 export const Fragment = fragment;
-export const jsx      = dsxRuntime;
+export const jsx      = dsx;
 export const jsxs     = dsxs;
-export const jsxDEV   = dsxRuntime;
+export const jsxDEV   = dsx;

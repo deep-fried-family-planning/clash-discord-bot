@@ -7,6 +7,7 @@ export * as Reserved from './reserved.ts';
 export * as DFMD from './dfmd.ts';
 export * as DTML from './dtml.ts';
 export * as All from './all.ts';
+export * as Schema from './common.ts';
 
 export type DFMD = typeof dfmd;
 export type DTML = typeof dtml;

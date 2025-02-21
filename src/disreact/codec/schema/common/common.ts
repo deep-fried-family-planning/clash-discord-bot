@@ -1,5 +1,5 @@
 import {S} from '#src/internal/pure/effect.ts';
-import {Any, Literal, maxLength, minLength, optional, String, Struct, SymbolFromSelf} from 'effect/Schema';
+import {Any, Literal, maxLength, minLength, optional, type Schema, String, Struct, SymbolFromSelf} from 'effect/Schema';
 
 
 
@@ -36,3 +36,7 @@ export const EmojiStruct = Struct({
   name    : optional(String),
   animated: optional(S.Boolean),
 });
+
+
+
+export type DisReactPointer = Schema.Type<typeof DisReactPointer>;

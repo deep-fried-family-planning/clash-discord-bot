@@ -1,7 +1,7 @@
 
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/dsx/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {cloneTree, collectStates, dispatchEvent, hydrateRoot, initialRender, type Pragma, reduceToStacks, rerenderRoot} from '#src/disreact/model/lifecycle.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from 'test/unit/disreact/internal/dsx/.components/test-message.tsx';
 import {it} from '@effect/vitest';

@@ -1,10 +1,10 @@
 import type {Rest} from '#src/disreact/codec/abstract/index.ts';
 import {decodeInteraction} from '#src/disreact/codec/interaction-codec.ts';
-import {emptyHooks} from '#src/disreact/hooks/hooks.ts';
 import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
 import {clickEvent} from '#src/disreact/runtime/flows/click-event.ts';
 import {submitEvent} from '#src/disreact/runtime/flows/submit-event.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import { NodeState } from '../codec/entities';
 
 
 
@@ -30,7 +30,7 @@ export const interact = (rest: Rest.Ix) => E.gen(function * () {
   };
 
   for (const [id, stack] of Object.entries(frame.stacks)) {
-    frame.rx.states[id] = emptyHooks(id);
+    frame.rx.states[id] = NodeState.make();
     frame.rx.states[id].stack = stack;
     frame.rx.states[id].rc = 1;
   }

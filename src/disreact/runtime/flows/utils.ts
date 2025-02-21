@@ -22,8 +22,8 @@ export const closeEvent = E.gen(function * () {
 });
 
 
-export const isClose = (ix: IxCtx) => ix.context.next === CLOSE;
-export const isSameRoot = (ix: IxCtx) => ix.context.next === NONE_STR || ix.context.next === ix.rx.params.root;
+export const isClose = (ix: IxCtx) => ix.context.graph.next === CLOSE;
+export const isSameRoot = (ix: IxCtx) => ix.context.graph.next === NONE_STR || ix.context.graph.next === ix.rx.params.root;
 export const isClick = (ix: IxCtx) => ix.event.type === 'onclick';
 export const isSubmit = (ix: IxCtx) => ix.event.type === 'onsubmit';
 

@@ -1,9 +1,9 @@
-import type {Auth, DEvent, Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
+import type {Doken, Rest} from '#src/disreact/codec/abstract/index.ts';
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
 import type {DecodedRoute} from '#src/disreact/codec/route-codec.ts';
-import type {GlobalContext, HooksById, HookStacksById, InteractionHooks, IxId} from '#src/disreact/dsx/types.ts';
-import type {MainHookState} from '#src/disreact/hooks/HookDispatch.ts';
+import type {DisReactPointer} from '#src/disreact/codec/schema/common/common.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
+import type {NodeState, RootState} from '../codec/entities';
 
 
 export type IxCtx = ReturnType<typeof empty>;
@@ -11,44 +11,42 @@ export type IxCtx = ReturnType<typeof empty>;
 
 const empty = () => ({
   start_ms   : Date.now(),
-  pointer    : null as unknown as IxId,
-  context    : null as unknown as MainHookState,
+  pointer    : null as unknown as DisReactPointer,
+  context    : null as unknown as RootState.Type,
   isEphemeral: null as unknown as boolean,
 
   global: {
-    state  : null as unknown as IxId,
-    event  : null as unknown as IxId,
+    state  : null as unknown as DisReactPointer,
+    event  : null as unknown as DisReactPointer,
     handler: null as unknown as E.Effect<void, any, any>,
   },
 
   rx: {
     rest  : null as unknown as Rest.Interaction,
     params: null as unknown as DecodedRoute['params'],
-    event : null as unknown as DEvent.T,
+    event : null as unknown as any,
     doken : null as unknown as Doken.T | null,
-    states: null as unknown as HooksById,
+    states: null as unknown as { [k in string]: NodeState.Type },
   },
 
   restDoken: null as unknown as Doken.T,
   doken    : null as unknown as Doken.T | null,
   rest     : null as unknown as Rest.Interaction,
-  auths    : null as unknown as Auth.T[],
-  event    : null as unknown as DEvent.T,
+  event    : null as unknown as any,
   params   : null as unknown as DecodedRoute['params'],
-  stacks   : null as unknown as HookStacksById,
-  states   : null as unknown as HooksById,
-  ctx      : null as unknown as InteractionHooks,
+  stacks   : null as unknown as { [k in string]: NodeState.Type['stack'] },
+  states   : null as unknown as { [k in string]: NodeState.Type },
   root     : NONE_STR,
   next     : NONE_STR,
 });
 
 
 
-const make = E.gen(function * () {
+const make = E.gen(function* () {
   let self = null as unknown as IxCtx;
 
-  const semaphore = yield * E.makeSemaphore(1);
-  const mutex = semaphore.withPermits(1);
+  const semaphore = yield* E.makeSemaphore(1);
+  const mutex     = semaphore.withPermits(1);
 
   return {
     Type: null as unknown as typeof self,

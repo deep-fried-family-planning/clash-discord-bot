@@ -1,9 +1,9 @@
 import {NONE_INT, NONE_STR} from '#src/disreact/codec/abstract/index.ts';
 import {Tx} from '#src/disreact/codec/abstract/rest.ts';
 import {encodeMessageInteraction} from '#src/disreact/codec/interaction-codec.ts';
-import {initialRender, type RenderFn} from '#src/disreact/dsx/lifecycle.ts';
-import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
-import {StaticGraph} from '#src/disreact/dsx/StaticGraph.ts';
+import {initialRender, type RenderFn} from '#src/disreact/model/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
+import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 

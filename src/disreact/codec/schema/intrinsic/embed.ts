@@ -1,4 +1,4 @@
-import {DTML} from '#src/disreact/dsx/index.ts';
+import {DTML} from '#src/disreact/model/index.ts';
 import {Any, type Schema} from 'effect/Schema';
 import {Literal, optional, String, Struct, Boolean, Int} from 'effect/Schema';
 

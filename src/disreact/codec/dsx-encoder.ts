@@ -1,5 +1,5 @@
 import {NONE_STR} from '#src/disreact/codec/abstract/index.ts';
-import type {Pragma} from '#src/disreact/dsx/lifecycle.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/schema/common/index.ts';
 
 
@@ -62,7 +62,7 @@ const encodeInner = (node: any): any => {
     const child = encodeInner(c);
     allChildren.push(child);
 
-    const normalized = normalizedNodeName(c.name);
+    const normalized = normalizedNodeName(c._name);
 
     children[normalized] ??= [];
     children[normalized].push(child);
@@ -79,7 +79,7 @@ const encodeInner = (node: any): any => {
 
   let acc = {...props};
 
-  switch (node.name) {
+  switch (node._name) {
   case DTML.emoji:
     return acc;
 
@@ -93,7 +93,7 @@ const encodeInner = (node: any): any => {
     acc       = {...props, ...acc};
     acc.emoji = children.emoji?.[0];
     acc.type  = 2;
-    acc.custom_id ??= node.id_step;
+    acc.custom_id ??= node.meta.step_id;
     return acc;
   }
 
@@ -110,7 +110,7 @@ const encodeInner = (node: any): any => {
   case DTML.premium:
     acc.style ??= 6;
     acc.type = 2;
-    acc.custom_id ??= node.id_step;
+    acc.custom_id ??= node.meta.step_id;
     return acc;
 
   case DTML.option:
@@ -166,7 +166,7 @@ const encodeInner = (node: any): any => {
     if (paragraph) acc.style ??= 2;
     else acc.style ??= 1;
     acc.type = 4;
-    acc.custom_id ??= node.id_step;
+    acc.custom_id ??= node.meta.step_id;
     return {
       type      : 1,
       components: [acc],
@@ -198,7 +198,7 @@ const encodeInner = (node: any): any => {
     return node.value;
   }
 
-  if (node.name in DFMD) {
+  if (node._name in DFMD) {
     node.children = allChildren;
     acc           = encodeDFMD(node);
     return acc;
@@ -217,7 +217,7 @@ const encodeDFMD = (node: any): any => {
           syntax,
         } = node.props;
 
-  switch (node.name) {
+  switch (node._name) {
   case DTML.string: {
     return node.value;
   }
@@ -301,7 +301,7 @@ const encodeDFMD = (node: any): any => {
   case DFMD.li:
     return node.children.join('');
   }
-  throw new Error(`Unrecognized markdown tag: ${node.name}`);
+  throw new Error(`Unrecognized markdown tag: ${node._name}`);
 };
 
 
@@ -393,16 +393,16 @@ const encodeProps = (props: any): any => {
 
 const unwrapFunctions = (node: any): any => {
   if (typeof node === 'string') {
-    return {kind: 'text', value: node, name: 'string'};
+    return {kind: 'text', value: node, _name: 'string'};
   }
-  if (node.kind === 'text') {
+  if (node._tag === All.TextElementTag) {
     return {...node, name: 'string'};
   }
-  if (node.kind === 'intrinsic') {
+  if (node._tag === All.IntrinsicElementTag) {
     node.children = node.children.flatMap(unwrapFunctions);
     return node;
   }
-  if (node.kind === 'function') {
+  if (node._tag === All.FunctionElementTag) {
     return node.children.flatMap(unwrapFunctions);
   }
   return node;

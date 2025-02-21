@@ -1,6 +1,6 @@
 import {encodeDialogDsx, encodeMessageDsx, encodeRoot} from '#src/disreact/codec/dsx-encoder.ts';
-import {cloneTree, initialRender} from '#src/disreact/dsx/lifecycle.ts';
-import {HookDispatch} from '#src/disreact/hooks/HookDispatch.ts';
+import {cloneTree, initialRender} from '#src/disreact/model/lifecycle.ts';
+import {HookDispatch} from '#src/disreact/model/HookDispatch.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {expect, it} from '@effect/vitest';
@@ -25,6 +25,7 @@ describe('dsx-encoder', () => {
   it.live('when encoding a message', E.fn(function* () {
     given.component = jsx(TestMessage, {});
     const rendered  = yield * initialRender(given.component);
+    console.log(tojson(rendered));
     const clone     = cloneTree(rendered);
     const actual    = encodeMessageDsx(clone);
 

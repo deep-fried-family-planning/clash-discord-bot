@@ -1,4 +1,5 @@
-import type {Hooks, HookStacksById} from '#src/disreact/dsx/types.ts';
+import type {NodeHookState} from '#src/disreact/model/HookDispatch.ts';
+import type {HookStacksById} from '#src/disreact/model/types.ts';
 import {flow} from 'effect';
 
 
@@ -19,7 +20,7 @@ export const decodeStacks = (search: URLSearchParams): HookStacksById => {
   const states = {} as HookStacksById;
 
   for (const [id, value] of search.entries()) {
-    states[id] = simpleDecode(value) as Hooks['stack'];
+    states[id] = simpleDecode(value) as NodeHookState['stack'];
   }
   return states;
 };

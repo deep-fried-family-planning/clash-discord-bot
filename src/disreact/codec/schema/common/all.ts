@@ -1,5 +1,3 @@
-
-
 export const onclick        = 'onclick';
 export const onselect       = 'onselect';
 export const ondeselect     = 'ondeselect';
@@ -92,3 +90,22 @@ export const RoleSelectEventTag    = 'RoleSelectEvent';
 export const ChannelSelectEventTag = 'ChannelSelectEvent';
 export const MentionSelectEventTag = 'MentionSelectEvent';
 export const SubmitEventTag        = 'SubmitEvent';
+
+
+
+export const FunctionElementTag  = 'FunctionElement';
+export const IntrinsicElementTag = 'IntrinsicElement';
+export const TextElementTag      = 'TextElement';
+
+
+export const AsyncFunctionConstructorName = 'AsyncFunction';
+
+export const SyncFunctionTag = 'Sync';
+export const AsyncFunctionTag = 'Async';
+export const SyncOrEffectFunctionTag = 'SyncOrEffect';
+export const EffectFunctionTag = 'Effect';
+
+export const NamelessFunction = '';
+export const AnonymousName = 'Anonymous';
+export const NotSet        = '.not-set';
+export const NotSetInt = -1;

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
 import type {IntrinsicMap} from '#src/disreact/codec/schema/intrinsic/index.ts';
-import {dsxRuntime, dsxs, fragment} from '#src/disreact/dsx/dsx-runtime.ts';
+import {dsx, dsxs, fragment} from '#src/disreact/model/dsx-runtime.ts';
 
 
 
 export const Fragment = fragment;
-export const jsx = dsxRuntime;
+export const jsx = dsx;
 export const jsxs = dsxs;
-export const jsxDEV = dsxRuntime;
+export const jsxDEV = dsx;
 
 
 
