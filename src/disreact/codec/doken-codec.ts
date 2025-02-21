@@ -1,4 +1,4 @@
-import {deferTTL, initialTTL, type T} from '#src/disreact/codec/abstract/doken.ts';
+import {deferTTL, initialTTL, type T} from '#src/disreact/codec/schema/rest/doken.ts';
 import {Doken, NONE_STR, Rest} from '#src/disreact/codec/abstract/index.ts';
 import {DokenMemory} from '#src/disreact/service.ts';
 import type {DecodedRoute} from '#src/disreact/codec/route-codec.ts';

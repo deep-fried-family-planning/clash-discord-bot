@@ -1,4 +1,4 @@
-import * as Doken from '#src/disreact/codec/abstract/doken.ts';
+import * as Doken from '#src/disreact/codec/schema/rest/doken.ts';
 import * as Rest from 'src/disreact/codec/abstract/rest.ts';
 
 export {
