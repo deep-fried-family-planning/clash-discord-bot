@@ -7,7 +7,7 @@ import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
-import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
+import {InteractionBroker} from '#src/disreact/runtime/InteractionBroker.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
 
@@ -15,7 +15,7 @@ import * as process from 'node:process';
 
 export const runtimeLayer = pipe(
   L.empty,
-  L.provideMerge(DisReactFrame.makeLayer()),
+  L.provideMerge(InteractionBroker.makeLayer()),
   L.provideMerge(StaticGraph.singleton({
     persistent: [
       OmniPublic,

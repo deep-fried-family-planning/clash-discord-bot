@@ -3,7 +3,7 @@ import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
 import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {DisReactFrame} from '#src/disreact/runtime/DisReactFrame.ts';
+import {InteractionBroker} from '#src/disreact/runtime/InteractionBroker.ts';
 import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec, Constants} from '../codec';
@@ -36,7 +36,7 @@ export const interact = E.fn(
 
     return yield* new BadInteraction({why: 'unsupported interaction'});
   },
-  E.provide(DisReactFrame.makeLayer()),
+  E.provide(InteractionBroker.makeLayer()),
 );
 
 
@@ -51,7 +51,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
 
 
-  const localMutex = yield* DisReactFrame.mutex();
+  const localMutex = yield* InteractionBroker.mutex();
 
   if (frame.state.graph.next === CLOSE) {
     if (frame.dokens.rest) {

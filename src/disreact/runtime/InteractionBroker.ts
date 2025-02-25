@@ -13,8 +13,8 @@ const make = E.gen(function* () {
 
 
 
-export class DisReactFrame extends E.Tag('DisReact.Frame')<
-  DisReactFrame,
+export class InteractionBroker extends E.Tag('DisReact.InteractionBroker')<
+  InteractionBroker,
   E.Effect.Success<typeof make>
 >() {
   static readonly makeLayer = () => L.effect(this, make);
