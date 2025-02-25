@@ -1,5 +1,5 @@
 /* eslint-disable no-empty */
-import * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
+import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import * as Events from '#src/disreact/codec/rest/events.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 

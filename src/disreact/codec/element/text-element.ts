@@ -1,6 +1,6 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
-import type * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
+import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 
 
 

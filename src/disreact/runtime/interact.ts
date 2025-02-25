@@ -1,4 +1,4 @@
-import {BadInteraction} from '#src/disreact/codec/entities/error.ts';
+import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
 import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
@@ -53,8 +53,6 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
   const localMutex = yield* DisReactFrame.mutex();
 
-
-
   if (frame.state.graph.next === CLOSE) {
     if (frame.dokens.rest) {
       yield* E.fork(DiscordDOM.discard(frame.dokens.fresh));
@@ -101,7 +99,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
 
   if ((rendered as FunctionElement.Type).meta.isModal) {
-    return yield* new BadInteraction({
+    yield* new BadInteraction({
       why: 'Unsupported interaction: modal open',
     });
 

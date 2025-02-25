@@ -90,5 +90,5 @@ export const getDispatch = () => {
 };
 
 export const setDispatch = (state: any) => {
-  __dispatch.current = Hooks.attachHooks(state); ;
+  __dispatch.current = Hooks.attachHooks(state);
 };

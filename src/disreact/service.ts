@@ -1,5 +1,5 @@
 import {Doken, Rest} from '#src/disreact/codec/rest/index.ts';
-import {DokenMemoryError} from '#src/disreact/codec/entities/error.ts';
+import {DokenMemoryError} from '#src/disreact/codec/error.ts';
 import {C, E, L, LG, LL, RDT} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {DiscordREST} from 'dfx';

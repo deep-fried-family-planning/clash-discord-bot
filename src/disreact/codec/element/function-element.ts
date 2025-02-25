@@ -1,9 +1,24 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as Element from '#src/disreact/codec/entities/element.ts';
-import type * as FunctionComponent from '#src/disreact/codec/entities/function-component.ts';
-import type * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
+import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
-import type * as TextElement from '#src/disreact/codec/entities/text-element.ts';
+import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
+import type {E} from '#src/internal/pure/effect.ts';
+
+
+
+export interface Component<P, R> {
+  (props: P): R | Promise<R> | E.Effect<R, any>;
+  displayName?: string;
+  graphName?  : string;
+  isRoot?     : boolean;
+  isModal?    : boolean;
+  isSync?     : boolean;
+  isAsync?    : boolean;
+  isEffect?   : boolean;
+}
+
+export type FEC<P = any, R = any> = Component<P, R>;
 
 
 
@@ -17,6 +32,7 @@ export type Type = {
     step_id     : string;
     full_id     : string;
     graph_id?   : string;
+    isMounted?  : boolean | undefined;
     isModal?    : boolean | undefined;
     isRoot?     : boolean | undefined;
     isMessage?  : boolean | undefined;
@@ -24,7 +40,7 @@ export type Type = {
   };
   props   : any;
   state   : NodeState.Type;
-  render  : FunctionComponent.Type;
+  render  : Component<any, JSX.Element>;
   children: (
     | Type
     | IntrinsicElement.Type
@@ -34,7 +50,7 @@ export type Type = {
 
 export const is = (type: any): type is Type => type._tag === All.FunctionElementTag;
 
-export const make = (type: FunctionComponent.Type, props: any): Type => {
+export const make = (type: Component<any, JSX.Element>, props: any): Type => {
   return {
     _kind   : getKind(type),
     _tag    : All.FunctionElementTag,
@@ -43,13 +59,15 @@ export const make = (type: FunctionComponent.Type, props: any): Type => {
     props,
     state   : NodeState.make(),
     render  : type,
-    children: [] as Element.Type[],
+    children: [],
   };
 };
 
+export const dsxDEV_make = make;
 
 
-const getName = (type: FunctionComponent.Type) => {
+
+const getName = (type: Component<any, JSX.Element>) => {
   if (type.displayName)
     return type.displayName;
 
@@ -59,9 +77,7 @@ const getName = (type: FunctionComponent.Type) => {
   return All.AnonymousName;
 };
 
-
-
-const getKind = (type: FunctionComponent.Type) => {
+const getKind = (type: Component<any, JSX.Element>) => {
   if (type.isSync)
     return All.SyncFunctionTag;
 
@@ -74,9 +90,7 @@ const getKind = (type: FunctionComponent.Type) => {
   return All.SyncOrEffectFunctionTag;
 };
 
-
-
-const getMeta = (type: FunctionComponent.Type): Type['meta'] => {
+const getMeta = (type: Component<any, JSX.Element>): Type['meta'] => {
   return {
     idx     : All.Zero,
     id      : All.Empty,
@@ -87,7 +101,3 @@ const getMeta = (type: FunctionComponent.Type): Type['meta'] => {
     graph_id: All.Empty,
   };
 };
-
-
-
-export const dsxDEV_make = make;

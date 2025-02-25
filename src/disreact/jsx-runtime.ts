@@ -1,77 +1,65 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
-import type {IntrinsicMap} from '#src/disreact/codec/intrinsic/index.ts';
+import type {Component, FEC} from '#src/disreact/codec/element/function-element.ts';
+import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
 import {dsx, dsxs, fragment} from '#src/disreact/model/dsx/dsx.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
 
 
 export const Fragment = fragment;
-export const jsx = dsx;
-export const jsxs = dsxs;
-export const jsxDEV = dsx;
+export const jsx      = dsx;
+export const jsxs     = dsxs;
+export const jsxDEV   = dsx;
 
-
+export type {
+  FEC as FC,
+};
 
 declare global {
+  export namespace DisReact {
+    type FC<P = any> = FEC<P>;
+  }
+
   export namespace DSX {
-    type ElementType =
-      | keyof JSX.IntrinsicElements
-      | FunctionComponent
-      | Fragment
-      | Node;
-
-    type Fragment = {} | Node[];
-
-    type Node =
-      | Fragment
-      | Element
-      | string
-      | number
-      | bigint
-      | boolean
-      | null
-      | undefined;
-
-    type FunctionComponent<P = unknown> = (props: P) => Node | null;
-    type FC<P = unknown> = FunctionComponent<P>;
-
-    type Element<
-      P = any,
-      T extends string | FunctionComponent<any> = string | FunctionComponent<any>,
-    > =
-      | {
-      type : T;
-      props: P;
-    };
+    type FC<P = any, R = JSX.Element> = Component<P, R>;
   }
 }
 
 
 
-declare global {
-  export namespace JSX {
-    type ElementType =
-      | ((props: any) => Element)
-      | keyof IntrinsicElements
-      | string
-      | number
-      | bigint
-      | boolean
-      | null
-      | undefined;
+export declare namespace JSX {
+  type ElementType =
+    | Component<any, Element>
+    | keyof IntrinsicElements
+    | string
+    | boolean
+    | null
+    | undefined;
 
-    type Element = any;
-    interface ElementAttributesProperty {
-      props: any;
-    }
-    interface ElementChildrenAttribute {
-      children: any;
-    }
-    interface IntrinsicAttributes {
-      children?: any |  any[];
-    }
-    interface IntrinsicClassAttributes {
-      children: any[];
-    }
-    interface IntrinsicElements extends IntrinsicMap {}
+  type Element = Pragma;
+
+  interface LibraryManagedAttributes {
+    displayName?: string;
+    ref?        : any;
+    key?        : string | number;
+    children?   : any;
+    isSync?     : boolean | undefined;
+    isAsync?    : boolean | undefined;
+    isEffect?   : boolean | undefined;
+    isMemo?     : boolean | undefined;
   }
+
+  interface ElementAttributesProperty {
+    props: any;
+  }
+  interface ElementChildrenAttribute {
+    children: any;
+  }
+  interface IntrinsicAttributes {
+    children?: any | any[];
+  }
+  interface IntrinsicClassAttributes {
+    children: any[];
+  }
+  interface IntrinsicElements extends IntrinsicMap {}
 }

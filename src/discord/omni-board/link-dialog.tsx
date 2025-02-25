@@ -1,13 +1,13 @@
-import console from 'node:console';
+import type {FC} from '#src/disreact/jsx-runtime.ts';
 
 
 
-export const LinkDialog = () => {
+export const LinkDialog: FC = () => {
   return (
     <modal
       title={'Testing'}
       onsubmit={() => {
-        console.log('SUBMIT');
+
       }}
     >
       <text label={'Testing1'} value={''}/>
@@ -18,3 +18,5 @@ export const LinkDialog = () => {
     </modal>
   );
 };
+
+LinkDialog.isSync;

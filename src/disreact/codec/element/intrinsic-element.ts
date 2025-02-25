@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import * as All from '#src/disreact/codec/constants/all.ts';
-import * as Intrinsic from '#src/disreact/codec/intrinsic/index.ts';
-import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
-import type * as TextElement from '#src/disreact/codec/entities/text-element.ts';
+import * as Intrinsic from '#src/disreact/codec/element/intrinsic/index.ts';
+import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
 
 
 

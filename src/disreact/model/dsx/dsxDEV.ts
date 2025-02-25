@@ -1,8 +1,9 @@
 /* eslint-disable no-case-declarations */
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
-import * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
-import * as TextElement from '#src/disreact/codec/entities/text-element.ts';
+import * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
+import * as TextElement from '#src/disreact/codec/element/text-element.ts';
 
 
 
@@ -54,7 +55,7 @@ export const dsxsDEV = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[]
   case 'number':
   case 'bigint':
   case 'symbol':
-    return TextElement.dsxDEV_make(`${type}`);
+    return TextElement.dsxDEV_make(type.toString());
   }
 
   throw new Error(`Unknown Tag: ${type}`);

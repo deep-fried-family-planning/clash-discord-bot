@@ -1,9 +1,10 @@
 /* eslint-disable no-case-declarations */
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
-import * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
-import * as TextElement from '#src/disreact/codec/entities/text-element.ts';
-import * as Props from '#src/disreact/codec/entities/props.ts';
+import * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
+import * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import * as Props from '#src/disreact/codec/element/props.ts';
 
 
 

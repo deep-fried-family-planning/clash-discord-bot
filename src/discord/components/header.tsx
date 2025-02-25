@@ -3,7 +3,7 @@ type Props = {
   description: string;
 }
 
-export const Header: DSX.FC<Props> = (props) => {
+export const Header = (props: Props) => {
   return (
     <embed title={props.title}>
       {props.description}

@@ -1,11 +1,11 @@
 import {Reserved} from '#src/disreact/codec/constants';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
+import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import {Props} from '#src/disreact/codec/entities';
 import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
-import type * as TextElement from '#src/disreact/codec/entities/text-element.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {Data, Equal} from 'effect';
 
 
 
@@ -85,12 +85,7 @@ export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
   return true;
 };
 
-export const hasSameProps = (c: Pragma, r: Pragma) => {
-  const cprops = Data.struct((c).props);
-  const rprops = Data.struct((r).props);
-  const equals = Equal.equals(cprops, rprops);
-  return equals;
-};
+export const hasSameProps = (c: Pragma, r: Pragma) => Props.isEqual(c.props, r.props);
 
 export const hasSameState = (c: FunctionElement.Type) => NodeState.isSameState(c.state);
 

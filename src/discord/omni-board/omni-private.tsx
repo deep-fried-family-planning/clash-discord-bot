@@ -6,7 +6,7 @@ import console from 'node:console';
 
 
 
-export const OmniPrivate = () => {
+export const OmniPrivate: DSX.FC = () => {
   const page          = usePage([Link]);
   const [num, setNum] = useState(0);
 
@@ -34,3 +34,8 @@ export const OmniPrivate = () => {
     </message>
   );
 };
+
+
+OmniPrivate.displayName;
+
+OmniPrivate;

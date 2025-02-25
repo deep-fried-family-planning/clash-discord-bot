@@ -1,18 +1,18 @@
-import * as Button from 'src/disreact/codec/intrinsic/button.ts';
-import * as Dialog from 'src/disreact/codec/intrinsic/dialog.ts';
-import * as Embed from 'src/disreact/codec/intrinsic/embed.ts';
-import * as Select from 'src/disreact/codec/intrinsic/select.ts';
-import * as Message from 'src/disreact/codec/intrinsic/message.ts';
-import * as Markdown from 'src/disreact/codec/intrinsic/markdown.ts';
-import * as Command from 'src/disreact/codec/intrinsic/command.ts';
+import * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
+import * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
+import * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
+import * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
+import * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
+import * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
+import * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
 
-export * as Button from 'src/disreact/codec/intrinsic/button.ts';
-export * as Command from 'src/disreact/codec/intrinsic/command.ts';
-export * as Dialog from 'src/disreact/codec/intrinsic/dialog.ts';
-export * as Embed from 'src/disreact/codec/intrinsic/embed.ts';
-export * as Select from 'src/disreact/codec/intrinsic/select.ts';
-export * as Message from 'src/disreact/codec/intrinsic/message.ts';
-export * as Markdown from 'src/disreact/codec/intrinsic/markdown.ts';
+export * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
+export * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
+export * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
+export * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
+export * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
+export * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
+export * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
 
 export type IntrinsicTuple =
   | [Button.Tag, Button.Attributes]

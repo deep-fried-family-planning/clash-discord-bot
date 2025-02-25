@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition,no-case-declarations */
 import { DTML } from '#src/disreact/codec/constants';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import * as Children from '#src/disreact/codec/entities/children.ts';
-import type * as FunctionElement from '#src/disreact/codec/entities/function-element.ts';
-import * as IntrinsicElement from '#src/disreact/codec/entities/intrinsic-element.ts';
+import * as Children from '#src/disreact/codec/element/children.ts';
+import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import type * as NodeState from '#src/disreact/codec/entities/node-state.ts';
-import * as TextElement from '#src/disreact/codec/entities/text-element.ts';
+import * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import * as Globals from '#src/disreact/model/globals/globals.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
