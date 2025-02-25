@@ -4,9 +4,9 @@ import * as All from '#src/disreact/codec/constants/all.ts';
 import * as Children from '#src/disreact/codec/element/children.ts';
 import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import type * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import * as TextElement from '#src/disreact/codec/element/text-element.ts';
-import * as Globals from '#src/disreact/model/globals/globals.ts';
+import * as Globals from '#src/disreact/model/globals.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';
@@ -28,7 +28,7 @@ export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, a
     } as IntrinsicElement.Type;
 
   case All.FunctionElementTag:
-    Globals.mountNode(base.meta.full_id, (base as any).state);
+    Globals.mountFiber(base.meta.full_id, (base as any).state);
 
     const children = yield* effectRenderNode(base);
 
@@ -43,7 +43,7 @@ export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, a
 
 
 
-export const hydrateRoot = (node: Pragma, states: {[k: string]: NodeState.Type}): E.Effect<Pragma, any> => E.gen(function* () {
+export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Type}): E.Effect<Pragma, any> => E.gen(function* () {
   if (TextElement.is(node)) {
     return node;
   }
@@ -89,7 +89,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     if (!c && !r) throw new Error();
 
     if (!c && r) {
-      Globals.mountNode(r.meta.full_id);
+      Globals.mountFiber(r.meta.full_id);
 
       children.push(yield* initialRender(r, parent));
 
@@ -97,14 +97,14 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     }
 
     if (c && !r) {
-      Globals.dismountNode(c.meta.full_id);
+      Globals.dismountFiber(c.meta.full_id);
 
       continue;
     }
 
     if (c && r) {
       if (!isSameNode(c, r)) {
-        Globals.dismountNode(c.meta.full_id);
+        Globals.dismountFiber(c.meta.full_id);
 
         children.push(yield* initialRender(r, parent));
       }
@@ -151,7 +151,7 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
     return node.children;
   }
 
-  Globals.mountNode(node.meta.full_id, node.state);
+  Globals.mountFiber(node.meta.full_id, node.state);
   Globals.setDispatch(node.state);
 
   const output = node.render(node.props);
@@ -164,7 +164,7 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
 
   const linked = setIds(normalized, node);
 
-  node.state       = Globals.readNode(node.meta.full_id);
+  node.state       = Globals.readFiber(node.meta.full_id);
   node.state.prior = structuredClone(node.state.stack);
   node.state.pc    = 0;
   node.state.rc++;

@@ -1,14 +1,15 @@
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
-import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/InteractionBroker.ts';
-import {DiscordDOM, DokenMemory} from '#src/disreact/service.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec, Constants} from '../codec';
 import type {FunctionElement} from '../codec/entities/index.ts';
-import * as Globals from '../model/globals/globals.ts';
+import * as Globals from 'src/disreact/model/globals.ts';
 
 
 
@@ -42,7 +43,7 @@ export const interact = E.fn(
 
 
 const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
-  const hydrated = yield* Lifecycles.hydrateRoot(root, frame.state.state);
+  const hydrated = yield* Lifecycles.hydrateRoot(root, frame.state.fibers);
 
   yield* flushHooks(hydrated);
 
@@ -57,11 +58,17 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
     if (frame.dokens.rest) {
       yield* E.fork(DiscordDOM.discard(frame.dokens.fresh));
       yield* E.fork(DokenMemory.free(frame.dokens.rest.id));
-      return yield* E.fork(DiscordDOM.dismount(frame.dokens.rest));
+      return yield* E.fork(DiscordDOM.dismount(
+        frame.rest.application_id,
+        frame.dokens.rest,
+      ));
     }
 
     yield* E.fork(DiscordDOM.discard(frame.dokens.fresh).pipe(localMutex));
-    return yield* E.fork(DiscordDOM.dismount(frame.dokens.fresh).pipe(localMutex));
+    return yield* E.fork(DiscordDOM.dismount(
+      frame.rest.application_id,
+      frame.dokens.fresh,
+    ).pipe(localMutex));
   }
 
 
@@ -90,7 +97,11 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
     const finalRender = yield* Lifecycles.rerenderRoot(rerendered);
     const encoded     = Codec.encodeMessage(frame, finalRender);
 
-    return yield* E.fork(DiscordDOM.reply(frame.dokens.rest ?? frame.dokens.fresh, encoded).pipe(localMutex));
+    return yield* E.fork(DiscordDOM.reply(
+      frame.rest.application_id,
+      frame.dokens.rest ?? frame.dokens.fresh,
+      encoded,
+    ).pipe(localMutex));
   }
 
 
@@ -134,7 +145,11 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   const finalRender = yield* Lifecycles.rerenderRoot(rendered);
   const encoded     = Codec.encodeMessage(frame, finalRender);
 
-  return yield* E.fork(DiscordDOM.reply(frame.dokens.rest ?? frame.dokens.fresh, encoded).pipe(localMutex));
+  return yield* E.fork(DiscordDOM.reply(
+    frame.rest.application_id,
+    frame.dokens.rest ?? frame.dokens.fresh,
+    encoded,
+  ).pipe(localMutex));
 });
 
 

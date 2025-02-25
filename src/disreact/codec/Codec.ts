@@ -2,7 +2,7 @@ import {SubmitEventTag} from '#src/disreact/codec/constants/all.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {encodeMessageDsx} from '#src/disreact/model/dsx/element-encode.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import {DokenMemory} from '#src/disreact/service.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {E, RDT} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
 import * as CodecTarget from './CodecTargets.ts';

@@ -9,7 +9,7 @@ import type * as Function from './function-element.ts';
 import type * as Text from './text-element.ts';
 import type * as Intrinsic from './intrinsic-element.ts';
 import * as Props from './props.ts';
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 
 
 export type Element =

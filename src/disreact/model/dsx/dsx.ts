@@ -10,6 +10,8 @@ import * as Props from '#src/disreact/codec/element/props.ts';
 
 export const fragment = undefined;
 
+
+
 export const dsx = (type: JSX.ElementType, props: Props.Type<Pragma> = {}): Pragma | Pragma[] => {
   if (Props.hasChild(props)) {
     if (Props.hasChildren(props)) {
@@ -21,6 +23,8 @@ export const dsx = (type: JSX.ElementType, props: Props.Type<Pragma> = {}): Prag
 
   return dsxs(type, {...props, children: []});
 };
+
+
 
 export const dsxs = (type: JSX.ElementType, props: Props.Children<Pragma>): Pragma | Pragma[] => {
   const children = props.children.flat();
@@ -48,6 +52,8 @@ export const dsxs = (type: JSX.ElementType, props: Props.Children<Pragma>): Prag
 
   throw new Error(`Unknown Tag: ${type}`);
 };
+
+
 
 const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
   for (let i = 0; i < children.length; i++) {

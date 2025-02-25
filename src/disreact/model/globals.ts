@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import * as NodeState from '#src/disreact/codec/entities/fiber-state.ts';
 import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
 import * as RootState from '#src/disreact/codec/entities/root-state.ts';
-import * as Hooks from '#src/disreact/model/globals/hooks.ts';
+import * as Hooks from '#src/disreact/model/hooks.ts';
 
 
 const __pointer = {current: null as null | Pointer.Type};
@@ -54,22 +54,24 @@ export const readRoot = (ptr = getPointer()) => {
   return root;
 };
 
-export const mountNode = (id: string, node = NodeState.make()) => {
+
+
+export const mountFiber = (id: string, node = NodeState.make()) => {
   const root = readRoot();
 
-  root.state[id] = node;
+  root.fibers[id] = node;
 
   return node;
 };
 
-export const dismountNode = (id: string) => {
-  const node = readRoot().state[id];
-  delete readRoot().state[id];
+export const dismountFiber = (id: string) => {
+  const node = readRoot().fibers[id];
+  delete readRoot().fibers[id];
   return node;
 };
 
-export const readNode = (id: string) => {
-  const node = readRoot().state[id];
+export const readFiber = (id: string) => {
+  const node = readRoot().fibers[id];
 
   if (!node) {
     throw new Error(`Internal: Node not found for id ${id}`);

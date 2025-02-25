@@ -1,5 +1,5 @@
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Globals from '#src/disreact/model/globals/globals.ts';
+import * as Globals from '#src/disreact/model/globals.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 
@@ -23,12 +23,3 @@ export const useIx = () => {
 export const usePage = (fns: RenderFn[]) => {
   return Globals.getDispatch().usePage(fns);
 };
-
-
-
-export class DisReactRuntime extends E.Tag('DisReact.Runtime')<
-  DisReactRuntime,
-  {}
->() {
-
-}

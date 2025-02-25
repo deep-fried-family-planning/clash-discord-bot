@@ -3,7 +3,7 @@ import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import {Props} from '#src/disreact/codec/entities';
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
@@ -87,11 +87,11 @@ export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
 
 export const hasSameProps = (c: Pragma, r: Pragma) => Props.isEqual(c.props, r.props);
 
-export const hasSameState = (c: FunctionElement.Type) => NodeState.isSameState(c.state);
+export const hasSameState = (c: FunctionElement.Type) => FiberState.isSameState(c.state);
 
 
 
-export const collectStates = (node: Pragma, states: { [K in string]: NodeState.Type } = {}): typeof states => {
+export const collectStates = (node: Pragma, states: { [K in string]: FiberState.Type } = {}): typeof states => {
   if (node._tag === All.FunctionElementTag) {
     states[node.meta.full_id] = node.state;
   }
@@ -105,7 +105,7 @@ export const collectStates = (node: Pragma, states: { [K in string]: NodeState.T
   return states;
 };
 
-export const reduceToStacks = (hooks: { [K in string]: NodeState.Type }): { [K in string]: NodeState.Type['stack'] } => {
+export const reduceToStacks = (hooks: { [K in string]: FiberState.Type }): { [K in string]: FiberState.Type['stack'] } => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

@@ -1,6 +1,6 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import type {E} from '#src/internal/pure/effect.ts';
@@ -39,7 +39,7 @@ export type Type = {
     isEphemeral?: boolean | undefined;
   };
   props   : any;
-  state   : NodeState.Type;
+  state   : FiberState.Type;
   render  : Component<any, JSX.Element>;
   children: (
     | Type
@@ -57,7 +57,7 @@ export const make = (type: Component<any, JSX.Element>, props: any): Type => {
     _name   : getName(type),
     meta    : getMeta(type),
     props,
-    state   : NodeState.make(),
+    state   : FiberState.make(),
     render  : type,
     children: [],
   };

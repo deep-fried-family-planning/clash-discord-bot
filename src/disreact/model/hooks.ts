@@ -1,11 +1,11 @@
-import type {NodeState} from '#src/disreact/codec/entities/index.ts';
 import {CLOSE} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Globals from '#src/disreact/model/globals/globals.ts';
+import * as Globals from '#src/disreact/model/globals.ts';
+import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 
 
 
-const useState = (fiber: NodeState.Type) => (initial: any) => {
+const useState = (fiber: FiberState.Type) => (initial: any) => {
   const current = fiber.stack[fiber.pc];
 
   if (!current) {
@@ -30,7 +30,7 @@ const useState = (fiber: NodeState.Type) => (initial: any) => {
 
 
 
-const useReducer = (fiber: NodeState.Type) => (reducer: any, initialState: any) => {
+const useReducer = (fiber: FiberState.Type) => (reducer: any, initialState: any) => {
   const current = fiber.stack[fiber.pc];
 
   if (!current) {
@@ -50,7 +50,7 @@ const useReducer = (fiber: NodeState.Type) => (reducer: any, initialState: any) 
 
 
 
-const useEffect = (fiber: NodeState.Type) => (effect: any, deps?: any[]) => {
+const useEffect = (fiber: FiberState.Type) => (effect: any, deps?: any[]) => {
   const current = fiber.stack[fiber.pc];
 
   if (deps) {
@@ -123,7 +123,7 @@ const usePage = () => (_: RenderFn[]) => {
 
 
 
-export const attachHooks = (fiber: NodeState.Type) => ({
+export const attachHooks = (fiber: FiberState.Type) => ({
   useState  : useState(fiber),
   useReducer: useReducer(fiber),
   useEffect : useEffect(fiber),

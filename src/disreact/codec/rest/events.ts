@@ -115,6 +115,7 @@ export type RoleSelectEvent = Schema.Type<typeof RoleSelectEvent>;
 export type ChannelSelectEvent = Schema.Type<typeof ChannelSelectEvent>;
 export type MentionSelectEvent = Schema.Type<typeof MentionSelectEvent>;
 export type AnySelectEvent = SelectEvent | UserSelectEvent | RoleSelectEvent | ChannelSelectEvent | MentionSelectEvent;
+export type AnyMessageEvent = AnySelectEvent | ButtonEvent;
 export type SubmitEvent = Schema.Type<typeof SubmitEvent>;
 export type Type = Schema.Type<typeof Type>;
 

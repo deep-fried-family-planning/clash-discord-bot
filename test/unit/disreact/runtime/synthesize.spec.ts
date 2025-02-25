@@ -1,4 +1,4 @@
-import {StaticGraph} from '#src/disreact/model/globals/StaticGraph.ts';
+import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {synthesize} from '#src/disreact/runtime/synthesize.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';

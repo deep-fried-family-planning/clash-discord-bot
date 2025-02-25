@@ -1,14 +1,14 @@
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import * as NodeState from '#src/disreact/codec/entities/node-state.ts';
+import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import * as Compression from '#src/disreact/codec/rest/compression.ts';
 
 
 
 export type Type = {
-  props: object | null;
-  store: object;
-  diffs: any[];
-  state: {[K in string]: NodeState.Type};
+  props : object | null;
+  store : object;
+  diffs : any[];
+  fibers: {[K in string]: FiberState.Type};
   graph: {
     next     : string;
     nextProps: object | null;
@@ -17,11 +17,11 @@ export type Type = {
 };
 
 export const make = (): Type => ({
-  props: null,
-  store: {},
-  diffs: [],
-  state: {},
-  graph: {
+  props : null,
+  store : {},
+  diffs : [],
+  fibers: {},
+  graph : {
     next     : NONE_STR,
     nextProps: null,
   },
@@ -36,7 +36,7 @@ export const makeHash = (root: Type) => {
   const acc = {} as any;
   acc[ROOT_PROPS_KEY] = root.props;
 
-  for (const [k, v] of Object.entries(root.state)) {
+  for (const [k, v] of Object.entries(root.fibers)) {
     acc[k] = v.stack;
   }
 
@@ -57,9 +57,9 @@ export const makeFromHash = (hash: string) => {
       continue;
 
     default:
-      root.state[k] = NodeState.make();
-      root.state[k].stack = v;
-      NodeState.savePrior(root.state[k]);
+      root.fibers[k]       = FiberState.make();
+      root.fibers[k].stack = v;
+      FiberState.savePrior(root.fibers[k]);
     }
   }
 
