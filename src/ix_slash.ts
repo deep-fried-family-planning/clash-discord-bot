@@ -1,5 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {runtimeLayer} from '#src/disreact/runtime/DisReactRuntime.ts';
 import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -33,7 +34,7 @@ const slash = (ix: IxD) => E.gen(function * () {
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
       ...userMessage,
       embeds: [{
-        ...userMessage.embeds[0], // @ts-expect-error clashperk lib types
+        ...userMessage.embeds[0],
         title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
       }],
     } as Partial<IxRE>);
@@ -54,7 +55,8 @@ const h = (event: IxD) => pipe(
 
 
 export const handler = makeLambda(h, pipe(
-  DiscordLayerLive,
+  runtimeLayer,
+  L.provideMerge(DiscordLayerLive),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),
@@ -64,4 +66,5 @@ export const handler = makeLambda(h, pipe(
   L.provideMerge(L.setTracerEnabled(true)),
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
   L.provideMerge(DT.layerCurrentZoneLocal),
+  L.provideMerge(L.scope),
 ));

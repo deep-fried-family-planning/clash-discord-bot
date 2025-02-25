@@ -56,7 +56,7 @@ server.subscription('/dev');
 await server.start();
 
 socket.onmessage = (event) => {
-  console.log('Received message', JSON.parse(event.data as str));
+  console.log('Received message', JSON.stringify(JSON.parse(event.data as string), null, 2));
   server.publish('/dev', event.data);
 };
 

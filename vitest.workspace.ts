@@ -6,7 +6,7 @@ export default defineWorkspace([{
   extends: 'vitest.config.ts',
   test   : {
     name         : 'unit',
-    include      : ['test/unit/**/*.spec.ts'],
+    include      : ['test/unit/**/*.spec.ts', 'test/unit/**/*.spec.tsx'],
     restoreMocks : true,
     unstubEnvs   : true,
     unstubGlobals: true,

@@ -1,0 +1,57 @@
+{
+  "embeds": [
+    {
+      "title": "Omni Board",
+      "description": "V2 - JSX Pragma",
+      "image": {
+        "url": "https://dffp.org/dsx/TestMessage/0/0/0/0/4/static/eJxrXqVXlJ9fElCUX1B8YG1IanGJb2pxcWJ6qpXBxMaFxQw3FVDErHLhLI_UxJTUIiuDCQC08Rpk"
+      }
+    },
+    {
+      "title": "Test Title - NOT markdown",
+      "description": "\n### H3\n-#  welcome!\n__$not a link__"
+    }
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "label": "Start",
+          "style": 1,
+          "type": 2,
+          "custom_id": "actions:2:button:0"
+        },
+        {
+          "label": "Help",
+          "style": 2,
+          "type": 2,
+          "custom_id": "actions:2:secondary:1"
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 3,
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3",
+              "default": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

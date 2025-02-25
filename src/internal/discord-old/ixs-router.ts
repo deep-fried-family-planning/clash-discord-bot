@@ -40,5 +40,5 @@ export const ixsRouter = (ix: IxD) => E.gen(function * () {
 
   const message = yield * IXS_LOOKUP[root](ix as never, nameOptions(ix));
 
-  return yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, message);
+  return yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
 });

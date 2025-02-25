@@ -13,7 +13,9 @@ export {
   Layer as L,
   Cache as C,
   Logger as Logger,
+  Logger as LG,
   LogLevel,
+  LogLevel as LL,
   LogSpan,
   Schema as S,
   Brand as B,
@@ -21,6 +23,7 @@ export {
   Metric as Metric,
   Order as ORD,
   Option as O,
+  Option as OPT,
   Equal as EQ,
 
   Cron,
@@ -37,6 +40,11 @@ export {
   gen as g,
 
 } from 'effect/Effect';
+
+
+export {
+  compose,
+} from 'effect/Function';
 
 
 export const ORDS  = Order.string;

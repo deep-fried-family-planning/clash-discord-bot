@@ -1,47 +1,65 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-namespace,@typescript-eslint/no-empty-object-type */
-import {createElementMulti, createElementSingle} from '#src/disreact/model/create-element.ts';
-import type {ActionRowAttributes, ButtonAttributes, DialogAttributes, EmbedAttributes, MessageAttributes, SelectMenuAttributes, TextInputAttributes} from '#src/disreact/model/types.ts';
-import type {Message} from 'dfx/types';
+/* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
+import type {Component, FEC} from '#src/disreact/codec/element/function-element.ts';
+import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
+import {dsx, dsxs, fragment} from '#src/disreact/model/dsx/dsx.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
-type Value = {value?: string} | {children: string};
 
-export declare namespace JSX {
-  export type Element = Message;
-  export type ElementType = any;
 
-  export interface IntrinsicAttributes {
-    _tag? : string;
-    _rest?: string;
+export const Fragment = fragment;
+export const jsx      = dsx;
+export const jsxs     = dsxs;
+export const jsxDEV   = dsx;
+
+export type {
+  FEC as FC,
+};
+
+declare global {
+  export namespace DisReact {
+    type FC<P = any> = FEC<P>;
   }
 
-  export interface IntrinsicElements {
-    actionrow  : ActionRowAttributes;
-    actions    : ActionRowAttributes;
-    components : ActionRowAttributes;
-    buttons    : ActionRowAttributes;
-    button     : ButtonAttributes;
-    success    : ButtonAttributes;
-    danger     : ButtonAttributes;
-    primary    : ButtonAttributes;
-    secondary  : ButtonAttributes;
-    link       : ButtonAttributes;
-    modal      : DialogAttributes;
-    dialog     : DialogAttributes;
-    embeds     : {};
-    embed      : EmbedAttributes;
-    title      : Value;
-    description: Value;
-    message    : MessageAttributes;
-    content    : Value;
-    select     : SelectMenuAttributes;
-    selectmenu : SelectMenuAttributes;
-    option     : {};
-    textinput  : TextInputAttributes;
-    text       : TextInputAttributes;
+  export namespace DSX {
+    type FC<P = any, R = JSX.Element> = Component<P, R>;
   }
 }
 
-export const Fragment = undefined;
-export const jsx      = createElementSingle;
-export const jsxs     = createElementMulti;
-export const jsxDEV   = createElementSingle;
+
+
+export declare namespace JSX {
+  type ElementType =
+    | Component<any, Element>
+    | keyof IntrinsicElements
+    | string
+    | boolean
+    | null
+    | undefined;
+
+  type Element = Pragma;
+
+  interface LibraryManagedAttributes {
+    displayName?: string;
+    ref?        : any;
+    key?        : string | number;
+    children?   : any;
+    isSync?     : boolean | undefined;
+    isAsync?    : boolean | undefined;
+    isEffect?   : boolean | undefined;
+    isMemo?     : boolean | undefined;
+  }
+
+  interface ElementAttributesProperty {
+    props: any;
+  }
+  interface ElementChildrenAttribute {
+    children: any;
+  }
+  interface IntrinsicAttributes {
+    children?: any | any[];
+  }
+  interface IntrinsicClassAttributes {
+    children: any[];
+  }
+  interface IntrinsicElements extends IntrinsicMap {}
+}

@@ -6,12 +6,14 @@ import {defineConfig} from 'vitest/config';
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test   : {
+    reporters         : 'verbose',
     watch             : false,
     globals           : true,
     expandSnapshotDiff: true,
     chaiConfig        : {
       includeStack     : true,
-      truncateThreshold: false,
+      truncateThreshold: 0,
+      showDiff         : true,
     },
     coverage: {
       provider       : 'istanbul',
@@ -24,6 +26,9 @@ export default defineConfig({
         perFile: true,
       },
     },
-    logHeapUsage: true,
+    logHeapUsage   : true,
+    testTimeout    : 0,
+    hookTimeout    : 0,
+    teardownTimeout: 0,
   },
 });

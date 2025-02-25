@@ -1,122 +1,55 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {ixcRouter} from '#src/internal/discord-old/ixc-router.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+import {runtimeLayer} from '#src/disreact/runtime/DisReactRuntime.ts';
+import {interact} from '#src/disreact/runtime/interact.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';
-import {MGF} from '#src/internal/discord.ts';
-import {CSL, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {SQS} from '@effect-aws/client-sqs';
+import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Discord} from 'dfx';
-import {Cause} from 'effect';
+import {NodeHttpClient} from '@effect/platform-node';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import console from 'node:console';
+import * as process from 'node:process';
 
 
 
-const menu = (ix: IxD) => ixcRouter(ix).pipe(
-  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
-    yield * CSL.error('[USER]');
-    const userMessage = yield * logDiscordError([e]);
-
-    const message = {
-      ...userMessage,
-      embeds: [{
-        ...userMessage.embeds[0],
-        title: e.issue,
-      }],
-    };
-
-    return yield * pipe(
-      DiscordApi.createInteractionResponse(ix.id, ix.token, {
-        type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          ...userMessage,
-          flags: MGF.EPHEMERAL,
-        },
-      }),
-      E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
-    );
-  })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
-    yield * CSL.error('[CLASH]');
-    const userMessage = yield * logDiscordError([e]);
-
-    const message = {
-      ...userMessage,
-      embeds: [{
-        ...userMessage.embeds[0], // @ts-expect-error clashperk lib types
-        title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
-      }],
-    };
-
-    return yield * pipe(
-      DiscordApi.createInteractionResponse(ix.id, ix.token, {
-        type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          ...userMessage,
-          flags: MGF.EPHEMERAL,
-        },
-      }),
-      E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, message)),
-    );
-  })),
-  E.catchAllCause((error) => E.gen(function * () {
-    yield * CSL.error('[CAUSE]');
-
-    const e = Cause.prettyErrors(error);
-
-    const userMessage = yield * logDiscordError(e);
-
-    yield * pipe(
-      DiscordApi.createInteractionResponse(ix.id, ix.token, {
-        type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          ...userMessage,
-          flags: MGF.EPHEMERAL,
-        },
-      }),
-      E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
-    );
-  })),
-  E.catchAllDefect((e) => E.gen(function * () {
-    yield * CSL.error('[DEFECT]');
-
-    const userMessage = yield * logDiscordError([e]);
-
-    yield * pipe(
-      DiscordApi.createInteractionResponse(ix.id, ix.token, {
-        type: Discord.InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-        data: {
-          ...userMessage,
-          flags: MGF.EPHEMERAL,
-        },
-      }),
-      E.catchTag('DiscordRESTError', () => DiscordApi.editMenu(ix, userMessage)),
-    );
-  })),
+const menu = (ix: IxD) => pipe(
+  E.gen(function * () {
+    yield * E.logTrace('ix_menu', ix.data);
+    yield * interact(ix as any).pipe(E.awaitAllChildren, E.catchAll((e) => E.sync(() => {console.error(e)})));
+  }),
+  E.catchAllDefect((e) => E.sync(() => {console.error(e)})),
 );
 
 
 const live = pipe(
-  ClashCache.Live,
+  runtimeLayer,
+  // L.provideMerge(ClashCache.Live),
+  // L.provideMerge(MenuCache.Live),
+  // L.provideMerge(L.mergeAll(
+  //   ClashOfClans.Live,
+  //   ClashKing.Live,
+  //   DiscordLayerLive,
+  //   Scheduler.defaultLayer,
+  //   SQS.defaultLayer,
+  //   DynamoDBDocument.defaultLayer,
+  // )),
   L.provideMerge(MenuCache.Live),
-  L.provideMerge(L.mergeAll(
-    ClashOfClans.Live,
-    ClashKing.Live,
-    DiscordLayerLive,
-    Scheduler.defaultLayer,
-    SQS.defaultLayer,
-    DynamoDBDocument.defaultLayer,
+  L.provideMerge(DynamoDBDocument.defaultLayer.pipe(L.provide(Logger.minimumLogLevel(LogLevel.All)))),
+  L.provide(DiscordRESTMemoryLive.pipe(
+    L.provide(Logger.minimumLogLevel(LogLevel.None)),
+    L.provide(NodeHttpClient.layerUndici),
+    L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
   )),
+  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+  L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   L.provideMerge(L.setTracerTiming(true)),
   L.provideMerge(L.setTracerEnabled(true)),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
+  // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
   L.provideMerge(DT.layerCurrentZoneLocal),
+  L.provideMerge(L.scope),
 );
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const handler = makeLambda(menu, live);

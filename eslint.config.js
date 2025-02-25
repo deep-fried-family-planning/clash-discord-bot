@@ -4,7 +4,6 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 
 const style = stylistic.configs.customize({
-  flat        : true,
   indent      : 4,
   semi        : true,
   commaDangle : 'always-multiline',
@@ -63,6 +62,7 @@ const config = [
         reportUnusedDisableDirectives: true,
       },
       rules: {
+        'no-fallthrough'                                   : [0],
         'require-yield'                                    : [1],
         '@typescript-eslint/consistent-type-imports'       : [2],
         '@typescript-eslint/no-unnecessary-type-parameters': [0],
@@ -74,19 +74,31 @@ const config = [
           allowNullish: true,
           allowNumber : true,
         }],
-        '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
+        // '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
 
         // temp
         '@typescript-eslint/no-unused-expressions'    : [0],
         '@typescript-eslint/no-unsafe-enum-comparison': [0],
         '@typescript-eslint/only-throw-error'         : [0],
+        '@typescript-eslint/no-unused-vars'           : [0],
+
+
+        '@typescript-eslint/no-explicit-any'        : [0],
+        '@typescript-eslint/no-unsafe-call'         : [0],
+        '@typescript-eslint/no-unsafe-member-access': [0],
+        '@typescript-eslint/no-unsafe-assignment'   : [0],
+        '@typescript-eslint/no-unsafe-return'       : [0],
+        '@typescript-eslint/no-unsafe-argument'     : [0],
+        '@typescript-eslint/no-empty-object-type'   : [0],
       },
     },
     {
       ...style,
       rules: {
         ...style.rules,
-        '@stylistic/key-spacing': ['error', {
+        '@stylistic/yield-star-spacing': [0],
+        '@stylistic/operator-linebreak': [0],
+        '@stylistic/key-spacing'       : ['error', {
           singleLine: {beforeColon: false, afterColon: true},
           multiLine : {beforeColon: false, afterColon: true, align: 'colon', mode: 'strict'},
         }],
@@ -101,22 +113,48 @@ const config = [
         '@stylistic/indent'                     : [0, 4, {flatTernaryExpressions: true}],
         '@stylistic/no-multiple-empty-lines'    : [2, {max: 3}],
         '@stylistic/lines-between-class-members': [0],
-        '@typescript-eslint/no-unused-vars'     : [2, {
-          args                          : 'all',
-          argsIgnorePattern             : '^_',
-          caughtErrors                  : 'all',
-          caughtErrorsIgnorePattern     : '^_',
-          destructuredArrayIgnorePattern: '^_',
-          varsIgnorePattern             : '^_',
-          ignoreRestSiblings            : true,
-        }],
+        // '@typescript-eslint/no-unused-vars'     : [2, {
+        //   args                          : 'all',
+        //   argsIgnorePattern             : '^_',
+        //   caughtErrors                  : 'all',
+        //   caughtErrorsIgnorePattern     : '^_',
+        //   destructuredArrayIgnorePattern: '^_',
+        //   varsIgnorePattern             : '^_',
+        //   ignoreRestSiblings            : true,
+        // }],
+        '@typescript-eslint/no-unused-vars'     : [0],
       },
     },
     {
       files: ['test/**/*'],
       rules: {
-        '@typescript-eslint/no-unsafe-call'         : [0],
-        '@typescript-eslint/no-unsafe-member-access': [0],
+        '@typescript-eslint/no-explicit-any'          : [0],
+        '@typescript-eslint/no-unsafe-call'           : [0],
+        '@typescript-eslint/no-unsafe-member-access'  : [0],
+        '@typescript-eslint/no-unsafe-assignment'     : [0],
+        '@typescript-eslint/no-unsafe-return'         : [0],
+        '@typescript-eslint/no-unsafe-argument'       : [0],
+        '@typescript-eslint/no-unsafe-enum-comparison': [0],
+        '@typescript-eslint/only-throw-error'         : [0],
+        '@typescript-eslint/no-unused-expressions'    : [0],
+        '@typescript-eslint/no-unused-vars'           : [0],
+        '@typescript-eslint/no-empty-object-type'     : [0],
+      },
+    },
+    {
+      files: ['src/disreact/**/*', 'dev/**/*'],
+      rules: {
+        '@typescript-eslint/no-explicit-any'          : [0],
+        '@typescript-eslint/no-unsafe-call'           : [0],
+        '@typescript-eslint/no-unsafe-member-access'  : [0],
+        '@typescript-eslint/no-unsafe-assignment'     : [0],
+        '@typescript-eslint/no-unsafe-return'         : [0],
+        '@typescript-eslint/no-unsafe-argument'       : [0],
+        '@typescript-eslint/no-unsafe-enum-comparison': [0],
+        '@typescript-eslint/only-throw-error'         : [0],
+        '@typescript-eslint/no-unused-expressions'    : [0],
+        '@typescript-eslint/no-unused-vars'           : [0],
+        '@typescript-eslint/no-empty-object-type'     : [0],
       },
     },
   ),

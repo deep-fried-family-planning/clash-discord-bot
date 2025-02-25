@@ -20,7 +20,6 @@ const api = E.gen(function * () {
   const executeWebhookJson = (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
     ...p[3],
     urlParams: {
-      ...p[3]?.urlParams,
       wait: true,
     },
   }).json as DE<Message>;

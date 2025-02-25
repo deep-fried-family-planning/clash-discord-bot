@@ -1,0 +1,9 @@
+{
+  "_tag": "Doken",
+  "id": "testixid",
+  "token": "<redacted>",
+  "ttl": "1970-01-01T00:14:00.000Z",
+  "ephemeral": 0,
+  "type": 6,
+  "status": "Active"
+}

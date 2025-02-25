@@ -3,6 +3,7 @@ import {decodeDiscordEmbed, type DEmbed, type DEmbedKey, encodeDiscordEmbed} fro
 import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import console from 'node:console';
 
 
 
@@ -17,6 +18,8 @@ export const discordEmbedCreate = (embed: DEmbed) => E.gen(function * () {
 
 
 export const discordEmbedRead = (id: DEmbedKey['pk']) => E.gen(function * () {
+  console.log('discordEmbedRead', id);
+
   const embedId = yield * encodeEmbedId(id);
 
   const item = yield * DynamoDBDocument.get({
