@@ -80,7 +80,7 @@ export const readNode = (id: string) => {
 
 
 
-const __dispatch = {current: null as any};
+const __dispatch = {current: null as null | ReturnType<typeof Hooks.attachHooks>};
 
 export const getDispatch = () => {
   if (!__dispatch.current) {
