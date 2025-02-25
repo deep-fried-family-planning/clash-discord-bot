@@ -1,7 +1,9 @@
 {
-  "extends"         : ["./tsconfig.json"], "include": [
-  "./**/*", "src/aws.env.d.ts"
-], "compilerOptions": {
-  "allowJs": true
-}
+  "extends"        : ["./tsconfig.json"],
+  "include"        : [
+    "./**/*", "src/aws.env.d.ts"
+  ],
+  "compilerOptions": {
+    "allowJs": true
+  }
 }

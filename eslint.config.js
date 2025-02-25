@@ -4,7 +4,6 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 
 const style = stylistic.configs.customize({
-  flat        : true,
   indent      : 4,
   semi        : true,
   commaDangle : 'always-multiline',
