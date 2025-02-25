@@ -6,9 +6,9 @@ import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
-import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {InteractionBroker} from '#src/disreact/runtime/InteractionBroker.ts';
+import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
+import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
 

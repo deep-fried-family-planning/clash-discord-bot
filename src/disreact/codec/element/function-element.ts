@@ -10,7 +10,7 @@ import type {E} from '#src/internal/pure/effect.ts';
 export interface Component<P, R> {
   (props: P): R | Promise<R> | E.Effect<R, any>;
   displayName?: string;
-  graphName?  : string;
+  static_id?  : string;
   isRoot?     : boolean;
   isModal?    : boolean;
   isSync?     : boolean;

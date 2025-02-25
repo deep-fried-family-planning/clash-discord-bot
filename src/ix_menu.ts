@@ -1,4 +1,4 @@
-import {runtimeLayer} from '#src/disreact/runtime/DisReactRuntime.ts';
+import {runtimeLayer} from '#src/disreact/runtime/service/DisReactRuntime.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import type {IxD} from '#src/internal/discord.ts';

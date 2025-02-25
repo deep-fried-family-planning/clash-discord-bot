@@ -35,7 +35,6 @@ export const Status = transformLiterals(
 export const Type = Struct({
   _tag     : tag('Doken'),
   id       : SnowFlake,
-  app_id   : optional(SnowFlake),
   token    : optional(S.Redacted(String)),
   ttl      : DateTimeUtcFromNumber,
   ephemeral: NumberFromString,
@@ -66,7 +65,6 @@ export const makeStatic = () => Type.make(
   {
     _tag     : 'Doken',
     id       : '0',
-    app_id   : 'static',
     ttl      : DT.unsafeMake(0),
     ephemeral: 0,
     type     : 0,
@@ -103,7 +101,6 @@ export const makeFresh = (config: {
     E.map((dt) => Type.make(
         {
           id       : config.rest.id,
-          app_id   : config.rest.application_id,
           token    : RDT.make(config.rest.token),
           ttl      : dt,
           ephemeral: 0,
@@ -121,7 +118,6 @@ export const makeFromParams = (config: {
   ttl      : DateTime.Utc;
   ephemeral: number;
   type     : number;
-  app_id?  : string | undefined;
   token?   : RDT.Redacted | undefined;
 }) =>
   pipe(
@@ -138,7 +134,6 @@ export const makeFromParams = (config: {
           Type.make(
             {
               id       : config.id,
-              app_id   : config.app_id,
               token    : config.token,
               ttl      : dt,
               ephemeral: config.ephemeral,
@@ -151,7 +146,6 @@ export const makeFromParams = (config: {
           Type.make(
             {
               id       : config.id,
-              app_id   : config.app_id,
               token    : config.token,
               ttl      : dt,
               ephemeral: config.ephemeral,

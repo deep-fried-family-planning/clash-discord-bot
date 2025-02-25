@@ -1,5 +1,5 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import * as Globals from '#src/disreact/model/globals.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';

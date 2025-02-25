@@ -2,7 +2,7 @@ import {E, L} from '#src/internal/pure/effect.ts';
 
 
 
-const make = E.gen(function* () {
+const make = () => E.gen(function* () {
   const semaphore = yield* E.makeSemaphore(1);
   const mutex     = semaphore.withPermits(1);
 
@@ -15,7 +15,7 @@ const make = E.gen(function* () {
 
 export class InteractionBroker extends E.Tag('DisReact.InteractionBroker')<
   InteractionBroker,
-  E.Effect.Success<typeof make>
+  E.Effect.Success<ReturnType<typeof make>>
 >() {
-  static readonly makeLayer = () => L.effect(this, make);
+  static readonly makeLayer = () => L.effect(this, make());
 }

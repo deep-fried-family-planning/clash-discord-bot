@@ -1,6 +1,6 @@
 import {CLOSE} from '#src/disreact/codec/rest/index.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Globals from '#src/disreact/model/globals.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 
 

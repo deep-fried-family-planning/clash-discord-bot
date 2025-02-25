@@ -3,7 +3,6 @@
 exports[`Active Doken > when activating 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Active",
@@ -16,7 +15,6 @@ exports[`Active Doken > when activating 1`] = `
 exports[`Fresh Doken > given DateTime, when making 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Fresh",
@@ -29,7 +27,6 @@ exports[`Fresh Doken > given DateTime, when making 1`] = `
 exports[`Fresh Doken > when making 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Fresh",
@@ -42,7 +39,6 @@ exports[`Fresh Doken > when making 1`] = `
 exports[`Params Doken > given future TTL, when making params doken 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Active",
@@ -55,7 +51,6 @@ exports[`Params Doken > given future TTL, when making params doken 1`] = `
 exports[`Params Doken > given past TTL, when making params doken 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Expired",
@@ -68,7 +63,6 @@ exports[`Params Doken > given past TTL, when making params doken 1`] = `
 exports[`Spent Doken > when spending 1`] = `
 {
   "_tag": "Doken",
-  "app_id": "testappid",
   "ephemeral": 0,
   "id": "testid",
   "status": "Spent",

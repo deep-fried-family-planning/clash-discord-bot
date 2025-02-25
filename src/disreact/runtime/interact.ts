@@ -1,15 +1,16 @@
+import * as All from '#src/disreact/codec/constants/all.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
-import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {InteractionBroker} from '#src/disreact/runtime/InteractionBroker.ts';
+import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
+import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
+import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {Codec, Constants} from '../codec';
+import {Codec} from '../codec';
 import type {FunctionElement} from '../codec/entities/index.ts';
-import * as Globals from 'src/disreact/model/globals.ts';
 
 
 
@@ -23,15 +24,15 @@ export const interact = E.fn(
     const root = yield* StaticGraph.cloneRoot(frame.params.root);
 
     switch (frame.event.kind) {
-    case Constants.All.ButtonEventTag:
-    case Constants.All.SelectEventTag:
-    case Constants.All.UserSelectEventTag:
-    case Constants.All.RoleSelectEventTag:
-    case Constants.All.ChannelSelectEventTag:
-    case Constants.All.MentionSelectEventTag:
+    case All.ButtonEventTag:
+    case All.SelectEventTag:
+    case All.UserSelectEventTag:
+    case All.RoleSelectEventTag:
+    case All.ChannelSelectEventTag:
+    case All.MentionSelectEventTag:
       return yield* processClick(frame, root);
 
-    case Constants.All.SubmitEventTag:
+    case All.SubmitEventTag:
       return yield* processSubmit(frame, root);
     }
 

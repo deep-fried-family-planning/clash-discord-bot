@@ -6,7 +6,7 @@ import type * as FunctionElement from '#src/disreact/codec/element/function-elem
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import * as TextElement from '#src/disreact/codec/element/text-element.ts';
-import * as Globals from '#src/disreact/model/globals.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';

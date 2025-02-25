@@ -2,8 +2,8 @@ import {SubmitEventTag} from '#src/disreact/codec/constants/all.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {encodeMessageDsx} from '#src/disreact/model/dsx/element-encode.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {E, RDT} from '#src/internal/pure/effect.ts';
+import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
 import * as CodecTarget from './CodecTargets.ts';
 import * as Pointer from './entities/pointer.ts';
@@ -30,10 +30,10 @@ export type Frame = {
 
 
 export const makeStaticFrame = (root: string): Frame => {
-  const doken = Doken.makeStatic();
-  const state = RootState.make();
+  const doken      = Doken.makeStatic();
+  const state      = RootState.make();
   state.graph.next = root;
-  const hash = RootState.makeHash(state);
+  const hash       = RootState.makeHash(state);
 
   return {
     rest   : null,
@@ -61,9 +61,8 @@ export const makeStaticFrame = (root: string): Frame => {
 export const decodeInteraction = E.fn(function* (rest: any) {
   const route  = CodecTarget.getRouteFromMessage(rest.message);
   const params = Route.decodeMessageRoute(route as never);
-  const event = Events.decodeEvent(rest);
+  const event  = Events.decodeEvent(rest);
 
-  params.doken.app_id = rest.application_id;
 
   const state = params.hash === NONE_STR
     ? RootState.make()

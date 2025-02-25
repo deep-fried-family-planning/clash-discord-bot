@@ -1,5 +1,5 @@
 import * as Codec from '#src/disreact/codec/Codec.ts';
-import * as Globals from '#src/disreact/model/globals.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';

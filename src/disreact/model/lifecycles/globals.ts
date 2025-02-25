@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
-import * as NodeState from '#src/disreact/codec/entities/fiber-state.ts';
+import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
 import * as RootState from '#src/disreact/codec/entities/root-state.ts';
-import * as Hooks from '#src/disreact/model/hooks.ts';
+import * as Hooks from '#src/disreact/model/lifecycles/hooks.ts';
 
 
 const __pointer = {current: null as null | Pointer.Type};
@@ -56,7 +56,7 @@ export const readRoot = (ptr = getPointer()) => {
 
 
 
-export const mountFiber = (id: string, node = NodeState.make()) => {
+export const mountFiber = (id: string, node = FiberState.make()) => {
   const root = readRoot();
 
   root.fibers[id] = node;

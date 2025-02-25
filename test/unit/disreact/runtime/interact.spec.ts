@@ -1,6 +1,6 @@
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
-import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
+import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';

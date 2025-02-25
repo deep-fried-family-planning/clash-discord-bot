@@ -6,3 +6,5 @@ export * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element
 export * as TextElement from '#src/disreact/codec/element/text-element.ts';
 export * as Props from '#src/disreact/codec/element/props.ts';
 export * as Children from '#src/disreact/codec/element/children.ts';
+export * as RootHash from '#src/disreact/codec/entities/root-hash.ts';
+export * as StaticRoot from '#src/disreact/codec/entities/static-root.ts';
