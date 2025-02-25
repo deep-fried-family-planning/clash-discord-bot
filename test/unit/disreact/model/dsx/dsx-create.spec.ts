@@ -57,6 +57,7 @@ describe('dsx', () => {
             {
               "components": [
                 {
+                  "custom_id": "message:0:select:3",
                   "options": [
                     {
                       "label": "1",

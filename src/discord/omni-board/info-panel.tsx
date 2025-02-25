@@ -1,7 +1,9 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
+import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
+import type {FC} from '#src/disreact/jsx-runtime.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
@@ -10,7 +12,7 @@ import console from 'node:console';
 
 
 
-export const InfoPanel = () => E.gen(function * () {
+export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function * () {
   const ix = useIx();
   const [infoKind, setInfoKind] = useState('about');
   const [embedId, setEmbedId] = useState(NONE_STR);
@@ -45,7 +47,7 @@ export const InfoPanel = () => E.gen(function * () {
       <embed title={'Info'}>
       </embed>
       <embed title={embed.title}>
-        {embed.description}
+        {props.description ?? embed.description}
       </embed>
       <select
         onselect={(event: any) => {
@@ -53,9 +55,9 @@ export const InfoPanel = () => E.gen(function * () {
           setEmbedId(NONE_STR);
         }}
       >
-        <option label={'About'} value={'about'}/>
-        <option label={'Help'} value={'help'}/>
-        <option label={'Settings'} value={'settings'}/>
+        <option label={'About'} value={'about'} default={infoKind === 'about'}/>
+        <option label={'Help'} value={'help'} default={infoKind === 'help'}/>
+        <option label={'Settings'} value={'settings'} default={infoKind === 'settings'}/>
       </select>
       <select
         onselect={(event: any) => {
@@ -68,15 +70,19 @@ export const InfoPanel = () => E.gen(function * () {
       </select>
       <NavBar/>
       <actions>
-        <select>
-
-        </select>
         <button
+          // onopen={[LinkDialog, {}]}
           primary
           label={'Back'}
-          onclick={() => page.next(Link)}
+          onclick={() => {
+            page.next(Link, {
+
+            });
+          }}
         />
       </actions>
     </message>
   );
 });
+
+InfoPanel.displayName = '';

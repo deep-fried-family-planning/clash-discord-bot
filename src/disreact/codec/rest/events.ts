@@ -1,5 +1,5 @@
 import {CustomId} from '#src/disreact/codec/constants/common.ts';
-import {Any, Array, Boolean, type Schema, String, Struct, tag, Union} from 'effect/Schema';
+import {Any, Array, Boolean, optional, type Schema, String, Struct, tag, Union} from 'effect/Schema';
 import {All, Reserved} from 'src/disreact/codec/constants/index.ts';
 import * as Rest from 'src/disreact/codec/rest/rest.ts';
 
@@ -33,9 +33,9 @@ export const SelectEvent =
                  options: Array(Struct({
                    value      : String,
                    label      : String,
-                   emoji      : Any,
-                   default    : Boolean,
-                   description: String,
+                   emoji      : optional(Any),
+                   default    : optional(Boolean),
+                   description: optional(Boolean),
                  })),
                });
 

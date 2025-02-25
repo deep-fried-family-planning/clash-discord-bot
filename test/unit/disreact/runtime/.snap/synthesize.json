@@ -34,6 +34,7 @@
       "type": 1,
       "components": [
         {
+          "custom_id": "message:0:select:3",
           "type": 3,
           "options": [
             {

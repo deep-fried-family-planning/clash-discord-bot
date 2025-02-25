@@ -1,6 +1,8 @@
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
+import console from 'node:console';
+import {inspect } from 'node:util';
 
 
 
@@ -30,6 +32,8 @@ export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
   if (p) {
     rest.flags = undefined;
   }
+
+  console.log('encoded', inspect(rest, false, null));
 
   return rest;
 };
@@ -117,6 +121,7 @@ const encodeInner = (node: any): any => {
     return acc;
 
   case DTML.select:
+    acc.custom_id ??= node.meta.step_id;
     acc.type = 3;
     acc.options ??= children[DTML.options];
     return {
@@ -140,6 +145,7 @@ const encodeInner = (node: any): any => {
     acc.type ??= 8;
   case DTML.mentions:
     acc.type ??= 7;
+    acc.custom_id ??= node.meta.step_id;
     acc.default_values = children[All.default_values];
     return {
       type      : 1,

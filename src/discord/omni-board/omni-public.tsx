@@ -23,7 +23,9 @@ export const OmniPublic = () => {
         <secondary
           label='Help'
           emoji={{name: '💩'}}
-          onclick={() => {}}
+          onclick={() => {
+            page.close();
+          }}
         />
         <danger
           label='Entry'

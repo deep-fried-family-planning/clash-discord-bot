@@ -20,7 +20,7 @@ export const Link = () => {
         <button
           secondary
           label={'Back'}
-          onclick={() => page.next(OmniPrivate)}
+          onclick={() => page.next(OmniPrivate, {})}
         />
         <CloseButton/>
         <button

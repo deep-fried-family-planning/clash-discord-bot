@@ -69,6 +69,8 @@ export const decodeInteraction = E.fn(function* (rest: any) {
     ? RootState.make()
     : RootState.makeFromHash(params.hash);
 
+  state.rest = rest;
+
   return {
     rest   : Object.freeze(rest),
     id     : rest.id,
