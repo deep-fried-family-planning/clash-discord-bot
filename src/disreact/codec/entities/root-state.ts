@@ -1,7 +1,7 @@
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
-import * as Compression from '#src/disreact/codec/rest/compression.ts';
-
+import * as Compression from '#src/disreact/codec/entities/compression.ts';
+import type * as RootHash from '#src/disreact/codec/entities/root-hash.ts';
 
 
 export type Type = {
@@ -27,6 +27,13 @@ export const make = (): Type => ({
   },
   rest: null as any,
 });
+
+export const makeFrom = (hash: RootHash.Type) => {
+  const root = make();
+  root.props = hash.props;
+  root.fibers = hash.fibers;
+  return root;
+};
 
 
 

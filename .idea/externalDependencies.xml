@@ -9,8 +9,6 @@
     <plugin id="JavaScriptDebugger" />
     <plugin id="NodeJS" />
     <plugin id="com.dmarcotte.handlebars" />
-    <plugin id="com.haulmont.rcb" />
-    <plugin id="com.intellij.aqua" />
     <plugin id="com.intellij.bigdatatools.binary.files" />
     <plugin id="com.intellij.bigdatatools.core" />
     <plugin id="com.intellij.copyright" />
@@ -31,7 +29,6 @@
     <plugin id="org.intellij.plugins.markdown" />
     <plugin id="org.intellij.qodana" />
     <plugin id="org.jetbrains.plugins.github" />
-    <plugin id="org.jetbrains.plugins.node-remote-interpreter" />
     <plugin id="org.jetbrains.plugins.yaml" />
     <plugin id="org.jetbrains.security.package-checker" />
     <plugin id="uk.co.ben-gibson.remote.repository.mapper" />

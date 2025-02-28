@@ -1,7 +1,8 @@
+/* eslint-disable no-case-declarations */
 import {CustomId} from '#src/disreact/codec/constants/common.ts';
+import {All, Reserved} from '#src/disreact/codec/constants/index.ts';
+import * as Rest from '#src/disreact/codec/rest/rest.ts';
 import {Any, Array, Boolean, optional, type Schema, String, Struct, tag, Union} from 'effect/Schema';
-import {All, Reserved} from 'src/disreact/codec/constants/index.ts';
-import * as Rest from 'src/disreact/codec/rest/rest.ts';
 
 
 
@@ -121,14 +122,14 @@ export type Type = Schema.Type<typeof Type>;
 
 
 
-export const isSynthesizeEvent = (event: Type): event is SynthesizeEvent => event.kind === All.SynthesizeEventTag;
-export const isButtonEvent = (event: Type): event is ButtonEvent => event.kind === All.ButtonEventTag;
-export const isSelectEvent = (event: Type): event is SelectEvent => event.kind === All.SelectEventTag;
-export const isUserSelectEvent = (event: Type): event is UserSelectEvent => event.kind === All.UserSelectEventTag;
-export const isRoleSelectEvent = (event: Type): event is RoleSelectEvent => event.kind === All.RoleSelectEventTag;
+export const isSynthesizeEvent    = (event: Type): event is SynthesizeEvent => event.kind === All.SynthesizeEventTag;
+export const isButtonEvent        = (event: Type): event is ButtonEvent => event.kind === All.ButtonEventTag;
+export const isSelectEvent        = (event: Type): event is SelectEvent => event.kind === All.SelectEventTag;
+export const isUserSelectEvent    = (event: Type): event is UserSelectEvent => event.kind === All.UserSelectEventTag;
+export const isRoleSelectEvent    = (event: Type): event is RoleSelectEvent => event.kind === All.RoleSelectEventTag;
 export const isChannelSelectEvent = (event: Type): event is ChannelSelectEvent => event.kind === All.ChannelSelectEventTag;
 export const isMentionSelectEvent = (event: Type): event is MentionSelectEvent => event.kind === All.MentionSelectEventTag;
-export const isSubmitEvent = (event: Type): event is SubmitEvent => event.kind === All.SubmitEventTag;
+export const isSubmitEvent        = (event: Type): event is SubmitEvent => event.kind === All.SubmitEventTag;
 
 
 
@@ -138,68 +139,90 @@ const unsupported = [
   Rest.Rx.APPLICATION_COMMAND,
 ];
 
-export const decodeEvent = (rest: Rest.Interaction) => {
+export const decodeEvent = (rest: Rest.Interaction): Type => {
   if (unsupported.includes(rest.type)) {
     throw new Error('Unsupported event');
   }
 
-  if (rest.type === Rest.Rx.MODAL_SUBMIT) {
-    return SubmitEvent.make({
-      id: rest.data.custom_id,
-      rest,
-    });
-  }
+  switch (rest.type) {
+  case Rest.Rx.MODAL_SUBMIT:
+    return {
+      kind: 'SubmitEvent',
+      type: 'onsubmit',
+      id  : rest.data.custom_id,
+      rest: rest,
+    };
 
-
-  if (rest.type === Rest.Rx.MESSAGE_COMPONENT) {
+  case Rest.Rx.MESSAGE_COMPONENT:
     const target = Rest.findTarget(rest.data.custom_id, rest.message!.components);
 
     if (!target) {
       throw new Error('Unsupported message click');
     }
-    if (rest.data.component_type === Rest.Cx.BUTTON) {
-      return ButtonEvent.make({
-        id: rest.data.custom_id,
-        rest,
-      });
-    }
-    if (rest.data.component_type === Rest.Cx.STRING_SELECT) {
-      return SelectEvent.make({
+
+    switch (rest.data.component_type) {
+    case Rest.Cx.BUTTON:
+      return {
+        kind: 'ButtonEvent',
+        type: 'onclick',
+        id  : rest.data.custom_id,
+        rest: rest,
+      };
+
+    case Rest.Cx.STRING_SELECT:
+      return {
+        kind   : 'SelectEvent',
+        type   : 'onselect',
         id     : rest.data.custom_id,
-        rest,
+        rest   : rest,
         options: (target as any).options.filter((option: any) => rest.data.values!.includes(option.value)),
         values : rest.data.values as any,
-      });
-    }
-    if (rest.data.component_type === Rest.Cx.USER_SELECT) {
-      return UserSelectEvent.make({
-        id      : rest.data.custom_id,
-        rest,
-        user_ids: rest.data.values as any,
-      });
-    }
-    if (rest.data.component_type === Rest.Cx.ROLE_SELECT) {
-      return RoleSelectEvent.make({
-        id      : rest.data.custom_id,
-        rest,
-        role_ids: rest.data.values as any,
-      });
-    }
-    if (rest.data.component_type === Rest.Cx.CHANNEL_SELECT) {
-      return ChannelSelectEvent.make({
-        id         : rest.data.custom_id,
-        rest,
-        channel_ids: rest.data.values as any,
-      });
-    }
-    if (rest.data.component_type === Rest.Cx.MENTIONABLE_SELECT) {
-      return MentionSelectEvent.make({
-        id      : rest.data.custom_id,
-        rest,
-        mentions: rest.data.values as any,
-      });
-    }
-  }
+      };
 
-  throw new Error('Unsupported event');
+    case Rest.Cx.USER_SELECT:
+      return {
+        kind    : 'UserSelectEvent',
+        type    : 'onselect',
+        id      : rest.data.custom_id,
+        rest    : rest,
+        user_ids: rest.data.values as any,
+      };
+
+    case Rest.Cx.ROLE_SELECT:
+      return {
+        kind    : 'RoleSelectEvent',
+        type    : 'onselect',
+        id      : rest.data.custom_id,
+        rest    : rest,
+        role_ids: rest.data.values as any,
+      };
+
+    case Rest.Cx.CHANNEL_SELECT:
+      return {
+        kind       : 'ChannelSelectEvent',
+        type       : 'onselect',
+        id         : rest.data.custom_id,
+        rest       : rest,
+        channel_ids: rest.data.values as any,
+      };
+
+    case Rest.Cx.MENTIONABLE_SELECT:
+      return {
+        kind    : 'MentionSelectEvent',
+        type    : 'onselect',
+        id      : rest.data.custom_id,
+        rest    : rest,
+        mentions: rest.data.values as any,
+      };
+
+    default:
+      throw new Error('Unsupported message click');
+    }
+
+  case Rest.Rx.PING:
+  case Rest.Rx.APPLICATION_COMMAND:
+  case Rest.Rx.APPLICATION_COMMAND_AUTOCOMPLETE:
+  default:
+    throw new Error('Unsupported event');
+  }
 };

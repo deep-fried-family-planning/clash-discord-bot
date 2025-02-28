@@ -1,25 +1,40 @@
+import type * as RootHash from '#src/disreact/codec/entities/root-hash.ts';
+import type {DT} from '#src/internal/pure/effect.ts';
 import {RDT} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
-import type * as RootHash from '#src/disreact/codec/entities/root-hash.ts';
-import {decodeSync, encodeSync, String, TemplateLiteralParser} from 'effect/Schema';
+import {decodeSync, encodeSync, Redacted, String, Struct, tag, TemplateLiteralParser, Number, DateTimeUtc} from 'effect/Schema';
+
+
+
+export const Type = Struct({
+  _tag     : tag('Message'),
+  root_id  : String,
+  id       : String,
+  token    : Redacted(String),
+  ephemeral: Number,
+  type     : Number,
+  ttl      : DateTimeUtc,
+  hash     : String,
+});
 
 
 
 export type Type = {
   _tag     : 'Message';
-  static_id: string;
+  root_id  : string;
   id       : string;
   token    : RDT.Redacted;
   ephemeral: number;
   type     : number;
-  ttl      : DateTime.Utc;
+  ttl      : DT.Utc;
   hash     : RootHash.Encoded;
 };
 
 
 
 const parser = TemplateLiteralParser(
-  '/dsx/',
+  '/dsx',
+  '/',
   String,
   '/',
   String,
@@ -40,37 +55,29 @@ const decoder = decodeSync(parser);
 
 
 
-export const encode = (route: Type): string => {
-  return encoder([
-    '/dsx/',
-    route.static_id,
-    '/',
-    route.id,
-    '/',
-    `${route.ephemeral}`,
-    '/',
-    `${route.type}`,
-    '/',
-    `${route.ttl.epochMillis}`,
-    '/',
-    RDT.value(route.token),
-    '/',
-    route.hash,
-  ]);
-};
+export const encode = (route: Type): string => encoder([
+  '/dsx',
+  '/', route.root_id,
+  '/', route.id,
+  '/', `${route.ephemeral}`,
+  '/', `${route.type}`,
+  '/', `${route.ttl.epochMillis}`,
+  '/', RDT.value(route.token),
+  '/', route.hash,
+]);
 
 
 
 export const decode = (route: string): Type => {
-  const [,static_id,,id,,ephemeral,,type,,ttl,,token,,hash] = decoder(route as never);
+  const [, root_id, , id, , ephemeral, , type, , ttl, , token, , hash] = decoder(route as never);
 
   return {
     _tag     : 'Message',
-    static_id,
+    root_id  : root_id,
     id,
-    ephemeral: Number(ephemeral),
-    type     : Number(type),
-    ttl      : DateTime.unsafeMake(Number(ttl)),
+    ephemeral: parseInt(ephemeral),
+    type     : parseInt(type),
+    ttl      : DateTime.unsafeMake(parseInt(ttl)),
     token    : RDT.make(token),
     hash,
   };

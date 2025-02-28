@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "pretty"                      : true,
+    "disableSizeLimit"            : true,
+    "noErrorTruncation"           : true,
     "target"                      : "esnext",
     "lib"                         : ["esnext"],
     "module"                      : "esnext",

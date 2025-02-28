@@ -8,7 +8,7 @@ import type {DateTime} from 'effect';
 import * as CodecTarget from './CodecTargets.ts';
 import * as Pointer from './entities/pointer.ts';
 import * as RootState from './entities/root-state.ts';
-import * as Events from './rest/events.ts';
+import * as Events from 'src/disreact/codec/routing/events.ts';
 import * as Route from './rest/route.ts';
 
 

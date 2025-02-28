@@ -1,8 +1,9 @@
 import {SnowFlake} from '#src/disreact/codec/constants/common.ts';
 import {Tx} from '#src/disreact/codec/rest/rest.ts';
-import {DT, E, O, RDT} from '#src/internal/pure/effect.ts';
+import {E, O, RDT} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
 import {pipe} from 'effect';
+import * as DT from 'effect/DateTime';
 import * as D from 'effect/Duration';
 import * as S from 'effect/Schema';
 import {DateTimeUtcFromNumber, equivalence, mutable, NumberFromString, optional, type Schema, String, Struct, tag, transformLiterals} from 'effect/Schema';
@@ -58,6 +59,20 @@ export const isSource      = (doken: Type) => doken.type === Tx.DEFERRED_CHANNEL
 export const isUpdate      = (doken: Type) => doken.type === Tx.UPDATE_MESSAGE;
 export const isSourceDefer = (doken: Type) => doken.type === Tx.CHANNEL_MESSAGE_WITH_SOURCE;
 export const isUpdateDefer = (doken: Type) => doken.type === Tx.DEFERRED_UPDATE_MESSAGE;
+
+
+
+export const makeFromRest = (rest: any, time = DT.unsafeNow()): Type => {
+  return {
+    _tag     : 'Doken',
+    id       : rest.id,
+    ttl      : DT.addDuration(time, TWO_SECONDS),
+    token    : RDT.make(rest.token),
+    ephemeral: rest.message?.flags === 64 ? 1 : 0,
+    type     : 0,
+    status   : 'Fresh',
+  };
+};
 
 
 

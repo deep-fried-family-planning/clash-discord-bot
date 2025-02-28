@@ -51,8 +51,6 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   const afterEvent = Lifecycles.invokeIntrinsicTarget(hydrated, frame.event) as any;
   frame.state      = Globals.readRoot(frame.pointer);
 
-
-
   const localMutex = yield* InteractionBroker.mutex();
 
   if (frame.state.graph.next === CLOSE) {
@@ -106,6 +104,8 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   }
 
 
+  Globals.dismountRoot(frame.pointer);
+  Globals.mountRoot(frame.pointer);
   const nextClone = yield* StaticGraph.cloneRoot(frame.state.graph.next);
   const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 

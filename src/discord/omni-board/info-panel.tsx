@@ -1,5 +1,4 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
-import {LinkDialog} from '#src/discord/omni-board/link-dialog.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
@@ -8,7 +7,6 @@ import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
-import console from 'node:console';
 
 
 
@@ -33,8 +31,6 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function *
       default    : false,
     })),
   );
-
-  console.log('infos', infos)
 
   if (embedId === NONE_STR) {
     setEmbedId(infos[0].value);
@@ -71,13 +67,10 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function *
       <NavBar/>
       <actions>
         <button
-          // onopen={[LinkDialog, {}]}
           primary
           label={'Back'}
           onclick={() => {
-            page.next(Link, {
-
-            });
+            page.next(Link, {});
           }}
         />
       </actions>

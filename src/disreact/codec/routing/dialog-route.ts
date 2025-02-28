@@ -1,4 +1,15 @@
+import {S} from '#src/internal/pure/effect.ts';
 import {decodeSync, encodeSync, String, TemplateLiteralParser} from 'effect/Schema';
+// import * as S from 'effect/Schema';
+
+
+
+export const Type = S.Struct({
+  _tag   : S.tag('Dialog'),
+  root_id: S.String,
+});
+
+
 
 export type Type = {
   _tag     : 'Dialog';
@@ -7,13 +18,13 @@ export type Type = {
 
 
 
-const parser = TemplateLiteralParser(
+const parser = S.TemplateLiteralParser(
   '/dsx/',
   String,
 );
 
-const encoder = encodeSync(parser);
-const decoder = decodeSync(parser);
+const encoder = S.encodeSync(parser);
+const decoder = S.decodeSync(parser);
 
 
 

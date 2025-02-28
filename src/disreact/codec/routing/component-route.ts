@@ -1,11 +1,13 @@
-import {decodeSync, encodeSync, String, TemplateLiteralParser} from 'effect/Schema';
+import {decodeSync, encodeSync, String, Struct, tag, TemplateLiteralParser, type Schema} from 'effect/Schema';
 
 
 
-export type Type = {
-  _tag: 'Component';
-  id  : string;
-};
+export const Type = Struct({
+  _tag: tag('Component'),
+  id  : String,
+});
+
+export type Type = Schema.Type<typeof Type>;
 
 
 

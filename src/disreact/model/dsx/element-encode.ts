@@ -33,8 +33,6 @@ export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
     rest.flags = undefined;
   }
 
-  console.log('encoded', inspect(rest, false, null));
-
   return rest;
 };
 
