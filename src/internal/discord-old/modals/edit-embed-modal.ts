@@ -6,13 +6,13 @@ import {UI} from 'dfx';
 
 
 
-export const EDIT_EMBED_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'EE'});
-export const EDIT_EMBED_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'EE'});
+export const EDIT_EMBED_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, component: 'EE'});
+export const EDIT_EMBED_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, component: 'EE'});
 
 
 export const EditEmbedTitleT = makeText({
-  kind: RK_TEXT,
-  type: 'EET',
+  kind     : RK_TEXT,
+  component: 'EET',
 }, {
   label      : 'Edit Title',
   style      : IXCTS.SHORT,
@@ -21,8 +21,8 @@ export const EditEmbedTitleT = makeText({
 
 
 export const EditEmbedDescriptionT = makeText({
-  kind: RK_TEXT,
-  type: 'EED',
+  kind     : RK_TEXT,
+  component: 'EED',
 }, {
   label      : 'Edit Description',
   style      : IXCTS.PARAGRAPH,
@@ -31,8 +31,8 @@ export const EditEmbedDescriptionT = makeText({
 
 
 export const EditEmbedColorT = makeText({
-  kind: RK_TEXT,
-  type: 'EEC',
+  kind     : RK_TEXT,
+  component: 'EEC',
 }, {
   label      : 'Edit Color',
   style      : IXCTS.SHORT,

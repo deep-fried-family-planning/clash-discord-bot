@@ -28,12 +28,12 @@ describe('lifecycle', () => {
   beforeEach(() => {
     given      = {};
     const Null = Globals.nullifyPointer();
-    Globals.mountRoot(Null);
+    Globals.mountFiberRoot(Null);
   });
 
   afterEach(() => {
-    Globals.dismountRoot();
-    Globals.unsetPointer();
+    Globals.dismountFiberRoot();
+    Globals.releasePointer();
   });
 
   it('when cloning a node', () => {

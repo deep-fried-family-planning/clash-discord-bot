@@ -6,16 +6,16 @@ import {UI} from 'dfx';
 
 
 
-export const LINK_ACCOUNT_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'LA'});
-export const LINK_ACCOUNT_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LA'});
+export const LINK_ACCOUNT_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, component: 'LA'});
+export const LINK_ACCOUNT_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, component: 'LA'});
 
 
-export const PlayerTagT = makeText({kind: RK_TEXT, type: 'PT'}, {
+export const PlayerTagT = makeText({kind: RK_TEXT, component: 'PT'}, {
   label      : 'Player Tag',
   style      : IXCTS.SHORT,
   placeholder: 'check in-game profile',
 });
-export const ApiTokenT  = makeText({kind: RK_TEXT, type: 'AT'}, {
+export const ApiTokenT  = makeText({kind: RK_TEXT, component: 'AT'}, {
   label      : 'API Token',
   style      : IXCTS.SHORT,
   placeholder: 'check in-game settings',

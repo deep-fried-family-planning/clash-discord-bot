@@ -1,6 +1,6 @@
-import * as All from '#src/disreact/codec/constants/all.ts';
+import * as All from '#src/disreact/codec/common/all.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
-import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
+import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/loop.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
@@ -10,7 +10,21 @@ import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec} from '../codec';
-import type {FunctionElement} from '../codec/entities/index.ts';
+import type {FunctionElement} from '#src/disreact/codec/dsx/fiber/index.ts';
+import * as IxRx from '#src/disreact/codec/rest/rx.ts';
+
+
+export const respond = (request: Rest.Ix) => E.gen(function* () {
+  const rx          = IxRx.make(request);
+  const rootState   = IxRx.hydrate(rx);
+
+  Globals.setPointer();
+
+
+  const rootElement = yield* StaticGraph.cloneRoot(rx.route.root_id);
+}).pipe(
+  E.provide(InteractionBroker.makeLayer()),
+);
 
 
 
@@ -19,7 +33,7 @@ export const interact = E.fn(
     const frame = yield* Codec.decodeInteraction(rest);
 
     Globals.setPointer(frame.pointer);
-    Globals.mountRoot(frame.pointer, frame.state);
+    Globals.mountFiberRoot(frame.pointer, frame.state);
 
     const root = yield* StaticGraph.cloneRoot(frame.params.root);
 
@@ -49,7 +63,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   yield* flushHooks(hydrated);
 
   const afterEvent = Lifecycles.invokeIntrinsicTarget(hydrated, frame.event) as any;
-  frame.state      = Globals.readRoot(frame.pointer);
+  frame.state      = Globals.getFiberRoot(frame.pointer);
 
   const localMutex = yield* InteractionBroker.mutex();
 
@@ -104,8 +118,8 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   }
 
 
-  Globals.dismountRoot(frame.pointer);
-  Globals.mountRoot(frame.pointer);
+  Globals.dismountFiberRoot(frame.pointer);
+  Globals.mountFiberRoot(frame.pointer);
   const nextClone = yield* StaticGraph.cloneRoot(frame.state.graph.next);
   const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 

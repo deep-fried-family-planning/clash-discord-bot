@@ -1,11 +1,11 @@
-import {CLOSE} from '#src/disreact/codec/rest/index.ts';
-import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
+import {CLOSE} from '#src/disreact/codec/common/index.ts';
+import type * as Component from '#src/disreact/codec/dsx/common/component.ts';
+import type * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 
 
 
-const useState = (fiber: FiberState.Type) => (initial: any) => {
+const useState = (fiber: FiberNode.T) => (initial: any) => {
   const current = fiber.stack[fiber.pc];
 
   if (!current) {
@@ -30,7 +30,7 @@ const useState = (fiber: FiberState.Type) => (initial: any) => {
 
 
 
-const useReducer = (fiber: FiberState.Type) => (reducer: any, initialState: any) => {
+const useReducer = (fiber: FiberNode.T) => (reducer: any, initialState: any) => {
   const current = fiber.stack[fiber.pc];
 
   if (!current) {
@@ -50,7 +50,7 @@ const useReducer = (fiber: FiberState.Type) => (reducer: any, initialState: any)
 
 
 
-const useEffect = (fiber: FiberState.Type) => (effect: any, deps?: any[]) => {
+const useEffect = (fiber: FiberNode.T) => (effect: any, deps?: any[]) => {
   const current = fiber.stack[fiber.pc];
 
   if (deps) {
@@ -100,30 +100,30 @@ const useEffect = (fiber: FiberState.Type) => (effect: any, deps?: any[]) => {
 
 
 const useIx = () => () => {
-  const root = Globals.readRoot();
+  const root = Globals.getFiberRoot();
 
-  return root.rest;
+  return root.request;
 };
 
 
 
-const usePage = () => (_: RenderFn[]) => {
-  const root = Globals.readRoot();
+const usePage = () => (_: Component.PFC[]) => {
+  const root = Globals.getFiberRoot();
 
   return {
-    next: (next: RenderFn, props: any = {}) => {
-      root.graph.next      = next.name;
-      root.graph.nextProps = props;
+    next: (next: Component.PFC, props: any = {}) => {
+      root.graph.root  = next.name;
+      root.graph.props = props;
     },
     close: () => {
-      root.graph.next = CLOSE;
+      root.graph.root = CLOSE;
     },
   };
 };
 
 
 
-export const attachHooks = (fiber: FiberState.Type) => ({
+export const attachHooks = (fiber: FiberNode.T) => ({
   useState  : useState(fiber),
   useReducer: useReducer(fiber),
   useEffect : useEffect(fiber),

@@ -93,7 +93,7 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
   const newClan = yield * putDiscordClan({
     pk             : data.guild_id!,
     sk             : clan.tag,
-    type           : 'DiscordClan',
+    component      : 'DiscordClan',
     version        : '1.0.0',
     created        : new Date(Date.now()),
     updated        : new Date(Date.now()),

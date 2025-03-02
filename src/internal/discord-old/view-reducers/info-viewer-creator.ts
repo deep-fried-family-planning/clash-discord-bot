@@ -26,7 +26,7 @@ const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(f
   const infoId  = v4();
 
   yield * discordEmbedCreate({
-    type        : 'DiscordEmbed',
+    component   : 'DiscordEmbed',
     pk          : embedId,
     sk          : 'now',
     gsi_embed_id: embedId,
@@ -45,7 +45,7 @@ const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(f
   });
 
   yield * infoCreate({
-    type          : 'DiscordInfo',
+    component     : 'DiscordInfo',
     pk            : s.server_id,
     sk            : infoId,
     version       : '1.0.0',

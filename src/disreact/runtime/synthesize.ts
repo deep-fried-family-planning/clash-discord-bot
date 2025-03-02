@@ -11,7 +11,7 @@ export const synthesize = (fn: RenderFn) => E.gen(function* () {
   const frame = Codec.makeStaticFrame(fn.name);
 
   const Null = Globals.nullifyPointer();
-  Globals.mountRoot(Null, frame.state);
+  Globals.mountFiberRoot(Null, frame.state);
 
   const root     = yield* StaticGraph.cloneRoot(fn);
   const rendered = yield* Lifecycles.initialRender(root);

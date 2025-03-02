@@ -40,9 +40,9 @@ export const fromId = (custom_id: str): Route => {
     custom_id,
     template: route.template,
     params  : {
-      kind: params.kind,
-      type: params.type,
-      data: 'data' in params
+      kind     : params.kind,
+      component: params.type,
+      data     : 'data' in params
         ? params.data.split(DELIM_DATA).map((d) => d.replaceAll(DELIM_PIPE, DELIM_SLASH))
         : [],
       nextKind: params.nextKind,

@@ -44,11 +44,11 @@ export const makeButton = (
 
     forward: (newId: Route, forward?: string) => makeButton(
       {
-        kind    : id.params.kind,
-        type    : id.params.type!,
-        nextKind: newId.params.nextKind!,
-        nextType: newId.params.nextType!,
-        forward : forward,
+        kind     : id.params.kind,
+        component: id.params.type!,
+        nextKind : newId.params.nextKind!,
+        nextType : newId.params.nextType!,
+        forward  : forward,
       },
       options,
     ),

@@ -29,7 +29,7 @@ describe('dsx', () => {
 
   it.effect('encodes message', E.fn(function* () {
     const Null = Globals.nullifyPointer();
-    Globals.mountRoot(Null);
+    Globals.mountFiberRoot(Null);
 
     const rendered = yield* Lifecycles.initialRender(jsx(TestMessage, {}) as Pragma);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
@@ -101,8 +101,8 @@ describe('dsx', () => {
         },
       ]
     `);
-    Globals.dismountRoot();
-    Globals.unsetPointer();
+    Globals.dismountFiberRoot();
+    Globals.releasePointer();
   }));
 
   it('renders tree', () => {

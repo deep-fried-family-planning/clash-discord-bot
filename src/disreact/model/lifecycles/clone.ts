@@ -1,11 +1,9 @@
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as Codec from '../../codec/index.ts';
+import {Reserved} from '#src/disreact/codec/common/index.ts';
+import * as DSX from '../../codec/dsx';
 import * as Utils from './utils.ts';
-import * as All from '#src/disreact/codec/constants/all.ts';
-import { Reserved } from '#src/disreact/codec/constants/index.ts';
 
 
-export const cloneTree = (node: Pragma, parent?: Pragma) => {
+export const cloneTree = (node: DSX.Element.T, parent?: DSX.Element.T) => {
   const base  = Utils.linkNodeToParent(node, parent);
   const clone = cloneNode(base);
 
@@ -18,17 +16,13 @@ export const cloneTree = (node: Pragma, parent?: Pragma) => {
 
 
 
-export const cloneNode = <T extends Pragma>(node: T): T => {
-  if (node._tag === All.TextElementTag) {
+export const cloneNode = <T extends DSX.Element.T>(node: T): T => {
+  if (DSX.isText(node)) {
     return Utils.deepClone(node);
   }
 
-  if (node._tag === All.IntrinsicElementTag) {
-    const {
-            props,
-            children,
-            ...rest
-          } = node;
+  if (DSX.isIntrinsic(node)) {
+    const {props, children, ...rest} = node;
 
     return {
       ...Utils.deepClone(rest),
@@ -41,13 +35,13 @@ export const cloneNode = <T extends Pragma>(node: T): T => {
           props,
           children,
           render,
-          state,
+          fiber,
           ...rest
         } = node;
 
   return {
     ...Utils.deepClone(rest),
-    state: cloneFunctionNodeState(state),
+    fiber: cloneFunctionNodeState(fiber),
     props: cloneFunctionNodeProps(props),
     children,
     render,
@@ -67,7 +61,7 @@ const intrinsicPropFunctionKeys = [
 
 export const cloneIntrinsicProps = (props: any) => {
   const shallow = Utils.removeReservedIntrinsicProps(props);
-  const cloned = Utils.deepClone(shallow);
+  const cloned  = Utils.deepClone(shallow);
 
   for (const fn of intrinsicPropFunctionKeys) {
     if (props[fn]) {
@@ -85,12 +79,14 @@ export const cloneFunctionNodeState = (state: any) => {
 
   const {
           queue: effects,
+          component,
           ...rest
         } = state;
 
   return {
     ...Utils.deepClone(rest),
     queue: effects,
+    component,
   };
 };
 

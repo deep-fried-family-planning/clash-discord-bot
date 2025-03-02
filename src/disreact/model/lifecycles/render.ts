@@ -1,53 +1,47 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition,no-case-declarations */
-import { DTML } from '#src/disreact/codec/constants';
-import * as All from '#src/disreact/codec/constants/all.ts';
-import * as Children from '#src/disreact/codec/element/children.ts';
-import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
-import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import type * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
-import * as TextElement from '#src/disreact/codec/element/text-element.ts';
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import {DTML} from 'src/disreact/codec/common';
+import * as Children from '#src/disreact/codec/dsx/common/children.ts';
+import type * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';
+import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import * as DSX from '../../codec/dsx/index.ts';
 
 
 
-export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, any> => E.gen(function* () {
+export const initialRender = (node: DSX.Element.T, parent?: DSX.Element.T): E.Effect<DSX.Element.T, any> => E.gen(function* () {
   const base = Lifecycles.linkNodeToParent(node, parent);
 
-  switch (node._tag) {
-  case All.TextElementTag:
+  if (DSX.isText(node)) {
     return base;
+  }
 
-  case All.IntrinsicElementTag:
+  if (DSX.isIntrinsic(node)) {
     return {
       ...base,
       children: yield* E.all(node.children.map((child) => initialRender(child, base))),
-    } as IntrinsicElement.Type;
-
-  case All.FunctionElementTag:
-    Globals.mountFiber(base.meta.full_id, (base as any).state);
-
-    const children = yield* effectRenderNode(base);
-
-    return {
-      ...base,
-      children: yield* E.all(children.map((child: any) => initialRender(child, base))),
-      render  : node.render,
-      state   : node.state,
-    } as FunctionElement.Type;
+    };
   }
+
+  Globals.mountFiberNode(base.meta.full_id, (base as DSX.Function.T).fiber);
+  const children = yield* effectRenderNode(base);
+
+  return {
+    ...base,
+    children: yield* E.all(children.map((child: any) => initialRender(child, base))),
+    render  : node.render,
+    state   : node.fiber,
+  };
 });
 
 
 
-export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Type}): E.Effect<Pragma, any> => E.gen(function* () {
-  if (TextElement.is(node)) {
+export const hydrateRoot = (node: DSX.Element.T, states: {[k: string]: FiberNode.T}): E.Effect<DSX.Element.T, any> => E.gen(function* () {
+  if (DSX.isText(node)) {
     return node;
   }
-  if (IntrinsicElement.is(node)) {
+  if (DSX.isIntrinsic(node)) {
     node.children = yield* E.all(setIds(node.children, node).map((child) => hydrateRoot(child, states)));
     return node;
   }
@@ -55,8 +49,8 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Type}
   const state = states[node.meta.full_id];
 
   if (state) {
-    node.state       = state;
-    node.state.prior = structuredClone(node.state.stack);
+    node.fiber       = state;
+    node.fiber.prior = structuredClone(node.fiber.stack);
   }
 
   node.children = yield* E.all((yield* effectRenderNode(node)).map((child) => hydrateRoot(child, states)));
@@ -65,11 +59,11 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Type}
 
 
 
-export const rerenderRoot = (root: Pragma): E.Effect<Pragma, any> => E.gen(function* () {
-  if (TextElement.is(root)) {
+export const rerenderRoot = (root: DSX.Element.T): E.Effect<DSX.Element.T, any> => E.gen(function* () {
+  if (DSX.isText(root)) {
     return root;
   }
-  if (IntrinsicElement.is(root)) {
+  if (DSX.isFunction(root)) {
     return root;
   }
   const current  = root.children;
@@ -78,7 +72,7 @@ export const rerenderRoot = (root: Pragma): E.Effect<Pragma, any> => E.gen(funct
   return root;
 });
 
-const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pragma[], any> => E.gen(function* () {
+const renderNodes = (parent: DSX.Element.T, css: DSX.Element.T[], rss: DSX.Element.T[]): E.Effect<DSX.Element.T[], any> => E.gen(function* () {
   const length   = Math.max(css.length, rss.length);
   const children = [];
 
@@ -89,7 +83,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     if (!c && !r) throw new Error();
 
     if (!c && r) {
-      Globals.mountFiber(r.meta.full_id);
+      Globals.mountFiberNode(r.meta.full_id);
 
       children.push(yield* initialRender(r, parent));
 
@@ -97,23 +91,23 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
     }
 
     if (c && !r) {
-      Globals.dismountFiber(c.meta.full_id);
+      Globals.dismountFiberNode(c.meta.full_id);
 
       continue;
     }
 
     if (c && r) {
       if (!isSameNode(c, r)) {
-        Globals.dismountFiber(c.meta.full_id);
+        Globals.dismountFiberNode(c.meta.full_id);
 
         children.push(yield* initialRender(r, parent));
       }
 
-      else if (c._tag === All.TextElementTag) {
+      else if (DSX.isText(c)) {
         children.push(c);
       }
 
-      else if (c._tag === All.IntrinsicElementTag) {
+      else if (DSX.isIntrinsic(c)) {
         if (!hasSameProps(c, r)) {
           c.props = r.props;
         }
@@ -143,16 +137,16 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
   return children;
 });
 
-const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(function* () {
-  if (TextElement.is(node)) {
+const effectRenderNode = (node: DSX.Element.T): E.Effect<DSX.Element.T[], any> => E.gen(function* () {
+  if (DSX.isText(node)) {
     return [];
   }
-  if (IntrinsicElement.is(node)) {
+  if (DSX.isIntrinsic(node)) {
     return node.children;
   }
 
-  Globals.mountFiber(node.meta.full_id, node.state);
-  Globals.setDispatch(node.state);
+  Globals.mountFiberNode(node.meta.full_id, node.fiber);
+  Globals.setDispatch(node.fiber);
 
   const output = node.render(node.props);
 
@@ -164,10 +158,10 @@ const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any> => E.gen(functi
 
   const linked = setIds(normalized, node);
 
-  node.state       = Globals.readFiber(node.meta.full_id);
-  node.state.prior = structuredClone(node.state.stack);
-  node.state.pc    = 0;
-  node.state.rc++;
+  node.fiber       = Globals.getFiberNode(node.meta.full_id);
+  node.fiber.prior = structuredClone(node.fiber.stack);
+  node.fiber.pc    = 0;
+  node.fiber.rc++;
 
   if (normalized.some((child) => child.name === DTML.dialog || child.name === DTML.modal)) {
     node.meta.isModal = true;

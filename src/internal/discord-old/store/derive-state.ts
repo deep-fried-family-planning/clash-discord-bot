@@ -109,7 +109,7 @@ export const deriveState = (ix: IxD) => E.gen(function * () {
     cmap: componentMap!,
 
     // system     : system?.fields,
-    type       : system?.author?.name,
+    component  : system?.author?.name,
     title      : system?.title,
     description: system?.description,
 

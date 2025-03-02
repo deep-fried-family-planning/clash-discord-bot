@@ -1,17 +1,12 @@
-import {Reserved} from '#src/disreact/codec/constants';
-import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
-import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
-import {Props} from '#src/disreact/codec/entities';
-import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import {Reserved} from 'src/disreact/codec/common';
+import * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
+import * as DSX from '../../codec/dsx/index.ts';
 
 
 
 export const deepClone = structuredClone;
 
-export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T => {
+export const linkNodeToParent = <T extends DSX.Element.T>(node: T, parent?: DSX.Element.T): T => {
   if (!parent) {
     node.meta.idx     = 0;
     node.meta.id      = `${node._name}:${node.meta.idx}`;
@@ -27,16 +22,14 @@ export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T 
   return node;
 };
 
-export const setIds = (children: Pragma[], parent: Pragma) => {
+export const setIds = (children: DSX.Element.T[], parent: DSX.Element.T) => {
   for (let i = 0; i < children.length; i++) {
     children[i].meta.idx = i;
     children[i].meta.id  = `${parent._name}:${i}`;
-    children[i]          = Lifecycles.linkNodeToParent(children[i], parent);
+    children[i]          = linkNodeToParent(children[i], parent);
   }
   return children;
 };
-
-
 
 const intrinsicPropFunctionKeys = [
   Reserved.onclick,
@@ -75,25 +68,21 @@ export const removeReservedFunctionProps = (props: any) => {
   return rest;
 };
 
-
-
-export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
+export const isSameNode = <A extends DSX.Element.T, B extends DSX.Element.T>(a: A, b: B) => {
   if (a._tag !== b._tag) return false;
   if (a._name !== b._name) return false;
   if (a.meta.id !== b.meta.id) return false;
-  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.Type).value;
+  if (DSX.Element.isText(a)) return a.value === (b as DSX.Element.Text.T).value;
   return true;
 };
 
-export const hasSameProps = (c: Pragma, r: Pragma) => Props.isEqual(c.props, r.props);
+export const hasSameProps = (c: DSX.Element.T, r: DSX.Element.T) => DSX.Props.isEqual(c.props, r.props);
 
-export const hasSameState = (c: FunctionElement.Type) => FiberState.isSameState(c.state);
+export const hasSameState = (c: DSX.Function.T) => FiberNode.isSameState(c.fiber);
 
-
-
-export const collectStates = (node: Pragma, states: { [K in string]: FiberState.Type } = {}): typeof states => {
-  if (node._tag === All.FunctionElementTag) {
-    states[node.meta.full_id] = node.state;
+export const collectStates = (node: DSX.Element.T, states: { [K in string]: FiberNode.T } = {}): typeof states => {
+  if (DSX.Function.is(node)) {
+    states[node.meta.full_id] = node.fiber;
   }
 
   if ('children' in node && Array.isArray(node.children)) {
@@ -105,7 +94,7 @@ export const collectStates = (node: Pragma, states: { [K in string]: FiberState.
   return states;
 };
 
-export const reduceToStacks = (hooks: { [K in string]: FiberState.Type }): { [K in string]: FiberState.Type['stack'] } => {
+export const reduceToStacks = (hooks: { [K in string]: FiberNode.T }): { [K in string]: FiberNode.T['stack'] } => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

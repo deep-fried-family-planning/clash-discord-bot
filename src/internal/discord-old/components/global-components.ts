@@ -10,58 +10,58 @@ import {IXCBS} from '#src/internal/discord.ts';
 
 
 
-export const SuccessB   = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
-export const DangerB    = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});
-export const PrimaryB   = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.PRIMARY});
-export const SecondaryB = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.SECONDARY});
-export const LinkB      = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.LINK});
-export const PremiumB   = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.PREMIUM});
+export const SuccessB   = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.SUCCESS});
+export const DangerB    = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.DANGER});
+export const PrimaryB   = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.PRIMARY});
+export const SecondaryB = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.SECONDARY});
+export const LinkB      = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.LINK});
+export const PremiumB   = makeButton({kind: RK_NOOP, component: 'NOOP'}, {style: IXCBS.PREMIUM});
 
 
-export const SingleS        = makeSelect({kind: RK_NOOP, type: 'NOOP'}, {options: OPTION_UNAVAILABLE});
-export const SingleChannelS = makeSelectChannel({kind: RK_NOOP, type: 'NOOP'}, {});
-export const SingleRoleS    = makeSelectRole({kind: RK_NOOP, type: 'NOOP'}, {});
-export const SingleUserS    = makeSelectUser({kind: RK_NOOP, type: 'NOOP'}, {});
+export const SingleS        = makeSelect({kind: RK_NOOP, component: 'NOOP'}, {options: OPTION_UNAVAILABLE});
+export const SingleChannelS = makeSelectChannel({kind: RK_NOOP, component: 'NOOP'}, {});
+export const SingleRoleS    = makeSelectRole({kind: RK_NOOP, component: 'NOOP'}, {});
+export const SingleUserS    = makeSelectUser({kind: RK_NOOP, component: 'NOOP'}, {});
 
 
-export const CloseB         = makeButton({kind: RK_CLOSE, type: 'T'}, {
+export const CloseB         = makeButton({kind: RK_CLOSE, component: 'T'}, {
   emoji: EMOJI_CLOSE,
   style: IXCBS.SECONDARY,
 });
-export const BackB          = makeButton({kind: RK_BACK, type: 'T'}, {
+export const BackB          = makeButton({kind: RK_BACK, component: 'T'}, {
   emoji: EMOJI_BACK,
   style: IXCBS.SECONDARY,
 });
-export const ForwardB       = makeButton({kind: RK_FORWARD, type: 'T'}, {
+export const ForwardB       = makeButton({kind: RK_FORWARD, component: 'T'}, {
   emoji: EMOJI_NEXT,
   style: IXCBS.SECONDARY,
 });
-export const SubmitB        = makeButton({kind: RK_SUBMIT, type: 'T'}, {
+export const SubmitB        = makeButton({kind: RK_SUBMIT, component: 'T'}, {
   emoji: EMOJI_SUBMIT,
   style: IXCBS.SUCCESS,
 });
-export const EditB          = makeButton({kind: RK_NOOP, type: 'NOOP'}, {
+export const EditB          = makeButton({kind: RK_NOOP, component: 'NOOP'}, {
   style: IXCBS.SUCCESS,
   label: 'Edit',
 });
-export const NewB           = makeButton({kind: RK_NOOP, type: 'NOOP'}, {
+export const NewB           = makeButton({kind: RK_NOOP, component: 'NOOP'}, {
   style: IXCBS.SUCCESS,
   emoji: EMOJI_NEW,
 });
-export const AdminB         = makeButton({kind: RK_NOOP, type: 'NOOP'}, {
+export const AdminB         = makeButton({kind: RK_NOOP, component: 'NOOP'}, {
   style: IXCBS.DANGER,
   emoji: EMOJI_ADMIN,
 });
-export const DeleteB        = makeButton({kind: RK_DELETE, type: 'T'}, {
+export const DeleteB        = makeButton({kind: RK_DELETE, component: 'T'}, {
   style: IXCBS.DANGER,
   emoji: EMOJI_DELETE,
 });
-export const DeleteConfirmB = makeButton({kind: RK_DELETE, type: 'T'}, {
+export const DeleteConfirmB = makeButton({kind: RK_DELETE, component: 'T'}, {
   style: IXCBS.DANGER,
   emoji: EMOJI_DELETE_CONFIRM,
 });
 
 
-export const NavSelect = makeSelect({kind: RK_NAV, type: 'T'}, {
+export const NavSelect = makeSelect({kind: RK_NAV, component: 'T'}, {
   placeholder: 'Navigate',
 });

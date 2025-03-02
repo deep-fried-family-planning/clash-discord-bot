@@ -6,11 +6,11 @@ import {UI} from 'dfx';
 
 
 
-export const LINK_CLAN_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'LC'});
-export const LINK_CLAN_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LC'});
+export const LINK_CLAN_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, component: 'LC'});
+export const LINK_CLAN_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, component: 'LC'});
 
 
-export const ClanTagT = makeText({kind: RK_TEXT, type: 'CT'}, {
+export const ClanTagT = makeText({kind: RK_TEXT, component: 'CT'}, {
   label      : 'Clan Tag',
   style      : IXCTS.SHORT,
   placeholder: 'check in-game clan profile',

@@ -1,20 +1,16 @@
 /* eslint-disable no-empty */
-import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import * as Events from '#src/disreact/codec/routing/events.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as IntrinsicElement from '#src/disreact/codec/dsx/element/intrinsic-element.ts';
+import type * as DSX from '../../codec/dsx/index.ts';
 
 
 
-export const invokeIntrinsicTarget = (root: Pragma, event: Events.Type) => {
-  if (Events.isSynthesizeEvent(event))
-    return root;
-
+export const invokeIntrinsicTarget = (root: DSX.Element.T, event: DSX.Event.T) => {
   return invokeTargetInner(root, event);
 };
 
 
 
-const invokeTargetInner = (node: Pragma, event: Events.NonSyntheticEvent, original: Pragma = node): Pragma => {
+const invokeTargetInner = (node: DSX.Element.T, event: DSX.Event.T, original = node): DSX.Element.T => {
   if (!IntrinsicElement.is(node)) {
     for (const child of node.children) {
       try {
@@ -24,11 +20,11 @@ const invokeTargetInner = (node: Pragma, event: Events.NonSyntheticEvent, origin
     }
   }
 
-  if (node.props.custom_id && event.id === node.props.custom_id) {
+  if (node.props.custom_id && event.custom_id === node.props.custom_id) {
     const handler = node.props[event.type];
 
     if (!handler) {
-      throw new Error(`No handler for custom_id ${event.id}`);
+      throw new Error(`No handler for custom_id ${event.custom_id}`);
     }
 
     handler(event);
@@ -36,11 +32,11 @@ const invokeTargetInner = (node: Pragma, event: Events.NonSyntheticEvent, origin
     return original;
   }
 
-  if (event.id === node.meta.step_id) {
+  if (event.custom_id === node.meta.step_id) {
     const handler = node.props[event.type];
 
     if (!handler) {
-      throw new Error(`No handler for step_id ${event.id}`);
+      throw new Error(`No handler for step_id ${event.custom_id}`);
     }
 
     handler(event);
@@ -55,5 +51,5 @@ const invokeTargetInner = (node: Pragma, event: Events.NonSyntheticEvent, origin
     catch (_) {}
   }
 
-  throw new Error(`No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`);
+  throw new Error(`No node with id_step "${event.custom_id}" having a handler for type "${event.type}" was not found`);
 };

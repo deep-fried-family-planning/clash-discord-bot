@@ -7,4 +7,4 @@ export const makeId = (
   kind: str,
   type: str,
   ops?: Parameters<typeof toId>[0],
-) => toId({...ops, kind, type});
+) => toId({...ops, kind, type: component});

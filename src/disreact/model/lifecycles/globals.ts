@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
-import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
-import * as Pointer from '#src/disreact/codec/entities/pointer.ts';
-import * as RootState from '#src/disreact/codec/entities/root-state.ts';
+import {FiberNode, FiberPointer, FiberRoot} from '#src/disreact/codec/dsx/fiber/index.ts';
 import * as Hooks from '#src/disreact/model/lifecycles/hooks.ts';
 
 
-const __pointer = {current: null as null | Pointer.Type};
+const __pointer = {current: null as null | FiberPointer.T};
 
 export const getPointer = () => {
   if (!__pointer.current) {
@@ -14,29 +12,23 @@ export const getPointer = () => {
   return __pointer.current;
 };
 
-export const setPointer = (ptr: Pointer.Type) => {
-  __pointer.current = ptr;
-};
+export const setPointer = (ptr: FiberPointer.T) => {__pointer.current = ptr};
 
-export const unsetPointer = () => {
-  __pointer.current = null;
-};
+export const releasePointer = () => {__pointer.current = null};
 
-export const nullifyPointer = () => {
-  __pointer.current = Pointer.Null;
-  return Pointer.Null;
-};
+export const nullifyPointer = () => __pointer.current = FiberPointer.Null;
 
 
-const __roots = new WeakMap<Pointer.Type, RootState.Type>();
 
-export const mountRoot = (ptr: Pointer.Type, hydration = RootState.make()) => {
+const __roots = new WeakMap<FiberPointer.T, FiberRoot.T>();
+
+export const mountFiberRoot = (ptr: FiberPointer.T, hydration = FiberRoot.make()) => {
   __roots.set(ptr, hydration);
 
   return hydration;
 };
 
-export const dismountRoot = (ptr = getPointer()) => {
+export const dismountFiberRoot = (ptr = getPointer()) => {
   const root = __roots.get(ptr);
 
   __roots.delete(ptr);
@@ -44,7 +36,7 @@ export const dismountRoot = (ptr = getPointer()) => {
   return root;
 };
 
-export const readRoot = (ptr = getPointer()) => {
+export const getFiberRoot = (ptr = getPointer()) => {
   const root = __roots.get(ptr);
 
   if (!root) {
@@ -56,22 +48,22 @@ export const readRoot = (ptr = getPointer()) => {
 
 
 
-export const mountFiber = (id: string, node = FiberState.make()) => {
-  const root = readRoot();
+export const mountFiberNode = (id: string, node = FiberNode.make()) => {
+  const root = getFiberRoot();
 
-  root.fibers[id] = node;
+  root.nodes[id] = node;
 
   return node;
 };
 
-export const dismountFiber = (id: string) => {
-  const node = readRoot().fibers[id];
-  delete readRoot().fibers[id];
+export const dismountFiberNode = (id: string) => {
+  const node = getFiberRoot().nodes[id];
+  delete getFiberRoot().nodes[id];
   return node;
 };
 
-export const readFiber = (id: string) => {
-  const node = readRoot().fibers[id];
+export const getFiberNode = (id: string) => {
+  const node = getFiberRoot().nodes[id];
 
   if (!node) {
     throw new Error(`Internal: Node not found for id ${id}`);

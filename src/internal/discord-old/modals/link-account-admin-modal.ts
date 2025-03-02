@@ -5,8 +5,8 @@ import {UI} from 'dfx';
 
 
 
-export const LINK_ACCOUNT_ADMIN_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'LAA'});
-export const LINK_ACCOUNT_ADMIN_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LAA'});
+export const LINK_ACCOUNT_ADMIN_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, component: 'LAA'});
+export const LINK_ACCOUNT_ADMIN_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, component: 'LAA'});
 
 
 export const LinkAccountAdminModal = {

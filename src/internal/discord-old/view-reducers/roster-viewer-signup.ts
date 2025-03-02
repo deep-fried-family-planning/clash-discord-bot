@@ -120,7 +120,7 @@ const signupRoster = (
 
   if (!signup) {
     return yield * rosterSignupCreate({
-      type         : 'DiscordRosterSignup',
+      component    : 'DiscordRosterSignup',
       pk           : rosterId,
       sk           : userId,
       gsi_roster_id: rosterId,

@@ -111,11 +111,11 @@ const component = (body: IxD) => E.gen(function * () {
       data: {
         ...curModal,
         custom_id: toId({
-          kind    : newId.params.kind,
-          type    : newId.params.type,
-          nextKind: id.params.nextKind,
-          nextType: id.params.nextType,
-          forward : body.id,
+          kind     : newId.params.kind,
+          component: newId.params.type,
+          nextKind : id.params.nextKind,
+          nextType : id.params.nextType,
+          forward  : body.id,
         }).custom_id,
       },
     });

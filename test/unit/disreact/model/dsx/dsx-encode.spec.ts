@@ -19,12 +19,12 @@ describe('dsx-encoder', () => {
   beforeEach(() => {
     given      = {};
     const Null = Globals.nullifyPointer();
-    Globals.mountRoot(Null);
+    Globals.mountFiberRoot(Null);
   });
 
   afterEach(() => {
-    Globals.dismountRoot();
-    Globals.unsetPointer();
+    Globals.dismountFiberRoot();
+    Globals.releasePointer();
   });
 
   it.effect('when encoding a message', E.fn(function* () {

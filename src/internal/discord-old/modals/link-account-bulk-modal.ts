@@ -6,11 +6,11 @@ import {UI} from 'dfx';
 
 
 
-export const LINK_ACCOUNT_BULK_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'LAB'});
-export const LINK_ACCOUNT_BULK_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LAB'});
+export const LINK_ACCOUNT_BULK_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, component: 'LAB'});
+export const LINK_ACCOUNT_BULK_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, component: 'LAB'});
 
 
-export const BulkCSV = makeText({kind: RK_TEXT, type: 'PT'}, {
+export const BulkCSV = makeText({kind: RK_TEXT, component: 'PT'}, {
   label      : 'CSV',
   style      : IXCTS.PARAGRAPH,
   placeholder: 'discord_id, player_tag,',

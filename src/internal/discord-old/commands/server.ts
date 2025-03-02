@@ -66,7 +66,7 @@ export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(functio
   yield * putDiscordServer({
     pk               : data.guild_id!,
     sk               : 'now',
-    type             : 'DiscordServer',
+    component        : 'DiscordServer',
     version          : '1.0.0',
     admin            : options.admin,
     forum            : options.forum,

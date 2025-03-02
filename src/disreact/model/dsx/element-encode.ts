@@ -1,10 +1,10 @@
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
-import console from 'node:console';
-import {inspect } from 'node:util';
+import {All, DFMD, DTML, NONE, Reserved} from '#src/disreact/codec/common/index.ts';
+import type * as Element from '#src/disreact/codec/dsx/element/index.ts';
+import * as DSX from '../../codec/dsx/index.ts';
 
 
+
+type Pragma = Element.T;
 
 export type EncodedMessage = {
   content   : string;
@@ -179,7 +179,7 @@ const encodeInner = (node: any): any => {
 
   case DTML.dialog:
   case DTML.modal:
-    acc.custom_id ??= NONE_STR;
+    acc.custom_id ??= NONE;
     acc.components = children[All.components];
     return acc;
 
@@ -399,14 +399,14 @@ const unwrapFunctions = (node: any): any => {
   if (typeof node === 'string') {
     return {kind: 'text', value: node, _name: 'string'};
   }
-  if (node._tag === All.TextElementTag) {
+  if (DSX.isText(node)) {
     return {...node, name: 'string'};
   }
-  if (node._tag === All.IntrinsicElementTag) {
+  if (DSX.isIntrinsic(node)) {
     node.children = node.children.flatMap(unwrapFunctions);
     return node;
   }
-  if (node._tag === All.FunctionElementTag) {
+  if (DSX.isFunction(node)) {
     return node.children.flatMap(unwrapFunctions);
   }
   return node;

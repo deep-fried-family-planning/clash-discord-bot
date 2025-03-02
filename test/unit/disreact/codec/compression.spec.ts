@@ -1,4 +1,4 @@
-import {compressStack, decompressStack} from '#src/disreact/codec/entities/compression.ts';
+import {compressStack, decompressStack} from '#src/disreact/codec/dsx/fiber/compression.ts';
 
 describe('compression', () => {
   it('Url compression', () => {

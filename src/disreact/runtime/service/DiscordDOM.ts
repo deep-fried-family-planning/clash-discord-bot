@@ -2,7 +2,7 @@ import {E, L, LG, LL, RDT} from '#src/internal/pure/effect.ts';
 import {DiscordREST} from 'dfx';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
 import {pipe} from 'effect';
-import type * as Doken from '#src/disreact/codec/rest/doken.ts';
+import type * as Doken from '#src/disreact/codec/rest/doken-old.ts';
 import * as Rest from '#src/disreact/codec/rest/rest.ts';
 
 

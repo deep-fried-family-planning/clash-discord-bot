@@ -4,7 +4,7 @@
     "disableSizeLimit"            : true,
     "noErrorTruncation"           : true,
     "target"                      : "esnext",
-    "lib"                         : ["esnext"],
+    //    "lib"                         : ["esnext"],
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
     "jsx"                         : "react-jsx",
@@ -17,6 +17,9 @@
     "allowImportingTsExtensions"  : true,
     "strict"                      : true,
     "exactOptionalPropertyTypes"  : true,
+    "allowJs"                     : true,
+    "checkJs"                     : false,
+    "skipLibCheck"                : true,
     "baseUrl"                     : "./",
     "paths"                       : {
       "#src"  : ["src"],

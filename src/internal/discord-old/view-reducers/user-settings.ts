@@ -15,7 +15,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 const saveUserRecord = (s: St, tz: string) => E.gen(function * () {
   yield * userCreate({
-    type           : 'DiscordUser',
+    component      : 'DiscordUser',
     pk             : s.user_id,
     sk             : 'now',
     gsi_all_user_id: s.user_id,

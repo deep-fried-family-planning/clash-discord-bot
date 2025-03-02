@@ -26,9 +26,9 @@ const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(fun
   const embedId  = v4();
 
   yield * rosterCreate({
-    type: 'DiscordRoster',
-    pk  : s.server_id,
-    sk  : rosterId,
+    component: 'DiscordRoster',
+    pk       : s.server_id,
+    sk       : rosterId,
 
     version: '1.0.0',
     created: dtNow(),
@@ -51,7 +51,7 @@ const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(fun
 
 
   yield * discordEmbedCreate({
-    type        : 'DiscordEmbed',
+    component   : 'DiscordEmbed',
     pk          : embedId,
     sk          : 'now',
     gsi_embed_id: embedId,

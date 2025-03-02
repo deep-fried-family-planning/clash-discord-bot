@@ -2,7 +2,6 @@ import {dsx} from '#src/disreact/model/dsx/dsx.ts';
 import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraphError} from '#src/disreact/codec/error.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
-import console from 'node:console';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
 

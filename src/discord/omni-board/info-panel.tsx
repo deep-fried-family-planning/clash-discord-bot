@@ -1,6 +1,6 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
+import {NONE_STR} from '#src/disreact/codec/rest/loop.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/jsx-runtime.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
