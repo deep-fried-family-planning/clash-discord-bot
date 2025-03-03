@@ -1,6 +1,6 @@
+import * as Pointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import * as Deferred from 'effect/Deferred';
-import * as Pointer from '#src/disreact/codec/dsx/fiber/fiber-pointer.ts';
 
 
 
@@ -13,7 +13,7 @@ export type RendererConfig = {
 
 const make = (id: string) => E.gen(function* () {
   const pointer = Pointer.make(id);
-  const status = yield* Deferred.make<boolean>();
+  const status  = yield* Deferred.make<boolean>();
 
   return {
     awaitAll: () => Deferred.await(status),

@@ -23,3 +23,5 @@ export class StaticGraphError extends Data.TaggedError('DisReact.StaticGraphErro
 export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{
   cause: Error;
 }> {}
+
+export class RenderError extends Data.TaggedError('DisReact.RenderError')<{}> {}

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import {_Tag, NONE, ZERO} from '#src/disreact/codec/common/index.ts';
-import * as Common from '#src/disreact/codec/dsx/element/common.ts';
-import type * as Element from '#src/disreact/codec/dsx/element/index.ts';
-import * as Intrinsic from '#src/disreact/codec/dsx/element/intrinsics/index.ts';
+import * as Common from '#src/disreact/codec/dsx/common.ts';
+import type * as Element from '#src/disreact/codec/dsx/index.ts';
+import * as Intrinsic from '#src/disreact/codec/dsx/intrinsic/index.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
 

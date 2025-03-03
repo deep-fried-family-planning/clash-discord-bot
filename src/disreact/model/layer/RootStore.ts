@@ -1,6 +1,8 @@
-import {Component} from '#src/disreact/codec/dsx/element/index.ts';
-import {type FiberHash, TreeRoot, TreeSeed} from '#src/disreact/codec/dsx/fiber/index.ts';
-import type {Element} from '#src/disreact/codec/dsx/index.ts';
+import type * as FunctionElement from '#src/disreact/codec/dsx/function.ts';
+import {Component} from '#src/disreact/codec/dsx/index.ts';
+import type * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
+import * as TreeRoot from '#src/disreact/codec/tree/root.ts';
+import * as TreeSeed from '#src/disreact/codec/tree/seed.ts';
 import {dsx} from '#src/disreact/model/dsx/dsx.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
@@ -54,7 +56,7 @@ const make = (config?: RootStoreConfig) => E.gen(function* () {
   const cloneRoot = (
     id: string,
     fn: string | Component.PFC,
-    hash?: FiberHash.Encoded,
+    hash?: FiberHash.T,
   ) => {
     const root_id = typeof fn === 'string'
       ? fn
@@ -67,7 +69,7 @@ const make = (config?: RootStoreConfig) => E.gen(function* () {
     const root = roots.get(root_id)!;
 
     const initial = dsx(root.component);
-    const element = Lifecycles.linkNodeToParent(initial as Element.Function.T);
+    const element = Lifecycles.linkNodeToParent(initial as FunctionElement.T);
 
     return TreeRoot.make(id, root_id, element, hash);
   };

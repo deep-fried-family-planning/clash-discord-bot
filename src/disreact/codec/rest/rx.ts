@@ -1,8 +1,6 @@
-import * as FiberRoot from '#src/disreact/codec/dsx/fiber/fiber-root.ts';
-import * as Event from '#src/disreact/codec/dsx/event/index.ts';
-import * as Dokens from '#src/disreact/codec/rest/loop/dokens.ts';
+import * as Event from '#src/disreact/codec/event/index.ts';
 import * as Loop from '#src/disreact/codec/rest/loop.ts';
-import * as Route from '#src/disreact/codec/rest/route/index.ts';
+import * as Dokens from '#src/disreact/codec/rest/loop/dokens.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
 

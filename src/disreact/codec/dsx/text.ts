@@ -1,20 +1,20 @@
 import {_Tag, NONE, ZERO} from '#src/disreact/codec/common/index.ts';
-import * as Common from '#src/disreact/codec/dsx/element/common.ts';
-import type * as Element from '#src/disreact/codec/dsx/element/index.ts';
-import {S} from '#src/internal/pure/effect.ts';
+import * as Common from '#src/disreact/codec/dsx/common.ts';
+import type * as Element from '#src/disreact/codec/dsx/index.ts';
+import {mutable, type Schema, String, Struct, tag} from 'effect/Schema';
 
 
 
-export const T = S.Struct({
+export const T = Struct({
   ...Common.Fields,
-  _tag : S.tag(_Tag.TEXT),
-  value: S.String,
+  _tag : tag(_Tag.TEXT),
+  value: String,
 });
 
-const t = S.mutable(T);
+const t = mutable(T);
 
 export type T =
-  S.Schema.Type<typeof t>
+  Schema.Type<typeof t>
   & {
     children: Element.T[];
   };

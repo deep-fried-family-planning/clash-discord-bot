@@ -1,8 +1,8 @@
 /* eslint-disable no-case-declarations */
+import * as FunctionElement from '#src/disreact/codec/dsx/function.ts';
+import * as IntrinsicElement from '#src/disreact/codec/dsx/intrinsic.ts';
+import * as TextElement from '#src/disreact/codec/dsx/text.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import * as FunctionElement from '#src/disreact/codec/dsx/element/function-element.ts';
-import * as IntrinsicElement from '#src/disreact/codec/dsx/element/intrinsic-element.ts';
-import * as TextElement from '#src/disreact/codec/dsx/element/text-element.ts';
 
 
 
@@ -71,8 +71,8 @@ const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
       c = TextElement.make(c);
     }
 
-    c.meta.idx = i;
-    c.meta.id  = `${c._name}:${i}`;
+    c.meta.idx  = i;
+    c.meta.id   = `${c._name}:${i}`;
     children[i] = c;
   }
 

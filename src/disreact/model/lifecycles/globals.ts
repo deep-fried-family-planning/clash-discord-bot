@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
-import {FiberNode, FiberPointer, FiberRoot} from '#src/disreact/codec/dsx/fiber/index.ts';
+import {FiberNode, FiberPointer, FiberRoot} from '#src/disreact/codec/fiber/index.ts';
 import * as Hooks from '#src/disreact/model/lifecycles/hooks.ts';
 
 

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import {DTML} from 'src/disreact/codec/common';
-import * as Children from '#src/disreact/codec/dsx/common/children.ts';
-import type * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
+import * as Children from '#src/disreact/codec/component/children.ts';
+import * as DSX from '#src/disreact/codec/dsx/index.ts';
+import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';
 import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import * as DSX from '../../codec/dsx/index.ts';
+import {DTML} from 'src/disreact/codec/common';
 
 
 

@@ -1,6 +1,8 @@
 import * as All from '#src/disreact/codec/common/all.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
+import type {FunctionElement} from '#src/disreact/codec/fiber/index.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/loop.ts';
+import * as IxRx from '#src/disreact/codec/rest/rx.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
@@ -10,13 +12,11 @@ import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec} from '../codec';
-import type {FunctionElement} from '#src/disreact/codec/dsx/fiber/index.ts';
-import * as IxRx from '#src/disreact/codec/rest/rx.ts';
 
 
 export const respond = (request: Rest.Ix) => E.gen(function* () {
-  const rx          = IxRx.make(request);
-  const rootState   = IxRx.hydrate(rx);
+  const rx        = IxRx.make(request);
+  const rootState = IxRx.hydrate(rx);
 
   Globals.setPointer();
 

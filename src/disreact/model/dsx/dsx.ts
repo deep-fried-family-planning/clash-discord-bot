@@ -1,8 +1,7 @@
 /* eslint-disable no-case-declarations */
-import {Props, type Children} from '#src/disreact/codec/dsx';
-import {Element} from '#src/disreact/codec/dsx';
+import * as Element from '#src/disreact/codec/dsx/index.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-
+import {type Children, Props} from 'src/disreact/codec/dsx';
 
 
 export const fragment = undefined;
@@ -33,9 +32,9 @@ export const dsxs = (type: JSX.ElementType, props: Props.Children<Element.T>): C
     return children;
 
   case 'string':
-    const node    = Element.Intrinsic.make(type, props);
-    node.children = connectDirectChildren(children);
-    return node;
+    const element    = Element.Intrinsic.make(type, props);
+    element.children = connectDirectChildren(children);
+    return element;
 
   case 'function':
     return Element.Function.make(type, props);

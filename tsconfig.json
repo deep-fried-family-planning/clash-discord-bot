@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
-    "pretty"                      : true,
-    "disableSizeLimit"            : true,
-    "noErrorTruncation"           : true,
-    "target"                      : "esnext",
-    //    "lib"                         : ["esnext"],
-    "module"                      : "esnext",
+    "noEmit"                      : true,
+    "target"                      : "ESNext",
+    "lib"                         : ["ESNext"],
+    "module"                      : "ESNext",
     "moduleResolution"            : "bundler",
     "jsx"                         : "react-jsx",
     "jsxImportSource"             : "src/disreact",
@@ -17,12 +15,8 @@
     "allowImportingTsExtensions"  : true,
     "strict"                      : true,
     "exactOptionalPropertyTypes"  : true,
-    "allowJs"                     : true,
-    "checkJs"                     : false,
-    "skipLibCheck"                : true,
     "baseUrl"                     : "./",
     "paths"                       : {
-      "#src"  : ["src"],
       "#src/*": ["src/*"]
     }
   }

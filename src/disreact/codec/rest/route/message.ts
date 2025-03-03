@@ -1,6 +1,6 @@
-import {DT, RDT, S} from '#src/internal/pure/effect.ts';
 import {_Tag, NONE} from '#src/disreact/codec/common/index.ts';
-import * as FiberHash from '#src/disreact/codec/dsx/fiber/fiber-hash.ts';
+import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
+import {DT, RDT, S} from '#src/internal/pure/effect.ts';
 
 
 
@@ -47,7 +47,7 @@ export const encode = (route: T): string => Encoder([
   '/', `${route.type ?? EMPTY}`,
   '/', `${route.ttl?.epochMillis ?? EMPTY}`,
   '/', route.token ? RDT.value(route.token) : EMPTY,
-  '/', route.hash ?? FiberHash.makeEmpty(),
+  '/', route.hash ?? FiberHash.make(),
 ]);
 
 export const decode = (route: string): T => {

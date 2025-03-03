@@ -1,6 +1,6 @@
-import * as Default from '#src/disreact/codec/dsx/event/default.ts';
-import {S} from '#src/internal/pure/effect.ts';
 import {_Tag, Reserved} from '#src/disreact/codec/common/index.ts';
+import * as Default from '#src/disreact/codec/event/default.ts';
+import {S} from '#src/internal/pure/effect.ts';
 
 
 

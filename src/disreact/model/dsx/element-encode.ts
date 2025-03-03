@@ -1,6 +1,6 @@
 import {All, DFMD, DTML, NONE, Reserved} from '#src/disreact/codec/common/index.ts';
-import type * as Element from '#src/disreact/codec/dsx/element/index.ts';
-import * as DSX from '../../codec/dsx/index.ts';
+import type * as Element from '#src/disreact/codec/dsx/index.ts';
+import * as DSX from '#src/disreact/codec/dsx/index.ts';
 
 
 
@@ -399,14 +399,14 @@ const unwrapFunctions = (node: any): any => {
   if (typeof node === 'string') {
     return {kind: 'text', value: node, _name: 'string'};
   }
-  if (DSX.isText(node)) {
+  if (DSX.isTextElement(node)) {
     return {...node, name: 'string'};
   }
-  if (DSX.isIntrinsic(node)) {
+  if (DSX.isIntrinsicElement(node)) {
     node.children = node.children.flatMap(unwrapFunctions);
     return node;
   }
-  if (DSX.isFunction(node)) {
+  if (DSX.isFunctionElement(node)) {
     return node.children.flatMap(unwrapFunctions);
   }
   return node;

@@ -1,24 +1,24 @@
 import {_Tag, Reserved} from '#src/disreact/codec/common/index.ts';
-import * as Button from '#src/disreact/codec/dsx/event/button.ts';
-import * as Channel from '#src/disreact/codec/dsx/event/channel.ts';
-import * as Default from '#src/disreact/codec/dsx/event/default.ts';
-import * as Mention from '#src/disreact/codec/dsx/event/mention.ts';
-import * as Role from '#src/disreact/codec/dsx/event/role.ts';
-import * as Select from '#src/disreact/codec/dsx/event/select.ts';
-import * as Submit from '#src/disreact/codec/dsx/event/submit.ts';
-import * as User from '#src/disreact/codec/dsx/event/user.ts';
+import * as Button from '#src/disreact/codec/event/button.ts';
+import * as Channel from '#src/disreact/codec/event/channel.ts';
+import * as Default from '#src/disreact/codec/event/default.ts';
+import * as Mention from '#src/disreact/codec/event/mention.ts';
+import * as Role from '#src/disreact/codec/event/role.ts';
+import * as Select from '#src/disreact/codec/event/select.ts';
+import * as Submit from '#src/disreact/codec/event/submit.ts';
+import * as User from '#src/disreact/codec/event/user.ts';
 import * as Rest from '#src/disreact/codec/rest/rest.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
 
 
-export * as Submit from '#src/disreact/codec/dsx/event/submit.ts';
-export * as Button from '#src/disreact/codec/dsx/event/button.ts';
-export * as Select from '#src/disreact/codec/dsx/event/select.ts';
-export * as Channel from '#src/disreact/codec/dsx/event/channel.ts';
-export * as Role from '#src/disreact/codec/dsx/event/role.ts';
-export * as User from '#src/disreact/codec/dsx/event/user.ts';
-export * as Mention from '#src/disreact/codec/dsx/event/mention.ts';
+export * as Submit from '#src/disreact/codec/event/submit.ts';
+export * as Button from '#src/disreact/codec/event/button.ts';
+export * as Select from '#src/disreact/codec/event/select.ts';
+export * as Channel from '#src/disreact/codec/event/channel.ts';
+export * as Role from '#src/disreact/codec/event/role.ts';
+export * as User from '#src/disreact/codec/event/user.ts';
+export * as Mention from '#src/disreact/codec/event/mention.ts';
 
 
 

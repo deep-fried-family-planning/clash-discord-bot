@@ -1,6 +1,6 @@
-import {FiberHash, TreeRoot} from '#src/disreact/codec/dsx/fiber/index.ts';
+import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
+import * as TreeRoot from '#src/disreact/codec/tree/root.ts';
 import {C, E, L, pipe} from '#src/internal/pure/effect.ts';
-
 
 
 const make = E.gen(function* () {
@@ -20,7 +20,7 @@ const make = E.gen(function* () {
     },
   });
 
-  const lookup = (id: string, root_id: string, hash: FiberHash.Encoded) =>
+  const lookup = (id: string, root_id: string, hash: FiberHash.T) =>
     pipe(
       cache.get(TreeRoot.makeKey(id, root_id)),
       E.map((tree) => {
@@ -36,7 +36,7 @@ const make = E.gen(function* () {
   const commit = (root: TreeRoot.T) => {
     roots.set(
       TreeRoot.makeKey(root.id, root.root_id),
-      TreeRoot.commit(root),
+      TreeRoot.updateHash(root),
     );
   };
 

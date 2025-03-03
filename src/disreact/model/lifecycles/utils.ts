@@ -1,6 +1,6 @@
+import * as DSX from '#src/disreact/codec/dsx/index.ts';
+import * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import {Reserved} from 'src/disreact/codec/common';
-import * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
-import * as DSX from '../../codec/dsx/index.ts';
 
 
 

@@ -1,4 +1,4 @@
-import {compressStack, decompressStack} from '#src/disreact/codec/dsx/fiber/compression.ts';
+import {compressStack, decompressStack} from '#src/disreact/codec/fiber/compression.ts';
 
 describe('compression', () => {
   it('Url compression', () => {
@@ -26,10 +26,10 @@ describe('compression', () => {
       type  : 9,
       flags : 64,
       stacks: {
-          'OmniPrivate:0'                                  : [{s: 0}, {}],
-          'OmniPrivate:0:message:0:buttons:1:CloseButton:2': [{s: 1}, {s: 'sdlfkjasdlfjasldkfjasdl;fkjasldkfjasl;dkf'}],
-          'OmniPrivate:0:message:0:buttons:1:CloseButton:3': [{s: 1}, {}],
-        },
+        'OmniPrivate:0'                                  : [{s: 0}, {}],
+        'OmniPrivate:0:message:0:buttons:1:CloseButton:2': [{s: 1}, {s: 'sdlfkjasdlfjasldkfjasdl;fkjasldkfjasl;dkf'}],
+        'OmniPrivate:0:message:0:buttons:1:CloseButton:3': [{s: 1}, {}],
+      },
     };
 
     const compressed = compressStack(url.stacks);
@@ -43,7 +43,8 @@ describe('compression', () => {
 
   it('markdown compression', () => {
     const obj = {
-      'Linker:0': [{s: '### About\n' +
+      'Linker:0': [{
+        s: '### About\n' +
           'Signup to participate in **O**re **D**uring **CWL** (ODCWL) so you can war in multiple clans during CWL and get 2x ore!\n' +
           '\n' +
           'This roster is for normal wars during CWL. You can participate in both kinds of wars at once. Ask clan leadership if you\'re confused.\n' +
@@ -55,7 +56,8 @@ describe('compression', () => {
           '4. Once ODCWL war starts, you can hop over, do your normal war hits. \n' +
           '5. Hop between clans again, rinse, and repeat!\n' +
           '\n' +
-          '**Remember: ** This is **not** the signup page for CWL. Signing up for ODCWL does **not** mean you are signed up for actual **CWL**. Remember to signup for both.'}],
+          '**Remember: ** This is **not** the signup page for CWL. Signing up for ODCWL does **not** mean you are signed up for actual **CWL**. Remember to signup for both.',
+      }],
     };
 
     const compressed = compressStack(obj);

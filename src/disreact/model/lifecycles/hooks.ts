@@ -1,6 +1,6 @@
 import {CLOSE} from '#src/disreact/codec/common/index.ts';
-import type * as Component from '#src/disreact/codec/dsx/common/component.ts';
-import type * as FiberNode from '#src/disreact/codec/dsx/fiber/fiber-node.ts';
+import type * as Component from '#src/disreact/codec/component/function.ts';
+import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 
 

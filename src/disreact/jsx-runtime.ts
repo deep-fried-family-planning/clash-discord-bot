@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
-import type {Component, FEC} from '#src/disreact/codec/dsx/element/function-element.ts';
-import type {IntrinsicMap} from '#src/disreact/codec/dsx/element/intrinsics/index.ts';
+import type * as Component from '#src/disreact/codec/component/function.ts';
+import * as Element from '#src/disreact/codec/dsx/index.ts';
+import type {IntrinsicMap} from '#src/disreact/codec/dsx/intrinsic/index.ts';
 import {dsx, dsxs, fragment} from '#src/disreact/model/dsx/dsx.ts';
-import type * as DSX from './codec/dsx/index.ts';
 
 
 
@@ -11,28 +11,18 @@ export const jsx      = dsx;
 export const jsxs     = dsxs;
 export const jsxDEV   = dsx;
 
-export type {
-  FEC as FC,
-};
-
-declare global {
-  export namespace DisReact {
-    type FC<P = any> = FEC<P>;
-  }
-}
-
 
 
 export declare namespace JSX {
   type ElementType =
-    | Component<any, Element>
+    | Component.T<any, Element>
     | keyof IntrinsicElements
     | string
     | boolean
     | null
     | undefined;
 
-  type Element = DSX.Element.T;
+  type Element = Element.T;
 
   interface LibraryManagedAttributes {
     displayName?: string;

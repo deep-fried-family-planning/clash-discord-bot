@@ -1,16 +1,16 @@
-import * as Default from '#src/disreact/codec/dsx/event/default.ts';
-import {S} from '#src/internal/pure/effect.ts';
 import {_Tag, Reserved} from '#src/disreact/codec/common/index.ts';
+import * as Default from '#src/disreact/codec/event/default.ts';
+import {S} from '#src/internal/pure/effect.ts';
 
 
 
-const TAG = _Tag.SELECT_ROLE;
+const TAG = _Tag.SELECT_MENTION;
 
 export const T = S.Struct({
   ...Default.MessageFields,
   _tag    : S.tag(TAG),
   type    : S.tag(Reserved.onselect),
-  role_ids: S.Array(S.String),
+  mentions: S.Array(S.String),
 });
 
 export type T = S.Schema.Type<typeof T>;

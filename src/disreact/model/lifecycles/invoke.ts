@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
-import * as IntrinsicElement from '#src/disreact/codec/dsx/element/intrinsic-element.ts';
-import type * as DSX from '../../codec/dsx/index.ts';
+import type * as DSX from '#src/disreact/codec/dsx/index.ts';
+import * as IntrinsicElement from '#src/disreact/codec/dsx/intrinsic.ts';
 
 
 
