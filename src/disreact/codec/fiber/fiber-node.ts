@@ -1,7 +1,7 @@
+import type * as FunctionElement from '#src/disreact/codec/dsx/function.ts';
 import {Data, Equal} from 'effect';
 import type {Schema} from 'effect/Schema';
 import {Any, Array, mutable, Number, optional, Struct} from 'effect/Schema';
-import type * as FunctionElement from '#src/disreact/codec/dsx/function.ts';
 
 
 
