@@ -5,10 +5,10 @@ import * as Props from '#src/disreact/codec/element/props.ts';
 import * as FiberState from '#src/disreact/codec/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';
-import {isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
+import {setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import * as FunctionElement from '../../codec/element/function-element.ts';
-import type * as Element from '../../codec/element/index.ts';
+import * as Element from '../../codec/element/index.ts';
 import * as IntrinsicElement from '../../codec/element/intrinsic-element.ts';
 import * as TextElement from '../../codec/element/text-element.ts';
 
@@ -101,7 +101,7 @@ const renderNodes = (parent: Element.T, cs: Element.T[], rs: Element.T[]): E.Eff
     }
 
     if (c && r) {
-      if (!isSameNode(c, r)) {
+      if (!Element.isSame(c, r)) {
         Globals.dismountFiber(c.meta.full_id);
 
         children.push(yield* initialRender(r, parent));

@@ -3,17 +3,14 @@ import * as pako from 'pako';
 
 
 
-export const compressStack = (data: Record<string, any>): string => {
+export const compress = (data: Record<string, any>): string => {
   const binary     = MsgPack.encode(data);
   const compressed = pako.deflate(binary);
-  return b64UrlSafe(compressed);
+  return Buffer.from(compressed).toString('base64url');
 };
 
-export const decompressStack = (url: string): Record<string, any> => {
-  const compressed   = b64FromUrl(url);
+export const decompress = (encoded: string): Record<string, any> => {
+  const compressed   = Buffer.from(encoded, 'base64url');
   const decompressed = pako.inflate(compressed);
   return MsgPack.decode(decompressed) as Record<string, any>;
 };
-
-const b64UrlSafe = (buffer: Uint8Array) => Buffer.from(buffer).toString('base64url');
-const b64FromUrl = (url: string) => Buffer.from(url, 'base64url');

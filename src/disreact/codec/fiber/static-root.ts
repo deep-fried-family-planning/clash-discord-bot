@@ -7,7 +7,9 @@ export type T = {
   component: FC.FC;
 };
 
-export const make = (component: FC.FC, root_id?: string): T => ({
-  root_id: root_id ?? FC.resolveRootId(component),
-  component,
-});
+export const make = (component: FC.FC, root_id?: string): T => {
+  return {
+    root_id: root_id ?? FC.resolveRootId(component),
+    component,
+  };
+};

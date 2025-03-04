@@ -1,20 +1,18 @@
 /* eslint-disable no-empty */
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import * as Events from '#src/disreact/codec/rest/events.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
 
 
-export const invokeIntrinsicTarget = (root: Pragma, event: Events.Type) => {
+export const invokeIntrinsicTarget = (root: Element.T, event: Events.Type) => {
   if (Events.isSynthesizeEvent(event))
     return root;
 
   return invokeTargetInner(root, event);
 };
 
-
-
-const invokeTargetInner = (node: Pragma, event: Events.NonSyntheticEvent, original: Pragma = node): Pragma => {
+const invokeTargetInner = (node: Element.T, event: Events.NonSyntheticEvent, original: Element.T = node): Element.T => {
   if (!IntrinsicElement.is(node)) {
     for (const child of node.children) {
       try {

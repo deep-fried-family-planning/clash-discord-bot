@@ -2,25 +2,25 @@ import {EMPTY, EMPTY_NUM, RootId} from '#src/disreact/codec/constants/common.ts'
 import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
 import {Redacted} from 'effect';
 import {decodeSync, encodeSync, mutable, optional, type Schema, Struct, tag, TemplateLiteralParser} from 'effect/Schema';
-import * as Doken from './doken.ts';
+import * as Doken from 'src/disreact/codec/route/doken.ts';
 
 
 
-const MESSAGE_ROUTE_TAG = 'MessageRoute';
+const TAG = 'MessageRoute';
 
-const MESSAGE_ROUTE_PREFIX = 'https://dffp.org/';
+const PREFIX = 'https://dffp.org/';
 
-export const MessageRoute = mutable(Struct({
-  _tag   : tag(MESSAGE_ROUTE_TAG),
+export const T = mutable(Struct({
+  _tag   : tag(TAG),
   root_id: RootId,
   doken  : optional(Doken.Doken),
   hash   : FiberHash.T,
 }));
 
-export type MessageRoute = Schema.Type<typeof MessageRoute>;
+export type T = Schema.Type<typeof T>;
 
-const MessageRouteParser = TemplateLiteralParser(
-  MESSAGE_ROUTE_PREFIX, RootId,
+const Parser = TemplateLiteralParser(
+  PREFIX, RootId,
   '/', Doken.DokenId,
   '/', Doken.DokenType,
   '/', Doken.DokenEphemeral,
@@ -29,14 +29,14 @@ const MessageRouteParser = TemplateLiteralParser(
   '/', FiberHash.T,
 );
 
-const Encoder = encodeSync(MessageRouteParser);
-const Decoder = decodeSync(MessageRouteParser);
+const Encoder = encodeSync(Parser);
+const Decoder = decodeSync(Parser);
 
-export const isMessageRoute = (self: any): self is MessageRoute => self._tag === MESSAGE_ROUTE_TAG;
+export const is = (self: any): self is T => self._tag === TAG;
 
-export const encodeMessageRoute = (self: MessageRoute): string => {
+export const encodeMessageRoute = (self: T): string => {
   return Encoder([
-    MESSAGE_ROUTE_PREFIX, self.root_id,
+    PREFIX, self.root_id,
     '/', self.doken?.id ?? EMPTY,
     '/', self.doken?.type ?? EMPTY_NUM,
     '/', self.doken?.ephemeral ?? EMPTY_NUM,
@@ -46,14 +46,14 @@ export const encodeMessageRoute = (self: MessageRoute): string => {
   ]);
 };
 
-export const decodeMessageRoute = (encoded: string): MessageRoute => {
+export const decodeMessageRoute = (encoded: string): T => {
   const [, root_id, , dokenId, , dokenType, , dokenEphemeral, , dokenTTL, , dokenValue, , hash] = Decoder(encoded as never);
 
   const acc = {
-    _tag: MESSAGE_ROUTE_TAG,
+    _tag: TAG,
     root_id,
     hash,
-  } as MessageRoute;
+  } as T;
 
   if (
     dokenId !== EMPTY &&
@@ -73,7 +73,7 @@ export const decodeMessageRoute = (encoded: string): MessageRoute => {
   return acc;
 };
 
-export const encodeMessageRouteToURL = (self: MessageRoute, message: any) => {
+export const encodeMessageRouteToURL = (self: T, message: any) => {
   message.embeds ??= [];
   message.embeds[0] ??= {};
   message.embeds[0].image ??= {};
@@ -84,7 +84,7 @@ export const encodeMessageRouteToURL = (self: MessageRoute, message: any) => {
 export const decodeMessageRouteFromRequest = (request: any) => {
   const url = request.message?.embeds?.[0]?.image?.url;
 
-  if (!url || !url.startsWith(MESSAGE_ROUTE_PREFIX)) {
+  if (!url || !url.startsWith(PREFIX)) {
     return undefined;
   }
 

@@ -18,7 +18,7 @@ export const Empty = EMPTY;
 export const isEmpty = (hash: T): boolean => hash === NONE_STR;
 
 export const hash = (root: FiberRoot.T): T => {
-  return Compression.compressStack({
+  return Compression.compress({
     props: root.props,
     ...pipe(root.fibers, Record.map((v) => v.stack)),
   });
@@ -31,7 +31,7 @@ export const decode = (hash?: T): FiberRoot.T => {
     return root;
   }
 
-  const stacks = Compression.decompressStack(hash);
+  const stacks = Compression.decompress(hash);
 
   for (const [k, v] of Object.entries(stacks)) {
     if (k === 'props') {

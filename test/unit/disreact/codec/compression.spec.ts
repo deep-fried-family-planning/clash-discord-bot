@@ -1,4 +1,4 @@
-import {compressStack, decompressStack} from '#src/disreact/codec/fiber/compression.ts';
+import {compress, decompress} from '#src/disreact/codec/fiber/compression.ts';
 
 describe('compression', () => {
   it('Url compression', () => {
@@ -10,12 +10,12 @@ describe('compression', () => {
       ],
     };
 
-    const compressed = compressStack(url);
-    const decompress = decompressStack(compressed);
+    const compressed   = compress(url);
+    const decompressed = decompress(compressed);
 
     expect(compressed.length).toMatchInlineSnapshot(`38`);
     expect(compressed).toMatchInlineSnapshot(`"eJxrXBuSWlzim1pcnJieamUwsXFhMQMAWi0IJA"`);
-    expect(decompress).toEqual(url);
+    expect(decompressed).toEqual(url);
   });
 
   it('route compression', () => {
@@ -32,13 +32,13 @@ describe('compression', () => {
       },
     };
 
-    const compressed = compressStack(url.stacks);
-    const decompress = decompressStack(compressed);
+    const compressed   = compress(url.stacks);
+    const decompressed = decompress(compressed);
 
     expect(`/${url.root}/${url.dialog}/${url.ttl}/${url.type}/${url.flags}`.length).toMatchInlineSnapshot(`42`);
     expect(compressed.length).toMatchInlineSnapshot(`132`);
     expect(compressed).toMatchInlineSnapshot(`"eJxrXuufm5cZUJRZlliSamUwqXFhMUPDTX0UQavc1OLixHQQK6m0pCQ_r9jK0Mo5J7841QnMtTICaWME4puaxSk5adlZiSAKSOakZKeBOdZgQSg3xxpIk2qHMdiOBgAZokT8"`);
-    expect(decompress).toEqual(url.stacks);
+    expect(decompressed).toEqual(url.stacks);
   });
 
   it('markdown compression', () => {
@@ -60,13 +60,13 @@ describe('compression', () => {
       }],
     };
 
-    const compressed = compressStack(obj);
-    const decompress = decompressStack(compressed);
+    const compressed   = compress(obj);
+    const decompressed = decompress(compressed);
 
     console.log(obj['Linker:0'][0].s.length);
 
     expect(compressed.length).toMatchInlineSnapshot(`588`);
     expect(compressed).toMatchInlineSnapshot(`"eJxtUsFu1DAQPdBTvuKhPZRakQUFLtyq9sCh1SJAQhydZJJYSezI41B67CfwCdz4Jr6GsZPdLghppXXseW_evDePv26tGyi8e_nj8Sf_fna22-1wVfklFp9s55YZ0WM2IdraziYSrINSe6UCyf-NUkuwrpPj9ZdbpfBifyOHC7DHg19QG4d7ExJoWsZo55FQj8YxmhUnxTCuQUcRl9_hAz0vis-9ZQTPkQTJaH2A82EyY-I6hWp83Zr8o7DyscdgXcPw7YoyEd7VpHHFQ9aAkUxDgXs7w7ZJ7rnMVHvXLkyNLorkxIfga2IuXmncmYHAi9RspdJHTiHPkAmrh3xOAzOZUPe6uJR-bZojPayXJTqfTI09Ibu1gUnmFNJ4zifTHoleH4hWyNMTOMrsXB797v2MytRD6vG3vmR0s132NrIu3mjsxZRT0v-w-W8UyiPyRFwmQfFW431qSvGeyG0Bm85YV0KiYipz60AzmSj5KvWRJpoq2TpZHOS45aeU81G-kzG87t5sOsr557DTQqbk5SHdraIbT0_QiUwOBSasHNQcqk0dF5G9LarGQUKyaeuWytLm6D_KzAYp"`);
-    expect(decompress).toEqual(obj);
+    expect(decompressed).toEqual(obj);
   });
 });

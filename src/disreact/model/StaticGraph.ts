@@ -1,36 +1,19 @@
-import {dsx} from '#src/disreact/codec/dsx/dsx.ts';
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import {StaticGraphError} from '#src/disreact/codec/error.ts';
-import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
-import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
-
+import * as FC from '../codec/element/function-component.ts';
+import type * as FiberHash from '../codec/fiber/fiber-hash.ts';
+import * as RootElement from '../codec/fiber/root-element.ts';
+import * as StaticRoot from '../codec/fiber/static-root.ts';
 
 
 export type StaticGraphConfig = {
-  ephemeral : RenderFn[];
-  persistent: RenderFn[];
-  dialog    : RenderFn[];
+  ephemeral : FC.FC[];
+  persistent: FC.FC[];
+  dialog    : FC.FC[];
 };
 
-
-
-type StaticGraphNode = {
-  isEphemeral : boolean;
-  isPersistent: boolean;
-  isDialog    : boolean;
-  isEffect    : boolean;
-  meta?: {
-    isEphemeral : boolean;
-    isPersistent: boolean;
-    isDialog    : boolean;
-    isEffect    : boolean;
-  };
-  render: RenderFn;
-};
-
-
-
-type StaticGraphMap = {[k: string]: StaticGraphNode};
+type StaticGraphMap = {[k: string]: StaticRoot.T};
 
 
 
@@ -38,46 +21,62 @@ const make = (config: StaticGraphConfig) => E.gen(function* () {
   const staticGraphMap = {} as StaticGraphMap;
 
   for (const ephemeral of config.ephemeral) {
-    staticGraphMap[ephemeral.name] = {
-      isEphemeral : true,
-      isPersistent: false,
-      isDialog    : false,
-      isEffect    : false,
-      render      : ephemeral,
-    };
+    staticGraphMap[ephemeral.name] = StaticRoot.make(ephemeral);
   }
 
   for (const persistent of config.persistent) {
-    staticGraphMap[persistent.name] = {
-      isEphemeral : false,
-      isPersistent: true,
-      isDialog    : false,
-      isEffect    : false,
-      render      : persistent,
-    };
+    staticGraphMap[persistent.name] = StaticRoot.make(persistent);
   }
 
   for (const dialog of config.dialog) {
-    staticGraphMap[dialog.name] = {
-      isEphemeral : false,
-      isPersistent: false,
-      isDialog    : true,
-      isEffect    : false,
-      render      : dialog,
-    };
+    staticGraphMap[dialog.name] = StaticRoot.make(dialog);
   }
 
   // yield * E.addFinalizer(() => E.log('static graph: closed'));
 
   return {
-    cloneRoot: (fn: RenderFn | string) => E.gen(function* () {
-      const name = typeof fn === 'string' ? fn : fn.name;
+    synthesizeClone: (
+      root_id: FC.FC | string,
+      props?: any,
+    ) => {
+      const name = typeof root_id === 'string' ? root_id : FC.resolveRootId(root_id);
+      const root = staticGraphMap[name];
 
-      if (!(name in staticGraphMap)) {
+      if (!root) {
+        throw new StaticGraphError({why: `${name} is not in the static graph`});
+      }
+
+      return RootElement.synthesizeFromStatic(root, props);
+    },
+
+    hydrateClone: (
+      id: string,
+      root_id: FC.FC | string,
+      hash: FiberHash.T,
+    ) => {
+      const name = typeof root_id === 'string' ? root_id : FC.resolveRootId(root_id);
+      const root = staticGraphMap[name];
+
+      if (!root) {
+        throw new StaticGraphError({why: `${name} is not in the static graph`});
+      }
+
+      return RootElement.hydrateFromStatic(id, root, hash);
+    },
+
+    makeClone: (
+      id: string,
+      root_id: FC.FC | string,
+      props?: any,
+    ) => E.gen(function* () {
+      const name = typeof root_id === 'string' ? root_id : FC.resolveRootId(root_id);
+      const root = staticGraphMap[name];
+
+      if (!root) {
         return yield* new StaticGraphError({why: `${name} is not in the static graph`});
       }
 
-      return Lifecycles.linkNodeToParent(dsx(staticGraphMap[name].render) as Pragma);
+      return RootElement.makeFromStatic(id, root, props);
     }),
   };
 });

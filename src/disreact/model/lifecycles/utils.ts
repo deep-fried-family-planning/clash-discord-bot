@@ -1,15 +1,12 @@
-import {Reserved} from '#src/disreact/codec/constants';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
 
 
-export const deepClone = structuredClone;
-
-export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T => {
+export const linkNodeToParent = <T extends Element.T>(node: T, parent?: Element.T): T => {
   if (!parent) {
     node.meta.idx     = 0;
     node.meta.id      = `${node._name}:${node.meta.idx}`;
@@ -24,7 +21,7 @@ export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T 
   return node;
 };
 
-export const setIds = (children: Pragma[], parent: Pragma) => {
+export const setIds = (children: Element.T[], parent: Element.T) => {
   for (let i = 0; i < children.length; i++) {
     children[i].meta.idx = i;
     children[i].meta.id  = `${parent._name}:${i}`;
@@ -32,46 +29,6 @@ export const setIds = (children: Pragma[], parent: Pragma) => {
   }
   return children;
 };
-
-
-
-const intrinsicPropFunctionKeys = [
-  Reserved.onclick,
-  Reserved.onselect,
-  Reserved.ondeselect,
-  Reserved.onsubmit,
-  Reserved.oninvoke,
-  Reserved.onautocomplete,
-];
-
-export const removeReservedIntrinsicProps = (props: any) => {
-  const {
-          [Reserved.onclick]       : _onclick,
-          [Reserved.onselect]      : _onselect,
-          [Reserved.ondeselect]    : _ondeselect,
-          [Reserved.onsubmit]      : _onsubmit,
-          [Reserved.oninvoke]      : _oninvoke,
-          [Reserved.onautocomplete]: _onautocomplete,
-          [Reserved.children]      : _children,
-          [Reserved.ref]           : _ref,
-          [Reserved.key]           : _key,
-          ...rest
-        } = props;
-
-  return rest;
-};
-
-
-
-export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
-  if (a._tag !== b._tag) return false;
-  if (a._name !== b._name) return false;
-  if (a.meta.id !== b.meta.id) return false;
-  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.T).value;
-  return true;
-};
-
-
 
 export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.T } = {}): typeof states => {
   if (node._tag === All.FunctionElementTag) {

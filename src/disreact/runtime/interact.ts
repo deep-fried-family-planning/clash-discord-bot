@@ -1,8 +1,8 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
@@ -11,17 +11,18 @@ import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec} from '../codec';
+import type * as RootElement from '../codec/fiber/root-element.ts';
 
 
 
 export const interact = E.fn(
   function* (rest: Rest.Ix) {
-    const frame = yield* Codec.decodeInteraction(rest);
-
+    const frame   = yield* Codec.decodeInteraction(rest);
+    const root    = yield* StaticGraph.hydrateClone(rest.id, frame.params.root, frame.params.hash);
+    frame.state   = root.fiber;
+    frame.pointer = root.pointer;
     Globals.setPointer(frame.pointer);
     Globals.mountRoot(frame.pointer, frame.state);
-
-    const root = yield* StaticGraph.cloneRoot(frame.params.root);
 
     switch (frame.event.kind) {
     case All.ButtonEventTag:
@@ -43,8 +44,8 @@ export const interact = E.fn(
 
 
 
-const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
-  const hydrated = yield* Lifecycles.hydrateRoot(root, frame.state.fibers);
+const processClick = E.fn(function* (frame: Codec.Frame, root: RootElement.T) {
+  const hydrated = yield* Lifecycles.hydrateRoot(root.element, frame.state.fibers);
 
   yield* flushHooks(hydrated);
 
@@ -103,12 +104,19 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
     ).pipe(localMutex));
   }
 
-
   Globals.dismountRoot(frame.pointer);
-  Globals.mountRoot(frame.pointer);
-  const nextClone = yield* StaticGraph.cloneRoot(frame.state.graph.next);
-  const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 
+  const nextClone = yield* StaticGraph.makeClone(
+    root.id,
+    root.fiber.graph.next,
+    root.fiber.graph.nextProps,
+  );
+
+  frame.pointer = nextClone.pointer;
+  frame.state   = nextClone.fiber;
+  Globals.mountRoot(frame.pointer, frame.state);
+
+  const rendered = yield* Lifecycles.rerenderRoot(nextClone.element);
 
   if ((rendered as FunctionElement.T).meta.isModal) {
     yield* new BadInteraction({
@@ -156,14 +164,14 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
 
 
 const processSubmit = E.fn(
-  function* (frame: Codec.Frame, root: Pragma) {
+  function* (frame: Codec.Frame, root: RootElement.T) {
 
   },
 );
 
 
 
-export const flushHooks = (root: Pragma) => E.gen(function* () {
+export const flushHooks = (root: Element.T) => E.gen(function* () {
   const states = Lifecycles.collectStates(root);
 
   for (const id in states) {

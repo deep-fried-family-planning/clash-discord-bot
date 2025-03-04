@@ -1,6 +1,6 @@
 import {CustomId, RootId} from '#src/disreact/codec/constants/common.ts';
 import {decodeSync, encodeSync, mutable, optional, type Schema, Struct, tag, TemplateLiteralParser} from 'effect/Schema';
-import * as MessageRoute from './message-route.ts';
+import * as MessageRoute from '#src/disreact/codec/route/params/embed-params.ts';
 
 
 
@@ -10,7 +10,7 @@ export const DialogParams = mutable(Struct({
   _tag     : tag(DIALOG_ROUTE_TAG),
   root_id  : RootId,
   custom_id: CustomId,
-  message  : optional(MessageRoute.MessageRoute),
+  message  : optional(MessageRoute.T),
 }));
 
 export const isDialogParams = (self: any): self is DialogParams => self._tag === DIALOG_ROUTE_TAG;

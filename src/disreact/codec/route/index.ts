@@ -1,19 +1,20 @@
+export * as DialogParams from 'src/disreact/codec/route/params/dialog-params.ts';
+export * as EmbedParams from '#src/disreact/codec/route/params/embed-params.ts';
+export * as Event from './event.ts';
 import {SnowFlake} from '#src/disreact/codec/constants/common.ts';
 import {CLICK} from '#src/disreact/codec/rest/rest.ts';
 import * as Dokens from '#src/disreact/codec/route/dokens.ts';
 import * as Event from '#src/disreact/codec/route/event.ts';
+import * as EmbedParams from '#src/disreact/codec/route/params/embed-params.ts';
 import {Any, mutable, type Schema, Struct, Union} from 'effect/Schema';
-import * as DialogParams from './dialog-params.ts';
-import * as MessageRoute from './message-route.ts';
+import * as DialogParams from 'src/disreact/codec/route/params/dialog-params.ts';
 
-export * from './dialog-params.ts';
-export * from './message-route.ts';
-export * as Event from './event.ts';
+
 
 export const Route = mutable(Struct({
   request: Any,
   id     : SnowFlake,
-  params : Union(DialogParams.DialogParams, MessageRoute.MessageRoute),
+  params : Union(DialogParams.DialogParams, EmbedParams.T),
   dokens : Dokens.Dokens,
   event  : Event.Event,
 }));
@@ -24,7 +25,7 @@ export const decodeRequestRoute = (request: any): Route => {
   const dokens = Dokens.makeDokens(request);
 
   if (request.type === CLICK) {
-    const params = MessageRoute.decodeMessageRouteFromRequest(request)!;
+    const params = EmbedParams.decodeMessageRouteFromRequest(request)!;
     const event  = Event.decodeRequestEvent(request);
     dokens.defer = params.doken;
 

@@ -66,8 +66,10 @@ export const resolveName = (fc: FC): string => {
     return fc.displayName;
   }
   if (fc.name) {
+    fc.displayName = fc.name;
     return fc.name;
   }
+  fc.displayName = ANONYMOUS;
   return ANONYMOUS;
 };
 
@@ -75,5 +77,7 @@ export const resolveRootId = (fc: FC): string => {
   if (fc.root_id) {
     return fc.root_id;
   }
-  return resolveName(fc);
+  const name = resolveName(fc);
+  fc.root_id = name;
+  return name;
 };
