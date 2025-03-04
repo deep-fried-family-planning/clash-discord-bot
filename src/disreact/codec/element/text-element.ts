@@ -4,8 +4,10 @@ import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-el
 
 
 
-export type Type = {
-  _tag : typeof All.TextElementTag;
+export const TAG = 'TextElement';
+
+export type TextElement = {
+  _tag : typeof TAG;
   _name: string;
   meta: {
     idx         : number;
@@ -20,15 +22,15 @@ export type Type = {
   value   : string;
   props   : any;
   children: (
-    | Type
-    | IntrinsicElement.Type
-    | FunctionElement.Type
+    | TextElement
+    | IntrinsicElement.IntrinsicElement
+    | FunctionElement.FunctionElement
     )[];
 };
 
-export const is = (type: any): type is Type => type._tag === All.TextElementTag;
+export const is = (type: any): type is TextElement => type._tag === TAG;
 
-export const make = (type: string): Type => {
+export const make = (type: string): TextElement => {
   return {
     _tag : All.TextElementTag,
     _name: 'string',
@@ -44,4 +46,4 @@ export const make = (type: string): Type => {
   };
 };
 
-export const dsxDEV_make = make;
+export const makeDEV = make;

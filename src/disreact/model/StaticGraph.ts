@@ -1,9 +1,8 @@
-import {dsx} from '#src/disreact/model/dsx/dsx.ts';
-import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
+import {dsx} from '#src/disreact/codec/dsx/dsx.ts';
 import {StaticGraphError} from '#src/disreact/codec/error.ts';
-import {E, L, pipe} from '#src/internal/pure/effect.ts';
-import console from 'node:console';
+import type {Pragma, RenderFn} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 
 
 
@@ -35,7 +34,7 @@ type StaticGraphMap = {[k: string]: StaticGraphNode};
 
 
 
-const make = (config: StaticGraphConfig) => E.gen(function * () {
+const make = (config: StaticGraphConfig) => E.gen(function* () {
   const staticGraphMap = {} as StaticGraphMap;
 
   for (const ephemeral of config.ephemeral) {
@@ -71,11 +70,11 @@ const make = (config: StaticGraphConfig) => E.gen(function * () {
   // yield * E.addFinalizer(() => E.log('static graph: closed'));
 
   return {
-    cloneRoot: (fn: RenderFn | string) => E.gen(function * () {
+    cloneRoot: (fn: RenderFn | string) => E.gen(function* () {
       const name = typeof fn === 'string' ? fn : fn.name;
 
       if (!(name in staticGraphMap)) {
-        return yield * new StaticGraphError({why: `${name} is not in the static graph`});
+        return yield* new StaticGraphError({why: `${name} is not in the static graph`});
       }
 
       return Lifecycles.linkNodeToParent(dsx(staticGraphMap[name].render) as Pragma);

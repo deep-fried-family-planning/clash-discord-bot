@@ -1,7 +1,7 @@
+import {encodeDsx} from '#src/disreact/codec/dsx/element-encode.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {encodeDsx} from '#src/disreact/model/dsx/element-encode.ts';
-import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
@@ -108,26 +108,18 @@ describe('dsx', () => {
   it('renders tree', () => {
     expect(jsx(TestMessage)).toMatchInlineSnapshot(`
       {
-        "_kind": "SyncOrEffect",
         "_name": "TestMessage",
         "_tag": "FunctionElement",
         "children": [],
         "meta": {
           "full_id": "",
-          "graph_id": "",
           "id": "",
           "idx": 0,
-          "isModal": undefined,
-          "isRoot": undefined,
           "step_id": "",
         },
         "props": {},
         "render": [Function],
         "state": {
-          "circular": {
-            "node": null,
-            "refs": [],
-          },
           "pc": 0,
           "prior": [],
           "queue": [],

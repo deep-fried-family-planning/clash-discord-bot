@@ -1,5 +1,5 @@
+import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx/element-encode.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/model/dsx/element-encode.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';

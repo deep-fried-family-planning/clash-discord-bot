@@ -7,6 +7,6 @@ import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
 export type RenderFn = (props: any) => any;
 
 export type Pragma =
-  | TextElement.Type
-  | IntrinsicElement.Type
-  | FunctionElement.Type;
+  | TextElement.TextElement
+  | IntrinsicElement.IntrinsicElement
+  | FunctionElement.FunctionElement;

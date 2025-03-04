@@ -1,37 +1,24 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
+import * as FC from '#src/disreact/codec/element/function-component.ts';
 import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
 import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
-import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {E} from '#src/internal/pure/effect.ts';
+import * as FiberNode from '#src/disreact/codec/entities/fiber-node.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import {isPromise} from 'effect/Predicate';
+import * as Children from './children.ts';
 
 
 
-export interface Component<P, R> {
-  (props: P): R | Promise<R> | E.Effect<R, any>;
-  displayName?: string;
-  static_id?  : string;
-  isRoot?     : boolean;
-  isModal?    : boolean;
-  isSync?     : boolean;
-  isAsync?    : boolean;
-  isEffect?   : boolean;
-}
+export const TAG = 'FunctionElement';
 
-export type FEC<P = any, R = any> = Component<P, R>;
-
-
-
-export type Type = {
-  _kind: ReturnType<typeof getKind>;
-  _tag : typeof All.FunctionElementTag;
+export type FunctionElement = {
+  _tag : typeof TAG;
   _name: string;
   meta: {
     idx         : number;
     id          : string;
     step_id     : string;
     full_id     : string;
-    graph_id?   : string;
     isMounted?  : boolean | undefined;
     isModal?    : boolean | undefined;
     isRoot?     : boolean | undefined;
@@ -39,65 +26,72 @@ export type Type = {
     isEphemeral?: boolean | undefined;
   };
   props   : any;
-  state   : FiberState.Type;
-  render  : Component<any, JSX.Element>;
+  state   : FiberNode.FiberNode;
+  render  : FC.FC;
   children: (
-    | Type
-    | IntrinsicElement.Type
-    | TextElement.Type
+    | FunctionElement
+    | IntrinsicElement.IntrinsicElement
+    | TextElement.TextElement
     )[];
 };
 
-export const is = (type: any): type is Type => type._tag === All.FunctionElementTag;
+export const is = (type: any): type is FunctionElement => type._tag === TAG;
 
-export const make = (type: Component<any, JSX.Element>, props: any): Type => {
+export const make = (type: FC.FC, props: any): FunctionElement => {
   return {
-    _kind   : getKind(type),
-    _tag    : All.FunctionElementTag,
-    _name   : getName(type),
+    _tag    : TAG,
+    _name   : FC.resolveName(type),
     meta    : getMeta(type),
     props,
-    state   : FiberState.make(),
+    state   : FiberNode.make(),
     render  : type,
     children: [],
   };
 };
 
-export const dsxDEV_make = make;
+export const makeDEV = make;
+
+export const render = (self: FunctionElement): E.Effect<FunctionElement['children'], any, any> => E.gen(function* () {
+  if (FC.isSync(self.render)) {
+    const children = self.render(self.props);
+    return Children.normalize(children);
+  }
+
+  if (FC.isAsync(self.render)) {
+    const output   = self.render(self.props);
+    const children = yield* E.tryPromise(async () => await output);
+    return Children.normalize(children);
+  }
+
+  if (FC.isEffect(self.render)) {
+    const children = yield* self.render(self.props);
+    return Children.normalize(children);
+  }
+
+  const output = self.render(self.props);
+
+  if (isPromise(output)) {
+    self.render._tag = FC.ASYNC;
+    const children   = yield* E.tryPromise(async () => await output);
+    return Children.normalize(children);
+  }
+
+  if (E.isEffect(output)) {
+    self.render._tag = FC.EFFECT;
+    const children   = yield* output;
+    return Children.normalize(children);
+  }
+
+  self.render._tag = FC.SYNC;
+  return Children.normalize(output);
+});
 
 
-
-const getName = (type: Component<any, JSX.Element>) => {
-  if (type.displayName)
-    return type.displayName;
-
-  if (type.name)
-    return type.name;
-
-  return All.AnonymousName;
-};
-
-const getKind = (type: Component<any, JSX.Element>) => {
-  if (type.isSync)
-    return All.SyncFunctionTag;
-
-  if (type.isEffect)
-    return All.EffectFunctionTag;
-
-  if (type.constructor.name === All.AsyncFunctionConstructorName)
-    return All.AsyncFunctionTag;
-
-  return All.SyncOrEffectFunctionTag;
-};
-
-const getMeta = (type: Component<any, JSX.Element>): Type['meta'] => {
+const getMeta = (type: FC.FC): FunctionElement['meta'] => {
   return {
-    idx     : All.Zero,
-    id      : All.Empty,
-    step_id : All.Empty,
-    full_id : All.Empty,
-    isModal : type.isModal,
-    isRoot  : type.isRoot,
-    graph_id: All.Empty,
+    idx    : All.Zero,
+    id     : All.Empty,
+    step_id: All.Empty,
+    full_id: All.Empty,
   };
 };

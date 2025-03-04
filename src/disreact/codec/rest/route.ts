@@ -1,5 +1,5 @@
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
 import {decodeSync, encodeSync, mutable, NumberFromString, type Schema, String, Struct, TemplateLiteralParser, transform} from 'effect/Schema';
-import * as Doken from 'src/disreact/codec/rest/doken.ts';
 
 
 

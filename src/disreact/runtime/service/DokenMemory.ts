@@ -1,8 +1,8 @@
 import {DokenMemoryError} from '#src/disreact/codec/error.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
 import {C, E, L} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {type Cause, Duration, Exit, pipe} from 'effect';
-import * as Doken from '#src/disreact/codec/rest/doken.ts';
 
 
 

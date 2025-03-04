@@ -151,7 +151,6 @@ describe('lifecycle', () => {
 
       expect(JSON.stringify(render, null, 2)).toMatchInlineSnapshot(`
         "{
-          "_kind": "SyncOrEffect",
           "_tag": "FunctionElement",
           "_name": "TestMessage",
           "meta": {
@@ -159,8 +158,7 @@ describe('lifecycle', () => {
             "id": "TestMessage:0",
             "step_id": "TestMessage:0",
             "full_id": "TestMessage:0",
-            "isRoot": true,
-            "graph_id": ""
+            "isMessage": true
           },
           "state": {
             "pc": 0,
@@ -175,10 +173,6 @@ describe('lifecycle', () => {
               }
             ],
             "rc": 1,
-            "circular": {
-              "node": null,
-              "refs": []
-            },
             "queue": []
           },
           "props": {},
@@ -197,15 +191,13 @@ describe('lifecycle', () => {
               },
               "children": [
                 {
-                  "_kind": "SyncOrEffect",
                   "_tag": "FunctionElement",
                   "_name": "Header",
                   "meta": {
                     "idx": 0,
                     "id": "Header:0",
                     "step_id": "message:0:Header:0",
-                    "full_id": "TestMessage:0:message:0:Header:0",
-                    "graph_id": ""
+                    "full_id": "TestMessage:0:message:0:Header:0"
                   },
                   "props": {
                     "title": "Omni Board",
@@ -216,11 +208,7 @@ describe('lifecycle', () => {
                     "stack": [],
                     "prior": [],
                     "rc": 1,
-                    "queue": [],
-                    "circular": {
-                      "node": null,
-                      "refs": []
-                    }
+                    "queue": []
                   },
                   "children": [
                     {

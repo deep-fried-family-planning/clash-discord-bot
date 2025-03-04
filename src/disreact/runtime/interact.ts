@@ -110,7 +110,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 
 
-  if ((rendered as FunctionElement.Type).meta.isModal) {
+  if ((rendered as FunctionElement.FunctionElement).meta.isModal) {
     yield* new BadInteraction({
       why: 'Unsupported interaction: modal open',
     });
@@ -121,7 +121,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   }
 
 
-  if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.Type).meta.isEphemeral) {
+  if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.FunctionElement).meta.isEphemeral) {
     frame.dokens.fresh.type      = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
     frame.dokens.fresh.ephemeral = 1;
     frame.dokens.fresh           = yield* Doken.activate({doken: frame.dokens.fresh});

@@ -1,26 +1,13 @@
-import type * as FunctionElement from '../element/function-element.ts';
+import * as FC from 'src/disreact/codec/element/function-component.ts';
 
 
 
-export type Type = {
-  static_id    : string;
-  component    : FunctionElement.FEC;
-  isEntrypoint?: boolean | undefined;
-  isEphemeral? : boolean | undefined;
-  isDialog?    : boolean | undefined;
-  isSync?      : boolean | undefined;
-  isAsync?     : boolean | undefined;
-  isEffect?    : boolean | undefined;
+export type StaticRoot = {
+  root_id  : string;
+  component: FC.FC;
 };
 
-
-
-export const make = (fn: FunctionElement.FEC): Type => {
-  return {
-    static_id: fn.static_id ?? fn.displayName ?? fn.name,
-    component: fn,
-    isEffect : fn.isEffect,
-    isAsync  : fn.isAsync,
-    isSync   : fn.isSync,
-  };
-};
+export const make = (component: FC.FC, root_id?: string): StaticRoot => ({
+  root_id: root_id ?? FC.resolveName(component),
+  component,
+});

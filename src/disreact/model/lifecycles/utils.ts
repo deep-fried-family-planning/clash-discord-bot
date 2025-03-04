@@ -3,7 +3,7 @@ import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import {Props} from '#src/disreact/codec/entities';
-import * as FiberState from '#src/disreact/codec/entities/fiber-state.ts';
+import * as FiberNode from '#src/disreact/codec/entities/fiber-node.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
@@ -17,7 +17,6 @@ export const linkNodeToParent = <T extends Pragma>(node: T, parent?: Pragma): T 
     node.meta.id      = `${node._name}:${node.meta.idx}`;
     node.meta.step_id = `${node._name}:${node.meta.idx}`;
     node.meta.full_id = `${node._name}:${node.meta.idx}`;
-    node.meta.isRoot  = true;
   }
   else {
     node.meta.id      = `${node._name}:${node.meta.idx}`;
@@ -81,17 +80,17 @@ export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
   if (a._tag !== b._tag) return false;
   if (a._name !== b._name) return false;
   if (a.meta.id !== b.meta.id) return false;
-  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.Type).value;
+  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.TextElement).value;
   return true;
 };
 
 export const hasSameProps = (c: Pragma, r: Pragma) => Props.isEqual(c.props, r.props);
 
-export const hasSameState = (c: FunctionElement.Type) => FiberState.isSameState(c.state);
+export const hasSameState = (c: FunctionElement.FunctionElement) => FiberNode.isSameState(c.state);
 
 
 
-export const collectStates = (node: Pragma, states: { [K in string]: FiberState.Type } = {}): typeof states => {
+export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.FiberNode } = {}): typeof states => {
   if (node._tag === All.FunctionElementTag) {
     states[node.meta.full_id] = node.state;
   }
@@ -105,7 +104,7 @@ export const collectStates = (node: Pragma, states: { [K in string]: FiberState.
   return states;
 };
 
-export const reduceToStacks = (hooks: { [K in string]: FiberState.Type }): { [K in string]: FiberState.Type['stack'] } => {
+export const reduceToStacks = (hooks: { [K in string]: FiberNode.FiberNode }): { [K in string]: FiberNode.FiberNode['stack'] } => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

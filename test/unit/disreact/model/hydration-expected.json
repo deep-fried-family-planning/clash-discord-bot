@@ -1,5 +1,4 @@
 {
-  "_kind": "SyncOrEffect",
   "_name": "TestMessage",
   "_tag": "FunctionElement",
   "children": [
@@ -8,7 +7,6 @@
       "_tag": "IntrinsicElement",
       "children": [
         {
-          "_kind": "SyncOrEffect",
           "_name": "Header",
           "_tag": "FunctionElement",
           "children": [
@@ -43,11 +41,8 @@
           ],
           "meta": {
             "full_id": "TestMessage:0:message:0:Header:0",
-            "graph_id": "",
             "id": "Header:0",
             "idx": 0,
-            "isModal": undefined,
-            "isRoot": undefined,
             "step_id": "message:0:Header:0",
           },
           "props": {
@@ -56,10 +51,6 @@
           },
           "render": [Function],
           "state": {
-            "circular": {
-              "node": null,
-              "refs": [],
-            },
             "pc": 0,
             "prior": [],
             "queue": [],
@@ -331,20 +322,14 @@
   ],
   "meta": {
     "full_id": "TestMessage:0",
-    "graph_id": "",
     "id": "TestMessage:0",
     "idx": 0,
-    "isModal": undefined,
-    "isRoot": true,
+    "isMessage": true,
     "step_id": "TestMessage:0",
   },
   "props": {},
   "render": [Function],
   "state": {
-    "circular": {
-      "node": null,
-      "refs": [],
-    },
     "pc": 0,
     "prior": [
       {

@@ -1,4 +1,4 @@
-import type {FC} from '#src/disreact/jsx-runtime.ts';
+import type {FC} from '#src/disreact/codec/element/function-component.ts';
 
 
 

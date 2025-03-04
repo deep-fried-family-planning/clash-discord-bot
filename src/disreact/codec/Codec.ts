@@ -1,14 +1,15 @@
 import {SubmitEventTag} from '#src/disreact/codec/constants/all.ts';
+import {encodeMessageDsx} from '#src/disreact/codec/dsx/element-encode.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import {encodeMessageDsx} from '#src/disreact/model/dsx/element-encode.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
-import * as CodecTarget from './CodecTargets.ts';
-import * as Pointer from './entities/pointer.ts';
-import * as RootState from './entities/root-state.ts';
+import * as FiberHash from 'src/disreact/codec/entities/fiber-hash.ts';
+import * as FiberPointer from 'src/disreact/codec/entities/fiber-pointer.ts';
+import * as FiberRoot from 'src/disreact/codec/entities/fiber-root.ts';
 import * as Events from 'src/disreact/codec/routing/events.ts';
+import * as CodecTarget from './CodecTargets.ts';
 import * as Route from './rest/route.ts';
 
 
@@ -16,8 +17,8 @@ import * as Route from './rest/route.ts';
 export type Frame = {
   rest   : any;
   id     : string;
-  pointer: Pointer.Type;
-  state  : RootState.Type;
+  pointer: FiberPointer.Type;
+  state  : FiberRoot.FiberRoot;
   hash   : string;
   params : Route.Params;
   event  : Events.Type;
@@ -31,14 +32,14 @@ export type Frame = {
 
 export const makeStaticFrame = (root: string): Frame => {
   const doken      = Doken.makeStatic();
-  const state      = RootState.make();
+  const state      = FiberRoot.make();
   state.graph.next = root;
-  const hash       = RootState.makeHash(state);
+  const hash       = FiberHash.hash(state);
 
   return {
     rest   : null,
     id     : NONE_STR,
-    pointer: Pointer.make(NONE_STR),
+    pointer: FiberPointer.make(NONE_STR),
     state,
     hash,
     params : {
@@ -64,18 +65,15 @@ export const decodeInteraction = E.fn(function* (rest: any) {
   const event  = Events.decodeEvent(rest);
 
 
-  const state = params.hash === NONE_STR
-    ? RootState.make()
-    : RootState.makeFromHash(params.hash);
-
-  state.rest = rest;
+  const state = FiberHash.decode(params.hash);
+  state.rest  = rest;
 
   return {
     rest   : Object.freeze(rest),
     id     : rest.id,
-    pointer: Pointer.make(rest.id),
+    pointer: FiberPointer.make(rest.id),
     state,
-    hash   : RootState.makeHash(state),
+    hash   : FiberHash.hash(state),
     params,
     event,
     dokens : yield* resolveDokens(rest, event, params),
@@ -135,7 +133,7 @@ const resolveDokens = E.fn(function* (
 
 
 export const encodeMessage = (frame: Frame, root: Pragma) => {
-  const hash  = RootState.makeHash(frame.state);
+  const hash  = FiberHash.hash(frame.state);
   const doken = frame.dokens.rest ?? frame.dokens.fresh;
 
   const route = Route.encodeMessageRoute({

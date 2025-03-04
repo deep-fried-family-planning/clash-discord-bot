@@ -1,8 +1,8 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
+import type {FC} from '#src/disreact/codec/element/function-component.ts';
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/jsx-runtime.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
@@ -10,14 +10,14 @@ import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 
 
 
-export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function * () {
-  const ix = useIx();
+export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* () {
+  const ix                      = useIx();
   const [infoKind, setInfoKind] = useState('about');
-  const [embedId, setEmbedId] = useState(NONE_STR);
-  const page = usePage([Link]);
+  const [embedId, setEmbedId]   = useState(NONE_STR);
+  const page                    = usePage([Link]);
 
   const infos = pipe(
-    yield * infoQueryByServer({pk: ix.guild_id!}),
+    yield* infoQueryByServer({pk: ix.guild_id!}),
     filterL((i) => i.kind === infoKind),
     sortByL(
       ORD.mapInput(ORDN, (i) => i.selector_order ?? 100),
@@ -36,7 +36,7 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function *
     setEmbedId(infos[0].value);
   }
 
-  const {embed} = yield * MenuCache.embedRead(embedId === NONE_STR ? infos[0].value : embedId);
+  const {embed} = yield* MenuCache.embedRead(embedId === NONE_STR ? infos[0].value : embedId);
 
   return (
     <message ephemeral>
@@ -57,7 +57,7 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function *
       </select>
       <select
         onselect={(event: any) => {
-          setEmbedId(event.values[0])
+          setEmbedId(event.values[0]);
         }}
       >
         {infos.map((i) => (

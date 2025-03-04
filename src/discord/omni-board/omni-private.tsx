@@ -1,12 +1,13 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
 import {Header} from '#src/discord/components/header.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
+import type {FC} from '#src/disreact/codec/element/function-component.ts';
 import {useEffect, usePage, useState} from '#src/disreact/index.ts';
 import console from 'node:console';
 
 
 
-export const OmniPrivate: DSX.FC = () => {
+export const OmniPrivate: FC = () => {
   const page          = usePage([Link]);
   const [num, setNum] = useState(0);
 
@@ -37,5 +38,3 @@ export const OmniPrivate: DSX.FC = () => {
 
 
 OmniPrivate.displayName;
-
-OmniPrivate;

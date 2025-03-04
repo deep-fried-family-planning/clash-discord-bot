@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
-import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
 
 
@@ -44,18 +44,18 @@ export const dsxsDEV = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[]
     return children;
 
   case 'string':
-    const node    = IntrinsicElement.dsxDEV_make(type, props);
+    const node    = IntrinsicElement.makeDEV(type, props);
     node.children = connectDirectChildren(children);
     return node;
 
   case 'function':
-    return FunctionElement.dsxDEV_make(type, props);
+    return FunctionElement.makeDEV(type, props);
 
   case 'boolean':
   case 'number':
   case 'bigint':
   case 'symbol':
-    return TextElement.dsxDEV_make(type.toString());
+    return TextElement.makeDEV(type.toString());
   }
 
   throw new Error(`Unknown Tag: ${type}`);
@@ -71,8 +71,8 @@ const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
       c = TextElement.make(c);
     }
 
-    c.meta.idx = i;
-    c.meta.id  = `${c._name}:${i}`;
+    c.meta.idx  = i;
+    c.meta.id   = `${c._name}:${i}`;
     children[i] = c;
   }
 

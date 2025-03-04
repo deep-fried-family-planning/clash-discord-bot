@@ -1,8 +1,9 @@
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
-import * as Codec from '../../codec/index.ts';
-import * as Utils from './utils.ts';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import { Reserved } from '#src/disreact/codec/constants/index.ts';
+import {Reserved} from '#src/disreact/codec/constants/index.ts';
+import type * as FiberNode from '#src/disreact/codec/entities/fiber-node.ts';
+import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Utils from './utils.ts';
+
 
 
 export const cloneTree = (node: Pragma, parent?: Pragma) => {
@@ -67,7 +68,7 @@ const intrinsicPropFunctionKeys = [
 
 export const cloneIntrinsicProps = (props: any) => {
   const shallow = Utils.removeReservedIntrinsicProps(props);
-  const cloned = Utils.deepClone(shallow);
+  const cloned  = Utils.deepClone(shallow);
 
   for (const fn of intrinsicPropFunctionKeys) {
     if (props[fn]) {
@@ -80,9 +81,7 @@ export const cloneIntrinsicProps = (props: any) => {
 
 
 
-export const cloneFunctionNodeState = (state: any) => {
-  if (!state) return state;
-
+export const cloneFunctionNodeState = (state: FiberNode.FiberNode): FiberNode.FiberNode => {
   const {
           queue: effects,
           ...rest
