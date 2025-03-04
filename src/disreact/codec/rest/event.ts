@@ -54,7 +54,7 @@ export const SubmitEvent = mutable(Struct({
   values: Any,
 }));
 
-export const Event = Union(
+export const T = Union(
   ButtonEvent,
   SelectEvent,
   UserEvent,
@@ -69,9 +69,9 @@ export type UserEvent = Schema.Type<typeof UserEvent>;
 export type RoleEvent = Schema.Type<typeof RoleEvent>;
 export type ChannelEvent = Schema.Type<typeof ChannelEvent>;
 export type SubmitEvent = Schema.Type<typeof SubmitEvent>;
-export type Event = Schema.Type<typeof Event>;
+export type T = Schema.Type<typeof T>;
 
-export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
+export const decodeRequestEvent = (request: any, custom_id?: string): T => {
   if (request.type === InteractionType.MESSAGE_COMPONENT) {
     if (request.data.component_type === ComponentType.BUTTON) {
       return {

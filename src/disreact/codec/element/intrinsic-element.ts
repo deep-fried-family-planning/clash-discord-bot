@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-dynamic-delete */
 import * as All from '#src/disreact/codec/constants/all.ts';
 import * as Reserved from '#src/disreact/codec/constants/reserved.ts';
 import * as Intrinsic from '#src/disreact/codec/element/intrinsic/index.ts';
-import type * as Element from './index.ts';
+import type * as Element from './element.ts';
 
 
-
-export const TYPE_OF = 'string';
 
 export const TAG = 'IntrinsicElement';
 
@@ -45,16 +43,6 @@ export const make = (type: string, props: any): T => {
   };
 };
 
-export const makeDEV = (type: string, props: any): T => {
-  const validator = Intrinsic.validateAttributesDEV[type as keyof typeof Intrinsic.validateAttributesDEV];
-
-  if (!validator) {
-    throw new Error(`Unknown intrinsic element type: ${type}`);
-  }
-
-  return make(type, validator(props));
-};
-
 const reservedProps = [
   Reserved.onclick,
   Reserved.onselect,
@@ -89,10 +77,18 @@ export const clone = (self: T): T => {
   return cloned;
 };
 
-export const cloneDEV = clone;
-
 export const encode = (self: T) => {
   return self;
 };
 
-export const encodeDEV = encode;
+
+
+export const makeDEV = (type: string, props: any): T => {
+  const validator = Intrinsic.validateAttributesDEV[type as keyof typeof Intrinsic.validateAttributesDEV];
+
+  if (!validator) {
+    throw new Error(`Unknown intrinsic element type: ${type}`);
+  }
+
+  return make(type, validator(props));
+};

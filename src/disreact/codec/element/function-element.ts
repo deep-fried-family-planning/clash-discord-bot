@@ -4,11 +4,9 @@ import * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {isPromise} from 'effect/Predicate';
 import * as Children from './children.ts';
-import type * as Element from './index.ts';
+import type * as Element from './element.ts';
 
 
-
-export const TYPE_OF = 'function';
 
 export const TAG = 'FunctionElement';
 
@@ -50,8 +48,6 @@ export const make = (type: FC.FC, props: any): T => {
     children: [],
   };
 };
-
-export const makeDEV = make;
 
 export const clone = (self: T): T => {
   const {props, state, render, children, ...rest} = self;
@@ -99,8 +95,6 @@ const cloneProps = (props: T['props']): T['props'] => {
   return props;
 };
 
-export const cloneDEV = clone;
-
 export const render = (self: T): E.Effect<T['children'], any, any> => E.gen(function* () {
   if (FC.isSync(self.render)) {
     const children = self.render(self.props);
@@ -136,10 +130,10 @@ export const render = (self: T): E.Effect<T['children'], any, any> => E.gen(func
   return Children.normalize(output);
 });
 
-export const renderDEV = render;
-
 export const encode = (self: T) => {
   return self.children;
 };
 
-export const encodeDEV = encode;
+
+
+export const makeDEV = make;

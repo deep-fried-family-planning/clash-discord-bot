@@ -79,8 +79,8 @@ describe('lifecycle', () => {
       given.clone     = Lifecycles.cloneTree(given.component);
       given.initial   = yield* Lifecycles.rerenderRoot(yield* Lifecycles.initialRender(given.clone));
       given.event     = {
-        id  : 'actions:2:button:0',
-        type: 'onclick',
+        custom_id: 'actions:2:button:0',
+        prop     : 'onclick',
       } as any;
 
       const before     = Lifecycles.cloneTree(given.initial);
@@ -117,13 +117,13 @@ describe('lifecycle', () => {
         given.clone     = Lifecycles.cloneTree(given.component);
         given.initial   = yield* Lifecycles.rerenderRoot(yield* Lifecycles.initialRender(given.clone));
         given.event     = {
-          id  : 'buttons:1:button:0',
-          type: 'onclick',
+          custom_id: 'buttons:1:button:0',
+          prop     : 'onclick',
         } as any;
         given.event.id  = 'never';
 
         const actual = () => Lifecycles.invokeIntrinsicTarget(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "never" having a handler for type "onclick" was not found]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "onclick" was not found]`);
       }));
     });
 
@@ -134,12 +134,12 @@ describe('lifecycle', () => {
         given.clone      = Lifecycles.cloneTree(given.component);
         given.initial    = yield* Lifecycles.rerenderRoot(yield* Lifecycles.initialRender(given.clone));
         given.event      = {
-          id  : 'buttons:1:button:0',
-          type: 'onclick',
+          custom_id: 'buttons:1:button:0',
+          prop     : 'onclick',
         } as any;
         given.event.type = 'never';
         const actual     = () => Lifecycles.invokeIntrinsicTarget(given.initial, given.event);
-        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "never" was not found]`);
+        expect(actual).toThrowErrorMatchingInlineSnapshot(`[Error: No node with id_step "buttons:1:button:0" having a handler for type "onclick" was not found]`);
       }));
     });
 

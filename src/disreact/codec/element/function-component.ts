@@ -14,6 +14,9 @@ type Base = Function & {
   displayName?: string;
   root_id?    : string;
   isModal?    : boolean;
+  isRoot?     : boolean;
+  isMessage?  : boolean;
+  isEphemeral?: boolean;
 };
 
 export type UnknownFunctionComponent<P, E> = Base & {

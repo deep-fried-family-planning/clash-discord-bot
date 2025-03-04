@@ -10,12 +10,12 @@ import {pipe} from 'effect';
 export class DiscordDOM extends E.Tag('DisReact.DiscordDOM')<
   DiscordDOM,
   {
-    discard : (doken: Doken.Type) => E.Effect<void, DiscordRESTError>;
-    defer   : (doken: Doken.Type) => E.Effect<void, DiscordRESTError>;
-    create  : (doken: Doken.Type, encoded: any) => E.Effect<void, DiscordRESTError>;
-    reply   : (app_id: string, doken: Doken.Type, encoded: any) => E.Effect<void, DiscordRESTError>;
-    update  : (app_id: string, doken: Doken.Type, encoded: any) => E.Effect<void, DiscordRESTError>;
-    dismount: (app_id: string, doken: Doken.Type) => E.Effect<void, DiscordRESTError>;
+    discard : (doken: Doken.T) => E.Effect<void, DiscordRESTError>;
+    defer   : (doken: Doken.T) => E.Effect<void, DiscordRESTError>;
+    create  : (doken: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
+    reply   : (app_id: string, doken: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
+    update  : (app_id: string, doken: Doken.T, encoded: any) => E.Effect<void, DiscordRESTError>;
+    dismount: (app_id: string, doken: Doken.T) => E.Effect<void, DiscordRESTError>;
   }
 >() {
   static readonly defaultLayer = L.suspend(() => makeDfx);
@@ -31,7 +31,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.createInteractionResponse(
           doken.id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
           {type: Rest.DEFER_UPDATE},
         ),
         E.provide(LG.minimumLogLevel(LL.Info)),
@@ -41,7 +41,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.createInteractionResponse(
           doken.id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
           doken.ephemeral
             ? {type: doken.type, data: {flags: Rest.EPHEMERAL}}
             : {type: doken.type},
@@ -53,7 +53,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.createInteractionResponse(
           doken.id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
           {type: doken.type, data},
         ),
         E.provide(LG.minimumLogLevel(LL.Info)),
@@ -63,7 +63,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.editOriginalInteractionResponse(
           app_id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
           data,
         ),
         E.provide(LG.minimumLogLevel(LL.Info)),
@@ -73,7 +73,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.editOriginalInteractionResponse(
           app_id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
           data,
         ),
         E.provide(LG.minimumLogLevel(LL.Info)),
@@ -83,7 +83,7 @@ const makeDfx = L.effect(DiscordDOM, E.gen(function* () {
       pipe(
         REST.deleteOriginalInteractionResponse(
           app_id,
-          RDT.value(doken.token!),
+          RDT.value(doken.value),
         ),
         E.provide(LG.minimumLogLevel(LL.Info)),
       ),

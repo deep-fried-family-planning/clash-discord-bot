@@ -6,7 +6,7 @@ import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
 import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
-import {StaticModel} from '#src/disreact/model/StaticModel.ts';
+import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
@@ -17,7 +17,7 @@ import type * as FC from '../../codec/element/function-component.ts';
 export const runtimeLayer = pipe(
   L.empty,
   L.provideMerge(InteractionBroker.makeLayer()),
-  L.provideMerge(StaticModel.singleton({
+  L.provideMerge(RootStore.singleton({
     persistent: [
       OmniPublic,
     ],

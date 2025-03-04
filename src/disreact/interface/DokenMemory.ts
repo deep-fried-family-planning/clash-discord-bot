@@ -1,8 +1,8 @@
 import {DokenMemoryError} from '#src/disreact/codec/error.ts';
-import * as Doken from '#src/disreact/codec/rest/doken.ts';
 import {C, E, L} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {type Cause, Duration, Exit, pipe} from 'effect';
+import {Doken} from '../codec/rest';
 
 
 
@@ -11,7 +11,7 @@ type DokenMemoryKind =
   | 'dynamo'
   | 'custom';
 
-type DokenError =
+export type DokenError =
   | DokenMemoryError
   | Cause.UnknownException;
 
@@ -19,12 +19,12 @@ export class DokenMemory extends E.Tag('DisReact.DokenMemory')<
   DokenMemory,
   {
     kind   : DokenMemoryKind;
-    load   : (id: string) => E.Effect<Doken.Type | null, DokenError>;
-    memLoad: (id: string) => E.Effect<Doken.Type | null, DokenError>;
+    load   : (id: string) => E.Effect<Doken.T | null, DokenError>;
+    memLoad: (id: string) => E.Effect<Doken.T | null, DokenError>;
     free   : (id: string) => E.Effect<void, DokenError>;
     memFree: (id: string) => E.Effect<void, DokenError>;
-    save   : (d: Doken.Type) => E.Effect<void, DokenError>;
-    memSave: (d: Doken.Type) => E.Effect<void, DokenError>;
+    save   : (d: Doken.T) => E.Effect<void, DokenError>;
+    memSave: (d: Doken.T) => E.Effect<void, DokenError>;
   }
 >() {
   static readonly localLayer = (config: LocalDokenMemoryConfig) =>
@@ -48,7 +48,7 @@ export const LocalDokenMemory = (config: LocalDokenMemoryConfig) => L.effect(Dok
   const cache = yield* C.make({
     capacity  : config.capacity ?? 1000,
     timeToLive: config.timeToLive ?? '12 minutes',
-    lookup    : () => E.succeed(null as null | Doken.Type),
+    lookup    : () => E.succeed(null as null | Doken.T),
   });
 
   return {
@@ -75,9 +75,9 @@ const DynamoDokenMemory = (TableName: string) => L.effect(DokenMemory, E.gen(fun
             sk: `t-${id}`,
           },
         }),
-        E.flatMap((resp) => resp.Item
-          ? Doken.makeFromParams(resp.Item as any)
-          : E.succeed(null),
+        E.map((resp) => resp.Item
+          ? Doken.decodeMemory(resp.Item as any)
+          : null,
         ),
       ),
     timeToLive: (exit) =>
@@ -130,7 +130,7 @@ const DynamoDokenMemory = (TableName: string) => L.effect(DokenMemory, E.gen(fun
           Item: {
             pk: `t-${d.id}`,
             sk: `t-${d.id}`,
-            ...d,
+            ...Doken.encodeMemory(d),
           },
         })),
         E.catchAll((e: Error) => new DokenMemoryError({cause: e})),

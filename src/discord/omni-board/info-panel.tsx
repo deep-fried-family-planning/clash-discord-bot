@@ -1,7 +1,7 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
+import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import type {FC} from '#src/disreact/codec/element/function-component.ts';
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
@@ -13,7 +13,7 @@ import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* () {
   const ix                      = useIx();
   const [infoKind, setInfoKind] = useState('about');
-  const [embedId, setEmbedId]   = useState(NONE_STR);
+  const [embedId, setEmbedId]   = useState(EMPTY);
   const page                    = usePage([Link]);
 
   const infos = pipe(
@@ -32,11 +32,11 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
     })),
   );
 
-  if (embedId === NONE_STR) {
+  if (embedId === EMPTY) {
     setEmbedId(infos[0].value);
   }
 
-  const {embed} = yield* MenuCache.embedRead(embedId === NONE_STR ? infos[0].value : embedId);
+  const {embed} = yield* MenuCache.embedRead(embedId === EMPTY ? infos[0].value : embedId);
 
   return (
     <message ephemeral>
@@ -48,7 +48,7 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
       <select
         onselect={(event: any) => {
           setInfoKind(event.values[0]);
-          setEmbedId(NONE_STR);
+          setEmbedId(EMPTY);
         }}
       >
         <option label={'About'} value={'about'} default={infoKind === 'about'}/>

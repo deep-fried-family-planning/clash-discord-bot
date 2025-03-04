@@ -1,4 +1,4 @@
-import {StaticModel} from '#src/disreact/model/StaticModel.ts';
+import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {Data} from 'effect';
 import * as Deferred from 'effect/Deferred';
@@ -24,7 +24,7 @@ export type RendererConfig = {
 
 
 const make = (config: RendererConfig) => E.gen(function* () {
-  const staticModel = yield* StaticModel;
+  const staticModel = yield* RootStore;
 
   const root = staticModel.synthesizeClone(config.root_id, config.props);
 
@@ -39,8 +39,8 @@ const make = (config: RendererConfig) => E.gen(function* () {
 
 
 
-export class RendererModel extends E.Tag('DisReact.Renderer')<
-  RendererModel,
+export class Renderer extends E.Tag('DisReact.Renderer')<
+  Renderer,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
   static readonly makeLayer = (id: RendererConfig) => L.effect(this, make(id));

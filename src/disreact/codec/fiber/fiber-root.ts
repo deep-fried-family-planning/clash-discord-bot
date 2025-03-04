@@ -1,11 +1,12 @@
+import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import type * as FiberState from '#src/disreact/codec/fiber/fiber-node.ts';
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 
 
 
 export type T = {
-  props : object | null;
-  fibers: { [K in string]: FiberState.T };
+  root_id: string;
+  props  : object | null;
+  fibers : { [K in string]: FiberState.T };
   graph: {
     next     : string;
     nextProps: object | null;
@@ -13,11 +14,12 @@ export type T = {
   rest: any;
 };
 
-export const make = (): T => ({
-  props : null,
-  fibers: {},
-  graph : {
-    next     : NONE_STR,
+export const make = (root_id?: string): T => ({
+  root_id: root_id ?? EMPTY,
+  props  : null,
+  fibers : {},
+  graph  : {
+    next     : root_id ?? EMPTY,
     nextProps: null,
   },
   rest: null as any,

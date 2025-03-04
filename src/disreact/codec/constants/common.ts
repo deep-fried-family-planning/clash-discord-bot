@@ -45,3 +45,4 @@ export const RootId = String;
 
 export const EMPTY     = '-';
 export const EMPTY_NUM = 0;
+export const CLOSE     = '.close';

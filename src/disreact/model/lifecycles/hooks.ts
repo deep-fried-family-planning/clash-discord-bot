@@ -1,6 +1,6 @@
+import {CLOSE} from '#src/disreact/codec/constants/common.ts';
 import type * as FC from '#src/disreact/codec/element/function-component.ts';
 import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
-import {CLOSE} from '#src/disreact/codec/rest/index.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 
 

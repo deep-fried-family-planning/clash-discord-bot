@@ -1,7 +1,6 @@
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import * as FiberRoot from '#src/disreact/codec/fiber/fiber-root.ts';
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {pipe, Record} from 'effect';
 import type {Schema} from 'effect/Schema';
 import {String} from 'effect/Schema';
@@ -15,7 +14,7 @@ export type T = Schema.Type<typeof T>;
 
 export const Empty = EMPTY;
 
-export const isEmpty = (hash: T): boolean => hash === NONE_STR;
+export const isEmpty = (hash: T): boolean => hash === Empty;
 
 export const hash = (root: FiberRoot.T): T => {
   return Compression.compress({

@@ -1,4 +1,4 @@
-import {StaticModel} from '#src/disreact/model/StaticModel.ts';
+import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {synthesize} from '#src/disreact/runtime/synthesize.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
@@ -8,7 +8,7 @@ import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx
 
 
 
-const staticGraph = StaticModel.singleton({
+const staticGraph = RootStore.singleton({
   persistent: [
     TestMessage,
     TestDialog,

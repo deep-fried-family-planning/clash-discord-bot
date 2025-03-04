@@ -25,15 +25,25 @@ export const make = (): T => ({
   queue: [] as any[],
 });
 
-export const commit = (self: T): T => {
-  self.prior = structuredClone(self.stack);
-  return self;
-};
-
 export const clone = (self: T): T => {
   const {queue, ...rest} = self;
   return {
     ...structuredClone(rest),
     queue,
   };
+};
+
+export const render = (self: T): T => {
+  self.rc++;
+  return self;
+};
+
+export const advance = (self: T): T => {
+  self.pc++;
+  return self;
+};
+
+export const commit = (self: T): T => {
+  self.prior = structuredClone(self.stack);
+  return self;
 };

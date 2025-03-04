@@ -1,6 +1,6 @@
+import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 
 
 
@@ -177,7 +177,7 @@ const encodeInner = (node: any): any => {
 
   case DTML.dialog:
   case DTML.modal:
-    acc.custom_id ??= NONE_STR;
+    acc.custom_id ??= EMPTY;
     acc.components = children[All.components];
     return acc;
 

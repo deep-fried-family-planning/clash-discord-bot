@@ -1,19 +1,19 @@
 import {EMPTY, EMPTY_NUM, RootId} from '#src/disreact/codec/constants/common.ts';
 import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
-import * as Doken from '#src/disreact/codec/rest/route/doken.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
+import {RDT} from '#src/internal/pure/effect.ts';
 import {Redacted} from 'effect';
-import {decodeSync, encodeSync, mutable, optional, type Schema, Struct, tag, TemplateLiteralParser} from 'effect/Schema';
+import {decodeSync, encodeSync, mutable, optional, type Schema, String, Struct, tag, TemplateLiteralParser} from 'effect/Schema';
 
 
 
-const TAG = 'MessageRoute';
-
+const TAG    = 'MessageRoute';
 const PREFIX = 'https://dffp.org/';
 
 export const T = mutable(Struct({
   _tag   : tag(TAG),
   root_id: RootId,
-  doken  : optional(Doken.Doken),
+  doken  : optional(Doken.T),
   hash   : FiberHash.T,
 }));
 
@@ -25,7 +25,7 @@ const Parser = TemplateLiteralParser(
   '/', Doken.DokenType,
   '/', Doken.DokenEphemeral,
   '/', Doken.DokenTTL,
-  '/', Doken.DokenValue,
+  '/', String,
   '/', FiberHash.T,
 );
 
@@ -34,14 +34,14 @@ const Decoder = decodeSync(Parser);
 
 export const is = (self: any): self is T => self._tag === TAG;
 
-export const encodeMessageRoute = (self: T): string => {
+export const encodeMessageRoute = (self: Omit<T, '_tag'>): string => {
   return Encoder([
     PREFIX, self.root_id,
     '/', self.doken?.id ?? EMPTY,
     '/', self.doken?.type ?? EMPTY_NUM,
     '/', self.doken?.ephemeral ?? EMPTY_NUM,
     '/', self.doken?.ttl ?? EMPTY_NUM,
-    '/', self.doken?.value ?? Redacted.make(EMPTY),
+    '/', self.doken?.value ? Redacted.value(self.doken.value) : EMPTY,
     '/', self.hash,
   ]);
 };
@@ -66,14 +66,14 @@ export const decodeMessageRoute = (encoded: string): T => {
       type     : dokenType,
       ephemeral: dokenEphemeral,
       ttl      : dokenTTL,
-      value    : dokenValue,
+      value    : RDT.make(dokenValue),
     });
   }
 
   return acc;
 };
 
-export const encodeMessageRouteToURL = (self: T, message: any) => {
+export const encodeMessageRouteToURL = (self: Omit<T, '_tag'>, message: any) => {
   message.embeds ??= [];
   message.embeds[0] ??= {};
   message.embeds[0].image ??= {};

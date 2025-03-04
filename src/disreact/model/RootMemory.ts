@@ -1,11 +1,11 @@
-import {StaticModel} from '#src/disreact/model/StaticModel.ts';
+import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import * as Deferred from 'effect/Deferred';
 
 
 
 const make = () => E.gen(function* () {
-  const staticModel = yield* StaticModel;
+  const staticModel = yield* RootStore;
 
 
 
@@ -18,8 +18,8 @@ const make = () => E.gen(function* () {
 
 
 
-export class MemoryModel extends E.Tag('DisReact.MemoryModel')<
-  MemoryModel,
+export class RootMemory extends E.Tag('DisReact.MemoryModel')<
+  RootMemory,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
   static readonly makeLayer = (id: string) => L.effect(this, make());

@@ -1,18 +1,14 @@
 /* eslint-disable no-empty */
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import * as Events from '#src/disreact/codec/rest/events.ts';
+import type {Event} from '../../codec/rest/index.ts';
 
 
-
-export const invokeIntrinsicTarget = (root: Element.T, event: Events.Type) => {
-  if (Events.isSynthesizeEvent(event))
-    return root;
-
+export const invokeIntrinsicTarget = (root: Element.T, event: Event.T) => {
   return invokeTargetInner(root, event);
 };
 
-const invokeTargetInner = (node: Element.T, event: Events.NonSyntheticEvent, original: Element.T = node): Element.T => {
+const invokeTargetInner = (node: Element.T, event: Event.T, original: Element.T = node): Element.T => {
   if (!IntrinsicElement.is(node)) {
     for (const child of node.children) {
       try {
@@ -22,11 +18,11 @@ const invokeTargetInner = (node: Element.T, event: Events.NonSyntheticEvent, ori
     }
   }
 
-  if (node.props.custom_id && event.id === node.props.custom_id) {
-    const handler = node.props[event.type];
+  if (node.props.custom_id && event.custom_id === node.props.custom_id) {
+    const handler = node.props[event.prop];
 
     if (!handler) {
-      throw new Error(`No handler for custom_id ${event.id}`);
+      throw new Error(`No handler for custom_id ${event.custom_id}`);
     }
 
     handler(event);
@@ -34,11 +30,11 @@ const invokeTargetInner = (node: Element.T, event: Events.NonSyntheticEvent, ori
     return original;
   }
 
-  if (event.id === node.meta.step_id) {
-    const handler = node.props[event.type];
+  if (event.custom_id === node.meta.step_id) {
+    const handler = node.props[event.prop];
 
     if (!handler) {
-      throw new Error(`No handler for step_id ${event.id}`);
+      throw new Error(`No handler for step_id ${event.custom_id}`);
     }
 
     handler(event);
@@ -53,5 +49,5 @@ const invokeTargetInner = (node: Element.T, event: Events.NonSyntheticEvent, ori
     catch (_) {}
   }
 
-  throw new Error(`No node with id_step "${event.id}" having a handler for type "${event.type}" was not found`);
+  throw new Error(`No node with id_step "${event.custom_id}" having a handler for type "${event.prop}" was not found`);
 };

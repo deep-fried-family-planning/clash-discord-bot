@@ -46,16 +46,14 @@ export const make = (type: string): T => {
   };
 };
 
-export const makeDEV = make;
-
 export const clone = (self: T): T => {
   return structuredClone(self);
 };
-
-export const cloneDEV = clone;
 
 export const encode = (self: T) => {
   return self.value;
 };
 
-export const encodeDEV = encode;
+
+
+export const makeDEV = make;
