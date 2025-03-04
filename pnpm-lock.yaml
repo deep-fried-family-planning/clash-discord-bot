@@ -1204,12 +1204,19 @@ packages:
   '@redocly/config@0.21.0':
     resolution: {integrity: sha512-JBtrrjBIURTnzb7KUIWOF46vSgpfC3rO6Mm8LjtRjtTNCLTyB+mOuU7HrTkVcvUCEBuSuzkivlTHMWT4JETz9A==}
 
+  '@redocly/config@0.22.0':
+    resolution: {integrity: sha512-gAy93Ddo01Z3bHuVdPWfCwzgfaYgMdaZPcfL7JZ7hWJoK9V0lXDbigTWkhiPFAaLWzbOJ+kbUQG1+XwIm0KRGQ==}
+
   '@redocly/openapi-core@1.31.3':
     resolution: {integrity: sha512-SyE/1TwM33tgldc3k367sg2i1kqnILOJZo6J96Y/Tt1PHhJp+na637CzCuTgdyY86GTPvNw42834Ks0Lkfk3Hg==}
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
   '@redocly/openapi-core@1.32.1':
     resolution: {integrity: sha512-nZvPWneybAWen2rhFksvhpA1VYIsr2bIrpJU4z20SQeH8BKUzPRiO+EtCodRqQQe/NIvf/tD85POtLRJ9PjaiA==}
+    engines: {node: '>=18.17.0', npm: '>=9.5.0'}
+
+  '@redocly/openapi-core@1.32.2':
+    resolution: {integrity: sha512-E1GvI1lPAX1rJSrgoFJewWoenoPrG4VTm91WPGkbFPC4r+qcdwZzlL9rxbkY0kB5BiFeUr+l0xZxb5wjL5Fv7A==}
     engines: {node: '>=18.17.0', npm: '>=9.5.0'}
 
   '@rollup/rollup-android-arm-eabi@4.34.8':
@@ -2373,6 +2380,9 @@ packages:
   caniuse-lite@1.0.30001701:
     resolution: {integrity: sha512-faRs/AW3jA9nTwmJBSO1PQ6L/EOgsB5HMQQq4iCu5zhPgVVgO/pZRHlmatwijZKetFw8/Pr4q6dEN8sJuq8qTw==}
 
+  caniuse-lite@1.0.30001702:
+    resolution: {integrity: sha512-LoPe/D7zioC0REI5W73PeR1e1MLCipRGq/VkovJnd6Df+QVqT+vT33OXCp8QUd7kA7RZrHWxb1B36OQKI/0gOA==}
+
   chai@5.2.0:
     resolution: {integrity: sha512-mCuXncKXk5iCLhfhwTc0izo0gtEmpz5CtG2y8GiOINBlMVS6v8TMRc5TaLWKS6692m9+dVVfzgeVxR5UxWHTYw==}
     engines: {node: '>=12'}
@@ -2704,6 +2714,9 @@ packages:
 
   electron-to-chromium@1.5.111:
     resolution: {integrity: sha512-vJyJlO95wQRAw6K2ZGF/8nol7AcbCOnp8S6H91mwOOBbXoS9seDBYxCTPYAFsvXLxl3lc0jLXXe9GLxC4nXVog==}
+
+  electron-to-chromium@1.5.112:
+    resolution: {integrity: sha512-oen93kVyqSb3l+ziUgzIOlWt/oOuy4zRmpwestMn4rhFWAoFJeFuCVte9F2fASjeZZo7l/Cif9TiyrdW4CwEMA==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -4407,6 +4420,10 @@ packages:
 
   type-fest@4.36.0:
     resolution: {integrity: sha512-3T/PUdKTCnkUmhQU6FFJEHsLwadsRegktX3TNHk+2JJB9HlA8gp1/VXblXVDI93kSnXF2rdPx0GMbHtJIV2LPg==}
+    engines: {node: '>=16'}
+
+  type-fest@4.37.0:
+    resolution: {integrity: sha512-S/5/0kFftkq27FPNye0XM1e2NsnoD/3FS+pBmbjmmtLT6I+i344KoOf7pvXreaFsDamWeaJX55nczA1m5PsBDg==}
     engines: {node: '>=16'}
 
   type-is@1.6.18:
@@ -6633,6 +6650,8 @@ snapshots:
 
   '@redocly/config@0.21.0': {}
 
+  '@redocly/config@0.22.0': {}
+
   '@redocly/openapi-core@1.31.3(supports-color@9.4.0)':
     dependencies:
       '@redocly/ajv': 8.11.2
@@ -6651,6 +6670,20 @@ snapshots:
     dependencies:
       '@redocly/ajv': 8.11.2
       '@redocly/config': 0.21.0
+      colorette: 1.4.0
+      https-proxy-agent: 7.0.6(supports-color@9.4.0)
+      js-levenshtein: 1.1.6
+      js-yaml: 4.1.0
+      minimatch: 5.1.6
+      pluralize: 8.0.0
+      yaml-ast-parser: 0.0.43
+    transitivePeerDependencies:
+      - supports-color
+
+  '@redocly/openapi-core@1.32.2(supports-color@9.4.0)':
+    dependencies:
+      '@redocly/ajv': 8.11.2
+      '@redocly/config': 0.22.0
       colorette: 1.4.0
       https-proxy-agent: 7.0.6(supports-color@9.4.0)
       js-levenshtein: 1.1.6
@@ -7169,7 +7202,7 @@ snapshots:
       '@module-federation/runtime-tools': 0.8.4
       '@rspack/binding': 1.2.7
       '@rspack/lite-tapable': 1.0.1
-      caniuse-lite: 1.0.30001701
+      caniuse-lite: 1.0.30001702
 
   '@rspack/dev-server@1.0.10(@rspack/core@1.2.6)(@types/express@4.17.21)(webpack@5.98.0(esbuild@0.25.0))':
     dependencies:
@@ -8270,8 +8303,8 @@ snapshots:
 
   browserslist@4.24.4:
     dependencies:
-      caniuse-lite: 1.0.30001701
-      electron-to-chromium: 1.5.111
+      caniuse-lite: 1.0.30001702
+      electron-to-chromium: 1.5.112
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
@@ -8308,6 +8341,8 @@ snapshots:
   callsites@3.1.0: {}
 
   caniuse-lite@1.0.30001701: {}
+
+  caniuse-lite@1.0.30001702: {}
 
   chai@5.2.0:
     dependencies:
@@ -8628,6 +8663,8 @@ snapshots:
   electron-to-chromium@1.5.109: {}
 
   electron-to-chromium@1.5.111: {}
+
+  electron-to-chromium@1.5.112: {}
 
   emoji-regex@8.0.0: {}
 
@@ -9642,7 +9679,7 @@ snapshots:
 
   openapi-typescript@7.6.1(typescript@5.8.2):
     dependencies:
-      '@redocly/openapi-core': 1.32.1(supports-color@9.4.0)
+      '@redocly/openapi-core': 1.32.2(supports-color@9.4.0)
       ansi-colors: 4.1.3
       change-case: 5.4.4
       parse-json: 8.1.0
@@ -9747,7 +9784,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.26.2
       index-to-position: 0.1.2
-      type-fest: 4.36.0
+      type-fest: 4.37.0
 
   parseurl@1.3.3: {}
 
@@ -10373,6 +10410,8 @@ snapshots:
   type-fest@4.35.0: {}
 
   type-fest@4.36.0: {}
+
+  type-fest@4.37.0: {}
 
   type-is@1.6.18:
     dependencies:
