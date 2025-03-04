@@ -1,7 +1,7 @@
 import {EMPTY, EMPTY_NUM, RootId} from '#src/disreact/codec/constants/common.ts';
+import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
 import {Redacted} from 'effect';
 import {decodeSync, encodeSync, mutable, optional, type Schema, Struct, tag, TemplateLiteralParser} from 'effect/Schema';
-import * as FiberHash from '../entities/fiber-hash.ts';
 import * as Doken from './doken.ts';
 
 
@@ -14,7 +14,7 @@ export const MessageRoute = mutable(Struct({
   _tag   : tag(MESSAGE_ROUTE_TAG),
   root_id: RootId,
   doken  : optional(Doken.Doken),
-  hash   : FiberHash.FiberHash,
+  hash   : FiberHash.T,
 }));
 
 export type MessageRoute = Schema.Type<typeof MessageRoute>;
@@ -26,7 +26,7 @@ const MessageRouteParser = TemplateLiteralParser(
   '/', Doken.DokenEphemeral,
   '/', Doken.DokenTTL,
   '/', Doken.DokenValue,
-  '/', FiberHash.FiberHash,
+  '/', FiberHash.T,
 );
 
 const Encoder = encodeSync(MessageRouteParser);

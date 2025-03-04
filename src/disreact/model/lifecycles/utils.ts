@@ -1,9 +1,7 @@
 import {Reserved} from '#src/disreact/codec/constants';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
-import {Props} from '#src/disreact/codec/entities';
-import * as FiberNode from '#src/disreact/codec/entities/fiber-node.ts';
+import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
@@ -63,34 +61,19 @@ export const removeReservedIntrinsicProps = (props: any) => {
   return rest;
 };
 
-export const removeReservedFunctionProps = (props: any) => {
-  const {
-          [Reserved.children]: _children,
-          [Reserved.ref]     : _ref,
-          [Reserved.key]     : _key,
-          ...rest
-        } = props;
-
-  return rest;
-};
-
 
 
 export const isSameNode = <A extends Pragma, B extends Pragma>(a: A, b: B) => {
   if (a._tag !== b._tag) return false;
   if (a._name !== b._name) return false;
   if (a.meta.id !== b.meta.id) return false;
-  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.TextElement).value;
+  if (a._tag === All.TextElementTag) return a.value === (b as TextElement.T).value;
   return true;
 };
 
-export const hasSameProps = (c: Pragma, r: Pragma) => Props.isEqual(c.props, r.props);
-
-export const hasSameState = (c: FunctionElement.FunctionElement) => FiberNode.isSameState(c.state);
 
 
-
-export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.FiberNode } = {}): typeof states => {
+export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.T } = {}): typeof states => {
   if (node._tag === All.FunctionElementTag) {
     states[node.meta.full_id] = node.state;
   }
@@ -104,7 +87,7 @@ export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.F
   return states;
 };
 
-export const reduceToStacks = (hooks: { [K in string]: FiberNode.FiberNode }): { [K in string]: FiberNode.FiberNode['stack'] } => {
+export const reduceToStacks = (hooks: { [K in string]: FiberNode.T }): { [K in string]: FiberNode.T['stack'] } => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

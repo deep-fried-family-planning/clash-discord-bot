@@ -1,4 +1,5 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
+import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
@@ -10,7 +11,6 @@ import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec} from '../codec';
-import type {FunctionElement} from '../codec/entities/index.ts';
 
 
 
@@ -110,7 +110,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   const rendered  = yield* Lifecycles.rerenderRoot(nextClone);
 
 
-  if ((rendered as FunctionElement.FunctionElement).meta.isModal) {
+  if ((rendered as FunctionElement.T).meta.isModal) {
     yield* new BadInteraction({
       why: 'Unsupported interaction: modal open',
     });
@@ -121,7 +121,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: Pragma) {
   }
 
 
-  if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.FunctionElement).meta.isEphemeral) {
+  if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.T).meta.isEphemeral) {
     frame.dokens.fresh.type      = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
     frame.dokens.fresh.ephemeral = 1;
     frame.dokens.fresh           = yield* Doken.activate({doken: frame.dokens.fresh});

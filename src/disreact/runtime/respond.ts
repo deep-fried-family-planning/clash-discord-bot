@@ -1,9 +1,9 @@
 import {BadInteraction} from '#src/disreact/codec/error.ts';
+import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
 import * as DialogParams from '#src/disreact/codec/route/dialog-params.ts';
 import * as Route from '#src/disreact/codec/route/index.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import * as FiberHash from '../codec/entities/fiber-hash.ts';
 import * as Model from '../model/index.ts';
 
 

@@ -18,5 +18,6 @@ export const hasChild      = <A = any>(props: Type<A>): props is Child<A> => pro
 export const isEqual = (a: AnyProps, b: AnyProps): boolean => {
   const cprops = Data.struct(a);
   const rprops = Data.struct(b);
+
   return Equal.equals(cprops, rprops);
 };

@@ -1,58 +1,19 @@
-import * as All from '#src/disreact/codec/constants/all.ts';
 import {Reserved} from '#src/disreact/codec/constants/index.ts';
-import type * as FiberNode from '#src/disreact/codec/entities/fiber-node.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Element from '../../codec/element/index.ts';
 import * as Utils from './utils.ts';
 
 
 
 export const cloneTree = (node: Pragma, parent?: Pragma) => {
   const base  = Utils.linkNodeToParent(node, parent);
-  const clone = cloneNode(base);
+  const clone = Element.clone(base);
 
-  if (node.children.length) {
+  if (clone.children.length) {
     clone.children = node.children.map((child) => cloneTree(child, clone));
   }
 
   return clone;
-};
-
-
-
-export const cloneNode = <T extends Pragma>(node: T): T => {
-  if (node._tag === All.TextElementTag) {
-    return Utils.deepClone(node);
-  }
-
-  if (node._tag === All.IntrinsicElementTag) {
-    const {
-            props,
-            children,
-            ...rest
-          } = node;
-
-    return {
-      ...Utils.deepClone(rest),
-      children,
-      props: cloneIntrinsicProps(props),
-    } as T;
-  }
-
-  const {
-          props,
-          children,
-          render,
-          state,
-          ...rest
-        } = node;
-
-  return {
-    ...Utils.deepClone(rest),
-    state: cloneFunctionNodeState(state),
-    props: cloneFunctionNodeProps(props),
-    children,
-    render,
-  } as T;
 };
 
 
@@ -77,20 +38,6 @@ export const cloneIntrinsicProps = (props: any) => {
   }
 
   return cloned;
-};
-
-
-
-export const cloneFunctionNodeState = (state: FiberNode.FiberNode): FiberNode.FiberNode => {
-  const {
-          queue: effects,
-          ...rest
-        } = state;
-
-  return {
-    ...Utils.deepClone(rest),
-    queue: effects,
-  };
 };
 
 

@@ -1,47 +1,48 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import {DTML} from '#src/disreact/codec/constants';
 import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as FiberState from '#src/disreact/codec/entities/fiber-node.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import * as Props from '#src/disreact/codec/element/props.ts';
+import * as FiberState from '#src/disreact/codec/fiber/fiber-node.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/utils.ts';
-import {hasSameProps, hasSameState, isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
+import {isSameNode, setIds} from '#src/disreact/model/lifecycles/utils.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import * as FunctionElement from '../../codec/element/function-element.ts';
+import type * as Element from '../../codec/element/index.ts';
 import * as IntrinsicElement from '../../codec/element/intrinsic-element.ts';
 import * as TextElement from '../../codec/element/text-element.ts';
 
 
 
-export const initialRender = (node: Pragma, parent?: Pragma): E.Effect<Pragma, any, any> => E.gen(function* () {
+export const initialRender = (node: Element.T, parent?: Element.T): E.Effect<Element.T, any, any> => E.gen(function* () {
   const base = Lifecycles.linkNodeToParent(node, parent);
 
-  if (TextElement.is(node)) {
+  if (TextElement.is(base)) {
     return base;
   }
 
-  if (IntrinsicElement.is(node)) {
+  if (IntrinsicElement.is(base)) {
     return {
       ...base,
       children: yield* E.all(node.children.map((child) => initialRender(child, base))),
-    } as IntrinsicElement.IntrinsicElement;
+    } as IntrinsicElement.T;
   }
 
-  Globals.mountFiber(base.meta.full_id, (base as FunctionElement.FunctionElement).state);
+  Globals.mountFiber(base.meta.full_id, base.state);
 
   const children = yield* effectRenderNode(base);
 
   return {
     ...base,
     children: yield* E.all(children.map((child: any) => initialRender(child, base))),
-    render  : node.render,
-    state   : node.state,
-  } as FunctionElement.FunctionElement;
+    render  : base.render,
+    state   : base.state,
+  } as FunctionElement.T;
 });
 
 
 
-export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.FiberNode}): E.Effect<Pragma, any, any> => E.gen(function* () {
+export const hydrateRoot = (node: Element.T, states: {[k: string]: FiberState.T}): E.Effect<Element.T, any, any> => E.gen(function* () {
   if (TextElement.is(node)) {
     return node;
   }
@@ -53,8 +54,7 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Fiber
   const state = states[node.meta.full_id];
 
   if (state) {
-    node.state       = state;
-    node.state.prior = structuredClone(node.state.stack);
+    node.state = state;
   }
 
   node.children = yield* E.all((yield* effectRenderNode(node)).map((child) => hydrateRoot(child, states)));
@@ -63,7 +63,7 @@ export const hydrateRoot = (node: Pragma, states: {[k: string]: FiberState.Fiber
 
 
 
-export const rerenderRoot = (root: Pragma): E.Effect<Pragma, any, any> => E.gen(function* () {
+export const rerenderRoot = (root: Element.T): E.Effect<Element.T, any, any> => E.gen(function* () {
   if (TextElement.is(root)) {
     return root;
   }
@@ -76,13 +76,13 @@ export const rerenderRoot = (root: Pragma): E.Effect<Pragma, any, any> => E.gen(
   return root;
 });
 
-const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pragma[], any, any> => E.gen(function* () {
-  const length   = Math.max(css.length, rss.length);
+const renderNodes = (parent: Element.T, cs: Element.T[], rs: Element.T[]): E.Effect<Element.T[], any, any> => E.gen(function* () {
+  const length   = Math.max(cs.length, rs.length);
   const children = [];
 
   for (let i = 0; i < length; i++) {
-    const c = css.at(i);
-    const r = rss.at(i);
+    const c = cs.at(i);
+    const r = rs.at(i);
 
     if (!c && !r) throw new Error();
 
@@ -112,15 +112,15 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
       }
 
       else if (c._tag === All.IntrinsicElementTag) {
-        if (!hasSameProps(c, r)) {
+        if (!Props.isEqual(c.props, r.props)) {
           c.props = r.props;
         }
         c.children = yield* renderNodes(c, c.children, r.children);
         children.push(c);
       }
 
-      else if (hasSameProps(c, r)) {
-        if (hasSameState(c)) {
+      else if (Props.isEqual(c.props, r.props)) {
+        if (FiberState.isSame(c.state)) {
           c.children = yield* renderNodes(c, c.children, c.children);
           children.push(c);
         }
@@ -141,7 +141,7 @@ const renderNodes = (parent: Pragma, css: Pragma[], rss: Pragma[]): E.Effect<Pra
   return children;
 });
 
-const effectRenderNode = (node: Pragma): E.Effect<Pragma[], any, any> => E.gen(function* () {
+const effectRenderNode = (node: Element.T): E.Effect<Element.T[], any, any> => E.gen(function* () {
   if (TextElement.is(node)) {
     return [];
   }

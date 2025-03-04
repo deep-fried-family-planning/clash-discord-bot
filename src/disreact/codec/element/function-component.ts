@@ -12,6 +12,7 @@ export const ANONYMOUS              = 'Anonymous';
 
 type Base = Function & {
   displayName?: string;
+  root_id?    : string;
   isModal?    : boolean;
 };
 
@@ -51,6 +52,15 @@ export const isSync   = <P, E>(fc: FC<P, E>): fc is SFC<P, E> => fc._tag === SYN
 export const isAsync  = <P, E>(fc: FC<P, E>): fc is AFC<P, E> => fc._tag === ASYNC;
 export const isEffect = <P, E>(fc: FC<P, E>): fc is EFC<P, E> => fc._tag === EFFECT;
 
+export const resolveTag = (self: FC) => {
+  if (!self._tag) {
+    if (self.constructor.name === ASYNC_CONSTRUCTOR_NAME) {
+      self._tag = ASYNC;
+    }
+  }
+  return self;
+};
+
 export const resolveName = (fc: FC): string => {
   if (fc.displayName) {
     return fc.displayName;
@@ -59,4 +69,11 @@ export const resolveName = (fc: FC): string => {
     return fc.name;
   }
   return ANONYMOUS;
+};
+
+export const resolveRootId = (fc: FC): string => {
+  if (fc.root_id) {
+    return fc.root_id;
+  }
+  return resolveName(fc);
 };

@@ -1,33 +1,30 @@
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
+import * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
+import * as FiberRoot from '#src/disreact/codec/fiber/fiber-root.ts';
 import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import {pipe, Record} from 'effect';
 import type {Schema} from 'effect/Schema';
 import {String} from 'effect/Schema';
-import * as FiberNode from 'src/disreact/codec/entities/fiber-node.ts';
-import * as FiberRoot from 'src/disreact/codec/entities/fiber-root.ts';
 import * as Compression from './compression.ts';
 
 
 
-export const FiberHash = String;
+export const T = String;
 
-export type FiberHash = Schema.Type<typeof FiberHash>;
+export type T = Schema.Type<typeof T>;
 
 export const Empty = EMPTY;
 
-export const isEmpty = (hash: FiberHash): boolean => hash === NONE_STR;
+export const isEmpty = (hash: T): boolean => hash === NONE_STR;
 
-export const hash = (root: FiberRoot.FiberRoot): FiberHash => {
+export const hash = (root: FiberRoot.T): T => {
   return Compression.compressStack({
     props: root.props,
-    ...pipe(
-      root.fibers,
-      Record.map((v) => v.stack),
-    ),
+    ...pipe(root.fibers, Record.map((v) => v.stack)),
   });
 };
 
-export const decode = (hash?: FiberHash): FiberRoot.FiberRoot => {
+export const decode = (hash?: T): FiberRoot.T => {
   const root = FiberRoot.make();
 
   if (!hash || isEmpty(hash)) {
@@ -44,7 +41,7 @@ export const decode = (hash?: FiberHash): FiberRoot.FiberRoot => {
 
     const node     = FiberNode.make();
     node.stack     = v;
-    root.fibers[k] = FiberNode.savePrior(node);
+    root.fibers[k] = FiberNode.commit(node);
   }
 
   return root;

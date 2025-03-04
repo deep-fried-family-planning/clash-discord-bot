@@ -1,4 +1,4 @@
-import * as Pointer from '#src/disreact/codec/entities/fiber-pointer.ts';
+import * as Pointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import * as Deferred from 'effect/Deferred';
 

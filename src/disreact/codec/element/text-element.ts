@@ -6,7 +6,7 @@ import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-el
 
 export const TAG = 'TextElement';
 
-export type TextElement = {
+export type T = {
   _tag : typeof TAG;
   _name: string;
   meta: {
@@ -22,17 +22,17 @@ export type TextElement = {
   value   : string;
   props   : any;
   children: (
-    | TextElement
-    | IntrinsicElement.IntrinsicElement
-    | FunctionElement.FunctionElement
+    | T
+    | IntrinsicElement.T
+    | FunctionElement.T
     )[];
 };
 
-export const is = (type: any): type is TextElement => type._tag === TAG;
+export const is = (type: any): type is T => type._tag === TAG;
 
-export const make = (type: string): TextElement => {
+export const make = (type: string): T => {
   return {
-    _tag : All.TextElementTag,
+    _tag : TAG,
     _name: 'string',
     meta : {
       idx    : All.Zero,
@@ -47,3 +47,15 @@ export const make = (type: string): TextElement => {
 };
 
 export const makeDEV = make;
+
+export const clone = (self: T): T => {
+  return structuredClone(self);
+};
+
+export const cloneDEV = clone;
+
+export const encode = (self: T) => {
+  return self.value;
+};
+
+export const encodeDEV = encode;

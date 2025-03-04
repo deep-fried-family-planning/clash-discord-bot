@@ -1,6 +1,8 @@
 import * as MsgPack from '@msgpack/msgpack';
 import * as pako from 'pako';
 
+
+
 export const compressStack = (data: Record<string, any>): string => {
   const binary     = MsgPack.encode(data);
   const compressed = pako.deflate(binary);

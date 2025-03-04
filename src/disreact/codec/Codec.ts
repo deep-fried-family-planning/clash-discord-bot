@@ -1,14 +1,14 @@
 import {SubmitEventTag} from '#src/disreact/codec/constants/all.ts';
 import {encodeMessageDsx} from '#src/disreact/codec/dsx/element-encode.ts';
+import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
+import * as FiberPointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
+import * as FiberRoot from '#src/disreact/codec/fiber/fiber-root.ts';
+import * as Events from '#src/disreact/codec/rest/events.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
 import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
-import * as FiberHash from 'src/disreact/codec/entities/fiber-hash.ts';
-import * as FiberPointer from 'src/disreact/codec/entities/fiber-pointer.ts';
-import * as FiberRoot from 'src/disreact/codec/entities/fiber-root.ts';
-import * as Events from 'src/disreact/codec/routing/events.ts';
 import * as CodecTarget from './CodecTargets.ts';
 import * as Route from './rest/route.ts';
 
@@ -17,8 +17,8 @@ import * as Route from './rest/route.ts';
 export type Frame = {
   rest   : any;
   id     : string;
-  pointer: FiberPointer.Type;
-  state  : FiberRoot.FiberRoot;
+  pointer: FiberPointer.T;
+  state  : FiberRoot.T;
   hash   : string;
   params : Route.Params;
   event  : Events.Type;

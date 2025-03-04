@@ -1,12 +1,6 @@
-import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
-import type * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import type * as TextElement from '#src/disreact/codec/element/text-element.ts';
-
+import type * as Element from '../codec/element/index.ts';
 
 
 export type RenderFn = (props: any) => any;
 
-export type Pragma =
-  | TextElement.TextElement
-  | IntrinsicElement.IntrinsicElement
-  | FunctionElement.FunctionElement;
+export type Pragma = Element.T;
