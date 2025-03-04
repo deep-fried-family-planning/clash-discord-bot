@@ -1,7 +1,7 @@
+import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
 import {StaticModel} from '#src/disreact/model/StaticModel.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
-import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {pipe} from 'effect';

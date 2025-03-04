@@ -3,11 +3,11 @@ import type * as FunctionElement from '#src/disreact/codec/element/function-elem
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
+import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
+import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {StaticModel} from '#src/disreact/model/StaticModel.ts';
-import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Codec} from '../codec';

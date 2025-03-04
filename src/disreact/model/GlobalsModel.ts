@@ -14,8 +14,8 @@ const make = E.gen(function* () {
 
 
 
-export class GlobalModel extends E.Tag('DisReact.GlobalReference')<
-  GlobalModel,
+export class GlobalsModel extends E.Tag('DisReact.GlobalReference')<
+  GlobalsModel,
   E.Effect.Success<typeof make>
 >() {
   static readonly singletonLayer = pipe(

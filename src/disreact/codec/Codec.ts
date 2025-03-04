@@ -6,7 +6,7 @@ import * as FiberPointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
 import * as FiberRoot from '#src/disreact/codec/fiber/fiber-root.ts';
 import * as Events from '#src/disreact/codec/rest/events.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
 import * as CodecTarget from './CodecTargets.ts';
