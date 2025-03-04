@@ -1,13 +1,13 @@
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
 
 
-const nofunc = (node: Pragma): Pragma => {
+const nofunc = (node: Element.T): Element.T => {
   if ('props' in node && node.props && typeof node.props === 'object') {
     delete node.props['onclick'];
     delete node.props['onselect'];

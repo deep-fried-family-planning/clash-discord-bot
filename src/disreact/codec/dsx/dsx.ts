@@ -1,10 +1,10 @@
 /* eslint-disable no-case-declarations */
-import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
-import * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import * as Props from '#src/disreact/codec/element/props.ts';
+import * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import type {JSX} from '#src/disreact/jsx-runtime.ts';
 
 
 
@@ -12,7 +12,7 @@ export const fragment = undefined;
 
 
 
-export const dsx = (type: JSX.ElementType, props: Props.Type<Pragma> = {}): Pragma | Pragma[] => {
+export const dsx = (type: JSX.ElementType, props: Props.Type<Element.T> = {}): Element.T | Element.T[] => {
   if (Props.hasChild(props)) {
     if (Props.hasChildren(props)) {
       return dsxs(type, {...props, children: props.children.flat()});
@@ -26,10 +26,10 @@ export const dsx = (type: JSX.ElementType, props: Props.Type<Pragma> = {}): Prag
 
 
 
-export const dsxs = (type: JSX.ElementType, props: Props.Children<Pragma>): Pragma | Pragma[] => {
+export const dsxs = (type: JSX.ElementType, props: Props.Children<Element.T>): Element.T | Element.T[] => {
   const children = props.children.flat();
 
-  delete (props as Props.Type<Pragma>).children;
+  delete (props as Props.Type<Element.T>).children;
 
   switch (typeof type) {
   case 'undefined':
@@ -55,7 +55,7 @@ export const dsxs = (type: JSX.ElementType, props: Props.Children<Pragma>): Prag
 
 
 
-const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
+const connectDirectChildren = (children: (Element.T | string)[]): Element.T[] => {
   for (let i = 0; i < children.length; i++) {
     let c = children[i];
 
@@ -63,10 +63,10 @@ const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
       c = TextElement.make(c);
     }
 
-    c.meta.idx = i;
-    c.meta.id  = `${c._name}:${i}`;
+    c.meta.idx  = i;
+    c.meta.id   = `${c._name}:${i}`;
     children[i] = c;
   }
 
-  return children as Pragma[];
+  return children as Element.T[];
 };

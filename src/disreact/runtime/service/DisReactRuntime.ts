@@ -4,13 +4,13 @@ import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
-import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
 import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
+import type * as FC from '../../codec/element/function-component.ts';
 
 
 
@@ -39,9 +39,9 @@ export type DisReactRuntimeConfig = {
   bot_token: string;
 
   trees: {
-    entry    : RenderFn[];
-    ephemeral: RenderFn[];
-    dialog   : RenderFn[];
+    entry    : FC.FC[];
+    ephemeral: FC.FC[];
+    dialog   : FC.FC[];
   };
 };
 
@@ -50,11 +50,11 @@ export class DisReactRuntime extends E.Tag('DisReact.IxRuntime')<
   DisReactRuntime,
   {
     interact      : (rest: Rest.Ix) => void;
-    synthesizeRoot: (fn: RenderFn) => Rest.Message;
+    synthesizeRoot: (fn: FC.FC) => Rest.Message;
   }
 >() {
   static configure = (config: DisReactRuntimeConfig) => pipe(
-    E.gen(function * () {
+    E.gen(function* () {
 
     }),
   );

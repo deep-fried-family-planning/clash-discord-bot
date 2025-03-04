@@ -1,7 +1,6 @@
 import * as All from '#src/disreact/codec/constants/all.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 
 
@@ -30,7 +29,7 @@ export const setIds = (children: Element.T[], parent: Element.T) => {
   return children;
 };
 
-export const collectStates = (node: Pragma, states: { [K in string]: FiberNode.T } = {}): typeof states => {
+export const collectStates = (node: Element.T, states: { [K in string]: FiberNode.T } = {}): typeof states => {
   if (node._tag === All.FunctionElementTag) {
     states[node.meta.full_id] = node.state;
   }

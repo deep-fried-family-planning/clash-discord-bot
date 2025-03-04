@@ -1,11 +1,11 @@
 import {SubmitEventTag} from '#src/disreact/codec/constants/all.ts';
 import {encodeMessageDsx} from '#src/disreact/codec/dsx/element-encode.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import * as FiberHash from '#src/disreact/codec/fiber/fiber-hash.ts';
 import * as FiberPointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
 import * as FiberRoot from '#src/disreact/codec/fiber/fiber-root.ts';
 import * as Events from '#src/disreact/codec/rest/events.ts';
 import {Doken, NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {DateTime} from 'effect';
@@ -132,7 +132,7 @@ const resolveDokens = E.fn(function* (
 
 
 
-export const encodeMessage = (frame: Frame, root: Pragma) => {
+export const encodeMessage = (frame: Frame, root: Element.T) => {
   const hash  = FiberHash.hash(frame.state);
   const doken = frame.dokens.rest ?? frame.dokens.fresh;
 

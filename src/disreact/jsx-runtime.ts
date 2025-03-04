@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
 import {dsx, dsxs, fragment} from '#src/disreact/codec/dsx/dsx.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import type * as FC from './codec/element/function-component.ts';
 
 
@@ -19,7 +19,7 @@ export declare namespace JSX {
     | null
     | undefined;
 
-  type Element = Pragma;
+  type Element = Element.T;
 
   interface ElementAttributesProperty {
     props: any;

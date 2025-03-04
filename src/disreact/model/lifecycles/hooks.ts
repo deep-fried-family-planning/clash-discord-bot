@@ -1,6 +1,6 @@
+import type * as FC from '#src/disreact/codec/element/function-component.ts';
 import type * as FiberNode from '#src/disreact/codec/fiber/fiber-node.ts';
 import {CLOSE} from '#src/disreact/codec/rest/index.ts';
-import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 
 
@@ -107,11 +107,11 @@ const useIx = () => () => {
 
 
 
-const usePage = () => (_: RenderFn[]) => {
+const usePage = () => (_: FC.FC[]) => {
   const root = Globals.readRoot();
 
   return {
-    next: (next: RenderFn, props: any = {}) => {
+    next: (next: FC.FC, props: any = {}) => {
       root.graph.next      = next.name;
       root.graph.nextProps = props;
     },

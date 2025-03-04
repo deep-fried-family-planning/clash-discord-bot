@@ -1,6 +1,6 @@
 import {encodeDsx} from '#src/disreact/codec/dsx/element-encode.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -31,7 +31,7 @@ describe('dsx', () => {
     const Null = Globals.nullifyPointer();
     Globals.mountRoot(Null);
 
-    const rendered = yield* Lifecycles.initialRender(jsx(TestMessage, {}) as Pragma);
+    const rendered = yield* Lifecycles.initialRender(jsx(TestMessage, {}) as Element.T);
     expect(encodeDsx(rendered)).toMatchInlineSnapshot(`
       [
         {

@@ -4,7 +4,6 @@ export * as Text from './text-element.ts';
 export * as Intrinsic from './intrinsic-element.ts';
 export * as Props from './props.ts';
 export * as Fragment from './fragment.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import * as FunctionElement from './function-element.ts';
 import * as IntrinsicElement from './intrinsic-element.ts';
 import * as TextElement from './text-element.ts';
@@ -65,7 +64,7 @@ export const cloneTree = (self: T, parent?: T): T => {
 
 
 
-export const linkParent = <T extends Pragma>(node: T, parent?: Pragma): T => {
+export const linkParent = <A extends T>(node: A, parent?: T): A => {
   if (!parent) {
     node.meta.idx     = 0;
     node.meta.id      = `${node._name}:${node.meta.idx}`;

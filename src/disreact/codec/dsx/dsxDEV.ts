@@ -1,14 +1,14 @@
 /* eslint-disable no-case-declarations */
 import * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as Element from '#src/disreact/codec/element/index.ts';
 import * as IntrinsicElement from '#src/disreact/codec/element/intrinsic-element.ts';
 import * as TextElement from '#src/disreact/codec/element/text-element.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 
 
 
-type PropsS = {children?: Pragma | null} | null;
-type PropsM = {children: Pragma[]};
+type PropsS = {children?: Element.T | null} | null;
+type PropsM = {children: Element.T[]};
 
 
 
@@ -16,7 +16,7 @@ export const fragment = undefined;
 
 
 
-export const dsxDEV = (type: JSX.ElementType, props: PropsS = {}): Pragma | Pragma[] => {
+export const dsxDEV = (type: JSX.ElementType, props: PropsS = {}): Element.T | Element.T[] => {
   if (!props) {
     return dsxsDEV(type, {children: []});
   }
@@ -34,10 +34,10 @@ export const dsxDEV = (type: JSX.ElementType, props: PropsS = {}): Pragma | Prag
 
 
 
-export const dsxsDEV = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[] => {
+export const dsxsDEV = (type: JSX.ElementType, props: PropsM): Element.T | Element.T[] => {
   const children = props.children.flat();
 
-  delete (props as Partial<PropsM>).children;
+  delete (props as Partial<Element.T>).children;
 
   switch (typeof type) {
   case 'undefined':
@@ -63,7 +63,7 @@ export const dsxsDEV = (type: JSX.ElementType, props: PropsM): Pragma | Pragma[]
 
 
 
-const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
+const connectDirectChildren = (children: (Element.T | string)[]): Element.T[] => {
   for (let i = 0; i < children.length; i++) {
     let c = children[i];
 
@@ -76,5 +76,5 @@ const connectDirectChildren = (children: (Pragma | string)[]): Pragma[] => {
     children[i] = c;
   }
 
-  return children as Pragma[];
+  return children as Element.T[];
 };

@@ -1,4 +1,4 @@
-import type {RenderFn} from '#src/disreact/model/lifecycle.ts';
+import type * as FC from '#src/disreact/codec/element/function-component.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 
 
@@ -19,6 +19,6 @@ export const useIx = () => {
   return Globals.getDispatch().useIx();
 };
 
-export const usePage = (fns: RenderFn[]) => {
+export const usePage = (fns: FC.FC[]) => {
   return Globals.getDispatch().usePage(fns);
 };

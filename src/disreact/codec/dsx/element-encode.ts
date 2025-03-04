@@ -1,8 +1,6 @@
-import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
-import console from 'node:console';
-import {inspect } from 'node:util';
+import type * as Element from '#src/disreact/codec/element/index.ts';
+import {NONE_STR} from '#src/disreact/codec/rest/index.ts';
 
 
 
@@ -24,7 +22,7 @@ export type EncodedRoot =
 
 
 
-export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
+export const encodeMessageDsx = (node: Element.T): EncodedMessage => {
   const [encoded] = encodeDsx(node) as EncodedMessage[];
 
   const {public: p, ...rest} = encoded;
@@ -38,7 +36,7 @@ export const encodeMessageDsx = (node: Pragma): EncodedMessage => {
 
 
 
-export const encodeDialogDsx = (node: Pragma): EncodedDialog => {
+export const encodeDialogDsx = (node: Element.T): EncodedDialog => {
   const [encoded] = encodeDsx(node);
 
   return encoded as EncodedDialog;
@@ -46,7 +44,7 @@ export const encodeDialogDsx = (node: Pragma): EncodedDialog => {
 
 
 
-export const encodeDsx = (node: Pragma): EncodedRoot[] => {
+export const encodeDsx = (node: Element.T): EncodedRoot[] => {
   const next = unwrapFunctions(node);
 
   return next.map((n: any) => encodeInner(n));
