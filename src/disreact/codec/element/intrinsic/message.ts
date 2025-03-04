@@ -28,7 +28,7 @@ export type ActionRowAttributes = Schema.Type<typeof ActionRowAttributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.message]: validateSync(Attributes),
   [DTML.actions]: validateSync(ActionRowAttributes),
   [DTML.buttons]: validateSync(ActionRowAttributes),

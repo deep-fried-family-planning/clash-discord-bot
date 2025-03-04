@@ -83,8 +83,8 @@ const make = (config: StaticGraphConfig) => E.gen(function* () {
 
 
 
-export class StaticGraph extends E.Tag('DisReact.StaticGraph')<
-  StaticGraph,
+export class StaticModel extends E.Tag('DisReact.StaticGraph')<
+  StaticModel,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
   static readonly singleton = (config: StaticGraphConfig) => L.effect(this, pipe(

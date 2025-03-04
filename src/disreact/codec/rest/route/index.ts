@@ -1,13 +1,13 @@
-export * as DialogParams from 'src/disreact/codec/route/params/dialog-params.ts';
-export * as EmbedParams from '#src/disreact/codec/route/params/embed-params.ts';
-export * as Event from './event.ts';
+export * as DialogParams from '#src/disreact/codec/rest/route/params/dialog-params.ts';
+export * as EmbedParams from '#src/disreact/codec/rest/route/params/embed-params.ts';
+export * as Event from 'src/disreact/codec/rest/route/event.ts';
 import {SnowFlake} from '#src/disreact/codec/constants/common.ts';
 import {CLICK} from '#src/disreact/codec/rest/rest.ts';
-import * as Dokens from '#src/disreact/codec/route/dokens.ts';
-import * as Event from '#src/disreact/codec/route/event.ts';
-import * as EmbedParams from '#src/disreact/codec/route/params/embed-params.ts';
+import * as Dokens from '#src/disreact/codec/rest/route/dokens.ts';
+import * as Event from '#src/disreact/codec/rest/route/event.ts';
+import * as DialogParams from '#src/disreact/codec/rest/route/params/dialog-params.ts';
+import * as EmbedParams from '#src/disreact/codec/rest/route/params/embed-params.ts';
 import {Any, mutable, type Schema, Struct, Union} from 'effect/Schema';
-import * as DialogParams from 'src/disreact/codec/route/params/dialog-params.ts';
 
 
 

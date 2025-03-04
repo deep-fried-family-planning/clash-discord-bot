@@ -1,6 +1,6 @@
 import {SnowFlake} from '#src/disreact/codec/constants/common.ts';
-import {Boolean, Literal, optional, type Schema, String, Struct, validateSync} from 'effect/Schema';
 import * as DFMD from '#src/disreact/codec/constants/dfmd.ts';
+import {Boolean, Literal, optional, type Schema, String, Struct, validateSync} from 'effect/Schema';
 
 
 
@@ -107,7 +107,7 @@ export type IndentAttributes = Schema.Type<typeof IndentAttributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DFMD.at]  : validateSync(AtMentionAttributes),
   [DFMD.a]   : validateSync(AnchorAttributes),
   [DFMD.mask]: validateSync(AnchorMaskAttributes),

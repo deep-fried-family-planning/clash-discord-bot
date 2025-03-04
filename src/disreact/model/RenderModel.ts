@@ -22,8 +22,8 @@ const make = (id: string) => E.gen(function* () {
 
 
 
-export class Renderer extends E.Tag('DisReact.Renderer')<
-  Renderer,
+export class RenderModel extends E.Tag('DisReact.Renderer')<
+  RenderModel,
   E.Effect.Success<ReturnType<typeof make>>
 >() {
   static readonly makeLayer = (id: string) => L.effect(this, make(id));

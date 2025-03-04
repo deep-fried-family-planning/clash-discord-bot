@@ -1,16 +1,15 @@
 import {ButtonLabel, ConformantCustomId, EmojiStruct, IntrinsicKind, SkuId} from '#src/disreact/codec/constants/common.ts';
-import {type Schema, validateSync} from 'effect/Schema';
-import {Any, Boolean, Int, Literal, optional, String, Struct, Union, Unknown} from 'effect/Schema';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
+import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, Union, Unknown, validateSync} from 'effect/Schema';
 
 
 
-export const PrimaryStyle = Literal(1);
+export const PrimaryStyle   = Literal(1);
 export const SecondaryStyle = Literal(2);
-export const SuccessStyle = Literal(3);
-export const DangerStyle = Literal(4);
-export const LinkStyle = Literal(5);
-export const PremiumStyle = Literal(6);
+export const SuccessStyle   = Literal(3);
+export const DangerStyle    = Literal(4);
+export const LinkStyle      = Literal(5);
+export const PremiumStyle   = Literal(6);
 
 export const Style = Union(
   PrimaryStyle,
@@ -32,13 +31,13 @@ export const EventData = Struct({});
 
 
 
-export const ButtonTag = Literal(DTML.button);
-export const PrimaryButtonTag = Literal(DTML.primary);
+export const ButtonTag          = Literal(DTML.button);
+export const PrimaryButtonTag   = Literal(DTML.primary);
 export const SecondaryButtonTag = Literal(DTML.secondary);
-export const SuccessTag = Literal(DTML.success);
-export const DangerTag = Literal(DTML.danger);
-export const LinkTag = Literal(DTML.link);
-export const PremiumTag = Literal(DTML.premium);
+export const SuccessTag         = Literal(DTML.success);
+export const DangerTag          = Literal(DTML.danger);
+export const LinkTag            = Literal(DTML.link);
+export const PremiumTag         = Literal(DTML.premium);
 
 
 
@@ -147,7 +146,7 @@ export type PremiumAttributes = Schema.Type<typeof PremiumAttributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.button]   : validateSync(Attributes),
   [DTML.primary]  : validateSync(PrimaryAttributes),
   [DTML.secondary]: validateSync(SecondaryAttributes),

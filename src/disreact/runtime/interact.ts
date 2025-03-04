@@ -5,7 +5,7 @@ import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {CLOSE, Doken, NONE_STR, Rest} from '#src/disreact/codec/rest/index.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
+import {StaticModel} from '#src/disreact/model/StaticModel.ts';
 import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
@@ -18,7 +18,7 @@ import type * as RootElement from '../codec/fiber/root-element.ts';
 export const interact = E.fn(
   function* (rest: Rest.Ix) {
     const frame   = yield* Codec.decodeInteraction(rest);
-    const root    = yield* StaticGraph.hydrateClone(rest.id, frame.params.root, frame.params.hash);
+    const root    = yield* StaticModel.hydrateClone(rest.id, frame.params.root, frame.params.hash);
     frame.state   = root.fiber;
     frame.pointer = root.pointer;
     Globals.setPointer(frame.pointer);
@@ -106,7 +106,7 @@ const processClick = E.fn(function* (frame: Codec.Frame, root: RootElement.T) {
 
   Globals.dismountRoot(frame.pointer);
 
-  const nextClone = yield* StaticGraph.makeClone(
+  const nextClone = yield* StaticModel.makeClone(
     root.id,
     root.fiber.graph.next,
     root.fiber.graph.nextProps,

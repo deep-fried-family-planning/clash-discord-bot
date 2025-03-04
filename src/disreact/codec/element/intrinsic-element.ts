@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition,@typescript-eslint/no-dynamic-delete */
+/* eslint-disable @typescript-eslint/no-dynamic-delete,@typescript-eslint/no-unnecessary-condition */
 import * as All from '#src/disreact/codec/constants/all.ts';
 import * as Reserved from '#src/disreact/codec/constants/reserved.ts';
 import * as Intrinsic from '#src/disreact/codec/element/intrinsic/index.ts';
@@ -46,13 +46,13 @@ export const make = (type: string, props: any): T => {
 };
 
 export const makeDEV = (type: string, props: any): T => {
-  const validator = Intrinsic.dsxDEV_validators[type as keyof typeof Intrinsic.dsxDEV_validators];
+  const validator = Intrinsic.validateAttributesDEV[type as keyof typeof Intrinsic.validateAttributesDEV];
 
-  if (validator) {
-    validator(props);
+  if (!validator) {
+    throw new Error(`Unknown intrinsic element type: ${type}`);
   }
 
-  return make(type, props);
+  return make(type, validator(props));
 };
 
 const reservedProps = [

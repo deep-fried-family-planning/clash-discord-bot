@@ -1,6 +1,6 @@
 import type {Schema} from 'effect/Schema';
 import {mutable, optional, Struct} from 'effect/Schema';
-import * as Doken from './doken.ts';
+import * as Doken from 'src/disreact/codec/rest/route/doken.ts';
 
 
 

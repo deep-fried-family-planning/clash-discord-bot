@@ -116,7 +116,7 @@ export type MentionsAttributes = Schema.Type<typeof MentionsAttributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.select]  : validateSync(Attributes),
   [DTML.option]  : validateSync(OptionAttributes),
   [DTML.$default]: validateSync(DefaultValueAttributes),

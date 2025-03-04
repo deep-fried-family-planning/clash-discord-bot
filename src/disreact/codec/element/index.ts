@@ -1,9 +1,12 @@
 export * as Children from './children.ts';
-export * as Function from './function-element.ts';
-export * as Text from './text-element.ts';
-export * as Intrinsic from './intrinsic-element.ts';
-export * as Props from './props.ts';
 export * as Fragment from './fragment.ts';
+export * as FunctionComponent from './function-component.ts';
+export * as FC from './function-component.ts';
+export * as FunctionElement from './function-element.ts';
+export * as Element from './index.ts';
+export * as IntrinsicElement from './intrinsic-element.ts';
+export * as Props from './props.ts';
+export * as TextElement from './text-element.ts';
 import * as FunctionElement from './function-element.ts';
 import * as IntrinsicElement from './intrinsic-element.ts';
 import * as TextElement from './text-element.ts';

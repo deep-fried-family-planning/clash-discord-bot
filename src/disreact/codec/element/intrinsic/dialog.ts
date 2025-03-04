@@ -39,7 +39,7 @@ export type TextInputAttributes = Schema.Type<typeof TextInputAttributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.dialog]   : validateSync(Attributes),
   [DTML.modal]    : validateSync(Attributes),
   [DTML.text]     : validateSync(TextInputAttributes),

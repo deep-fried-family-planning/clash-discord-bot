@@ -4,7 +4,7 @@ import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
-import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
+import {StaticModel} from '#src/disreact/model/StaticModel.ts';
 import {DiscordDOM} from '#src/disreact/runtime/service/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/service/DokenMemory.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
@@ -17,7 +17,7 @@ import type * as FC from '../../codec/element/function-component.ts';
 export const runtimeLayer = pipe(
   L.empty,
   L.provideMerge(InteractionBroker.makeLayer()),
-  L.provideMerge(StaticGraph.singleton({
+  L.provideMerge(StaticModel.singleton({
     persistent: [
       OmniPublic,
     ],

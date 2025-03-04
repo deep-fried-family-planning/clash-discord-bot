@@ -1,11 +1,3 @@
-import * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
-import * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
-import * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
-import * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
-import * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
-import * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
-import * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
-
 export * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
 export * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
 export * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
@@ -13,6 +5,15 @@ export * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
 export * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
 export * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
 export * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
+import * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
+import * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
+import * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
+import * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
+import * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
+import * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
+import * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
+
+
 
 export type IntrinsicTuple =
   | [Button.Tag, Button.Attributes]
@@ -51,14 +52,12 @@ export type IntrinsicMap = {
   [K in IntrinsicTuple as K[0]]: K[1];
 };
 
-
-
-export const dsxDEV_validators = {
-  ...Button.dsxDEV_validators,
-  ...Command.dsxDEV_validators,
-  ...Dialog.dsxDEV_validators,
-  ...Embed.dsxDEV_validators,
-  ...Markdown.dsxDEV_validators,
-  ...Message.dsxDEV_validators,
-  ...Select.dsxDEV_validators,
+export const validateAttributesDEV = {
+  ...Button.validateAttributesDEV,
+  ...Command.validateAttributesDEV,
+  ...Dialog.validateAttributesDEV,
+  ...Embed.validateAttributesDEV,
+  ...Markdown.validateAttributesDEV,
+  ...Message.validateAttributesDEV,
+  ...Select.validateAttributesDEV,
 };

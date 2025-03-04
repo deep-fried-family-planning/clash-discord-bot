@@ -1,5 +1,5 @@
-import {Literal, type Schema, Struct, validateSync} from 'effect/Schema';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
+import {Literal, type Schema, Struct, validateSync} from 'effect/Schema';
 
 
 export const Tag = Literal(DTML.command);
@@ -14,6 +14,6 @@ export type Attributes = Schema.Type<typeof Attributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.command]: validateSync(Attributes),
 };

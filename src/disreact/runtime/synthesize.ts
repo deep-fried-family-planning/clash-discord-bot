@@ -1,7 +1,7 @@
 import * as Codec from '#src/disreact/codec/Codec.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {StaticGraph} from '#src/disreact/model/StaticGraph.ts';
+import {StaticModel} from '#src/disreact/model/StaticModel.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type * as FC from '../codec/element/function-component.ts';
 
@@ -9,7 +9,7 @@ import type * as FC from '../codec/element/function-component.ts';
 
 export const synthesize = (fn: FC.FC) => E.gen(function* () {
   const frame = Codec.makeStaticFrame(fn.name);
-  const root  = yield* StaticGraph.synthesizeClone(fn);
+  const root  = yield* StaticModel.synthesizeClone(fn);
   frame.state = root.fiber;
 
   Globals.nullifyPointer();

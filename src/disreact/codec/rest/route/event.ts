@@ -1,5 +1,5 @@
 import {onclick, onselect, onsubmit} from '#src/disreact/codec/constants/reserved.ts';
-import {BUTTON, CHANNEL_SELECT, CLICK, ROLE_SELECT, SELECT_MENU, USER_SELECT} from '#src/disreact/codec/rest/rest.ts';
+import {ComponentType, InteractionType} from 'dfx/types';
 import type {Schema} from 'effect/Schema';
 import {Any, mutable, String, Struct, tag, Union} from 'effect/Schema';
 
@@ -72,8 +72,8 @@ export type SubmitEvent = Schema.Type<typeof SubmitEvent>;
 export type Event = Schema.Type<typeof Event>;
 
 export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
-  if (request.type === CLICK) {
-    if (request.data.component_type === BUTTON) {
+  if (request.type === InteractionType.MESSAGE_COMPONENT) {
+    if (request.data.component_type === ComponentType.BUTTON) {
       return {
         request,
         _tag     : 'ButtonEvent',
@@ -81,7 +81,7 @@ export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
         prop     : onclick,
       };
     }
-    if (request.data.component_type === SELECT_MENU) {
+    if (request.data.component_type === ComponentType.STRING_SELECT) {
       return {
         request,
         _tag     : 'SelectEvent',
@@ -91,7 +91,7 @@ export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
         options  : [],
       };
     }
-    if (request.data.component_type === USER_SELECT) {
+    if (request.data.component_type === ComponentType.USER_SELECT) {
       return {
         request,
         _tag     : 'UserSelectEvent',
@@ -100,7 +100,7 @@ export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
         users    : request.data.values,
       };
     }
-    if (request.data.component_type === ROLE_SELECT) {
+    if (request.data.component_type === ComponentType.ROLE_SELECT) {
       return {
         request,
         _tag     : 'RoleSelectEvent',
@@ -109,7 +109,7 @@ export const decodeRequestEvent = (request: any, custom_id?: string): Event => {
         roles    : request.data.values,
       };
     }
-    if (request.data.component_type === CHANNEL_SELECT) {
+    if (request.data.component_type === ComponentType.CHANNEL_SELECT) {
       return {
         request,
         _tag     : 'ChannelSelectEvent',

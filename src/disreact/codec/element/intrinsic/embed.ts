@@ -44,7 +44,7 @@ export type Attributes = Schema.Type<typeof Attributes>;
 
 
 
-export const dsxDEV_validators = {
+export const validateAttributesDEV = {
   [DTML.embed] : validateSync(Attributes),
   [DTML.field] : validateSync(FieldAttributes),
   [DTML.footer]: validateSync(FooterAttributes),
