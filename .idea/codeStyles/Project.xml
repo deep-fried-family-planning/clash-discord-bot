@@ -14,9 +14,6 @@
       <option name="USE_DOUBLE_QUOTES" value="false" />
       <option name="ENFORCE_QUOTES_ON_FORMAT" value="true" />
     </CssCodeStyleSettings>
-    <HCL-Terraform>
-      <option name="RUN_TF_FMT_ON_REFORMAT" value="true" />
-    </HCL-Terraform>
     <HTMLCodeStyleSettings>
       <option name="HTML_ATTRIBUTE_WRAP" value="4" />
       <option name="HTML_TEXT_WRAP" value="0" />
