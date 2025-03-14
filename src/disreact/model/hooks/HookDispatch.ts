@@ -19,12 +19,10 @@ export class HookDispatch extends E.Service<HookDispatch>()('disreact/HookDispat
           pipe(
             E.sync(() => {
               FiberNode.λ_λ.set(node);
-              FiberStore.λ_λ.set(node.root as any);
             }),
             E.andThen(() => effect),
             E.catchAll((e) => {
               FiberNode.λ_λ.clear();
-              FiberStore.λ_λ.clear();
               return E.fail(e as HookError);
             }),
             semaphore.withPermits(1),
@@ -45,12 +43,7 @@ export class HookDispatch extends E.Service<HookDispatch>()('disreact/HookDispat
 }) {
   static readonly withMutex = (node: FiberNode) => <A, E, R>(effect: E.Effect<A, E, R>) =>
     pipe(
-      HookDispatch.use((dispatch) =>
-        pipe(
-          effect,
-          dispatch.mutex(node),
-        ),
-      ),
+      HookDispatch.use((dispatch) => dispatch.mutex(node)(effect)),
       E.provide(HookDispatch.Default),
     );
 

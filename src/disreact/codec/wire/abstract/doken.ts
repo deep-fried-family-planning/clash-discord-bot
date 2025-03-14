@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import {CallbackType, Flag, Id} from '#src/disreact/codec/enum/index.ts';
 import type {DokenMemoryError} from '#src/disreact/codec/error.ts';
@@ -10,7 +10,7 @@ import type {Cause} from 'effect';
 import {DateTime, ParseResult, pipe} from 'effect';
 import {DateTimeUtcFromNumber, DateTimeUtcFromSelf, mutable, optional, Struct, TaggedStruct, TemplateLiteralParser, transform, transformOrFail, UndefinedOr, Union} from 'effect/Schema';
 import * as dapi from '#src/disreact/codec/wire/resource/index.ts';
-import * as Ix from '#src/disreact/codec/ix.ts';
+import * as Ix from '#src/disreact/codec/wire/ix.ts';
 
 
 

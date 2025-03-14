@@ -1,64 +1,80 @@
+import {ONE} from '#src/disreact/codec/constants/common.ts';
 import {RESERVED} from '#src/disreact/codec/constants/index.ts';
-import type {Element} from '#src/disreact/model/entity/element.ts';
 import {Data, Equal} from 'effect';
 
 
 
 export * as Props from 'src/disreact/model/entity/props.ts';
-export type Props<P = any, C = Element> = Any<P, C>;
+export type Props<P = any, A = any> =
+  | None
+  | Zero<P, A>
+  | Only<P, A>
+  | Many<P, A>;
+
+type None = null | undefined | never;
+type Zero<P = any, A = any> = Omit<P, 'children' | '_tag'> & {_tag: typeof ZERO; children: never};
+type Only<P = any, A = any> = Omit<P, 'children' | '_tag'> & {_tag: typeof ONLY; children: A};
+type Many<P = any, A = any> = Omit<P, 'children' | '_tag'> & {_tag: typeof MANY; children: A[]};
 
 export const ZERO = 'ZERO' as const;
 export const ONLY = 'ONLY' as const;
 export const MANY = 'MANY' as const;
 
-export type WithZero<P> = P & object & {
-  _tag     : typeof ZERO;
-  children?: null | undefined | never;
+export const isNone = <P, A>(self: Props<P, A>): self is None => self === null || self === undefined;
+export const isZero = <P, A>(self: Props<P, A>): self is Zero<P, A> => self?._tag === ZERO;
+export const isOnly = <P, A>(self: Props<P, A>): self is Only<P, A> => self?._tag === ONLY;
+export const isMany = <P, A>(self: Props<P, A>): self is Many<P, A> => self?._tag === MANY;
+
+export const zero = <P, A>(props: P): Zero<P, A> => {
+  (props as any)._tag = ZERO;
+  return props as Zero<P, A>;
 };
 
-export type WithOnly<P, C> = P & object & {
-  _tag    : typeof ONLY;
-  children: C;
+export const only = <P, A>(props: P): Only<P, A> => {
+  (props as any)._tag = ONLY;
+  return props as Only<P, A>;
 };
 
-export type WithMany<P, C> = P & object & {
-  _tag    : typeof MANY;
-  children: C[];
+export const many = <P, A>(props: P): Many<P, A> => {
+  (props as any)._tag = MANY;
+  return props as Many<P, A>;
 };
 
-export type WithChildren<P, C> = WithOnly<P, C> | WithMany<P, C>;
-
-export type Any<P, C> =
-  | WithZero<P>
-  | WithOnly<P, C>
-  | WithMany<P, C>;
-
-export const isZero = <P, C>(self: Any<P, C>): self is WithZero<P> => self._tag === ZERO;
-export const isOnly = <P, C>(self: Any<P, C>): self is WithOnly<P, C> => self._tag === ONLY;
-export const isMany = <P, C>(self: Any<P, C>): self is WithMany<P, C> => self._tag === MANY;
-
-export const ensure = (self: any) => {
-  if (!self) {
-    return {};
+export const jsx = <P, A>(props: any): None | Zero<P, A> | Only<P, A> => {
+  if (!props) {
+    return props;
   }
 
-  if (!self.children) {
-    self.children = [];
+  if (!props.children) {
+    props._tag = ZERO;
   }
-  if (!self.children?.length) {
-    self.children = [self.children];
+  else {
+    props._tag = ONLY;
+    props.children = [props.children];
   }
-  return self;
+
+  return props;
 };
 
-export const partition = (self: any) => {
-  ensure(self);
-  const children = self.children;
-  delete self.children;
-  return children;
+export const jsxs = <P, A>(props: any): Many<P, A> => {
+  props._tag = MANY;
+  return props;
 };
 
 export const isEqual = (a: Props, b: Props): boolean => {
+  if (a === b) {
+    return true;
+  }
+  if (a === null || b === null) {
+    return false;
+  }
+  if (a === undefined || b === undefined) {
+    return false;
+  }
+  if (a._tag !== b._tag) {
+    return false;
+  }
+
   const cprops = Data.struct(a);
   const rprops = Data.struct(b);
 

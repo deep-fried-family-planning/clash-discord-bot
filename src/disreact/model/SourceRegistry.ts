@@ -1,12 +1,9 @@
-
 import {DsxSettings} from '#src/disreact/interface/DisReactConfig.ts';
+import type {TaskElem} from '#src/disreact/model/entity/element-task.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
-import type {Element} from '#src/disreact/model/entity/element.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import type { Cause} from 'effect';
 import {Array, Data, Hash, pipe} from 'effect';
-import console from 'node:console';
-import {Root, type Source} from './root';
+import {Root} from './root';
 
 
 
@@ -43,11 +40,11 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
             Hash.array,
           ),
 
-      checkout: (key: string | FC | Element) => {
+      checkout: (key: string | FC | TaskElem) => {
         const id
                 = typeof key === 'string' ? key
-                : typeof key === 'function' ? FC.getSource(key)
-                : key.id;
+          : typeof key === 'function' ? FC.getSrcId(key)
+            : key.id;
 
         const src = Root.λ_λ.get(id);
 

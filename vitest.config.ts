@@ -30,5 +30,6 @@ export default defineConfig({
     testTimeout    : 0,
     hookTimeout    : 0,
     teardownTimeout: 0,
+    cache          : false,
   },
 });

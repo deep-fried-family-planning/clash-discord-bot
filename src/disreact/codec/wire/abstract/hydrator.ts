@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+
 import {CustomId} from '#src/disreact/codec/wire/resource/index.ts';
 import * as DAPI from '#src/disreact/codec/wire/dapi.ts';
 import * as Doken from '#src/disreact/codec/wire/abstract/doken.ts';
 import {ForbiddenSync} from '#src/disreact/codec/wire/shared/shared.ts';
 import {String, Struct, TaggedStruct, TemplateLiteralParser, transform, Union} from 'effect/Schema';
-import * as Ix from '#src/disreact/codec/ix.ts';
+import * as Ix from '#src/disreact/codec/wire/ix.ts';
 
 
 

@@ -29,7 +29,10 @@ export const TestMessage: FC = () => E.gen(function* () {
         <button
           primary
           label={'Start'}
-          onclick={() => setNum(num + 1)}
+          onclick={() => {
+            setNum(num + 1);
+            console.log(num);
+          }}
         />
         <secondary label={'Help'} onclick={() => console.log('help')}/>
       </actions>

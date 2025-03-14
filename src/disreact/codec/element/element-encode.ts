@@ -1,6 +1,6 @@
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
-import type { Element } from '#src/disreact/model/entity/element';
+import type { Elem } from '#src/disreact/model/entity/element';
 
 
 
@@ -22,7 +22,7 @@ export type EncodedRoot =
 
 
 
-export const encodeMessageDsx = (node: Element): EncodedMessage => {
+export const encodeMessageDsx = (node: Elem): EncodedMessage => {
   const [encoded] = encodeDsx(node) as EncodedMessage[];
 
   const {public: p, ...rest} = encoded;
@@ -36,7 +36,7 @@ export const encodeMessageDsx = (node: Element): EncodedMessage => {
 
 
 
-export const encodeDialogDsx = (node: Element): EncodedDialog => {
+export const encodeDialogDsx = (node: Elem): EncodedDialog => {
   const [encoded] = encodeDsx(node);
 
   return encoded as EncodedDialog;
@@ -44,7 +44,7 @@ export const encodeDialogDsx = (node: Element): EncodedDialog => {
 
 
 
-export const encodeDsx = (node: Element): EncodedRoot[] => {
+export const encodeDsx = (node: Elem): EncodedRoot[] => {
   const next = unwrapFunctions(node);
 
   return next.map((n: any) => encodeInner(n));

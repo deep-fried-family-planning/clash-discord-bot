@@ -37,10 +37,23 @@ export const TestRegistry = pipe(
   L.provide(config),
   L.provide(L.effectContext(E.succeed(liveServices))),
 );
-// ReturnType<typeof vfx.layer<typeof TestRegistry, never>>
+
 let local: Vitest.Methods<typeof SourceRegistry.Service>;
 
-vfx.layer(TestRegistry)((it) => local = it as unknown as typeof vfx);
+vfx.layer(TestRegistry)((it) => local = it as any);
 
 // @ts-expect-error testing convenience
 export const it = local;
+
+export const nofunc = (node) => {
+  if ('props' in node && node.props && typeof node.props === 'object') {
+    delete node.props['onclick'];
+    delete node.props['onselect'];
+  }
+
+  if ('children' in node && node.children.length > 0) {
+    node.children = node.children.map((child) => nofunc(child));
+  }
+
+  return node;
+};

@@ -8,7 +8,7 @@
   },
   "fiber": {
     "id": "TestMessage",
-    "rc": 2,
+    "rc": 1,
     "pc": 0,
     "stack": [
       {

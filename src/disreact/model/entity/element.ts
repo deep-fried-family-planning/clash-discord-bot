@@ -1,39 +1,34 @@
-import {RestElement} from '#src/disreact/model/entity/rest-element.ts';
-import {TaskElement} from '#src/disreact/model/entity/task-element.ts';
-import {TextLeaf} from '#src/disreact/model/entity/text-leaf.ts';
+import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
+import {TaskElem} from '#src/disreact/model/entity/element-task.ts';
+import {LeafElem} from '#src/disreact/model/entity/leaf.ts';
+import type {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import {FC} from './fc.ts';
 
 
 
-export * as Element from './element.ts';
-export type Element = Parent;
-
-export type Parent =
+export * as Elem from './element.ts';
+export type Elem<P = any, A = any> =
   | RestElement
-  | TaskElement;
-
-export type Leaf =
-  | TextLeaf;
-
-export type Any =
-  | Parent
-  | Leaf;
-
-export interface Meta {
-  id : string;
-  idx: string;
-}
+  | TaskElem
+  | LeafElem;
 
 export const Fragment = undefined;
 
-export const isLeaf = (self: any): self is string =>
-  TextLeaf.isType(self);
-
-export const isNode = (self: any): self is Parent =>
-  self &&
-  typeof self === 'object' && (
-    RestElement.isTag(self) ||
-    TaskElement.isTag(self)
-  );
+export const isSame = (a: Elem, b: Elem): boolean => {
+  if (a === b) {
+    return true;
+  }
+  if (a._tag !== b._tag) {
+    return false;
+  }
+  if (a.constructor.name !== b.constructor.name) {
+    return false;
+  }
+  if (LeafElem.is(a)) {
+    return a.value === (b as LeafElem).value;
+  }
+  return true;
+};
 
 export const make = (type: any, props: any) => {
   switch (typeof type) {
@@ -46,7 +41,7 @@ export const make = (type: any, props: any) => {
     }
 
     case 'function': {
-      return TaskElement.make(type, props);
+      return TaskElem.make(type, props);
     }
 
     default: {
@@ -55,66 +50,106 @@ export const make = (type: any, props: any) => {
   }
 };
 
-export const jsx = (type: any, props: any) => {
-  const self = make(type, props);
-  self.type;
-  return self;
-};
-
-
-
-export const clone = <A extends Any>(self: A): A => {
-  if (TextLeaf.is(self)) {
-    return TextLeaf.clone(self) as A;
+export const clone = <A extends Elem>(self: A): A => {
+  if (LeafElem.is(self)) {
+    return LeafElem.clone(self) as A;
   }
   if (RestElement.isTag(self)) {
     return RestElement.clone(self) as A;
   }
-  return TaskElement.clone(self) as A;
+  return TaskElem.clone(self) as A;
 };
 
-export const deepClone = <A extends Any>(self: A): A => {
+export const deepClone = <A extends Elem>(self: A): A => {
   const cloned = clone(self);
 
-  if (TextLeaf.is(cloned)) {
-    return cloned;
-  }
-
-  for (let i = 0; i < cloned.children.length; i++) {
-    cloned.children[i] = deepClone(cloned.children[i]);
+  if (!LeafElem.is(cloned)) {
+    for (let i = 0; i < cloned.children.length; i++) {
+      cloned.children[i] = deepClone(cloned.children[i]);
+    }
   }
 
   return cloned;
 };
 
-export const isSame = (a: Element.Any, b: Element.Any): boolean => {
-  if (a === b) {
-    return true;
+export const linearize = <A extends Elem>(self: A): A => {
+  if (LeafElem.is(self)) {
+    return self;
   }
-  if (a._tag !== b._tag) {
-    return false;
-  }
-  if (a.constructor.name !== b.constructor.name) {
-    return false;
-  }
-  if (TextLeaf.is(a)) {
-    return a.value === (b as TextLeaf).value;
-  }
-  return true;
-};
 
-export const linearize = (self: Element.Any): void => {
-  if (TaskElement.isTag(self)) {
-    TaskElement.linearize(self);
+  if (TaskElem.isTag(self)) {
+    delete self.fiber.root;
+    delete self.fiber.element;
   }
-};
 
-export const linearizeDeep = (self: Element) => {
-  linearize(self);
-
-  for (const child of self.children) {
-    linearize(child);
+  for (let i = 0; i < self.children.length; i++) {
+    linearize(self.children[i]);
   }
 
   return self;
+};
+
+export interface Meta {
+  id     : string;
+  idx    : string;
+  step_id: string;
+}
+
+export const linkNodeToParent = <T extends Elem>(node: T, parent?: Elem): T => {
+  if (!parent) {
+    node.idx = 0;
+
+    if (TaskElem.isTag(node)) {
+
+    }
+
+    node.step_id = `${node.id}:${node.idx}`;
+    node.full_id = `${node.id}:${node.idx}`;
+  }
+  else {
+    node.step_id = `${parent.id}:${parent.idx}:${node.id}:${node.idx}`;
+    node.full_id = `${parent.full_id}:${node.id}:${node.idx}`;
+  }
+  return node;
+};
+
+export const setIds = (children: Elem[], parent: Elem) => {
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+
+    if (LeafElem.is(child)) {
+      continue;
+    }
+    if (RestElement.isTag(child)) {
+      child.idx = `${child.type}:${i}`;
+    }
+    if (TaskElem.isTag(child)) {
+      child.idx = `${FC.getName(child.type)}:${i}`;
+    }
+    child.step_id = `${(parent as TaskElem).idx}:${child.idx}`;
+    child.id      = `${(parent as TaskElem).id}:${child.idx}`;
+  }
+  return children;
+};
+
+export const collectStates = (node: Elem, states: { [K in string]: FiberNode } = {}): typeof states => {
+  if (TaskElem.isTag(node)) {
+    states[node.id] = node.fiber;
+  }
+
+  if ('children' in node && Array.isArray(node.children)) {
+    for (const child of node.children) {
+      collectStates(child, states);
+    }
+  }
+
+  return states;
+};
+
+export const reduceToStacks = (hooks: { [K in string]: FiberNode }): { [K in string]: FiberNode['stack'] } => {
+  return Object.fromEntries(
+    Object.entries(hooks)
+      .filter(([_, value]) => value.stack.length)
+      .map(([key, value]) => [key, value.stack]),
+  );
 };

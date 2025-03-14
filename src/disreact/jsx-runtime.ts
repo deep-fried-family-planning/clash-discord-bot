@@ -1,6 +1,6 @@
 import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
-import type {Element} from '#src/disreact/model/entity/element.ts';
+import type {Elem} from '#src/disreact/model/entity/element.ts';
 import {fragment, multi, single} from './model/dsx';
 
 
@@ -19,7 +19,7 @@ export declare namespace JSX {
     | null
     | undefined;
 
-  type Element = Element.Element;
+  type Element = Elem.Element;
 
   interface ElementAttributesProperty {
     props: any;

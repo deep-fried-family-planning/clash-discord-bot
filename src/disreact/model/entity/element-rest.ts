@@ -1,36 +1,30 @@
-import {EMPTY, ZERO} from '#src/disreact/codec/constants/common.ts';
 import {RESERVED} from '#src/disreact/codec/constants/index.ts';
-import type {Element} from '#src/disreact/model/entity/element.ts';
+import type {Elem} from '#src/disreact/model/entity/element.ts';
 
 
 
 export const TAG = 'RestElement';
 
-export * as RestElement from './rest-element.ts';
+export * as RestElement from 'src/disreact/model/entity/element-rest.ts';
 
-export type RestElement = Element.Meta & {
+export type RestElement = Elem.Meta & {
   _tag    : typeof TAG;
   type    : string;
   props   : any;
-  children: Element.Any[];
+  children: Elem[];
 };
 
-export const Type = 'string' as const;
+export const isTag = (self: Elem): self is RestElement => self._tag === TAG;
 
-export type Type = string;
-
-export const isType = (type: any): type is Type => typeof type === Type;
-
-export const isTag = (self: Element.Any): self is RestElement => self._tag === TAG;
-
-export const makeId = (self: RestElement, idx: number) => `${self.type}:${idx}`;
+export const id = (self: RestElement, idx: number) => `${self.type}:${idx}`;
 
 export const make = (type: string, props: any): RestElement => {
   return {
     _tag    : TAG,
     type,
     id      : '',
-    idx     : type,
+    idx     : '',
+    step_id : '',
     props,
     children: [],
   };

@@ -1,8 +1,9 @@
+import type {RestElement} from '#src/disreact/model/entity/element-rest.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Element} from '#src/disreact/model/entity/element.ts';
+import {Elem} from '#src/disreact/model/entity/element.ts';
 import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
 import {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
-import {TaskElement} from './entity/task-element.ts';
+import {TaskElem} from 'src/disreact/model/entity/element-task.ts';
 
 
 
@@ -11,14 +12,14 @@ export * as Root from './root.ts';
 export type Root = {
   _tag   : Type;
   id     : Hydrant.Id;
-  element: Element;
+  element: TaskElem;
   store  : FiberStore;
 };
 
 export interface Source {
   _tag   : Type;
   id     : string;
-  element: Element;
+  element: TaskElem;
 }
 
 export const MODAL     = 'Modal';
@@ -30,36 +31,37 @@ export type Type =
   | typeof PUBLIC
   | typeof EPHEMERAL;
 
-export const make = (_tag: Type, src: Element | FC): Source => {
+export const make = (_tag: Type, src: Elem | FC): Source => {
   if (FC.isFC(src)) {
     const fc = FC.initRoot(src);
 
     return {
       _tag,
-      id     : FC.getSource(fc),
-      element: TaskElement.make(fc),
+      id     : FC.getSrcId(fc),
+      element: TaskElem.make(fc),
     };
   }
 
-  if (!TaskElement.isTag(src)) {
-    throw new Error(`Invalid Source: ${src.type} is not allowed (${src.id})`);
+  if (TaskElem.isTag(src)) {
+    const fc = FC.initRoot(src.type);
+
+    return {
+      _tag,
+      id     : FC.getSrcId(fc),
+      element: Elem.clone(src),
+    };
   }
 
-  const fc = FC.initRoot(src.type);
-
-  return {
-    _tag,
-    id     : FC.getSource(fc),
-    element: Element.clone(src),
-  };
+  // @ts-expect-error convenience
+  throw new Error(`Invalid Source: ${src.type} is not allowed (${src.id})`);
 };
 
 export const fromSource = (src: Source, props?: any): Root => {
-  const elem    = Element.clone(src.element);
+  const elem    = Elem.clone(src.element);
   const store   = FiberStore.make(src.id, props);
-  elem.id = elem.idx;
+  elem.id = elem.idx = src.id;
 
-  if (TaskElement.isTag(elem)) {
+  if (TaskElem.isTag(elem)) {
     elem.fiber.root       = store;
     elem.fiber.element    = elem;
     elem.fiber.id         = elem.id;
@@ -86,14 +88,14 @@ export const deepClone = (self: Root) => {
   const {element, store, ...rest} = self;
 
   const cloned   = structuredClone(rest) as Root;
-  cloned.element = Element.clone(self.element);
+  cloned.element = Elem.clone(self.element);
   cloned.store   = FiberStore.clone(self.store);
   return cloned;
 };
 
 export const cloneDeep = (self: Root) => {
   const cloned   = deepClone(self);
-  cloned.element = Element.deepClone(self.element);
+  cloned.element = Elem.deepClone(self.element);
   return cloned;
 };
 
@@ -104,7 +106,7 @@ export const linearize = (self: Root): void => {
 
 export const deepLinearize = (self: Root): Root => {
   linearize(self);
-  Element.linearizeDeep(self.element);
+  Elem.linearize(self.element);
   return self;
 };
 

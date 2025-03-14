@@ -62,24 +62,3 @@ export const clone = (self: FiberStore): FiberStore => {
   cloned.fibers = Record.map(fibers, (node) => FiberNode.clone(node));
   return cloned;
 };
-
-export const linearize = (self: FiberStore): FiberStore => {
-  delete self.element;
-  delete self.request;
-  return self;
-};
-
-export const circularize = (self: FiberStore, element: Root, request: Ix.Input): FiberStore => {
-  self.element = element;
-  self.request = request;
-  return self;
-};
-
-
-
-export namespace λ_λ {
-  const STORE        = {current: null as FiberStore | null};
-  export const get   = () => STORE.current!;
-  export const set   = (fiber: FiberStore) => {STORE.current = fiber};
-  export const clear = () => {STORE.current = null};
-}

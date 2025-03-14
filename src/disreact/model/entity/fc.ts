@@ -4,101 +4,111 @@ import * as Arr from 'effect/Array';
 
 
 
+export const SourceSymbol = Symbol.for('disreact/fc/source');
+export const NamingSymbol = Symbol.for('disreact/fc/naming');
+export const RenderSymbol = Symbol.for('disreact/fc/render');
+
 export * as FC from 'src/disreact/model/entity/fc.ts';
-export type FC<P = any, E = any> =
-  | Any<P, E>
-  | SFC<P, E>
-  | AFC<P, E>
-  | EFC<P, E>;
+export type FC<P = any, A = any> =
+  | Base
+  | Sync<P, A>
+  | Prom<P, A>
+  | FnFx<P, A>
+  | Src<P, A>;
 
-interface Base {
-  (props?: any): any;
-  _tag?       : string;
-  displayName?: string;
-  sourceName? : string;
+interface Base<P = any, A = any> {
+  (props?: P): A | A[] | Promise<A | A[]> | E.Effect<A | A[], any, any>;
+  _tag?          : string;
+  displayName?   : string;
+  sourceName?    : string;
+  [NamingSymbol]?: string;
+  [RenderSymbol]?: string;
+  [SourceSymbol]?: string;
 }
 
-export interface Any<P, E> extends Base {
-  // (props: P): E | E[];
-  [Naming]?  : string;
-  [Render]?  : string;
-  [SourceId]?: string;
+interface Known<P, A> extends Base<P, A> {
+  [NamingSymbol]: string;
+  [RenderSymbol]: Render;
 }
 
-export interface SFC<P, E> extends Any<P, E> {
-  (props: P): E | E[];
-  [Render]: typeof SYNC;
-  [Naming]: string;
+interface Sync<P, A> extends Known<P, A> {
+  (props?: P): A | A[];
+  _tag          : Render.SYNC;
+  [RenderSymbol]: Render.SYNC;
 }
 
-export interface AFC<P, E> extends Any<P, E> {
-  (props: P): Promise<E | E[]>;
-  [Render]: typeof ASYNC;
-  [Naming]: string;
+interface Prom<P, A> extends Known<P, A> {
+  (props?: P): Promise<A | A[]>;
+  _tag          : Render.ASYNC;
+  [RenderSymbol]: Render.ASYNC;
 }
 
-export interface EFC<P, E> extends Any<P, E> {
-  (props: P): E.Effect<E | E[], any, any>;
-  [Render]: typeof EFFECT;
-  [Naming]: string;
+interface FnFx<P, A> extends Known<P, A> {
+  (props?: P): E.Effect<A | A[], any, any>;
+  _tag          : Render.EFFECT;
+  [RenderSymbol]: Render.EFFECT;
 }
 
-export interface Known<P, E> extends Any<P, E> {
-  [Naming]: string;
-  [Render]: Render;
+interface Src<P, A> extends Known<P, A> {
+  [SourceSymbol]: string;
 }
 
-export interface Src<P, E> extends Known<P, E> {
-  [SourceId]: string;
+enum Render {
+  SYNC   = 'Sync',
+  ASYNC  = 'Async',
+  EFFECT = 'Effect',
 }
 
-type Render = typeof SYNC | typeof ASYNC | typeof EFFECT;
-
-export const SourceId = Symbol.for('disreact/fc/source');
-export const Naming   = Symbol.for('disreact/fc/naming');
-export const Render   = Symbol.for('disreact/fc/render');
-
-export const SYNC   = 'Sync';
-export const ASYNC  = 'Async';
-export const EFFECT = 'Effect';
-
-export const isFC = <P, E>(fc: any): fc is Any<P, E> => typeof fc === 'function';
-
-export const isSync   = <P, E>(fc: Any<P, E>): fc is SFC<P, E> => fc[Render] === SYNC;
-export const isAsync  = <P, E>(fc: Any<P, E>): fc is AFC<P, E> => fc[Render] === ASYNC;
-export const isEffect = <P, E>(fc: Any<P, E>): fc is EFC<P, E> => fc[Render] === EFFECT;
-export const isSource = <P, E>(fc: Any<P, E>): fc is Src<P, E> => !!fc[SourceId];
-
-export const getNaming = (self: FC) => self[Naming]!;
-export const getSource = (self: FC) => self[SourceId]!;
-
+export const SYNC    = 'Sync' as const;
+export const ASYNC   = 'Async' as const;
+export const EFFECT  = 'Effect' as const;
 const ANONYMOUS      = 'Anonymous' as const;
 const ASYNC_FUNCTION = 'AsyncFunction' as const;
 
+export const isFC     = <P, E>(fc: any): fc is FC<P, E> => typeof fc === 'function';
+export const isSync   = <P, E>(fc: FC<P, E>): fc is Sync<P, E> => fc[RenderSymbol] === Render.SYNC;
+export const isAsync  = <P, E>(fc: FC<P, E>): fc is Prom<P, E> => fc[RenderSymbol] === Render.ASYNC;
+export const isEffect = <P, E>(fc: FC<P, E>): fc is FnFx<P, E> => fc[RenderSymbol] === Render.EFFECT;
+export const isSrc    = <P, E>(fc: FC<P, E>): fc is Src<P, E> => !!fc[SourceSymbol];
+export const isKnown  = <P, E>(fc: FC<P, E>): fc is Known<P, E> => !!fc[NamingSymbol] || !!fc[RenderSymbol];
+
+export const getName  = (fc: FC) => fc[NamingSymbol]!;
+export const getSrcId = (fc: FC) => (fc as any)[SourceSymbol]!;
+
 export const init = (fc: FC): FC => {
-  if (fc[Naming] || fc[Render]) {
+  if (isKnown(fc)) {
     return fc;
   }
 
-  fc[Naming]
-    = fc.displayName ? fc.displayName
-    : fc.name ? fc.name
-      : ANONYMOUS;
-
   if (fc.constructor.name === ASYNC_FUNCTION) {
-    if (fc._tag && fc._tag !== ASYNC) {
+    fc[RenderSymbol] = Render.ASYNC;
+
+    if (fc._tag && fc._tag !== Render.ASYNC) {
       throw new Error(`Invalid Render: ${fc._tag}`);
     }
-
-    fc[Render] = ASYNC;
+  }
+  else if (fc._tag) {
+    if (
+      fc._tag === Render.SYNC ||
+      fc._tag === Render.ASYNC ||
+      fc._tag === Render.EFFECT
+    ) {
+      fc[RenderSymbol] = fc._tag as Render;
+    }
+    throw new Error(`Invalid Render: ${fc._tag}`);
   }
 
-  if (fc._tag) {
-    if (![SYNC, ASYNC, EFFECT].includes(fc._tag)) {
-      throw new Error(`Invalid Render: ${fc._tag}`);
-    }
-
-    fc[Render] = fc._tag as Render;
+  if (fc.sourceName) {
+    fc[NamingSymbol] = fc.sourceName;
+  }
+  else if (fc.displayName) {
+    fc[NamingSymbol] = fc.displayName;
+  }
+  else if (fc.name) {
+    fc[NamingSymbol] = fc.name;
+  }
+  else {
+    fc[NamingSymbol] = ANONYMOUS;
   }
 
   return fc;
@@ -107,21 +117,21 @@ export const init = (fc: FC): FC => {
 export const initRoot = (self: FC): FC => {
   const fc = init(self);
 
-  if (fc[Naming] === ANONYMOUS) {
+  if (fc[NamingSymbol] === ANONYMOUS) {
     throw new Error(`Source cannot be named ${ANONYMOUS}`);
   }
-  // if (fc[SourceId]) {
-  //   throw new Error(`Source ${fc[SourceId]} (${fc[Naming]}) already initialized`);
+    // if (fc[SourceId]) {
+    //   throw new Error(`Source ${fc[SourceId]} (${fc[Naming]}) already initialized`);
   // }
   else {
-    fc[SourceId] = fc.sourceName ? fc.sourceName : self[Naming]!;
+    fc[SourceSymbol] = fc.sourceName ? fc.sourceName : self[NamingSymbol]!;
   }
 
   return fc;
 };
 
 export const setSync = (self: FC) => {
-  self[Render] = SYNC;
+  self[RenderSymbol] = SYNC;
   return self;
 };
 
@@ -131,7 +141,7 @@ export const renderSync = (self: FC, props: any) =>
   );
 
 export const setAsync = (self: FC) => {
-  self[Render] = ASYNC;
+  self[RenderSymbol] = ASYNC;
   return self;
 };
 
@@ -141,7 +151,7 @@ export const renderAsync = (self: FC, props: any) =>
   );
 
 export const setEffect = (self: FC) => {
-  self[Render] = EFFECT;
+  self[RenderSymbol] = EFFECT;
   return self;
 };
 

@@ -1,15 +1,20 @@
-import type {Element} from '#src/disreact/model/entity/element.ts';
-import {RestElement} from '#src/disreact/model/entity/rest-element.ts';
-import type * as Event from '../../codec/element/event.ts';
+import type {Elem} from '#src/disreact/model/entity/element.ts';
+import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
+import type * as Event from 'src/disreact/codec/element/event.ts';
+import { LeafElem } from './entity/leaf';
 
 
 
-export const invokeIntrinsicTarget = (root: Element, event: Event.T) => {
+export const invokeIntrinsicTarget = (root: Elem, event: Event.T) => {
   return invokeTargetInner(root, event);
 };
 
-const invokeTargetInner = (node: Element, event: Event.T, original: Element = node): Element => {
-  if (!RestElement.isTag(node)) {
+const invokeTargetInner = (node: Elem, event: Event.T, original: Elem = node): Elem => {
+  if (LeafElem.is(node)) {
+    throw new Error();
+  }
+
+  if (!RestElement.isTag(node) && node.children) {
     for (const child of node.children) {
       try {
         return invokeTargetInner(child, event, original);
@@ -18,7 +23,7 @@ const invokeTargetInner = (node: Element, event: Event.T, original: Element = no
     }
   }
 
-  if (node.props.custom_id && event.custom_id === node.props.custom_id) {
+  if (node.props?.custom_id && event.custom_id === node.props?.custom_id) {
     const handler = node.props[event.prop];
 
     if (!handler) {
@@ -42,11 +47,13 @@ const invokeTargetInner = (node: Element, event: Event.T, original: Element = no
     return original;
   }
 
-  for (const child of node.children) {
-    try {
-      return invokeTargetInner(child, event, original);
+  if (node.children) {
+    for (const child of node.children) {
+      try {
+        return invokeTargetInner(child, event, original);
+      }
+      catch (_) {/**/}
     }
-    catch (_) {/**/}
   }
 
   throw new Error(`No node with id_step "${event.custom_id}" having a handler for type "${event.prop}" was not found`);

@@ -1,7 +1,7 @@
 import * as DAPI from '#src/disreact/codec/wire/dapi.ts';
 import {ForbiddenSync, RedactionTerminus} from '#src/disreact/codec/wire/shared/shared.ts';
 import {Literal, optional, Struct, transform, Union} from 'effect/Schema';
-import {CallbackType} from 'src/disreact/codec/enum/index.ts';
+import {CallbackType} from '#src/disreact/codec/enum/index.ts';
 import * as Doken from '#src/disreact/codec/wire/abstract/doken.ts';
 import * as dapi from '#src/disreact/codec/wire/resource/index.ts';
 

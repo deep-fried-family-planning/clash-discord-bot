@@ -1,9 +1,9 @@
 /* eslint-disable no-case-declarations */
-import * as TaskElement from '#src/disreact/model/entity/task-element.ts';
+import * as TreeTask from '#src/disreact/model/entity/element-task.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
-import * as RestElement from '#src/disreact/model/entity/rest-element.ts';
+import * as RestElement from '#src/disreact/model/entity/element-rest.ts';
 import * as Props from '#src/disreact/model/entity/props.ts';
-import * as TextElement from '#src/disreact/model/entity/text-leaf.ts';
+import * as TextElement from '#src/disreact/model/entity/leaf.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
 import * as Children from '#src/disreact/model/entity/children.ts';
 
@@ -13,7 +13,7 @@ export const fragment = undefined;
 
 
 
-export const dsx = (type: JSX.ElementType, props: Props.Any<Element.Element> = {}): Element.Element | Element.Element[] => {
+export const dsx = (type: JSX.ElementType, props: Props.Any<Element.Elem> = {}): Element.Elem | Element.Elem[] => {
   if (Props.hasMany(props)) {
     if (Children.isMany(props.children)) {
       return dsxs(type, {...props, children: props.children.flat()});
@@ -27,10 +27,10 @@ export const dsx = (type: JSX.ElementType, props: Props.Any<Element.Element> = {
 
 
 
-export const dsxs = (type: JSX.ElementType, props: Props.AndMany<Element.Element>): Element.Element | Element.Element[] => {
+export const dsxs = (type: JSX.ElementType, props: Props.AndMany<Element.Elem>): Element.Elem | Element.Elem[] => {
   const children = props.children.flat();
 
-  delete (props as Props.Any<Element.Element>).children;
+  delete (props as Props.Any<Element.Elem>).children;
 
   switch (typeof type) {
   case 'undefined':
@@ -42,7 +42,7 @@ export const dsxs = (type: JSX.ElementType, props: Props.AndMany<Element.Element
     return node;
 
   case 'function':
-    return TaskElement.make(type, props);
+    return TreeTask.make(type, props);
 
   case 'boolean':
   case 'number':
@@ -56,7 +56,7 @@ export const dsxs = (type: JSX.ElementType, props: Props.AndMany<Element.Element
 
 
 
-const connectDirectChildren = (children: (Element.Element | string)[]): Element.Element[] => {
+const connectDirectChildren = (children: (Element.Elem | string)[]): Element.Elem[] => {
   for (let i = 0; i < children.length; i++) {
     let c = children[i];
 
@@ -69,5 +69,5 @@ const connectDirectChildren = (children: (Element.Element | string)[]): Element.
     children[i] = c;
   }
 
-  return children as Element.Element[];
+  return children as Element.Elem[];
 };

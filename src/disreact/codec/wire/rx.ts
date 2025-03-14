@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+
 import {ForbiddenSync} from '#src/disreact/codec/wire/shared/shared.ts';
 import {pipe} from 'effect';
 import {String, Struct, TaggedStruct, transform, Union} from 'effect/Schema';
-import {DAPI, Doken, Ix, Params} from 'src/disreact/codec/wire/index.ts';
-import * as DAPIOld from 'src/disreact/codec/wire/dapi.ts';
+import {DAPI, Doken, Ix, Params} from '#src/disreact/codec/wire/index.ts';
+import * as DAPIOld from '#src/disreact/codec/wire/dapi.ts';
 
 
 

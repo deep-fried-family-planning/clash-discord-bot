@@ -1,5 +1,5 @@
 import {CLOSE, EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type * as FunctionElement from '#src/disreact/model/entity/task-element.ts';
+import type * as FunctionElement from '#src/disreact/model/entity/element-task.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {DialogParams, Doken, Dokens, Rest, Route} from '#src/disreact/codec/rest/index.ts';
@@ -100,7 +100,7 @@ export const interact = E.fn(
 
     const rendered = yield* Lifecycles.rerenderRoot(nextClone.element);
 
-    if ((rendered as FunctionElement.TaskElement).meta.isModal) {
+    if ((rendered as FunctionElement.TaskElem).meta.isModal) {
       yield* new BadInteraction({
         why: 'Unsupported interaction: modal open',
       });
@@ -111,7 +111,7 @@ export const interact = E.fn(
     }
 
 
-    if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.TaskElement).meta.isEphemeral) {
+    if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.TaskElem).meta.isEphemeral) {
       route.dokens.fresh.type      = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
       route.dokens.fresh.ephemeral = 1;
       route.dokens.fresh           = Doken.makeDeferred(route.dokens.fresh);
@@ -146,7 +146,7 @@ export const interact = E.fn(
 );
 
 
-export const flushHooks = (root: Element.Element) => E.gen(function* () {
+export const flushHooks = (root: Element.Elem) => E.gen(function* () {
   const states = Lifecycles.collectStates(root);
 
   for (const id in states) {

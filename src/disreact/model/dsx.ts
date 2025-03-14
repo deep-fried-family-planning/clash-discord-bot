@@ -1,38 +1,38 @@
-import {Element} from '#src/disreact/model/entity/element.ts';
-import {RestElement} from '#src/disreact/model/entity/rest-element.ts';
-import {TaskElement} from '#src/disreact/model/entity/task-element.ts';
-import {TextLeaf} from '#src/disreact/model/entity/text-leaf.ts';
+import {Elem} from '#src/disreact/model/entity/element.ts';
+import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
+import {TaskElem} from '#src/disreact/model/entity/element-task.ts';
+import {LeafElem} from '#src/disreact/model/entity/leaf.ts';
 import * as Array from 'effect/Array';
-import { FC } from './entity/fc';
+import { Props } from './entity/props.ts';
 
 
 
-// export * as dsx from './dsx.ts';
-// export type dsx = any;
+export * as dsx from './dsx.ts';
+export type dsx = any;
 
-export const fragment = Element.Fragment;
+export const fragment = Elem.Fragment;
 
-export const single = (type: any, props?: any) => {
-  props.children = Array.ensure(props.children).filter(Boolean).flat();
-  return multi(type, props);
+export const single = (t: any, p?: any) => {
+  return multi(t, Props.jsx(p));
 };
 
-export const multi = (type: any, props: any) => {
-  const children = props.children.flat();
-  delete props.children;
+export const multi = (t: any, p: any) => {
+  const children = p.children?.flat() ?? [];
 
-  switch (typeof type) {
+  delete p.children;
+
+  switch (typeof t) {
     case 'undefined':
       return children;
 
     case 'string': {
-      const node    = RestElement.make(type, props);
+      const node    = RestElement.make(t, p);
       node.children = connectDirectChildren(node, children);
       return node;
     }
 
     case 'function': {
-      const node    = TaskElement.make(type, props);
+      const node    = TaskElem.make(t, p);
       node.children = connectDirectChildren(node, children);
       return node;
     }
@@ -41,13 +41,13 @@ export const multi = (type: any, props: any) => {
     case 'number':
     case 'bigint':
     case 'symbol':
-      return TextLeaf.make(type.toString());
+      return LeafElem.make(t.toString());
   }
 
-  throw new Error(`Unknown Tag: ${type}`);
+  throw new Error(`Unknown Tag: ${t}`);
 };
 
-const connectDirectChildren = (parent: Element, children: any[]): Element[] => {
+const connectDirectChildren = (parent: Elem, children: any[]): Elem[] => {
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
 
@@ -65,7 +65,7 @@ const connectDirectChildren = (parent: Element, children: any[]): Element[] => {
       case 'number':
       case 'bigint':
       case 'string': {
-        children[i] = TextLeaf.make(String(child));
+        children[i] = LeafElem.make(String(child));
         continue;
       }
     }
@@ -73,5 +73,5 @@ const connectDirectChildren = (parent: Element, children: any[]): Element[] => {
     child.idx = `${child.idx}:${i}`;
   }
 
-  return children as Element[];
+  return children as Elem[];
 };

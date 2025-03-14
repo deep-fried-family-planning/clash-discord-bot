@@ -24,7 +24,7 @@ export const TextInputAttributes = Struct({
   min_length : optional(Int),
   max_length : optional(Int),
   label      : String,
-  value      : String,
+  value      : optional(String),
 });
 
 

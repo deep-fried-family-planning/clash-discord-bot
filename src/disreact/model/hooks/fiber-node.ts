@@ -1,5 +1,5 @@
 import {ONE, ZERO} from '#src/disreact/codec/constants/common.ts';
-import type {TaskElement} from '#src/disreact/model/entity/task-element.ts';
+import type {TaskElem} from '#src/disreact/model/entity/element-task.ts';
 import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
 import type {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
 import * as Data from 'effect/Data';
@@ -16,7 +16,7 @@ export type FiberNode = {
   stack   : Hydrant.Stack;
   saved   : Hydrant.Stack;
   queue   : any[];
-  element?: TaskElement;
+  element?: TaskElem;
   root?   : FiberStore;
 };
 
@@ -52,20 +52,6 @@ export const clone = (self: FiberNode): FiberNode => {
   const {element, root, ...rest} = self;
 
   return structuredClone(rest);
-};
-
-export const linearize = (self: FiberNode) => {
-  delete self.element;
-  delete self.root;
-  return self;
-};
-
-export const circularize = (self: FiberNode, element: TaskElement, root: FiberStore): FiberNode => {
-  self.element = element;
-  self.id      = element.full_id;
-  self.root    = root;
-  root.fibers[self.id] = self;
-  return self;
 };
 
 export const commit = (self: FiberNode) => {
