@@ -5,9 +5,9 @@ import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {DialogParams, Doken, Dokens, Rest, Route} from '#src/disreact/codec/rest/index.ts';
 import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
+import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RouteCodec} from '../codec';
@@ -24,7 +24,7 @@ export const interact = E.fn(
 
     yield* E.fork(Dokens.resolvePartial(route.dokens));
 
-    const root = yield* RootStore.hydrateClone(rest.id, route.params.root_id, route.params.hash);
+    const root = yield* RootRegistry.hydrateClone(rest.id, route.params.root_id, route.params.hash);
 
     Globals.setPointer(root.pointer);
     Globals.mountRoot(root.pointer, root.fiber);
@@ -38,7 +38,7 @@ export const interact = E.fn(
 
     const localMutex = yield* InteractionBroker.mutex();
 
-    if (root.fiber.graph.next === CLOSE) {
+    if (root.fiber.next.id === CLOSE) {
       if (route.dokens.defer) {
         yield* E.fork(DiscordDOM.discard(route.dokens.fresh));
         yield* E.fork(DokenMemory.free(route.dokens.defer.id));
@@ -58,10 +58,10 @@ export const interact = E.fn(
 
 
     if (
-      root.fiber.graph.next === EMPTY
-      || root.fiber.graph.next === root.root_id
+      root.fiber.next.id === EMPTY
+      || root.fiber.next.id === root.root_id
     ) {
-      root.fiber.graph.next = root.root_id;
+      root.fiber.next.id = root.root_id;
 
       if (route.dokens.defer) {
         yield* E.fork(DiscordDOM.discard(route.dokens.fresh));
@@ -90,10 +90,10 @@ export const interact = E.fn(
 
     Globals.dismountRoot(root.pointer);
 
-    const nextClone = yield* RootStore.makeClone(
+    const nextClone = yield* RootRegistry.makeClone(
       root.id,
-      root.fiber.graph.next,
-      root.fiber.graph.nextProps,
+      root.fiber.next.id,
+      root.fiber.next.props,
     );
 
     Globals.mountRoot(nextClone.pointer, nextClone.fiber);

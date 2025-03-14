@@ -14,25 +14,27 @@ export const OmniPrivate: FC = () => {
   useEffect(() => console.log('USE_EFFECT'));
 
   return (
-    <message ephemeral>
-      <Header
-        title={'Welcome!'}
-        description={'Empty'}
-      />
-      <actions>
-        <button
-          primary
-          label={'Link'}
-          onclick={() => page.next(Link)}
+    <>
+      <message ephemeral>
+        <Header
+          title={'Welcome!'}
+          description={'Empty'}
         />
-        <button
-          primary
-          label={`Increment ${num}`}
-          onclick={() => setNum(num + 1)}
-        />
-        <CloseButton/>
-      </actions>
-    </message>
+        <actions>
+          <button
+            primary
+            label={'Link'}
+            onClick={() => page.next(Link)}
+          />
+          <button
+            primary
+            label={`Increment ${num}`}
+            onClick={() => setNum(num + 1)}
+          />
+          <CloseButton/>
+        </actions>
+      </message>
+    </>
   );
 };
 

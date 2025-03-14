@@ -17,6 +17,7 @@
     <HTMLCodeStyleSettings>
       <option name="HTML_ATTRIBUTE_WRAP" value="4" />
       <option name="HTML_TEXT_WRAP" value="0" />
+      <option name="HTML_KEEP_BLANK_LINES" value="3" />
       <option name="HTML_ALIGN_ATTRIBUTES" value="false" />
       <option name="HTML_ALIGN_TEXT" value="true" />
       <option name="HTML_QUOTE_STYLE" value="Single" />
@@ -24,6 +25,18 @@
       <option name="HTML_NEWLINE_BEFORE_FIRST_ATTRIBUTE" value="When multiline" />
       <option name="HTML_NEWLINE_AFTER_LAST_ATTRIBUTE" value="When multiline" />
     </HTMLCodeStyleSettings>
+    <JSCodeStyleSettings version="0">
+      <option name="ALIGN_OBJECT_PROPERTIES" value="2" />
+      <option name="ALIGN_VAR_STATEMENTS" value="1" />
+      <option name="REFORMAT_C_STYLE_COMMENTS" value="true" />
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="OBJECT_LITERAL_WRAP" value="0" />
+      <option name="IMPORTS_WRAP" value="0" />
+      <option name="CHAINED_CALL_DOT_ON_NEW_LINE" value="false" />
+      <option name="BLANK_LINES_AROUND_FUNCTION" value="0" />
+      <option name="IMPORT_SORT_MODULE_NAME" value="true" />
+    </JSCodeStyleSettings>
     <JSON>
       <option name="PROPERTY_ALIGNMENT" value="2" />
       <option name="OBJECT_WRAPPING" value="5" />
@@ -38,6 +51,7 @@
       <option name="USE_DOUBLE_QUOTES" value="false" />
       <option name="FORCE_QUOTE_STYlE" value="true" />
       <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="USE_IMPORT_TYPE" value="ALWAYS" />
       <option name="VAR_DECLARATION_WRAP" value="0" />
       <option name="OBJECT_LITERAL_WRAP" value="0" />
       <option name="OBJECT_TYPES_WRAP" value="0" />
@@ -89,6 +103,7 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="HTML">
+      <option name="RIGHT_MARGIN" value="240" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -105,6 +120,17 @@
     </codeStyleSettings>
     <codeStyleSettings language="JavaScript">
       <option name="RIGHT_MARGIN" value="240" />
+      <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
+      <option name="BLANK_LINES_AROUND_CLASS" value="0" />
+      <option name="BLANK_LINES_AROUND_METHOD" value="0" />
+      <option name="ELSE_ON_NEW_LINE" value="true" />
+      <option name="WHILE_ON_NEW_LINE" value="true" />
+      <option name="CATCH_ON_NEW_LINE" value="true" />
+      <option name="FINALLY_ON_NEW_LINE" value="true" />
+      <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -120,7 +146,9 @@
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
       <option name="RIGHT_MARGIN" value="240" />
+      <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
       <option name="BLANK_LINES_AROUND_CLASS" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />
@@ -130,11 +158,11 @@
       <option name="FINALLY_ON_NEW_LINE" value="true" />
       <option name="INDENT_CASE_FROM_SWITCH" value="false" />
       <option name="ALIGN_MULTILINE_FOR" value="false" />
+      <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
       <option name="CALL_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
       <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
       <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
       <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
-      <option name="EXTENDS_KEYWORD_WRAP" value="1" />
       <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
       <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <indentOptions>

@@ -1,7 +1,7 @@
 import {EMPTY, EMPTY_NUM} from '#src/disreact/codec/constants/common.ts';
+import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
 import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
 import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
-import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
 import {E, RDT} from '#src/internal/pure/effect.ts';
 import type * as FC from '../codec/element/function-component.ts';
 import {Doken, RouteCodec} from '../codec/index.ts';
@@ -9,14 +9,14 @@ import {Doken, RouteCodec} from '../codec/index.ts';
 
 
 export const synthesize = (fn: FC.FC) => E.gen(function* () {
-  const root = yield* RootStore.synthesizeClone(fn);
+  const root = yield* RootRegistry.synthesizeClone(fn);
 
   Globals.nullifyPointer();
   Globals.mountRoot(root.pointer, root.fiber);
 
-  root.element          = yield* Lifecycles.initialRender(root.element);
-  root.fiber.graph.next = root.root_id;
-  const encoded         = RouteCodec.encodeMessage(
+  root.element       = yield* Lifecycles.initialRender(root.element);
+  root.fiber.next.id = root.root_id;
+  const encoded      = RouteCodec.encodeMessage(
     root,
     {
       fresh: Doken.make({

@@ -1,26 +1,34 @@
-import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
-import {E, L} from '#src/internal/pure/effect.ts';
-import * as Deferred from 'effect/Deferred';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {Cache} from 'effect';
+import type {FiberHash, RootElement} from '#src/disreact/codec/element/index.ts';
+import type { Root } from 'src/disreact/model/entity/root.ts';
 
 
 
-const make = () => E.gen(function* () {
-  const staticModel = yield* RootStore;
-
-
-
-  const status = yield* Deferred.make<boolean>();
-
-  return {
-    awaitAll: () => Deferred.await(status),
-  };
+const memCache = Cache.make({
+  capacity  : 100,
+  timeToLive: '5 minutes',
+  lookup    : () => E.succeed(null as null | Root),
 });
 
+export class RootMemory extends E.Service<RootMemory>()('disreact/RootMemory', {
+  accessors: true,
 
+  effect: pipe(
+    memCache,
+    E.map((cache) => ({
+      save: (key: string, root: Root) => cache.set(key, root),
 
-export class RootMemory extends E.Tag('DisReact.MemoryModel')<
-  RootMemory,
-  E.Effect.Success<ReturnType<typeof make>>
->() {
-  static readonly makeLayer = (id: string) => L.effect(this, make());
-}
+      load: (key: string, hash: FiberHash.Encoded) =>
+        pipe(
+          cache.get(key),
+          E.map((root) => {
+            if (!root) {
+              return null;
+            }
+            return null;
+          }),
+        ),
+    })),
+  ),
+}) {}

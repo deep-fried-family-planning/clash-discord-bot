@@ -15,5 +15,4 @@ export * as TextElement from './element/text-element.ts';
 
 export * as Dokens from '#src/disreact/codec/rest/dokens.ts';
 export * as Event from '#src/disreact/codec/rest/event.ts';
-export * as ElementCodec from './ElementCodec.ts';
 export * as RouteCodec from './RouteCodec.ts';

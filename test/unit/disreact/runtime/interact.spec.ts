@@ -1,6 +1,6 @@
 import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
-import {RootStore} from '#src/disreact/model/globals/RootStore.ts';
+import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
@@ -11,7 +11,7 @@ import synthesized from '././.snap/synthesize.json';
 
 
 
-const staticGraph = RootStore.singleton({
+const staticGraph = RootRegistry.singleton({
   persistent: [
     TestMessage,
     TestDialog,
