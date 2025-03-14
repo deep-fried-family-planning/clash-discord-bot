@@ -1,25 +1,25 @@
-/* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
-import {dsx, dsxs, fragment} from '#src/disreact/codec/dsx/dsx.ts';
-import type * as Element from '#src/disreact/codec/element/index.ts';
 import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
-import type * as FC from './codec/element/function-component.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import type {Element} from '#src/disreact/model/entity/element.ts';
+import {fragment, multi, single} from './model/dsx';
+
 
 
 export const Fragment = fragment;
-export const jsx      = dsx;
-export const jsxs     = dsxs;
-export const jsxDEV   = dsx;
+export const jsx      = single;
+export const jsxs     = multi;
+export const jsxDEV   = single;
 
 export declare namespace JSX {
   type ElementType =
-    | FC.FC
+    | any
     | keyof IntrinsicElements
     | string
     | boolean
     | null
     | undefined;
 
-  type Element = Element.T;
+  type Element = Element.Element;
 
   interface ElementAttributesProperty {
     props: any;

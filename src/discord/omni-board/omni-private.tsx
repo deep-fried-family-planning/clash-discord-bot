@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
 import {Header} from '#src/discord/components/header.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
-import type {FC} from '#src/disreact/codec/element/function-component.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {useEffect, usePage, useState} from '#src/disreact/index.ts';
 import console from 'node:console';
 
@@ -24,12 +24,12 @@ export const OmniPrivate: FC = () => {
           <button
             primary
             label={'Link'}
-            onClick={() => page.next(Link)}
+            onclick={() => page.next(Link)}
           />
           <button
             primary
             label={`Increment ${num}`}
-            onClick={() => setNum(num + 1)}
+            onclick={() => setNum(num + 1)}
           />
           <CloseButton/>
         </actions>
@@ -37,6 +37,3 @@ export const OmniPrivate: FC = () => {
     </>
   );
 };
-
-
-OmniPrivate.displayName;

@@ -4,20 +4,20 @@ import {Link} from '#src/discord/omni-board/link.tsx';
 import {OmniPrivate} from '#src/discord/omni-board/omni-private.tsx';
 import {OmniPublic} from '#src/discord/omni-board/omni-public.tsx';
 import type {Rest} from '#src/disreact/codec/rest/index.ts';
-import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
-import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
+import {InteractionDOM} from '#src/disreact/interface/InteractionDOM.ts';
+import {DokenCache} from '#src/disreact/interface/DokenCache.ts';
+import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import * as process from 'node:process';
-import type * as FC from '../../codec/element/function-component.ts';
+import type * as FC from '#src/disreact/model/entity/fc.ts';
 
 
 
 export const runtimeLayer = pipe(
   L.empty,
   L.provideMerge(InteractionBroker.makeLayer()),
-  L.provideMerge(RootRegistry.singleton({
+  L.provideMerge(OldRoot.singleton({
     persistent: [
       OmniPublic,
     ],
@@ -30,8 +30,8 @@ export const runtimeLayer = pipe(
       LinkDialog,
     ],
   })),
-  L.provideMerge(DiscordDOM.defaultLayer),
-  L.provideMerge(DokenMemory.dynamoLayer(process.env.DDB_OPERATIONS)),
+  L.provideMerge(InteractionDOM.defaultLayer),
+  L.provideMerge(DokenCache.dynamoLayer(process.env.DDB_OPERATIONS)),
 );
 
 

@@ -1,35 +1,65 @@
-import * as Unsafe from '#src/disreact/model/hooks/unsafe.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {pipe} from 'effect';
-import {type FiberNode, TaskElement} from 'src/disreact/codec/element/index.ts';
-import * as Hook from './Hook.ts';
+import type {HookError} from '#src/disreact/codec/error.ts';
+import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
+import {$useEffect} from '#src/disreact/model/hooks/use-effect.ts';
+import {$useReducer, $useState} from '#src/disreact/model/hooks/use-reducer.ts';
+import {$useIx, $useMessage} from '#src/disreact/model/hooks/use-utility.ts';
+import {E, L} from '#src/internal/pure/effect.ts';
+import {Logger, LogLevel, pipe} from 'effect';
 
 
 
-export class HookDispatch extends E.Service<HookDispatch>()('DisReact.HookDispatcher', {
-  effect: E.gen(function* () {
-    const semaphore = yield* E.makeSemaphore(1);
-
-    return {
-      mutex: (node: FiberNode.FiberNode) =>
-        pipe(
-          E.sync(() => {
-            Unsafe.UNSAFE_setNode(node);
-            Unsafe.UNSAFE_setRoot(node.root as any);
-          }),
-          E.andThen(() => TaskElement.renderEffect(node.element!)),
-          semaphore.withPermits(1),
-        ),
-    };
-  }),
+export class HookDispatch extends E.Service<HookDispatch>()('disreact/HookDispatch', {
   accessors: true,
+
+  effect: E.makeSemaphore(1).pipe(
+    E.map((semaphore) => {
+      return {
+        mutex: (node: FiberNode) => <A, E, R>(effect: E.Effect<A, E, R>) =>
+          pipe(
+            E.sync(() => {
+              FiberNode.λ_λ.set(node);
+              FiberStore.λ_λ.set(node.root as any);
+            }),
+            E.andThen(() => effect),
+            E.catchAll((e) => {
+              FiberNode.λ_λ.clear();
+              FiberStore.λ_λ.clear();
+              return E.fail(e as HookError);
+            }),
+            semaphore.withPermits(1),
+            // E.withLogSpan('mutex'),
+            // E.tap(() => E.log('mutex')),
+            // E.provide(Logger.minimumLogLevel(LogLevel.Fatal)),
+            // E.provide(
+            //   Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
+            // ),
+            // E.provide([
+            //   L.setTracerTiming(true),
+            //   L.setTracerEnabled(true),
+            // ]),
+          ),
+      };
+    }),
+  ),
 }) {
+  static readonly withMutex = (node: FiberNode) => <A, E, R>(effect: E.Effect<A, E, R>) =>
+    pipe(
+      HookDispatch.use((dispatch) =>
+        pipe(
+          effect,
+          dispatch.mutex(node),
+        ),
+      ),
+      E.provide(HookDispatch.Default),
+    );
+
   static readonly impl = {
-    useState  : Hook.$useState,
-    useReducer: Hook.$useReducer,
-    useEffect : Hook.$useEffect,
-    usePage   : Hook.$useMessage,
-    useIx     : Hook.$useIx,
+    useState  : $useState,
+    useReducer: $useReducer,
+    useEffect : $useEffect,
+    usePage   : $useMessage,
+    useIx     : $useIx,
   };
 }
 

@@ -20,7 +20,7 @@ export class BadInteraction extends Data.TaggedError('DisReact.BadInteraction')<
 export class DokenError extends Data.TaggedError('DisReact.DokenError')<{}> {}
 
 export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{
-  cause: Error;
+  cause?: any;
 }> {}
 
 export class HookError extends Data.TaggedError('DisReact.HookError')<{

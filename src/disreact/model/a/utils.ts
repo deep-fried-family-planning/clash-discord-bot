@@ -1,37 +1,44 @@
-import * as All from '#src/disreact/codec/constants/all.ts';
-import type * as Element from '#src/disreact/codec/element/index.ts';
-import type * as FiberNode from '#src/disreact/model/entity/fiber/fiber-node.ts';
-import * as Lifecycles from '#src/disreact/lifecycles/index.ts';
+import type {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import type {Element} from '#src/disreact/model/entity/element';
+import { TaskElement } from '../entity/task-element';
+import { TextLeaf } from '../entity/text-leaf';
 
 
 
-export const linkNodeToParent = <T extends Element.Element>(node: T, parent?: Element.Element): T => {
+export const linkNodeToParent = <T extends Element>(node: T, parent?: Element): T => {
   if (!parent) {
-    node.meta.idx     = 0;
-    node.meta.id      = `${node._name}:${node.meta.idx}`;
-    node.meta.step_id = `${node._name}:${node.meta.idx}`;
-    node.meta.full_id = `${node._name}:${node.meta.idx}`;
+    node.idx     = 0;
+
+    if (TaskElement.isTag(node)) {
+
+    }
+
+    node.step_id = `${node.id}:${node.idx}`;
+    node.full_id = `${node.id}:${node.idx}`;
   }
   else {
-    node.meta.id      = `${node._name}:${node.meta.idx}`;
-    node.meta.step_id = `${parent.meta.id}:${node.meta.id}`;
-    node.meta.full_id = `${parent.meta.full_id}:${node.meta.id}`;
+    node.step_id = `${parent.id}:${parent.idx}:${node.id}:${node.idx}`;
+    node.full_id = `${parent.full_id}:${node.id}:${node.idx}`;
   }
   return node;
 };
 
-export const setIds = (children: Element.Element[], parent: Element.Element) => {
+export const setIds = (children: Element.Any[], parent: Element) => {
   for (let i = 0; i < children.length; i++) {
-    children[i].meta.idx = i;
-    children[i].meta.id  = `${parent._name}:${i}`;
-    children[i]          = Lifecycles.linkNodeToParent(children[i], parent);
+    const child = children[i];
+
+    if (TextLeaf.is(child)) {
+      continue;
+    }
+    child.idx      = `${child.idx}:${i}`;
+    child.id       = `${parent.id}:${child.idx}`;
   }
   return children;
 };
 
-export const collectStates = (node: Element.Element, states: { [K in string]: FiberNode.FiberNode } = {}): typeof states => {
-  if (node._tag === All.FunctionElementTag) {
-    states[node.meta.full_id] = node.state;
+export const collectStates = (node: Element.Any, states: { [K in string]: FiberNode } = {}): typeof states => {
+  if (TaskElement.isTag(node)) {
+    states[node.id] = node.fiber;
   }
 
   if ('children' in node && Array.isArray(node.children)) {
@@ -43,7 +50,7 @@ export const collectStates = (node: Element.Element, states: { [K in string]: Fi
   return states;
 };
 
-export const reduceToStacks = (hooks: { [K in string]: FiberNode.FiberNode }): { [K in string]: FiberNode.FiberNode['stack'] } => {
+export const reduceToStacks = (hooks: { [K in string]: FiberNode }): { [K in string]: FiberNode['stack'] } => {
   return Object.fromEntries(
     Object.entries(hooks)
       .filter(([_, value]) => value.stack.length)

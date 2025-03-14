@@ -1,9 +1,8 @@
-import {HookDispatcher} from '#src/disreact/model/index.ts';
+import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
 
 
 
-export const useState   = HookDispatcher.useState;
-export const useReducer = HookDispatcher.useReducer;
-export const useEffect  = HookDispatcher.useEffect;
-export const useIx      = HookDispatcher.useIx;
-export const usePage    = HookDispatcher.usePage;
+export const useState   = HookDispatch.impl.useState;
+export const useEffect  = HookDispatch.impl.useEffect;
+export const useIx      = HookDispatch.impl.useIx;
+export const usePage    = HookDispatch.impl.usePage;

@@ -1,11 +1,11 @@
 /* eslint-disable no-case-declarations */
-import * as TaskElement from '#src/disreact/codec/element/task-element.ts';
+import * as TaskElement from '#src/disreact/model/entity/task-element.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
-import * as RestElement from '#src/disreact/codec/element/rest-element.ts';
-import * as Props from '#src/disreact/codec/element/props.ts';
-import * as TextElement from '#src/disreact/codec/element/text-element.ts';
+import * as RestElement from '#src/disreact/model/entity/rest-element.ts';
+import * as Props from '#src/disreact/model/entity/props.ts';
+import * as TextElement from '#src/disreact/model/entity/text-leaf.ts';
 import type {JSX} from '#src/disreact/jsx-runtime.ts';
-import * as Children from '#src/disreact/codec/element/children.ts';
+import * as Children from '#src/disreact/model/entity/children.ts';
 
 
 

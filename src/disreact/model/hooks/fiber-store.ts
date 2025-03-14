@@ -1,73 +1,83 @@
 import type * as Ix from '#src/disreact/codec/wire/dapi.ts';
-import {FiberNode} from '#src/disreact/model/fiber/fiber-node.ts';
-import type {FiberHydrant} from '#src/disreact/model/fiber/fiber-hydrant.ts';
+import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
+import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
 import type {Root} from '#src/disreact/model/root.ts';
 import {Record} from 'effect';
 
 
 
-export interface FiberStore {
-  id    : FiberHydrant.Id;
-  props : FiberHydrant.Props;
-  fibers: {[id: FiberHydrant.FiberId]: FiberNode};
+export * as FiberStore from './fiber-store.ts';
+
+export type FiberStore = {
+  id    : Hydrant.Id;
+  props : Hydrant.Props;
+  fibers: {[id: Hydrant.FiberId]: FiberNode};
   next: {
-    id   : FiberHydrant.Id;
-    props: FiberHydrant.Props;
+    id   : Hydrant.Id;
+    props: Hydrant.Props;
   };
   request?: Ix.Input;
   element?: Root;
 };
 
-export namespace FiberStore {
-  export type T = FiberStore;
+export type T = FiberStore;
 
-  export const make = (id: string, props?:FiberHydrant.Props): FiberStore => {
-    return {
+export const make = (id: string, props?: Hydrant.Props): FiberStore => {
+  return {
+    id,
+    props : props ?? {},
+    fibers: {},
+    next  : {
       id,
-      props : props ?? {},
-      fibers: {},
-      next  : {
-        id,
-        props: {},
-      },
-    };
+      props: {},
+    },
   };
+};
 
-  export const decode = (id: string, hash: FiberHydrant): FiberStore => {
-    const {props, ...rest} = hash;
+export const decode = (id: string, hash: Hydrant): FiberStore => {
+  const {props, ...rest} = hash;
 
-    return {
+  return {
+    id,
+    props,
+    fibers: Record.map(rest, (stack, id) => FiberNode.decode(id, stack)),
+    next  : {
       id,
-      props,
-      fibers: Record.map(rest, (stack, id) => FiberNode.decode(id, stack)),
-      next  : {
-        id,
-        props: null,
-      },
-    };
+      props: null,
+    },
   };
+};
 
-  export const encode = (self: FiberStore): FiberHydrant => {
-    return {
-      props: self.props,
-      ...Record.map(self.fibers, (node) => FiberNode.encode(node)),
-    };
+export const encode = (self: FiberStore): Hydrant => {
+  return {
+    props: self.props,
+    ...Record.map(self.fibers, (node) => FiberNode.encode(node)),
   };
+};
 
-  export const encircle = (self: FiberStore, element: Root, request: Ix.Input): FiberStore => {
-    self.element = element;
-    self.request = request;
-    return self;
-  };
+export const clone = (self: FiberStore): FiberStore => {
+  const {element, fibers, ...rest} = self;
 
-  export const linearize = (self: FiberStore): FiberStore => {
-    delete self.element;
-    delete self.request;
-    return self;
-  };
-}
+  const cloned = structuredClone(rest) as FiberStore;
+  cloned.fibers = Record.map(fibers, (node) => FiberNode.clone(node));
+  return cloned;
+};
 
-export namespace $FiberStore {
+export const linearize = (self: FiberStore): FiberStore => {
+  delete self.element;
+  delete self.request;
+  return self;
+};
+
+export const circularize = (self: FiberStore, element: Root, request: Ix.Input): FiberStore => {
+  self.element = element;
+  self.request = request;
+  return self;
+};
+
+
+
+export namespace λ_λ {
   const STORE        = {current: null as FiberStore | null};
   export const get   = () => STORE.current!;
   export const set   = (fiber: FiberStore) => {STORE.current = fiber};

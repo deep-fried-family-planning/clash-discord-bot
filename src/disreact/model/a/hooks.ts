@@ -1,7 +1,7 @@
 import {CLOSE} from '#src/disreact/codec/constants/common.ts';
-import type * as FC from '#src/disreact/model/entity/component/fc.ts';
-import type * as FiberNode from '#src/disreact/model/entity/fiber/fiber-node.ts';
-import * as Globals from '#src/disreact/lifecycles/globals.ts';
+import type * as FC from '#src/disreact/model/entity/fc.ts';
+import type * as FiberNode from '#src/disreact/model/hooks/fiber-node.ts';
+import * as Globals from '#src/disreact/model/a/globals.ts';
 
 
 

@@ -1,9 +1,10 @@
-import {dsx, dsxs} from '#src/disreact/codec/dsx/dsx.ts';
-import {fragment} from '#src/disreact/codec/dsx/dsxDEV.ts';
+// import {dsx} from '#src/disreact/model/dsx.ts';
+
+import {fragment, multi, single} from './model/dsx';
 
 
 
 export const Fragment = fragment;
-export const jsx      = dsx;
-export const jsxs     = dsxs;
-export const jsxDEV   = dsx;
+export const jsx      = single;
+export const jsxs     = multi;
+export const jsxDEV   = single;

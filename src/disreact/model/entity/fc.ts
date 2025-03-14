@@ -4,7 +4,7 @@ import * as Arr from 'effect/Array';
 
 
 
-export * as FC from './fc.ts';
+export * as FC from 'src/disreact/model/entity/fc.ts';
 export type FC<P = any, E = any> =
   | Any<P, E>
   | SFC<P, E>

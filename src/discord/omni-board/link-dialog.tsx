@@ -1,12 +1,12 @@
 import {Link} from '#src/discord/omni-board/link.tsx';
-import type {FC} from '#src/disreact/codec/element/function-component.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {usePage} from '#src/disreact/index.ts';
 
 
 
 type Props = {
   submitText?: string;
-}
+};
 
 export const LinkDialog: FC<Props> = (props) => {
   const page = usePage([Link]);

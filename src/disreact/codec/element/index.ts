@@ -1,60 +1,23 @@
-export * as Children from './children.ts';
-export * as Fragment from './fragment.ts';
-export * as FunctionComponent from './function-component.ts';
-export * as FC from './function-component.ts';
-export * as FunctionElement from './function-element.ts';
-export * as Element from './index.ts';
-export * as IntrinsicElement from './intrinsic-element.ts';
-export * as Props from './props.ts';
-export * as TextElement from './text-element.ts';
-import * as FunctionElement from './function-element.ts';
-import * as IntrinsicElement from './intrinsic-element.ts';
-import * as TextElement from './text-element.ts';
+import type { Element } from '#src/disreact/model/entity/element';
+import {RestElement} from '#src/disreact/model/entity/rest-element.ts';
+import {TaskElement} from '#src/disreact/model/entity/task-element.ts';
+import {TextLeaf} from '#src/disreact/model/entity/text-leaf.ts';
 
 
 
-export type T =
-  | FunctionElement.T
-  | IntrinsicElement.T
-  | TextElement.T;
-
-
-
-export const isSame = <A extends T, B extends T>(a: A, b: B): boolean => {
-  if (a._tag !== b._tag) {
-    return false;
+export const cloneElement = (self: Element): Element => {
+  if (TextLeaf.is(self)) {
+    return TextLeaf.clone(self);
   }
 
-  if (a._name !== b._name) {
-    return false;
+  if (RestElement.isTag(self)) {
+    return RestElement.clone(self);
   }
 
-  if (a.meta.id !== b.meta.id) {
-    return false;
-  }
-
-  if (TextElement.is(a)) {
-    return a.value === (b as TextElement.T).value;
-  }
-
-  return true;
+  return TaskElement.clone(self);
 };
 
-
-
-export const cloneElement = (self: T): T => {
-  if (TextElement.is(self)) {
-    return TextElement.clone(self);
-  }
-
-  if (IntrinsicElement.is(self)) {
-    return IntrinsicElement.clone(self);
-  }
-
-  return FunctionElement.clone(self);
-};
-
-export const cloneTree = (self: T, parent?: T): T => {
+export const cloneTree = (self: Element, parent?: Element): Element => {
   const linked = linkParent(self, parent);
   const cloned = cloneElement(linked);
 
@@ -67,31 +30,17 @@ export const cloneTree = (self: T, parent?: T): T => {
 
 
 
-export const linkParent = <A extends T>(node: A, parent?: T): A => {
+export const linkParent = <A extends Element>(node: A, parent?: Element): A => {
   if (!parent) {
-    node.meta.idx     = 0;
-    node.meta.id      = `${node._name}:${node.meta.idx}`;
-    node.meta.step_id = `${node._name}:${node.meta.idx}`;
-    node.meta.full_id = `${node._name}:${node.meta.idx}`;
+    node.idx     = 0;
+    node.id      = `${node.id}:${node.idx}`;
+    node.step_id = `${node.id}:${node.idx}`;
+    node.full_id = `${node.id}:${node.idx}`;
   }
   else {
-    node.meta.id      = `${node._name}:${node.meta.idx}`;
-    node.meta.step_id = `${parent.meta.id}:${node.meta.id}`;
-    node.meta.full_id = `${parent.meta.full_id}:${node.meta.id}`;
+    node.id      = `${node.id}:${node.idx}`;
+    node.step_id = `${parent.id}:${node.id}`;
+    node.full_id = `${parent.full_id}:${node.id}`;
   }
   return node;
-};
-
-
-
-export const encode = (self: T) => {
-  if (TextElement.is(self)) {
-    return TextElement.encode(self);
-  }
-
-  if (IntrinsicElement.is(self)) {
-    return IntrinsicElement.encode(self);
-  }
-
-  return FunctionElement.encode(self);
 };

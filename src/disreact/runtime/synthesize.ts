@@ -1,15 +1,15 @@
 import {EMPTY, EMPTY_NUM} from '#src/disreact/codec/constants/common.ts';
-import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
-import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
+import * as Globals from '#src/disreact/model/a/globals.ts';
+import * as Lifecycles from '#src/disreact/model/a/index.ts';
 import {E, RDT} from '#src/internal/pure/effect.ts';
-import type * as FC from '../codec/element/function-component.ts';
+import type * as FC from '#src/disreact/model/entity/fc.ts';
 import {Doken, RouteCodec} from '../codec/index.ts';
 
 
 
 export const synthesize = (fn: FC.FC) => E.gen(function* () {
-  const root = yield* RootRegistry.synthesizeClone(fn);
+  const root = yield* OldRoot.synthesizeClone(fn);
 
   Globals.nullifyPointer();
   Globals.mountRoot(root.pointer, root.fiber);

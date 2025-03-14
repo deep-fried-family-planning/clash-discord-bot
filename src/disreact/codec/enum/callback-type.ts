@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import {Literal} from 'effect/Schema';
 
 
 
-export const FRESH = 0;
-export const SOURCE = 4;
-export const UPDATE = 7;
-export const SOURCE_DEFER = 5;
-export const UPDATE_DEFER = 6;
-export const MODAL = 9;
+export const FRESH        = 0 as const;
+export const SOURCE       = 4 as const;
+export const UPDATE       = 7 as const;
+export const SOURCE_DEFER = 5 as const;
+export const UPDATE_DEFER = 6 as const;
+export const MODAL        = 9 as const;
 
 export const Fresh = Literal(FRESH);
 export const Defer = Literal(SOURCE_DEFER, UPDATE_DEFER);
 export const Spent = Literal(SOURCE, UPDATE);
 export const Modal = Literal(MODAL);
-export const All = Literal(FRESH, SOURCE, UPDATE, SOURCE_DEFER, UPDATE_DEFER, MODAL);
+export const All   = Literal(FRESH, SOURCE, UPDATE, SOURCE_DEFER, UPDATE_DEFER, MODAL);
 
 export const Message = Literal(SOURCE, UPDATE, SOURCE_DEFER, UPDATE_DEFER);
 

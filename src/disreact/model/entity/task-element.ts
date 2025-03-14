@@ -1,92 +1,104 @@
-import {EMPTY, ZERO} from '#src/disreact/codec/constants/common.ts';
-import {FC } from '#src/disreact/model/component/fc.ts';
-import {Element} from '#src/disreact/model/element/element.ts';
+import {EMPTY} from '#src/disreact/codec/constants/common.ts';
+import type {Element} from '#src/disreact/model/entity/element.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
 import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import type {Root} from '#src/disreact/model/root.ts';
 
 
 
-export interface TaskElement<P = any> extends Element.Meta {
-  _tag    : Element.Tag.TASK;
-  type    : FC.Unknown;
+export const TAG = 'TaskElement';
+
+export * as TaskElement from './task-element.ts';
+
+export type TaskElement = Element.Meta & {
+  _tag    : typeof TAG;
+  type    : FC.FC;
   fiber   : FiberNode;
   props   : any;
-  children: any[];
-}
+  children: Element.Any[];
+};
 
-export namespace TaskElement {
-  export type T<P = any> = TaskElement<P>;
+export const isTag = (self: Element.Any): self is TaskElement => self._tag === TAG;
 
-  export const is = (type: Element.Any): type is TaskElement => type._tag === Element.Tag.TASK;
+export const makeId = (self: TaskElement, idx: number) => `${FC.getNaming(self.type)}:${idx}`;
 
-  export const make = (type: FC.FC, props?: any): TaskElement => {
-    const fc = FC.init(type);
+export const isType = (type: any): type is FC.FC => FC.isFC(type);
 
-    const element: TaskElement = {
-      _tag    : Element.Tag.TASK,
-      type    : fc,
-      id      : FC.getName(type),
-      idx     : ZERO,
-      step_id : EMPTY,
-      full_id : EMPTY,
-      fiber   : FiberNode.make(EMPTY),
-      props,
-      children: [],
-    };
+export const make = (type: FC, props?: any): TaskElement => {
+  const fc = FC.init(type);
 
-    element.fiber.element = element;
-
-    return element;
+  const element: TaskElement = {
+    _tag    : TAG,
+    type    : fc,
+    id      : '',
+    idx     : FC.getNaming(fc),
+    props,
+    fiber   : FiberNode.make(EMPTY),
+    children: [],
   };
 
-  export const clone = (self: TaskElement): TaskElement => {
-    const {props, fiber, type, children, ...rest} = self;
+  element.fiber.element = element;
 
-    const cloned    = structuredClone(rest) as T;
-    cloned.fiber    = FiberNode.clone(fiber);
-    cloned.props    = cloneProps(props);
-    cloned.type     = type;
-    cloned.children = children;
-    return cloned;
-  };
+  return element;
+};
 
-  const cloneProps = (props: any): any => {
-    if (!props) {
-      return {};
-    }
+export const linearize = (self: TaskElement) => {
+  FiberNode.linearize(self.fiber);
+};
 
-    try {
-      return structuredClone(props);
-    }
-    catch (e) {/**/}
+export const circular = (self: TaskElement, root: Root) => {
+  FiberNode.circularize(self.fiber, self, root.store);
+  self.fiber.element         = self;
+  root.store.fibers[self.id] = self.fiber;
+  self.fiber.root            = root.store;
+};
 
-    const acc = {} as any;
+export const encode = (self: TaskElement) => self.children;
 
-    for (const key of Object.keys(props)) {
-      const original     = props[key];
-      const originalType = typeof original;
+export const clone = (self: TaskElement): TaskElement => {
+  const {props, fiber, type, children, ...rest} = self;
 
-      if (originalType === 'object') {
-        if (!original) {
-          acc[key] = null;
-          continue;
-        }
-        if (original instanceof Array) {
-          acc[key] = original.map((item) => cloneProps(item));
-          continue;
-        }
-        acc[key] = cloneProps(original);
+  const cloned    = structuredClone(rest) as TaskElement;
+  cloned.props    = clonePropsDeep(props);
+  cloned.type     = type;
+  cloned.children = children;
+  cloned.fiber    = FiberNode.clone(fiber);
+  return cloned;
+};
+
+const clonePropsDeep = (props: any): any => {
+  if (!props) {
+    return {};
+  }
+
+  try {
+    return structuredClone(props);
+  }
+  catch (e) {/**/}
+
+  const acc = {} as any;
+
+  for (const key of Object.keys(props)) {
+    const original     = props[key];
+    const originalType = typeof original;
+
+    if (originalType === 'object') {
+      if (!original) {
+        acc[key] = null;
         continue;
       }
-
-      acc[key] = original;
+      if (Array.isArray(original)) {
+        acc[key] = original.map((item) => clonePropsDeep(item));
+        continue;
+      }
+      acc[key] = clonePropsDeep(original);
+      continue;
     }
 
-    return props;
-  };
+    acc[key] = original;
+  }
 
-  export const encode = (self: T) => {
-    return self.children;
-  };
+  return props;
+};
 
-  export const makeDEV = make;
-}
+export const makeDEV = make;

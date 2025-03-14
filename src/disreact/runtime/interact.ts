@@ -1,13 +1,13 @@
 import {CLOSE, EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type * as FunctionElement from '#src/disreact/codec/element/function-element.ts';
+import type * as FunctionElement from '#src/disreact/model/entity/task-element.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {DialogParams, Doken, Dokens, Rest, Route} from '#src/disreact/codec/rest/index.ts';
-import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
-import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
-import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import {InteractionDOM} from '#src/disreact/interface/InteractionDOM.ts';
+import {DokenCache} from '#src/disreact/interface/DokenCache.ts';
+import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
+import * as Globals from '#src/disreact/model/a/globals.ts';
+import * as Lifecycles from '#src/disreact/model/a/index.ts';
 import {InteractionBroker} from '#src/disreact/runtime/service/InteractionBroker.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {RouteCodec} from '../codec';
@@ -24,7 +24,7 @@ export const interact = E.fn(
 
     yield* E.fork(Dokens.resolvePartial(route.dokens));
 
-    const root = yield* RootRegistry.hydrateClone(rest.id, route.params.root_id, route.params.hash);
+    const root = yield* OldRoot.hydrateClone(rest.id, route.params.root_id, route.params.hash);
 
     Globals.setPointer(root.pointer);
     Globals.mountRoot(root.pointer, root.fiber);
@@ -40,16 +40,16 @@ export const interact = E.fn(
 
     if (root.fiber.next.id === CLOSE) {
       if (route.dokens.defer) {
-        yield* E.fork(DiscordDOM.discard(route.dokens.fresh));
-        yield* E.fork(DokenMemory.free(route.dokens.defer.id));
-        return yield* E.fork(DiscordDOM.dismount(
+        yield* E.fork(InteractionDOM.discard(route.dokens.fresh));
+        yield* E.fork(DokenCache.free(route.dokens.defer.id));
+        return yield* E.fork(InteractionDOM.dismount(
           rest.application_id,
           route.dokens.defer,
         ));
       }
 
-      yield* E.fork(DiscordDOM.discard(route.dokens.fresh).pipe(localMutex));
-      return yield* E.fork(DiscordDOM.dismount(
+      yield* E.fork(InteractionDOM.discard(route.dokens.fresh).pipe(localMutex));
+      return yield* E.fork(InteractionDOM.dismount(
         rest.application_id,
         route.dokens.fresh,
       ).pipe(localMutex));
@@ -64,14 +64,14 @@ export const interact = E.fn(
       root.fiber.next.id = root.root_id;
 
       if (route.dokens.defer) {
-        yield* E.fork(DiscordDOM.discard(route.dokens.fresh));
+        yield* E.fork(InteractionDOM.discard(route.dokens.fresh));
       }
       else {
         route.dokens.fresh.type = Rest.Tx.DEFERRED_UPDATE_MESSAGE;
         route.dokens.fresh      = Doken.makeDeferred(route.dokens.fresh);
 
-        yield* E.fork(DokenMemory.save(route.dokens.fresh));
-        yield* E.fork(DiscordDOM.defer(route.dokens.fresh).pipe(localMutex));
+        yield* E.fork(DokenCache.save(route.dokens.fresh));
+        yield* E.fork(InteractionDOM.defer(route.dokens.fresh).pipe(localMutex));
       }
 
       const rerendered = yield* Lifecycles.rerenderRoot(afterEvent);
@@ -81,7 +81,7 @@ export const interact = E.fn(
       const finalRender = yield* Lifecycles.rerenderRoot(rerendered);
       const encoded     = RouteCodec.encodeMessage(root, route.dokens);
 
-      return yield* E.fork(DiscordDOM.reply(
+      return yield* E.fork(InteractionDOM.reply(
         rest.application_id,
         route.dokens.defer ?? route.dokens.fresh,
         encoded,
@@ -90,7 +90,7 @@ export const interact = E.fn(
 
     Globals.dismountRoot(root.pointer);
 
-    const nextClone = yield* RootRegistry.makeClone(
+    const nextClone = yield* OldRoot.makeClone(
       root.id,
       root.fiber.next.id,
       root.fiber.next.props,
@@ -100,34 +100,34 @@ export const interact = E.fn(
 
     const rendered = yield* Lifecycles.rerenderRoot(nextClone.element);
 
-    if ((rendered as FunctionElement.T).meta.isModal) {
+    if ((rendered as FunctionElement.TaskElement).meta.isModal) {
       yield* new BadInteraction({
         why: 'Unsupported interaction: modal open',
       });
 
       route.dokens.fresh.type = Rest.Tx.MODAL;
       // const encoded = yield* encodeDialogInteraction(rendered, frame.restDoken);
-      return yield* E.fork(DiscordDOM.create(route.dokens.fresh, {} as any).pipe(localMutex));
+      return yield* E.fork(InteractionDOM.create(route.dokens.fresh, {} as any).pipe(localMutex));
     }
 
 
-    if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.T).meta.isEphemeral) {
+    if (afterEvent.meta.isEphemeral !== (rendered as FunctionElement.TaskElement).meta.isEphemeral) {
       route.dokens.fresh.type      = Rest.Tx.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE;
       route.dokens.fresh.ephemeral = 1;
       route.dokens.fresh           = Doken.makeDeferred(route.dokens.fresh);
 
-      yield* E.fork(DokenMemory.save(route.dokens.fresh));
-      yield* E.fork(DiscordDOM.defer(route.dokens.fresh).pipe(localMutex));
+      yield* E.fork(DokenCache.save(route.dokens.fresh));
+      yield* E.fork(InteractionDOM.defer(route.dokens.fresh).pipe(localMutex));
     }
     else if (route.dokens.defer) {
-      yield* E.fork(DiscordDOM.discard(route.dokens.fresh));
+      yield* E.fork(InteractionDOM.discard(route.dokens.fresh));
     }
     else {
       route.dokens.fresh.type = Rest.Tx.DEFERRED_UPDATE_MESSAGE;
       route.dokens.fresh      = Doken.makeDeferred(route.dokens.fresh);
 
-      yield* E.fork(DokenMemory.save(route.dokens.fresh));
-      yield* E.fork(DiscordDOM.defer(route.dokens.fresh).pipe(localMutex));
+      yield* E.fork(DokenCache.save(route.dokens.fresh));
+      yield* E.fork(InteractionDOM.defer(route.dokens.fresh).pipe(localMutex));
     }
 
 
@@ -136,7 +136,7 @@ export const interact = E.fn(
     const finalRender = yield* Lifecycles.rerenderRoot(rendered);
     const encoded     = RouteCodec.encodeMessage(nextClone, route.dokens);
 
-    return yield* E.fork(DiscordDOM.reply(
+    return yield* E.fork(InteractionDOM.reply(
       rest.application_id,
       route.dokens.defer ?? route.dokens.fresh,
       encoded,
@@ -146,7 +146,7 @@ export const interact = E.fn(
 );
 
 
-export const flushHooks = (root: Element.T) => E.gen(function* () {
+export const flushHooks = (root: Element.Element) => E.gen(function* () {
   const states = Lifecycles.collectStates(root);
 
   for (const id in states) {

@@ -1,7 +1,7 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type {FC} from '#src/disreact/codec/element/function-component.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
@@ -78,4 +78,4 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
   );
 });
 
-InfoPanel.displayName = '';
+InfoPanel.displayName = 'InfoPanel';

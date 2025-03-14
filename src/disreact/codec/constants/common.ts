@@ -10,7 +10,7 @@ export const FunctionKind = Literal(3);
 
 
 export const SnowFlake = String;
-export const DisReactPointer = SymbolFromSelf;
+// export const DisReactPointer = SymbolFromSelf;
 export const CustomId = String;
 export const ConformantCustomId = String.pipe(minLength(1), maxLength(100));
 export const BitField = String;
@@ -38,8 +38,6 @@ export const EmojiStruct = Struct({
 });
 
 
-
-export type DisReactPointer = Schema.Type<typeof DisReactPointer>;
 
 export const RootId = String;
 

@@ -1,17 +1,17 @@
-export * as Button from '#src/disreact/codec/element/definitions/button.ts';
-export * as Command from '#src/disreact/codec/element/definitions/command.ts';
-export * as Dialog from '#src/disreact/codec/element/definitions/dialog.ts';
-export * as Embed from '#src/disreact/codec/element/definitions/embed.ts';
-export * as Select from '#src/disreact/codec/element/definitions/select.ts';
-export * as Message from '#src/disreact/codec/element/definitions/message.ts';
-export * as Markdown from '#src/disreact/codec/element/definitions/markdown.ts';
-import * as Button from '#src/disreact/codec/element/definitions/button.ts';
-import * as Command from '#src/disreact/codec/element/definitions/command.ts';
-import * as Dialog from '#src/disreact/codec/element/definitions/dialog.ts';
-import * as Embed from '#src/disreact/codec/element/definitions/embed.ts';
-import * as Markdown from '#src/disreact/codec/element/definitions/markdown.ts';
-import * as Message from '#src/disreact/codec/element/definitions/message.ts';
-import * as Select from '#src/disreact/codec/element/definitions/select.ts';
+export * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
+export * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
+export * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
+export * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
+export * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
+export * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
+export * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
+import * as Button from '#src/disreact/codec/element/intrinsic/button.ts';
+import * as Command from '#src/disreact/codec/element/intrinsic/command.ts';
+import * as Dialog from '#src/disreact/codec/element/intrinsic/dialog.ts';
+import * as Embed from '#src/disreact/codec/element/intrinsic/embed.ts';
+import * as Markdown from '#src/disreact/codec/element/intrinsic/markdown.ts';
+import * as Message from '#src/disreact/codec/element/intrinsic/message.ts';
+import * as Select from '#src/disreact/codec/element/intrinsic/select.ts';
 
 
 

@@ -1,6 +1,6 @@
 export * as DAPI from './dapi.ts';
-export * as Doken from 'src/disreact/codec/wire/doken.ts';
-export * as Ix from './ix.ts';
-export * as Params from './params.ts';
-export * as Rx from './rx.ts';
-export * as Tx from './tx.ts';
+export * as Doken from '#src/disreact/codec/wire/abstract/doken.ts';
+export * as Ix from '#src/disreact/codec/ix.ts';
+export * as Params from '#src/disreact/codec/wire/abstract/hydrator.ts';
+export * as Rx from 'src/disreact/codec/rx.ts';
+export * as Tx from 'src/disreact/codec/tx.ts';

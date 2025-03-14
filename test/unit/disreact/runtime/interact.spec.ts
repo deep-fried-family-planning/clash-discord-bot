@@ -1,17 +1,17 @@
-import {DiscordDOM} from '#src/disreact/interface/DiscordDOM.ts';
-import {DokenMemory} from '#src/disreact/interface/DokenMemory.ts';
-import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
+import {InteractionDOM} from '#src/disreact/interface/InteractionDOM.ts';
+import {DokenCache} from '#src/disreact/interface/DokenCache.ts';
+import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {pipe} from 'effect';
-import {TestDialog} from 'test/unit/disreact/model/.components/test-dialog.tsx';
-import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
+import {TestDialog} from 'test/unit/disreact/components/test-dialog.tsx';
+import {TestMessage} from 'test/unit/disreact/components/test-message.tsx';
 import synthesized from '././.snap/synthesize.json';
 
 
 
-const staticGraph = RootRegistry.singleton({
+const staticGraph = OldRoot.singleton({
   persistent: [
     TestMessage,
     TestDialog,
@@ -20,7 +20,7 @@ const staticGraph = RootRegistry.singleton({
   dialog   : [],
 });
 
-const mockDiscord = L.scoped(DiscordDOM, E.succeed({
+const mockDiscord = L.scoped(InteractionDOM, E.succeed({
   discard : vi.fn(),
   defer   : vi.fn(),
   create  : vi.fn(),
@@ -33,7 +33,7 @@ const mockDiscord = L.scoped(DiscordDOM, E.succeed({
 
 describe('DisReact.interact', () => {
   it.effect('when processing interaction', E.fn(function* () {
-    const discordDOM = yield* DiscordDOM;
+    const discordDOM = yield* InteractionDOM;
 
     yield* pipe(
       interact({
@@ -49,7 +49,7 @@ describe('DisReact.interact', () => {
       E.awaitAllChildren,
       E.provide(pipe(
         staticGraph,
-        L.provideMerge(DokenMemory.localLayer({})),
+        L.provideMerge(DokenCache.localLayer({})),
       )),
     );
 

@@ -1,14 +1,14 @@
-import {RootRegistry} from '#src/disreact/model/RootRegistry.ts';
+import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
 import {synthesize} from '#src/disreact/runtime/synthesize.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
 import {pipe} from 'effect';
-import {TestDialog} from 'test/unit/disreact/model/.components/test-dialog.tsx';
-import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
+import {TestDialog} from 'test/unit/disreact/components/test-dialog.tsx';
+import {TestMessage} from 'test/unit/disreact/components/test-message.tsx';
 
 
 
-const staticGraph = RootRegistry.singleton({
+const staticGraph = OldRoot.singleton({
   persistent: [
     TestMessage,
     TestDialog,

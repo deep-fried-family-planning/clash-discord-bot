@@ -4,7 +4,7 @@ import type {Element} from './element';
 
 export const TAG = 'Fragment';
 
-export * as FragElement from 'src/disreact/model/entity/frag-element.ts';
+export * as FragElement from '#src/disreact/model/entity/fragment.ts';
 
 export type FragElement = Element.Meta & {
   _tag: typeof TAG;

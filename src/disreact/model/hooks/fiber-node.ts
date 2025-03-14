@@ -1,96 +1,99 @@
 import {ONE, ZERO} from '#src/disreact/codec/constants/common.ts';
-import type {TaskElement} from '#src/disreact/model/element/task-element.ts';
-import type {FiberHydrant} from '#src/disreact/model/fiber/fiber-hydrant.ts';
-import type {FiberStore} from '#src/disreact/model/fiber/fiber-store.ts';
+import type {TaskElement} from '#src/disreact/model/entity/task-element.ts';
+import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
+import type {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 
 
 
-export interface FiberNode {
+export * as FiberNode from './fiber-node.ts';
+
+export type FiberNode = {
   id      : string;
   pc      : number;
   rc      : number;
-  stack   : FiberHydrant.Stack;
-  saved   : FiberHydrant.Stack;
+  stack   : Hydrant.Stack;
+  saved   : Hydrant.Stack;
   queue   : any[];
   element?: TaskElement;
   root?   : FiberStore;
 };
 
-export namespace FiberNode {
-  export const make = (id: string): FiberNode => {
-    return {
-      id,
-      rc   : ZERO,
-      pc   : ZERO,
-      stack: [],
-      saved: [],
-      queue: [],
-    };
+export const make = (id: string): FiberNode => {
+  return {
+    id,
+    rc   : ZERO,
+    pc   : ZERO,
+    stack: [],
+    saved: [],
+    queue: [],
   };
+};
 
-  export const decode = (id: string, stack: FiberHydrant.Stack): FiberNode => {
-    return {
-      id,
-      rc   : ONE,
-      pc   : ZERO,
-      stack,
-      saved: [],
-      queue: [],
-    };
+export const decode = (id: string, stack: Hydrant.Stack): FiberNode => {
+  return {
+    id,
+    rc   : ONE,
+    pc   : ZERO,
+    stack,
+    saved: [],
+    queue: [],
   };
+};
 
-  export const encode = (self: FiberNode): FiberHydrant.Stack => self.stack;
+export const encode = (self: FiberNode): Hydrant.Stack => self.stack;
 
-  export const clone = (self: FiberNode): FiberNode => {
-    if (self.queue.length > 0) {
-      throw new Error('Queue is not empty.');
-    }
+export const clone = (self: FiberNode): FiberNode => {
+  if (self.queue.length > 0) {
+    throw new Error('Queue is not empty.');
+  }
 
-    linearize(self);
+  const {element, root, ...rest} = self;
 
-    return structuredClone(self);
-  };
+  return structuredClone(rest);
+};
 
-  export const encircle = (self: FiberNode, element: TaskElement, root: FiberStore): FiberNode => {
-    self.element = element;
-    self.root    = root;
-    return self;
-  };
+export const linearize = (self: FiberNode) => {
+  delete self.element;
+  delete self.root;
+  return self;
+};
 
-  export const linearize = (self: FiberNode): FiberNode => {
-    delete self.element;
-    delete self.root;
-    return self;
-  };
+export const circularize = (self: FiberNode, element: TaskElement, root: FiberStore): FiberNode => {
+  self.element = element;
+  self.id      = element.full_id;
+  self.root    = root;
+  root.fibers[self.id] = self;
+  return self;
+};
 
-  export const commit = (self: FiberNode): FiberNode => {
-    self.saved = structuredClone(self.stack);
-    self.rc    = ZERO;
-    return self;
-  };
+export const commit = (self: FiberNode) => {
+  self.saved = structuredClone(self.stack);
+  self.pc    = ZERO;
+  return self;
+};
 
-  export const isFirstRender = (self: FiberNode) => self.rc === ZERO;
+export const isFirstRender = (self: FiberNode) => self.rc === ZERO;
 
-  export const isSame = (self: FiberNode) => {
-    const a = self.stack;
-    const b = self.saved;
+export const isSame = (self: FiberNode) => {
+  const a = self.stack;
+  const b = self.saved;
 
-    if (a.length !== b.length) {
-      return false;
-    }
+  if (a.length !== b.length) {
+    return false;
+  }
 
-    const stackData = Data.array(self.stack.map((s) => s === null ? null : Data.struct(s)));
-    const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)));
+  const stackData = Data.array(self.stack.map((s) => s === null ? null : Data.struct(s)));
+  const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)));
 
-    return Equal.equals(stackData, priorData);
-  };
-}
+  return Equal.equals(stackData, priorData);
+};
 
-export namespace $FiberNode {
+
+
+export namespace λ_λ {
   const STORE        = {current: null as FiberNode | null};
-  const SIGNAL       = {current: false};
   export const get   = () => STORE.current!;
   export const set   = (fiber: FiberNode) => {STORE.current = fiber};
   export const clear = () => {STORE.current = null};

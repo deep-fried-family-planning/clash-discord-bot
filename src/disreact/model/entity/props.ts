@@ -4,7 +4,7 @@ import {Data, Equal} from 'effect';
 
 
 
-export * as Props from './props.ts';
+export * as Props from 'src/disreact/model/entity/props.ts';
 export type Props<P = any, C = Element> = Any<P, C>;
 
 export const ZERO = 'ZERO' as const;

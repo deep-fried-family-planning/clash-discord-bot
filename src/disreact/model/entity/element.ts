@@ -1,90 +1,120 @@
-import type {FC} from '#src/disreact/model/component/fc.ts';
-import {RestElement} from '#src/disreact/model/element/rest-element.ts';
-import {TaskElement} from '#src/disreact/model/element/task-element.ts';
-import {TextElement} from '#src/disreact/model/element/text-element.ts';
+import {RestElement} from '#src/disreact/model/entity/rest-element.ts';
+import {TaskElement} from '#src/disreact/model/entity/task-element.ts';
+import {TextLeaf} from '#src/disreact/model/entity/text-leaf.ts';
 
 
 
-export type Element = Element.Any;
+export * as Element from './element.ts';
+export type Element = Parent;
 
-export namespace Element {
-  export type Rest = RestElement;
-  export type Task = TaskElement;
-  export type Text = TextElement;
+export type Parent =
+  | RestElement
+  | TaskElement;
 
-  export type Any =
-    | RestElement
-    | TaskElement
-    | TextElement;
+export type Leaf =
+  | TextLeaf;
 
-  export interface Meta {
-    id     : string;
-    idx    : number;
-    step_id: string;
-    full_id: string;
-  }
+export type Any =
+  | Parent
+  | Leaf;
 
-  export const enum Tag {
-    REST = 'RestElement',
-    TASK = 'TaskElement',
-    TEXT = 'TextElement',
-  }
-
-  export type OrFC = Any | FC.FC;
-
-  export const Fragment = undefined;
-  export const Rest     = RestElement;
-  export const Task     = TaskElement;
-  export const Text     = TextElement;
-
-  export const make = (type: any, props: any) => {
-    switch (typeof type) {
-      case 'undefined': {
-        return props.children;
-      }
-
-      case 'string': {
-        return Rest.make(type, props);
-      }
-
-      case 'function': {
-        return Task.make(type, props);
-      }
-
-      case 'symbol':
-      case 'boolean':
-      case 'number':
-      case 'bigint': {
-        throw new Error();
-      }
-    }
-  };
-
-  export const clone = <A extends Element>(element: A): A => {
-    if (Text.is(element)) {
-      return Text.clone(element) as A;
-    }
-    if (Rest.is(element)) {
-      return Rest.clone(element) as A;
-    }
-    return Task.clone(element) as A;
-  };
-
-  export const isSame = (a: Any, b: Any): boolean => {
-    if (a === b) {
-      return true;
-    }
-    if (a._tag !== b._tag) {
-      return false;
-    }
-    if (a.constructor !== b.constructor) {
-      return false;
-    }
-    return true;
-  };
-
-  export const connectParent = (self: Any, parent: Any) => {
-    self.step_id = `${parent.step_id}:${self.id}:${self.idx}`;
-    self.full_id = `${parent.full_id}:${self.id}:${self.idx}`;
-  };
+export interface Meta {
+  id : string;
+  idx: string;
 }
+
+export const Fragment = undefined;
+
+export const isLeaf = (self: any): self is string =>
+  TextLeaf.isType(self);
+
+export const isNode = (self: any): self is Parent =>
+  self &&
+  typeof self === 'object' && (
+    RestElement.isTag(self) ||
+    TaskElement.isTag(self)
+  );
+
+export const make = (type: any, props: any) => {
+  switch (typeof type) {
+    case 'undefined': {
+      return props.children;
+    }
+
+    case 'string': {
+      return RestElement.make(type, props);
+    }
+
+    case 'function': {
+      return TaskElement.make(type, props);
+    }
+
+    default: {
+      throw new Error(`Invalid Element Type: ${type}`);
+    }
+  }
+};
+
+export const jsx = (type: any, props: any) => {
+  const self = make(type, props);
+  self.type;
+  return self;
+};
+
+
+
+export const clone = <A extends Any>(self: A): A => {
+  if (TextLeaf.is(self)) {
+    return TextLeaf.clone(self) as A;
+  }
+  if (RestElement.isTag(self)) {
+    return RestElement.clone(self) as A;
+  }
+  return TaskElement.clone(self) as A;
+};
+
+export const deepClone = <A extends Any>(self: A): A => {
+  const cloned = clone(self);
+
+  if (TextLeaf.is(cloned)) {
+    return cloned;
+  }
+
+  for (let i = 0; i < cloned.children.length; i++) {
+    cloned.children[i] = deepClone(cloned.children[i]);
+  }
+
+  return cloned;
+};
+
+export const isSame = (a: Element.Any, b: Element.Any): boolean => {
+  if (a === b) {
+    return true;
+  }
+  if (a._tag !== b._tag) {
+    return false;
+  }
+  if (a.constructor.name !== b.constructor.name) {
+    return false;
+  }
+  if (TextLeaf.is(a)) {
+    return a.value === (b as TextLeaf).value;
+  }
+  return true;
+};
+
+export const linearize = (self: Element.Any): void => {
+  if (TaskElement.isTag(self)) {
+    TaskElement.linearize(self);
+  }
+};
+
+export const linearizeDeep = (self: Element) => {
+  linearize(self);
+
+  for (const child of self.children) {
+    linearize(child);
+  }
+
+  return self;
+};

@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-dynamic-delete */
-import type * as FiberNode from '#src/disreact/model/entity/fiber/fiber-node.ts';
+
+import type * as FiberNode from '#src/disreact/model/hooks/fiber-node.ts';
 import * as FiberPointer from '#src/disreact/codec/fiber/fiber-pointer.ts';
-import * as FiberRoot from '#src/disreact/model/entity/fiber/fiber-store.ts';
-import * as Hooks from '#src/disreact/lifecycles/hooks.ts';
+import * as FiberRoot from '#src/disreact/model/hooks/fiber-store.ts';
+import * as Hooks from '#src/disreact/model/a/hooks.ts';
 
 
 const __pointer = {current: null as null | FiberPointer.T};
@@ -28,7 +28,7 @@ export const nullifyPointer = () => {
 };
 
 
-const __roots = new WeakMap<FiberPointer.T, FiberRoot.FiberStore>();
+const __roots = new WeakMap<FiberPointer.T, FiberStore>();
 
 export const mountRoot = (ptr: FiberPointer.T, hydration = FiberRoot.make()) => {
   __roots.set(ptr, hydration);
@@ -56,7 +56,7 @@ export const readRoot = (ptr = getPointer()) => {
 
 
 
-export const mountFiber = (id: string, node: FiberNode.FiberNode) => {
+export const mountFiber = (id: string, node: FiberNode) => {
   const root = readRoot();
 
   root.fibers[id] = node;
@@ -91,6 +91,6 @@ export const getDispatch = () => {
   return __dispatch.current;
 };
 
-export const setDispatch = (state: FiberNode.FiberNode) => {
+export const setDispatch = (state: FiberNode) => {
   __dispatch.current = Hooks.attachHooks(state);
 };

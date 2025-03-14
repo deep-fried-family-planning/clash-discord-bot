@@ -1,6 +1,32 @@
 import {ButtonLabel, ConformantCustomId, EmojiStruct, IntrinsicKind, SkuId} from '#src/disreact/codec/constants/common.ts';
 import * as DTML from '#src/disreact/codec/constants/dtml.ts';
+import {S} from '#src/internal/pure/effect.ts';
 import {Any, Boolean, Int, Literal, optional, type Schema, String, Struct, Union, Unknown, validateSync} from 'effect/Schema';
+
+
+
+export namespace Button {
+  export const TAG = 'button';
+  export const Style = S.Literal('primary', 1, 'secondary', 2, 'success', 3, 'danger', 4, 'link', 5, 'premium', 6);
+  export const Props = {};
+
+  export const HANDLER = 'onclick';
+
+  export namespace Primary {
+    export const TAG = 'primary';
+    export const Style = S.Literal();
+  }
+
+  export namespace Secondary {}
+
+  export namespace Success {}
+
+  export namespace Danger {}
+
+  export namespace Link {}
+
+  export namespace Premium {}
+}
 
 
 

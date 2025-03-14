@@ -58,8 +58,8 @@ export type St = {
 };
 
 
-export const deriveState = (ix: IxD) => E.gen(function * () {
-  const [server, user] = yield * pipe(
+export const deriveState = (ix: IxD) => E.gen(function* () {
+  const [server, user] = yield* pipe(
     [
       MenuCache.serverRead(ix.guild_id!),
       MenuCache.userRead(ix.member?.user?.id ?? ix.user!.id),
@@ -93,7 +93,7 @@ export const deriveState = (ix: IxD) => E.gen(function * () {
   return {
     original  : ix,
     server_id : ix.guild_id!,
-    user_id   : ix.member!.user!.id,
+    user      : ix.member!.user!.id,
     user_roles: ix.member!.roles,
     user      : user,
     server    : server,

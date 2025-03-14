@@ -1,6 +1,7 @@
 import * as all from '#src/disreact/codec/constants/all.ts';
 import * as dfmd from '#src/disreact/codec/constants/dfmd.ts';
 import * as dtml from '#src/disreact/codec/constants/dtml.ts';
+import {children, key, onautocomplete, onclick, ondeselect, oninvoke, onselect, onsubmit, ref} from '#src/disreact/codec/constants/reserved.ts';
 import * as reserved from '#src/disreact/codec/constants/reserved.ts';
 
 export * as Reserved from '#src/disreact/codec/constants/reserved.ts';
@@ -24,3 +25,15 @@ const inf = Infinity;
 // | --- |
 //
 // let λ, φ, τ, π;
+
+export const RESERVED = [
+  onclick,
+  onselect,
+  ondeselect,
+  onsubmit,
+  oninvoke,
+  onautocomplete,
+  children,
+  ref,
+  key,
+];

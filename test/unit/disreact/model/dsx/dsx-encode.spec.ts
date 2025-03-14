@@ -1,11 +1,11 @@
-import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/dsx/element-encode.ts';
+import {encodeDialogDsx, encodeMessageDsx} from '#src/disreact/codec/element/element-encode.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import * as Globals from '#src/disreact/model/lifecycles/globals.ts';
-import * as Lifecycles from '#src/disreact/model/lifecycles/index.ts';
+import * as Globals from '#src/disreact/model/a/globals.ts';
+import * as Lifecycles from '#src/disreact/model/a/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {it} from '@effect/vitest';
-import {TestDialog} from 'test/unit/disreact/model/.components/test-dialog.tsx';
-import {TestMessage} from 'test/unit/disreact/model/.components/test-message.tsx';
+import {TestDialog} from 'test/unit/disreact/components/test-dialog.tsx';
+import {TestMessage} from 'test/unit/disreact/components/test-message.tsx';
 
 
 
