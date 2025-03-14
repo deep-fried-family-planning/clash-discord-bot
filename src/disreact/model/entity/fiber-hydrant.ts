@@ -6,7 +6,7 @@ import * as pako from 'pako';
 
 export type Hydrant = typeof Pack.Type;
 
-export * as Hydrant from '#src/disreact/model/hooks/fiber-hydrant.ts';
+export * as Hydrant from '#src/disreact/model/entity/fiber-hydrant.ts';
 
 export type Stack = typeof Stack.Items.Type;
 

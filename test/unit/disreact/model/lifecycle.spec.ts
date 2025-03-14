@@ -1,10 +1,10 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {Elem} from '#src/disreact/model/entity/element';
-// import * as Globals from '#src/disreact/model/a/globals.ts';
-import {invokeIntrinsicTarget} from '#src/disreact/model/invoke.ts';
-import {hydrateRoot, initialRender, rerenderRoot} from '#src/disreact/model/render.ts';
-import {Root} from '#src/disreact/model/root';
-import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts';
+import {Elem} from '#src/disreact/model/element/element';
+import {hydrateRoot} from '#src/disreact/model/lifecycle/hydrate.ts';
+import {invokeIntrinsicTarget} from '#src/disreact/model/lifecycle/invoke.ts';
+import { initialRender, rerenderRoot} from '#src/disreact/model/lifecycle/render.ts';
+import {Root} from '#src/disreact/model/entity/root.ts';
+import {SourceRegistry} from '#src/disreact/model/service/SourceRegistry.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {pipe} from 'effect';
 import {TestMessage} from 'test/unit/disreact/components/test-message.tsx';
@@ -123,8 +123,8 @@ it.effect('when rendering an initial tree', E.fn(function* () {
   yield* pipe(render, Elem.linearize, expectJSON('./initial-tree.json'));
 }));
 
-describe('performance', {timeout: 1000}, () => {
-  const runs = Array.from({length: 1000});
+describe('performance', {timeout: 10000}, () => {
+  const runs = Array.from({length: 10000});
 
   it.effect(`when hydrating an empty root`, E.fn(function* () {
     for (let i = 0; i < runs.length; i++) {

@@ -1,13 +1,13 @@
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type {Elem} from '#src/disreact/model/entity/element.ts';
+import type {Elem} from '#src/disreact/model/element/element.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
-import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import {FiberNode} from '#src/disreact/model/entity/fiber-node.ts';
 
 
 
 export const TAG = 'TaskElem';
 
-export * as TaskElem from 'src/disreact/model/entity/element-task.ts';
+export * as TaskElem from '#src/disreact/model/element/task.ts';
 export type TaskElem<P = any, A = any> = Elem.Meta & {
   _tag    : typeof TAG;
   type    : FC<P, A>;
@@ -16,9 +16,7 @@ export type TaskElem<P = any, A = any> = Elem.Meta & {
   children: Elem[];
 };
 
-export const isTag = (self: Elem): self is TaskElem => self._tag === TAG;
-
-export const id = (self: TaskElem, idx: number) => `${FC.getName(self.type)}:${idx}`;
+export const is = (self: Elem): self is TaskElem => self._tag === TAG;
 
 export const make = (type: FC, props?: any): TaskElem => {
   const element: TaskElem = {

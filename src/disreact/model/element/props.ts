@@ -1,10 +1,9 @@
-import {ONE} from '#src/disreact/codec/constants/common.ts';
 import {RESERVED} from '#src/disreact/codec/constants/index.ts';
 import {Data, Equal} from 'effect';
 
 
 
-export * as Props from 'src/disreact/model/entity/props.ts';
+export * as Props from '#src/disreact/model/element/props.ts';
 export type Props<P = any, A = any> =
   | None
   | Zero<P, A>
@@ -25,21 +24,6 @@ export const isZero = <P, A>(self: Props<P, A>): self is Zero<P, A> => self?._ta
 export const isOnly = <P, A>(self: Props<P, A>): self is Only<P, A> => self?._tag === ONLY;
 export const isMany = <P, A>(self: Props<P, A>): self is Many<P, A> => self?._tag === MANY;
 
-export const zero = <P, A>(props: P): Zero<P, A> => {
-  (props as any)._tag = ZERO;
-  return props as Zero<P, A>;
-};
-
-export const only = <P, A>(props: P): Only<P, A> => {
-  (props as any)._tag = ONLY;
-  return props as Only<P, A>;
-};
-
-export const many = <P, A>(props: P): Many<P, A> => {
-  (props as any)._tag = MANY;
-  return props as Many<P, A>;
-};
-
 export const jsx = <P, A>(props: any): None | Zero<P, A> | Only<P, A> => {
   if (!props) {
     return props;
@@ -49,7 +33,7 @@ export const jsx = <P, A>(props: any): None | Zero<P, A> | Only<P, A> => {
     props._tag = ZERO;
   }
   else {
-    props._tag = ONLY;
+    props._tag     = ONLY;
     props.children = [props.children];
   }
 

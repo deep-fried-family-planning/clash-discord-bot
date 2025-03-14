@@ -4,7 +4,7 @@ import {CallbackType, Flag, Id} from '#src/disreact/codec/enum/index.ts';
 import type {DokenMemoryError} from '#src/disreact/codec/error.ts';
 import * as DAPI from '#src/disreact/codec/wire/dapi.ts';
 import {ForbiddenEffect, ForbiddenSync, Redaction, RedactionTerminus, UtcNow} from '#src/disreact/codec/wire/shared/shared.ts';
-import {DokenMem} from '#src/disreact/interface/DokenCache.ts';
+import {DokenMem} from '#src/disreact/external/DokenCache.ts';
 import {DT, E, RDT} from '#src/internal/pure/effect.ts';
 import type {Cause} from 'effect';
 import {DateTime, ParseResult, pipe} from 'effect';

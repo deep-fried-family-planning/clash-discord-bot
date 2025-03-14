@@ -1,7 +1,7 @@
-import type { Elem } from '#src/disreact/model/entity/element';
-import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
-import {TaskElem} from '#src/disreact/model/entity/element-task.ts';
-import {LeafElem} from '#src/disreact/model/entity/leaf.ts';
+import type { Elem } from '#src/disreact/model/element/element';
+import {RestElement} from '#src/disreact/model/element/rest.ts';
+import {TaskElem} from '#src/disreact/model/element/task.ts';
+import {LeafElem} from '#src/disreact/model/element/leaf.ts';
 
 
 
@@ -10,7 +10,7 @@ export const cloneElement = (self: Elem): Elem => {
     return LeafElem.clone(self);
   }
 
-  if (RestElement.isTag(self)) {
+  if (RestElement.is(self)) {
     return RestElement.clone(self);
   }
 

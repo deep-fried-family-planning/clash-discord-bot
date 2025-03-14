@@ -1,7 +1,7 @@
-import type {Elem} from '#src/disreact/model/entity/element.ts';
-import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
-import type * as Event from 'src/disreact/codec/element/event.ts';
-import { LeafElem } from './entity/leaf';
+import type {Elem} from '#src/disreact/model/element/element.ts';
+import {RestElement} from '#src/disreact/model/element/rest.ts';
+import type * as Event from '#src/disreact/codec/element/event.ts';
+import { LeafElem } from '#src/disreact/model/element/leaf.ts';
 
 
 
@@ -14,7 +14,7 @@ const invokeTargetInner = (node: Elem, event: Event.T, original: Elem = node): E
     throw new Error();
   }
 
-  if (!RestElement.isTag(node) && node.children) {
+  if (!RestElement.is(node)) {
     for (const child of node.children) {
       try {
         return invokeTargetInner(child, event, original);
@@ -47,14 +47,12 @@ const invokeTargetInner = (node: Elem, event: Event.T, original: Elem = node): E
     return original;
   }
 
-  if (node.children) {
     for (const child of node.children) {
       try {
         return invokeTargetInner(child, event, original);
       }
       catch (_) {/**/}
     }
-  }
 
   throw new Error(`No node with id_step "${event.custom_id}" having a handler for type "${event.prop}" was not found`);
 };

@@ -1,11 +1,11 @@
-import {DsxSettings} from '#src/disreact/interface/DisReactConfig.ts';
-import type { Root} from '#src/disreact/model/root.ts';
+import {DsxSettings} from '#src/disreact/external/DisReactConfig.ts';
+import type { Root} from '#src/disreact/model/entity/root.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Cache} from 'effect';
 
 
 
-export class RootMemory extends E.Service<RootMemory>()('disreact/RootMemory', {
+export class RootCache extends E.Service<RootCache>()('disreact/RootCache', {
   accessors: true,
 
   effect: pipe(

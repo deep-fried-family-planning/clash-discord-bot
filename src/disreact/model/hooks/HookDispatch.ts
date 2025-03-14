@@ -1,11 +1,10 @@
 import type {HookError} from '#src/disreact/codec/error.ts';
-import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
-import {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
+import {FiberNode} from '#src/disreact/model/entity/fiber-node.ts';
 import {$useEffect} from '#src/disreact/model/hooks/use-effect.ts';
 import {$useReducer, $useState} from '#src/disreact/model/hooks/use-reducer.ts';
 import {$useIx, $useMessage} from '#src/disreact/model/hooks/use-utility.ts';
-import {E, L} from '#src/internal/pure/effect.ts';
-import {Logger, LogLevel, pipe} from 'effect';
+import {E} from '#src/internal/pure/effect.ts';
+import {pipe} from 'effect';
 
 
 
@@ -26,16 +25,6 @@ export class HookDispatch extends E.Service<HookDispatch>()('disreact/HookDispat
               return E.fail(e as HookError);
             }),
             semaphore.withPermits(1),
-            // E.withLogSpan('mutex'),
-            // E.tap(() => E.log('mutex')),
-            // E.provide(Logger.minimumLogLevel(LogLevel.Fatal)),
-            // E.provide(
-            //   Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
-            // ),
-            // E.provide([
-            //   L.setTracerTiming(true),
-            //   L.setTracerEnabled(true),
-            // ]),
           ),
       };
     }),
@@ -55,29 +44,3 @@ export class HookDispatch extends E.Service<HookDispatch>()('disreact/HookDispat
     useIx     : $useIx,
   };
 }
-
-// const thing = HookDispatcher.pipe(E.map((hookDispatcher) => {
-//   hookDispatcher.mutex();
-// }));
-
-// const thing = E.gen(function* () {
-//   const thing2 = yield* HookDispatch.mutex();
-//
-//   yield* thing2(E.void);
-// });
-
-
-//
-// export class HookDispatcher extends E.Tag(HOOK_DISPATCHER_TAG)<
-//   HookDispatcher,
-//   {
-//     mutex: () => <A, E, R>(node: FiberNode.T, effect: E.Effect<A, E, R>) => E.Effect<A, E, R>;
-//   }
-// >() {
-//   static readonly Live       = L.effect(this, E.suspend(() => make));
-//   static readonly useState   = UseState.hook;
-//   static readonly useReducer = UseReducer.hook;
-//   static readonly useEffect  = UseEffect.hook;
-//   static readonly usePage    = UsePage.hook;
-//   static readonly useIx      = UseIx.hook;
-// }

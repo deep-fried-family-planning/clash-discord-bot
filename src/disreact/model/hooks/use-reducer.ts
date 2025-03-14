@@ -1,6 +1,6 @@
 import {HookError} from '#src/disreact/codec/error.ts';
-import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
-import {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
+import {FiberNode} from '#src/disreact/model/entity/fiber-node.ts';
+import {Hydrant} from '#src/disreact/model/entity/fiber-hydrant.ts';
 
 
 

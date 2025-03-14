@@ -1,5 +1,5 @@
-import {InteractionDOM} from '#src/disreact/interface/InteractionDOM.ts';
-import {DokenCache} from '#src/disreact/interface/DokenCache.ts';
+import {InteractionDOM} from '#src/disreact/external/InteractionDOM.ts';
+import {DokenCache} from '#src/disreact/external/DokenCache.ts';
 import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
 import {interact} from '#src/disreact/runtime/interact.ts';
 import {E, L} from '#src/internal/pure/effect.ts';

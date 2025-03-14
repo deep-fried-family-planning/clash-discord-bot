@@ -1,14 +1,15 @@
-import type {Elem} from '#src/disreact/model/entity/element.ts';
+import type {Elem} from '#src/disreact/model/element/element.ts';
 
 
 
 export const TAG = 'Leaf';
 
-export * as LeafElem from '#src/disreact/model/entity/leaf.ts';
+export * as LeafElem from '#src/disreact/model/element/leaf.ts';
 export type LeafElem<V = string> = {
-  _tag : typeof TAG;
-  value: V;
-  props: {};
+  _tag    : typeof TAG;
+  value   : V;
+  props   : {};
+  children: [];
 };
 
 export const is = (type: Elem): type is LeafElem => type._tag === TAG;

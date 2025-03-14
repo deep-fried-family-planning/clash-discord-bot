@@ -1,14 +1,13 @@
 import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
-import type {FC} from '#src/disreact/model/entity/fc.ts';
-import type {Elem} from '#src/disreact/model/entity/element.ts';
-import {fragment, multi, single} from './model/dsx';
+import {fragment, createMultiple, createSingle} from '#src/disreact/model/lifecycle/create.ts';
+import type {Elem} from '#src/disreact/model/element/element.ts';
 
 
 
 export const Fragment = fragment;
-export const jsx      = single;
-export const jsxs     = multi;
-export const jsxDEV   = single;
+export const jsx      = createSingle;
+export const jsxs     = createMultiple;
+export const jsxDEV   = createSingle;
 
 export declare namespace JSX {
   type ElementType =
@@ -19,7 +18,7 @@ export declare namespace JSX {
     | null
     | undefined;
 
-  type Element = Elem.Element;
+  type Element = Elem;
 
   interface ElementAttributesProperty {
     props: any;

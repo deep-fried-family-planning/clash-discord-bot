@@ -1,11 +1,11 @@
 import {RESERVED} from '#src/disreact/codec/constants/index.ts';
-import type {Elem} from '#src/disreact/model/entity/element.ts';
+import type {Elem} from '#src/disreact/model/element/element.ts';
 
 
 
 export const TAG = 'RestElement';
 
-export * as RestElement from 'src/disreact/model/entity/element-rest.ts';
+export * as RestElement from '#src/disreact/model/element/rest.ts';
 
 export type RestElement = Elem.Meta & {
   _tag    : typeof TAG;
@@ -14,9 +14,7 @@ export type RestElement = Elem.Meta & {
   children: Elem[];
 };
 
-export const isTag = (self: Elem): self is RestElement => self._tag === TAG;
-
-export const id = (self: RestElement, idx: number) => `${self.type}:${idx}`;
+export const is = (self: Elem): self is RestElement => self._tag === TAG;
 
 export const make = (type: string, props: any): RestElement => {
   return {

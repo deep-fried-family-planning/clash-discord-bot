@@ -2,7 +2,7 @@ import type {FC} from '#src/disreact/model/entity/fc.ts';
 import type { RDT} from '#src/internal/pure/effect.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {pipe} from 'effect';
-import type { Elem } from '#src/disreact/model/entity/element';
+import type { Elem } from '#src/disreact/model/element/element.ts';
 
 
 

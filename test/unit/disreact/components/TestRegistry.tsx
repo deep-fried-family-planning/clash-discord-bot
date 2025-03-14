@@ -1,5 +1,5 @@
-import {DsxSettings} from '#src/disreact/interface/DisReactConfig.ts';
-import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts';
+import {DsxSettings} from '#src/disreact/external/DisReactConfig.ts';
+import {SourceRegistry} from '#src/disreact/model/service/SourceRegistry.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import type { Vitest } from '@effect/vitest';
 import {it as vfx} from '@effect/vitest';

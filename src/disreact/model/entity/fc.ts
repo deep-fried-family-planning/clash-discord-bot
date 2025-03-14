@@ -1,6 +1,4 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {pipe} from 'effect';
-import * as Arr from 'effect/Array';
+import type {E} from '#src/internal/pure/effect.ts';
 
 
 
@@ -8,7 +6,7 @@ export const SourceSymbol = Symbol.for('disreact/fc/source');
 export const NamingSymbol = Symbol.for('disreact/fc/naming');
 export const RenderSymbol = Symbol.for('disreact/fc/render');
 
-export * as FC from 'src/disreact/model/entity/fc.ts';
+export * as FC from '#src/disreact/model/entity/fc.ts';
 export type FC<P = any, A = any> =
   | Base
   | Sync<P, A>
@@ -69,7 +67,6 @@ export const isFC     = <P, E>(fc: any): fc is FC<P, E> => typeof fc === 'functi
 export const isSync   = <P, E>(fc: FC<P, E>): fc is Sync<P, E> => fc[RenderSymbol] === Render.SYNC;
 export const isAsync  = <P, E>(fc: FC<P, E>): fc is Prom<P, E> => fc[RenderSymbol] === Render.ASYNC;
 export const isEffect = <P, E>(fc: FC<P, E>): fc is FnFx<P, E> => fc[RenderSymbol] === Render.EFFECT;
-export const isSrc    = <P, E>(fc: FC<P, E>): fc is Src<P, E> => !!fc[SourceSymbol];
 export const isKnown  = <P, E>(fc: FC<P, E>): fc is Known<P, E> => !!fc[NamingSymbol] || !!fc[RenderSymbol];
 
 export const getName  = (fc: FC) => fc[NamingSymbol]!;
@@ -129,36 +126,3 @@ export const initRoot = (self: FC): FC => {
 
   return fc;
 };
-
-export const setSync = (self: FC) => {
-  self[RenderSymbol] = SYNC;
-  return self;
-};
-
-export const renderSync = (self: FC, props: any) =>
-  E.sync(
-    () => Arr.ensure(self(props)),
-  );
-
-export const setAsync = (self: FC) => {
-  self[RenderSymbol] = ASYNC;
-  return self;
-};
-
-export const renderAsync = (self: FC, props: any) =>
-  E.tryPromise(
-    async () => Arr.ensure(await self(props)),
-  );
-
-export const setEffect = (self: FC) => {
-  self[RenderSymbol] = EFFECT;
-  return self;
-};
-
-export const renderEffect = (self: FC, props: any) =>
-  pipe(
-    self(props) as E.Effect<any>,
-    E.map(
-      (children) => Arr.ensure(children),
-    ),
-  );

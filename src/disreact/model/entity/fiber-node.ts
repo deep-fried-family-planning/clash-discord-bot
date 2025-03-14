@@ -1,13 +1,13 @@
 import {ONE, ZERO} from '#src/disreact/codec/constants/common.ts';
-import type {TaskElem} from '#src/disreact/model/entity/element-task.ts';
-import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
-import type {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
+import type {TaskElem} from '#src/disreact/model/element/task.ts';
+import type {Hydrant} from '#src/disreact/model/entity/fiber-hydrant.ts';
+import type {FiberStore} from '#src/disreact/model/entity/fiber-store.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 
 
 
-export * as FiberNode from './fiber-node.ts';
+export * as FiberNode from '#src/disreact/model/entity/fiber-node.ts';
 
 export type FiberNode = {
   id      : string;

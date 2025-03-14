@@ -1,10 +1,8 @@
-// import {dsx} from '#src/disreact/model/dsx.ts';
-
-import {fragment, multi, single} from './model/dsx';
+import {fragment, createMultiple, createSingle} from 'src/disreact/model/lifecycle/create.ts';
 
 
 
 export const Fragment = fragment;
-export const jsx      = single;
-export const jsxs     = multi;
-export const jsxDEV   = single;
+export const jsx      = createSingle;
+export const jsxs     = createMultiple;
+export const jsxDEV   = createSingle;

@@ -1,6 +1,6 @@
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
 import {All, DFMD, DTML, Reserved} from '#src/disreact/codec/constants/index.ts';
-import type { Elem } from '#src/disreact/model/entity/element';
+import type { Elem } from '#src/disreact/model/element/element';
 
 
 

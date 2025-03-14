@@ -1,12 +1,12 @@
 import type * as Ix from '#src/disreact/codec/wire/dapi.ts';
-import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
-import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
-import type {Root} from '#src/disreact/model/root.ts';
+import type {Hydrant} from '#src/disreact/model/entity/fiber-hydrant.ts';
+import {FiberNode} from '#src/disreact/model/entity/fiber-node.ts';
+import type {Root} from '#src/disreact/model/entity/root.ts';
 import {Record} from 'effect';
 
 
 
-export * as FiberStore from './fiber-store.ts';
+export * as FiberStore from '#src/disreact/model/entity/fiber-store.ts';
 
 export type FiberStore = {
   id    : Hydrant.Id;

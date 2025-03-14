@@ -1,9 +1,9 @@
-import {DsxSettings} from '#src/disreact/interface/DisReactConfig.ts';
-import type {TaskElem} from '#src/disreact/model/entity/element-task.ts';
+import {DsxSettings} from '#src/disreact/external/DisReactConfig.ts';
+import type {TaskElem} from '#src/disreact/model/element/task.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Array, Data, Hash, pipe} from 'effect';
-import {Root} from './root';
+import {Root} from '#src/disreact/model/entity/root.ts';
 
 
 

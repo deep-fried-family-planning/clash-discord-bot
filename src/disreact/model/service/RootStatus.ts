@@ -11,7 +11,7 @@ type Status = Data.TaggedEnum<{
 
 const Status = Data.taggedEnum<Status>();
 
-export class RenderStatus extends E.Service<RenderStatus>()('disreact/RenderStatus', {
+export class RootStatus extends E.Service<RootStatus>()('disreact/RootStatus', {
   accessors: true,
 
   effect: pipe(
@@ -24,6 +24,6 @@ export class RenderStatus extends E.Service<RenderStatus>()('disreact/RenderStat
     })),
   ),
 }) {
-  static readonly Fresh = L.fresh(RenderStatus.Default);
+  static readonly Fresh = L.fresh(RootStatus.Default);
   static readonly Data  = Status;
 }

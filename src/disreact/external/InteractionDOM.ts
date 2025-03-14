@@ -1,9 +1,9 @@
 
-import {DsxSettings} from '#src/disreact/interface/DisReactConfig.ts';
+import {DsxSettings} from '#src/disreact/external/DisReactConfig.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
-import type {Tx} from '../codec/wire';
+import type {Tx} from '#src/disreact/codec/wire/index.ts';
 
 
 

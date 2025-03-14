@@ -1,22 +1,18 @@
-import {Elem} from '#src/disreact/model/entity/element.ts';
-import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
-import {TaskElem} from '#src/disreact/model/entity/element-task.ts';
-import {LeafElem} from '#src/disreact/model/entity/leaf.ts';
-import * as Array from 'effect/Array';
-import { Props } from './entity/props.ts';
+import {Elem} from '#src/disreact/model/element/element.ts';
+import { LeafElem } from '#src/disreact/model/element/leaf.ts';
+import { RestElement } from '#src/disreact/model/element/rest.ts';
+import { TaskElem } from '#src/disreact/model/element/task.ts';
+import { Props } from '#src/disreact/model/element/props.ts';
 
 
-
-export * as dsx from './dsx.ts';
-export type dsx = any;
 
 export const fragment = Elem.Fragment;
 
-export const single = (t: any, p?: any) => {
-  return multi(t, Props.jsx(p));
+export const createSingle = (t: any, p?: any) => {
+  return createMultiple(t, Props.jsx(p));
 };
 
-export const multi = (t: any, p: any) => {
+export const createMultiple = (t: any, p: any) => {
   const children = p.children?.flat() ?? [];
 
   delete p.children;

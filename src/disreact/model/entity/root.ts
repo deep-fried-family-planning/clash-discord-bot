@@ -1,25 +1,25 @@
-import type {RestElement} from '#src/disreact/model/entity/element-rest.ts';
+import type {RestElement} from '#src/disreact/model/element/rest.ts';
+import {TaskElem} from '#src/disreact/model/element/task.ts';
+import {Elem} from '#src/disreact/model/element/element.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Elem} from '#src/disreact/model/entity/element.ts';
-import type {Hydrant} from '#src/disreact/model/hooks/fiber-hydrant.ts';
-import {FiberStore} from '#src/disreact/model/hooks/fiber-store.ts';
-import {TaskElem} from 'src/disreact/model/entity/element-task.ts';
+import type {Hydrant} from '#src/disreact/model/entity/fiber-hydrant.ts';
+import {FiberStore} from '#src/disreact/model/entity/fiber-store.ts';
 
 
 
-export * as Root from './root.ts';
+export * as Root from '#src/disreact/model/entity/root.ts';
 
 export type Root = {
   _tag   : Type;
   id     : Hydrant.Id;
-  element: TaskElem;
+  element: TaskElem | RestElement;
   store  : FiberStore;
 };
 
 export interface Source {
   _tag   : Type;
   id     : string;
-  element: TaskElem;
+  element: TaskElem | RestElement;
 }
 
 export const MODAL     = 'Modal';
@@ -42,7 +42,7 @@ export const make = (_tag: Type, src: Elem | FC): Source => {
     };
   }
 
-  if (TaskElem.isTag(src)) {
+  if (TaskElem.is(src)) {
     const fc = FC.initRoot(src.type);
 
     return {
@@ -57,11 +57,11 @@ export const make = (_tag: Type, src: Elem | FC): Source => {
 };
 
 export const fromSource = (src: Source, props?: any): Root => {
-  const elem    = Elem.clone(src.element);
-  const store   = FiberStore.make(src.id, props);
-  elem.id = elem.idx = src.id;
+  const elem  = Elem.clone(src.element);
+  const store = FiberStore.make(src.id, props);
+  elem.id     = elem.idx = src.id;
 
-  if (TaskElem.isTag(elem)) {
+  if (TaskElem.is(elem)) {
     elem.fiber.root       = store;
     elem.fiber.element    = elem;
     elem.fiber.id         = elem.id;
@@ -78,7 +78,7 @@ export const fromSource = (src: Source, props?: any): Root => {
   return store.element;
 };
 
-export const fromSourceWith = (src: Source, hydrant: Hydrant) => {
+export const fromSourceHydrant = (src: Source, hydrant: Hydrant) => {
   const root = fromSource(src, hydrant.props);
   root.store = FiberStore.decode(src.id, hydrant);
   return root;
@@ -109,8 +109,6 @@ export const deepLinearize = (self: Root): Root => {
   Elem.linearize(self.element);
   return self;
 };
-
-
 
 export namespace λ_λ {
   const STORE = new Map<string, Source>();

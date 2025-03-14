@@ -1,6 +1,6 @@
-import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts';
+import {SourceRegistry} from '#src/disreact/model/service/SourceRegistry.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {it } from 'test/unit/disreact/components/TestRegistry.tsx';
+import {it} from 'test/unit/disreact/components/TestRegistry.tsx';
 
 
 

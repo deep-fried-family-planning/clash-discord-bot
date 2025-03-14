@@ -1,15 +1,15 @@
-// import * as Globals from '#src/disreact/model/a/globals.ts';
-import {Elem} from '#src/disreact/model/entity/element.ts';
-import {Props} from '#src/disreact/model/entity/props.ts';
-import {RestElement} from '#src/disreact/model/entity/element-rest.ts';
-import {TaskElem} from '#src/disreact/model/entity/element-task.ts';
-import {LeafElem} from '#src/disreact/model/entity/leaf.ts';
-import {FiberNode} from '#src/disreact/model/hooks/fiber-node.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
+import {Props} from '#src/disreact/model/element/props.ts';
+import {LeafElem} from '#src/disreact/model/element/leaf.ts';
+import {RestElement} from '#src/disreact/model/element/rest.ts';
+import {TaskElem} from '#src/disreact/model/element/task.ts';
+import {Elem} from '#src/disreact/model/element/element.ts';
+import {FiberNode} from '#src/disreact/model/entity/fiber-node.ts';
+import type {Root} from '#src/disreact/model/entity/root.ts';
 import {HookDispatch} from '#src/disreact/model/hooks/HookDispatch.ts';
-import {renderTask} from '#src/disreact/model/lifecycle.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import * as Array from 'effect/Array';
-import type {Root} from '#src/disreact/model/root.ts';
+import {isPromise} from 'effect/Predicate';
 
 
 
@@ -17,7 +17,7 @@ export const initialRender = (root: Root, node: Elem, parent?: Elem): E.Effect<E
   if (LeafElem.is(node)) {
     return E.succeed(node);
   }
-  if (RestElement.isTag(node)) {
+  if (RestElement.is(node)) {
     return pipe(
       parent ? Elem.setIds(node.children, node) : node.children,
       Array.map((child) => initialRender(root, child, node)),
@@ -41,99 +41,11 @@ export const initialRender = (root: Root, node: Elem, parent?: Elem): E.Effect<E
   );
 };
 
-
-//   E.gen(function* () {
-//   if (Leaf.is(node)) {
-//     return node;
-//   }
-//
-//   if (RestElement.isTag(node)) {
-//     node.children = yield* E.all(node.children.map((child) => initialRender(root, child, node)));
-//     return node;
-//   }
-//
-//   console.log(root.id);
-//   console.log(node.id);
-//
-//   root.store.fibers[node.id] = node.fiber;
-//
-//   node.children = yield* pipe(
-//     effectRenderNode(root, node),
-//     E.map((children) => children.map((c) => initialRender(root, c, node))),
-//   );
-//
-//   return node;
-// });
-
-
-
-export const hydrateRoot = (root: Root, node: Elem, states: {[k: string]: FiberNode}): E.Effect<Elem> => {
-  if (LeafElem.is(node)) {
-    return E.succeed(node);
-  }
-  if (RestElement.isTag(node)) {
-    return pipe(
-      Elem.setIds(node.children, node),
-      Array.map(
-        (child) => hydrateRoot(root, child, states),
-      ),
-      E.all,
-      E.map(
-        (children) => {
-          node.children = children;
-          return node;
-        },
-      ),
-    );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (states[node.id]) {
-    node.fiber = states[node.id];
-  }
-
-  return pipe(
-    effectRenderNode(root, node),
-    E.flatMap(
-      (children) => E.all(children.map((c) => hydrateRoot(root, c, states))),
-    ),
-    E.map(
-      (children) => {
-        node.children = children;
-        return node;
-      },
-    ),
-  );
-};
-
-// E.gen(function* () {
-//   if (Leaf.is(node)) {
-//     return root;
-//   }
-//   if (RestElement.isTag(node)) {
-//     node.children = yield* E.all(.map((child) => hydrateRoot(root, child, states));
-//   )
-//     ;
-//     return node;
-//   }
-//
-//   const state = states[node.id];
-//
-//   if (state) {
-//     node.fiber = state;
-//   }
-//
-//   node.children = yield* E.all((yield* effectRenderNode(root, node)).map((child) => hydrateRoot(root, child, states)));
-//   return node;
-// });
-
-
-
 export const rerenderRoot = (root: Root) => {
   if (LeafElem.is(root.element)) {
     return E.succeed(root);
   }
-  if (RestElement.isTag(root.element)) {
+  if (RestElement.is(root.element)) {
     return pipe(
       renderNodes(root, root.element, root.element.children, root.element.children),
       E.map(
@@ -169,7 +81,7 @@ const renderNodes = (root: Root, parent: Elem, cs: Elem[], rs: Elem[]): E.Effect
     if (!c && !r) throw new Error();
 
     if (!c && r) {
-      if (TaskElem.isTag(r)) {
+      if (TaskElem.is(r)) {
         root.store.fibers[r.id] = r.fiber;
       }
       children.push(yield* initialRender(root, r, parent));
@@ -177,7 +89,7 @@ const renderNodes = (root: Root, parent: Elem, cs: Elem[], rs: Elem[]): E.Effect
     }
 
     if (c && !r) {
-      if (TaskElem.isTag(c)) {
+      if (TaskElem.is(c)) {
         delete root.store.fibers[c.id];
       }
       continue;
@@ -185,7 +97,7 @@ const renderNodes = (root: Root, parent: Elem, cs: Elem[], rs: Elem[]): E.Effect
 
     if (c && r) {
       if (!Elem.isSame(c, r)) {
-        if (TaskElem.isTag(c)) {
+        if (TaskElem.is(c)) {
           delete root.store.fibers[c.id];
         }
 
@@ -196,7 +108,7 @@ const renderNodes = (root: Root, parent: Elem, cs: Elem[], rs: Elem[]): E.Effect
         children.push(c);
       }
 
-      else if (RestElement.isTag(c)) {
+      else if (RestElement.is(c)) {
         if (!Props.isEqual(c.props, r.props)) {
           c.props = r.props;
         }
@@ -226,12 +138,12 @@ const renderNodes = (root: Root, parent: Elem, cs: Elem[], rs: Elem[]): E.Effect
   return children;
 });
 
-const effectRenderNode = (root: Root, node: Elem): E.Effect<Elem[]> => {
+export const effectRenderNode = (root: Root, node: Elem): E.Effect<Elem[]> => {
   if (LeafElem.is(node)) {
     return E.succeed([]);
   }
 
-  if (RestElement.isTag(node)) {
+  if (RestElement.is(node)) {
     return E.succeed(node.children);
   }
 
@@ -245,31 +157,43 @@ const effectRenderNode = (root: Root, node: Elem): E.Effect<Elem[]> => {
       node.fiber.rc++;
       return Elem.setIds(children, node);
     }),
-    E.provide(HookDispatch.Default),
   ) as E.Effect<any>;
 };
 
+export const renderTask = (root: Root, element: TaskElem) => {
+  element.fiber.pc      = 0;
+  element.fiber.element = element;
+  element.fiber.root    = root.store;
+  delete root.store.fibers[element.id];
+  root.store.fibers[element.id] = element.fiber;
 
-//   E.gen(function* () {
-//   if (RestElement.isTag(node)) {
-//     return node.children;
-//   }
-//
-//   // Globals.mountFiber(node.id, node.fiber);
-//   // Globals.setDispatch(node.fiber);
-//
-//   const children = yield* pipe(
-//     renderTask(root, node),
-//     HookDispatch.withMutex(node.fiber),
-//     E.map((children) => Array.ensure(children)),
-//   ) as E.Effect<any>;
-//
-//   const linked   = setIds(children, node);
-//
-//   // node.fiber       = Globals.readFiber(node.id);
-//   node.fiber.saved = structuredClone(node.fiber.stack);
-//   node.fiber.pc    = 0;
-//   node.fiber.rc++;
-//
-//   return linked;
-// }).pipe();
+  if (FC.isSync(element.type)) {
+    return E.succeed(element.type(element.props));
+  }
+  if (FC.isAsync(element.type)) {
+    return E.tryPromise(async () => await element.type(element.props)) as E.Effect<any>;
+  }
+  if (FC.isEffect(element.type)) {
+    return element.type(element.props) as E.Effect<any>;
+  }
+
+  return E.suspend(() => {
+    const children = element.type(element.props);
+
+    if (isPromise(children)) {
+      element.type[FC.RenderSymbol] = FC.ASYNC;
+
+      return E.tryPromise(async () => await children) as E.Effect<any>;
+    }
+
+    if (E.isEffect(children)) {
+      element.type[FC.RenderSymbol] = FC.EFFECT;
+
+      return children as E.Effect<any>;
+    }
+
+    element.type[FC.RenderSymbol] = FC.SYNC;
+
+    return E.succeed(children);
+  });
+};

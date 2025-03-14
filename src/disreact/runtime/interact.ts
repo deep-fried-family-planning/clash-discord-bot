@@ -1,10 +1,10 @@
 import {CLOSE, EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type * as FunctionElement from '#src/disreact/model/entity/element-task.ts';
+import type * as FunctionElement from '#src/disreact/model/element/task.ts';
 import type * as Element from '#src/disreact/codec/element/index.ts';
 import {BadInteraction} from '#src/disreact/codec/error.ts';
 import {DialogParams, Doken, Dokens, Rest, Route} from '#src/disreact/codec/rest/index.ts';
-import {InteractionDOM} from '#src/disreact/interface/InteractionDOM.ts';
-import {DokenCache} from '#src/disreact/interface/DokenCache.ts';
+import {InteractionDOM} from '#src/disreact/external/InteractionDOM.ts';
+import {DokenCache} from '#src/disreact/external/DokenCache.ts';
 import {OldRoot} from '#src/disreact/model/RootRegistry.ts';
 import * as Globals from '#src/disreact/model/a/globals.ts';
 import * as Lifecycles from '#src/disreact/model/a/index.ts';
