@@ -1,6 +1,8 @@
+import {RestCache} from '#src/clash/layers/restcache.ts';
 import {clashErrorFromUndefined, type ClashperkError, SlashUserError} from '#src/internal/errors.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
-import {Client} from 'clashofclans.js';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Client, type Player} from 'clashofclans.js';
 
 
 
@@ -22,13 +24,25 @@ type ClashClient = {
                    };
 
 
-const program = E.gen(function * () {
+const program = E.gen(function* () {
   const client = new Client({
     baseURL: 'https://cocproxy.royaleapi.dev',
     keys   : [process.env.DFFP_COC_KEY],
   });
 
+  const cache = yield* RestCache;
+
   return {
+    validateTag: (tag) => {
+      const formatted
+              = `#${tag.toUpperCase().replace(/O/g, '0').replace(/^#/g, '').replace(/\s/g, '')}`;
+
+      if (/^#?[0289PYLQGRJCUV]$/.test(formatted)) {
+        return E.fail(new SlashUserError({issue: 'Invalid tag provided.'}));
+      }
+
+      return E.succeed(formatted);
+    },
     verifyPlayerToken: (playerTag, options) => E
       .tryPromise(
         async () => await client.verifyPlayerToken(playerTag, options),
@@ -37,12 +51,19 @@ const program = E.gen(function * () {
         E.catchAll(clashErrorFromUndefined),
       ),
 
-    getPlayer: (playerTag, options) => E
-      .tryPromise(
-        async () => await client.getPlayer(playerTag, options),
-      )
-      .pipe(
-        E.catchAll(clashErrorFromUndefined),
+    getPlayer: (playerTag, options) =>
+      pipe(
+        cache.get(playerTag),
+        E.flatMap((cached) => {
+          if (cached) return E.succeed(cached.data as Player);
+          return pipe(
+            E.tryPromise(
+              async () => await client.getPlayer(playerTag, options),
+            ),
+            E.catchAll(clashErrorFromUndefined),
+            E.tap((player) => cache.set(playerTag, player)),
+          );
+        }),
       ),
 
     getPlayers: (playerTag, options) => pipe(
@@ -98,20 +119,15 @@ const program = E.gen(function * () {
         E.catchAll(clashErrorFromUndefined),
       ),
 
-    validateTag: (tag) => {
-      const formatted
-              = `#${tag.toUpperCase().replace(/O/g, '0').replace(/^#/g, '').replace(/\s/g, '')}`;
 
-      if (/^#?[0289PYLQGRJCUV]$/.test(formatted)) {
-        return E.fail(new SlashUserError({issue: 'Invalid tag provided.'}));
-      }
-
-      return E.succeed(formatted);
-    },
   } as ClashClient;
 });
 
 
 export class ClashOfClans extends E.Tag('ClashOfClans')<ClashOfClans, ClashClient>() {
-  static Live = L.effect(this, program);
+  static Live = pipe(
+    L.effect(this, program),
+    L.provide(RestCache.Live),
+  );
 }
+

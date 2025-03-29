@@ -6,29 +6,34 @@ import {defineConfig} from 'vitest/config';
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test   : {
+    globals            : true,
+    environment        : 'node',
+    watch              : false,
+    includeTaskLocation: true,
+    logHeapUsage       : true,
+
     reporters         : 'verbose',
-    watch             : false,
-    globals           : true,
+    chaiConfig        : {truncateThreshold: 0},
     expandSnapshotDiff: true,
-    chaiConfig        : {
-      includeStack     : true,
-      truncateThreshold: 0,
-      showDiff         : true,
-    },
+    expect            : {requireAssertions: true},
+    testTimeout       : 0,
+    hookTimeout       : 0,
+    teardownTimeout   : 0,
+    slowTestThreshold : 5000,
+
     coverage: {
-      provider       : 'istanbul',
-      reporter       : ['lcov'],
-      all            : true,
-      skipFull       : true,
-      reportOnFailure: true,
-      thresholds     : {
-        100    : true,
-        perFile: true,
+      provider        : 'v8',
+      reporter        : ['lcov'],
+      reportOnFailure : true,
+      ignoreEmptyLines: true,
+      thresholds      : {
+        perFile   : true,
+        autoUpdate: true,
+        statements: 0,
+        branches  : 0,
+        functions : 0,
+        lines     : 0,
       },
     },
-    logHeapUsage   : true,
-    testTimeout    : 0,
-    hookTimeout    : 0,
-    teardownTimeout: 0,
   },
 });

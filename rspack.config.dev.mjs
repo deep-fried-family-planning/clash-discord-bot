@@ -1,24 +1,46 @@
-import {defineConfig} from '@rspack/cli';
-import config from './rspack.config.mjs';
-import {rspack} from '@rspack/core';
+import {defineConfig} from '@rspack/cli'
+import {rspack} from '@rspack/core'
+import config from './rspack.config.mjs'
+
 
 
 export default defineConfig({
   ...config,
 
-  mode   : 'development',
-  devtool: 'eval-source-map',
-  cache  : true,
+  mode     : 'none',
+  devtool  : 'nosources-source-map',
+  externals: [/effect.*/],
+  // cache  : true,
 
   optimization: {
-    ...config,
-    minimizer: [new rspack.SwcJsMinimizerRspackPlugin({
-      minimizerOptions: {
-        module: true,
-        mangle: {
-          keep_fnames: true,
+    ...config.optimization,
+    minimizer: [
+      new rspack.SwcJsMinimizerRspackPlugin({
+        test            : [/.*/],
+        // extractComments : true,
+        minimizerOptions: {
+          minify  : false,
+          module  : true,
+          compress: {
+            dead_code: true,
+          },
+          mangle: {
+            keep_fnames: true,
+          },
+          format: {
+            beautify: true,
+            // comments: false,
+          },
         },
-      },
-    })],
+      }),
+    ],
+    minimize              : true,
+    removeAvailableModules: true,
+    mergeDuplicateChunks  : true,
+    concatenateModules    : true,
+    innerGraph            : true,
+    usedExports           : true,
+    providedExports       : true,
+    sideEffects           : true,
   },
-});
+})

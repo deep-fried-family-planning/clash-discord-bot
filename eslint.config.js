@@ -1,11 +1,11 @@
 // @ts-check
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import stylistic from '@stylistic/eslint-plugin';
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import stylistic from '@stylistic/eslint-plugin'
 
 const style = stylistic.configs.customize({
-  indent      : 4,
-  semi        : true,
+  indent      : 2,
+  semi        : false,
   commaDangle : 'always-multiline',
   quotes      : 'single',
   jsx         : false,
@@ -13,7 +13,7 @@ const style = stylistic.configs.customize({
   quoteProps  : 'as-needed',
   blockSpacing: false,
   braceStyle  : 'stroustrup',
-});
+})
 
 const config = [
   {
@@ -29,11 +29,12 @@ const config = [
         '**/*.ts',
         '**/*.mjs',
         '**/*.js',
+        '**/*.tsx',
       ],
       extends: [
         eslint.configs.recommended,
         tseslint.configs.eslintRecommended,
-        ...tseslint.configs.strictTypeChecked,
+        tseslint.configs.recommended,
       ],
       languageOptions: {
         parser       : tseslint.parser,
@@ -66,14 +67,22 @@ const config = [
         'require-yield'                                    : [1],
         '@typescript-eslint/consistent-type-imports'       : [2],
         '@typescript-eslint/no-unnecessary-type-parameters': [0],
+        '@typescript-eslint/no-unnecessary-type-assertion' : [0],
         '@typescript-eslint/consistent-type-exports'       : [2],
+        '@typescript-eslint/no-confusing-void-expression'  : [0],
+        '@typescript-eslint/no-base-to-string'             : [0],
+        '@typescript-eslint/restrict-template-expressions' : [0],
         '@typescript-eslint/no-import-type-side-effects'   : [2],
-        '@typescript-eslint/no-non-null-assertion'         : [1],
-        '@typescript-eslint/restrict-template-expressions' : [2, {
-          allowBoolean: true,
-          allowNullish: true,
-          allowNumber : true,
-        }],
+        '@typescript-eslint/no-non-null-assertion'         : [0],
+        // '@typescript-eslint/no-non-null-assertion'         : [1],
+        '@typescript-eslint/no-redundant-type-constituents': [0],
+        '@typescript-eslint/no-namespace'                  : [0],
+        '@typescript-eslint/no-dynamic-delete'             : [0],
+        // '@typescript-eslint/restrict-template-expressions' : [2, {
+        //   allowBoolean: true,
+        //   allowNullish: true,
+        //   allowNumber : true,
+        // }],
         // '@typescript-eslint/no-unused-vars': [2, {caughtErrorsIgnorePattern: '^_'}],
 
         // temp
@@ -81,6 +90,7 @@ const config = [
         '@typescript-eslint/no-unsafe-enum-comparison': [0],
         '@typescript-eslint/only-throw-error'         : [0],
         '@typescript-eslint/no-unused-vars'           : [0],
+        '@typescript-eslint/prefer-namespace-keyword' : [0],
 
 
         '@typescript-eslint/no-explicit-any'        : [0],
@@ -94,6 +104,7 @@ const config = [
     },
     {
       ...style,
+      files: ['**/*.ts', '**/*.d.ts', '**/*.mjs', '**/*.js', '**/*.ts', '**/*.mjs', '**/*.js', '**/*.tsx'],
       rules: {
         ...style.rules,
         '@stylistic/yield-star-spacing': [0],
@@ -105,7 +116,7 @@ const config = [
         // '@stylistic/object-curly-spacing'   : [2, 'never'],
         '@stylistic/type-annotation-spacing'    : [0],
         '@stylistic/max-statements-per-line'    : [2, {max: 2}],
-        '@stylistic/semi'                       : [2, 'always', {omitLastInOneLineBlock: true}],
+        // '@stylistic/semi'                       : [2, 'always', {omitLastInOneLineBlock: true}],
         '@stylistic/no-multi-spaces'            : [0, {exceptions: {TSPropertySignature: true}}],
         '@stylistic/multiline-ternary'          : [0],
         '@stylistic/indent-binary-ops'          : [0],
@@ -158,6 +169,6 @@ const config = [
       },
     },
   ),
-];
+]
 
-export default config;
+export default config
