@@ -89,7 +89,7 @@
     "@types/uuid": "10.0.0",
     "@types/ws": "8.5.14",
     "@vitest/coverage-istanbul": "3.0.7",
-    "esbuild": "0.25.0",
+    "esbuild": "0.25.2",
     "esbuild-loader": "4.3.0",
     "esbuild-register": "3.6.0",
     "eslint": "9.21.0",
