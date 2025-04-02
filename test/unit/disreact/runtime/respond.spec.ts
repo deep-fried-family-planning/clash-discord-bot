@@ -30,7 +30,9 @@ it.effect('when responding', E.fn(function* () {
   const ixdom = yield* IxDOM
   const root = ixdom.reply.mock.calls[0][2]
 
-  expect(JSON.stringify(ixdom.reply.mock.calls[0][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json')
+yield* E.promise(() =>
+  expect(JSON.stringify(ixdom.reply.mock.calls[0][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
+)
 
   yield* respond({
     id   : 'respond2',
@@ -50,5 +52,7 @@ it.effect('when responding', E.fn(function* () {
     },
   }).pipe(E.provide(Relay.Fresh))
 
-  expect(JSON.stringify(ixdom.reply.mock.calls[1][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json')
+  yield* E.promise(() =>
+    expect(JSON.stringify(ixdom.reply.mock.calls[1][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
+  )
 }))
