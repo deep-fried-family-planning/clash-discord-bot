@@ -3,12 +3,10 @@ import {RDT} from '#src/disreact/re-exports.ts'
 import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
 import {DR, DT, E, pipe, S} from '#src/internal/pure/effect.ts'
 import {DateTime, ParseResult} from 'effect'
-import {fresh} from 'effect/Layer'
 import {DateTimeUtcFromNumber, DateTimeUtcFromSelf, RedactedFromSelf} from 'effect/Schema'
-import console from 'node:console'
 import {CallbackType} from 'src/disreact/codec/rest/callback-type.ts'
 import {Flag} from 'src/disreact/codec/rest/flag.ts'
-import { DAPIIX } from 'src/disreact/codec/rest/dapi-ix.ts'
+import { DAPIIX} from 'src/disreact/codec/rest/dapi-ix.ts'
 
 
 export type Fresh = typeof Fresh.T.Type
@@ -25,7 +23,7 @@ export namespace Fresh {
     ttl : UtcNow,
   }).pipe(S.attachPropertySignature('_tag', TAG))
 
-  export const FromRequest = S.transformOrFail(DAPIIX.Body, T, {
+  export const FromRequest = S.transformOrFail(DAPIIX.BaseBody, T, {
     strict: true,
     decode: (request) =>
       pipe(
@@ -158,6 +156,7 @@ export namespace Spent {
     id  : S.String,
     type: CallbackType.Spent,
     flag: Flag.Defined,
+    val : RedactedFromSelf(S.String),
   })
 
   export const A = S.TemplateLiteralParser(
@@ -174,6 +173,7 @@ export namespace Spent {
         id,
         type,
         flag,
+        val : RDT.make('-'),
       }),
     encode: ({id, type, flag}) =>
       [
@@ -189,6 +189,7 @@ export namespace Spent {
         id  : fresh.id,
         type: fresh.type as any,
         flag: fresh.flag as any,
+        val : fresh.val,
       }),
     encode: () => {throw new Error()},
   })
@@ -240,7 +241,7 @@ export const makeOptimizedDeferFromFresh = (request: DAPIIX.Body, fresh: Fresh) 
     DT.isPast(fresh.ttl),
     E.andThen((isPast) => {
       if (isPast) {
-        return E.fail(new Error('Expired'))
+        return E.fail(new ParseResult.Unexpected('Expired'))
       }
       return E.succeed({
         _tag: 'Defer',
@@ -258,7 +259,7 @@ export const makeDeferFromFresh = (request: DAPIIX.Body, fresh: Fresh, flags?: n
     DT.isPast(fresh.ttl),
     E.andThen((isPast) => {
       if (isPast) {
-        return E.fail(new Error('Expired'))
+        return E.fail(new ParseResult.Unexpected('Expired'))
       }
       const msgFlags = request.message?.flags === 64 ? 2 : 1
       return E.succeed({
@@ -271,3 +272,7 @@ export const makeDeferFromFresh = (request: DAPIIX.Body, fresh: Fresh, flags?: n
       } satisfies Defer)
     }),
   )
+
+export const freshFromRequest = S.decode(Fresh.FromRequest)
+export const spentFromFresh = S.decode(Spent.FromFresh)
+export const cacheFromDefer = S.decode(Cache.FromDefer)

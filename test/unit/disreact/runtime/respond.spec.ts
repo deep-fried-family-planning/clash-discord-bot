@@ -32,7 +32,6 @@ it.effect('when responding', E.fn(function* () {
 
   expect(JSON.stringify(ixdom.reply.mock.calls[0][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json')
 
-
   yield* respond({
     id   : 'respond2',
     token: 'respond2',

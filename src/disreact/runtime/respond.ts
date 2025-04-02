@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/codec/codec.ts'
-import {Doken} from '#src/disreact/codec/doken.ts'
+import {Doken, makeFreshFromRequest} from '#src/disreact/codec/doken.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
-import { Status} from '#src/disreact/model/Relay.ts'
+import { RelayStatus} from '#src/disreact/model/Relay.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {DF, DT, E, F, O, pipe, RDT} from '#src/disreact/re-exports.ts'
 import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
@@ -9,26 +9,26 @@ import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
 import {Model} from '../model/model'
 
 export const respond = (body: any) => E.gen(function* () {
+  const fresh = yield* makeFreshFromRequest(body)
   const params = yield* Codec.decodeRoute(body.message)
   const deferDoken = yield* DF.make<Doken.Defer>()
   const model = yield* E.fork(Model.invokeRoot(params.hydrant, body.event))
 
-  let status: Status | undefined = undefined
+  let status: RelayStatus | undefined = undefined
 
   while (status?._tag !== 'Complete') {
-    status = yield* Relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(Status.Complete())))
+    status = yield* Relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())))
 
     if (status._tag === 'Close') {
       const param = yield* resolveParamDoken(params.doken)
-      const fresh = body.fresh
 
       if (!param) {
-        yield* IxDOM.defer(fresh.id, RDT.value(fresh.val), {type: 6})
-        yield*IxDOM.dismount(fresh.app, RDT.value(fresh.val))
+        yield* IxDOM.defer(fresh.id, fresh.val, {type: 6})
+        yield*IxDOM.dismount(fresh.app, fresh.val)
       }
       else {
-        yield* E.fork(IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}))
-        yield* E.fork(IxDOM.dismount(fresh.app, RDT.value(param.val)))
+        yield* E.fork(IxDOM.discard(fresh.id, fresh.val, {type: 7}))
+        yield* E.fork(IxDOM.dismount(fresh.app, param.val))
       }
       return
     }
@@ -37,15 +37,13 @@ export const respond = (body: any) => E.gen(function* () {
       const param = yield* resolveParamDoken(params.doken)
 
       if (status.id === params.hydrant.id) {
-        const fresh = body.fresh
-
         if (!param) {
           const defer = yield* Doken.makeOptimizedDeferFromFresh(body, fresh)
-          yield* E.fork(IxDOM.defer(defer.id, RDT.value(defer.val), {type: defer.type}))
+          yield* E.fork(IxDOM.defer(defer.id, defer.val, {type: defer.type}))
           yield* DF.succeed(deferDoken, defer)
         }
         else {
-          yield* E.fork(IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}))
+          yield* E.fork(IxDOM.discard(fresh.id, fresh.val, {type: 7}))
           yield* DF.succeed(deferDoken, param)
         }
       }
@@ -60,7 +58,7 @@ export const respond = (body: any) => E.gen(function* () {
       if (!doken || doken.flag !== status.flags) {
         const defer = yield* Doken.makeDeferFromFresh(body, body.fresh, status.flags)
         yield* E.fork(
-          IxDOM.defer(defer.id, RDT.value(defer.val), defer.flag === 2
+          IxDOM.defer(defer.id, defer.val, defer.flag === 2
             ? {type: defer.type, data: {flags: 64}}
             : {type: defer.type}),
         )
@@ -81,7 +79,7 @@ export const respond = (body: any) => E.gen(function* () {
     encoded.message[0],
   ])
 
-  yield* IxDOM.reply(body.fresh.app, RDT.value(doken.val), final)
+  yield* IxDOM.reply(fresh.app, doken.val, final)
 })
 
 const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'

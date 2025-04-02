@@ -1,5 +1,6 @@
 import {E, L, pipe} from '#src/disreact/re-exports.ts'
 import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
+import {RDT} from '#src/internal/pure/effect.ts'
 import {NodeHttpClient} from '@effect/platform-node'
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx'
 
@@ -9,20 +10,20 @@ export class IxDOM extends E.Service<IxDOM>()('disreact/IxDOM', {
     const api = yield* DiscordREST
 
     return {
-      discard: (id: string, token: string, body: {type: 7}) =>
-        api.createInteractionResponse(id, token, body),
+      discard: (id: string, token: RDT.Redacted<string>, body: {type: 7}) =>
+        api.createInteractionResponse(id, RDT.value(token), body),
 
-      dismount: (app: string, token: string) =>
-        api.deleteOriginalInteractionResponse(app, token),
+      dismount: (app: string, token: RDT.Redacted<string>) =>
+        api.deleteOriginalInteractionResponse(app, RDT.value(token)),
 
-      defer: (id: string, token: string, body: any) =>
-        api.createInteractionResponse(id, token, body),
+      defer: (id: string, token: RDT.Redacted<string>, body: any) =>
+        api.createInteractionResponse(id, RDT.value(token), body),
 
-      create: (id: string, token: string, body: any) =>
-        api.createInteractionResponse(id, token, body),
+      create: (id: string, token: RDT.Redacted<string>, body: any) =>
+        api.createInteractionResponse(id, RDT.value(token), body),
 
-      reply: (app: string, token: string, body: any) =>
-        api.editOriginalInteractionResponse(app, token, body),
+      reply: (app: string, token: RDT.Redacted<string>, body: any) =>
+        api.editOriginalInteractionResponse(app, RDT.value(token), body),
 
       // update  : (tx: Operations.Update) => api.editOriginalInteractionResponse(tx.app, tx.token, tx.body as any),
     }

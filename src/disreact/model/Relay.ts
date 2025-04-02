@@ -3,7 +3,7 @@ import type {Root} from '#src/disreact/model/entity/root.ts'
 import {D, DF, E, L, pipe} from '#src/disreact/re-exports.ts'
 import * as Mailbox from 'effect/Mailbox'
 
-export type Status = D.TaggedEnum<{
+export type RelayStatus = D.TaggedEnum<{
   None    : {}
   Partial : {type: 'modal' | 'message', flags?: number}
   Complete: {}
@@ -11,12 +11,12 @@ export type Status = D.TaggedEnum<{
   Next    : {id: string, props?: any | undefined}
   Close   : {}
 }>
-export const Status = D.taggedEnum<Status>()
+export const RelayStatus = D.taggedEnum<RelayStatus>()
 
 export class Relay extends E.Service<Relay>()('disreact/Relay', {
   effect: pipe(
     E.all([
-      Mailbox.make<Status>(),
+      Mailbox.make<RelayStatus>(),
       DF.make<Root | null>(),
     ]),
     E.map(([mailbox, current]) =>
@@ -25,7 +25,7 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
         awaitOutput: () => DF.await(current),
         setComplete: () => mailbox.done,
         awaitStatus: () => mailbox.take,
-        sendStatus : (msg: Status) => mailbox.offer(msg),
+        sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
       }),
     ),
   ),
@@ -38,7 +38,7 @@ export const relayPartial = (elem: Elem.Rest) => {
   if (elem.type === 'modal') {
     return pipe(
       Relay.sendStatus(
-        Status.Partial({
+        RelayStatus.Partial({
           type: 'modal',
         }),
       ),
@@ -48,7 +48,7 @@ export const relayPartial = (elem: Elem.Rest) => {
   if (elem.type === 'message') {
     return pipe(
       Relay.sendStatus(
-        Status.Partial({
+        RelayStatus.Partial({
           type : 'message',
           flags: elem.props.display === 'ephemeral' ? 2 : 1,
         }),
