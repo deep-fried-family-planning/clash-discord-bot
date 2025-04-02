@@ -2,7 +2,7 @@ import {Codec} from '#src/disreact/codec/codec.ts'
 import {FC} from '#src/disreact/model/entity/fc.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
-import {E} from '#src/disreact/re-exports.ts'
+import {E, RDT} from '#src/disreact/re-exports.ts'
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts'
 import { Fibril } from '../model/fibril/fibril'
 
@@ -35,6 +35,7 @@ export const synthesize = (component: Id, props?: any) => E.gen(function* () {
         id  : 'a',
         type: 4,
         flag: 2,
+        val : RDT.make('-'),
       },
       hydrant: Fibril.encodeNexus(root.nexus),
     },
