@@ -1,39 +1,42 @@
-import {E, ML, pipe} from '#src/disreact/re-exports.ts'
-import {EH} from '#src/disreact/model/entity/comp/eh.ts'
-import {Props} from '#src/disreact/model/entity/comp/props.ts'
-import {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import {EH} from '#src/disreact/model/entity/eh.ts'
+import {Elem} from '#src/disreact/model/entity/elem.ts'
+import {Props} from '#src/disreact/model/entity/props.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
-import {Dispatcher} from './hooks/Dispatcher.ts'
-import {LifecycleSingle} from './lifecycle-single.ts'
+import {Relay, relayPartial} from '#src/disreact/model/Relay.ts'
+import {E, ML, pipe} from '#src/disreact/re-exports.ts'
+import {Lifecycle} from 'src/disreact/model/lifecycle.ts'
 
-export * as LifecycleGenML from './lifecycle-gen-ml.ts'
-export type LifecycleGenMl = never
+export * as Lifecycles from '#src/disreact/model/lifecycles.ts'
+export type Lifecycles = never
 
+export const handleEvent = (root: Root, event: any) =>
+  E.suspend(() => {
+    const stack = ML.make<Elem>(root.elem)
 
-export const handleEvent = (root: Root, event: any) => E.gen(function* () {
-  const stack = ML.make<Elem>(root.elem)
+    while (ML.tail(stack)) {
+      const elem = ML.pop(stack)!
 
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!
+      if (Elem.isRest(elem)) {
+        if (elem.props.custom_id === event.id || elem.ids === event.id) {
+          return pipe(
+            EH.apply(elem.handler, event),
+            E.andThen(() => Relay.send(Relay.Handled())),
+            E.tap(() => Lifecycle.notifyOnHandlePiped(root)),
+          )
+        }
+      }
 
-    if (Elem.isRest(elem)) {
-      if (elem.props.custom_id === event.id || elem.ids === event.id) {
-        yield* EH.apply(elem.handler, event)
-        return root
+      for (let i = 0; i < elem.nodes.length; i++) {
+        const node = elem.nodes[i]
+        if (!Elem.isPrim(node)) {
+          ML.append(stack, elem.nodes[i])
+        }
       }
     }
 
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i]
-      if (!Elem.isPrim(node)) {
-        ML.append(stack, elem.nodes[i])
-      }
-    }
-  }
-
-  return yield* E.fail(new Error('Event not handled'))
-})
+    return E.fail(new Error('Event not handled'))
+  })
 
 
 export const initialize = (root: Root) =>
@@ -45,11 +48,16 @@ export const initialize = (root: Root) =>
 export const initializeSubtree = (root: Root, elem: Elem) => E.gen(function* () {
   const stack = ML.make<Elem>(elem)
 
+  let hasSentPartial = false
+
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!
 
     if (Elem.isTask(elem)) {
-      elem.nodes = yield* LifecycleSingle.render(root, elem)
+      elem.nodes = yield* Lifecycle.renderElemPiped(root, elem)
+    }
+    else if (!hasSentPartial) {
+      hasSentPartial = yield* relayPartial(elem)
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {
@@ -64,53 +72,73 @@ export const initializeSubtree = (root: Root, elem: Elem) => E.gen(function* () 
   }
 
   return elem
-}).pipe(E.provide(Dispatcher.Default))
+})
 
 
-export const hydrate = (root: Root) => E.gen(function* () {
-  const stack = ML.make<Elem>(root.elem)
+export const hydrate = (root: Root) => pipe(
+  E.iterate(ML.make<Elem>(root.elem), {
+    while: (stack) => !!ML.tail(stack),
+    body : (stack) =>
+      pipe(
+        E.suspend(() => {
+          const elem = ML.pop(stack)!
 
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!
+          if (Elem.isTask(elem)) {
+            if (root.nexus.strands[elem.id!]) {
+              elem.strand = root.nexus.strands[elem.id!]
+              elem.strand.nexus = root.nexus
+            }
 
-    if (Elem.isTask(elem)) {
-      if (root.nexus.strands[elem.id!]) {
-        elem.strand = root.nexus.strands[elem.id!]
-        elem.strand.nexus = root.nexus
-      }
+            return pipe(
+              Lifecycle.renderElemPiped(root, elem),
+              E.map((children) => {
+                elem.nodes = children
+                return elem
+              }),
+            )
+          }
 
-      elem.nodes = yield* LifecycleSingle.render(root, elem)
-    }
+          return E.succeed(elem as Elem)
+        }),
+        E.map((elem) => {
+          for (let i = 0; i < elem.nodes.length; i++) {
+            const node = elem.nodes[i]
 
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i]
-
-      if (!Elem.isPrim(node)) {
-        Elem.connectChild(elem, node, i)
-        Root.mountElem(root, node)
-        ML.append(stack, node)
-      }
-    }
-  }
-
-  return root
-}).pipe(E.provide(Dispatcher.Default))
+            if (!Elem.isPrim(node)) {
+              Elem.connectChild(elem, node, i)
+              Root.mountElem(root, node)
+              ML.append(stack, node)
+            }
+          }
+          return stack
+        }),
+      ),
+  }),
+  E.as(root),
+)
 
 
 export const rerender = (root: Root) => E.gen(function* () {
   const stack = ML.empty<[Elem, Elem.Any[]]>()
+  let hasSentPartial = false
 
   if (Elem.isRest(root.elem)) {
     for (let i = 0; i < root.elem.nodes.length; i++) {
       const node = root.elem.nodes[i]
 
-      if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* LifecycleSingle.render(root, node)])
+      if (Elem.isPrim(node)) {
+        continue
+      }
+      else if (Elem.isTask(node)) {
+        ML.append(stack, [node, yield* Lifecycle.renderElemPiped(root, node)])
+      }
+      else {
+        ML.append(stack, [node, node.nodes])
       }
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* LifecycleSingle.render(root, root.elem)])
+    ML.append(stack, [root.elem, yield* Lifecycle.renderElemPiped(root, root.elem)])
   }
 
   while (ML.tail(stack)) {
@@ -157,6 +185,10 @@ export const rerender = (root: Root) => E.gen(function* () {
       }
 
       else if (Elem.isRest(curr)) {
+        if (!hasSentPartial) {
+          hasSentPartial = yield* relayPartial(curr)
+        }
+
         if (Elem.isPrim(rend)) {
           dismountSubtree(root, curr)
           parent.nodes[i] = rend
@@ -196,7 +228,7 @@ export const rerender = (root: Root) => E.gen(function* () {
           ML.append(stack, [curr, rend.nodes])
         }
         else {
-          const rerendered = yield* LifecycleSingle.render(root, curr)
+          const rerendered = yield* Lifecycle.renderElemPiped(root, curr)
           ML.append(stack, [curr, rerendered])
         }
       }
@@ -204,7 +236,7 @@ export const rerender = (root: Root) => E.gen(function* () {
   }
 
   return root
-}).pipe(E.provide(Dispatcher.Default))
+})
 
 
 export const mountSubtree = (root: Root, elem: Elem) => E.gen(function* () {
@@ -215,7 +247,7 @@ export const mountSubtree = (root: Root, elem: Elem) => E.gen(function* () {
 
     if (Elem.isTask(elem)) {
       Root.mountTask(root, elem)
-      elem.nodes = yield* LifecycleSingle.render(root, elem)
+      elem.nodes = yield* Lifecycle.renderElemPiped(root, elem)
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {

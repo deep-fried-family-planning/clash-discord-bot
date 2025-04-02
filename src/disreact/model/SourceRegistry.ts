@@ -1,8 +1,9 @@
-import {DsxSettings} from '#src/disreact/DisReactConfig.ts'
-import {FC} from '#src/disreact/model/entity/comp/fc.ts'
-import {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {FC} from '#src/disreact/model/entity/fc.ts'
+import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {Arr, Data, E, Hash} from '#src/disreact/re-exports.ts'
+import type {Fibril} from './fibril/fibril'
 
 
 export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
@@ -16,7 +17,7 @@ const STORE = new Map<string, Root.Source>()
 export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/SourceRegistry', {
   accessors: true,
 
-  effect: DsxSettings.use((config) => {
+  effect: E.andThen(DsxSettings, (config) => {
     const sources = [
       ...config.sources.modal.map((src) => Root.make(Root.MODAL, src)),
       ...config.sources.public.map((src) => Root.make(Root.PUBLIC, src)),
@@ -30,7 +31,11 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
       STORE.set(src.id, src)
     }
 
-    const checkout = (key: string | FC | Elem.Task, props?: any) => {
+    const version = config.version
+      ? `${config.version}`
+      : Hash.array(Arr.map(sources, (src) => src.id))
+
+    const checkout = (key: string | FC | Elem.Task, props: any = {}) => {
       const id = typeof key === 'string' ? key
         : Elem.isTask(key) ? FC.getSrcId(key.type)
           : FC.getSrcId(key)
@@ -44,11 +49,18 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
       return E.succeed(Root.fromSource(src, props))
     }
 
-    const version = config.version
-      ? `${config.version}`
-      : Hash.array(Arr.map(sources, (src) => src.id))
+    const fromHydrant = (hydrant: Fibril.Hydrant) => {
+      const src = STORE.get(hydrant.id)
+
+      if (!src) {
+        return E.fail(new SourceDefect({message: `Unregistered Source: ${hydrant.id}`}))
+      }
+
+      return E.succeed(Root.fromSourceHydrant(src, hydrant))
+    }
 
     return E.succeed({
+      fromHydrant,
       checkout,
       version,
     })

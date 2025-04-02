@@ -1,5 +1,5 @@
-import { Elem } from '#src/disreact/model/entity/elem/elem.ts'
-import {SourceRegistry} from '#src/disreact/model/entity/SourceRegistry.ts'
+import { Elem } from '#src/disreact/model/entity/elem.ts'
+import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E} from '#src/internal/pure/effect.ts'
 import {TestMessage} from 'test/components/test-message.tsx'
 import {it} from 'test/components/TestRegistry.tsx'

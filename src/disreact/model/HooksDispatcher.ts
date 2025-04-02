@@ -4,7 +4,7 @@ import {UseReducer} from '#src/disreact/model/hooks/use-reducer.ts'
 import {UseUtility} from '#src/disreact/model/hooks/use-utility.ts'
 
 
-export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
+export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/Dispatcher', {
   accessors: false,
 
   effect: E.map(E.makeSemaphore(1), (semaphore) => {

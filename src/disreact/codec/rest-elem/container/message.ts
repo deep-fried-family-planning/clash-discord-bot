@@ -4,7 +4,7 @@ import {Select} from '#src/disreact/codec/rest-elem/component/select.ts'
 import {Users} from '#src/disreact/codec/rest-elem/component/users.ts'
 import {Actions} from '#src/disreact/codec/rest-elem/container/actions.ts'
 import {Util} from '#src/disreact/codec/rest-elem/util.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {S} from '#src/internal/pure/effect'
 import { Keys } from '../keys'
 
@@ -37,7 +37,7 @@ export const Element = Util.declareElem(
 
 export const encode = (self: Elem, acc: any) => {
   return {
-    content   : self.props.content ?? acc[Keys.primitive],
+    content   : self.props.content ?? acc[Keys.primitive]?.[0] ?? undefined,
     embeds    : acc[Keys.embeds],
     components: acc[Keys.components],
     flags     : self.props.flags ?? self.props.display === 'ephemeral' ? 64 : undefined,

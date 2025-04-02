@@ -10,7 +10,7 @@ export const PRIVATE = 2
 export const Fresh = Literal(FRESH)
 export const Public = Literal(PUBLIC)
 export const Private = Literal(PRIVATE)
-export const Defined = Literal(FRESH, PUBLIC)
+export const Defined = Literal(PUBLIC, PRIVATE)
 export const All = Literal(FRESH, PUBLIC, PRIVATE)
 
 export type Fresh = typeof Fresh.Type

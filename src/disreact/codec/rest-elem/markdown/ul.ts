@@ -1,6 +1,6 @@
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import {S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
 export * as UnorderedList from '#src/disreact/codec/rest-elem/markdown/ul.ts'
 export type UnorderedList = typeof UnorderedList

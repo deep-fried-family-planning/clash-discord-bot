@@ -1,4 +1,4 @@
-import type {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import type {FC} from '#src/disreact/model/entity/fc.ts'
 import {Fibril, Monomer} from '#src/disreact/model/fibril/fibril.ts'
 
 

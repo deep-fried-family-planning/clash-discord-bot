@@ -1,6 +1,6 @@
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import {BI, S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
 export * as Time from '#src/disreact/codec/rest-elem/markdown/time.ts'
 export type Time = typeof Time

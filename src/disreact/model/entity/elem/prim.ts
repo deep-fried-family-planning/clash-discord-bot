@@ -1,4 +1,4 @@
-import type { Elem } from '#src/disreact/model/entity/elem/elem.ts'
+import type { Elem } from '#src/disreact/model/entity/elem.ts'
 
 export * as Prim from '#src/disreact/model/entity/elem/prim.ts'
 export type Prim =

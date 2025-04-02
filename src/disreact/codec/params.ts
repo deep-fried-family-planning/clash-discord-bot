@@ -6,45 +6,44 @@ import {DAPIMessage} from 'src/disreact/codec/rest/dapi-message.ts'
 export * as Params from '#src/disreact/codec/params.ts'
 export type Params = never
 
+export type Msg = typeof MessageParams.Type
+
 export const MessageParams = S.Struct({
-  id     : S.String,
-  doken  : S.asSchema(Doken.D),
+  doken  : Doken.T,
   hydrant: Fibril.Hydrant,
 })
 
 export const MessageSerial = S.TemplateLiteralParser(
   'https://dffp.org/', Doken.D,
-  '/', S.String,
-  '/', Fibril.Hydrant,
+  '/', Fibril.Hydrant.from,
 )
 
 export const MessageTransform = S.transform(MessageSerial, MessageParams, {
-  strict: false,
-  decode: ([, doken, , id, , hydrant]) =>
+  strict: true,
+  decode: ([, doken, , hydrant]) =>
     ({
-      id,
       doken,
       hydrant,
     } as const),
-  encode: ({doken, id, hydrant}) =>
+  encode: ({doken, hydrant}) =>
     [
-      'https://dffp.org/', doken, '/', id, '/', hydrant,
+      'https://dffp.org/', doken, '/', hydrant,
     ] as const,
 })
 
 export const MessageParamsFromMessage = S.transform(DAPIMessage.Base, MessageTransform, {
-  strict: false,
+  strict: true,
   decode: (message) => {
     if (!message.embeds?.[0].image?.url) {
       throw new Error()
     }
-    return message.embeds[0].image.url
+    return message.embeds[0].image.url as any
   },
   encode: () => {throw new Error()},
 })
 
 export const MessageParamsToMessage = S.transform(DAPIMessage.Base, S.Tuple(MessageTransform, DAPIMessage.Base), {
-  strict: false,
+  strict: true,
   decode: () => {throw new Error()},
   encode: ([params, message]) =>
     ({

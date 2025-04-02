@@ -1,6 +1,6 @@
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import {S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
 export * as Details from '#src/disreact/codec/rest-elem/markdown/details.ts'
 export type Details = never

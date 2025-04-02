@@ -1,7 +1,9 @@
 import {CallbackType} from '#src/disreact/codec/rest/callback-type.ts'
 import {S} from '#src/disreact/re-exports.ts'
+import {RDT} from '#src/internal/pure/effect.ts'
 import {DAPIMessage} from 'src/disreact/codec/rest/dapi-message.ts'
 import {DAPIModal} from 'src/disreact/codec/rest/dapi-modal.ts'
+import type { Doken } from './doken'
 
 export * as Operations from 'src/disreact/codec/operations.ts'
 export type Operations = never
@@ -11,9 +13,6 @@ export const Discard = S.Struct({
   token: S.Redacted(S.String),
   body : S.Struct({
     type: S.tag(CallbackType.UPDATE),
-    data: S.Struct({
-      flags: S.optional(S.Number),
-    }),
   }),
 })
 
@@ -30,7 +29,7 @@ export const CreateSource = S.Struct({
   id   : S.String,
   token: S.Redacted(S.String),
   body : S.Struct({
-    type: S.tag(CallbackType.UPDATE),
+    type: S.tag(CallbackType.SOURCE),
     data: DAPIMessage.Base,
   }),
 })
@@ -68,6 +67,11 @@ export const DeferUpdate = S.Struct({
   token: S.Redacted(S.String),
   body : S.Struct({
     type: S.tag(CallbackType.UPDATE_DEFER),
+    data: S.optional(
+      S.Struct({
+        flags: S.Literal(64),
+      }),
+    ),
   }),
 })
 
@@ -92,3 +96,14 @@ export type Create = typeof Create.Encoded
 export type Defer = typeof Defer.Encoded
 export type Reply = typeof Reply.Encoded
 export type Dismount = typeof Dismount.Encoded
+
+export const makeDiscardFromFresh = (doken: Doken.Fresh): Discard =>
+  ({
+    id   : doken.id,
+    token: RDT.value(doken.val),
+    body : {
+      type: CallbackType.UPDATE,
+    },
+  })
+
+export const makeDismountFrom

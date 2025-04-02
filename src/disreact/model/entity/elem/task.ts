@@ -1,6 +1,6 @@
 
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
-import {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
+import {FC} from '#src/disreact/model/entity/fc.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
 import {E} from '#src/internal/pure/effect.ts'
 import * as Array from 'effect/Array'

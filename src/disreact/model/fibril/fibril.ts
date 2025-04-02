@@ -1,5 +1,5 @@
 import {S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
 import * as MsgPack from '@msgpack/msgpack'
 import {pipe, Record} from 'effect'
@@ -124,7 +124,7 @@ export const decodeNexus = (hydrant: Hydrant): Nexus =>
         rc   : 1,
         pc   : 0,
         stack,
-        saved: [],
+        saved: structuredClone(stack),
         queue: [],
       }),
     ),

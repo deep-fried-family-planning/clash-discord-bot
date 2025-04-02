@@ -2,7 +2,7 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts'
 import {declareEvent, declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import {S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {DAPIComponent} from '../../rest/dapi-component'
 
 export * as Danger from '#src/disreact/codec/rest-elem/component/danger.ts'

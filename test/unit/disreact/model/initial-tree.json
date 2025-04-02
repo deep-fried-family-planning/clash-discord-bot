@@ -16,7 +16,7 @@
           "type": 1,
           "components": [
             {
-              "label": "Start",
+              "label": "Start 0",
               "style": 1,
               "type": 2,
               "custom_id": "actions:2:button:0"

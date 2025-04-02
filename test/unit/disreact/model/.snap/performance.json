@@ -8,7 +8,7 @@
               "custom_id": "actions:2:button:0",
               "disabled": undefined,
               "emoji": undefined,
-              "label": "Start",
+              "label": "Start 1",
               "style": 1,
               "type": 2,
             },
@@ -60,9 +60,7 @@
           "type": 1,
         },
       ],
-      "content": [
-        undefined,
-      ],
+      "content": undefined,
       "embeds": [
         {
           "author": undefined,

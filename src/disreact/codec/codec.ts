@@ -1,7 +1,13 @@
-import {S} from '#src/disreact/re-exports.ts'
+import {Root} from '#src/disreact/model/entity/root.ts'
+import {E, S} from '#src/disreact/re-exports.ts'
+import { Doken } from './doken'
+import {Params} from './params'
 
-export * as Codec from './codec.ts'
-export type Codec = never
-
-
-export const decodeRoute = S.decodeUnknownSync()
+export class Codec extends E.Service<Codec>()('disreact/codec', {
+  succeed: {
+    encodeRoot : Root.encodeRoot,
+    encodeRoute: S.encodeUnknown(Params.MessageParamsToMessage),
+    decodeRoute: S.decodeUnknown(Params.MessageParamsFromMessage),
+  },
+  accessors: true,
+}) {}

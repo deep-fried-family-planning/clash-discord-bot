@@ -6,7 +6,7 @@ export const SourceSymbol = Symbol.for('disreact/fc/source')
 export const NamingSymbol = Symbol.for('disreact/fc/naming')
 export const RenderSymbol = Symbol.for('disreact/fc/render')
 
-export * as FC from '#src/disreact/model/entity/comp/fc.ts'
+export * as FC from '#src/disreact/model/entity/fc.ts'
 export type FC<P = any, A = any> =
   | Base
   | Sync<P, A>

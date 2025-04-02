@@ -1,5 +1,5 @@
 import {DokenMemoryError} from '#src/disreact/model/error.ts'
-import {DsxSettings} from '#src/disreact/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts'
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
 import {Cache, type Cause, Exit, pipe} from 'effect'
@@ -13,7 +13,7 @@ export type DokenError =
 
 
 
-export class DokenMem extends E.Service<DokenMem>()('disreact/DokenMemory', {
+export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
   accessors: true,
 
   effect: E.gen(function* () {
@@ -60,7 +60,7 @@ const makeDynamo = E.gen(function* () {
     },
   )
 
-  return DokenMem.make({
+  return DokenMemory.make({
     load: (id: string): E.Effect<Doken.Defer | undefined, DokenError> => cache.get(id),
 
     save: (doken: Doken.Defer): E.Effect<void, DokenError> =>

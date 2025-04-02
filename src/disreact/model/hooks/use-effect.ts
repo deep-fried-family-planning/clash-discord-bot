@@ -9,7 +9,7 @@ interface EffectFn {
   (): void | Promise<void> | E.Effect<void>
 }
 
-export const hook = (effect: EffectFn | void, deps?: any[]): void => {
+export const hook = (effect: EffectFn, deps?: any[]): void => {
   if (deps) {
     for (const dep of deps) {
       switch (typeof dep) {

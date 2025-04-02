@@ -1,5 +1,5 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
 export * as Rest from '#src/disreact/model/entity/elem/rest.ts'
 

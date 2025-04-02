@@ -1,12 +1,11 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts'
-import {encodeRoot} from '#src/disreact/model/entity/ElemEncoder.ts'
-import {Elem} from '#src/disreact/model/entity/elem/elem.ts'
-import {Root} from '#src/disreact/model/entity/root.ts'
-import {SourceRegistry} from '#src/disreact/model/entity/SourceRegistry.ts'
+import {Elem} from '#src/disreact/model/entity/elem.ts'
+import {encodeRoot, Root} from '#src/disreact/model/entity/root.ts'
+import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E} from '#src/internal/pure/effect.ts'
 import {pipe, Record} from 'effect'
 import {TestMessage} from 'test/components/test-message.tsx'
-import {LifecycleGenML} from '../../../../src/disreact/model/lifecycle-gen-ml.ts'
+import {Lifecycles} from '#src/disreact/model/lifecycles.ts'
 import {expectJSON, it, nofunc} from 'test/components/TestRegistry.tsx'
 
 
@@ -21,7 +20,7 @@ it.effect('when cloning a node', E.fn(function* () {
 
 it.effect('when cloning a tree', E.fn(function* () {
   const root = yield* SourceRegistry.checkout(TestMessage)
-  const rendered = yield* LifecycleGenML.rerender(root)
+  const rendered = yield* Lifecycles.rerender(root)
 
   const exp = pipe(
     rendered.elem,
@@ -42,8 +41,8 @@ it.effect('when rerendering a cloned tree', E.fn(function* () {
   const component = jsx(TestMessage, {})
   const src = Root.make(Root.PUBLIC, component)
   const root = Root.fromSource(src)
-  const initial = yield* LifecycleGenML.initialize(root)
-  const actual = yield* LifecycleGenML.rerender(root)
+  const initial = yield* Lifecycles.initialize(root)
+  const actual = yield* Lifecycles.rerender(root)
 
   expect(nofunc(Elem.linearizeElem(actual.elem))).toEqual(nofunc(Elem.linearizeElem(initial.elem)))
 }))
@@ -51,7 +50,7 @@ it.effect('when rerendering a cloned tree', E.fn(function* () {
 
 it.effect('when dispatching an event', E.fn(function* () {
   const root = yield* SourceRegistry.checkout(TestMessage)
-  const initial = yield* LifecycleGenML.initialize(root)
+  const initial = yield* Lifecycles.initialize(root)
 
   const event = {
     id  : 'actions:2:button:0',
@@ -69,8 +68,8 @@ it.effect('when dispatching an event', E.fn(function* () {
     }
   `)
 
-  yield* LifecycleGenML.handleEvent(initial, event)
-  yield* LifecycleGenML.rerender(root)
+  yield* Lifecycles.handleEvent(initial, event)
+  yield* Lifecycles.rerender(root)
 
   expect(Record.map(root.nexus.strands, (v) => v.stack)).toMatchInlineSnapshot(`
     {
@@ -88,14 +87,14 @@ it.effect('when dispatching an event', E.fn(function* () {
 describe('given event.type is not in any node.props', () => {
   it.effect('when dispatching an event', E.fn(function* () {
     const root = yield* SourceRegistry.checkout(TestMessage)
-    yield* LifecycleGenML.initialize(root)
-    const initial = yield* LifecycleGenML.rerender(root)
+    yield* Lifecycles.initialize(root)
+    const initial = yield* Lifecycles.rerender(root)
     const event = {
       id  : 'buttons:1:button:0',
       prop: 'onclick',
     }
     yield* pipe(
-      LifecycleGenML.handleEvent(initial, event),
+      Lifecycles.handleEvent(initial, event),
       E.catchAll((err) => {
           expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`)
           return E.void
@@ -108,8 +107,8 @@ describe('given event.type is not in any node.props', () => {
 describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
     const root = yield* SourceRegistry.checkout(TestMessage)
-    yield* LifecycleGenML.initialize(root)
-    const initial = yield* LifecycleGenML.rerender(root)
+    yield* Lifecycles.initialize(root)
+    const initial = yield* Lifecycles.rerender(root)
     const event = {
       custom_id: 'buttons:1:button:0',
       prop     : 'onclick',
@@ -117,7 +116,7 @@ describe('given event.id does not match any node.id', () => {
     event.id = 'never'
 
     yield* pipe(
-      LifecycleGenML.handleEvent(initial, event),
+      Lifecycles.handleEvent(initial, event),
       E.catchAll((err) => {
         expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`)
         return E.void
@@ -129,20 +128,27 @@ describe('given event.id does not match any node.id', () => {
 
 it.effect('when rendering an initial tree', E.fn(function* () {
   const root = yield* SourceRegistry.checkout(TestMessage)
-  const render = yield* LifecycleGenML.initialize(root)
+  const render = yield* Lifecycles.initialize(root)
   yield* pipe(encodeRoot(render), expectJSON('./initial-tree.json'))
 }))
 
 
-describe('performance', {timeout: 10000}, () => {
+describe('performance', {timeout: 5000}, () => {
   it.effect(`when hydrating an empty root`, E.fn(function* () {
-    const runs = Array.from({length: 1000})
+    const runs = Array.from({length: 10000})
 
     for (let i = 0; i < runs.length; i++) {
       const root = yield* SourceRegistry.checkout(TestMessage)
-      const expected = yield* LifecycleGenML.initialize(root)
-      const actual = yield* LifecycleGenML.hydrate(root)
-      const again = yield* LifecycleGenML.rerender(root)
+      const expected = yield* Lifecycles.initialize(root)
+      const actual = yield* Lifecycles.hydrate(root)
+
+      const event = {
+        id  : 'actions:2:button:0',
+        prop: 'onclick',
+      }
+      yield* Lifecycles.handleEvent(root, event)
+
+      const again = yield* Lifecycles.rerender(root)
 
       expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(actual.elem))
       expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(expected.elem))
@@ -150,7 +156,7 @@ describe('performance', {timeout: 10000}, () => {
 
       const encoded = encodeRoot(again)
 
-      yield* E.tryPromise(() => expect(encoded).toMatchFileSnapshot('./.snap/performance.json'))
+      yield* E.promise(() => expect(encoded).toMatchFileSnapshot('./.snap/performance.json'))
     }
   }))
 })

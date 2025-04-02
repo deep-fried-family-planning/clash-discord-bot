@@ -1,0 +1,55 @@
+{
+  "flags": 64,
+  "embeds": [
+    {
+      "title": "Test Title - NOT markdown",
+      "description": "### H3-# \n@123456\n__$ not a link__",
+      "image": {
+        "url": "https://dffp.org/d/6/2/fresh/720000/secret/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccPy4pKixLyU4iZkuYmNC4uZ9iEJWOVCaQMrj9TElNQiK4MJALWwIeU"
+      }
+    }
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "actions:2:button:0",
+          "label": "Start 2"
+        },
+        {
+          "type": 2,
+          "style": 2,
+          "custom_id": "actions:2:secondary:1",
+          "label": "Help"
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 3,
+          "custom_id": "message:0:select:3",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            },
+            {
+              "value": "3",
+              "label": "3",
+              "default": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

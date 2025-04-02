@@ -1,6 +1,10 @@
-import {Elem} from '#src/disreact/model/entity/elem/elem.ts'
-import {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import { Intrinsic } from '#src/disreact/codec/rest-elem'
+import { Keys } from '#src/disreact/codec/rest-elem/keys'
+import {Elem} from '#src/disreact/model/entity/elem.ts'
+import {FC} from '#src/disreact/model/entity/fc.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
+import {ML} from '#src/disreact/re-exports.ts'
+import {inspect} from 'node:util'
 
 
 export * as Root from '#src/disreact/model/entity/root.ts'
@@ -70,6 +74,7 @@ export const dismountTask = (root: Root, elem: Elem.Task) => {
 
 export const fromSource = (src: Source, props?: any): Root => {
   const elem = Elem.cloneElem(src.elem)
+  elem.props = props
   const nexus = Fibril.makeNexus(props)
   elem.id = src.id
 
@@ -79,6 +84,9 @@ export const fromSource = (src: Source, props?: any): Root => {
     nexus.strands[elem.id] = elem.strand
   }
 
+  nexus.id = src.id
+  nexus.next.id = src.id
+  nexus.next.props = elem.props
   nexus.root = {
     _tag : src._tag,
     id   : elem.id,
@@ -92,6 +100,9 @@ export const fromSource = (src: Source, props?: any): Root => {
 export const fromSourceHydrant = (src: Source, hydrant: Fibril.Hydrant) => {
   const root = fromSource(src, hydrant.props)
   root.nexus = Fibril.decodeNexus(hydrant)
+  if (Elem.isTask(root.elem)) {
+    root.elem.strand = root.nexus.strands[root.elem.id!]
+  }
   return root
 }
 
@@ -109,4 +120,68 @@ export const deepLinearize = (self: Root): Root => {
   delete self.nexus.request
   Elem.linearizeElem(self.elem)
   return self
+}
+
+export const encodeRoot = (root: Root | null | undefined): {message: [any]} => {
+  if (!root) {
+    throw new Error('Root is null or undefined')
+  }
+
+  const result = {} as any,
+        list   = ML.make<[any, Elem.Any[]]>([result, [root.elem]]),
+        args   = new WeakMap<Elem, any>()
+
+  while (ML.tail(list)) {
+    const [acc, cs] = ML.pop(list)!
+
+    for (let i = 0; i < cs.length; i++) {
+      const c = cs[i]
+
+      if (Elem.isPrim(c)) {
+        acc[Keys.primitive] ??= []
+        acc[Keys.primitive].push(c)
+      }
+      else if (args.has(c as any)) {
+        if (Elem.isRest(c)) {
+          const norm = Intrinsic.NORM[c.type as any]
+          const encode = Intrinsic.ENC[c.type]
+          const arg = args.get(c)!
+          acc[norm] ??= []
+          acc[norm].push(encode(c, arg))
+        }
+        else {
+          //
+        }
+      }
+      else if (!c.nodes.length) {
+        if (Elem.isRest(c)) {
+          const norm = Intrinsic.NORM[c.type as any]
+          const encode = Intrinsic.ENC[c.type]
+          const arg = {} as any
+          args.set(c, arg)
+          acc[norm] ??= []
+          acc[norm].push(encode(c, arg))
+        }
+        else {
+          //
+        }
+      }
+      else {
+        ML.append(list, [acc, cs.slice(i)])
+        const arg = {} as any
+        args.set(c, arg)
+
+        if (Elem.isRest(c)) {
+          ML.append(list, [arg, c.nodes])
+        }
+        else {
+          ML.append(list, [acc, c.nodes])
+        }
+
+        break
+      }
+    }
+  }
+
+  return result
 }

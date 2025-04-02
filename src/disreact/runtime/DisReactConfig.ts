@@ -1,8 +1,8 @@
-import type {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import type {FC} from '#src/disreact/model/entity/fc.ts'
 import type { RDT} from '#src/internal/pure/effect.ts'
 import {E, L} from '#src/internal/pure/effect.ts'
 import {pipe} from 'effect'
-import type { Elem } from '#src/disreact/model/entity/elem/elem.ts'
+import type { Elem } from '#src/disreact/model/entity/elem.ts'
 
 
 

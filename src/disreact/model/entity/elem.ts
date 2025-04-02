@@ -1,14 +1,14 @@
 import {Prim} from '#src/disreact/model/entity/elem/prim.ts'
 import {Rest} from '#src/disreact/model/entity/elem/rest.ts'
 import {Task} from '#src/disreact/model/entity/elem/task.ts'
-import {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import {FC} from '#src/disreact/model/entity/fc.ts'
 
 export * from '#src/disreact/model/entity/elem/frag.ts'
 export * from '#src/disreact/model/entity/elem/prim.ts'
 export * from '#src/disreact/model/entity/elem/rest.ts'
 export * from '#src/disreact/model/entity/elem/task.ts'
 
-export * as Elem from '#src/disreact/model/entity/elem/elem.ts'
+export * as Elem from '#src/disreact/model/entity/elem.ts'
 export type Elem =
   | Rest
   | Task

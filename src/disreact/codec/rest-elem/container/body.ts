@@ -1,5 +1,5 @@
 import {S} from '#src/disreact/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem/elem.ts'
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import { Keys } from '../keys.ts'
 import {Util} from '../util.ts'
 

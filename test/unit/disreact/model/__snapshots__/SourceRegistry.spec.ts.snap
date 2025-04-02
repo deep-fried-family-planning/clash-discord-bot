@@ -20,9 +20,9 @@ exports[`disreact/SourceRegistry > when checking out a root 1`] = `
   },
   "id": "TestMessage",
   "nexus": {
-    "id": "-",
+    "id": "TestMessage",
     "next": {
-      "id": "-",
+      "id": "TestMessage",
       "props": {},
     },
     "props": {},

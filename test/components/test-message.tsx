@@ -1,8 +1,7 @@
 import {Header} from '#src/discord/components/header.tsx'
 import {useState} from '#src/disreact/index.ts'
-import type {FC} from '#src/disreact/model/entity/comp/fc.ts'
+import type {FC} from '#src/disreact/model/entity/fc.ts'
 import {E} from '#src/internal/pure/effect.ts'
-
 
 export const TestMessage: FC = () => E.gen(function* () {
   const [num, setNum] = useState(0)
@@ -22,18 +21,20 @@ export const TestMessage: FC = () => E.gen(function* () {
           </p>
         </small>
         <br/>
-        <u>
-          $ not a link
-        </u>
+        <u>$ not a link</u>
       </embed>
       <actions>
         <button
-          label='Start'
           onclick={() => {
             setNum(num + 1)
           }}
+        >
+          {`Start ${num}`}
+        </button>
+        <secondary
+          label={'Help'}
+          onclick={() => {}}
         />
-        <secondary label={'Help'} onclick={() => {console.log('help')}}/>
       </actions>
       <select onselect={(e) => {}}>
         <option value='1' label='1'/>
@@ -43,5 +44,3 @@ export const TestMessage: FC = () => E.gen(function* () {
     </message>
   )
 })
-
-TestMessage.displayName = 'TestMessage'

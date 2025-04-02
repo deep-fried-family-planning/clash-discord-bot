@@ -1,9 +1,15 @@
-import {DsxSettings} from '#src/disreact/DisReactConfig.ts'
-import {SourceRegistry} from '#src/disreact/model/entity/SourceRegistry.ts'
+import {Codec} from '#src/disreact/codec/codec.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
+import {IxDOM} from '#src/disreact/runtime/IxDOM.ts'
+import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
+import {Relay} from '#src/disreact/model/Relay.ts'
+import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E, L, pipe} from '#src/internal/pure/effect.ts'
 import type {Vitest} from '@effect/vitest'
-import {expect, it as vfx} from '@effect/vitest'
+import {expect, it as vfx, vi} from '@effect/vitest'
 import {Redacted} from 'effect'
+import {TestClock} from 'effect'
 import {liveServices} from 'effect/TestServices'
 import {TestDialog} from 'test/components/test-dialog.tsx'
 import {TestMessage} from 'test/components/test-message.tsx'
@@ -32,12 +38,29 @@ const config = DsxSettings.configLayer(
 
 
 export const TestRegistry = pipe(
-  SourceRegistry.Default,
-  L.provide(config),
-  L.provide(L.effectContext(E.succeed(liveServices))),
+  L.mergeAll(
+    // L.effectContext(E.succeed(liveServices)),
+    pipe(
+      SourceRegistry.Default,
+      L.provide(config),
+    ),
+    Codec.Default,
+    HooksDispatcher.Default,
+    L.succeed(IxDOM, IxDOM.make({
+      defer   : vi.fn().mockReturnValue(E.void),
+      discard : vi.fn().mockReturnValue(E.void),
+      create  : vi.fn().mockReturnValue(E.void),
+      reply   : vi.fn().mockReturnValue(E.void),
+      dismount: vi.fn().mockReturnValue(E.void),
+    })).pipe(L.provide(config)),
+    DokenMemory.Default.pipe(
+      L.provide(config),
+    ),
+    Relay.Default,
+  ),
 )
 
-let local: Vitest.Methods<typeof SourceRegistry.Service>
+let local: Vitest.Methods<L.Layer.Success<typeof TestRegistry>>
 
 vfx.layer(TestRegistry)((it) => local = it as any)
 
