@@ -1,40 +1,23 @@
 import {Codec} from '#src/disreact/codec/codec.ts'
 import {Doken} from '#src/disreact/codec/doken.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
-import {Relay, Status} from '#src/disreact/model/Relay.ts'
+import { Status} from '#src/disreact/model/Relay.ts'
+import {Relay} from '#src/disreact/model/Relay.ts'
 import {DF, DT, E, F, O, pipe, RDT} from '#src/disreact/re-exports.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
-import {IxDOM} from '#src/disreact/runtime/IxDOM.ts'
+import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
+import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
 import {Model} from '../model/model'
 
-interface Respond {
-  fresh  : Doken.Fresh
-  message: any
-  event  : any
-}
-
-const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
-  ? E.succeed(undefined)
-  : pipe(
-    DT.isPast(doken.ttl),
-    E.if({
-      onTrue : () => E.succeed(undefined),
-      onFalse: () => doken._tag === 'Defer'
-        ? E.succeed(undefined)
-        : DokenMemory.load(doken.id),
-    }),
-  )
-
-const resolveRelayStatus = () => Relay.take().pipe(E.catchTag('NoSuchElementException', () => E.succeed(Status.Complete())))
-
-export const respond = (body: Respond) => E.gen(function* () {
+export const respond = (body: any) => E.gen(function* () {
   const params = yield* Codec.decodeRoute(body.message)
   const deferDoken = yield* DF.make<Doken.Defer>()
   const model = yield* E.fork(Model.invokeRoot(params.hydrant, body.event))
 
-  let status: Status | null = yield* resolveRelayStatus()
+  let status: Status | undefined = undefined
 
   while (status?._tag !== 'Complete') {
+    status = yield* Relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(Status.Complete())))
+
     if (status._tag === 'Close') {
       const param = yield* resolveParamDoken(params.doken)
       const fresh = body.fresh
@@ -44,12 +27,8 @@ export const respond = (body: Respond) => E.gen(function* () {
         yield*IxDOM.dismount(fresh.app, RDT.value(fresh.val))
       }
       else {
-        yield* E.fork(
-          IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}),
-        )
-        yield* E.fork(
-          IxDOM.dismount(fresh.app, RDT.value(param.val)),
-        )
+        yield* E.fork(IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}))
+        yield* E.fork(IxDOM.dismount(fresh.app, RDT.value(param.val)))
       }
       return
     }
@@ -62,15 +41,11 @@ export const respond = (body: Respond) => E.gen(function* () {
 
         if (!param) {
           const defer = yield* Doken.makeOptimizedDeferFromFresh(body, fresh)
-          yield* E.fork(
-            IxDOM.defer(defer.id, RDT.value(defer.val), {type: defer.type}),
-          )
+          yield* E.fork(IxDOM.defer(defer.id, RDT.value(defer.val), {type: defer.type}))
           yield* DF.succeed(deferDoken, defer)
         }
         else {
-          yield* E.fork(
-            IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}),
-          )
+          yield* E.fork(IxDOM.discard(fresh.id, RDT.value(fresh.val), {type: 7}))
           yield* DF.succeed(deferDoken, param)
         }
       }
@@ -91,11 +66,8 @@ export const respond = (body: Respond) => E.gen(function* () {
         )
         yield* DF.succeed(deferDoken, defer)
       }
-
       break
     }
-
-    status = yield* resolveRelayStatus()
   }
 
   const output = yield* F.join(model)
@@ -110,10 +82,19 @@ export const respond = (body: Respond) => E.gen(function* () {
   ])
 
   yield* IxDOM.reply(body.fresh.app, RDT.value(doken.val), final)
-}).pipe(
-  E.provide([Relay.Fresh]),
-)
+})
 
+const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
+  ? E.succeed(undefined)
+  : pipe(
+    DT.isPast(doken.ttl),
+    E.if({
+      onTrue : () => E.succeed(undefined),
+      onFalse: () => doken._tag === 'Defer'
+        ? E.succeed(undefined)
+        : DokenMemory.load(doken.id),
+    }),
+  )
 
 // export const respondPiped = (body: any) =>
 //   pipe(

@@ -1,4 +1,4 @@
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
 import {E, pipe} from '#src/internal/pure/effect.ts'
 import {Cache} from 'effect'

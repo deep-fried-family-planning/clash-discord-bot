@@ -1,4 +1,4 @@
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
 import {FC} from '#src/disreact/model/entity/fc.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'

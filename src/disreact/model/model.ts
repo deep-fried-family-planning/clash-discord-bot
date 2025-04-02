@@ -30,62 +30,8 @@ export const invokeRoot = (hydrant: Fibril.Hydrant, event: any) =>
         return Lifecycles.initialize(output)
       },
     )),
-    E.tap(() => Relay.complete()),
-    // E.andThen((original) =>
-    //   E.andThen(Relay.pollOutput(), (first) =>
-    //     E.iterate(first, {
-    //       while: (output) => O.isNone(output),
-    //       body : () => E.andThen(Relay.pollOutput(), (output) => {
-    //         if (O.isNone(output)) {
-    //           return E.succeed(output)
-    //         }
-    //         return E.succeedSome(
-    //           E.flatMap(output.value, (next) => {
-    //             if (next === null || next.id === original.id) {
-    //               return E.succeed(next)
-    //             }
-    //             return Lifecycles.initialize(next)
-    //           }),
-    //         )
-    //       }),
-    //     }).pipe(
-    //       E.andThen((output) => O.match(output, {
-    //         onNone: () => E.fail(new Error('Output was None')),
-    //         onSome: (next) => next,
-    //       })),
-    //     ),
-    //   ),
-    // ),
+    E.tap(() => Relay.setComplete()),
   )
-
-//     E.gen(function* () {
-//       let output: O.Option<E.Effect<Root | null>>
-//       do {
-//         output = yield* Relay.pollOutput()
-//
-//         if (O.isSome(output)) {
-//           const next = yield* output.value
-//
-//           if (next === null) {
-//             yield* Relay.complete()
-//             return null
-//           }
-//           else if (next.id !== original.id) {
-//             return yield* pipe(
-//               Lifecycles.initialize(next),
-//               E.tap(() => Relay.complete()),
-//             )
-//           }
-//           else {
-//             yield* Relay.complete()
-//             return next
-//           }
-//         }
-//       }
-//       while (O.isNone(output))
-//     }),
-//   ),
-// )
 
 // E.gen(function* () {
 //     const original = yield* SourceRegistry.withHydrant(hydrant)

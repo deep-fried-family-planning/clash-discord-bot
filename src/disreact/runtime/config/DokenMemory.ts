@@ -1,5 +1,5 @@
 import {DokenMemoryError} from '#src/disreact/model/error.ts'
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts'
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
 import {Cache, type Cause, Exit, pipe} from 'effect'

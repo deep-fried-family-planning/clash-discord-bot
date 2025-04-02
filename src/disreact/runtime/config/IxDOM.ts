@@ -1,5 +1,5 @@
 import {E, L, pipe} from '#src/disreact/re-exports.ts'
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
 import {NodeHttpClient} from '@effect/platform-node'
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx'
 

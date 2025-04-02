@@ -1,6 +1,5 @@
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {E, S} from '#src/disreact/re-exports.ts'
-import { Doken } from './doken'
 import {Params} from './params'
 
 export class Codec extends E.Service<Codec>()('disreact/codec', {

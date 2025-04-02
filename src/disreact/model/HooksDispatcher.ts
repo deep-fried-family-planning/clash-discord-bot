@@ -5,41 +5,14 @@ import {UseUtility} from '#src/disreact/model/hooks/use-utility.ts'
 
 
 export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/Dispatcher', {
-  accessors: false,
-
   effect: E.map(E.makeSemaphore(1), (semaphore) => {
     return {
       lock  : semaphore.take(1),
       unlock: semaphore.release(1),
-
-      // mutex: (node: Fibril.Strand) => <A, E, R>(effect: E.Effect<A, E, R>) => {
-      //   return pipe(
-      //     semaphore.take(1),
-      //     E.andThen(() => {
-      //       Fibril.λ.set(node)
-      //       return effect
-      //     }),
-      //     E.tap(() => {
-      //       Fibril.λ.clear()
-      //       return semaphore.release(1)
-      //     }),
-      //     E.catchAll((e) => {
-      //       Fibril.λ.clear()
-      //       return pipe(
-      //         E.fail(e as HookError),
-      //         E.tap(() => semaphore.release(1)),
-      //       )
-      //     }),
-      //   )
-      // },
     }
   }),
+  accessors: false,
 }) {
-  // static readonly withMutex = (node: Fibril.Strand) => <A, E, R>(effect: E.Effect<A, E, R>) =>
-  //   pipe(
-  //     Dispatcher.use((dispatch) => dispatch.mutex(node)(effect)),
-  //   )
-
   static readonly impl = {
     useState  : UseReducer.state,
     useReducer: UseReducer.reducer,

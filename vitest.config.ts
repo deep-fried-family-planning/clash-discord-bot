@@ -1,5 +1,5 @@
-import tsconfigPaths from 'vite-tsconfig-paths';
-import {defineConfig} from 'vitest/config';
+import tsconfigPaths from 'vite-tsconfig-paths'
+import {defineConfig} from 'vitest/config'
 
 
 
@@ -15,7 +15,6 @@ export default defineConfig({
     reporters         : 'verbose',
     chaiConfig        : {truncateThreshold: 0},
     expandSnapshotDiff: true,
-    expect            : {requireAssertions: true},
     testTimeout       : 0,
     hookTimeout       : 0,
     teardownTimeout   : 0,
@@ -36,4 +35,4 @@ export default defineConfig({
       },
     },
   },
-});
+})

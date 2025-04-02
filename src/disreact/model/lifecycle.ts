@@ -3,7 +3,7 @@ import type {Root} from '#src/disreact/model/entity/root.ts'
 import {EF} from '#src/disreact/model/fibril/ef.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
-import {Relay} from '#src/disreact/model/Relay.ts'
+import {Relay, Status} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E, pipe, type RT} from '#src/disreact/re-exports.ts'
 import {FC} from 'src/disreact/model/entity/fc.ts'
@@ -92,8 +92,8 @@ export const notifyPiped = (root: Root) => {
   if (next.id === null) {
     return pipe(
       Relay.setOutput(null),
-      E.andThen(() => Relay.send(
-        Relay.Close()),
+      E.andThen(() => Relay.sendStatus(
+        Status.Close()),
       ),
     )
   }
@@ -102,8 +102,8 @@ export const notifyPiped = (root: Root) => {
     return pipe(
       SourceRegistry.checkout(next.id, next.props),
       E.andThen((next) => Relay.setOutput(next)),
-      E.andThen(() => Relay.send(
-        Relay.Next({
+      E.andThen(() => Relay.sendStatus(
+        Status.Next({
           id   : next.id!,
           props: next.props,
         })),
@@ -123,8 +123,8 @@ export const notifyOnHandlePiped = (root: Root) =>
     if (next.id === null) {
       return pipe(
         Relay.setOutput(null),
-        E.andThen(() => Relay.send(
-          Relay.Close()),
+        E.andThen(() => Relay.sendStatus(
+          Status.Close()),
         ),
       )
     }
@@ -133,8 +133,8 @@ export const notifyOnHandlePiped = (root: Root) =>
       return pipe(
         SourceRegistry.checkout(next.id, next.props),
         E.andThen((next) => Relay.setOutput(next)),
-        E.andThen(() => Relay.send(
-          Relay.Next({
+        E.andThen(() => Relay.sendStatus(
+          Status.Next({
             id   : next.id!,
             props: next.props,
           })),
@@ -144,8 +144,8 @@ export const notifyOnHandlePiped = (root: Root) =>
 
     return pipe(
       Relay.setOutput(root),
-      E.andThen(() => Relay.send(
-        Relay.Next({
+      E.andThen(() => Relay.sendStatus(
+        Status.Next({
           id   : curr.id!,
           props: curr.props,
         }),

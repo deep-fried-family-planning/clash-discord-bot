@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/codec/codec.ts'
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
-import {IxDOM} from '#src/disreact/runtime/IxDOM.ts'
+import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
+import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
+import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
@@ -56,7 +56,7 @@ export const TestRegistry = pipe(
     DokenMemory.Default.pipe(
       L.provide(config),
     ),
-    Relay.Default,
+    Relay.Fresh,
   ),
 )
 

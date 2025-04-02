@@ -96,14 +96,3 @@ export type Create = typeof Create.Encoded
 export type Defer = typeof Defer.Encoded
 export type Reply = typeof Reply.Encoded
 export type Dismount = typeof Dismount.Encoded
-
-export const makeDiscardFromFresh = (doken: Doken.Fresh): Discard =>
-  ({
-    id   : doken.id,
-    token: RDT.value(doken.val),
-    body : {
-      type: CallbackType.UPDATE,
-    },
-  })
-
-export const makeDismountFrom

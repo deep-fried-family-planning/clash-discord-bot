@@ -3,7 +3,7 @@ import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Props} from '#src/disreact/model/entity/props.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
-import {Relay, relayPartial} from '#src/disreact/model/Relay.ts'
+import {Relay, relayPartial, Status} from '#src/disreact/model/Relay.ts'
 import {E, ML, pipe} from '#src/disreact/re-exports.ts'
 import {Lifecycle} from 'src/disreact/model/lifecycle.ts'
 
@@ -21,7 +21,7 @@ export const handleEvent = (root: Root, event: any) =>
         if (elem.props.custom_id === event.id || elem.ids === event.id) {
           return pipe(
             EH.apply(elem.handler, event),
-            E.andThen(() => Relay.send(Relay.Handled())),
+            E.andThen(() => Relay.sendStatus(Status.Handled())),
             E.tap(() => Lifecycle.notifyOnHandlePiped(root)),
           )
         }

@@ -4,8 +4,6 @@ import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {FC} from '#src/disreact/model/entity/fc.ts'
 import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
 import {ML} from '#src/disreact/re-exports.ts'
-import {inspect} from 'node:util'
-
 
 export * as Root from '#src/disreact/model/entity/root.ts'
 export type Root = Source & {
@@ -70,7 +68,6 @@ export const dismountTask = (root: Root, elem: Elem.Task) => {
   delete elem.strand.nexus
   delete root.nexus.strands[elem.id!]
 }
-
 
 export const fromSource = (src: Source, props?: any): Root => {
   const elem = Elem.cloneElem(src.elem)
