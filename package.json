@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.7.0",
+  "packageManager": "pnpm@10.7.1",
   "engineStrict": true,
   "engines": {
     "node": "22.14.0"
@@ -50,7 +50,7 @@
     "@effect-aws/lib-dynamodb": "1.9.5",
     "@effect-aws/ssm": "1.2.0",
     "@effect/platform": "0.80.5",
-    "@effect/platform-node": "0.76.8",
+    "@effect/platform-node": "0.76.9",
     "@hapi/boom": "10.0.1",
     "@hapi/bourne": "3.0.0",
     "@msgpack/msgpack": "3.1.1",
@@ -75,7 +75,7 @@
     "@commitlint/cli": "19.8.0",
     "@commitlint/config-conventional": "19.8.0",
     "@discordjs/core": "2.0.1",
-    "@effect/language-service": "0.4.0",
+    "@effect/language-service": "0.5.1",
     "@effect/vitest": "0.20.5",
     "@eslint/js": "9.23.0",
     "@hapi/hapi": "21.4.0",
