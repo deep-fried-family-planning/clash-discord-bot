@@ -1,6 +1,6 @@
 import {Relay} from '#src/disreact/model/Relay.ts'
-import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
-import {respond } from '#src/disreact/runtime/respond.ts'
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
+import {respond} from '#src/disreact/runtime/respond.ts'
 import {E} from '#src/internal/pure/effect.ts'
 import {DateTime, Redacted, TestClock} from 'effect'
 import {it} from 'test/components/TestRegistry.tsx'
@@ -27,12 +27,12 @@ it.effect('when responding', E.fn(function* () {
     },
   })
 
-  const ixdom = yield* IxDOM
+  const ixdom = yield* DisReactDOM
   const root = ixdom.reply.mock.calls[0][2]
 
-yield* E.promise(() =>
-  expect(JSON.stringify(ixdom.reply.mock.calls[0][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
-)
+  yield* E.promise(() =>
+    expect(JSON.stringify(ixdom.reply.mock.calls[0][2], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
+  )
 
   yield* respond({
     id   : 'respond2',

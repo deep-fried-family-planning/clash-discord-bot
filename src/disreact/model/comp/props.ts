@@ -1,6 +1,6 @@
 import {Data, Equal} from 'effect'
 
-export * as Props from '#src/disreact/model/entity/props.ts'
+export * as Props from '#src/disreact/model/comp/props.ts'
 export type Props<P = any, A = any> =
   | None
   | Zero<P, A>

@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/re-exports.ts'
+import {S} from '#src/disreact/codec/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
 import * as MsgPack from '@msgpack/msgpack'
@@ -6,13 +6,13 @@ import {pipe, Record} from 'effect'
 import * as Data from 'effect/Data'
 import * as Equal from 'effect/Equal'
 import * as pako from 'pako'
-import {Polymer} from '#src/disreact/model/fibril/polymer.ts'
-import type { EF } from './ef'
+import {Polymer} from '#src/disreact/model/comp/polymer.ts'
+import type { EF } from '#src/disreact/model/comp/ef.ts'
 
 
-export * from '#src/disreact/model/fibril/polymer.ts'
-export * from '#src/disreact/model/fibril/monomer.ts'
-export * as Fibril from '#src/disreact/model/fibril/fibril.ts'
+export * from '#src/disreact/model/comp/polymer.ts'
+export * from '#src/disreact/model/comp/monomer.ts'
+export * as Fibril from '#src/disreact/model/comp/fibril.ts'
 export type Fibril = never
 
 export type Hydrant = typeof Hydrant.Type

@@ -1,8 +1,7 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
-export * as Rest from '#src/disreact/model/entity/elem/rest.ts'
-
+export * as Rest from '#src/disreact/model/entity/rest.ts'
 export interface Rest extends Elem.MetaProps {
   type   : string
   handler: any

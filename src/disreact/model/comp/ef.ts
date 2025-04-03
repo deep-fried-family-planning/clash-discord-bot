@@ -1,7 +1,7 @@
-import { E } from '#src/disreact/re-exports.ts'
+import { E } from '#src/disreact/codec/re-exports.ts'
 import {isPromise} from 'effect/Predicate'
 
-export * as EF from 'src/disreact/model/fibril/ef.ts'
+export * as EF from '#src/disreact/model/comp/ef.ts'
 export type EF = () => void | Promise<void> | E.Effect<void>
 
 export const applyEffect = (ef: EF) => E.suspend(() => {

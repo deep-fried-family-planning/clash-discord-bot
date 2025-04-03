@@ -6,7 +6,7 @@ import {Primary} from '#src/disreact/codec/rest-elem/component/primary.ts'
 import {Secondary} from '#src/disreact/codec/rest-elem/component/secondary.ts'
 import {Success} from '#src/disreact/codec/rest-elem/component/success.ts'
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {S} from '#src/disreact/re-exports.ts'
+import {S} from '#src/disreact/codec/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Util} from '../util'
 

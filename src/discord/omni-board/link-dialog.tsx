@@ -1,5 +1,5 @@
 import {Link} from '#src/discord/omni-board/link.tsx'
-import type {FC} from '#src/disreact/model/entity/fc.ts'
+import type {FC} from '#src/disreact/model/comp/fc.ts'
 import {usePage} from '#src/disreact/index.ts'
 
 

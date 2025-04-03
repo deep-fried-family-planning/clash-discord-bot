@@ -1,42 +1,185 @@
-import {EH} from '#src/disreact/model/entity/eh.ts'
+import {EF} from '#src/disreact/model/comp/ef.ts'
+import {EH} from '#src/disreact/model/comp/eh.ts'
+import {Fibril} from '#src/disreact/model/comp/fibril.ts'
+import {Props} from '#src/disreact/model/comp/props.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
-import {Props} from '#src/disreact/model/entity/props.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
-import {Fibril} from '#src/disreact/model/fibril/fibril.ts'
+import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay, relayPartial, RelayStatus} from '#src/disreact/model/Relay.ts'
-import {E, ML, pipe} from '#src/disreact/re-exports.ts'
-import {Lifecycle} from 'src/disreact/model/lifecycle.ts'
+import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
+import {E, ML, pipe, type RT} from '#src/disreact/codec/re-exports.ts'
+import {FC} from '#src/disreact/model/comp/fc'
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts'
 export type Lifecycles = never
 
-export const handleEvent = (root: Root, event: any) =>
-  E.suspend(() => {
-    const stack = ML.make<Elem>(root.elem)
+const renderElemPiped = (root: Root, self: Elem.Task) =>
+  pipe(
+    E.andThen(HooksDispatcher, (dispatch) => dispatch.lock),
+    E.andThen(() => {
+      Fibril.λ.set(self.strand)
+      self.strand.nexus = root.nexus
+      self.strand.pc = 0
+      self.strand.elem = self
+      self.strand.nexus.strands[self.id!] = self.strand
 
-    while (ML.tail(stack)) {
-      const elem = ML.pop(stack)!
+      if (FC.isSync(self.type)) {
+        return E.succeed(Elem.renderSync(self))
+      }
+      if (FC.isAsync(self.type)) {
+        return Elem.renderAsync(self)
+      }
+      if (FC.isEffect(self.type)) {
+        return Elem.renderEffect(self)
+      }
 
-      if (Elem.isRest(elem)) {
-        if (elem.props.custom_id === event.id || elem.ids === event.id) {
-          return pipe(
-            EH.apply(elem.handler, event),
-            E.andThen(() => Relay.sendStatus(RelayStatus.Handled())),
-            E.tap(() => Lifecycle.notifyOnHandlePiped(root)),
-          )
+      return Elem.renderUnknown(self)
+    }),
+    E.tap(() => {
+      Fibril.λ.clear()
+      return E.andThen(HooksDispatcher, (dispatch) => dispatch.unlock)
+    }),
+    E.map((children) => {
+      self.strand.pc = 0
+      self.strand.saved = structuredClone(self.strand.stack)
+      self.strand.rc++
+
+      const filtered = children.filter(Boolean) as Elem.Any[]
+
+      for (let i = 0; i < filtered.length; i++) {
+        const node = filtered[i]
+
+        if (!Elem.isPrim(node)) {
+          Elem.connectChild(self, node, i)
         }
       }
 
-      for (let i = 0; i < elem.nodes.length; i++) {
-        const node = elem.nodes[i]
-        if (!Elem.isPrim(node)) {
-          ML.append(stack, elem.nodes[i])
-        }
+      return filtered
+    }),
+    E.catchAll((e) => {
+      Fibril.λ.clear()
+      return E.tap(E.fail(e), E.andThen(HooksDispatcher, (dispatch) => dispatch.unlock))
+    }),
+    E.tap(() => renderEffectAtNodePiped(root, self)),
+  )
+
+
+const renderEffectPiped = (root: Root, ef: EF) =>
+  pipe(
+    EF.applyEffect(ef),
+    E.tap(() => notifyPiped(root)),
+  )
+
+const renderEffectAtNodePiped = (root: Root, node: Elem.Task) => {
+  if (!node.strand.queue.length) {
+    return E.void
+  }
+
+  const effects = Array<RT<typeof renderEffectPiped>>(node.strand.queue.length)
+  for (let i = 0; i < effects.length; i++) {
+    effects[i] = renderEffectPiped(root, node.strand.queue[i])
+  }
+
+  return pipe(
+    E.all(effects),
+    E.asVoid,
+  )
+}
+
+
+const notifyPiped = (root: Root) => {
+  const curr = root.nexus
+  const next = root.nexus.next
+
+  if (next.id === null) {
+    return pipe(
+      Relay.setOutput(null),
+      E.andThen(() => Relay.sendStatus(
+        RelayStatus.Close()),
+      ),
+    )
+  }
+
+  if (next.id !== curr.id) {
+    return pipe(
+      SourceRegistry.checkout(next.id, next.props),
+      E.andThen((next) => Relay.setOutput(next)),
+      E.andThen(() => Relay.sendStatus(
+        RelayStatus.Next({
+          id   : next.id!,
+          props: next.props,
+        })),
+      ),
+    )
+  }
+
+  return E.void
+}
+
+
+const notifyOnHandlePiped = (root: Root) => E.suspend(() => {
+  const curr = root.nexus
+  const next = root.nexus.next
+
+  if (next.id === null) {
+    return pipe(
+      Relay.setOutput(null),
+      E.andThen(() => Relay.sendStatus(
+        RelayStatus.Close()),
+      ),
+    )
+  }
+
+  if (next.id !== curr.id) {
+    return pipe(
+      SourceRegistry.checkout(next.id, next.props),
+      E.andThen((next) => Relay.setOutput(next)),
+      E.andThen(() => Relay.sendStatus(
+        RelayStatus.Next({
+          id   : next.id!,
+          props: next.props,
+        })),
+      ),
+    )
+  }
+
+  return pipe(
+    Relay.setOutput(root),
+    E.andThen(() => Relay.sendStatus(
+      RelayStatus.Next({
+        id   : curr.id!,
+        props: curr.props,
+      }),
+    )),
+  )
+})
+
+export const handleEvent = (root: Root, event: any) => E.suspend(() => {
+  const stack = ML.make<Elem>(root.elem)
+
+  while (ML.tail(stack)) {
+    const elem = ML.pop(stack)!
+
+    if (Elem.isRest(elem)) {
+      if (elem.props.custom_id === event.id || elem.ids === event.id) {
+        return pipe(
+          EH.apply(elem.handler, event),
+          E.andThen(() => Relay.sendStatus(RelayStatus.Handled())),
+          E.tap(() => notifyOnHandlePiped(root)),
+        )
       }
     }
 
-    return E.fail(new Error('Event not handled'))
-  })
+    for (let i = 0; i < elem.nodes.length; i++) {
+      const node = elem.nodes[i]
+      if (!Elem.isPrim(node)) {
+        ML.append(stack, elem.nodes[i])
+      }
+    }
+  }
+
+  return E.fail(new Error('Event not handled'))
+})
 
 
 export const initialize = (root: Root) =>
@@ -54,7 +197,7 @@ export const initializeSubtree = (root: Root, elem: Elem) => E.gen(function* () 
     const elem = ML.pop(stack)!
 
     if (Elem.isTask(elem)) {
-      elem.nodes = yield* Lifecycle.renderElemPiped(root, elem)
+      elem.nodes = yield* renderElemPiped(root, elem)
     }
     else if (!hasSentPartial) {
       hasSentPartial = yield* relayPartial(elem)
@@ -90,7 +233,7 @@ export const hydrate = (root: Root) => pipe(
             }
 
             return pipe(
-              Lifecycle.renderElemPiped(root, elem),
+              renderElemPiped(root, elem),
               E.map((children) => {
                 elem.nodes = children
                 return elem
@@ -130,7 +273,7 @@ export const rerender = (root: Root) => E.gen(function* () {
         continue
       }
       else if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* Lifecycle.renderElemPiped(root, node)])
+        ML.append(stack, [node, yield* renderElemPiped(root, node)])
       }
       else {
         ML.append(stack, [node, node.nodes])
@@ -138,7 +281,7 @@ export const rerender = (root: Root) => E.gen(function* () {
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* Lifecycle.renderElemPiped(root, root.elem)])
+    ML.append(stack, [root.elem, yield* renderElemPiped(root, root.elem)])
   }
 
   while (ML.tail(stack)) {
@@ -228,7 +371,7 @@ export const rerender = (root: Root) => E.gen(function* () {
           ML.append(stack, [curr, rend.nodes])
         }
         else {
-          const rerendered = yield* Lifecycle.renderElemPiped(root, curr)
+          const rerendered = yield* renderElemPiped(root, curr)
           ML.append(stack, [curr, rerendered])
         }
       }
@@ -247,7 +390,7 @@ export const mountSubtree = (root: Root, elem: Elem) => E.gen(function* () {
 
     if (Elem.isTask(elem)) {
       Root.mountTask(root, elem)
-      elem.nodes = yield* Lifecycle.renderElemPiped(root, elem)
+      elem.nodes = yield* renderElemPiped(root, elem)
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {

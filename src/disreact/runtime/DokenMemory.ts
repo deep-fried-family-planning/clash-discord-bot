@@ -1,17 +1,16 @@
-import {DokenMemoryError} from '#src/disreact/model/error.ts'
-import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts'
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
-import {Cache, type Cause, Exit, pipe} from 'effect'
+import {Cache, type Cause, Data, Exit, pipe} from 'effect'
 import type {Doken} from '#src/disreact/codec/doken.ts'
 
-
+export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{
+  cause?: any
+}> {}
 
 export type DokenError =
   | DokenMemoryError
   | Cause.UnknownException
-
-
 
 export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
   accessors: true,

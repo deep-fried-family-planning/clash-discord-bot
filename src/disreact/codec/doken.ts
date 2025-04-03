@@ -1,6 +1,6 @@
 import {UtcNow} from '#src/disreact/codec/rest/shared.ts'
-import {RDT} from '#src/disreact/re-exports.ts'
-import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
+import {RDT} from '#src/disreact/codec/re-exports.ts'
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import {DR, DT, E, pipe, S} from '#src/internal/pure/effect.ts'
 import {DateTime, ParseResult} from 'effect'
 import {DateTimeUtcFromNumber, DateTimeUtcFromSelf, RedactedFromSelf} from 'effect/Schema'

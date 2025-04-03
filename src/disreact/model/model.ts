@@ -1,7 +1,7 @@
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
-import {E, pipe} from '#src/disreact/re-exports.ts'
-import type {Fibril} from './fibril/fibril'
+import {E, pipe} from '#src/disreact/codec/re-exports.ts'
+import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Lifecycles} from './lifecycles'
 
 export * as Model from './model.ts'

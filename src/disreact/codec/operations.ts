@@ -1,5 +1,5 @@
 import {CallbackType} from '#src/disreact/codec/rest/callback-type.ts'
-import {S} from '#src/disreact/re-exports.ts'
+import {S} from '#src/disreact/codec/re-exports.ts'
 import {RDT} from '#src/internal/pure/effect.ts'
 import {DAPIMessage} from 'src/disreact/codec/rest/dapi-message.ts'
 import {DAPIModal} from 'src/disreact/codec/rest/dapi-modal.ts'

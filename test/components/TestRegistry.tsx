@@ -1,7 +1,7 @@
-import {Codec} from '#src/disreact/codec/codec.ts'
-import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
-import {DokenMemory} from '#src/disreact/runtime/config/DokenMemory.ts'
-import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
+import {Codec} from '#src/disreact/codec/Codec.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
@@ -9,8 +9,6 @@ import {E, L, pipe} from '#src/internal/pure/effect.ts'
 import type {Vitest} from '@effect/vitest'
 import {expect, it as vfx, vi} from '@effect/vitest'
 import {Redacted} from 'effect'
-import {TestClock} from 'effect'
-import {liveServices} from 'effect/TestServices'
 import {TestDialog} from 'test/components/test-dialog.tsx'
 import {TestMessage} from 'test/components/test-message.tsx'
 
@@ -19,7 +17,6 @@ export const expectJSON = (filename: string) => (actual: any) =>
     async () =>
       await expect(JSON.stringify(actual, null, 2)).toMatchFileSnapshot(filename),
   )
-
 
 const config = DsxSettings.configLayer(
   {
@@ -46,7 +43,7 @@ export const TestRegistry = pipe(
     ),
     Codec.Default,
     HooksDispatcher.Default,
-    L.succeed(IxDOM, IxDOM.make({
+    L.succeed(DisReactDOM, DisReactDOM.make({
       defer   : vi.fn().mockReturnValue(E.void),
       discard : vi.fn().mockReturnValue(E.void),
       create  : vi.fn().mockReturnValue(E.void),

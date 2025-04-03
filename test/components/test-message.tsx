@@ -1,6 +1,6 @@
 import {Header} from '#src/discord/components/header.tsx'
 import {useState} from '#src/disreact/index.ts'
-import type {FC} from '#src/disreact/model/entity/fc.ts'
+import type {FC} from '#src/disreact/model/comp/fc.ts'
 import {E} from '#src/internal/pure/effect.ts'
 
 export const TestMessage: FC = () => E.gen(function* () {

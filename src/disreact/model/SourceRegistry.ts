@@ -1,10 +1,11 @@
-import {DsxSettings} from '#src/disreact/runtime/config/DisReactConfig.ts'
-import {FC} from '#src/disreact/model/entity/fc.ts'
+import {FC} from '#src/disreact/model/comp/fc.ts'
+import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
-import {Arr, Data, E, Hash} from '#src/disreact/re-exports.ts'
-import type {Fibril} from './fibril/fibril'
+import {Arr, Data, E, Hash} from '#src/disreact/codec/re-exports.ts'
+import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
 
+const STORE = new Map<string, Root.Source>()
 
 export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
   message?: string
@@ -12,11 +13,7 @@ export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
   cause?  : Error
 }> {}
 
-const STORE = new Map<string, Root.Source>()
-
 export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/SourceRegistry', {
-  accessors: true,
-
   effect: E.andThen(DsxSettings, (config) => {
     const sources = [
       ...config.sources.modal.map((src) => Root.make(Root.MODAL, src)),
@@ -65,4 +62,5 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
       version,
     })
   }),
+  accessors: true,
 }) {}

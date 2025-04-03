@@ -1,6 +1,6 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import {S} from '#src/disreact/re-exports.ts'
+import {S} from '#src/disreact/codec/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 
 export * as BlockQuote from '#src/disreact/codec/rest-elem/markdown/blockquote.ts'

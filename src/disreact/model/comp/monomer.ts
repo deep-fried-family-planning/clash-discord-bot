@@ -1,6 +1,6 @@
-import {S} from '#src/disreact/re-exports.ts'
+import {S} from '#src/disreact/codec/re-exports.ts'
 
-export * as Monomer from '#src/disreact/model/fibril/monomer.ts'
+export * as Monomer from '#src/disreact/model/comp/monomer.ts'
 export type Monomer =
   | Null
   | State

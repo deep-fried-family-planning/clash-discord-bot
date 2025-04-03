@@ -1,13 +1,11 @@
-import {Prim} from '#src/disreact/model/entity/elem/prim.ts'
-import {Rest} from '#src/disreact/model/entity/elem/rest.ts'
-import {Task} from '#src/disreact/model/entity/elem/task.ts'
-import {FC} from '#src/disreact/model/entity/fc.ts'
+import {Prim} from '#src/disreact/model/entity/prim.ts'
+import {Rest} from '#src/disreact/model/entity/rest.ts'
+import {Task} from '#src/disreact/model/entity/task.ts'
 
-export * from '#src/disreact/model/entity/elem/frag.ts'
-export * from '#src/disreact/model/entity/elem/prim.ts'
-export * from '#src/disreact/model/entity/elem/rest.ts'
-export * from '#src/disreact/model/entity/elem/task.ts'
-
+export * from '#src/disreact/model/entity/frag.ts'
+export * from '#src/disreact/model/entity/prim.ts'
+export * from '#src/disreact/model/entity/rest.ts'
+export * from '#src/disreact/model/entity/task.ts'
 export * as Elem from '#src/disreact/model/entity/elem.ts'
 export type Elem =
   | Rest
@@ -105,60 +103,6 @@ export const linearizeElem = <A extends Elem>(self: A): A => {
   }
 
   return self
-}
-
-export const findElem = (self: Elem, predicate: (elem: Elem) => boolean): Elem | false => {
-  if (predicate(self)) {
-    return self
-  }
-
-  for (let i = 0; i < self.nodes.length; i++) {
-    const node = self.nodes[i]
-
-    if (Prim.isPrim(node)) {
-      continue
-    }
-
-    const found = findElem(node, predicate)
-
-    if (found) {
-      return found
-    }
-  }
-  return false
-}
-
-export const isSameElem = (a: Elem, b: Elem): boolean => {
-  if (a === b) {
-    return true
-  }
-  if (a.type !== b.type) {
-    return false
-  }
-  if (a.constructor.name !== b.constructor.name) {
-    return false
-  }
-  return true
-}
-
-export const setIds = (children: Any[], parent: Elem) => {
-  for (let i = 0; i < children.length; i++) {
-    const child = children[i]
-
-    if (Prim.isPrim(child)) {
-      continue
-    }
-
-    if (Rest.isRest(child)) {
-      child.ids = `${child.type}:${i}`
-    }
-
-    if (Task.isTask(child)) {
-      child.ids = `${FC.getName(child.type)}:${i}`
-    }
-  }
-
-  return children
 }
 
 export const connectChild = (parent: Elem, child: Elem, idx: number) => {

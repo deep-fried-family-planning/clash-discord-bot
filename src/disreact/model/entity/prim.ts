@@ -1,6 +1,4 @@
-import type { Elem } from '#src/disreact/model/entity/elem.ts'
-
-export * as Prim from '#src/disreact/model/entity/elem/prim.ts'
+export * as Prim from '#src/disreact/model/entity/prim.ts'
 export type Prim =
   | symbol
   | string
@@ -21,5 +19,3 @@ export const isPrim = (self: unknown): self is Prim => {
 }
 
 export const clonePrim = (self: Prim): Prim => structuredClone(self)
-
-export const diffPrim = (a: Prim, b: Elem.Any): b is Prim => a === b

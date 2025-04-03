@@ -1,7 +1,7 @@
-import {E} from '#src/disreact/re-exports.ts'
+import {E} from '#src/disreact/codec/re-exports.ts'
 import {isPromise} from 'effect/Predicate'
 
-export * as EH from '#src/disreact/model/entity/eh.ts'
+export * as EH from '#src/disreact/model/comp/eh.ts'
 export type EH<A> = (event: A) => void | Promise<void> | E.Effect<void>
 
 export const make = () => {}

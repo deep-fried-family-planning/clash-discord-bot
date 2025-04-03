@@ -1,10 +1,10 @@
-import {Codec} from '#src/disreact/codec/codec.ts'
-import {FC} from '#src/disreact/model/entity/fc.ts'
+import {Codec} from '#src/disreact/codec/Codec.ts'
+import {FC} from '#src/disreact/model/comp/fc.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
-import {E, RDT} from '#src/disreact/re-exports.ts'
+import {E, RDT} from '#src/disreact/codec/re-exports.ts'
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts'
-import { Fibril } from '../model/fibril/fibril'
+import { Fibril } from '#src/disreact/model/comp/fibril.ts'
 
 type Id = Elem | FC | string
 

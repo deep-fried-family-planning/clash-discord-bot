@@ -1,4 +1,4 @@
-export * as Frag from '#src/disreact/model/entity/elem/frag.ts'
+export * as Frag from '#src/disreact/model/entity/frag.ts'
 export type Frag = undefined
 
 export const Type = undefined

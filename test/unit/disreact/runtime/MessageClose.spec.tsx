@@ -1,10 +1,8 @@
-import {Relay} from '#src/disreact/model/Relay.ts'
-import {IxDOM} from '#src/disreact/runtime/config/IxDOM.ts'
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {makeDefaultRuntimeLayer, makeRuntimeWithLayer} from '#src/disreact/runtime/DisReactRuntime.ts'
-import {respond} from '#src/disreact/runtime/respond.ts'
 import {E, L} from '#src/internal/pure/effect.ts'
-import {vi, it} from '@effect/vitest'
-import {Clock, DateTime, pipe, Redacted, TestClock} from 'effect'
+import {it, vi} from '@effect/vitest'
+import {pipe, Redacted, TestClock} from 'effect'
 import {liveServices} from 'effect/TestServices'
 import {TestDialog} from 'test/components/test-dialog.tsx'
 import {TestMessage} from 'test/components/test-message.tsx'
@@ -27,7 +25,7 @@ const runtimeLayer = pipe(
         ],
       },
     },
-    ixDOM: L.succeed(IxDOM, IxDOM.make({
+    ixDOM: L.succeed(DisReactDOM, DisReactDOM.make({
       defer   : vi.fn(),
       discard : vi.fn(),
       create  : vi.fn(),
