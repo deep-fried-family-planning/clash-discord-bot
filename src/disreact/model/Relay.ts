@@ -31,28 +31,3 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
 }) {
   static readonly Fresh = L.fresh(Relay.Default)
 }
-
-export const relayPartial = (elem: Elem.Rest) => E.andThen(Relay, (relay) => {
-  if (elem.type === 'modal') {
-    return pipe(
-      relay.sendStatus(
-        RelayStatus.Partial({
-          type: 'modal',
-        }),
-      ),
-      E.as(true),
-    )
-  }
-  if (elem.type === 'message') {
-    return pipe(
-      relay.sendStatus(
-        RelayStatus.Partial({
-          type : 'message',
-          flags: elem.props.display === 'ephemeral' ? 2 : 1,
-        }),
-      ),
-      E.as(true),
-    )
-  }
-  return E.succeed(false)
-})

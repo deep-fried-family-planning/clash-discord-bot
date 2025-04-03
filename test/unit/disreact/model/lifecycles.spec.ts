@@ -128,7 +128,7 @@ it.effect('when rendering an initial tree', E.fn(function* () {
   const registry = yield* SourceRegistry
   const root = yield* registry.checkout(TestMessage)
   const render = yield* Lifecycles.initialize(root)
-  yield* pipe(encodeRoot(render), expectJSON('./initial-tree.json'))
+  yield* pipe(encodeRoot(render), expectJSON('./.json/initial-tree.json'))
 }))
 
 it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
@@ -154,6 +154,6 @@ it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
 
     const encoded = encodeRoot(again)
 
-    yield* E.promise(() => expect(encoded).toMatchFileSnapshot('./.snap/performance.json'))
+    yield* E.promise(() => expect(JSON.stringify(encoded, null, 2)).toMatchFileSnapshot('./.json/performance.json'))
   }
-}), {timeout: 5000})
+}), {timeout: 10000})

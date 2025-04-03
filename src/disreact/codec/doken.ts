@@ -124,24 +124,24 @@ export namespace Cache {
       ] as const,
   })
 
-  export const FromDefer = S.transformOrFail(Defer.T, T, {
-    strict: true,
-    decode: (defer) =>
-      pipe(
-        DokenMemory.save(defer),
-        E.catchAll(() => E.fail(new ParseResult.Unexpected(undefined))),
-        E.map(() =>
-          ({
-            _tag: TAG,
-            id  : defer.id,
-            type: defer.type,
-            flag: defer.flag,
-            ttl : defer.ttl,
-          }),
-        ),
-      ),
-    encode: () => {throw new Error()},
-  })
+  // export const FromDefer = S.transformOrFail(Defer.T, T, {
+  //   strict: true,
+  //   decode: (defer) =>
+  //     pipe(
+  //       DokenMemory.save(defer),
+  //       E.catchAll(() => E.fail(new ParseResult.Unexpected(undefined))),
+  //       E.map(() =>
+  //         ({
+  //           _tag: TAG,
+  //           id  : defer.id,
+  //           type: defer.type,
+  //           flag: defer.flag,
+  //           ttl : defer.ttl,
+  //         }),
+  //       ),
+  //     ),
+  //   encode: () => {throw new Error()},
+  // })
 }
 
 
@@ -272,7 +272,3 @@ export const makeDeferFromFresh = (request: DAPIIX.Body, fresh: Fresh, flags?: n
       } satisfies Defer)
     }),
   )
-
-export const freshFromRequest = S.decode(Fresh.FromRequest)
-export const spentFromFresh = S.decode(Spent.FromFresh)
-export const cacheFromDefer = S.decode(Cache.FromDefer)

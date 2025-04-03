@@ -8,6 +8,18 @@ import {ExpiryFailure} from '#src/disreact/runtime/DisReactState.ts'
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import {Model} from '../model/model'
 
+const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
+  ? E.succeed(undefined)
+  : pipe(
+    DT.isPast(doken.ttl),
+    E.if({
+      onTrue : () => E.succeed(undefined),
+      onFalse: () => doken._tag === 'Defer'
+        ? E.succeed(undefined)
+        : E.andThen(DokenMemory, (memory) => memory.load(doken.id)),
+    }),
+  )
+
 const closeInteraction = (fresh: Doken.Fresh, defer?: Doken) =>
   pipe(
     DT.isPast(fresh.ttl),
@@ -48,11 +60,15 @@ export const respond = (body: any) => E.gen(function* () {
   const deferDoken = yield* DF.make<Doken.Defer>()
   const model = yield* E.fork(Model.hydrateInvoke(params.hydrant, body.event))
   const relay = yield* Relay
+  const dom = yield* DisReactDOM
 
   let status: RelayStatus | undefined = undefined
 
   while (status?._tag !== 'Complete') {
-    status = yield* relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())))
+    status = yield* pipe(
+      relay.awaitStatus(),
+      E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())),
+    )
 
     if (status._tag === 'Close') {
       return yield* closeInteraction(fresh, params.doken)
@@ -64,11 +80,11 @@ export const respond = (body: any) => E.gen(function* () {
       if (status.id === params.hydrant.id) {
         if (!param) {
           const defer = yield* Doken.makeOptimizedDeferFromFresh(body, fresh)
-          yield* E.fork(DisReactDOM.defer(defer.id, defer.val, {type: defer.type}))
+          yield* E.fork(E.andThen(DisReactDOM, (dom) => dom.defer(defer.id, defer.val, {type: defer.type})))
           yield* DF.succeed(deferDoken, defer)
         }
         else {
-          yield* E.fork(DisReactDOM.discard(fresh.id, fresh.val, {type: 7}))
+          yield* E.fork(dom.discard(fresh.id, fresh.val, {type: 7}))
           yield* DF.succeed(deferDoken, param)
         }
       }
@@ -83,9 +99,11 @@ export const respond = (body: any) => E.gen(function* () {
       if (!doken || doken.flag !== status.flags) {
         const defer = yield* Doken.makeDeferFromFresh(body, body.fresh, status.flags)
         yield* E.fork(
-          DisReactDOM.defer(defer.id, defer.val, defer.flag === 2
-            ? {type: defer.type, data: {flags: 64}}
-            : {type: defer.type}),
+          E.andThen(DisReactDOM, (dom) =>
+            dom.defer(defer.id, defer.val, defer.flag === 2
+              ? {type: defer.type, data: {flags: 64}}
+              : {type: defer.type}),
+          ),
         )
         yield* DF.succeed(deferDoken, defer)
       }
@@ -104,20 +122,10 @@ export const respond = (body: any) => E.gen(function* () {
     encoded.message[0],
   ])
 
-  yield* DisReactDOM.reply(fresh.app, doken.val, final)
+  yield* E.andThen(DisReactDOM, (dom) => dom.reply(body.application_id, doken.val, final))
 })
 
-const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
-  ? E.succeed(undefined)
-  : pipe(
-    DT.isPast(doken.ttl),
-    E.if({
-      onTrue : () => E.succeed(undefined),
-      onFalse: () => doken._tag === 'Defer'
-        ? E.succeed(undefined)
-        : E.andThen(DokenMemory, (memory) => memory.load(doken.id)),
-    }),
-  )
+
 
 // export const respondPiped = (body: any) =>
 //   pipe(

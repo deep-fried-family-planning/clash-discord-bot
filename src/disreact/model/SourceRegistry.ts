@@ -60,6 +60,11 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
       fromHydrant,
       checkout,
       version,
+      register: (kind: Root.Type, src: FC | Elem) => {
+        const root = Root.make(kind, src)
+        STORE.set(root.id, root)
+        return root
+      },
     })
   }),
 }) {}

@@ -45,5 +45,4 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/IxDOM', {
       L.provide(NodeHttpClient.layerUndici),
     ),
   ],
-  accessors: true,
 }) {}

@@ -1,17 +1,42 @@
+import {E, ML, pipe, type RT} from '#src/disreact/codec/re-exports.ts'
 import {EF} from '#src/disreact/model/comp/ef.ts'
 import {EH} from '#src/disreact/model/comp/eh.ts'
+import {FC} from '#src/disreact/model/comp/fc'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Props} from '#src/disreact/model/comp/props.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
-import {Relay, relayPartial, RelayStatus} from '#src/disreact/model/Relay.ts'
+import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
-import {E, ML, pipe, type RT} from '#src/disreact/codec/re-exports.ts'
-import {FC} from '#src/disreact/model/comp/fc'
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts'
 export type Lifecycles = never
+
+const relayPartial = (elem: Elem.Rest) => E.andThen(Relay, (relay) => {
+  if (elem.type === 'modal') {
+    return pipe(
+      relay.sendStatus(
+        RelayStatus.Partial({
+          type: 'modal',
+        }),
+      ),
+      E.as(true),
+    )
+  }
+  if (elem.type === 'message') {
+    return pipe(
+      relay.sendStatus(
+        RelayStatus.Partial({
+          type : 'message',
+          flags: elem.props.display === 'ephemeral' ? 2 : 1,
+        }),
+      ),
+      E.as(true),
+    )
+  }
+  return E.succeed(false)
+})
 
 const renderElemPiped = (root: Root, self: Elem.Task) =>
   pipe(
@@ -185,77 +210,108 @@ export const initialize = (root: Root) =>
     E.as(root),
   )
 
-export const initializeSubtree = (root: Root, elem: Elem) => E.gen(function* () {
-  const stack = ML.make<Elem>(elem)
+const loopNodes = (stack: ML.MutableList<Elem>, root: Root, elem: Elem) => {
+  for (let i = 0; i < elem.nodes.length; i++) {
+    const node = elem.nodes[i]
 
-  let hasSentPartial = false
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!
-
-    if (Elem.isTask(elem)) {
-      elem.nodes = yield* renderElemPiped(root, elem)
-    }
-    else if (!hasSentPartial) {
-      hasSentPartial = yield* relayPartial(elem)
-    }
-
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i]
-
-      if (!Elem.isPrim(node)) {
-        Elem.connectChild(elem, node, i)
-        Root.mountElem(root, node)
-        ML.append(stack, node)
-      }
+    if (!Elem.isPrim(node)) {
+      Elem.connectChild(elem, node, i)
+      Root.mountElem(root, node)
+      ML.append(stack, node)
     }
   }
+  return stack
+}
 
-  return elem
-})
+export const initializeSubtree = (root: Root, elem: Elem) => {
+  let hasSentPartial = false
 
-
-export const hydrate = (root: Root) => pipe(
-  E.iterate(ML.make<Elem>(root.elem), {
+  return E.iterate(ML.make<Elem>(elem), {
     while: (stack) => !!ML.tail(stack),
-    body : (stack) =>
-      pipe(
-        E.suspend(() => {
-          const elem = ML.pop(stack)!
+    body : (stack) => {
+      const elem = ML.pop(stack)!
 
-          if (Elem.isTask(elem)) {
-            if (root.nexus.strands[elem.id!]) {
-              elem.strand = root.nexus.strands[elem.id!]
-              elem.strand.nexus = root.nexus
-            }
+      if (Elem.isTask(elem)) {
+        return pipe(
+          renderElemPiped(root, elem),
+          E.map((children) => {
+            elem.nodes = children
+            return loopNodes(stack, root, elem)
+          }),
+        )
+      }
+      else if (!hasSentPartial) {
+        return pipe(
+          relayPartial(elem),
+          E.map((did) => {
+            hasSentPartial = did
+            return loopNodes(stack, root, elem)
+          }),
+        )
+      }
 
-            return pipe(
-              renderElemPiped(root, elem),
-              E.map((children) => {
-                elem.nodes = children
-                return elem
-              }),
-            )
+      return E.succeed(loopNodes(stack, root, elem))
+    },
+  })
+}
+
+//   E.gen(function* () {
+//   const stack = ML.make<Elem>(elem)
+//
+//   let hasSentPartial = false
+//
+//   while (ML.tail(stack)) {
+//     const elem = ML.pop(stack)!
+//
+//     if (Elem.isTask(elem)) {
+//       elem.nodes = yield* renderElemPiped(root, elem)
+//     }
+//     else if (!hasSentPartial) {
+//       hasSentPartial = yield* relayPartial(elem)
+//     }
+//
+//     for (let i = 0; i < elem.nodes.length; i++) {
+//       const node = elem.nodes[i]
+//
+//       if (!Elem.isPrim(node)) {
+//         Elem.connectChild(elem, node, i)
+//         Root.mountElem(root, node)
+//         ML.append(stack, node)
+//       }
+//     }
+//   }
+//
+//   return elem
+// })
+
+
+export const hydrate = (root: Root) =>
+  pipe(
+    E.iterate(ML.make<Elem>(root.elem), {
+      while: (stack) => !!ML.tail(stack),
+      body : (stack) => {
+        const elem = ML.pop(stack)!
+
+        if (Elem.isTask(elem)) {
+          if (root.nexus.strands[elem.id!]) {
+            elem.strand = root.nexus.strands[elem.id!]
+            elem.strand.nexus = root.nexus
           }
 
-          return E.succeed(elem as Elem)
-        }),
-        E.map((elem) => {
-          for (let i = 0; i < elem.nodes.length; i++) {
-            const node = elem.nodes[i]
+          return pipe(
+            renderElemPiped(root, elem),
+            E.map((children) => {
+              elem.nodes = children
+              return loopNodes(stack, root, elem)
+            }),
+          )
+        }
 
-            if (!Elem.isPrim(node)) {
-              Elem.connectChild(elem, node, i)
-              Root.mountElem(root, node)
-              ML.append(stack, node)
-            }
-          }
-          return stack
-        }),
-      ),
-  }),
-  E.as(root),
-)
+        return E.succeed(loopNodes(stack, root, elem))
+      },
+    }),
+    E.as(root),
+  )
 
 
 export const rerender = (root: Root) => E.gen(function* () {
