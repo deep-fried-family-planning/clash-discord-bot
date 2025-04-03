@@ -3,7 +3,7 @@ import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {Arr, Data, E, Hash} from '#src/disreact/codec/re-exports.ts'
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 
 const STORE = new Map<string, Root.Source>()
 
@@ -14,7 +14,7 @@ export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
 }> {}
 
 export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/SourceRegistry', {
-  effect: E.andThen(DsxSettings, (config) => {
+  effect: E.andThen(DisReactConfig, (config) => {
     const sources = [
       ...config.sources.modal.map((src) => Root.make(Root.MODAL, src)),
       ...config.sources.public.map((src) => Root.make(Root.PUBLIC, src)),
@@ -62,5 +62,4 @@ export class SourceRegistry extends E.Service<SourceRegistry>()('disreact/Source
       version,
     })
   }),
-  accessors: true,
 }) {}

@@ -58,3 +58,62 @@ exports[`disreact/SourceRegistry > when cloning a root 1`] = `
   "type": [Function],
 }
 `;
+
+exports[`when checking out a root 1`] = `
+{
+  "_tag": "Ephemeral",
+  "elem": {
+    "id": "TestMessage",
+    "idn": "TestMessage",
+    "idx": undefined,
+    "nodes": [],
+    "props": {},
+    "strand": {
+      "pc": 0,
+      "queue": [],
+      "rc": 0,
+      "saved": [],
+      "stack": [],
+    },
+    "type": [Function],
+  },
+  "id": "TestMessage",
+  "nexus": {
+    "id": "TestMessage",
+    "next": {
+      "id": "TestMessage",
+      "props": {},
+    },
+    "props": {},
+    "queue": [],
+    "root": [Circular],
+    "strands": {
+      "TestMessage": {
+        "pc": 0,
+        "queue": [],
+        "rc": 0,
+        "saved": [],
+        "stack": [],
+      },
+    },
+  },
+}
+`;
+
+exports[`when cloning a root 1`] = `
+{
+  "id": "TestMessage",
+  "idn": "TestMessage",
+  "idx": undefined,
+  "nodes": [],
+  "props": {},
+  "strand": {
+    "pc": 0,
+    "queue": [],
+    "rc": 0,
+    "saved": [],
+    "stack": [],
+  },
+  "type": [Function],
+}
+`;

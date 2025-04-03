@@ -87,14 +87,14 @@ const renderEffectAtNodePiped = (root: Root, node: Elem.Task) => {
 }
 
 
-const notifyPiped = (root: Root) => {
+const notifyPiped = (root: Root) => E.andThen(Relay, (relay) => {
   const curr = root.nexus
   const next = root.nexus.next
 
   if (next.id === null) {
     return pipe(
-      Relay.setOutput(null),
-      E.andThen(() => Relay.sendStatus(
+      relay.setOutput(null),
+      E.andThen(() => relay.sendStatus(
         RelayStatus.Close()),
       ),
     )
@@ -102,9 +102,9 @@ const notifyPiped = (root: Root) => {
 
   if (next.id !== curr.id) {
     return pipe(
-      SourceRegistry.checkout(next.id, next.props),
-      E.andThen((next) => Relay.setOutput(next)),
-      E.andThen(() => Relay.sendStatus(
+      E.andThen(SourceRegistry, (registry) => registry.checkout(next.id!, next.props)),
+      E.andThen((next) => relay.setOutput(next)),
+      E.andThen(() => relay.sendStatus(
         RelayStatus.Next({
           id   : next.id!,
           props: next.props,
@@ -114,27 +114,25 @@ const notifyPiped = (root: Root) => {
   }
 
   return E.void
-}
+})
 
 
-const notifyOnHandlePiped = (root: Root) => E.suspend(() => {
+const notifyOnHandlePiped = (root: Root) => E.andThen(Relay, (relay) => {
   const curr = root.nexus
   const next = root.nexus.next
 
   if (next.id === null) {
     return pipe(
-      Relay.setOutput(null),
-      E.andThen(() => Relay.sendStatus(
-        RelayStatus.Close()),
-      ),
+      relay.setOutput(null),
+      E.andThen(() => relay.sendStatus(RelayStatus.Close())),
     )
   }
 
   if (next.id !== curr.id) {
     return pipe(
-      SourceRegistry.checkout(next.id, next.props),
-      E.andThen((next) => Relay.setOutput(next)),
-      E.andThen(() => Relay.sendStatus(
+      E.andThen(SourceRegistry, (registry) => registry.checkout(next.id!, next.props)),
+      E.andThen((next) => relay.setOutput(next)),
+      E.andThen(() => relay.sendStatus(
         RelayStatus.Next({
           id   : next.id!,
           props: next.props,
@@ -144,8 +142,8 @@ const notifyOnHandlePiped = (root: Root) => E.suspend(() => {
   }
 
   return pipe(
-    Relay.setOutput(root),
-    E.andThen(() => Relay.sendStatus(
+    relay.setOutput(root),
+    E.andThen(() => relay.sendStatus(
       RelayStatus.Next({
         id   : curr.id!,
         props: curr.props,
@@ -164,7 +162,6 @@ export const handleEvent = (root: Root, event: any) => E.suspend(() => {
       if (elem.props.custom_id === event.id || elem.ids === event.id) {
         return pipe(
           EH.apply(elem.handler, event),
-          E.andThen(() => Relay.sendStatus(RelayStatus.Handled())),
           E.tap(() => notifyOnHandlePiped(root)),
         )
       }

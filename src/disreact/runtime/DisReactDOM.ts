@@ -10,50 +10,31 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/IxDOM', {
     E.succeed({
       discard: (id: string, token: Token, body: {type: 7}) =>
         pipe(
-          api.createInteractionResponse(
-            id,
-            RDT.value(token),
-            body,
-          ),
+          api.createInteractionResponse(id, RDT.value(token), body),
           E.asVoid,
         ),
 
       dismount: (app: string, token: Token) =>
         pipe(
-          api.deleteOriginalInteractionResponse(
-            app,
-            RDT.value(token),
-          ),
+          api.deleteOriginalInteractionResponse(app, RDT.value(token)),
           E.asVoid,
         ),
 
       defer: (id: string, token: Token, body: any) =>
         pipe(
-          api.createInteractionResponse(
-            id,
-            RDT.value(token),
-            body,
-          ),
+          api.createInteractionResponse(id, RDT.value(token), body),
           E.asVoid,
         ),
 
       create: (id: string, token: Token, body: any) =>
         pipe(
-          api.createInteractionResponse(
-            id,
-            RDT.value(token),
-            body,
-          ),
+          api.createInteractionResponse(id, RDT.value(token), body),
           E.asVoid,
         ),
 
       reply: (app: string, token: Token, body: any) =>
         pipe(
-          api.editOriginalInteractionResponse(
-            app,
-            RDT.value(token),
-            body,
-          ),
+          api.editOriginalInteractionResponse(app, RDT.value(token), body),
           E.asVoid,
         ),
     }),

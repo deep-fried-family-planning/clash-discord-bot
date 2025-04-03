@@ -1,4 +1,4 @@
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
 import {E, pipe} from '#src/internal/pure/effect.ts'
 import {Cache} from 'effect'
@@ -7,7 +7,7 @@ export class RootMemory extends E.Service<RootMemory>()('disreact/RootMemory', {
   accessors: true,
 
   effect: pipe(
-    DsxSettings,
+    DisReactConfig,
     E.flatMap(() =>
       Cache.make({
         capacity  : 100,

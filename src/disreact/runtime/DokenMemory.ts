@@ -1,4 +1,4 @@
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts'
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
 import {Cache, type Cause, Data, Exit, pipe} from 'effect'
@@ -13,10 +13,8 @@ export type DokenError =
   | Cause.UnknownException
 
 export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
-  accessors: true,
-
   effect: E.gen(function* () {
-    const config = yield* DsxSettings
+    const config = yield* DisReactConfig
     const lookup = (_: string) => E.succeed(undefined as Doken.Defer | undefined)
     const cache = yield* Cache.makeWith({
       capacity: config.doken.capacity ?? 100,
@@ -39,7 +37,7 @@ export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory'
 
 const makeDynamo = E.gen(function* () {
   const dynamo = yield* DynamoDBDocument
-  const config = yield* DsxSettings
+  const config = yield* DisReactConfig
   const cache = yield* C.makeWith(
     {
       lookup: (id: string): E.Effect<Doken.Defer | undefined, DokenError> =>

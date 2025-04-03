@@ -3,7 +3,7 @@ import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E, L, pipe} from '#src/disreact/codec/re-exports.ts'
-import {type DisReactOptions, DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {type DisReactOptions, DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {respond} from '#src/disreact/runtime/respond.ts'
@@ -30,7 +30,7 @@ export const makeDefaultRuntimeLayer = (
         config?.dokenMemory ?? DokenMemory.Default,
       ),
     ),
-    L.provide(DsxSettings.configLayer(config?.options)),
+    L.provide(DisReactConfig.configLayer(config?.options)),
   )
 
   return layer

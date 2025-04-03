@@ -19,7 +19,8 @@ const getId = (component: Id) => {
 }
 
 export const synthesize = (component: Id, props?: any) => E.gen(function* () {
-  const root = yield* SourceRegistry.checkout(
+  const registry = yield* SourceRegistry
+  const root = yield* registry.checkout(
     getId(component),
     props,
   )

@@ -1,6 +1,6 @@
+import {D, DF, E, L, pipe} from '#src/disreact/codec/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
-import {D, DF, E, L, pipe} from '#src/disreact/codec/re-exports.ts'
 import * as Mailbox from 'effect/Mailbox'
 
 export type RelayStatus = D.TaggedEnum<{
@@ -20,23 +20,22 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
       DF.make<Root | null>(),
     ]),
     ([mailbox, current]) =>
-    ({
-      setOutput  : (root: Root | null) => DF.succeed(current, root),
-      awaitOutput: () => DF.await(current),
-      setComplete: () => mailbox.done,
-      awaitStatus: () => mailbox.take,
-      sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
-    }),
+      ({
+        setOutput  : (root: Root | null) => DF.succeed(current, root),
+        awaitOutput: () => DF.await(current),
+        setComplete: () => mailbox.done,
+        awaitStatus: () => mailbox.take,
+        sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
+      }),
   ),
-  accessors: true,
 }) {
   static readonly Fresh = L.fresh(Relay.Default)
 }
 
-export const relayPartial = (elem: Elem.Rest) => {
+export const relayPartial = (elem: Elem.Rest) => E.andThen(Relay, (relay) => {
   if (elem.type === 'modal') {
     return pipe(
-      Relay.sendStatus(
+      relay.sendStatus(
         RelayStatus.Partial({
           type: 'modal',
         }),
@@ -46,7 +45,7 @@ export const relayPartial = (elem: Elem.Rest) => {
   }
   if (elem.type === 'message') {
     return pipe(
-      Relay.sendStatus(
+      relay.sendStatus(
         RelayStatus.Partial({
           type : 'message',
           flags: elem.props.display === 'ephemeral' ? 2 : 1,
@@ -56,4 +55,4 @@ export const relayPartial = (elem: Elem.Rest) => {
     )
   }
   return E.succeed(false)
-}
+})

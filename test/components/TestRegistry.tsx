@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts'
-import {DsxSettings} from '#src/disreact/runtime/DisReactConfig.ts'
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
@@ -18,7 +18,7 @@ export const expectJSON = (filename: string) => (actual: any) =>
       await expect(JSON.stringify(actual, null, 2)).toMatchFileSnapshot(filename),
   )
 
-const config = DsxSettings.configLayer(
+const config = DisReactConfig.configLayer(
   {
     token  : Redacted.make(''),
     doken  : {capacity: 100},

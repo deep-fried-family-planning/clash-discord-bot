@@ -1,36 +1,61 @@
 import {Codec} from '#src/disreact/codec/Codec.ts'
 import {Doken, makeFreshFromRequest} from '#src/disreact/codec/doken.ts'
+import {DF, DT, E, F, O, pipe} from '#src/disreact/codec/re-exports.ts'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
-import { RelayStatus} from '#src/disreact/model/Relay.ts'
-import {Relay} from '#src/disreact/model/Relay.ts'
-import {DF, DT, E, F, O, pipe, RDT} from '#src/disreact/codec/re-exports.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
+import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
+import {ExpiryFailure} from '#src/disreact/runtime/DisReactState.ts'
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import {Model} from '../model/model'
+
+const closeInteraction = (fresh: Doken.Fresh, defer?: Doken) =>
+  pipe(
+    DT.isPast(fresh.ttl),
+    E.if({
+      onTrue : () => E.fail(new ExpiryFailure()),
+      onFalse: () => DisReactDOM,
+    }),
+    E.andThen((dom) => {
+      if (!defer || defer._tag === 'Spent') {
+        return pipe(
+          dom.defer(fresh.id, fresh.val, {type: 7}),
+          E.andThen(() => dom.dismount(fresh.app, fresh.val)),
+          E.fork,
+        )
+      }
+      if (defer._tag === 'Cache') {
+        return pipe(
+          dom.defer(fresh.id, fresh.val, {type: 7}),
+          E.andThen(() =>
+            E.forkAll([
+              dom.dismount(fresh.app, fresh.val),
+              E.andThen(DokenMemory, (memory) => memory.free(defer.id)),
+            ]),
+          ),
+        )
+      }
+      return E.forkAll([
+        dom.discard(fresh.app, fresh.val, {type: 7}),
+        dom.dismount(fresh.app, defer.val),
+      ])
+    }),
+    E.as(undefined),
+  )
 
 export const respond = (body: any) => E.gen(function* () {
   const fresh = yield* makeFreshFromRequest(body)
   const params = yield* Codec.decodeRoute(body.message)
   const deferDoken = yield* DF.make<Doken.Defer>()
-  const model = yield* E.fork(Model.invokeRoot(params.hydrant, body.event))
+  const model = yield* E.fork(Model.hydrateInvoke(params.hydrant, body.event))
+  const relay = yield* Relay
 
   let status: RelayStatus | undefined = undefined
 
   while (status?._tag !== 'Complete') {
-    status = yield* Relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())))
+    status = yield* relay.awaitStatus().pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())))
 
     if (status._tag === 'Close') {
-      const param = yield* resolveParamDoken(params.doken)
-
-      if (!param) {
-        yield* DisReactDOM.defer(fresh.id, fresh.val, {type: 6})
-        yield*DisReactDOM.dismount(fresh.app, fresh.val)
-      }
-      else {
-        yield* E.fork(DisReactDOM.discard(fresh.id, fresh.val, {type: 7}))
-        yield* E.fork(DisReactDOM.dismount(fresh.app, param.val))
-      }
-      return
+      return yield* closeInteraction(fresh, params.doken)
     }
 
     if (status._tag === 'Next') {
@@ -90,7 +115,7 @@ const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
       onTrue : () => E.succeed(undefined),
       onFalse: () => doken._tag === 'Defer'
         ? E.succeed(undefined)
-        : DokenMemory.load(doken.id),
+        : E.andThen(DokenMemory, (memory) => memory.load(doken.id)),
     }),
   )
 

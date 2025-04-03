@@ -1,36 +1,40 @@
-import {Relay} from '#src/disreact/model/Relay.ts'
-import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E, pipe} from '#src/disreact/codec/re-exports.ts'
 import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
+import {Relay} from '#src/disreact/model/Relay.ts'
+import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {Lifecycles} from './lifecycles'
 
 export * as Model from './model.ts'
 export type Model = never
 
-export const createRoot = () => {}
+export const initEntrypoint = () => {}
 
-export const invokeRoot = (hydrant: Fibril.Hydrant, event: any) =>
+export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: any) =>
   pipe(
-    SourceRegistry.fromHydrant(hydrant),
+    E.andThen(SourceRegistry, (registry) => registry.fromHydrant(hydrant)),
     E.tap((original) =>
       pipe(
         Lifecycles.hydrate(original),
         E.andThen(() => Lifecycles.handleEvent(original, event)),
         E.andThen(() => Lifecycles.rerender(original)),
-        E.andThen(() => Relay.setOutput(original)),
+        E.andThen(() => E.andThen(Relay, (relay) => relay.setOutput(original))),
         E.fork,
       ),
     ),
-    E.andThen((original) => E.andThen(
-      Relay.awaitOutput(),
-      (output) => {
-        if (output === null || output.id === original.id) {
-          return E.succeed(output)
-        }
-        return Lifecycles.initialize(output)
-      },
-    )),
-    E.tap(() => Relay.setComplete()),
+    E.andThen((original) =>
+      E.andThen(Relay, (relay) =>
+        pipe(
+          relay.awaitOutput(),
+          E.andThen((output) => {
+            if (output === null || output.id === original.id) {
+              return E.succeed(output)
+            }
+            return Lifecycles.initialize(output)
+          }),
+          E.tap(() => relay.setComplete()),
+        ),
+      ),
+    ),
   )
 
 // E.gen(function* () {

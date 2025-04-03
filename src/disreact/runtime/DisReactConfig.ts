@@ -1,15 +1,11 @@
 import type {FC} from '#src/disreact/model/comp/fc.ts'
-import type { RDT} from '#src/internal/pure/effect.ts'
-import {E, L} from '#src/internal/pure/effect.ts'
-import {pipe} from 'effect'
-import type { Elem } from '#src/disreact/model/entity/elem.ts'
-
-
+import type {Elem} from '#src/disreact/model/entity/elem.ts'
+import {E, L, type RDT} from '../codec/re-exports'
 
 export interface DisReactOptions {
   version?: number | string
   // app  : string;
-  token   : RDT.Redacted
+  token   : RDT.Redacted<string>
   // codec: {
   //   componentPrefix: string;
   //   hydrationPrefix: string;
@@ -33,9 +29,8 @@ interface DisReactResolved extends DisReactOptions {
   }
 }
 
-export class DsxSettings extends E.Service<DsxSettings>()('disreact/Config', {
-  accessors: true,
-  succeed  : {} as unknown as DisReactResolved,
+export class DisReactConfig extends E.Service<DisReactConfig>()('disreact/Config', {
+  succeed: {} as unknown as DisReactResolved,
 }) {
   static readonly configLayer = (options: DisReactOptions) => {
     options.sources.public ??= []

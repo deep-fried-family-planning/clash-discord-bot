@@ -1,25 +1,25 @@
 import {jsx} from '#src/disreact/jsx-runtime.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {encodeRoot, Root} from '#src/disreact/model/entity/root.ts'
+import {Lifecycles} from '#src/disreact/model/lifecycles.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E} from '#src/internal/pure/effect.ts'
 import {pipe, Record} from 'effect'
 import {TestMessage} from 'test/components/test-message.tsx'
-import {Lifecycles} from '#src/disreact/model/lifecycles.ts'
 import {expectJSON, it, nofunc} from 'test/components/TestRegistry.tsx'
 
-
 it.effect('when cloning a node', E.fn(function* () {
-  const root = yield* SourceRegistry.checkout(TestMessage)
+  const registry = yield* SourceRegistry
+  const root = yield* registry.checkout(TestMessage)
   const actual = Root.deepLinearize(Root.deepClone(root))
   const expected = Root.deepLinearize(root)
 
   expect(actual.elem).toEqual(expected.elem)
 }))
 
-
 it.effect('when cloning a tree', E.fn(function* () {
-  const root = yield* SourceRegistry.checkout(TestMessage)
+  const registry = yield* SourceRegistry
+  const root = yield* registry.checkout(TestMessage)
   const rendered = yield* Lifecycles.rerender(root)
 
   const exp = pipe(
@@ -36,7 +36,6 @@ it.effect('when cloning a tree', E.fn(function* () {
   expect(act).toEqual(exp)
 }))
 
-
 it.effect('when rerendering a cloned tree', E.fn(function* () {
   const component = jsx(TestMessage, {})
   const src = Root.make(Root.PUBLIC, component)
@@ -47,9 +46,9 @@ it.effect('when rerendering a cloned tree', E.fn(function* () {
   expect(nofunc(Elem.linearizeElem(actual.elem))).toEqual(nofunc(Elem.linearizeElem(initial.elem)))
 }))
 
-
 it.effect('when dispatching an event', E.fn(function* () {
-  const root = yield* SourceRegistry.checkout(TestMessage)
+  const registry = yield* SourceRegistry
+  const root = yield* registry.checkout(TestMessage)
   const initial = yield* Lifecycles.initialize(root)
 
   const event = {
@@ -83,10 +82,10 @@ it.effect('when dispatching an event', E.fn(function* () {
   `)
 }))
 
-
 describe('given event.type is not in any node.props', () => {
   it.effect('when dispatching an event', E.fn(function* () {
-    const root = yield* SourceRegistry.checkout(TestMessage)
+    const registry = yield* SourceRegistry
+    const root = yield* registry.checkout(TestMessage)
     yield* Lifecycles.initialize(root)
     const initial = yield* Lifecycles.rerender(root)
     const event = {
@@ -96,17 +95,17 @@ describe('given event.type is not in any node.props', () => {
     yield* pipe(
       Lifecycles.handleEvent(initial, event),
       E.catchAll((err) => {
-          expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`)
-          return E.void
-        }),
+        expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`)
+        return E.void
+      }),
     )
   }))
 })
 
-
 describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
-    const root = yield* SourceRegistry.checkout(TestMessage)
+    const registry = yield* SourceRegistry
+    const root = yield* registry.checkout(TestMessage)
     yield* Lifecycles.initialize(root)
     const initial = yield* Lifecycles.rerender(root)
     const event = {
@@ -125,38 +124,36 @@ describe('given event.id does not match any node.id', () => {
   }))
 })
 
-
 it.effect('when rendering an initial tree', E.fn(function* () {
-  const root = yield* SourceRegistry.checkout(TestMessage)
+  const registry = yield* SourceRegistry
+  const root = yield* registry.checkout(TestMessage)
   const render = yield* Lifecycles.initialize(root)
   yield* pipe(encodeRoot(render), expectJSON('./initial-tree.json'))
 }))
 
+it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
+  const runs = Array.from({length: 10000})
+  const registry = yield* SourceRegistry
 
-describe('performance', {timeout: 5000}, () => {
-  it.effect(`when hydrating an empty root`, E.fn(function* () {
-    const runs = Array.from({length: 10000})
+  for (let i = 0; i < runs.length; i++) {
+    const root = yield* registry.checkout(TestMessage)
+    const expected = yield* Lifecycles.initialize(root)
+    const actual = yield* Lifecycles.hydrate(root)
 
-    for (let i = 0; i < runs.length; i++) {
-      const root = yield* SourceRegistry.checkout(TestMessage)
-      const expected = yield* Lifecycles.initialize(root)
-      const actual = yield* Lifecycles.hydrate(root)
-
-      const event = {
-        id  : 'actions:2:button:0',
-        prop: 'onclick',
-      }
-      yield* Lifecycles.handleEvent(root, event)
-
-      const again = yield* Lifecycles.rerender(root)
-
-      expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(actual.elem))
-      expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(expected.elem))
-      expect(Elem.linearizeElem(actual.elem)).toEqual(Elem.linearizeElem(expected.elem))
-
-      const encoded = encodeRoot(again)
-
-      yield* E.promise(() => expect(encoded).toMatchFileSnapshot('./.snap/performance.json'))
+    const event = {
+      id  : 'actions:2:button:0',
+      prop: 'onclick',
     }
-  }))
-})
+    yield* Lifecycles.handleEvent(root, event)
+
+    const again = yield* Lifecycles.rerender(root)
+
+    expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(actual.elem))
+    expect(Elem.linearizeElem(again.elem)).toEqual(Elem.linearizeElem(expected.elem))
+    expect(Elem.linearizeElem(actual.elem)).toEqual(Elem.linearizeElem(expected.elem))
+
+    const encoded = encodeRoot(again)
+
+    yield* E.promise(() => expect(encoded).toMatchFileSnapshot('./.snap/performance.json'))
+  }
+}), {timeout: 5000})
