@@ -1,4 +1,4 @@
-import {E, ML, pipe, type RT} from '#src/disreact/codec/re-exports.ts'
+import {E, ML, pipe, type RT} from '#src/disreact/utils/re-exports.ts'
 import {EF} from '#src/disreact/model/comp/ef.ts'
 import {EH} from '#src/disreact/model/comp/eh.ts'
 import {FC} from '#src/disreact/model/comp/fc'

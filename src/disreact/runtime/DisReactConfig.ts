@@ -1,6 +1,6 @@
 import type {FC} from '#src/disreact/model/comp/fc.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {E, L, type RDT} from '../codec/re-exports'
+import {E, L, type RDT} from 'src/disreact/utils/re-exports.ts'
 
 export interface DisReactOptions {
   version?: number | string

@@ -1,5 +1,5 @@
 import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/rest/common.ts'
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import {PremiumType} from 'dfx/types'
 import {DAPIMessage} from './dapi-message'
 

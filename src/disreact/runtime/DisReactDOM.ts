@@ -1,4 +1,4 @@
-import {E, L, pipe} from '#src/disreact/codec/re-exports.ts'
+import {E, L, pipe} from '#src/disreact/utils/re-exports.ts'
 import {RDT} from '#src/internal/pure/effect.ts'
 import {NodeHttpClient} from '@effect/platform-node'
 import {DiscordREST, DiscordRESTMemoryLive} from 'dfx'

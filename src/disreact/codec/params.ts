@@ -1,6 +1,6 @@
 import {Doken} from '#src/disreact/codec/doken.ts'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import {DAPIMessage} from 'src/disreact/codec/rest/dapi-message.ts'
 
 export * as Params from '#src/disreact/codec/params.ts'

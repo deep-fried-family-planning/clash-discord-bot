@@ -1,4 +1,4 @@
-import {D, DT, E, L, pipe} from '#src/disreact/codec/re-exports.ts'
+import {D, DT, E, L, pipe} from '#src/disreact/utils/re-exports.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
 import type {Doken} from '../codec/doken'

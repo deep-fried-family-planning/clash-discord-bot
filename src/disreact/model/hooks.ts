@@ -1,5 +1,5 @@
 import type {FC} from '#src/disreact/model/comp/fc.ts'
-import {D} from '#src/disreact/codec/re-exports.ts'
+import {D} from '#src/disreact/utils/re-exports.ts'
 import type {E} from '#src/internal/pure/effect.ts'
 import {Fibril, Monomer} from '#src/disreact/model/comp/fibril'
 

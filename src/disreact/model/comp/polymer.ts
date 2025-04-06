@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import {Monomer} from '#src/disreact/model/comp/monomer.ts'
 
 export * as Polymer from '#src/disreact/model/comp/polymer.ts'

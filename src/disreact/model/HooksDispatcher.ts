@@ -1,4 +1,4 @@
-import {E} from '#src/disreact/codec/re-exports.ts'
+import {E} from '#src/disreact/utils/re-exports.ts'
 import { Hooks } from './hooks'
 
 

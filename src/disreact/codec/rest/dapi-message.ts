@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import {DAPIComponent} from './dapi-component.ts'
 import {DAPIEmbed} from './dapi-embed.ts'
 

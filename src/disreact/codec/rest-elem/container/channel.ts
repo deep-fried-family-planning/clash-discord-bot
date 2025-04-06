@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import {Util} from '../util.ts'
 
 export * as Channel from './channel.ts'

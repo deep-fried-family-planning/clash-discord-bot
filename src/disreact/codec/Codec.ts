@@ -1,5 +1,5 @@
 import {Root} from '#src/disreact/model/entity/root.ts'
-import {E, S} from '#src/disreact/codec/re-exports.ts'
+import {E, S} from '#src/disreact/utils/re-exports.ts'
 import {Params} from '#src/disreact/codec/params.ts'
 
 export class Codec extends E.Service<Codec>()('disreact/Codec', {

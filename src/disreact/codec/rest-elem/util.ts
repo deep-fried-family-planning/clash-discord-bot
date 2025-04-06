@@ -1,5 +1,5 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 import type {E} from '#src/internal/pure/effect.ts'
 
 export * as Util from '#src/disreact/codec/rest-elem/util.ts'

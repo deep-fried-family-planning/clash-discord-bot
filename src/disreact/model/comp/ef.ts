@@ -1,4 +1,4 @@
-import { E } from '#src/disreact/codec/re-exports.ts'
+import { E } from '#src/disreact/utils/re-exports.ts'
 import {isPromise} from 'effect/Predicate'
 
 export * as EF from '#src/disreact/model/comp/ef.ts'

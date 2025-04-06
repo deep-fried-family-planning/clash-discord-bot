@@ -1,4 +1,4 @@
-import {E, pipe} from '#src/disreact/codec/re-exports.ts'
+import {E, pipe} from '#src/disreact/utils/re-exports.ts'
 import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'

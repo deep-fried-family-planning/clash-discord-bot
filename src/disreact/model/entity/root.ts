@@ -3,7 +3,7 @@ import { Keys } from '#src/disreact/codec/rest-elem/keys.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {FC} from '#src/disreact/model/comp/fc.ts'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
-import {ML} from '#src/disreact/codec/re-exports.ts'
+import {ML} from '#src/disreact/utils/re-exports.ts'
 
 export * as Root from '#src/disreact/model/entity/root.ts'
 export type Root = Source & {

@@ -1,4 +1,4 @@
-import {pipe, S} from '#src/disreact/codec/re-exports.ts'
+import {pipe, S} from '#src/disreact/utils/re-exports.ts'
 
 
 export * as DAPIComponent from '#src/disreact/codec/rest/dapi-component.ts'

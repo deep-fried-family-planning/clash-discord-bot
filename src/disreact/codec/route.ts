@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/codec/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts'
 
 export * as Route from './route.ts'
 export type Route = never

@@ -2,7 +2,7 @@ import {FC} from '#src/disreact/model/comp/fc.ts'
 import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
-import {Arr, Data, E, Hash} from '#src/disreact/codec/re-exports.ts'
+import {Arr, Data, E, Hash} from '#src/disreact/utils/re-exports.ts'
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 
 const STORE = new Map<string, Root.Source>()

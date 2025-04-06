@@ -1,4 +1,4 @@
-import {D, DF, E, L, pipe} from '#src/disreact/codec/re-exports.ts'
+import {D, DF, E, L, pipe} from '#src/disreact/utils/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import type {Root} from '#src/disreact/model/entity/root.ts'
 import * as Mailbox from 'effect/Mailbox'

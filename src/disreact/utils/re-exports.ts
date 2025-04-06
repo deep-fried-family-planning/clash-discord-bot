@@ -23,6 +23,12 @@ import * as DT from 'effect/DateTime'
 import * as DR from 'effect/Duration'
 
 export {
+  pipe,
+  hole,
+  flow,
+} from 'effect/Function'
+
+export {
   Arr,
   BI,
   Data,
@@ -47,9 +53,5 @@ export {
   DT,
   DR,
 }
-
-export {
-  pipe,
-} from 'effect/Function'
 
 export type RT<A extends (...args: any) => any> = ReturnType<A>
