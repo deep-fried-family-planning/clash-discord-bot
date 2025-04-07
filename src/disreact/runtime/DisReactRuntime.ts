@@ -1,10 +1,10 @@
-import {Codec} from '#src/disreact/codec/Codec.ts'
+import {RestCodec} from '#src/disreact/codec/RestCodec.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts'
 import {type DisReactOptions, DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
+import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {respond} from '#src/disreact/runtime/respond.ts'
 import {synthesize} from '#src/disreact/runtime/synthesize.ts'
@@ -23,7 +23,7 @@ export const makeDefaultRuntimeLayer = (
     L.provideMerge(
       L.mergeAll(
         HooksDispatcher.Default,
-        Codec.Default,
+        RestCodec.Default,
         SourceRegistry.Default,
         DokenMemory.Default,
         config?.ixDOM ?? pipe(DisReactDOM.Default, L.provide(DiscordConfig.layer({token: config.options.token}))),

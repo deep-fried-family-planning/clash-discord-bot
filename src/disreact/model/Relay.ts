@@ -23,7 +23,7 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
       ({
         setOutput  : (root: Root | null) => DF.succeed(current, root),
         awaitOutput: () => DF.await(current),
-        setComplete: () => mailbox.done,
+        setComplete: () => mailbox.end,
         awaitStatus: () => mailbox.take,
         sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
       }),

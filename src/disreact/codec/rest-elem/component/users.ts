@@ -3,7 +3,7 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {declareEvent, declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import {S} from '#src/disreact/utils/re-exports.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {DAPIComponent} from '../../rest/dapi-component'
+import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component'
 
 export * as Users from '#src/disreact/codec/rest-elem/component/users.ts'
 export type Users = never

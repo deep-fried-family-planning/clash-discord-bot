@@ -1,6 +1,6 @@
 import {Literal} from 'effect/Schema'
 
-export * as Flag from '#src/disreact/codec/rest/flag.ts'
+export * as Flag from '#src/disreact/codec/dapi/flag.ts'
 
 
 export const FRESH = 0

@@ -1,6 +1,6 @@
 import {Literal} from 'effect/Schema'
 
-export * as CallbackType from '#src/disreact/codec/rest/callback-type.ts'
+export * as CallbackType from '#src/disreact/codec/dapi/callback-type.ts'
 export type CallbackType = never
 
 export const FRESH = 0 as const

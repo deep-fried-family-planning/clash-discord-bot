@@ -2,7 +2,7 @@ import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts'
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {Util} from '#src/disreact/codec/rest-elem/util.ts'
 import * as S from 'effect/Schema'
-import {DAPIModal} from '../../rest/dapi-modal'
+import {DAPIModal} from '#src/disreact/codec/dapi/dapi-modal'
 
 export * as Modal from '#src/disreact/codec/rest-elem/container/modal.ts'
 export type Modal = never

@@ -1,7 +1,7 @@
 import {pipe, S} from '#src/disreact/utils/re-exports.ts'
 
 
-export * as DAPIComponent from '#src/disreact/codec/rest/dapi-component.ts'
+export * as DAPIComponent from '#src/disreact/codec/dapi/dapi-component.ts'
 export type DAPIComponent = never
 
 export const ACTION_ROW     = 1,

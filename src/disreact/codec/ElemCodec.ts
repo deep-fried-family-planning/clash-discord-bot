@@ -1,0 +1,96 @@
+import type {RxTx} from '#src/disreact/codec/rxtx.ts'
+import {Elem} from '#src/disreact/model/entity/elem.ts'
+import type {Event} from '#src/disreact/model/entity/event.ts'
+import {E, ML} from '#src/disreact/utils/re-exports.ts'
+import type {Root} from '../model/entity/root'
+import {Intrinsic} from './rest-elem'
+import {Keys} from './rest-elem/keys'
+
+export const encodeRoot = (root: Root | null | undefined) => {
+  if (!root) {
+    throw new Error('Root is null or undefined')
+  }
+
+  const result = {} as any,
+        list   = ML.make<[any, Elem.Any[]]>([result, [root.elem]]),
+        args   = new WeakMap<Elem, any>()
+
+  while (ML.tail(list)) {
+    const [acc, cs] = ML.pop(list)!
+
+    for (let i = 0; i < cs.length; i++) {
+      const c = cs[i]
+
+      if (Elem.isPrim(c)) {
+        acc[Keys.primitive] ??= []
+        acc[Keys.primitive].push(c)
+      }
+      else if (args.has(c as any)) {
+        if (Elem.isRest(c)) {
+          const norm = Intrinsic.NORM[c.type as any]
+          const encode = Intrinsic.ENC[c.type]
+          const arg = args.get(c)!
+          acc[norm] ??= []
+          acc[norm].push(encode(c, arg))
+        }
+        else {
+          //
+        }
+      }
+      else if (!c.nodes.length) {
+        if (Elem.isRest(c)) {
+          const norm = Intrinsic.NORM[c.type as any]
+          const encode = Intrinsic.ENC[c.type]
+          const arg = {} as any
+          args.set(c, arg)
+          acc[norm] ??= []
+          acc[norm].push(encode(c, arg))
+        }
+        else {
+          //
+        }
+      }
+      else {
+        ML.append(list, [acc, cs.slice(i)])
+        const arg = {} as any
+        args.set(c, arg)
+
+        if (Elem.isRest(c)) {
+          ML.append(list, [arg, c.nodes])
+        }
+        else {
+          ML.append(list, [acc, c.nodes])
+        }
+
+        break
+      }
+    }
+  }
+
+  return result.message?.[0] ?? result.modal?.[0]
+}
+
+export const decodeEvent = (route: RxTx.RouteDecoding): Event => {
+  const req = route.original
+
+  if (req.type === 2) {
+    return {
+      id  : req.data.custom_id,
+      data: {},
+    }
+  }
+
+  if (req.type === 5) {
+    throw new Error(`Invalid request type: ${req.type}`)
+  }
+
+  // @ts-expect-error temporary
+  throw new Error(`Invalid request type: ${req.type}`)
+}
+
+export class ElemCodec extends E.Service<ElemCodec>()('disreact/ElemCodec', {
+  succeed: {
+    encodeRoot,
+    decodeEvent,
+  },
+}) {}

@@ -11,21 +11,21 @@ export const initEntrypoint = () => {}
 
 export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: any) =>
   pipe(
-    E.andThen(SourceRegistry, (registry) => registry.fromHydrant(hydrant)),
+    E.flatMap(SourceRegistry, (registry) => registry.fromHydrant(hydrant)),
     E.tap((original) =>
       pipe(
         Lifecycles.hydrate(original),
-        E.andThen(() => Lifecycles.handleEvent(original, event)),
-        E.andThen(() => Lifecycles.rerender(original)),
-        E.andThen(() => E.andThen(Relay, (relay) => relay.setOutput(original))),
+        E.tap(() => Lifecycles.handleEvent(original, event)),
+        E.tap(() => Lifecycles.rerender(original)),
+        E.tap(() => E.tap(Relay, (relay) => relay.setOutput(original))),
         E.fork,
       ),
     ),
-    E.andThen((original) =>
-      E.andThen(Relay, (relay) =>
+    E.flatMap((original) =>
+      E.flatMap(Relay, (relay) =>
         pipe(
           relay.awaitOutput(),
-          E.andThen((output) => {
+          E.flatMap((output) => {
             if (output === null || output.id === original.id) {
               return E.succeed(output)
             }

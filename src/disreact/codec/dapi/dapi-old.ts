@@ -1,6 +1,6 @@
-import {CallbackType} from '#src/disreact/codec/rest/enum/index.ts'
-import {AssetHash, AvatarHash, BannerHash, EmailAddress, EmailVerified, InteractionId, LocaleOption, MFAEnabled, OAuth2BotUser, SnowFlake, OfficialSystemUser, UserDiscordTag, UserDisplayName, UserId, UserName, MessageId, VisiblePlainText, MarkdownString, CustomId, SkuId, RoleId, ChannelId, EmojiObject} from '#src/disreact/codec/rest/common.ts'
-import {RedactionTerminus} from '#src/disreact/codec/rest/shared.ts'
+import {CallbackType} from '#src/disreact/codec/dapi/enum/index.ts'
+import {AssetHash, AvatarHash, BannerHash, EmailAddress, EmailVerified, InteractionId, LocaleOption, MFAEnabled, OAuth2BotUser, SnowFlake, OfficialSystemUser, UserDiscordTag, UserDisplayName, UserId, UserName, MessageId, VisiblePlainText, MarkdownString, CustomId, SkuId, RoleId, ChannelId, EmojiObject} from '#src/disreact/codec/dapi/common.ts'
+import {RedactionTerminus} from '#src/disreact/codec/dapi/shared.ts'
 import {PremiumType} from 'dfx/types'
 import {Any, Array, Boolean, Enums, greaterThan, Int, Literal, maxItems, maxLength, minItems, optional, Record, String, Struct, Union} from 'effect/Schema'
 

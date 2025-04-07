@@ -1,142 +1,213 @@
-import {Codec} from '#src/disreact/codec/Codec.ts'
-import {Doken, makeFreshFromRequest} from '#src/disreact/codec/doken.ts'
-import {DF, DT, E, F, O, pipe} from '#src/disreact/utils/re-exports.ts'
+import {Doken, type Defer} from '#src/disreact/codec/doken.ts'
+import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts'
+import {ElemCodec} from '#src/disreact/codec/ElemCodec.ts'
+import {RestCodec} from '#src/disreact/codec/RestCodec.ts'
+import {RxTx} from '#src/disreact/codec/rxtx.ts'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
-import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts'
+import type {RelayStatus} from '#src/disreact/model/Relay.ts'
+import {Relay} from '#src/disreact/model/Relay.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
-import {ExpiryFailure} from '#src/disreact/runtime/DisReactState.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
-import {Deferred} from 'effect'
+import {DF, DT, E, F, pipe} from '#src/disreact/utils/re-exports.ts'
 import {Model} from '../model/model'
 
-class RespondState extends E.Service<RespondState>()('disreact/RespondState', {
-  effect: E.map(
-    E.all([
-      Deferred.make(),
-    ]),
-    (state) => {
-      return {
-
-      }
-    },
-  ),
-  accessors: true,
-}) {}
-
-
 export const respond = (body: any) => E.gen(function* () {
-  const fresh = yield* makeFreshFromRequest(body)
-  const params = yield* Codec.decodeRoute(body.message)
-  const deferDoken = yield* DF.make<Doken.Defer>()
-  const model = yield* E.fork(Model.hydrateInvoke(params.hydrant, body.event))
-  const relay = yield* Relay
-  const dom = yield* DisReactDOM
+  const restCodec = yield* RestCodec
+  const request = restCodec.decodeRequest(body)
+  const model = yield* forkModelInvoke(request)
+  const param = yield* forkResolveDoken(request.defer)
+  const fresh = request.fresh
+  const final = yield* DF.make<Doken.Defer | Doken.Spent>()
 
   let status: RelayStatus | undefined = undefined
 
+  const relay = yield* Relay
+
   while (status?._tag !== 'Complete') {
-    status = yield* pipe(
-      relay.awaitStatus(),
-      E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete())),
-    )
+    status = yield* relay.awaitStatus()
 
     if (status._tag === 'Close') {
-      return yield* closeInteraction(fresh, params.doken)
+      const defer = yield* F.join(param)
+
+      if (!defer) {
+        yield* DisReactDOM.defer(fresh.id, fresh.val, {type: 7})
+        yield* DisReactDOM.dismount(fresh.app, fresh.val)
+        return
+      }
+
+      yield* E.forkAll([
+        DisReactDOM.discard(fresh.id, fresh.val, {type: 7}),
+        DisReactDOM.dismount(fresh.app, defer.val),
+        E.tap(DokenMemory, (memory) => memory.free(defer.id)),
+      ])
+      return
     }
 
-    if (status._tag === 'Next') {
-      const param = yield* resolveParamDoken(params.doken)
+    if (status._tag === 'Next' && status.id === request.hydrant.id) {
+      const defer = yield* F.join(param)
 
-      if (status.id === params.hydrant.id) {
-        if (!param) {
-          const defer = yield* Doken.makeOptimizedDeferFromFresh(body, fresh)
-          yield* E.fork(E.andThen(DisReactDOM, (dom) => dom.defer(defer.id, defer.val, {type: defer.type})))
-          yield* DF.succeed(deferDoken, defer)
-        }
-        else {
-          yield* E.fork(dom.discard(fresh.id, fresh.val, {type: 7}))
-          yield* DF.succeed(deferDoken, param)
-        }
+      if (!defer) {
+        yield* pipe(
+          DisReactDOM.defer(fresh.id, fresh.val, {type: 7}),
+          E.tap(() => DF.succeed(final, Doken.makeDeferFromFresh(fresh))),
+        )
+        break
       }
+
+      yield* pipe(
+        DisReactDOM.discard(fresh.id, fresh.val, {type: 7}),
+        E.tap(() => DF.succeed(final, defer)),
+      )
+      break
     }
 
     if (status._tag === 'Partial') {
-      const maybe = yield* DF.poll(deferDoken)
-      const doken = O.isSome(maybe)
-        ? yield* maybe.value
-        : undefined
-
-      if (!doken || doken.flag !== status.flags) {
-        const defer = yield* Doken.makeDeferFromFresh(body, body.fresh, status.flags)
-        yield* E.fork(
-          E.andThen(DisReactDOM, (dom) =>
-            dom.defer(defer.id, defer.val, defer.flag === 2
-              ? {type: defer.type, data: {flags: 64}}
-              : {type: defer.type}),
-          ),
-        )
-        yield* DF.succeed(deferDoken, defer)
-      }
       break
     }
   }
 
-  const output = yield* F.join(model)
-  const encoded = yield* Codec.encodeRoot(output)
-  const doken = yield* DF.await(deferDoken)
-  const final = yield* Codec.encodeRoute([
+  const doken = yield* DF.await(final)
+  const root = yield* F.join(model)
+
+  const output = restCodec.encodeResponse([
     {
+      base   : RxTx.DEFAULT_BASE_URL,
       doken  : doken,
-      hydrant: Fibril.encodeNexus(output!.nexus),
+      hydrant: Fibril.encodeNexus(root.nexus!),
     },
-    encoded.message[0],
+    root.encoded,
   ])
 
-  yield* E.andThen(DisReactDOM, (dom) => dom.reply(body.application_id, doken.val, final))
+  yield* DisReactDOM.reply(doken.id, doken.val, output)
 })
 
-const resolveParamDoken = (doken?: Doken) => !doken || doken._tag === 'Spent'
-  ? E.succeed(undefined)
-  : pipe(
-    DT.isPast(doken.ttl),
-    E.if({
-      onTrue : () => E.succeed(undefined),
-      onFalse: () => doken._tag === 'Defer'
-        ? E.succeed(undefined)
-        : E.andThen(DokenMemory, (memory) => memory.load(doken.id)),
+const forkModelInvoke = (request: RxTx.RouteDecoding) => E.flatMap(ElemCodec, (codec) => {
+  const event = codec.decodeEvent(request)
+
+  return pipe(
+    Model.hydrateInvoke(request.hydrant, event),
+    E.map((model) =>
+      ({
+        nexus  : model?.nexus,
+        encoded: codec.encodeRoot(model),
+      }),
+    ),
+    E.fork,
+  )
+})
+
+const forkResolveDoken = (defer?: Doken.Defer | Doken.Spent | Doken.Cache) =>
+  E.fork(
+    E.suspend(() => {
+      if (!defer || defer._tag === 'Public') {
+        return E.succeed(undefined)
+      }
+      if (defer._tag === 'Defer') {
+        return E.succeed(defer)
+      }
+
+      return E.flatMap(DokenMemory, (memory) => memory.load(defer.id))
     }),
   )
 
-const closeInteraction = (fresh: Doken.Fresh, defer?: Doken) =>
+const cacheFinalDoken = (final: Doken.Defer) =>
   pipe(
-    DT.isPast(fresh.ttl),
-    E.if({
-      onTrue : () => E.fail(new ExpiryFailure()),
-      onFalse: () => DisReactDOM,
-    }),
-    E.andThen((dom) => {
-      if (!defer || defer._tag === 'Spent') {
-        return pipe(
-          dom.defer(fresh.id, fresh.val, {type: 7}),
-          E.andThen(() => dom.dismount(fresh.app, fresh.val)),
-          E.fork,
-        )
-      }
-      if (defer._tag === 'Cache') {
-        return pipe(
-          dom.defer(fresh.id, fresh.val, {type: 7}),
-          E.andThen(() =>
-            E.forkAll([
-              dom.dismount(fresh.app, fresh.val),
-              E.andThen(DokenMemory, (memory) => memory.free(defer.id)),
-            ]),
-          ),
-        )
-      }
-      return E.forkAll([
-        dom.discard(fresh.app, fresh.val, {type: 7}),
-        dom.dismount(fresh.app, defer.val),
-      ])
-    }),
-    E.as(undefined),
+    E.tap(DokenMemory, (memory) => memory.save(final)),
+    E.fork,
+    E.as(Doken.makeCacheFromDefer(final)),
   )
+
+const setupResponseState = (input: any) =>
+  pipe(
+    RestCodec,
+    E.map((codec) => codec.decodeRequest(input)),
+    E.flatMap((request) =>
+      E.all({
+        epoch  : DT.now,
+        request: E.succeed(request),
+        doken  : DF.make<Doken.Defer | Doken.Spent>(),
+        fresh  : E.succeed(request.fresh),
+        defer  : forkResolveDoken(request.defer),
+        model  : forkModelInvoke(request),
+        dom    : DisReactDOM,
+      }),
+    ),
+  )
+
+type State = E.Effect.Success<ReturnType<typeof setupResponseState>>
+
+const forkOnClose = (state: State) => E.tap(F.join(state.defer), (defer) => {
+  if (defer) {
+    return E.forkAll([
+      state.dom.discard(state.fresh.id, state.fresh.val, {type: 7}),
+      state.dom.dismount(state.fresh.app, defer.val),
+    ])
+  }
+
+  return pipe(
+    state.dom.defer(state.fresh.id, state.fresh.val, {type: 7}),
+    E.fork,
+  )
+})
+
+// const responder = (input: any) => pipe(
+//   setupResponseState(input),
+//   E.tap((state) => {
+//     const initial = RelayStatus.None()
+//
+//     const condition = (status: RelayStatus) =>
+//       status._tag !== 'Complete'
+//       && status._tag !== 'Close'
+//
+//     let isSame = false
+//
+//     const onClose = () => pipe(
+//       F.join(state.defer),
+//       E.tap((defer) => {
+//         if (isSame) {
+//           return
+//         }
+//         return
+//       }),
+//     )
+//
+//     const onSameNext = (defer?: Doken.Defer) => defer
+//       ? pipe(
+//         DF.succeed(state.doken, defer),
+//         E.tap(() => state.dom.discard(state.fresh.id, state.fresh.val, {type: 7})),
+//         E.fork,
+//       )
+//       : pipe(
+//         state.dom.defer(state.fresh.id, state.fresh.val, {type: 7}),
+//         E.tap(() => DF.succeed(state.doken, {
+//           _tag: 'Defer',
+//           id  : state.fresh.id,
+//           val : state.fresh.val,
+//           ttl : state.fresh.ttl.pipe(DT.addDuration(DR.minutes(14))),
+//         } as const)),
+//         E.fork,
+//       )
+//
+//     const onNext = (status: D.TaggedEnum.Value<RelayStatus, 'Next'>) => pipe(
+//       DF.await(state.defer),
+//       E.tap((defer) => {
+//         if (status.id === state.request.hydrant.id) {
+//           isSame = true
+//           return onSameNext(defer)
+//         }
+//       }),
+//     )
+//
+//     const onPartial = (status: D.TaggedEnum.Value<RelayStatus, 'Partial'>) => {
+//
+//     }
+//
+//     const loopBody = RelayStatus.$match({
+//       None    : () => {},
+//       Handled : () => {},
+//       Complete: () => {},
+//       Close   : onClose,
+//       Next    : onNext,
+//       Partial : onPartial,
+//     })
+//   }),
+// )

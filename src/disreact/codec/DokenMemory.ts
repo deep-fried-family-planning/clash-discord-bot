@@ -1,8 +1,8 @@
+import type {Doken} from '#src/disreact/codec/doken.ts'
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts'
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
 import {Cache, type Cause, Data, Exit, pipe} from 'effect'
-import type {Doken} from '#src/disreact/codec/doken.ts'
 
 export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{
   cause?: any
@@ -15,11 +15,10 @@ export type DokenError =
 export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
   effect: E.gen(function* () {
     const config = yield* DisReactConfig
-    const lookup = (_: string) => E.succeed(undefined as Doken.Defer | undefined)
     const cache = yield* Cache.makeWith({
-      capacity: config.doken.capacity ?? 100,
       timeToLive,
-      lookup,
+      capacity: config.doken.capacity ?? 100,
+      lookup  : (_: string) => E.succeed(undefined as Doken.Defer | undefined),
     })
 
     return {
@@ -28,6 +27,7 @@ export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory'
       free: (id: string) => cache.invalidate(id) as E.Effect<void, DokenError>,
     }
   }),
+  accessors: true,
 }) {
   static readonly Dynamo = pipe(
     L.effect(this, E.suspend(() => makeDynamo)),
@@ -38,24 +38,23 @@ export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory'
 const makeDynamo = E.gen(function* () {
   const dynamo = yield* DynamoDBDocument
   const config = yield* DisReactConfig
-  const cache = yield* C.makeWith(
-    {
-      lookup: (id: string): E.Effect<Doken.Defer | undefined, DokenError> =>
-        pipe(
-          dynamo.get({
-            TableName: process.env.DDB_OPERATIONS,
-            Key      : {
-              pk: `t-${id}`,
-              sk: `t-${id}`,
-            },
-          }),
-          E.catchAll((e) => new DokenMemoryError(e)),
-          E.map((resp) => resp.Item as Doken.Defer | undefined),
-        ),
-      timeToLive,
-      capacity: config.doken.capacity ?? 100,
-    },
-  )
+
+  const cache = yield* C.makeWith({
+    timeToLive,
+    capacity: config.doken.capacity ?? 100,
+    lookup  : (id: string): E.Effect<Doken.Defer | undefined, DokenError> =>
+      pipe(
+        dynamo.get({
+          TableName: process.env.DDB_OPERATIONS,
+          Key      : {
+            pk: `t-${id}`,
+            sk: `t-${id}`,
+          },
+        }),
+        E.catchAll((e) => new DokenMemoryError(e)),
+        E.map((resp) => resp.Item as Doken.Defer | undefined),
+      ),
+  })
 
   return DokenMemory.make({
     load: (id: string): E.Effect<Doken.Defer | undefined, DokenError> => cache.get(id),
@@ -71,7 +70,7 @@ const makeDynamo = E.gen(function* () {
           },
         }),
         E.catchAll((e) => new DokenMemoryError(e)),
-        E.andThen(() => cache.set(doken.id, doken)),
+        E.tap(() => cache.set(doken.id, doken)),
       ),
 
     free: (id: string): E.Effect<void, DokenError> =>
@@ -84,7 +83,7 @@ const makeDynamo = E.gen(function* () {
           },
         }),
         E.catchAll((e) => new DokenMemoryError(e)),
-        E.andThen(() => cache.invalidate(id)),
+        E.tap(() => cache.invalidate(id)),
       ),
   })
 })

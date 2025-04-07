@@ -12,6 +12,7 @@ import * as Hash from 'effect/Hash'
 import * as L from 'effect/Layer'
 import * as LI from 'effect/List'
 import * as MB from 'effect/Mailbox'
+import * as M from 'effect/Match'
 import * as ML from 'effect/MutableList'
 import * as O from 'effect/Option'
 import * as S from 'effect/Schema'
@@ -29,6 +30,7 @@ export {
 } from 'effect/Function'
 
 export {
+  M,
   Arr,
   BI,
   Data,

@@ -1,10 +1,10 @@
-import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/rest/common.ts'
+import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/dapi/common.ts'
 import {S} from '#src/disreact/utils/re-exports.ts'
 import {PremiumType} from 'dfx/types'
 import {DAPIMessage} from './dapi-message'
 
-export * as DAPIIX from './dapi-ix.ts'
-export type DAPIIX = never
+export * as Ix from '#src/disreact/codec/dapi/ix.ts'
+export type Ix = never
 
 const InteractionMetadataUser = S.Struct({
   id                    : UserId,

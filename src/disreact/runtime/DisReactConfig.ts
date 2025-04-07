@@ -4,8 +4,11 @@ import {E, L, type RDT} from 'src/disreact/utils/re-exports.ts'
 
 export interface DisReactOptions {
   version?: number | string
-  // app  : string;
   token   : RDT.Redacted<string>
+  codec?: {
+    baseUrl?: string
+  }
+
   // codec: {
   //   componentPrefix: string;
   //   hydrationPrefix: string;

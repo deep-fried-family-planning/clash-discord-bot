@@ -1,6 +1,6 @@
-import {Codec} from '#src/disreact/codec/Codec.ts'
+import {RestCodec} from '#src/disreact/codec/RestCodec.ts'
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts'
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts'
+import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts'
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay} from '#src/disreact/model/Relay.ts'
@@ -41,7 +41,7 @@ export const TestRegistry = pipe(
       SourceRegistry.Default,
       L.provide(config),
     ),
-    Codec.Default,
+    RestCodec.Default,
     HooksDispatcher.Default,
     L.succeed(DisReactDOM, DisReactDOM.make({
       defer   : vi.fn().mockReturnValue(E.void),

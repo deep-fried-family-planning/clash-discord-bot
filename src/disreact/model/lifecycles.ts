@@ -1,19 +1,19 @@
-import {E, ML, pipe, type RT} from '#src/disreact/utils/re-exports.ts'
 import {EF} from '#src/disreact/model/comp/ef.ts'
-import {EH} from '#src/disreact/model/comp/eh.ts'
 import {FC} from '#src/disreact/model/comp/fc'
 import {Fibril} from '#src/disreact/model/comp/fibril.ts'
 import {Props} from '#src/disreact/model/comp/props.ts'
 import {Elem} from '#src/disreact/model/entity/elem.ts'
+import {Event} from '#src/disreact/model/entity/event.ts'
 import {Root} from '#src/disreact/model/entity/root.ts'
 import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts'
 import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
+import {E, ML, pipe, type RT} from '#src/disreact/utils/re-exports.ts'
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts'
 export type Lifecycles = never
 
-const relayPartial = (elem: Elem.Rest) => E.andThen(Relay, (relay) => {
+const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   if (elem.type === 'modal') {
     return pipe(
       relay.sendStatus(
@@ -40,8 +40,8 @@ const relayPartial = (elem: Elem.Rest) => E.andThen(Relay, (relay) => {
 
 const renderElemPiped = (root: Root, self: Elem.Task) =>
   pipe(
-    E.andThen(HooksDispatcher, (dispatch) => dispatch.lock),
-    E.andThen(() => {
+    E.flatMap(HooksDispatcher, (dispatch) => dispatch.lock),
+    E.flatMap(() => {
       Fibril.λ.set(self.strand)
       self.strand.nexus = root.nexus
       self.strand.pc = 0
@@ -62,7 +62,11 @@ const renderElemPiped = (root: Root, self: Elem.Task) =>
     }),
     E.tap(() => {
       Fibril.λ.clear()
-      return E.andThen(HooksDispatcher, (dispatch) => dispatch.unlock)
+      return E.tap(HooksDispatcher, (dispatch) => dispatch.unlock)
+    }),
+    E.tapError(() => {
+      Fibril.λ.clear()
+      return E.flatMap(HooksDispatcher, (dispatch) => dispatch.unlock)
     }),
     E.map((children) => {
       self.strand.pc = 0
@@ -80,10 +84,6 @@ const renderElemPiped = (root: Root, self: Elem.Task) =>
       }
 
       return filtered
-    }),
-    E.catchAll((e) => {
-      Fibril.λ.clear()
-      return E.tap(E.fail(e), E.andThen(HooksDispatcher, (dispatch) => dispatch.unlock))
     }),
     E.tap(() => renderEffectAtNodePiped(root, self)),
   )
@@ -177,7 +177,7 @@ const notifyOnHandlePiped = (root: Root) => E.andThen(Relay, (relay) => {
   )
 })
 
-export const handleEvent = (root: Root, event: any) => E.suspend(() => {
+export const handleEvent = (root: Root, event: Event) => E.suspend(() => {
   const stack = ML.make<Elem>(root.elem)
 
   while (ML.tail(stack)) {
@@ -186,7 +186,7 @@ export const handleEvent = (root: Root, event: any) => E.suspend(() => {
     if (Elem.isRest(elem)) {
       if (elem.props.custom_id === event.id || elem.ids === event.id) {
         return pipe(
-          EH.apply(elem.handler, event),
+          Event.renderHandler(elem.handler, event),
           E.tap(() => notifyOnHandlePiped(root)),
         )
       }

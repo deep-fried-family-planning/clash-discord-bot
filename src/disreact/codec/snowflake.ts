@@ -1,5 +1,3 @@
-import {DateTime} from 'effect'
-import console from 'node:console'
 import type {DR} from 'src/disreact/utils/re-exports.ts'
 import { DT, hole, S} from 'src/disreact/utils/re-exports.ts'
 

@@ -1,4 +1,4 @@
-import {Codec} from '#src/disreact/codec/Codec.ts'
+import {RestCodec} from '#src/disreact/codec/RestCodec.ts'
 import {FC} from '#src/disreact/model/comp/fc.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
 import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
@@ -27,9 +27,9 @@ export const synthesize = (component: Id, props?: any) => E.gen(function* () {
 
   yield* Lifecycles.initialize(root)
 
-  const encoded = yield* Codec.encodeRoot(root)
+  const encoded = yield* RestCodec.encodeRoot(root)
 
-  const parameterized = yield* Codec.encodeRoute([
+  const parameterized = yield* RestCodec.encodeRoute([
     {
       doken: {
         _tag: 'Spent',
