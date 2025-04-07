@@ -50,7 +50,7 @@
     "@effect-aws/lib-dynamodb": "1.9.5",
     "@effect-aws/ssm": "1.2.0",
     "@effect/platform": "0.80.6",
-    "@effect/platform-node": "0.76.10",
+    "@effect/platform-node": "0.76.11",
     "@hapi/boom": "10.0.1",
     "@hapi/bourne": "3.0.0",
     "@msgpack/msgpack": "3.1.1",
