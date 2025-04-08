@@ -1,10 +1,10 @@
-import {Header} from '#src/discord/components/header.tsx'
-import {useState} from '#src/disreact/index.ts'
-import type {FC} from '#src/disreact/model/comp/fc.ts'
-import {E} from '#src/internal/pure/effect.ts'
+import {Header} from '#src/discord/components/header.tsx';
+import {useState} from '#src/disreact/index.ts';
+import type {FC} from '#src/disreact/model/comp/fc.ts';
+import {E} from '#src/internal/pure/effect.ts';
 
 export const TestMessage: FC = () => E.gen(function* () {
-  const [num, setNum] = useState(0)
+  const [num, setNum] = useState(0);
 
   return (
     <message display={'ephemeral'}>
@@ -26,7 +26,7 @@ export const TestMessage: FC = () => E.gen(function* () {
       <actions>
         <button
           onclick={() => {
-            setNum(num + 1)
+            setNum(num + 1);
           }}
         >
           {`Start ${num}`}
@@ -42,5 +42,5 @@ export const TestMessage: FC = () => E.gen(function* () {
         <option value='3' label='3' default/>
       </select>
     </message>
-  )
-})
+  );
+});

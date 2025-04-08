@@ -46,17 +46,22 @@ export const TestRegistry = pipe(
     L.succeed(
       DisReactDOM,
       DisReactDOM.make({
-        defer   : vi.fn(() => E.void),
-        discard : vi.fn(() => E.void),
-        create  : vi.fn(() => E.void),
-        reply   : vi.fn(() => E.void),
-        dismount: vi.fn(() => E.void),
+        defer       : vi.fn(() => E.void),
+        discard     : vi.fn(() => E.void),
+        create      : vi.fn(() => E.void),
+        reply       : vi.fn(() => E.void),
+        dismount    : vi.fn(() => E.void),
+        createModal : vi.fn(() => E.void),
+        createSource: vi.fn(() => E.void),
+        createUpdate: vi.fn(() => E.void),
+        deferSource : vi.fn(() => E.void),
+        deferUpdate : vi.fn(() => E.void),
       }),
     ).pipe(L.provide(config)),
     DokenMemory.Default.pipe(
       L.provide(config),
     ),
-    Relay.Fresh,
+    L.fresh(Relay.Default),
   ),
   L.provideMerge(
     Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),

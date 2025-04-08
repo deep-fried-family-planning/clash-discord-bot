@@ -1,44 +1,52 @@
-import type {FC} from '#src/disreact/model/comp/fc.ts'
-import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {E, L, type RDT} from 'src/disreact/utils/re-exports.ts'
+import type {FC} from '#src/disreact/model/comp/fc.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Redacted} from 'effect';
+import {E, flow, L} from 'src/disreact/utils/re-exports.ts';
+import {RxTx} from '../codec/rxtx';
 
-export interface DisReactOptions {
-  version?: number | string
-  token   : RDT.Redacted<string>
-  codec?: {
-    baseUrl?: string
-  }
+export namespace DisReactConfig {
+  export type Input = {
+    token         : Redacted.Redacted<string> | string;
+    version?      : number | string;
+    baseUrl?      : string;
+    modal?        : (Elem | FC)[];
+    public?       : (Elem | FC)[];
+    ephemeral?    : (Elem | FC)[];
+    dokenCapacity?: number;
+  };
 
-  // codec: {
-  //   componentPrefix: string;
-  //   hydrationPrefix: string;
-  //   modalPrefix    : string;
-  // };
-  sources: {
-    modal?    : (Elem | FC)[]
-    public?   : (Elem | FC)[]
-    ephemeral?: (Elem | FC)[]
-  }
-  doken: {
-    capacity?: number
+  export interface Resolved extends Input {
+    token        : Redacted.Redacted<string>;
+    baseUrl      : string;
+    modal        : (Elem | FC)[];
+    public       : (Elem | FC)[];
+    ephemeral    : (Elem | FC)[];
+    dokenCapacity: number;
   }
 }
 
-interface DisReactResolved extends DisReactOptions {
-  sources: {
-    modal    : (Elem | FC)[]
-    public   : (Elem | FC)[]
-    ephemeral: (Elem | FC)[]
+const makeDefaultOptions = (input: DisReactConfig.Input): DisReactConfig.Resolved => {
+  const options = input as DisReactConfig.Resolved;
+
+  if (!Redacted.isRedacted(options.token)) {
+    options.token = Redacted.make(options.token);
   }
-}
+
+  options.public ??= [];
+  options.ephemeral ??= [];
+  options.modal ??= [];
+  options.baseUrl ??= RxTx.DEFAULT_BASE_URL;
+  options.dokenCapacity ??= 100;
+
+  return options;
+};
 
 export class DisReactConfig extends E.Service<DisReactConfig>()('disreact/Config', {
-  succeed: {} as unknown as DisReactResolved,
+  succeed: makeDefaultOptions({token: ''}),
 }) {
-  static readonly configLayer = (options: DisReactOptions) => {
-    options.sources.public ??= []
-    options.sources.ephemeral ??= []
-    options.sources.modal ??= []
-    return L.succeed(this, this.make(options as DisReactResolved))
-  }
+  static readonly configLayer = flow(
+    makeDefaultOptions,
+    this.make,
+    L.succeed(this),
+  );
 }

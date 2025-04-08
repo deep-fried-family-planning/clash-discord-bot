@@ -1,166 +1,152 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {RxTx} from '#src/disreact/codec/rxtx.ts';
-import {FC} from '#src/disreact/model/comp/fc.ts';
+import type {FC} from '#src/disreact/model/comp/fc.ts';
 import {Fibril} from '#src/disreact/model/comp/fibril.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {RelayStatus} from '#src/disreact/model/Relay.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
-import {SourceDefect, Registry} from '#src/disreact/model/Registry.ts';
+import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
-import {E, F, pipe} from '#src/disreact/utils/re-exports.ts';
-import {InteractionCallbackType, InteractionType} from 'dfx/types';
+import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import {DateTime, Fiber} from 'effect';
 import {Intrinsic} from '../codec/rest-elem/index.ts';
-import {Lifecycles} from '../model/lifecycles.ts';
 import {Model} from '../model/model';
-import {Misc} from '../utils/misc.ts';
 import {Dokens} from './dokens.ts';
-import {Helpers} from './helpers.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
 
-type Id = Elem | FC | string;
+/**
+ *
+ */
+export const synthesize = (id: Elem.Task | FC | string, props?: any) => E.flatMap(Codec, (codec) =>
+  Model.makeEntrypoint(id, props).pipe(
+    E.map((root) => {
+      return codec.encodeResponse(root, Doken.makeSyntheticSingle());
+    }),
+  ),
+);
 
-const getId = (component: Id) => {
-  if (typeof component === 'string') {
-    return component;
-  }
-  if (typeof component === 'object') {
-    return 'nope';
-  }
-  return FC.getSrcId(component);
-};
+export const decodeRequestEvent = (input: any) => E.map(Codec, (codec) => {
+  const request = codec.decodeRequest(input);
+  const event = codec.decodeEvent(request);
 
-//
-//
-//
-export const synthesize = (id: Id, props?: any) =>
-  pipe(
-    E.flatMap(Registry, (registry) =>
-      registry.checkout(getId(id), props),
-    ),
-    E.flatMap((root) =>
-      Lifecycles.initialize(root),
-    ),
-    E.flatMap((root) =>
-      E.map(Codec, (codec) => {
-        const encoded = codec.encodeRoot(root);
+  return [request, event] as const;
+});
 
-        return codec.encodeResponse({
-          _tag   : Intrinsic.isModal(encoded) ? 'Modal' : 'Message',
-          base   : RxTx.DEFAULT_BASE_URL,
-          serial : Doken.makeEmptySingle(),
-          hydrant: Fibril.encodeNexus(root.nexus!),
-          data   : encoded as any,
-        });
-      }),
-    ),
-  );
-
-//
-//
-//
+/**
+ *
+ */
 export const respond = (body: any) => E.gen(function* () {
-  const [req, event] = yield* Helpers.decodeRequestEvent(body);
-
-  const model = yield* E.fork(
-    Model.hydrateInvoke(req.hydrant!, event).pipe(Misc.trackModelTime),
-  );
-
-  const doken = yield* Dokens.make(req.fresh);
-
-  yield* E.fork(
-    Dokens.resolveActive(doken, req.serial).pipe(Misc.trackModelTime),
-  );
+  const [req, event] = yield* decodeRequestEvent(body);
 
   const relay = yield* Relay;
   const dom = yield* DisReactDOM;
-  let status: RelayStatus | undefined;
 
-  while (status?._tag !== 'Complete') {
-    status = yield* relay.awaitStatus();
+  const dokens = yield* Dokens.make(req.fresh);
 
-    if (status._tag === 'Close') {
-      yield* Dokens.close(doken).pipe(Misc.trackDismountTime);
-      break;
-    }
+  yield* E.fork(
+    Dokens.resolveActive(dokens, req.serial),
+  );
 
-    if (status._tag === 'Same') {
-      const active = yield* Dokens.awaitActive(doken);
+  const model = yield* E.fork(
+    Model.hydrateInvoke(req.hydrant!, event),
+  );
 
-      if (active) {
-        yield* E.fork(
-          dom.discard(doken.fresh.id, doken.fresh.val, {type: 7}),
-        );
-        yield* Dokens.setFinal(doken, active);
-        break;
+  yield* E.iterate(RelayStatus.Start(), {
+    while: (r) => r._tag !== 'Complete',
+    body : () => E.tap(relay.awaitStatus(), (r) => {
+      if (r._tag === 'Close') {
+        return Dokens.handleClose(dokens);
       }
 
-      yield* dom.defer(doken.fresh.id, doken.fresh.val, {type: 7}).pipe(Misc.trackDeferTime);
-      yield* Dokens.setFinal(doken, Doken.makeActive(doken.fresh));
-      break;
-    }
+      if (r._tag === 'Same') {
+        return Dokens.awaitActive(dokens).pipe(E.flatMap((active) => {
+          if (active) {
+            return E.zipRight(
+              dom.discard(dokens.fresh),
+              E.zipRight(
+                Dokens.setFinal(dokens, active),
+                Dokens.currentActive(dokens, active),
+              ),
+            );
+          }
+          return E.zipRight(
+            Dokens.engageDeferUpdate(dokens),
+            Dokens.currentUpdate(dokens),
+          );
+        }));
+      }
 
-    if (status._tag === 'Partial') {
-      if (status.type === 'modal') {
-        if (req.body.type === InteractionType.MODAL_SUBMIT) {
-          return yield* new SourceDefect({
-            message: 'Modal already open',
-          });
+      if (r._tag === 'Partial') {
+        if (r.type === 'modal') {
+          return Dokens.currentModal(dokens);
         }
-
-        yield* Dokens.setFinal(doken, doken.fresh);
-        break;
+        if (r.isEphemeral === req.isEphemeral) {
+          return Dokens.awaitActive(dokens).pipe(E.flatMap((active) => {
+            if (active) {
+              return E.zipRight(
+                Dokens.setFinal(dokens, active),
+                Dokens.currentActive(dokens, active),
+              );
+            }
+            return E.zipRight(
+              Dokens.engageDeferUpdate(dokens),
+              Dokens.currentUpdate(dokens),
+            );
+          }));
+        }
+        return E.zipRight(
+          Dokens.engageDeferSource(dokens),
+          Dokens.currentSource(dokens),
+        );
       }
 
-      const active = yield* Dokens.awaitActive(doken);
+      return E.void;
+    }),
+  });
 
-      if (active && status.isEphemeral === req.isEphemeral) {
-        yield* Dokens.setFinal(doken, active);
-        break;
-      }
-
-      yield* dom.defer(doken.fresh.id, doken.fresh.val, {type: 7}).pipe(Misc.trackDeferTime);
-      yield* Dokens.setFinal(doken, Doken.makeActive(doken.fresh));
-      break;
-    }
-  }
-
-  const final = yield* Dokens.awaitFinal(doken);
-  const root = yield* F.join(model);
+  const codec = yield* Codec;
+  const root = yield* Fiber.join(model);
 
   if (!root) {
     return;
   }
 
-  if (final._tag === Doken.ACTIVE) {
-    const output = yield* Helpers.encodeActiveReply(root, final);
+  const isPastCreate = yield* DateTime.isPast(dokens.fresh.ttl);
 
-    yield* dom.reply(final.id, final.val, output).pipe(Misc.trackReplyTime);
+  if (isPastCreate) {
+    const doken = yield* Dokens.awaitFinal(dokens);
+    const payload = yield* codec.encodeResponseWithCache(root, doken);
+
+    yield* dom.reply(doken, payload);
     return;
   }
 
-  const encoded = yield* Codec.encodeRoot(root);
+  yield* Dokens.disengageTimeout(dokens);
 
-  const output = yield* Codec.encodeResponse({
-    _tag   : Intrinsic.isModal(encoded) ? 'Modal' : 'Message',
-    base   : RxTx.DEFAULT_BASE_URL,
-    serial : Doken.makeSingle(final),
-    hydrant: Fibril.encodeNexus(root.nexus),
-    data   : encoded as any,
-  });
+  const doken = yield* Dokens.getCurrent(dokens);
 
-  if (Intrinsic.isModal(output)) {
-    yield* dom.create(final.id, final.val, {
-      type: InteractionCallbackType.MODAL,
-      data: output,
-    }).pipe(Misc.trackCreateTime);
+  if (doken._tag === Doken.ACTIVE) {
+    const payload = yield* codec.encodeResponseWithCache(root, doken);
+
+    yield* dom.reply(doken, payload);
     return;
   }
 
-  yield* dom.create(final.id, final.val, {
-    type: 0,
-    data: output,
-  }).pipe(Misc.trackCreateTime);
+  const payload = codec.encodeResponse(root, doken);
+
+  if (doken._tag === Doken.MODAL) {
+    yield* dom.createModal(doken, payload);
+    return;
+  }
+
+  if (doken._tag === Doken.SOURCE) {
+    yield* dom.createSource(doken, payload);
+    return;
+  }
+
+  if (doken._tag === Doken.UPDATE) {
+    yield* dom.createUpdate(doken, payload);
+    return;
+  }
 });

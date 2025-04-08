@@ -1,13 +1,17 @@
+import {Doken} from '#src/disreact/codec/doken.ts';
+import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
+import {Fibril, type Hydrant} from '#src/disreact/model/comp/fibril.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {Root} from '#src/disreact/model/entity/root.ts';
-import {E, ML, S} from '#src/disreact/utils/re-exports.ts';
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import type {Events} from '../model/entity/events';
 import {Intrinsic} from './rest-elem';
 import {Keys} from './rest-elem/keys';
 import {RxTx} from './rxtx';
 
-export const encodeResponse = S.encodeSync(RxTx.ParamsResponse);
-export const decodeRequest = S.decodeSync(RxTx.ParamsRequest);
+export const encodeParamsResponse = S.encodeSync(RxTx.ParamsResponse);
+export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 
 export const encodeRoot = (root: Root): RxTx.ParamsResponse['data'] => {
   const result = {} as any,
@@ -94,11 +98,65 @@ export const decodeEvent = (route: RxTx.ParamsRequest): Events => {
 };
 
 export class Codec extends E.Service<Codec>()('disreact/Codec', {
-  succeed: {
-    decodeRequest,
-    encodeResponse,
-    encodeRoot,
-    decodeEvent,
-  },
-  accessors: true,
+  effect: E.map(DisReactConfig, (config) => {
+    return {
+      decodeRequest          : decodeParamsRequest,
+      encodeResponseWithCache: (root: Root, doken: Doken.Active) => {
+        const encoded = encodeRoot(root);
+        const hydrant = Fibril.encodeNexus(root.nexus);
+        const serial  = Intrinsic.isEphemeral(encoded)
+          ? doken
+          : Doken.convertCached(doken);
+
+        return pipe(
+          E.tap(DokenMemory, (memory) => memory.save(doken)),
+          E.as(
+            encodeParamsResponse({
+              _tag: 'Message',
+              base: config.baseUrl,
+              serial,
+              hydrant,
+              data: encoded,
+            }),
+          ),
+        );
+      },
+      encodeResponse: (root: Root, doken: Doken) => {
+        const encoded = encodeRoot(root);
+        const hydrant = Fibril.encodeNexus(root.nexus);
+
+        if (Intrinsic.isModal(encoded)) {
+          return encodeParamsResponse({
+            _tag   : 'Modal',
+            base   : config.baseUrl,
+            serial : Doken.makeSingle(doken),
+            hydrant: hydrant,
+            data   : encoded as any,
+          });
+        }
+
+        const serial = Doken.convertSerial(doken);
+
+        if (Intrinsic.isEphemeral(encoded)) {
+          return encodeParamsResponse({
+            _tag   : 'Message',
+            base   : config.baseUrl,
+            serial : serial,
+            hydrant: hydrant,
+            data   : encoded as any,
+          });
+        }
+
+        return encodeParamsResponse({
+          _tag   : 'Message',
+          base   : config.baseUrl,
+          serial : serial,
+          hydrant: hydrant,
+          data   : encoded as any,
+        });
+      },
+      encodeRoot,
+      decodeEvent,
+    };
+  }),
 }) {}

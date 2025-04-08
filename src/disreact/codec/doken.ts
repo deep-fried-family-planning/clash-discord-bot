@@ -1,6 +1,7 @@
 import {DT, hole} from '#src/disreact/utils/re-exports.ts';
 import {DR, pipe, S} from '#src/internal/pure/effect.ts';
 import {Redacted} from 'effect';
+import {fresh} from 'effect/Layer';
 import {Snowflake} from './snowflake';
 
 export * as Doken from '#src/disreact/codec/doken.ts';
@@ -8,7 +9,37 @@ export type Doken =
   | Fresh
   | Active
   | Cached
-  | Single;
+  | Single
+  | Modal
+  | Source
+  | Update;
+
+export type Value =
+  | Modal
+  | Fresh
+  | Active
+  | Single
+  | Source
+  | Update;
+
+export type Create =
+  | Modal
+  | Source
+  | Update;
+
+export type Serial =
+  | Single
+  | Active
+  | Cached;
+
+export const value = (doken: Value) => Redacted.value(doken.val);
+
+const Base = S.Struct({
+  id : Snowflake.Id,
+  ttl: S.DateTimeUtcFromSelf,
+  val: S.RedactedFromSelf(S.String),
+  app: Snowflake.Id,
+});
 
 export const FRESH_OFFSET = DR.seconds(2);
 export const ACTIVE_OFFSET = DR.minutes(12);
@@ -43,6 +74,95 @@ export const Fresh = pipe(
   S.mutable,
 );
 
+export const MODAL = 'Modal';
+export type Modal = typeof Modal.Type;
+export const Modal = pipe(
+  Base,
+  S.attachPropertySignature('_tag', MODAL),
+  S.mutable,
+);
+
+export const makeModal = (fresh: Fresh): Modal =>
+  ({
+    ...fresh,
+    _tag: MODAL,
+  });
+
+export const SOURCE = 'Source';
+export type Source = typeof Source.Type;
+export const Source = pipe(
+  Base,
+  S.attachPropertySignature('_tag', SOURCE),
+  S.mutable,
+);
+
+export const makeSource = (fresh: Fresh): Source =>
+  ({
+    ...fresh,
+    _tag: SOURCE,
+  });
+
+export const UPDATE = 'Update';
+export type Update = typeof Update.Type;
+export const Update = pipe(
+  Base,
+  S.attachPropertySignature('_tag', UPDATE),
+  S.mutable,
+);
+
+export const makeUpdate = (fresh: Fresh): Update =>
+  ({
+    ...fresh,
+    _tag: UPDATE,
+  });
+
+export const SINGLE = 'Single' as const;
+export type Single = typeof Single.Type;
+export const Single = pipe(
+  S.TemplateLiteralParser(
+    's',
+  ),
+  S.transform(
+    Base,
+    {
+      encode: () =>
+        [
+          's',
+        ] as const,
+      decode: () =>
+        ({
+          id : '',
+          ttl: DT.unsafeMake(0),
+          val: Redacted.make(''),
+          app: '',
+        }),
+    },
+  ),
+  S.attachPropertySignature('_tag', SINGLE),
+  S.mutable,
+);
+
+export const makeSingle = (doken: Doken): Single =>
+  ({
+    ...doken,
+    _tag: SINGLE,
+  });
+
+export const makeSingleModal = (modal: Modal): Single =>
+  ({
+    ...modal,
+    _tag: SINGLE,
+  });
+
+export const makeSyntheticSingle = (): Single =>
+  ({
+    _tag: SINGLE,
+    id  : 'synthesized',
+    ttl : DT.unsafeMake(0),
+    val : Redacted.make(''),
+    app : '',
+  });
+
 export const ACTIVE = 'Active';
 export type Active = typeof Active.Type;
 export const Active = pipe(
@@ -52,9 +172,8 @@ export const Active = pipe(
   ),
   S.transform(
     S.Struct({
-      id : Snowflake.Id,
+      ...Base.fields,
       ttl: Snowflake.TimeToLive(ACTIVE_OFFSET),
-      val: S.RedactedFromSelf(S.String),
     }),
     {
       encode: ({id, val}) =>
@@ -66,6 +185,7 @@ export const Active = pipe(
           id : id,
           ttl: id,
           val: val,
+          app: '',
         }),
     },
   ),
@@ -75,10 +195,9 @@ export const Active = pipe(
 
 export const makeActive = (fresh: Fresh): Active =>
   ({
+    ...fresh,
     _tag: ACTIVE,
-    id  : fresh.id,
     ttl : fresh.ttl.pipe(DT.addDuration(ACTIVE_OFFSET)),
-    val : fresh.val,
   });
 
 export const CACHED = 'Cached';
@@ -89,7 +208,7 @@ export const Cached = pipe(
   ),
   S.transform(
     S.Struct({
-      id : Snowflake.Id,
+      ...Base.fields,
       ttl: Snowflake.TimeToLive(ACTIVE_OFFSET),
     }),
     {
@@ -101,6 +220,8 @@ export const Cached = pipe(
         ({
           id : id,
           ttl: id,
+          val: Redacted.make(''),
+          app: '',
         }),
     },
   ),
@@ -108,57 +229,36 @@ export const Cached = pipe(
   S.mutable,
 );
 
-export const makeCached = (defer: Active): Cached =>
+export const makeCached = (doken: Doken): Cached =>
   ({
+    ...doken,
     _tag: CACHED,
-    id  : defer.id,
-    ttl : defer.ttl,
   });
 
-export const SINGLE = 'Single' as const;
-export type Single = typeof Single.Type;
-export const Single = pipe(
-  S.TemplateLiteralParser(
-    's',
-  ),
-  S.transform(
-    S.Struct({
-      id : Snowflake.Id,
-      ttl: S.DateTimeUtcFromSelf,
-      val: S.RedactedFromSelf(S.String),
-    }),
-    {
-      encode: () =>
-        [
-          's',
-        ] as const,
-      decode: () =>
-        ({
-          id : '',
-          ttl: DT.unsafeMake(0),
-          val: Redacted.make(''),
-        }),
-    },
-  ),
-  S.attachPropertySignature('_tag', SINGLE),
-  S.mutable,
+export const Serial = S.Union(
+  Active,
+  Cached,
+  Single,
 );
 
-export const makeSingle = (fresh: Fresh): Single =>
-  ({
-    _tag: SINGLE,
-    id  : fresh.id,
-    ttl : fresh.ttl,
-    val : fresh.val,
-  });
+export const convertSerial = (doken: Doken): Serial => {
+  switch (doken._tag) {
+    case ACTIVE:
+      return doken;
+    case SINGLE:
+      return doken;
+    case CACHED:
+      return doken;
+    default:
+      return makeSingle(doken);
+  }
+};
 
-export const makeEmptySingle = (): Single =>
-  ({
-    _tag: SINGLE,
-    id  : 'synthesized',
-    ttl : DT.unsafeMake(0),
-    val : Redacted.make(''),
-  });
-
-export type Serial = typeof Serial.Type;
-export const Serial = S.Union(Active, Cached, Single);
+export const convertCached = (doken: Serial): Serial => {
+  switch (doken._tag) {
+    case ACTIVE:
+      return makeCached(doken);
+    default:
+      return doken;
+  }
+};

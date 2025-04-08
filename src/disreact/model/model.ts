@@ -1,15 +1,20 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
 import type {Fibril} from '#src/disreact/model/comp/fibril.ts';
 import type {Events} from '#src/disreact/model/entity/events.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import type {FC} from './comp/fc.ts';
+import type {Elem} from './entity/elem.ts';
 import {Lifecycles} from './lifecycles';
 
 export * as Model from './model.ts';
 export type Model = never;
 
-export const initEntrypoint = () => {};
+export const makeEntrypoint = (key: string | FC | Elem.Task, props?: any) =>
+  pipe(
+    E.flatMap(Registry, (registry) => registry.checkout(key, props)),
+    E.flatMap((root) => Lifecycles.initialize(root)),
+  );
 
 export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Events) =>
   pipe(

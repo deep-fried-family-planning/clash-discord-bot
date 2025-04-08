@@ -43,6 +43,8 @@ import {UnorderedList} from '#src/disreact/codec/rest-elem/markdown/ul.ts';
 import {Message} from '#src/disreact/codec/rest-elem/container/message.ts';
 import {Modal} from '#src/disreact/codec/rest-elem/container/modal.ts';
 import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
+import {pipe, S} from '#src/disreact/utils/re-exports.ts';
+import { DAPI } from '../dapi/dapi';
 
 export * as Intrinsic from '#src/disreact/codec/rest-elem/index.ts';
 export type Intrinsic = never;

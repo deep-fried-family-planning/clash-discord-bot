@@ -24,3 +24,8 @@ export const Base = S.Struct({
     ),
   ),
 });
+
+export const Ephemeral = S.Struct({
+  ...Base.fields,
+  flags: S.Literal(64),
+});

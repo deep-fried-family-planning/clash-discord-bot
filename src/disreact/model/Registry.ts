@@ -14,7 +14,7 @@ export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
 
 const STORE = new Map<string, Root.Source>();
 
-const getKey = (key: string | FC | Elem.Task): string => {
+const resolveId = (key: string | FC | Elem.Task): string => {
   if (typeof key === 'string') {
     return key;
   }
@@ -29,9 +29,9 @@ const getKey = (key: string | FC | Elem.Task): string => {
 export class Registry extends E.Service<Registry>()('disreact/Registry', {
   effect: E.map(DisReactConfig, (config) => {
     const sources = [
-      ...config.sources.modal.map((src) => Root.make(Root.MODAL, src)),
-      ...config.sources.public.map((src) => Root.make(Root.PUBLIC, src)),
-      ...config.sources.ephemeral.map((src) => Root.make(Root.EPHEMERAL, src)),
+      ...config.modal.map((src) => Root.make(Root.MODAL, src)),
+      ...config.public.map((src) => Root.make(Root.PUBLIC, src)),
+      ...config.ephemeral.map((src) => Root.make(Root.EPHEMERAL, src)),
     ];
 
     for (const src of sources) {
@@ -45,8 +45,8 @@ export class Registry extends E.Service<Registry>()('disreact/Registry', {
       ? `${config.version}`
       : Hash.array(Arr.map(sources, (src) => src.id));
 
-    const checkout = (key: string | FC | Elem.Task, props: any = {}) => {
-      const id = getKey(key);
+    const checkout = (key: string | FC | Elem.Task, props: any = {}): E.Effect<Root, SourceDefect> => {
+      const id = resolveId(key);
       const src = STORE.get(id);
 
       if (!src) {
@@ -56,7 +56,7 @@ export class Registry extends E.Service<Registry>()('disreact/Registry', {
       return E.succeed(Root.fromSource(src, props));
     };
 
-    const fromHydrant = (hydrant: Fibril.Hydrant) => {
+    const fromHydrant = (hydrant: Fibril.Hydrant): E.Effect<Root, SourceDefect> => {
       const src = STORE.get(hydrant.id);
 
       if (!src) {
@@ -66,16 +66,27 @@ export class Registry extends E.Service<Registry>()('disreact/Registry', {
       return E.succeed(Root.fromSourceHydrant(src, hydrant));
     };
 
+    const register = (kind: Root.Type, ...src: (FC | Elem.Task)[]) => {
+      for (const s of src) {
+        const root = Root.make(kind, s);
+        STORE.set(root.id, root);
+      }
+    };
+
+    const registerModal = (...src: (FC | Elem.Task)[]) => register(Root.MODAL, ...src);
+
+    const registerEphemeral = (...src: (FC | Elem.Task)[]) => register(Root.EPHEMERAL, ...src);
+
+    const registerPublic = (...src: (FC | Elem.Task)[]) => register(Root.PUBLIC, ...src);
+
     return {
       fromHydrant,
       checkout,
       version,
-      register: (kind: Root.Type, ...src: (FC | Elem.Task)[]) => {
-        for (const s of src) {
-          const root = Root.make(kind, s);
-          STORE.set(root.id, root);
-        }
-      },
+      register,
+      registerModal,
+      registerEphemeral,
+      registerPublic,
     };
   }),
 }) {}

@@ -4,7 +4,6 @@ import {E} from '#src/disreact/utils/re-exports.ts';
 import {Doken} from '../codec/doken.ts';
 import {RxTx} from '../codec/rxtx.ts';
 import {Fibril} from '../model/comp/fibril.ts';
-import {Misc} from '../utils/misc.ts';
 
 export * as Helpers from './helpers.ts';
 export type Helpers = never;
@@ -14,9 +13,7 @@ export const decodeRequestEvent = (input: any) => E.map(Codec, (codec) => {
   const event = codec.decodeEvent(request);
 
   return [request, event] as const;
-}).pipe(
-  Misc.trackDecodeTime,
-);
+});
 
 export const encodeActiveReply = (root: Root, doken: Doken.Active) => E.map(Codec, (codec) => {
   const encoded = codec.encodeRoot(root);
@@ -28,9 +25,7 @@ export const encodeActiveReply = (root: Root, doken: Doken.Active) => E.map(Code
     hydrant: Fibril.encodeNexus(root.nexus),
     data   : encoded as any,
   });
-}).pipe(
-  Misc.trackEncodeTime,
-);
+});
 
 export const encodeModalReply = (root: Root, doken: Doken.Fresh) => E.map(Codec, (codec) => {
   const encoded = codec.encodeRoot(root);
@@ -42,6 +37,4 @@ export const encodeModalReply = (root: Root, doken: Doken.Fresh) => E.map(Codec,
     hydrant: Fibril.encodeNexus(root.nexus),
     data   : encoded as any,
   });
-}).pipe(
-  Misc.trackEncodeTime,
-);
+});

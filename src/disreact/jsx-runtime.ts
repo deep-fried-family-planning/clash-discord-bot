@@ -1,11 +1,11 @@
-import type {IntrinsicTuplesMapped} from '#src/disreact/codec/rest-elem/index.ts'
-import {Elem} from '#src/disreact/model/entity/elem.ts'
+import type {IntrinsicTuplesMapped} from '#src/disreact/codec/rest-elem/index.ts';
+import {Elem} from '#src/disreact/model/entity/elem.ts';
 
 
-export const Fragment = Elem.Frag.Type
-export const jsx = Elem.jsx
-export const jsxs = Elem.jsxs
-export const jsxDEV = Elem.jsxDEV
+export const Fragment = Elem.Frag;
+export const jsx = Elem.jsx;
+export const jsxs = Elem.jsxs;
+export const jsxDEV = Elem.jsxDEV;
 
 export declare namespace JSX {
   type ElementType =
@@ -17,16 +17,16 @@ export declare namespace JSX {
     | boolean
     | symbol
     | bigint
-    | ((props?: any) => ElementType | Element)
+    | ((props?: any) => ElementType | Element);
 
-  type Element = {type: any, props: any, nodes: any[], id: string, ids: string, idx: string}
+  type Element = {type: any; props: any; nodes: any[]; id: string; ids: string; idx: string};
 
   interface ElementAttributesProperty {
-    props?: {}
+    props?: {};
   }
 
   interface ElementChildrenAttribute {
-    children?: {}
+    children?: {};
   }
 
   interface IntrinsicAttributes {

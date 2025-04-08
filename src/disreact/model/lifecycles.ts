@@ -38,9 +38,9 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   return E.succeed(false);
 });
 
-const renderElemPiped = (root: Root, self: Elem.Task) =>
+const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(HooksDispatcher, (dispatcher) =>
   pipe(
-    E.flatMap(HooksDispatcher, (dispatch) => dispatch.lock),
+    dispatcher.lock,
     E.flatMap(() => {
       Fibril.λ.set(self.strand);
       self.strand.nexus = root.nexus;
@@ -62,11 +62,19 @@ const renderElemPiped = (root: Root, self: Elem.Task) =>
     }),
     E.tap(() => {
       Fibril.λ.clear();
-      return E.tap(HooksDispatcher, (dispatch) => dispatch.unlock);
+      return dispatcher.unlock;
     }),
-    E.tapError(() => {
+    // E.flatMap((children) => {
+    //   Fibril.λ.clear();
+    //   return dispatcher.unlock.pipe(E.as(children));
+    // }),
+    E.catchAll((err) => {
       Fibril.λ.clear();
-      return E.flatMap(HooksDispatcher, (dispatch) => dispatch.unlock);
+      return E.fail(err);
+    }),
+    E.catchAllDefect((err) => {
+      Fibril.λ.clear();
+      return E.die(err);
     }),
     E.map((children) => {
       self.strand.pc = 0;
@@ -86,7 +94,8 @@ const renderElemPiped = (root: Root, self: Elem.Task) =>
       return filtered;
     }),
     E.tap(() => renderEffectAtNodePiped(root, self)),
-  );
+  ),
+);
 
 
 const renderEffectPiped = (root: Root, ef: EF) =>
@@ -105,10 +114,7 @@ const renderEffectAtNodePiped = (root: Root, node: Elem.Task) => {
     effects[i] = renderEffectPiped(root, node.strand.queue[i]);
   }
 
-  return pipe(
-    E.all(effects),
-    E.asVoid,
-  );
+  return E.all(effects).pipe(E.asVoid);
 };
 
 
@@ -253,36 +259,6 @@ export const initializeSubtree = (root: Root, elem: Elem) => {
     },
   });
 };
-
-//   E.gen(function* () {
-//   const stack = ML.make<Elem>(elem)
-//
-//   let hasSentPartial = false
-//
-//   while (ML.tail(stack)) {
-//     const elem = ML.pop(stack)!
-//
-//     if (Elem.isTask(elem)) {
-//       elem.nodes = yield* renderElemPiped(root, elem)
-//     }
-//     else if (!hasSentPartial) {
-//       hasSentPartial = yield* relayPartial(elem)
-//     }
-//
-//     for (let i = 0; i < elem.nodes.length; i++) {
-//       const node = elem.nodes[i]
-//
-//       if (!Elem.isPrim(node)) {
-//         Elem.connectChild(elem, node, i)
-//         Root.mountElem(root, node)
-//         ML.append(stack, node)
-//       }
-//     }
-//   }
-//
-//   return elem
-// })
-
 
 export const hydrate = (root: Root) =>
   pipe(

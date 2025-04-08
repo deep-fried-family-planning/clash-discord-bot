@@ -250,3 +250,34 @@ export const ParamsResponse = S.Union(
   ModalResponse.pipe(S.attachPropertySignature('_tag', MODAL), S.mutable),
 );
 export type ParamsResponse = typeof ParamsResponse.Type;
+
+
+export const ModalOutput = pipe(
+  S.Struct({
+    hydrant: Hydrant,
+    data   : DAPI.Modal.Open,
+  }),
+  S.attachPropertySignature('_tag', 'Modal'),
+);
+
+export const PublicMessageOutput = pipe(
+  S.Struct({
+    hydrant: Hydrant,
+    data   : DAPI.Message.Base,
+  }),
+  S.attachPropertySignature('_tag', 'Public'),
+);
+
+export const EphemeralMessageOutput = pipe(
+  S.Struct({
+    hydrant: Hydrant,
+    data   : DAPI.Message.Ephemeral,
+  }),
+  S.attachPropertySignature('_tag', 'Ephemeral'),
+);
+
+export const Output = S.Union(
+  ModalOutput,
+  PublicMessageOutput,
+  EphemeralMessageOutput,
+);

@@ -1,8 +1,7 @@
-import {D, DF, E, L, pipe} from '#src/disreact/utils/re-exports.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {Root} from '#src/disreact/model/entity/root.ts';
+import {D, DF, E, L} from '#src/disreact/utils/re-exports.ts';
 import * as Mailbox from 'effect/Mailbox';
-import { Misc } from '../utils/misc';
+import {Misc} from '../utils/misc';
 
 export type RelayStatus = D.TaggedEnum<{
   Start   : {};
@@ -26,7 +25,7 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
         awaitOutput: () => DF.await(current),
         pollOutput : () => Misc.pollDeferred(current),
         setComplete: () => mailbox.end,
-        awaitStatus: () => mailbox.take,
+        awaitStatus: () => mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete()))),
         sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
       }),
   ),

@@ -12,12 +12,26 @@ export type DokenError =
   | DokenMemoryError
   | Cause.UnknownException;
 
+const timeToLive = (exit: Exit.Exit<Doken.Active | undefined, DokenError>): DR.Duration =>
+  pipe(
+    Exit.getOrElse(exit, () => undefined),
+    OPT.fromNullable,
+    OPT.flatMap((doken) =>
+      pipe(
+        E.runSync(DT.now),
+        DT.distanceDurationEither(doken.ttl),
+        OPT.getRight,
+      ),
+    ),
+    OPT.getOrElse(() => DR.millis(0)),
+  );
+
 export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
   effect: E.gen(function* () {
     const config = yield* DisReactConfig;
     const cache = yield* Cache.makeWith({
       timeToLive,
-      capacity: config.doken.capacity ?? 100,
+      capacity: config.dokenCapacity,
       lookup  : (_: string) => E.succeed(undefined as Doken.Active | undefined),
     });
 
@@ -27,7 +41,6 @@ export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory'
       free: (id: string) => cache.invalidate(id) as E.Effect<void, DokenError>,
     };
   }),
-  accessors: true,
 }) {
   static readonly Dynamo = pipe(
     L.effect(this, E.suspend(() => makeDynamo)),
@@ -41,7 +54,7 @@ const makeDynamo = E.gen(function* () {
 
   const cache = yield* C.makeWith({
     timeToLive,
-    capacity: config.doken.capacity ?? 100,
+    capacity: config.dokenCapacity,
     lookup  : (id: string): E.Effect<Doken.Active | undefined, DokenError> =>
       pipe(
         dynamo.get({
@@ -87,17 +100,3 @@ const makeDynamo = E.gen(function* () {
       ),
   });
 });
-
-const timeToLive = (exit: Exit.Exit<Doken.Active | undefined, DokenError>): DR.Duration =>
-  pipe(
-    Exit.getOrElse(exit, () => undefined),
-    OPT.fromNullable,
-    OPT.flatMap((doken) =>
-      pipe(
-        E.runSync(DT.now),
-        DT.distanceDurationEither(doken.ttl),
-        OPT.getRight,
-      ),
-    ),
-    OPT.getOrElse(() => DR.millis(0)),
-  );

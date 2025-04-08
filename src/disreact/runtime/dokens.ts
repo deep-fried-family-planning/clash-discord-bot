@@ -1,133 +1,158 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Misc} from '#src/disreact/utils/misc.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {DateTime, Deferred, FiberHandle, Schedule, type Scope} from 'effect';
+import {E, flow, pipe} from '#src/disreact/utils/re-exports.ts';
+import {DateTime, Deferred, Duration, Either, Fiber, FiberHandle, Schedule, type Scope, SynchronizedRef} from 'effect';
+import console from 'node:console';
 
 export * as Dokens from '#src/disreact/runtime/dokens.ts';
 export type Dokens = {
-  fresh   : Doken.Fresh;
-  active  : Deferred.Deferred<Doken.Active | undefined>;
-  final   : Deferred.Deferred<Doken.Active | Doken.Fresh>;
-  failsafe: FiberHandle.FiberHandle;
+  fresh  : Doken.Fresh;
+  active : Deferred.Deferred<Doken.Active | undefined>;
+  final  : Deferred.Deferred<Doken.Active>;
+  timeout: FiberHandle.FiberHandle;
+  current: SynchronizedRef.SynchronizedRef<Doken>;
 };
 
 export const make = (fresh: Doken.Fresh): E.Effect<Dokens, never, Scope.Scope> =>
-  pipe(
-    E.all([
-      Deferred.make<Doken.Active | undefined>(),
-      Deferred.make<Doken.Active | Doken.Fresh>(),
-      FiberHandle.make(),
-    ]),
-    E.map(([active, final, failsafe]) =>
-      ({
-        fresh,
-        active,
-        final,
-        failsafe,
-      }),
-    ),
-  );
+  E.all({
+    fresh  : E.succeed(fresh),
+    active : Deferred.make<Doken.Active | undefined>(),
+    final  : Deferred.make<Doken.Active>(),
+    timeout: FiberHandle.make(),
+    current: SynchronizedRef.make<Doken>(fresh),
+  });
 
-export const resolveActive = (
-  d: Dokens,
-  active: Doken.Serial | undefined,
-) => {
+export const getCurrent = (d: Dokens) =>
+  SynchronizedRef.get(d.current);
+
+export const currentModal = (d: Dokens) =>
+  SynchronizedRef.set(d.current, Doken.makeModal(d.fresh));
+
+export const currentSource = (d: Dokens) =>
+  SynchronizedRef.set(d.current, Doken.makeSource(d.fresh));
+
+export const currentUpdate = (d: Dokens) =>
+  SynchronizedRef.set(d.current, Doken.makeUpdate(d.fresh));
+
+export const currentActive = (d: Dokens, active: Doken.Active) =>
+  SynchronizedRef.set(d.current, active);
+
+export const awaitFinal = (d: Dokens) => Deferred.await(d.final);
+
+export const setFinal = (d: Dokens, final: Doken.Active) => Deferred.succeed(d.final, final);
+
+export const pollFinal = (d: Dokens) => Misc.pollDeferred(d.final);
+
+export const finalActive = (d: Dokens) => Deferred.succeed(d.final, Doken.makeActive(d.fresh));
+
+export const awaitActive = (d: Dokens) => Deferred.await(d.active);
+
+export const resolveActive = (d: Dokens, active: Doken.Serial | undefined) => {
   if (!active || active._tag === Doken.SINGLE) {
     return Deferred.succeed(d.active, undefined);
   }
 
   if (active._tag === Doken.ACTIVE) {
-    return pipe(
-      DateTime.isPast(active.ttl),
-      E.if({
-        onTrue : () => Deferred.succeed(d.active, undefined),
-        onFalse: () => Deferred.succeed(d.active, active),
-      }),
-    );
-  }
-
-  return pipe(
-    E.flatMap(DokenMemory, (memory) => memory.load(active.id)),
-    E.flatMap((cached) => {
-      if (!cached) {
+    return E.flatMap(DateTime.isPast(active.ttl), (isPast) => {
+      if (isPast) {
         return Deferred.succeed(d.active, undefined);
       }
-      return pipe(
-        DateTime.isPast(cached.ttl),
-        E.if({
-          onTrue : () => Deferred.succeed(d.active, undefined),
-          onFalse: () => Deferred.succeed(d.active, cached),
-        }),
-      );
-    }),
-  );
+      active.app = d.fresh.app;
+      return Deferred.succeed(d.active, active);
+    });
+  }
+
+  return E.flatMap(DateTime.isPast(active.ttl), (isPast) => {
+    if (isPast) {
+      return Deferred.succeed(d.active, undefined);
+    }
+    return pipe(
+      E.flatMap(DokenMemory, (memory) => memory.load(active.id)),
+      E.timeoutTo({
+        duration : Duration.seconds(1),
+        onSuccess: (cached) => cached,
+        onTimeout: () => undefined,
+      }),
+      E.flatMap((cached) => {
+        if (!cached) {
+          return Deferred.succeed(d.active, undefined);
+        }
+        cached.app = d.fresh.app;
+        return Deferred.succeed(d.active, cached);
+      }),
+    );
+  });
 };
 
-export const awaitActive = (d: Dokens) => Deferred.await(d.active);
+export const disengageTimeout = (d: Dokens) => FiberHandle.clear(d.timeout);
 
-export const setFinal = (d: Dokens, final: Doken.Active | Doken.Fresh) => Deferred.succeed(d.final, final);
-
-export const awaitFinal = (d: Dokens) => Deferred.await(d.final);
-
-export const engageFailsafe = (d: Dokens, now: DateTime.Utc) =>
+export const handleClose = (d: Dokens) => E.zipRight(
+  disengageTimeout(d),
   pipe(
     E.all([
-      Misc.pollDeferred(d.active),
-      Misc.pollDeferred(d.final),
-      E.flatMap(Relay, (relay) => relay.pollOutput()),
+      DisReactDOM,
+      awaitActive(d),
+      pollFinal(d),
     ]),
-    E.tap(([active, final, output]) => {
-      if (!output) {
-        return E.void;
-      }
-      if (final?._tag === 'Fresh') {
-        return DisReactDOM.create(final.id, final.val, output);
-      }
-      if (!active) {
-        return Deferred.succeed(d.final, d.fresh);
-      }
-
-      const doken = Doken.makeActive(d.fresh);
-
-      return pipe(
-        DisReactDOM.defer(doken.id, doken.val, {type: 7}),
-        E.tap(Deferred.succeed(d.final, doken)),
-      );
-    }),
-    E.schedule(
-      Schedule.fromDelay(
-        DateTime.distanceDuration(d.fresh.ttl, now),
-      ),
-    ),
-    E.tap(() => FiberHandle.clear(d.failsafe)),
-    FiberHandle.run(d.failsafe),
-  );
-
-export const disengageFailsafe = (d: Dokens) =>
-  FiberHandle.clear(d.failsafe);
-
-export const close = (d: Dokens) =>
-  pipe(
-    FiberHandle.clear(d.failsafe),
-    E.flatMap(() =>
-      E.all([
-        Deferred.await(d.active),
-        Misc.pollDeferred(d.final),
-      ]),
-    ),
-    E.tap(([active, final]) => {
-      if (final) {
-        return DisReactDOM.dismount(d.fresh.app, final.val);
+    E.flatMap(([dom, active, final]) => {
+      if (final?._tag === 'Active') {
+        return dom.dismount(final);
       }
       if (active) {
-        return DisReactDOM.dismount(d.fresh.app, active.val);
+        return dom.dismount(active);
       }
       return pipe(
-        DisReactDOM.defer(d.fresh.id, d.fresh.val, {type: 7}),
-        E.flatMap(() => DisReactDOM.dismount(d.fresh.app, d.fresh.val)),
+        dom.deferUpdate(d.fresh),
+        E.flatMap(() => dom.dismount(d.fresh)),
       );
     }),
-  );
+  ),
+);
+
+export const engageDeferSource = (d: Dokens) => E.zipRight(
+  disengageTimeout(d),
+  E.tap(DateTime.now, (now) =>
+    pipe(
+      DateTime.distanceDurationEither(now, d.fresh.ttl),
+      Either.map((time) =>
+        pipe(
+          E.tap(DisReactDOM, (dom) => dom.deferSource(d.fresh)),
+          E.tap(() => finalActive(d)),
+          E.schedule(Schedule.fromDelay(time).pipe(Schedule.asVoid)),
+          FiberHandle.run(d.timeout),
+        ),
+      ),
+      Either.getOrElse(() =>
+        pipe(
+          E.tap(DisReactDOM, (dom) => dom.deferSource(d.fresh)),
+          E.tap(() => finalActive(d)),
+        ),
+      ),
+    ),
+  ),
+);
+
+export const engageDeferUpdate = (d: Dokens) => E.zipRight(
+  disengageTimeout(d),
+  E.tap(DateTime.now, (now) =>
+    pipe(
+      DateTime.distanceDurationEither(now, d.fresh.ttl),
+      Either.map((time) =>
+        pipe(
+          E.tap(DisReactDOM, (dom) => dom.deferUpdate(d.fresh)),
+          E.tap(() => finalActive(d)),
+          E.schedule(Schedule.fromDelay(time).pipe(Schedule.asVoid)),
+          FiberHandle.run(d.timeout),
+        ),
+      ),
+      Either.getOrElse(() =>
+        pipe(
+          E.tap(DisReactDOM, (dom) => dom.deferUpdate(d.fresh)),
+          E.tap(() => finalActive(d)),
+        ),
+      ),
+    ),
+  ),
+);
