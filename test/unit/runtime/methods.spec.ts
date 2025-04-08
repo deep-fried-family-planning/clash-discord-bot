@@ -1,11 +1,35 @@
+import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
+import { Runtime } from '#src/disreact/runtime/runtime';
+import {L} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {TestClock} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {it} from 'test/unit/components/TestRegistry.tsx';
 import TestMessageJSON from 'test/unit/runtime/.synthesized/TestMessage.json';
+import {it} from '@effect/vitest';
+
+const createUpdate = vi.fn(() => E.void);
+const reply = vi.fn(() => E.void);
+const deferUpdate = vi.fn(() => E.void);
+
+const layer = Runtime.makeGlobalRuntimeLayer({
+  config: {
+    token    : '',
+    ephemeral: [
+      TestMessage,
+    ],
+  },
+  dom: L.succeed(
+    DisReactDOM,
+    DisReactDOM.make({
+      createUpdate,
+      reply,
+      deferUpdate,
+    } as any),
+  ),
+});
 
 it.effect('when synthesizing', E.fn(function* () {
   const root = yield* Methods.synthesize(TestMessage);
@@ -13,7 +37,7 @@ it.effect('when synthesizing', E.fn(function* () {
   yield* E.promise(() =>
     expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
   );
-}));
+}, E.provide(layer)));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
   const runs = Array.from({length: 10000});
@@ -25,9 +49,9 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
       expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
     );
   }
-}));
+}, E.provide(layer)));
 
-it.scoped('when responding', E.fn(function* () {
+it.effect('when responding', E.fn(function* () {
   yield* TestClock.setTime(0);
 
   yield* Methods.respond({
@@ -42,16 +66,14 @@ it.scoped('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  }).pipe(E.provide(Relay.Fresh));
-
-  const ixdom = yield* DisReactDOM;
+  }).pipe(E.scoped, E.provide(Relay.Fresh));
 
   yield* E.promise(() =>
-    expect(JSON.stringify(ixdom.createUpdate.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
+    expect(JSON.stringify(createUpdate.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
   );
 
   yield* Methods.respond({
-    message       : ixdom.createUpdate.mock.calls[0][1],
+    message       : createUpdate.mock.calls[0][1],
     id            : '1299833226612969542',
     token         : 'respond2',
     application_id: 'app',
@@ -62,14 +84,14 @@ it.scoped('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  }).pipe(E.provide(Relay.Fresh));
+  }).pipe(E.scoped, E.provide([Relay.Fresh]));
 
   yield* E.promise(() =>
-    expect(JSON.stringify(ixdom.createUpdate.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
+    expect(JSON.stringify(createUpdate.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
   );
-}));
+}, E.provide(layer)));
 
-it.scoped('when responding (performance)', E.fn(
+it.effect('when responding (performance)', E.fn(
   function* () {
     const runs = Array.from({length: 10000});
 
@@ -86,7 +108,7 @@ it.scoped('when responding (performance)', E.fn(
           custom_id     : 'actions:2:button:0',
           component_type: 2,
         },
-      }).pipe(E.provide(Relay.Fresh));
+      }).pipe(E.scoped, E.provide(Relay.Fresh));
     }
-  },
+  }, E.provide(layer),
 ), {timeout: 20000});

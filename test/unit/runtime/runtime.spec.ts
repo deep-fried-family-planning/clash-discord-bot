@@ -59,8 +59,6 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
 }));
 
 it.effect('when responding', E.fn(function* () {
-  // yield* TestClock.setTime(0);
-
   yield* runtime.respond({
     id            : '1359103729483251722',
     token         : 'respond1',
@@ -98,22 +96,28 @@ it.effect('when responding', E.fn(function* () {
   );
 }));
 
-it.effect('when responding (performance)', E.fn(function* () {
-  const runs = Array.from({length: 10000});
+const test = () =>
+  pipe(
+    Array.from<number>({length: 10000}).map((_, idx) =>
+      pipe(
+        E.log(`Start ${idx}`),
+        E.tap(runtime.respond({
+          id            : '1236074574509117491',
+          token         : 'respond1',
+          application_id: 'app',
+          user_id       : 'user',
+          guild_id      : 'guild',
+          message       : TestMessageJSON,
+          type          : 2,
+          data          : {
+            custom_id     : 'actions:2:button:0',
+            component_type: 2,
+          },
+        })),
+        E.tap(E.log(`Done ${idx}`)),
+      ),
+    ),
+    E.allWith({concurrency: 'unbounded', concurrentFinalizers: true}),
+  );
 
-  for (let i = 0; i < runs.length; i++) {
-    yield* runtime.respond({
-      id            : '1236074574509117491',
-      token         : 'respond1',
-      application_id: 'app',
-      user_id       : 'user',
-      guild_id      : 'guild',
-      message       : TestMessageJSON,
-      type          : 2,
-      data          : {
-        custom_id     : 'actions:2:button:0',
-        component_type: 2,
-      },
-    });
-  }
-}), {timeout: 20000});
+it.live('when responding (performance)', test, {timeout: 20000});
