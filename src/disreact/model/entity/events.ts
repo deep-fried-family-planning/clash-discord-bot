@@ -2,13 +2,13 @@ import {D, E, S} from '#src/disreact/utils/re-exports.ts'
 import type {Cause} from 'effect'
 import {Predicate} from 'effect'
 
-export * as Event from './event.ts'
-export type Event<A = any> = {
+export * as Events from 'src/disreact/model/entity/events.ts'
+export type Events<A = any> = {
   id  : string
   data: A
 }
 
-export type EventData<A> = Event<A>['data']
+export type EventData<A> = Events<A>['data']
 
 export const declareEvent = <A, I, R>(data: S.Schema<A, I, R>) =>
   S.Struct({
@@ -29,7 +29,7 @@ export const declareHandler = <A, I, R>(data: S.Schema<A, I, R>) =>
     typeHandler<typeof data.Type>,
   )
 
-export const renderHandler = <A = any>(handler: Handler<A>, event: Event<A>) => E.suspend(() => {
+export const renderHandler = <A = any>(handler: Handler<A>, event: Events<A>) => E.suspend(() => {
   const output = handler(event.data)
 
   if (!output) {

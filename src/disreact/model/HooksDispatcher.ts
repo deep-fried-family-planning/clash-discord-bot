@@ -1,5 +1,5 @@
-import {E} from '#src/disreact/utils/re-exports.ts'
-import { Hooks } from './hooks'
+import {E} from '#src/disreact/utils/re-exports.ts';
+import { Hooks } from './hooks';
 
 
 export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/Dispatcher', {
@@ -9,7 +9,6 @@ export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/Disp
       unlock: semaphore.release(1),
     }),
   ),
-  accessors: false,
 }) {
   static readonly impl = {
     useState  : Hooks.$useState,
@@ -17,5 +16,5 @@ export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/Disp
     useEffect : Hooks.$useEffect,
     usePage   : Hooks.$usePage,
     useIx     : Hooks.$useIx,
-  }
+  };
 }

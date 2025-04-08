@@ -1,11 +1,11 @@
 // @ts-check
-import eslint from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import stylistic from '@stylistic/eslint-plugin'
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import stylistic from '@stylistic/eslint-plugin';
 
 const style = stylistic.configs.customize({
   indent      : 2,
-  semi        : false,
+  semi        : true,
   commaDangle : 'always-multiline',
   quotes      : 'single',
   jsx         : false,
@@ -13,7 +13,7 @@ const style = stylistic.configs.customize({
   quoteProps  : 'as-needed',
   blockSpacing: false,
   braceStyle  : 'stroustrup',
-})
+});
 
 const config = [
   {
@@ -169,6 +169,6 @@ const config = [
       },
     },
   ),
-]
+];
 
-export default config
+export default config;

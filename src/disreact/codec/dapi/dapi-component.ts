@@ -1,8 +1,8 @@
-import {pipe, S} from '#src/disreact/utils/re-exports.ts'
+import {pipe, S} from '#src/disreact/utils/re-exports.ts';
 
 
-export * as DAPIComponent from '#src/disreact/codec/dapi/dapi-component.ts'
-export type DAPIComponent = never
+export * as DAPIComponent from '#src/disreact/codec/dapi/dapi-component.ts';
+export type DAPIComponent = never;
 
 export const ACTION_ROW     = 1,
              BUTTON         = 2,
@@ -19,12 +19,12 @@ export const ACTION_ROW     = 1,
              LINK           = 5,
              PREMIUM        = 6,
              SHORT          = 1,
-             PARAGRAPH      = 2
+             PARAGRAPH      = 2;
 
 export const ActionRow = <A, I, R>(schema: S.Schema<A, I, R>) => S.Struct({
   type      : S.tag(ACTION_ROW),
   components: S.Array(schema),
-})
+});
 
 export const ComponentButton = S.Struct({
   type     : S.tag(BUTTON),
@@ -33,7 +33,7 @@ export const ComponentButton = S.Struct({
   label    : S.optional(S.String),
   emoji    : S.optional(S.Any),
   disabled : S.optional(S.Boolean),
-})
+});
 
 export const LinkButton = S.Struct({
   type    : S.tag(BUTTON),
@@ -42,25 +42,25 @@ export const LinkButton = S.Struct({
   label   : S.optional(S.String),
   emoji   : S.optional(S.Any),
   disabled: S.optional(S.Boolean),
-})
+});
 
 export const PremiumButton = S.Struct({
   type    : S.tag(BUTTON),
   style   : S.Literal(PREMIUM),
   sku_id  : S.String,
   disabled: S.optional(S.Boolean),
-})
+});
 
 export const Button = S.Union(
   ComponentButton,
   LinkButton,
   PremiumButton,
-)
+);
 
 export const ButtonData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(BUTTON),
-})
+});
 
 export const StringSelect = S.Struct({
   type       : S.Literal(SELECT_MENU),
@@ -70,13 +70,13 @@ export const StringSelect = S.Struct({
   max_values : S.optional(S.Number),
   disabled   : S.optional(S.Boolean),
   options    : S.Array(S.Any),
-})
+});
 
 export const StringSelectData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(SELECT_MENU),
   values        : S.Array(S.String),
-})
+});
 
 export const UserSelect = S.Struct({
   type          : S.Literal(USER_SELECT),
@@ -92,13 +92,13 @@ export const UserSelect = S.Struct({
     }),
     S.Array,
   ),
-})
+});
 
 export const UserSelectData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(USER_SELECT),
   values        : S.Array(S.String),
-})
+});
 
 export const RoleSelect = S.Struct({
   type          : S.tag(ROLE_SELECT),
@@ -114,13 +114,13 @@ export const RoleSelect = S.Struct({
     }),
     S.Array,
   ),
-})
+});
 
 export const RoleSelectData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(ROLE_SELECT),
   values        : S.Array(S.String),
-})
+});
 
 export const MentionableSelect = S.Struct({
   type          : S.Literal(MENTION_SELECT),
@@ -134,13 +134,13 @@ export const MentionableSelect = S.Struct({
     }),
     S.Array,
   ),
-})
+});
 
 export const MentionableSelectData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(MENTION_SELECT),
   values        : S.Array(S.String),
-})
+});
 
 export const ChannelSelect = S.Struct({
   type          : S.Literal(CHANNEL_SELECT),
@@ -157,13 +157,13 @@ export const ChannelSelect = S.Struct({
     }),
     S.Array,
   ),
-})
+});
 
 export const ChannelSelectData = S.Struct({
   custom_id     : S.String,
   component_type: S.tag(CHANNEL_SELECT),
   values        : S.Array(S.String),
-})
+});
 
 export const SelectMenu = S.Union(
   StringSelect,
@@ -171,7 +171,7 @@ export const SelectMenu = S.Union(
   RoleSelect,
   MentionableSelect,
   ChannelSelect,
-)
+);
 
 export const TextInput = S.Struct({
   type       : S.Literal(TEXT_INPUT),
@@ -182,4 +182,4 @@ export const TextInput = S.Struct({
   max_length : S.optional(S.Number),
   required   : S.optional(S.Boolean),
   value      : S.optional(S.String),
-})
+});

@@ -1,17 +1,19 @@
-import {E, pipe} from '#src/disreact/utils/re-exports.ts'
-import type {Fibril} from '#src/disreact/model/comp/fibril.ts'
-import {Relay} from '#src/disreact/model/Relay.ts'
-import {SourceRegistry} from '#src/disreact/model/SourceRegistry.ts'
-import {Lifecycles} from './lifecycles'
+import {Codec} from '#src/disreact/codec/Codec.ts';
+import type {Fibril} from '#src/disreact/model/comp/fibril.ts';
+import type {Events} from '#src/disreact/model/entity/events.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
+import {Registry} from '#src/disreact/model/Registry.ts';
+import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import {Lifecycles} from './lifecycles';
 
-export * as Model from './model.ts'
-export type Model = never
+export * as Model from './model.ts';
+export type Model = never;
 
-export const initEntrypoint = () => {}
+export const initEntrypoint = () => {};
 
-export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: any) =>
+export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Events) =>
   pipe(
-    E.flatMap(SourceRegistry, (registry) => registry.fromHydrant(hydrant)),
+    E.flatMap(Registry, (registry) => registry.fromHydrant(hydrant)),
     E.tap((original) =>
       pipe(
         Lifecycles.hydrate(original),
@@ -27,15 +29,15 @@ export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: any) =>
           relay.awaitOutput(),
           E.flatMap((output) => {
             if (output === null || output.id === original.id) {
-              return E.succeed(output)
+              return E.succeed(output);
             }
-            return Lifecycles.initialize(output)
+            return Lifecycles.initialize(output);
           }),
           E.tap(() => relay.setComplete()),
         ),
       ),
     ),
-  )
+  );
 
 // E.gen(function* () {
 //     const original = yield* SourceRegistry.withHydrant(hydrant)

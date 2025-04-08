@@ -1,9 +1,10 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts'
-import {declareEvent, declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import {S} from '#src/disreact/utils/re-exports.ts'
+import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component'
+import {Events} from '#src/disreact/model/entity/events'
+import {S} from '#src/disreact/utils/re-exports.ts'
+import {DAPI} from '../../dapi/dapi'
 
 export * as Success from '#src/disreact/codec/rest-elem/component/success.ts'
 export type Success = never
@@ -11,13 +12,11 @@ export type Success = never
 export const TAG  = 'success',
              NORM = Keys.buttons
 
-export const Event = declareEvent(
-  TAG,
-  S.Struct({}),
-  DAPIComponent.ButtonData,
-)
+export const EventData = S.Struct({
+  data: DAPI.Component.ButtonData,
+})
 
-export const Handler = declareHandler(Event)
+export const Handler = Events.declareHandler(EventData)
 
 export const Children = S.Union(
   S.String,
@@ -43,9 +42,9 @@ export const Element = declareHandlerElem(
 
 export const encode = (self: Elem, acc: any) => {
   return {
-    type     : DAPIComponent.BUTTON,
+    type     : DAPI.Component.BUTTON,
     custom_id: self.props.custom_id ?? self.ids,
-    style    : DAPIComponent.SUCCESS,
+    style    : DAPI.Component.SUCCESS,
     label    : self.props.label ?? acc[Keys.primitive]?.[0],
     emoji    : self.props.emoji ?? acc[Keys.emoji]?.[0],
     disabled : self.props.disabled,

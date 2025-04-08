@@ -1,10 +1,10 @@
-import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/dapi/common.ts'
-import {S} from '#src/disreact/utils/re-exports.ts'
-import {PremiumType} from 'dfx/types'
-import {DAPIMessage} from './dapi-message'
+import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/dapi/common.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
+import {PremiumType} from 'dfx/types';
+import {DAPIMessage} from './dapi-message';
 
-export * as Ix from '#src/disreact/codec/dapi/ix.ts'
-export type Ix = never
+export * as Ix from '#src/disreact/codec/dapi/ix.ts';
+export type Ix = never;
 
 const InteractionMetadataUser = S.Struct({
   id                    : UserId,
@@ -27,7 +27,7 @@ const InteractionMetadataUser = S.Struct({
     asset : AssetHash,
     sku_id: SnowFlake,
   })),
-})
+});
 
 export const CommandInteractionMetadata = S.Struct({
   id                            : InteractionId,
@@ -37,7 +37,7 @@ export const CommandInteractionMetadata = S.Struct({
   original_response_message_id  : S.optional(SnowFlake),
   target_user                   : S.Any,
   target_message_id             : SnowFlake,
-})
+});
 
 export const MessageComponentInteractionMetadata = S.Struct({
   id                            : InteractionId,
@@ -46,7 +46,7 @@ export const MessageComponentInteractionMetadata = S.Struct({
   authorizing_integration_owners: S.Any,
   original_response_message_id  : S.optional(SnowFlake),
   interacted_message_id         : SnowFlake,
-})
+});
 
 export const ModalInteractionMetadataFromComponent = S.Struct({
   id                             : InteractionId,
@@ -57,7 +57,7 @@ export const ModalInteractionMetadataFromComponent = S.Struct({
   triggering_interaction_metadata: S.Union(
     MessageComponentInteractionMetadata,
   ),
-})
+});
 
 export const ModalInteractionMetadataFromCommand = S.Struct({
   id                             : InteractionId,
@@ -68,25 +68,25 @@ export const ModalInteractionMetadataFromCommand = S.Struct({
   triggering_interaction_metadata: S.Union(
     CommandInteractionMetadata,
   ),
-})
+});
 
 export const InteractionMetadata = S.Union(
   CommandInteractionMetadata,
   MessageComponentInteractionMetadata,
   ModalInteractionMetadataFromComponent,
   ModalInteractionMetadataFromCommand,
-)
+);
 
 export const ButtonData = S.Struct({
   custom_id     : CustomId,
   component_type: S.Literal(2),
-})
+});
 
 export const StringSelectData = S.Struct({
   custom_id     : CustomId,
   component_type: S.Literal(3),
   values        : S.Array(S.String.pipe(S.maxLength(100))).pipe(S.minItems(1), S.maxItems(25)),
-})
+});
 
 export const UserSelectData = S.Struct({
   custom_id     : CustomId,
@@ -96,7 +96,7 @@ export const UserSelectData = S.Struct({
     users  : S.Record({key: UserId, value: S.Any}),
     members: S.optional(S.Record({key: UserId, value: S.Any})),
   }),
-})
+});
 
 export const RoleSelectData = S.Struct({
   custom_id     : CustomId,
@@ -105,7 +105,7 @@ export const RoleSelectData = S.Struct({
   resolved      : S.Struct({
     roles: S.Record({key: RoleId, value: S.Any}),
   }),
-})
+});
 
 export const ChannelSelectData = S.Struct({
   custom_id     : CustomId,
@@ -114,7 +114,7 @@ export const ChannelSelectData = S.Struct({
   resolved      : S.Struct({
     channels: S.Record({key: ChannelId, value: S.Any}),
   }),
-})
+});
 
 export const MentionSelectData = S.Struct({
   custom_id     : CustomId,
@@ -126,7 +126,7 @@ export const MentionSelectData = S.Struct({
     users   : S.Record({key: UserId, value: S.Any}),
     members : S.optional(S.Record({key: UserId, value: S.Any})),
   }),
-})
+});
 
 export const ComponentData = S.Union(
   ButtonData,
@@ -135,25 +135,24 @@ export const ComponentData = S.Union(
   RoleSelectData,
   ChannelSelectData,
   MentionSelectData,
-)
+);
 
 
 export const TextInputData = S.Struct({
   type     : S.Literal(4),
   custom_id: CustomId,
   value    : VisiblePlainText.pipe(S.maxLength(4000)),
-})
+});
 
 export const ModalRowData = S.Struct({
   type      : S.Literal(1),
   components: S.Array(TextInputData).pipe(S.minItems(1), S.maxItems(1)),
-})
+});
 
 export const ModalData = S.Struct({
   custom_id : CustomId,
   components: S.Array(ModalRowData).pipe(S.minItems(1), S.maxItems(5)),
-})
-
+});
 
 export const BaseBody = S.Struct({
   id            : S.String,
@@ -161,24 +160,24 @@ export const BaseBody = S.Struct({
   application_id: S.String,
   user_id       : S.String,
   guild_id      : S.String,
-})
+});
 
-export const ComponentBody = S.Struct({
+export const ComponentRequestBody = S.Struct({
   ...BaseBody.fields,
   type   : S.Literal(2),
   data   : ComponentData,
-  message: S.optional(DAPIMessage.Base),
-})
+  message: DAPIMessage.Base,
+});
 
-export const ModalBody = S.Struct({
+export const ModalRequestBody = S.Struct({
   ...BaseBody.fields,
   type   : S.Literal(5),
   data   : ModalData,
   message: S.optional(DAPIMessage.Base),
-})
+});
 
-export const Body = S.Union(
-  ComponentBody,
-  ModalBody,
-)
-export type Body = typeof Body.Type
+export const RequestBody = S.Union(
+  ComponentRequestBody,
+  ModalRequestBody,
+);
+export type RequestBody = typeof RequestBody.Type;

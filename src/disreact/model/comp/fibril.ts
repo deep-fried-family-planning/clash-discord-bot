@@ -1,74 +1,73 @@
-import {S} from '#src/disreact/utils/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import type {Root} from '#src/disreact/model/entity/root.ts'
-import * as MsgPack from '@msgpack/msgpack'
-import {pipe, Record} from 'effect'
-import * as Data from 'effect/Data'
-import * as Equal from 'effect/Equal'
-import * as pako from 'pako'
-import {Polymer} from '#src/disreact/model/comp/polymer.ts'
-import type { EF } from '#src/disreact/model/comp/ef.ts'
+import {S} from '#src/disreact/utils/re-exports.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Root} from '#src/disreact/model/entity/root.ts';
+import * as MsgPack from '@msgpack/msgpack';
+import {pipe, Record} from 'effect';
+import * as Data from 'effect/Data';
+import * as Equal from 'effect/Equal';
+import * as pako from 'pako';
+import {Polymer} from '#src/disreact/model/comp/polymer.ts';
+import type { EF } from '#src/disreact/model/comp/ef.ts';
 
 
-export * from '#src/disreact/model/comp/polymer.ts'
-export * from '#src/disreact/model/comp/monomer.ts'
-export * as Fibril from '#src/disreact/model/comp/fibril.ts'
-export type Fibril = never
+export * from '#src/disreact/model/comp/polymer.ts';
+export * from '#src/disreact/model/comp/monomer.ts';
+export * as Fibril from '#src/disreact/model/comp/fibril.ts';
+export type Fibril = never;
 
-export type Hydrant = typeof Hydrant.Type
+export type Hydrant = typeof Hydrant.Type;
 
 export const Hydrant = S.transform(
   S.String,
   S.Struct({
     id     : S.String,
-    props  : S.Any,
+    props  : S.optional(S.Any),
     strands: S.Record({key: S.String, value: Polymer.Chain}),
   }),
   {
-    strict: true,
     encode: (hydrant) => deflate(hydrant),
     decode: (hash) => inflate(hash),
   },
-)
+);
 
 const deflate = (data: any) =>
   pipe(
     MsgPack.encode(data),
     pako.deflate,
     (binary) => Buffer.from(binary).toString('base64url'),
-  )
+  );
 
 const inflate = (encoded: string) =>
   pipe(
     Buffer.from(encoded, 'base64url'),
     pako.inflate,
     MsgPack.decode,
-  ) as any
+  ) as any;
 
 
 export type Strand = {
-  pc    : number
-  rc    : number
-  stack : Polymer.Chain
-  saved : Polymer.Chain
-  queue : any[]
-  elem? : Elem.Task
-  nexus?: Nexus | undefined
-}
+  pc    : number;
+  rc    : number;
+  stack : Polymer.Chain;
+  saved : Polymer.Chain;
+  queue : any[];
+  elem? : Elem.Task;
+  nexus?: Nexus | undefined;
+};
 
 export const isSameStrand = (self: Strand) => {
-  const a = self.stack
-  const b = self.saved
+  const a = self.stack;
+  const b = self.saved;
 
   if (a.length !== b.length) {
-    return false
+    return false;
   }
 
-  const stackData = Data.array(self.stack.map((s) => s === null ? null : Data.struct(s)))
-  const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)))
+  const stackData = Data.array(self.stack.map((s) => s === null ? null : Data.struct(s)));
+  const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)));
 
-  return Equal.equals(stackData, priorData)
-}
+  return Equal.equals(stackData, priorData);
+};
 
 export const makeStrand = (): Strand =>
   ({
@@ -77,31 +76,31 @@ export const makeStrand = (): Strand =>
     stack: [],
     saved: [],
     queue: [],
-  })
+  });
 
 export const cloneStrand = (self: Strand): Strand => {
   if (self.queue.length > 0) {
-    throw new Error('Queue is not empty.')
+    throw new Error('Queue is not empty.');
   }
 
-  const {elem, nexus, ...rest} = self
+  const {elem, nexus, ...rest} = self;
 
-  return structuredClone(rest)
-}
+  return structuredClone(rest);
+};
 
 
 export type Nexus = {
-  id     : string
-  props  : Hydrant
-  strands: {[id: string]: Strand}
+  id     : string;
+  props  : Hydrant;
+  strands: {[id: string]: Strand};
   next: {
-    id   : string | null
-    props: any
-  }
-  queue   : EF.Queue
-  request?: any
-  root?   : Root | undefined
-}
+    id   : string | null;
+    props: any;
+  };
+  queue   : EF.Queue;
+  request?: any;
+  root?   : Root | undefined;
+};
 
 export const makeNexus = (props?: any): Nexus =>
   ({
@@ -113,7 +112,7 @@ export const makeNexus = (props?: any): Nexus =>
       props: {},
     },
     queue: [],
-  })
+  });
 
 export const decodeNexus = (hydrant: Hydrant): Nexus =>
   ({
@@ -133,26 +132,26 @@ export const decodeNexus = (hydrant: Hydrant): Nexus =>
       props: hydrant.props,
     },
     queue: [],
-  })
+  });
 
 export const encodeNexus = (self: Nexus): Hydrant =>
   ({
     id     : self.id,
     props  : self.props,
     strands: Record.map(self.strands, (node) => node.stack),
-  })
+  });
 
 export const cloneNexus = (self: Nexus): Nexus => {
-  const {root, strands, ...rest} = self
+  const {root, strands, ...rest} = self;
 
-  const cloned = structuredClone(rest) as Nexus
-  cloned.strands = Record.map(strands, (node) => cloneStrand(node))
-  return cloned
-}
+  const cloned = structuredClone(rest) as Nexus;
+  cloned.strands = Record.map(strands, (node) => cloneStrand(node));
+  return cloned;
+};
 
 export namespace λ {
-  const NODE = {current: null as Strand | null}
-  export const get = () => NODE.current!
-  export const set = (node: Strand) => {NODE.current = node}
-  export const clear = () => {NODE.current = null}
+  const NODE = {current: null as Strand | null};
+  export const get = () => NODE.current!;
+  export const set = (node: Strand) => {NODE.current = node;};
+  export const clear = () => {NODE.current = null;};
 }

@@ -1,8 +1,9 @@
 import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts'
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
 import {Util} from '#src/disreact/codec/rest-elem/util.ts'
-import * as S from 'effect/Schema'
-import {DAPIModal} from '#src/disreact/codec/dapi/dapi-modal'
+import {Events} from '#src/disreact/model/entity/events'
+import {S} from '#src/disreact/utils/re-exports'
+import {DAPI} from '../../dapi/dapi'
 
 export * as Modal from '#src/disreact/codec/rest-elem/container/modal.ts'
 export type Modal = never
@@ -10,13 +11,11 @@ export type Modal = never
 export const TAG  = 'modal',
              NORM = TAG
 
-export const Event = Util.declareEvent(
-  TAG,
-  S.Struct({}),
-  DAPIModal.Data,
-)
+export const EventData = S.Struct({
+  data: DAPI.Modal.Data,
+})
 
-export const Handler = Util.declareHandler(Event)
+export const Handler = Events.declareHandler(EventData)
 
 export const Children = S.Union(
   TextInput.Element,
@@ -34,7 +33,7 @@ export const Attributes = Util.declareProps(
 export const Element = Util.declareHandlerElem(
   TAG,
   Attributes,
-  Event,
+  EventData,
 )
 
 export const encode = (self: any, acc: any) => {

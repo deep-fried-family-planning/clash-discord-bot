@@ -2,11 +2,15 @@
   "flags": 64,
   "embeds": [
     {
-      "title": "Test Title - NOT markdown",
-      "description": "### H3-# \n@123456\n__$ not a link__",
+      "title": "Omni Board",
+      "description": "V2 - JSX Pragma",
       "image": {
-        "url": "https://dffp.org/d/6/2/respond2/722000/respond2/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccPy4pKixLyU4iZkuYmNC4uZ9iEJWOVCaQMrj9TElNQiK4MJALWwIeU"
+        "url": "https://dffp.org/s/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccPy4pKixLyU4iZkuYmNC4sZ9iEJWOVCaQMrj9TElNQiK4MJALVuIeM"
       }
+    },
+    {
+      "title": "Test Title - NOT markdown",
+      "description": "### H3-# \n@123456\n__$ not a link__"
     }
   ],
   "components": [
@@ -17,7 +21,7 @@
           "type": 2,
           "style": 1,
           "custom_id": "actions:2:button:0",
-          "label": "Start 2"
+          "label": "Start 0"
         },
         {
           "type": 2,

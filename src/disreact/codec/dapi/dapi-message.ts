@@ -1,9 +1,9 @@
-import {S} from '#src/disreact/utils/re-exports.ts'
-import {DAPIComponent} from './dapi-component.ts'
-import {DAPIEmbed} from './dapi-embed.ts'
+import {S} from '#src/disreact/utils/re-exports.ts';
+import {DAPIComponent} from './dapi-component.ts';
+import {DAPIEmbed} from './dapi-embed.ts';
 
-export * as DAPIMessage from './dapi-message.ts'
-export type DAPIMessage = never
+export * as DAPIMessage from './dapi-message.ts';
+export type DAPIMessage = never;
 
 export const Base = S.Struct({
   content: S.optional(S.String),
@@ -23,4 +23,4 @@ export const Base = S.Struct({
       ),
     ),
   ),
-})
+});

@@ -1,9 +1,9 @@
 import {Default} from '#src/disreact/codec/rest-elem/component/default.ts'
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {declareEvent, declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import {S} from '#src/disreact/utils/re-exports.ts'
+import {declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
 import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component'
+import {S} from '#src/disreact/utils/re-exports.ts'
+import {DAPI} from '../../dapi/dapi'
 
 export * as Roles from '#src/disreact/codec/rest-elem/component/roles.ts'
 export type Roles = never
@@ -11,13 +11,11 @@ export type Roles = never
 export const TAG  = 'roles',
              NORM = Keys.components
 
-export const Event = declareEvent(
-  TAG,
-  S.Struct({}),
-  DAPIComponent.RoleSelectData,
-)
+export const EventData = S.Struct({
+  data: DAPI.Component.RoleSelectData,
+})
 
-export const Handler = declareHandler(Event)
+export const Handler = declareHandler(EventData)
 
 export const Children = S.Union(
   Default.Element,
@@ -42,9 +40,9 @@ export const Element = declareHandlerElem(
 
 export const encode = (self: Elem, acc: any) => {
   return {
-    type      : DAPIComponent.ACTION_ROW,
+    type      : DAPI.Component.ACTION_ROW,
     components: [{
-      type          : DAPIComponent.ROLE_SELECT,
+      type          : DAPI.Component.ROLE_SELECT,
       custom_id     : self.props.custom_id ?? self.ids,
       placeholder   : self.props.label ?? acc[Keys.primitive]?.[0],
       min_values    : self.props.min_values,

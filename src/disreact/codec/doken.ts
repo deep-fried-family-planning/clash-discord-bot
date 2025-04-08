@@ -1,17 +1,20 @@
-import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts'
-import {DT, E, hole} from '#src/disreact/utils/re-exports.ts'
-import {DR, pipe, S} from '#src/internal/pure/effect.ts'
-import {Redacted} from 'effect'
-import {Snowflake} from './snowflake'
+import {DT, hole} from '#src/disreact/utils/re-exports.ts';
+import {DR, pipe, S} from '#src/internal/pure/effect.ts';
+import {Redacted} from 'effect';
+import {Snowflake} from './snowflake';
 
-export * as Doken from '#src/disreact/codec/doken.ts'
+export * as Doken from '#src/disreact/codec/doken.ts';
 export type Doken =
   | Fresh
-  | Defer
-  | Cache
-  | Spent
+  | Active
+  | Cached
+  | Single;
 
-export type Fresh = typeof Fresh.Type
+export const FRESH_OFFSET = DR.seconds(2);
+export const ACTIVE_OFFSET = DR.minutes(12);
+
+export const FRESH = 'Fresh';
+export type Fresh = S.Schema.Type<typeof Fresh>;
 export const Fresh = pipe(
   S.Struct({
     id            : Snowflake.Id,
@@ -21,7 +24,7 @@ export const Fresh = pipe(
   S.transform(
     S.Struct({
       id : Snowflake.Id,
-      ttl: Snowflake.TimeToLive(DR.seconds(2)),
+      ttl: Snowflake.TimeToLive(FRESH_OFFSET),
       val: S.RedactedFromSelf(S.String),
       app: Snowflake.Id,
     }),
@@ -36,26 +39,27 @@ export const Fresh = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', 'Fresh'),
+  S.attachPropertySignature('_tag', FRESH),
   S.mutable,
-)
+);
 
-export type Defer = typeof Defer.Type
-export const Defer = pipe(
+export const ACTIVE = 'Active';
+export type Active = typeof Active.Type;
+export const Active = pipe(
   S.TemplateLiteralParser(
-    'd/', Snowflake.Id,
+    'a/', Snowflake.Id,
     '/', S.Redacted(S.String),
   ),
   S.transform(
     S.Struct({
       id : Snowflake.Id,
-      ttl: Snowflake.TimeToLive(DR.minutes(14)),
+      ttl: Snowflake.TimeToLive(ACTIVE_OFFSET),
       val: S.RedactedFromSelf(S.String),
     }),
     {
       encode: ({id, val}) =>
         [
-          'd/', id, '/', val,
+          'a/', id, '/', val,
         ] as const,
       decode: ([, id, , val]) =>
         ({
@@ -65,19 +69,28 @@ export const Defer = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', 'Defer'),
+  S.attachPropertySignature('_tag', ACTIVE),
   S.mutable,
-)
+);
 
-export type Cache = typeof Cache.Type
-export const Cache = pipe(
+export const makeActive = (fresh: Fresh): Active =>
+  ({
+    _tag: ACTIVE,
+    id  : fresh.id,
+    ttl : fresh.ttl.pipe(DT.addDuration(ACTIVE_OFFSET)),
+    val : fresh.val,
+  });
+
+export const CACHED = 'Cached';
+export type Cached = typeof Cached.Type;
+export const Cached = pipe(
   S.TemplateLiteralParser(
     'c/', Snowflake.Id,
   ),
   S.transform(
     S.Struct({
       id : Snowflake.Id,
-      ttl: Snowflake.TimeToLive(DR.minutes(14)),
+      ttl: Snowflake.TimeToLive(ACTIVE_OFFSET),
     }),
     {
       encode: ({id}) =>
@@ -91,14 +104,22 @@ export const Cache = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', 'Cache'),
+  S.attachPropertySignature('_tag', CACHED),
   S.mutable,
-)
+);
 
-export type Spent = typeof Spent.Type
-export const Spent = pipe(
+export const makeCached = (defer: Active): Cached =>
+  ({
+    _tag: CACHED,
+    id  : defer.id,
+    ttl : defer.ttl,
+  });
+
+export const SINGLE = 'Single' as const;
+export type Single = typeof Single.Type;
+export const Single = pipe(
   S.TemplateLiteralParser(
-    's/',
+    's',
   ),
   S.transform(
     S.Struct({
@@ -109,7 +130,7 @@ export const Spent = pipe(
     {
       encode: () =>
         [
-          's/',
+          's',
         ] as const,
       decode: () =>
         ({
@@ -119,44 +140,25 @@ export const Spent = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', 'Spent'),
+  S.attachPropertySignature('_tag', SINGLE),
   S.mutable,
-)
+);
 
-export type Serial = typeof Serial.Type
-export const Serial = S.Union(Defer, Cache, Spent)
-
-export const makeDeferFromFresh = (fresh: Fresh): Defer =>
+export const makeSingle = (fresh: Fresh): Single =>
   ({
-    _tag: 'Defer',
-    id  : fresh.id,
-    ttl : fresh.ttl.pipe(DT.addDuration(DR.minutes(14))),
-    val : fresh.val,
-  })
-
-export const makeSpentFromFresh = (fresh: Fresh): Spent =>
-  ({
-    _tag: 'Spent',
+    _tag: SINGLE,
     id  : fresh.id,
     ttl : fresh.ttl,
     val : fresh.val,
-  })
+  });
 
-export const makeCacheFromDefer = (defer: Defer): Cache =>
+export const makeEmptySingle = (): Single =>
   ({
-    _tag: 'Cache',
-    id  : defer.id,
-    ttl : defer.ttl,
-  })
+    _tag: SINGLE,
+    id  : 'synthesized',
+    ttl : DT.unsafeMake(0),
+    val : Redacted.make(''),
+  });
 
-export const resolveSerialDoken = (serial?: Defer | Cache | Spent) => {
-  if (!serial || serial._tag === 'Spent') {
-    return E.succeed(undefined)
-  }
-
-  if (serial._tag === 'Defer') {
-    return E.succeed(serial)
-  }
-
-  return E.flatMap(DokenMemory, (memory) => memory.load(serial.id))
-}
+export type Serial = typeof Serial.Type;
+export const Serial = S.Union(Active, Cached, Single);

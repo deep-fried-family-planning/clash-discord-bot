@@ -1,51 +1,55 @@
-import {Actions} from '#src/disreact/codec/rest-elem/container/actions.ts'
-import {Button} from '#src/disreact/codec/rest-elem/component/button.ts'
-import {Channels} from '#src/disreact/codec/rest-elem/component/channels.ts'
-import {Danger} from '#src/disreact/codec/rest-elem/component/danger.ts'
-import {Default} from '#src/disreact/codec/rest-elem/component/default.ts'
-import {Link} from '#src/disreact/codec/rest-elem/component/link.ts'
-import {Mentions} from '#src/disreact/codec/rest-elem/component/mentions.ts'
-import {Option} from '#src/disreact/codec/rest-elem/component/option.ts'
-import {Premium} from '#src/disreact/codec/rest-elem/component/premium.ts'
-import {Primary} from '#src/disreact/codec/rest-elem/component/primary.ts'
-import {Roles} from '#src/disreact/codec/rest-elem/component/roles.ts'
-import {Secondary} from '#src/disreact/codec/rest-elem/component/secondary.ts'
-import {Select} from '#src/disreact/codec/rest-elem/component/select.ts'
-import {Success} from '#src/disreact/codec/rest-elem/component/success.ts'
-import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts'
-import {Users} from '#src/disreact/codec/rest-elem/component/users.ts'
-import {Author} from '#src/disreact/codec/rest-elem/embed/author.ts'
-import {Embed} from '#src/disreact/codec/rest-elem/embed/embed.ts'
-import {Field} from '#src/disreact/codec/rest-elem/embed/field.ts'
-import {Footer} from '#src/disreact/codec/rest-elem/embed/footer.ts'
-import {Img} from '#src/disreact/codec/rest-elem/embed/img.ts'
-import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts'
-import {Anchor} from '#src/disreact/codec/rest-elem/markdown/a.ts'
-import {AtMention} from '#src/disreact/codec/rest-elem/markdown/at.ts'
-import {Bold} from '#src/disreact/codec/rest-elem/markdown/b.ts'
-import {BlockQuote} from '#src/disreact/codec/rest-elem/markdown/blockquote.ts'
-import {Break} from '#src/disreact/codec/rest-elem/markdown/br.ts'
-import {Code} from '#src/disreact/codec/rest-elem/markdown/code.ts'
-import {H1} from '#src/disreact/codec/rest-elem/markdown/h1.ts'
-import {H2} from '#src/disreact/codec/rest-elem/markdown/h2.ts'
-import {H3} from '#src/disreact/codec/rest-elem/markdown/h3.ts'
-import {Italic} from '#src/disreact/codec/rest-elem/markdown/i.ts'
-import {ListItem} from '#src/disreact/codec/rest-elem/markdown/li.ts'
-import {MaskAnchor} from '#src/disreact/codec/rest-elem/markdown/mask.ts'
-import {OrderedList} from '#src/disreact/codec/rest-elem/markdown/ol.ts'
-import {Paragraph} from '#src/disreact/codec/rest-elem/markdown/p.ts'
-import {Pre} from '#src/disreact/codec/rest-elem/markdown/pre.ts'
-import {Strikethrough} from '#src/disreact/codec/rest-elem/markdown/s.ts'
-import {Small} from '#src/disreact/codec/rest-elem/markdown/small.ts'
-import {Time} from '#src/disreact/codec/rest-elem/markdown/time.ts'
-import {Underline} from '#src/disreact/codec/rest-elem/markdown/u.ts'
-import {UnorderedList} from '#src/disreact/codec/rest-elem/markdown/ul.ts'
-import {Message} from '#src/disreact/codec/rest-elem/container/message.ts'
-import {Modal} from '#src/disreact/codec/rest-elem/container/modal.ts'
-import { Keys } from '#src/disreact/codec/rest-elem/keys.ts'
+import {Actions} from '#src/disreact/codec/rest-elem/container/actions.ts';
+import {Button} from '#src/disreact/codec/rest-elem/component/button.ts';
+import {Channels} from '#src/disreact/codec/rest-elem/component/channels.ts';
+import {Danger} from '#src/disreact/codec/rest-elem/component/danger.ts';
+import {Default} from '#src/disreact/codec/rest-elem/component/default.ts';
+import {Link} from '#src/disreact/codec/rest-elem/component/link.ts';
+import {Mentions} from '#src/disreact/codec/rest-elem/component/mentions.ts';
+import {Option} from '#src/disreact/codec/rest-elem/component/option.ts';
+import {Premium} from '#src/disreact/codec/rest-elem/component/premium.ts';
+import {Primary} from '#src/disreact/codec/rest-elem/component/primary.ts';
+import {Roles} from '#src/disreact/codec/rest-elem/component/roles.ts';
+import {Secondary} from '#src/disreact/codec/rest-elem/component/secondary.ts';
+import {Select} from '#src/disreact/codec/rest-elem/component/select.ts';
+import {Success} from '#src/disreact/codec/rest-elem/component/success.ts';
+import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts';
+import {Users} from '#src/disreact/codec/rest-elem/component/users.ts';
+import {Author} from '#src/disreact/codec/rest-elem/embed/author.ts';
+import {Embed} from '#src/disreact/codec/rest-elem/embed/embed.ts';
+import {Field} from '#src/disreact/codec/rest-elem/embed/field.ts';
+import {Footer} from '#src/disreact/codec/rest-elem/embed/footer.ts';
+import {Img} from '#src/disreact/codec/rest-elem/embed/img.ts';
+import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts';
+import {Anchor} from '#src/disreact/codec/rest-elem/markdown/a.ts';
+import {AtMention} from '#src/disreact/codec/rest-elem/markdown/at.ts';
+import {Bold} from '#src/disreact/codec/rest-elem/markdown/b.ts';
+import {BlockQuote} from '#src/disreact/codec/rest-elem/markdown/blockquote.ts';
+import {Break} from '#src/disreact/codec/rest-elem/markdown/br.ts';
+import {Code} from '#src/disreact/codec/rest-elem/markdown/code.ts';
+import {H1} from '#src/disreact/codec/rest-elem/markdown/h1.ts';
+import {H2} from '#src/disreact/codec/rest-elem/markdown/h2.ts';
+import {H3} from '#src/disreact/codec/rest-elem/markdown/h3.ts';
+import {Italic} from '#src/disreact/codec/rest-elem/markdown/i.ts';
+import {ListItem} from '#src/disreact/codec/rest-elem/markdown/li.ts';
+import {MaskAnchor} from '#src/disreact/codec/rest-elem/markdown/mask.ts';
+import {OrderedList} from '#src/disreact/codec/rest-elem/markdown/ol.ts';
+import {Paragraph} from '#src/disreact/codec/rest-elem/markdown/p.ts';
+import {Pre} from '#src/disreact/codec/rest-elem/markdown/pre.ts';
+import {Strikethrough} from '#src/disreact/codec/rest-elem/markdown/s.ts';
+import {Small} from '#src/disreact/codec/rest-elem/markdown/small.ts';
+import {Time} from '#src/disreact/codec/rest-elem/markdown/time.ts';
+import {Underline} from '#src/disreact/codec/rest-elem/markdown/u.ts';
+import {UnorderedList} from '#src/disreact/codec/rest-elem/markdown/ul.ts';
+import {Message} from '#src/disreact/codec/rest-elem/container/message.ts';
+import {Modal} from '#src/disreact/codec/rest-elem/container/modal.ts';
+import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
 
-export * as Intrinsic from '#src/disreact/codec/rest-elem/index.ts'
-export type Intrinsic = never
+export * as Intrinsic from '#src/disreact/codec/rest-elem/index.ts';
+export type Intrinsic = never;
+
+export const isModal = (intrinsic: any) => 'custom_id' in intrinsic;
+
+export const isEphemeral = (intrinsic: any) => 'flags' in intrinsic && intrinsic.flags === 64;
 
 export const IntrinsicMap = {
   [Emoji.TAG]        : Emoji.Children,
@@ -92,7 +96,7 @@ export const IntrinsicMap = {
   [Time.TAG]         : Time.Children,
   [Underline.TAG]    : Underline.Children,
   [UnorderedList.TAG]: UnorderedList.Children,
-}
+};
 
 export const Children = {
 
@@ -140,21 +144,21 @@ export const Children = {
   [Time.TAG]         : Time.Children,
   [Underline.TAG]    : Underline.Children,
   [UnorderedList.TAG]: UnorderedList.Children,
-}
+};
 
-export const Event = {
-  [Button.TAG]   : Button.Event,
-  [Primary.TAG]  : Primary.Event,
-  [Secondary.TAG]: Secondary.Event,
-  [Success.TAG]  : Success.Event,
-  [Danger.TAG]   : Danger.Event,
-  [Select.TAG]   : Select.Event,
-  [Channels.TAG] : Channels.Event,
-  [Users.TAG]    : Users.Event,
-  [Roles.TAG]    : Roles.Event,
-  [Mentions.TAG] : Mentions.Event,
-  [Modal.TAG]    : Modal.Event,
-}
+export const EventData = {
+  [Button.TAG]   : Button.EventData,
+  [Primary.TAG]  : Primary.EventData,
+  [Secondary.TAG]: Secondary.EventData,
+  [Success.TAG]  : Success.EventData,
+  [Danger.TAG]   : Danger.EventData,
+  [Select.TAG]   : Select.EventData,
+  [Channels.TAG] : Channels.EventData,
+  [Users.TAG]    : Users.EventData,
+  [Roles.TAG]    : Roles.EventData,
+  [Mentions.TAG] : Mentions.EventData,
+  [Modal.TAG]    : Modal.EventData,
+};
 
 export const Handler = {
   [Button.TAG]   : Button.Handler,
@@ -168,7 +172,7 @@ export const Handler = {
   [Roles.TAG]    : Roles.Handler,
   [Mentions.TAG] : Mentions.Handler,
   [Modal.TAG]    : Modal.Handler,
-}
+};
 
 export const Attributes = {
   [Emoji.TAG]        : Emoji.Attributes,
@@ -215,7 +219,7 @@ export const Attributes = {
   [Time.TAG]         : Time.Attributes,
   [Underline.TAG]    : Underline.Attributes,
   [UnorderedList.TAG]: UnorderedList.Attributes,
-}
+};
 
 export const NORM = {
   [Emoji.TAG]        : Emoji.NORM,
@@ -262,7 +266,7 @@ export const NORM = {
   [Time.TAG]         : Time.NORM,
   [Underline.TAG]    : Underline.NORM,
   [UnorderedList.TAG]: UnorderedList.NORM,
-} as any
+} as any;
 
 export const ENC =  {
   [Emoji.TAG]        : Emoji.encode,
@@ -309,7 +313,7 @@ export const ENC =  {
   [Time.TAG]         : Time.encode,
   [Underline.TAG]    : Underline.encode,
   [UnorderedList.TAG]: UnorderedList.encode,
-} as any
+} as any;
 
 export const Element = {
   [Emoji.TAG]        : Emoji.Element,
@@ -356,7 +360,7 @@ export const Element = {
   [Time.TAG]         : Time.Element,
   [Underline.TAG]    : Underline.Element,
   [UnorderedList.TAG]: UnorderedList.Element,
-}
+};
 
 export type IntrinsicTuples =
   | [typeof Emoji.TAG, typeof Emoji.Attributes.Type]
@@ -402,8 +406,8 @@ export type IntrinsicTuples =
   | [typeof Small.TAG, typeof Small.Attributes.Type]
   | [typeof Time.TAG, typeof Time.Attributes.Type]
   | [typeof Underline.TAG, typeof Underline.Attributes.Type]
-  | [typeof UnorderedList.TAG, typeof UnorderedList.Attributes.Type]
+  | [typeof UnorderedList.TAG, typeof UnorderedList.Attributes.Type];
 
 export type IntrinsicTuplesMapped = {
   [K in IntrinsicTuples as K[0]]: K[1];
-}
+};
