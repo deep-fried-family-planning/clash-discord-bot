@@ -5,7 +5,7 @@ import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
 import {Logger} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import TestMessageJSON from 'test/unit/runtime/.synthesized/TestMessage.json';
+import TestMessageJSON from 'test/unit/runtime/.runtime/TestMessage.json';
 
 const createUpdate = vi.fn(() => E.void);
 const reply = vi.fn(() => E.void);
@@ -42,7 +42,7 @@ it.effect('when synthesizing', E.fn(function* () {
   const root = yield* runtime.synthesize(TestMessage);
 
   yield* E.promise(() =>
-    expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
+    expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.runtime/TestMessage.json'),
   );
 }));
 
@@ -53,7 +53,7 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
     const root = yield* runtime.synthesize(TestMessage);
 
     yield* E.promise(() =>
-      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
+      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.runtime/TestMessage.json'),
     );
   }
 }));
@@ -76,7 +76,7 @@ it.effect('when responding', E.fn(function* () {
   });
 
   yield* E.promise(() =>
-    expect(JSON.stringify(reply.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
+    expect(JSON.stringify(reply.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage1.json'),
   );
 
   yield* runtime.respond({
@@ -94,7 +94,7 @@ it.effect('when responding', E.fn(function* () {
   });
 
   yield* E.promise(() =>
-    expect(JSON.stringify(reply.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
+    expect(JSON.stringify(reply.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage2.json'),
   );
 }));
 

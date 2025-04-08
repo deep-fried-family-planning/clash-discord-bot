@@ -20,16 +20,13 @@ export const expectJSON = (filename: string) => (actual: any) =>
 
 const config = DisReactConfig.configLayer(
   {
-    token  : Redacted.make(''),
-    doken  : {capacity: 100},
-    sources: {
-      modal: [
-        <TestDialog/>,
-      ],
-      ephemeral: [
-        <TestMessage/>,
-      ],
-    },
+    token: Redacted.make(''),
+    modal: [
+      <TestDialog/>,
+    ],
+    ephemeral: [
+      <TestMessage/>,
+    ],
   },
 );
 
@@ -41,7 +38,7 @@ export const TestRegistry = pipe(
       Registry.Default,
       L.provide(config),
     ),
-    Codec.Default,
+    Codec.Default.pipe(L.provide(config)),
     HooksDispatcher.Default,
     L.succeed(
       DisReactDOM,

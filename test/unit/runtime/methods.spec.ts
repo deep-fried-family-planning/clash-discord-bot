@@ -1,3 +1,4 @@
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -41,7 +42,7 @@ it.scoped('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  });
+  }).pipe(E.provide(Relay.Fresh));
 
   const ixdom = yield* DisReactDOM;
 
@@ -61,7 +62,7 @@ it.scoped('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  });
+  }).pipe(E.provide(Relay.Fresh));
 
   yield* E.promise(() =>
     expect(JSON.stringify(ixdom.createUpdate.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
@@ -85,7 +86,7 @@ it.scoped('when responding (performance)', E.fn(
           custom_id     : 'actions:2:button:0',
           component_type: 2,
         },
-      });
+      }).pipe(E.provide(Relay.Fresh));
     }
   },
 ), {timeout: 20000});
