@@ -1,18 +1,26 @@
 import {DF, E, O, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Metric, Record} from 'effect';
+import {Exit, Fiber, Metric, Record} from 'effect';
 
 export * as Misc from './misc.ts';
 export type Misc = never;
 
-export const pollDeferred = <A, E>(deferred: DF.Deferred<A, E>) =>
-  pipe(
-    DF.poll(deferred),
-    E.flatMap((result) =>
-      E.transposeOption(result),
-    ),
+export const pollFiber = <A, E>(fiber: Fiber.Fiber<A, E>) =>
+  Fiber.poll(fiber).pipe(
     E.map((result) =>
-      O.getOrElse(result, () => undefined),
+      pipe(
+        O.map(result, (r) => Exit.getOrElse(r, () => undefined)),
+        O.getOrElse(() => undefined),
     ),
+    ),
+  );
+
+export const pollDeferred = <A, E>(deferred: DF.Deferred<A, E>) =>
+  DF.poll(deferred).pipe(
+    E.flatMap((result) => E.transposeOption(result).pipe(
+      E.map((result) =>
+        O.getOrElse(result, () => undefined),
+      ),
+    )),
   );
 
 const DecodeTime = Metric.timer('decode');

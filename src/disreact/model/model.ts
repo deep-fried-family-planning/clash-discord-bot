@@ -10,7 +10,7 @@ import {Lifecycles} from './lifecycles';
 export * as Model from './model.ts';
 export type Model = never;
 
-export const makeEntrypoint = (key: string | FC | Elem.Task, props?: any) =>
+export const makeEntrypoint = (key: string | FC | Elem, props?: any) =>
   pipe(
     E.flatMap(Registry, (registry) => registry.checkout(key, props)),
     E.flatMap((root) => Lifecycles.initialize(root)),

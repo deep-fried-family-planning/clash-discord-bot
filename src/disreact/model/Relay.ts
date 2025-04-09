@@ -25,8 +25,9 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
         awaitOutput: () => DF.await(current),
         pollOutput : () => Misc.pollDeferred(current),
         setComplete: () => mailbox.end,
-        awaitStatus: () => mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete()))),
+        awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete()))),
         sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
+        status     : mailbox,
       }),
   ),
 }) {

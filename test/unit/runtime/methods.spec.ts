@@ -11,7 +11,7 @@ import TestMessageJSON from 'test/unit/runtime/.synthesized/TestMessage.json';
 import {it} from '@effect/vitest';
 
 const createUpdate = vi.fn(() => E.void);
-const reply = vi.fn(() => E.void);
+const deferEdit = vi.fn(() => E.void);
 const deferUpdate = vi.fn(() => E.void);
 
 const layer = Runtime.makeGlobalRuntimeLayer({
@@ -25,7 +25,7 @@ const layer = Runtime.makeGlobalRuntimeLayer({
     DisReactDOM,
     DisReactDOM.make({
       createUpdate,
-      reply,
+      deferEdit,
       deferUpdate,
     } as any),
   ),

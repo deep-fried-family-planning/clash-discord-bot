@@ -19,7 +19,7 @@ export declare namespace JSX {
     | bigint
     | ((props?: any) => ElementType | Element);
 
-  type Element = {type: any; props: any; nodes: any[]; id: string; ids: string; idx: string};
+  type Element = Elem;
 
   interface ElementAttributesProperty {
     props?: {};

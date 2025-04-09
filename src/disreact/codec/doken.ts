@@ -1,6 +1,8 @@
-import {DT, hole} from '#src/disreact/utils/re-exports.ts';
+import {D, DT, hole} from '#src/disreact/utils/re-exports.ts';
 import {DR, pipe, S} from '#src/internal/pure/effect.ts';
-import {Redacted} from 'effect';
+import { Either} from 'effect';
+import {DateTime} from 'effect';
+import { Redacted} from 'effect';
 import {fresh} from 'effect/Layer';
 import {Snowflake} from './snowflake';
 
@@ -12,15 +14,19 @@ export type Doken =
   | Single
   | Modal
   | Source
-  | Update;
+  | Update
+  | Never;
 
-export type Value =
-  | Modal
-  | Fresh
-  | Active
-  | Single
-  | Source
-  | Update;
+export const isFresh = (doken: Doken): doken is Fresh => doken._tag === FRESH;
+export const isActive = (doken: Doken): doken is Active => doken._tag === ACTIVE;
+export const isCached = (doken: Doken): doken is Cached => doken._tag === CACHED;
+export const isSingle = (doken: Doken): doken is Single => doken._tag === SINGLE;
+export const isModal = (doken: Doken): doken is Modal => doken._tag === MODAL;
+export const isSource = (doken: Doken): doken is Source => doken._tag === SOURCE;
+export const isUpdate = (doken: Doken): doken is Update => doken._tag === UPDATE;
+export const isNever = (doken: Doken): doken is Never => doken._tag === NEVER;
+
+export type Value = Exclude<Doken, Cached>;
 
 export type Create =
   | Modal
@@ -32,13 +38,14 @@ export type Serial =
   | Active
   | Cached;
 
-export const value = (doken: Value) => Redacted.value(doken.val);
+export const value = (doken: Doken) => Redacted.value(doken.val);
 
 const Base = S.Struct({
   id : Snowflake.Id,
   ttl: S.DateTimeUtcFromSelf,
   val: S.RedactedFromSelf(S.String),
   app: Snowflake.Id,
+  eph: S.optional(S.Boolean),
 });
 
 export const FRESH_OFFSET = DR.seconds(2);
@@ -51,13 +58,13 @@ export const Fresh = pipe(
     id            : Snowflake.Id,
     token         : S.RedactedFromSelf(S.String),
     application_id: Snowflake.Id,
+    message       : S.optional(S.Struct({flags: S.optional(S.Number)})),
   }),
   S.transform(
     S.Struct({
-      id : Snowflake.Id,
+      ...Base.fields,
       ttl: Snowflake.TimeToLive(FRESH_OFFSET),
       val: S.RedactedFromSelf(S.String),
-      app: Snowflake.Id,
     }),
     {
       encode: hole,
@@ -67,12 +74,26 @@ export const Fresh = pipe(
           ttl: req.id,
           val: req.token,
           app: req.application_id,
+          eph: req.message?.flags === 64,
         }),
     },
   ),
   S.attachPropertySignature('_tag', FRESH),
   S.mutable,
 );
+
+export const NEVER = 'Never';
+export type Never = typeof Never.Type;
+export const Never = pipe(
+  Base,
+  S.attachPropertySignature('_tag', NEVER),
+  S.mutable,
+);
+
+export const never = (): Never =>
+  ({
+    _tag: NEVER,
+  } as unknown as Never);
 
 export const MODAL = 'Modal';
 export type Modal = typeof Modal.Type;
@@ -82,7 +103,7 @@ export const Modal = pipe(
   S.mutable,
 );
 
-export const makeModal = (fresh: Fresh): Modal =>
+export const modal = (fresh: Fresh): Modal =>
   ({
     ...fresh,
     _tag: MODAL,
@@ -96,9 +117,10 @@ export const Source = pipe(
   S.mutable,
 );
 
-export const makeSource = (fresh: Fresh): Source =>
+export const source = (fresh: Fresh): Source =>
   ({
     ...fresh,
+    eph : !fresh.eph,
     _tag: SOURCE,
   });
 
@@ -110,7 +132,7 @@ export const Update = pipe(
   S.mutable,
 );
 
-export const makeUpdate = (fresh: Fresh): Update =>
+export const update = (fresh: Fresh): Update =>
   ({
     ...fresh,
     _tag: UPDATE,
@@ -142,22 +164,16 @@ export const Single = pipe(
   S.mutable,
 );
 
-export const makeSingle = (doken: Doken): Single =>
+export const single = (doken: Doken): Single =>
   ({
     ...doken,
     _tag: SINGLE,
   });
 
-export const makeSingleModal = (modal: Modal): Single =>
-  ({
-    ...modal,
-    _tag: SINGLE,
-  });
-
-export const makeSyntheticSingle = (): Single =>
+export const synthetic = (): Single =>
   ({
     _tag: SINGLE,
-    id  : 'synthesized',
+    id  : 'synthetic',
     ttl : DT.unsafeMake(0),
     val : Redacted.make(''),
     app : '',
@@ -193,12 +209,21 @@ export const Active = pipe(
   S.mutable,
 );
 
-export const makeActive = (fresh: Fresh): Active =>
-  ({
-    ...fresh,
+export const active = (doken: Doken): Active => {
+  if (doken._tag === 'Fresh') {
+    return {
+      ...doken,
+      _tag: ACTIVE,
+      ttl : DateTime.addDuration(doken.ttl, ACTIVE_OFFSET),
+    };
+  }
+
+  return {
+    ...doken,
     _tag: ACTIVE,
-    ttl : fresh.ttl.pipe(DT.addDuration(ACTIVE_OFFSET)),
-  });
+  };
+};
+
 
 export const CACHED = 'Cached';
 export type Cached = typeof Cached.Type;
@@ -229,7 +254,7 @@ export const Cached = pipe(
   S.mutable,
 );
 
-export const makeCached = (doken: Doken): Cached =>
+export const cache = (doken: Doken): Cached =>
   ({
     ...doken,
     _tag: CACHED,
@@ -250,15 +275,30 @@ export const convertSerial = (doken: Doken): Serial => {
     case CACHED:
       return doken;
     default:
-      return makeSingle(doken);
+      return single(doken);
   }
 };
 
 export const convertCached = (doken: Serial): Serial => {
   switch (doken._tag) {
     case ACTIVE:
-      return makeCached(doken);
+      return cache(doken);
     default:
       return doken;
   }
 };
+
+export class DokenDefect extends D.TaggedError('disreact/DokenDefect')<{
+  msg?: string;
+}> {}
+
+export const ttlEither = (self: Doken | undefined, now: DateTime.Utc) =>
+  pipe(
+    self,
+    Either.fromNullable(() => undefined),
+    Either.flatMap((doken) =>
+      DateTime.distanceDurationEither(now, doken.ttl),
+    ),
+    Either.map((delay) => [delay, self!] as const),
+    Either.mapLeft(() => undefined),
+  );

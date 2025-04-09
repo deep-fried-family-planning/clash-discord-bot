@@ -7,7 +7,7 @@ import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Fiber, ManagedRuntime} from 'effect';
-import {Methods} from './methods';
+import {Methods, respondPiped} from './methods';
 
 export * as Runtime from '#src/disreact/runtime/runtime.ts';
 export type Runtime = ReturnType<typeof makeRuntime>;

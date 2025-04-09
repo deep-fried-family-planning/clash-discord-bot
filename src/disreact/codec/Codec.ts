@@ -129,7 +129,7 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
           return encodeParamsResponse({
             _tag   : 'Modal',
             base   : config.baseUrl,
-            serial : Doken.makeSingle(doken),
+            serial : Doken.single(doken),
             hydrant: hydrant,
             data   : encoded as any,
           });

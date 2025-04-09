@@ -8,8 +8,11 @@ import {TestMessage} from 'test/unit/components/test-message.tsx';
 import TestMessageJSON from 'test/unit/runtime/.runtime/TestMessage.json';
 
 const createUpdate = vi.fn(() => E.void);
-const reply = vi.fn(() => E.void);
+const createSource = vi.fn(() => E.void);
+const deferEdit = vi.fn(() => E.void);
 const deferUpdate = vi.fn(() => E.void);
+const discard = vi.fn(() => E.void);
+const dismount = vi.fn(() => E.void);
 
 const layer = Runtime.makeGlobalRuntimeLayer({
   config: {
@@ -22,7 +25,10 @@ const layer = Runtime.makeGlobalRuntimeLayer({
     DisReactDOM,
     DisReactDOM.make({
       createUpdate,
-      reply,
+      deferEdit,
+      discard,
+      dismount,
+      createSource,
       deferUpdate,
     } as any),
   ),
@@ -74,11 +80,11 @@ it.effect('when responding', E.fn(function* () {
   });
 
   yield* E.promise(() =>
-    expect(JSON.stringify(reply.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage1.json'),
+    expect(JSON.stringify(deferEdit.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage1.json'),
   );
 
   yield* runtime.respond({
-    message       : reply.mock.calls[0][1],
+    message       : deferEdit.mock.calls[0][1],
     id            : '1359103729483251722',
     token         : 'respond2',
     application_id: 'app',
@@ -92,32 +98,26 @@ it.effect('when responding', E.fn(function* () {
   });
 
   yield* E.promise(() =>
-    expect(JSON.stringify(reply.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage2.json'),
+    expect(JSON.stringify(deferEdit.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.runtime/TestMessage2.json'),
   );
 }));
 
-const test = () =>
-  pipe(
-    Array.from<number>({length: 10000}).map((_, idx) =>
-      pipe(
-        E.log(`Start ${idx}`),
-        E.tap(runtime.respond({
-          id            : '1236074574509117491',
-          token         : 'respond1',
-          application_id: 'app',
-          user_id       : 'user',
-          guild_id      : 'guild',
-          message       : TestMessageJSON,
-          type          : 2,
-          data          : {
-            custom_id     : 'actions:2:button:0',
-            component_type: 2,
-          },
-        })),
-        E.tap(E.log(`Done ${idx}`)),
-      ),
-    ),
-    E.allWith({concurrency: 'unbounded', concurrentFinalizers: true}),
-  );
+it.effect('when responding (performance)', E.fn(function* () {
+  const times = Array.from({length: 10000});
 
-it.live('when responding (performance)', test, {timeout: 20000});
+  for (let i = 0; i < times.length; i++) {
+    yield* runtime.respond({
+      id            : '1236074574509117491',
+      token         : 'respond1',
+      application_id: 'app',
+      user_id       : 'user',
+      guild_id      : 'guild',
+      message       : TestMessageJSON,
+      type          : 2,
+      data          : {
+        custom_id     : 'actions:2:button:0',
+        component_type: 2,
+      },
+    });
+  }
+}), {timeout: 20000});

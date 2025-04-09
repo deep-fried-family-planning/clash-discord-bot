@@ -14,13 +14,17 @@ export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
 
 const STORE = new Map<string, Root.Source>();
 
-const resolveId = (key: string | FC | Elem.Task): string => {
+const resolveId = (key: string | FC | Elem): string => {
   if (typeof key === 'string') {
     return key;
   }
 
   if (Elem.isTask(key)) {
     return FC.getSrcId(key.type);
+  }
+
+  if (Elem.isRest(key)) {
+    throw new Error();
   }
 
   return FC.getSrcId(key);
@@ -45,7 +49,7 @@ export class Registry extends E.Service<Registry>()('disreact/Registry', {
       ? `${config.version}`
       : Hash.array(Arr.map(sources, (src) => src.id));
 
-    const checkout = (key: string | FC | Elem.Task, props: any = {}): E.Effect<Root, SourceDefect> => {
+    const checkout = (key: string | FC | Elem, props: any = {}): E.Effect<Root, SourceDefect> => {
       const id = resolveId(key);
       const src = STORE.get(id);
 

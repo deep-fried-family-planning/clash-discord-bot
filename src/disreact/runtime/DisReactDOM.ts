@@ -4,11 +4,10 @@ import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
 import {InteractionCallbackType} from 'dfx/types';
-import {Redacted} from 'effect';
 
 export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM', {
   effect: E.map(DiscordREST, (api) => {
-    const createModal = (doken: Doken.Value, data: any) =>
+    const createModal = (doken: Doken, data: any) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -18,7 +17,7 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
         },
       );
 
-    const createSource = (doken: Doken.Value, data: any) =>
+    const createSource = (doken: Doken, data: any) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -28,7 +27,7 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
         },
       );
 
-    const createUpdate = (doken: Doken.Value, data: any) =>
+    const createUpdate = (doken: Doken, data: any) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -39,7 +38,7 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
       );
 
 
-    const deferSource = (doken: Doken.Value, isEphemeral?: boolean) =>
+    const deferSource = (doken: Doken, isEphemeral?: boolean) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -51,7 +50,7 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
         },
       );
 
-    const deferUpdate = (doken: Doken.Value) =>
+    const deferUpdate = (doken: Doken) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -60,7 +59,14 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
         },
       );
 
-    const discard = (doken: Doken.Value) =>
+    const deferEdit = (doken: Doken, body: any) =>
+      api.editOriginalInteractionResponse(
+        doken.app,
+        Doken.value(doken),
+        body,
+      );
+
+    const discard = (doken: Doken) =>
       api.createInteractionResponse(
         doken.id,
         Doken.value(doken),
@@ -69,31 +75,10 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
         },
       );
 
-    const dismount = (doken: Doken.Value) =>
+    const dismount = (doken: Doken) =>
       api.deleteOriginalInteractionResponse(
         doken.app,
         Doken.value(doken),
-      );
-
-    const defer = (doken: Doken.Value, body: any) =>
-      api.createInteractionResponse(
-        doken.id,
-        Doken.value(doken),
-        body,
-      );
-
-    const create = (doken: Doken.Value, body: any) =>
-      api.createInteractionResponse(
-        doken.id,
-        Doken.value(doken),
-        body,
-      );
-
-    const reply = (doken: Doken.Value, body: any) =>
-      api.editOriginalInteractionResponse(
-        doken.app,
-        Doken.value(doken),
-        body,
       );
 
     return {
@@ -104,9 +89,7 @@ export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM'
       deferUpdate,
       discard,
       dismount,
-      defer,
-      create,
-      reply,
+      deferEdit,
     };
   }),
 
