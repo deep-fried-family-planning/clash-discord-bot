@@ -1,10 +1,9 @@
 import {Side} from '#src/disreact/model/entity/side.ts';
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Tether} from '#src/disreact/model/entity/tether.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {Root} from '#src/disreact/model/entity/root.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Relay, Progress} from '#src/disreact/model/Relay.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
@@ -38,38 +37,27 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   return E.succeed(false);
 });
 
-const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(Dispatcher, (dispatcher) =>
+const renderElemPiped = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((dispatcher) =>
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      Fibril.λ.set(self.strand);
+      Tether.λ.set(self.strand);
       self.strand.nexus = root.nexus;
       self.strand.pc = 0;
       self.strand.elem = self;
       self.strand.nexus.strands[self.id!] = self.strand;
-
-      if (FC.isSync(self.type)) {
-        return E.succeed(Elem.renderSync(self));
-      }
-      if (FC.isAsync(self.type)) {
-        return Elem.renderAsync(self);
-      }
-      if (FC.isEffect(self.type)) {
-        return Elem.renderEffect(self);
-      }
-
-      return Elem.renderUnknown(self);
+      return Elem.render(self);
     }),
     E.tap((children) => {
-      Fibril.λ.clear();
+      Tether.λ.clear();
       return E.as(dispatcher.unlock, children);
     }),
     E.catchAll((err) => {
-      Fibril.λ.clear();
+      Tether.λ.clear();
       return E.fail(err);
     }),
     E.catchAllDefect((err) => {
-      Fibril.λ.clear();
+      Tether.λ.clear();
       return E.die(err);
     }),
     E.map((children) => {
@@ -94,13 +82,13 @@ const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(Dispatcher, (
 );
 
 
-const renderEffectPiped = (root: Root, ef: Side) =>
+const renderEffectPiped = (root: Rehydrant, ef: Side) =>
   pipe(
     Side.apply(ef),
     E.tap(() => notifyPiped(root)),
   );
 
-const renderEffectAtNodePiped = (root: Root, node: Elem.Task) => {
+const renderEffectAtNodePiped = (root: Rehydrant, node: Elem.Task) => {
   if (!node.strand.queue.length) {
     return E.void;
   }
@@ -114,7 +102,7 @@ const renderEffectAtNodePiped = (root: Root, node: Elem.Task) => {
 };
 
 
-const notifyPiped = (root: Root) => E.flatMap(Relay, (relay) => {
+const notifyPiped = (root: Rehydrant) => E.flatMap(Relay, (relay) => {
   const curr = root.nexus;
   const next = root.nexus.next;
 
@@ -144,7 +132,7 @@ const notifyPiped = (root: Root) => E.flatMap(Relay, (relay) => {
 });
 
 
-const notifyOnHandlePiped = (root: Root) => E.flatMap(Relay, (relay) => {
+const notifyOnHandlePiped = (root: Rehydrant) => E.flatMap(Relay, (relay) => {
   const curr = root.nexus;
   const next = root.nexus.next;
 
@@ -178,7 +166,7 @@ const notifyOnHandlePiped = (root: Root) => E.flatMap(Relay, (relay) => {
   );
 });
 
-export const handleEvent = (root: Root, event: Trigger) => E.suspend(() => {
+export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => {
   const stack = ML.make<Elem>(root.elem);
 
   while (ML.tail(stack)) {
@@ -205,26 +193,26 @@ export const handleEvent = (root: Root, event: Trigger) => E.suspend(() => {
 });
 
 
-export const initialize = (root: Root) =>
+export const initialize = (root: Rehydrant) =>
   pipe(
     initializeSubtree(root, root.elem),
     E.as(root),
   );
 
-const loopNodes = (stack: ML.MutableList<Elem>, root: Root, elem: Elem) => {
+const loopNodes = (stack: ML.MutableList<Elem>, root: Rehydrant, elem: Elem) => {
   for (let i = 0; i < elem.nodes.length; i++) {
     const node = elem.nodes[i];
 
     if (!Elem.isPrim(node)) {
       Elem.connectChild(elem, node, i);
-      Root.mountElem(root, node);
+      Rehydrant.mount(root, node);
       ML.append(stack, node);
     }
   }
   return stack;
 };
 
-export const initializeSubtree = (root: Root, elem: Elem) => {
+export const initializeSubtree = (root: Rehydrant, elem: Elem) => {
   let hasSentPartial = false;
 
   return E.iterate(ML.make<Elem>(elem), {
@@ -256,7 +244,7 @@ export const initializeSubtree = (root: Root, elem: Elem) => {
   });
 };
 
-export const hydrate = (root: Root) =>
+export const hydrate = (root: Rehydrant) =>
   pipe(
     E.iterate(ML.make<Elem>(root.elem), {
       while: (stack) => !!ML.tail(stack),
@@ -285,7 +273,7 @@ export const hydrate = (root: Root) =>
   );
 
 
-export const rerender = (root: Root) => E.gen(function* () {
+export const rerender = (root: Rehydrant) => E.gen(function* () {
   const stack = ML.empty<[Elem, Elem.Any[]]>();
   let hasSentPartial = false;
 
@@ -390,7 +378,7 @@ export const rerender = (root: Root) => E.gen(function* () {
         }
         else if (
           Props.isEqual(curr.props, rend.props) && // Task Changed
-          Fibril.isSameStrand(curr.strand)
+          Tether.isSameStrand(curr.strand)
         ) {
           ML.append(stack, [curr, rend.nodes]);
         }
@@ -406,14 +394,14 @@ export const rerender = (root: Root) => E.gen(function* () {
 });
 
 
-export const mountSubtree = (root: Root, elem: Elem) => E.gen(function* () {
+export const mountSubtree = (root: Rehydrant, elem: Elem) => E.gen(function* () {
   const stack = ML.make<Elem>(elem);
 
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
 
     if (Elem.isTask(elem)) {
-      Root.mountTask(root, elem);
+      Rehydrant.mountTask(root, elem);
       elem.nodes = yield* renderElemPiped(root, elem);
     }
 
@@ -427,14 +415,14 @@ export const mountSubtree = (root: Root, elem: Elem) => E.gen(function* () {
   }
 });
 
-export const dismountSubtree = (root: Root, elem: Elem) => {
+export const dismountSubtree = (root: Rehydrant, elem: Elem) => {
   const stack = ML.make<Elem>(elem);
 
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
 
     if (Elem.isTask(elem)) {
-      Root.dismountTask(root, elem);
+      Rehydrant.dismountTask(root, elem);
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {

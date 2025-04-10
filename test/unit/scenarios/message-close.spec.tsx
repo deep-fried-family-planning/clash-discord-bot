@@ -42,8 +42,8 @@ const dismount = vi.fn(() => E.void);
 
 const layer = Runtime.makeGlobalRuntimeLayer({
   config: {
-    token    : 'token',
-    ephemeral: [
+    token  : 'token',
+    sources: [
       <MessageClose/>,
     ],
   },
@@ -59,39 +59,36 @@ const layer = Runtime.makeGlobalRuntimeLayer({
   memory: DokenMemory.Default,
 });
 
-const runtime = Runtime.makeRuntime(
-  pipe(
-    layer,
-    L.provideMerge(
-      Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
-    ),
-  ),
-);
+const runtime = Runtime.makeRuntime(layer);
 
-it.effect('when synthesizing', E.fn(function* () {
-  const root = yield* runtime.synthesize(<MessageClose/>);
+describe('First', () => {
+  it.effect('when synthesizing', E.fn(function* () {
+    const root = yield* runtime.synthesize(<MessageClose/>);
 
-  yield* E.promise(() => expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./MessageClose.synthesize.json'));
-}));
+    yield* E.promise(() =>
+      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./MessageClose.synthesize.json'),
+    );
+  }));
 
-it.effect('when closing', E.fn(function* () {
-  const root = yield* runtime.respond({
-    id            : '1236074574509117491',
-    token         : 'respond1',
-    application_id: 'app',
-    user_id       : 'user',
-    guild_id      : 'guild',
-    message       : MessageCloseSynthesizeJSON,
-    type          : 2,
-    data          : {
-      custom_id     : 'CloseButton',
-      component_type: 2,
-    },
-  });
+  it.scoped('when closing', E.fn(function* () {
+    const root = yield* runtime.respond({
+      id            : '1236074574509117491',
+      token         : 'respond1',
+      application_id: 'app',
+      user_id       : 'user',
+      guild_id      : 'guild',
+      message       : MessageCloseSynthesizeJSON,
+      type          : 2,
+      data          : {
+        custom_id     : 'CloseButton',
+        component_type: 2,
+      },
+    });
 
-  expect(createUpdate).toBeCalledTimes(0);
-  expect(deferEdit).toBeCalledTimes(0);
-  expect(deferUpdate).toBeCalledTimes(1);
-  expect(dismount).toBeCalledTimes(1);
-  expect(root).toEqual(null);
-}));
+    expect(createUpdate).toBeCalledTimes(0);
+    expect(deferEdit).toBeCalledTimes(0);
+    expect(deferUpdate).toBeCalledTimes(1);
+    expect(dismount).toBeCalledTimes(1);
+    expect(root).toEqual(null);
+  }));
+});

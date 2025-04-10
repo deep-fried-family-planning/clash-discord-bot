@@ -3,7 +3,6 @@ import {DR, pipe, S} from '#src/internal/pure/effect.ts';
 import { Either} from 'effect';
 import {DateTime} from 'effect';
 import { Redacted} from 'effect';
-import {fresh} from 'effect/Layer';
 import {Snowflake} from './snowflake';
 
 export * as Doken from '#src/disreact/codec/doken.ts';
@@ -302,3 +301,21 @@ export const ttlEither = (self: Doken | undefined, now: DateTime.Utc) =>
     Either.map((delay) => [delay, self!] as const),
     Either.mapLeft(() => undefined),
   );
+
+export const reduce = (state: Doken, action: Doken) => {
+  if (action._tag === NEVER) {
+    return action;
+  }
+  if (
+    state._tag === NEVER ||
+    state._tag === ACTIVE ||
+    state._tag === MODAL
+  ) {
+    return state;
+  }
+  if (
+    state._tag === FRESH
+  ) {
+    return action;
+  }
+};

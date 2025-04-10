@@ -1,8 +1,8 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {Fibril, type Hydrant} from '#src/disreact/model/entity/fibril.ts';
+import {Tether, type Hydrant} from '#src/disreact/model/entity/tether.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {Root} from '#src/disreact/model/entity/root.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
@@ -13,7 +13,7 @@ import {RxTx} from './rxtx';
 export const encodeParamsResponse = S.encodeSync(RxTx.ParamsResponse);
 export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 
-export const encodeRoot = (root: Root): RxTx.ParamsResponse['data'] => {
+export const encodeRoot = (root: Rehydrant): RxTx.ParamsResponse['data'] => {
   const result = {} as any,
         list   = ML.make<[any, Elem.Any[]]>([result, [root.elem]]),
         args   = new WeakMap<Elem, any>();
@@ -101,9 +101,9 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
   effect: E.map(DisReactConfig, (config) => {
     return {
       decodeRequest          : decodeParamsRequest,
-      encodeResponseWithCache: (root: Root, doken: Doken.Active) => {
+      encodeResponseWithCache: (root: Rehydrant, doken: Doken.Active) => {
         const encoded = encodeRoot(root);
-        const hydrant = Fibril.encodeNexus(root.nexus);
+        const hydrant = Tether.encodeNexus(root.nexus);
         const serial  = Intrinsic.isEphemeral(encoded)
           ? doken
           : Doken.convertCached(doken);
@@ -121,9 +121,9 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
           ),
         );
       },
-      encodeResponse: (root: Root, doken: Doken) => {
+      encodeResponse: (root: Rehydrant, doken: Doken) => {
         const encoded = encodeRoot(root);
-        const hydrant = Fibril.encodeNexus(root.nexus);
+        const hydrant = Tether.encodeNexus(root.nexus);
 
         if (Intrinsic.isModal(encoded)) {
           return encodeParamsResponse({

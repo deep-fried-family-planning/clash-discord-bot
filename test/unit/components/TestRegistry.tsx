@@ -20,11 +20,9 @@ export const expectJSON = (filename: string) => (actual: any) =>
 
 const config = DisReactConfig.configLayer(
   {
-    token: Redacted.make(''),
-    modal: [
+    token  : Redacted.make(''),
+    sources: [
       <TestDialog/>,
-    ],
-    ephemeral: [
       <TestMessage/>,
     ],
   },

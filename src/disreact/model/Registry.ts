@@ -1,13 +1,16 @@
 import {FC} from '#src/disreact/model/entity/fc.ts';
-import type {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Root} from '#src/disreact/model/entity/root.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {Arr, Data, E, Hash, pipe} from '#src/disreact/utils/re-exports.ts';
 
 export type RegistryKey = string | FC | Elem;
 
-const resolveId = (key: RegistryKey): string => {
+export declare namespace Registry {
+  export type Key = RegistryKey;
+}
+
+const resolveId = (key: Registry.Key): string => {
   if (typeof key === 'string') {
     return key;
   }
@@ -26,77 +29,74 @@ export class RegistryDefect extends Data.TaggedError('disreact/RegistryException
   cause?  : Error;
 }> {}
 
-export class Registry extends E.Service<Registry>()('disreact/Registry', {
-  effect: pipe(
-    E.all({
-      config: DisReactConfig,
-    }),
-    E.flatMap(({config}) => {
-      const STORE = new Map<string, Root.Source>();
+const make = pipe(
+  E.all({
+    config: DisReactConfig,
+  }),
+  E.flatMap(({config}) => {
+    const STORE = new Map<string, Rehydrant.Source>();
 
-      const sources = [
-        ...config.modal.map((src) => Root.make(Root.MODAL, src)),
-        ...config.public.map((src) => Root.make(Root.PUBLIC, src)),
-        ...config.ephemeral.map((src) => Root.make(Root.EPHEMERAL, src)),
-      ];
-
-      for (const src of sources) {
-        if (STORE.has(src.id)) {
-          return E.die(
-            new RegistryDefect({
-              why: `Duplicate Source: ${src.id}`,
-            }),
-          );
-        }
-        STORE.set(src.id, src);
+    for (const src of config.sources) {
+      if (Elem.isPrim(src)) {
+        return new RegistryDefect({why: `Primitive Source: ${String(src)}`});
       }
 
-      const version = config.version
-        ? `${config.version}`
-        : Hash.array(Arr.map(sources, (src) => src.id));
+      if (Elem.isRest(src)) {
+        return new RegistryDefect({why: `Rest Source: ${src.type}`});
+      }
 
-      const checkout = (key: RegistryKey, props: any) => {
-        const id = resolveId(key);
-        const src = STORE.get(id);
+      const source = Rehydrant.source(src);
 
-        if (!src) {
-          return E.fail(
-            new RegistryDefect({
-              why: `Unregistered Source: ${key}`,
-            }),
-          );
-        }
+      // if (STORE.has(source.id)) {
+      //   return new RegistryDefect({why: `Duplicate Source: ${source.id}`});
+      // }
 
-        return E.succeed(Root.fromSource(src, props));
-      };
+      STORE.set(source.id, source);
+    }
 
-      const fromHydrant = (hydrant: Fibril.Hydrant) => {
-        const src = STORE.get(hydrant.id);
+    const version = config.version
+      ? `${config.version}`
+      : Hash.array(Arr.map([...STORE.values()], (src) => src.id));
 
-        if (!src) {
-          return E.fail(
-            new RegistryDefect({
-              message: `Unregistered Source: ${hydrant.id}`,
-            }),
-          );
-        }
+    const checkout = (key: RegistryKey, props?: any) => {
+      const id = resolveId(key);
+      const src = STORE.get(id);
 
-        return E.succeed(Root.fromSourceHydrant(src, hydrant));
-      };
+      if (!src) {
+        return new RegistryDefect({why: `Unregistered Source: ${key}`});
+      }
 
-      const register = (kind: Root.Type, ...src: (FC | Elem.Task)[]) => {
-        for (const s of src) {
-          const root = Root.make(kind, s);
-          STORE.set(root.id, root);
-        }
-      };
+      return E.succeed(Rehydrant.make(src, props));
+    };
 
-      return E.succeed({
-        fromHydrant,
-        checkout,
-        version,
-        register,
-      });
-    }),
-  ),
+    const rehydrate = (dehydrated: Rehydrant.Dehydrated) => {
+      const src = STORE.get(dehydrated.id);
+
+      if (!src) {
+        return new RegistryDefect({why: `Unregistered Source: ${dehydrated.id}`});
+      }
+
+      return E.succeed(Rehydrant.rehydrate(src, dehydrated));
+    };
+
+    const register = (...src: (FC | Elem.Task)[]) => {
+      for (const s of src) {
+        const root = Rehydrant.source(s);
+        STORE.set(root.id, root);
+      }
+      return E.void;
+    };
+
+    return E.succeed({
+      rehydrate,
+      checkout,
+      version,
+      register,
+    });
+  }),
+);
+
+export class Registry extends E.Service<Registry>()('disreact/Registry', {
+  accessors: true,
+  effect   : make,
 }) {}

@@ -1,23 +1,22 @@
-import type {Fibril, Hydrant} from '#src/disreact/model/entity/fibril.ts';
-import type {Root} from '#src/disreact/model/entity/root.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import type {Tether, Hydrant} from '#src/disreact/model/entity/tether.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {FiberMap} from 'effect';
-import type {FC} from 'src/disreact/model/entity/fc.ts';
-import type {Elem} from './entity/elem.ts';
 import {Lifecycles} from './lifecycles';
 
-export const makeEntrypoint = (key: string | FC | Elem, props?: any) =>
+export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
     E.flatMap(Registry, (registry) => registry.checkout(key, props)),
     E.flatMap((root) => Lifecycles.initialize(root)),
   );
 
-export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Trigger) =>
+export const hydrateInvoke = (dehydrated: Rehydrant.Dehydrated, event: Trigger) =>
   pipe(
-    E.flatMap(Registry, (registry) => registry.fromHydrant(hydrant)),
+    Registry.rehydrate(dehydrated),
     E.tap((original) =>
       pipe(
         Lifecycles.hydrate(original),
@@ -44,21 +43,20 @@ export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Trigger) =>
   );
 
 export class Model extends E.Service<Model>()('disreact/Model', {
-  accessors: true,
-
   effect: pipe(
     E.all({
-      fibers: FiberMap.make<Hydrant, Root>(),
+      roots: FiberMap.make<Hydrant, Rehydrant>(),
     }),
-    E.map(({fibers}) => {
+    E.map(({}) => {
       return {
-        invokeHydrant: (hydrant: Fibril.Hydrant, event: Trigger) =>
-          pipe(
-            FiberMap.has(fibers, hydrant),
-          ),
+
       };
     }),
   ),
+  dependencies: [
+    Dispatcher.Default,
+    Registry.Default,
+  ],
 }) {
   static readonly makeEntrypoint = makeEntrypoint;
   static readonly hydrateInvoke = hydrateInvoke;

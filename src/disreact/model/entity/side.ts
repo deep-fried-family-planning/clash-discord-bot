@@ -1,7 +1,7 @@
 import {E} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
-export const Id = Symbol('disreact/Side');
+export const TypeId = Symbol('disreact/Side');
 
 export * as Side from '#src/disreact/model/entity/side.ts';
 export type Side = () => void | Promise<void> | E.Effect<void>;

@@ -1,6 +1,6 @@
 import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {Root} from '#src/disreact/model/entity/root.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import * as MsgPack from '@msgpack/msgpack';
 import {pipe, Record} from 'effect';
 import * as Data from 'effect/Data';
@@ -41,8 +41,8 @@ export type Polymer = {
 export const Chain = S.mutable(S.Array(Any));
 export type Chain = typeof Chain.Type;
 
-export * as Fibril from '#src/disreact/model/entity/fibril.ts';
-export type Fibril = never;
+export * as Tether from '#src/disreact/model/entity/tether.ts';
+export type Tether = never;
 
 export type Hydrant = typeof Hydrant.Type;
 
@@ -128,7 +128,7 @@ export type Nexus = {
   };
   queue   : any[];
   request?: any;
-  root?   : Root | undefined;
+  root?   : Rehydrant | undefined;
 };
 
 export const makeNexus = (props?: any): Nexus =>

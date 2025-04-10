@@ -1,5 +1,5 @@
-import {Fibril, Hydrant} from '#src/disreact/model/entity/fibril.ts';
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
+import {Rehydrant} from '../model/entity/rehydrant.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
 
@@ -35,12 +35,12 @@ export const ModalParamsSerial = S.transform(
 );
 
 export const MessageParamsSerial = S.transform(
-  S.TemplateLiteralParser(S.String, '/', Doken.Serial, '/', Fibril.Hydrant),
+  S.TemplateLiteralParser(S.String, '/', Doken.Serial, '/', Rehydrant.Hydrator),
   S.typeSchema(
     S.Struct({
       base   : S.String,
       serial : Doken.Serial,
-      hydrant: Fibril.Hydrant,
+      hydrant: Rehydrant.Dehydrated,
     }),
   ),
   {
@@ -129,7 +129,7 @@ export const MessageParamsRequest = pipe(
       base       : S.String,
       fresh      : Doken.Fresh,
       serial     : S.typeSchema(Doken.Serial),
-      hydrant    : S.typeSchema(Hydrant.to),
+      hydrant    : S.typeSchema(Rehydrant.Dehydrated),
       body       : S.typeSchema(DAPI.Ix.RequestBody),
       event      : S.Any,
     }),
@@ -175,7 +175,7 @@ export const ModalParamsRequest = pipe(
       base       : S.optional(S.String),
       fresh      : Doken.Fresh,
       serial     : S.typeSchema(Doken.Serial),
-      hydrant    : S.optional(S.typeSchema(Hydrant)),
+      hydrant    : S.optional(S.typeSchema(Rehydrant.Dehydrated)),
       body       : S.typeSchema(DAPI.Ix.ModalRequestBody),
       event      : S.Any,
     }),
@@ -207,7 +207,7 @@ export const MessageResponse = S.transform(
   S.Struct({
     base   : S.String,
     serial : S.typeSchema(Doken.Serial),
-    hydrant: Hydrant.to,
+    hydrant: Rehydrant.Dehydrated,
     data   : DAPI.Message.Base,
   }),
   {
@@ -229,7 +229,7 @@ export const ModalResponse = S.transform(
   S.Struct({
     base   : S.String,
     serial : S.typeSchema(Doken.Serial),
-    hydrant: Hydrant.to,
+    hydrant: Rehydrant.Dehydrated,
     data   : DAPI.Modal.Any,
   }),
   {
@@ -254,7 +254,7 @@ export type ParamsResponse = typeof ParamsResponse.Type;
 
 export const ModalOutput = pipe(
   S.Struct({
-    hydrant: Hydrant,
+    hydrant: Rehydrant.Dehydrated,
     data   : DAPI.Modal.Open,
   }),
   S.attachPropertySignature('_tag', 'Modal'),
@@ -262,7 +262,7 @@ export const ModalOutput = pipe(
 
 export const PublicMessageOutput = pipe(
   S.Struct({
-    hydrant: Hydrant,
+    hydrant: Rehydrant.Dehydrated,
     data   : DAPI.Message.Base,
   }),
   S.attachPropertySignature('_tag', 'Public'),
@@ -270,7 +270,7 @@ export const PublicMessageOutput = pipe(
 
 export const EphemeralMessageOutput = pipe(
   S.Struct({
-    hydrant: Hydrant,
+    hydrant: Rehydrant.Dehydrated,
     data   : DAPI.Message.Ephemeral,
   }),
   S.attachPropertySignature('_tag', 'Ephemeral'),

@@ -1,7 +1,7 @@
 import {encodeRoot} from '#src/disreact/codec/Codec.ts';
 import {jsx} from '#src/disreact/jsx-runtime.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import { Root } from '#src/disreact/model/entity/root.ts';
+import { Rehydrant } from '#src/disreact/model/entity/rehydrant.ts';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -12,8 +12,8 @@ import {expectJSON, it } from 'test/unit/components/TestRegistry.tsx';
 it.effect('when cloning a node', E.fn(function* () {
   const registry = yield* Registry;
   const root = yield* registry.checkout(TestMessage);
-  const actual = Root.deepLinearize(Root.deepClone(root));
-  const expected = Root.deepLinearize(root);
+  const actual = Rehydrant.linear(Rehydrant.clone(root));
+  const expected = Rehydrant.linear(root);
 
   expect(actual.elem).toEqual(expected.elem);
 }));
@@ -39,8 +39,8 @@ it.effect('when cloning a tree', E.fn(function* () {
 
 it.effect('when rerendering a cloned tree', E.fn(function* () {
   const component = jsx(TestMessage, {});
-  const src = Root.make(Root.PUBLIC, component);
-  const root = Root.fromSource(src);
+  const src = Rehydrant.source(component);
+  const root = Rehydrant.make(src);
   const initial = yield* Lifecycles.initialize(root);
   const actual = yield* Lifecycles.rerender(root);
 
@@ -54,7 +54,7 @@ it.effect('when dispatching an event', E.fn(function* () {
 
   const event = {
     id  : 'actions:2:button:0',
-    prop: 'onclick',
+    data: 'onclick',
   };
 
   expect(Record.map(root.nexus.strands, (v) => v.stack)).toMatchInlineSnapshot(`
@@ -91,7 +91,7 @@ describe('given event.type is not in any node.props', () => {
     const initial = yield* Lifecycles.rerender(root);
     const event = {
       id  : 'buttons:1:button:0',
-      prop: 'onclick',
+      data: 'onclick',
     };
     yield* pipe(
       Lifecycles.handleEvent(initial, event),
@@ -110,10 +110,9 @@ describe('given event.id does not match any node.id', () => {
     yield* Lifecycles.initialize(root);
     const initial = yield* Lifecycles.rerender(root);
     const event = {
-      custom_id: 'buttons:1:button:0',
-      prop     : 'onclick',
+      id  : 'buttons:1:button:0',
+      data: 'onclick',
     };
-    event.id = 'never';
 
     yield* pipe(
       Lifecycles.handleEvent(initial, event),

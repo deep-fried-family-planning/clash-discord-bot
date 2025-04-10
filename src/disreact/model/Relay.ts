@@ -1,4 +1,4 @@
-import type {Root} from '#src/disreact/model/entity/root.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {E, L} from '#src/disreact/utils/re-exports.ts';
 import {Data, Deferred, Mailbox} from 'effect';
 
@@ -19,11 +19,11 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
   effect: E.map(
     E.all([
       Mailbox.make<Relay.Progress>(),
-      Deferred.make<Root | null>(),
+      Deferred.make<Rehydrant | null>(),
     ]),
     ([mailbox, current]) =>
       ({
-        setOutput  : (root: Root | null) => Deferred.succeed(current, root),
+        setOutput  : (root: Rehydrant | null) => Deferred.succeed(current, root),
         awaitOutput: () => Deferred.await(current),
         setComplete: () => mailbox.end,
         awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(Progress.Done()))),
