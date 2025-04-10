@@ -1,25 +1,25 @@
-import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts'
-import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {Util} from '#src/disreact/codec/rest-elem/util.ts'
-import {Events} from '#src/disreact/model/entity/events'
-import {S} from '#src/disreact/utils/re-exports'
-import {DAPI} from '../../dapi/dapi'
+import {TextInput} from '#src/disreact/codec/rest-elem/component/textinput.ts';
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
+import {Util} from '#src/disreact/codec/rest-elem/util.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {S} from '#src/disreact/utils/re-exports';
+import {DAPI} from '../../dapi/dapi';
 
-export * as Modal from '#src/disreact/codec/rest-elem/container/modal.ts'
-export type Modal = never
+export * as Modal from '#src/disreact/codec/rest-elem/container/modal.ts';
+export type Modal = never;
 
 export const TAG  = 'modal',
-             NORM = TAG
+             NORM = TAG;
 
 export const EventData = S.Struct({
   data: DAPI.Modal.Data,
-})
+});
 
-export const Handler = Events.declareHandler(EventData)
+export const Handler = Trigger.declareHandler(EventData);
 
 export const Children = S.Union(
   TextInput.Element,
-)
+);
 
 export const Attributes = Util.declareProps(
   S.Struct({
@@ -28,13 +28,13 @@ export const Attributes = Util.declareProps(
     open           : S.optional(S.Boolean),
     [Keys.onsubmit]: Handler,
   }),
-)
+);
 
 export const Element = Util.declareHandlerElem(
   TAG,
   Attributes,
   EventData,
-)
+);
 
 export const encode = (self: any, acc: any) => {
   return {
@@ -42,5 +42,5 @@ export const encode = (self: any, acc: any) => {
     title     : self.props.title,
     components: acc[Keys.components],
     open      : self.props.open,
-  }
-}
+  };
+};

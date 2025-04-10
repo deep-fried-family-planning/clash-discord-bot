@@ -1,13 +1,11 @@
 import { Keys } from '#src/disreact/codec/rest-elem/keys';
-import type {Rest} from '#src/disreact/model/entity/rest.ts';
-import type {Task} from '#src/disreact/model/entity/task.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import * as Array from 'effect/Array';
 import type {UnknownException} from 'effect/Cause';
 import {isPromise} from 'effect/Predicate';
-import type { Events } from './events';
-import { FC } from '../comp/fc';
-import { Fibril } from '../comp/fibril';
+import type { Trigger } from '#src/disreact/model/entity/trigger.ts';
+import { FC } from 'src/disreact/model/entity/fc.ts';
+import { Fibril } from 'src/disreact/model/entity/fibril.ts';
 
 export * as Elem from '#src/disreact/model/entity/elem.ts';
 export type Elem =
@@ -58,7 +56,7 @@ export interface MetaProps {
 
 export interface Rest extends Elem.MetaProps {
   type   : string;
-  handler: Events.Handler<any>;
+  handler: Trigger.Handler<any>;
 }
 
 export const isRest = (self: unknown): self is Rest => {

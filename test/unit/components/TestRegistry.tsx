@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
@@ -39,7 +39,7 @@ export const TestRegistry = pipe(
       L.provide(config),
     ),
     Codec.Default.pipe(L.provide(config)),
-    HooksDispatcher.Default,
+    Dispatcher.Default,
     L.succeed(
       DisReactDOM,
       DisReactDOM.make({

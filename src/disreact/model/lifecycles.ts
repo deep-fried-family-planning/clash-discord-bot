@@ -1,12 +1,12 @@
-import {EF} from '#src/disreact/model/comp/ef.ts';
-import {FC} from '#src/disreact/model/comp/fc';
-import {Fibril} from '#src/disreact/model/comp/fibril.ts';
-import {Props} from '#src/disreact/model/comp/props.ts';
+import {Side} from '#src/disreact/model/entity/side.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Props} from '#src/disreact/model/entity/props.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Events} from '#src/disreact/model/entity/events.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Root} from '#src/disreact/model/entity/root.ts';
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
-import {Relay, RelayStatus} from '#src/disreact/model/Relay.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import {Relay, Progress} from '#src/disreact/model/Relay.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {E, ML, pipe, type RT} from '#src/disreact/utils/re-exports.ts';
 
@@ -17,7 +17,7 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   if (elem.type === 'modal') {
     return pipe(
       relay.sendStatus(
-        RelayStatus.Partial({
+        Progress.Part({
           type: 'modal',
         }),
       ),
@@ -27,7 +27,7 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   if (elem.type === 'message') {
     return pipe(
       relay.sendStatus(
-        RelayStatus.Partial({
+        Progress.Part({
           type       : 'message',
           isEphemeral: elem.props.display === 'ephemeral' ? true : false,
         }),
@@ -38,7 +38,7 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   return E.succeed(false);
 });
 
-const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(HooksDispatcher, (dispatcher) =>
+const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(Dispatcher, (dispatcher) =>
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
@@ -60,14 +60,10 @@ const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(HooksDispatch
 
       return Elem.renderUnknown(self);
     }),
-    E.tap(() => {
+    E.tap((children) => {
       Fibril.λ.clear();
-      return dispatcher.unlock;
+      return E.as(dispatcher.unlock, children);
     }),
-    // E.flatMap((children) => {
-    //   Fibril.λ.clear();
-    //   return dispatcher.unlock.pipe(E.as(children));
-    // }),
     E.catchAll((err) => {
       Fibril.λ.clear();
       return E.fail(err);
@@ -98,9 +94,9 @@ const renderElemPiped = (root: Root, self: Elem.Task) => E.flatMap(HooksDispatch
 );
 
 
-const renderEffectPiped = (root: Root, ef: EF) =>
+const renderEffectPiped = (root: Root, ef: Side) =>
   pipe(
-    EF.applyEffect(ef),
+    Side.apply(ef),
     E.tap(() => notifyPiped(root)),
   );
 
@@ -126,7 +122,7 @@ const notifyPiped = (root: Root) => E.flatMap(Relay, (relay) => {
     return pipe(
       relay.setOutput(null),
       E.flatMap(() => relay.sendStatus(
-        RelayStatus.Close()),
+        Progress.Close()),
       ),
     );
   }
@@ -136,7 +132,7 @@ const notifyPiped = (root: Root) => E.flatMap(Relay, (relay) => {
       E.flatMap(Registry, (registry) => registry.checkout(next.id!, next.props)),
       E.flatMap((next) => relay.setOutput(next)),
       E.flatMap(() => relay.sendStatus(
-        RelayStatus.Next({
+        Progress.Next({
           id   : next.id!,
           props: next.props,
         })),
@@ -155,7 +151,7 @@ const notifyOnHandlePiped = (root: Root) => E.flatMap(Relay, (relay) => {
   if (next.id === null) {
     return E.zip(
       relay.setOutput(null),
-      relay.sendStatus(RelayStatus.Close()),
+      relay.sendStatus(Progress.Close()),
     );
   }
 
@@ -166,7 +162,7 @@ const notifyOnHandlePiped = (root: Root) => E.flatMap(Relay, (relay) => {
         E.zip(
           relay.setOutput(nextRoot),
           relay.sendStatus(
-            RelayStatus.Next({
+            Progress.Next({
               id   : next.id!,
               props: next.props,
             }),
@@ -178,11 +174,11 @@ const notifyOnHandlePiped = (root: Root) => E.flatMap(Relay, (relay) => {
 
   return E.zip(
     relay.setOutput(root),
-    relay.sendStatus(RelayStatus.Same()),
+    relay.sendStatus(Progress.Same()),
   );
 });
 
-export const handleEvent = (root: Root, event: Events) => E.suspend(() => {
+export const handleEvent = (root: Root, event: Trigger) => E.suspend(() => {
   const stack = ML.make<Elem>(root.elem);
 
   while (ML.tail(stack)) {
@@ -191,7 +187,7 @@ export const handleEvent = (root: Root, event: Events) => E.suspend(() => {
     if (Elem.isRest(elem)) {
       if (elem.props.custom_id === event.id || elem.ids === event.id) {
         return pipe(
-          Events.renderHandler(elem.handler, event),
+          Trigger.apply(elem.handler, event),
           E.tap(() => notifyOnHandlePiped(root)),
         );
       }

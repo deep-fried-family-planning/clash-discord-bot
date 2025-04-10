@@ -1,35 +1,37 @@
 import type {Root} from '#src/disreact/model/entity/root.ts';
-import {D, DF, E, L} from '#src/disreact/utils/re-exports.ts';
-import * as Mailbox from 'effect/Mailbox';
-import {Misc} from '../utils/misc';
+import {E, L} from '#src/disreact/utils/re-exports.ts';
+import {Data, Deferred, Mailbox} from 'effect';
 
-export type RelayStatus = D.TaggedEnum<{
-  Start   : {};
-  Close   : {};
-  Same    : {};
-  Next    : {id: string; props?: any | undefined};
-  Partial : {type: 'modal' | 'message'; isEphemeral?: boolean};
-  Complete: {};
-}>;
-export const RelayStatus = D.taggedEnum<RelayStatus>();
+export const Progress = Data.taggedEnum<Relay.Progress>();
+
+export declare namespace Relay {
+  export type Progress = Data.TaggedEnum<{
+    Start: {};
+    Close: {};
+    Same : {};
+    Next : {id: string | null; props?: any};
+    Part : {type: 'modal' | 'message'; isEphemeral?: boolean};
+    Done : {};
+  }>;
+}
 
 export class Relay extends E.Service<Relay>()('disreact/Relay', {
   effect: E.map(
     E.all([
-      Mailbox.make<RelayStatus>(),
-      DF.make<Root | null>(),
+      Mailbox.make<Relay.Progress>(),
+      Deferred.make<Root | null>(),
     ]),
     ([mailbox, current]) =>
       ({
-        setOutput  : (root: Root | null) => DF.succeed(current, root),
-        awaitOutput: () => DF.await(current),
-        pollOutput : () => Misc.pollDeferred(current),
+        setOutput  : (root: Root | null) => Deferred.succeed(current, root),
+        awaitOutput: () => Deferred.await(current),
         setComplete: () => mailbox.end,
-        awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(RelayStatus.Complete()))),
-        sendStatus : (msg: RelayStatus) => mailbox.offer(msg),
-        status     : mailbox,
+        awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(Progress.Done()))),
+        sendStatus : (msg: Relay.Progress) => mailbox.offer(msg),
       }),
   ),
 }) {
+  static readonly Progress = Data.taggedEnum<Relay.Progress>();
+
   static readonly Fresh = L.fresh(Relay.Default);
 }

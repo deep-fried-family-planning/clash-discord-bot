@@ -1,96 +1,102 @@
-import {FC} from '#src/disreact/model/comp/fc.ts';
-import type {Fibril} from '#src/disreact/model/comp/fibril.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
+import type {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Root} from '#src/disreact/model/entity/root.ts';
-import {Arr, Data, E, Hash} from '#src/disreact/utils/re-exports.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {Arr, Data, E, Hash, pipe} from '#src/disreact/utils/re-exports.ts';
 
+export type RegistryKey = string | FC | Elem;
 
-export class SourceDefect extends Data.TaggedError('disreact/SourceDefect')<{
+const resolveId = (key: RegistryKey): string => {
+  if (typeof key === 'string') {
+    return key;
+  }
+  if (Elem.isTask(key)) {
+    return FC.getSrcId(key.type);
+  }
+  if (Elem.isRest(key)) {
+    throw new Error();
+  }
+  return FC.getSrcId(key);
+};
+
+export class RegistryDefect extends Data.TaggedError('disreact/RegistryException')<{
   message?: string;
   why?    : string;
   cause?  : Error;
 }> {}
 
-const STORE = new Map<string, Root.Source>();
-
-const resolveId = (key: string | FC | Elem): string => {
-  if (typeof key === 'string') {
-    return key;
-  }
-
-  if (Elem.isTask(key)) {
-    return FC.getSrcId(key.type);
-  }
-
-  if (Elem.isRest(key)) {
-    throw new Error();
-  }
-
-  return FC.getSrcId(key);
-};
-
 export class Registry extends E.Service<Registry>()('disreact/Registry', {
-  effect: E.map(DisReactConfig, (config) => {
-    const sources = [
-      ...config.modal.map((src) => Root.make(Root.MODAL, src)),
-      ...config.public.map((src) => Root.make(Root.PUBLIC, src)),
-      ...config.ephemeral.map((src) => Root.make(Root.EPHEMERAL, src)),
-    ];
+  effect: pipe(
+    E.all({
+      config: DisReactConfig,
+    }),
+    E.flatMap(({config}) => {
+      const STORE = new Map<string, Root.Source>();
 
-    for (const src of sources) {
-      // if (ξ.has(src.id)) {
-      //   return E.die(new SourceDefect({why: `Duplicate Source: ${src.id}`}));
-      // }
-      STORE.set(src.id, src);
-    }
+      const sources = [
+        ...config.modal.map((src) => Root.make(Root.MODAL, src)),
+        ...config.public.map((src) => Root.make(Root.PUBLIC, src)),
+        ...config.ephemeral.map((src) => Root.make(Root.EPHEMERAL, src)),
+      ];
 
-    const version = config.version
-      ? `${config.version}`
-      : Hash.array(Arr.map(sources, (src) => src.id));
-
-    const checkout = (key: string | FC | Elem, props: any = {}): E.Effect<Root, SourceDefect> => {
-      const id = resolveId(key);
-      const src = STORE.get(id);
-
-      if (!src) {
-        return E.fail(new SourceDefect({message: `Unregistered Source: ${key}`}));
+      for (const src of sources) {
+        if (STORE.has(src.id)) {
+          return E.die(
+            new RegistryDefect({
+              why: `Duplicate Source: ${src.id}`,
+            }),
+          );
+        }
+        STORE.set(src.id, src);
       }
 
-      return E.succeed(Root.fromSource(src, props));
-    };
+      const version = config.version
+        ? `${config.version}`
+        : Hash.array(Arr.map(sources, (src) => src.id));
 
-    const fromHydrant = (hydrant: Fibril.Hydrant): E.Effect<Root, SourceDefect> => {
-      const src = STORE.get(hydrant.id);
+      const checkout = (key: RegistryKey, props: any) => {
+        const id = resolveId(key);
+        const src = STORE.get(id);
 
-      if (!src) {
-        return E.fail(new SourceDefect({message: `Unregistered Source: ${hydrant.id}`}));
-      }
+        if (!src) {
+          return E.fail(
+            new RegistryDefect({
+              why: `Unregistered Source: ${key}`,
+            }),
+          );
+        }
 
-      return E.succeed(Root.fromSourceHydrant(src, hydrant));
-    };
+        return E.succeed(Root.fromSource(src, props));
+      };
 
-    const register = (kind: Root.Type, ...src: (FC | Elem.Task)[]) => {
-      for (const s of src) {
-        const root = Root.make(kind, s);
-        STORE.set(root.id, root);
-      }
-    };
+      const fromHydrant = (hydrant: Fibril.Hydrant) => {
+        const src = STORE.get(hydrant.id);
 
-    const registerModal = (...src: (FC | Elem.Task)[]) => register(Root.MODAL, ...src);
+        if (!src) {
+          return E.fail(
+            new RegistryDefect({
+              message: `Unregistered Source: ${hydrant.id}`,
+            }),
+          );
+        }
 
-    const registerEphemeral = (...src: (FC | Elem.Task)[]) => register(Root.EPHEMERAL, ...src);
+        return E.succeed(Root.fromSourceHydrant(src, hydrant));
+      };
 
-    const registerPublic = (...src: (FC | Elem.Task)[]) => register(Root.PUBLIC, ...src);
+      const register = (kind: Root.Type, ...src: (FC | Elem.Task)[]) => {
+        for (const s of src) {
+          const root = Root.make(kind, s);
+          STORE.set(root.id, root);
+        }
+      };
 
-    return {
-      fromHydrant,
-      checkout,
-      version,
-      register,
-      registerModal,
-      registerEphemeral,
-      registerPublic,
-    };
-  }),
+      return E.succeed({
+        fromHydrant,
+        checkout,
+        version,
+        register,
+      });
+    }),
+  ),
 }) {}

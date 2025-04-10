@@ -1,4 +1,4 @@
-import type {FC} from '#src/disreact/model/comp/fc.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Redacted} from 'effect';
 import {E, flow, L} from 'src/disreact/utils/re-exports.ts';

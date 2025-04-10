@@ -6,13 +6,42 @@ import {pipe, Record} from 'effect';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 import * as pako from 'pako';
-import {Polymer} from '#src/disreact/model/comp/polymer.ts';
-import type { EF } from '#src/disreact/model/comp/ef.ts';
 
+export type Monomer =
+  | Null
+  | State
+  | Dependency
+  | Modal
+  | Message;
 
-export * from '#src/disreact/model/comp/polymer.ts';
-export * from '#src/disreact/model/comp/monomer.ts';
-export * as Fibril from '#src/disreact/model/comp/fibril.ts';
+export type Null = null;
+export type State = {s: any};
+export type Dependency = {d: any};
+export type Modal = {m: any};
+export type Message = {e: any};
+
+export const Null = S.Null;
+export const State = S.Struct({s: S.Any});
+export const Dependency = S.Struct({d: S.Any});
+export const Modal = S.Struct({m: S.Any});
+export const Message = S.Struct({e: S.Any});
+export const Any = S.Union(Null, State, Dependency, Modal, Message);
+
+export const isNull = (self: Monomer): self is Null => self === null;
+export const isState = (self: Monomer): self is State => !!self && 's' in self;
+export const isDependency = (self: Monomer): self is Dependency => !!self && 'd' in self;
+export const isModal = (self: Monomer): self is Modal => !!self && 'm' in self;
+export const isMessage = (self: Monomer): self is Message => !!self && 'e' in self;
+
+export type Polymer = {
+  pc   : number;
+  stack: Chain[];
+};
+
+export const Chain = S.mutable(S.Array(Any));
+export type Chain = typeof Chain.Type;
+
+export * as Fibril from '#src/disreact/model/entity/fibril.ts';
 export type Fibril = never;
 
 export type Hydrant = typeof Hydrant.Type;
@@ -22,7 +51,7 @@ export const Hydrant = S.transform(
   S.Struct({
     id     : S.String,
     props  : S.optional(S.Any),
-    strands: S.Record({key: S.String, value: Polymer.Chain}),
+    strands: S.Record({key: S.String, value: Chain}),
   }),
   {
     encode: (hydrant) => deflate(hydrant),
@@ -48,8 +77,8 @@ const inflate = (encoded: string) =>
 export type Strand = {
   pc    : number;
   rc    : number;
-  stack : Polymer.Chain;
-  saved : Polymer.Chain;
+  stack : Chain;
+  saved : Chain;
   queue : any[];
   elem? : Elem.Task;
   nexus?: Nexus | undefined;
@@ -97,7 +126,7 @@ export type Nexus = {
     id   : string | null;
     props: any;
   };
-  queue   : EF.Queue;
+  queue   : any[];
   request?: any;
   root?   : Root | undefined;
 };

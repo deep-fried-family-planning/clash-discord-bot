@@ -1,9 +1,8 @@
-import { Intrinsic } from '#src/disreact/codec/rest-elem/index.ts';
-import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {FC} from '#src/disreact/model/comp/fc.ts';
-import {Fibril} from '#src/disreact/model/comp/fibril.ts';
-import {ML} from '#src/disreact/utils/re-exports.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+
+export const Id = Symbol('disreact/Root');
 
 export * as Root from '#src/disreact/model/entity/root.ts';
 export type Root = Source & {

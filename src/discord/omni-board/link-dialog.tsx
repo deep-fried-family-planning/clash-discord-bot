@@ -1,21 +1,21 @@
-import {Link} from '#src/discord/omni-board/link.tsx'
-import type {FC} from '#src/disreact/model/comp/fc.ts'
-import {usePage} from '#src/disreact/index.ts'
+import {Link} from '#src/discord/omni-board/link.tsx';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import {usePage} from '#src/disreact/index.ts';
 
 
 
 type Props = {
-  submitText?: string
-}
+  submitText?: string;
+};
 
 export const LinkDialog: FC<Props> = (props) => {
-  const page = usePage([Link])
+  const page = usePage([Link]);
 
   return (
     <modal
       title="Testing"
       onsubmit={() => {
-        page.next(Link, {})
+        page.next(Link, {});
       }}
     >
       <text label="Testing1" value="" />
@@ -24,7 +24,7 @@ export const LinkDialog: FC<Props> = (props) => {
       <text label="Testing4" value="" />
       <text label="Testing5" value="" />
     </modal>
-  )
-}
+  );
+};
 
-LinkDialog.isModal = true
+LinkDialog.isModal = true;

@@ -1,11 +1,11 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {Fibril, type Hydrant} from '#src/disreact/model/comp/fibril.ts';
+import {Fibril, type Hydrant} from '#src/disreact/model/entity/fibril.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {Root} from '#src/disreact/model/entity/root.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import type {Events} from '../model/entity/events';
+import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Intrinsic} from './rest-elem';
 import {Keys} from './rest-elem/keys';
 import {RxTx} from './rxtx';
@@ -77,7 +77,7 @@ export const encodeRoot = (root: Root): RxTx.ParamsResponse['data'] => {
   return result.message?.[0];
 };
 
-export const decodeEvent = (route: RxTx.ParamsRequest): Events => {
+export const decodeEvent = (route: RxTx.ParamsRequest): Trigger => {
   const req = route.body;
 
   if (req.type === 2) {

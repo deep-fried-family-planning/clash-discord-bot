@@ -1,4 +1,4 @@
-import {Fibril, Hydrant} from '#src/disreact/model/comp/fibril.ts';
+import {Fibril, Hydrant} from '#src/disreact/model/entity/fibril.ts';
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';

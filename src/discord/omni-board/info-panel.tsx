@@ -1,20 +1,20 @@
-import {NavBar} from '#src/discord/components/nav-bar.tsx'
-import {Link} from '#src/discord/omni-board/link.tsx'
-import {EMPTY} from '#src/disreact/codec/constants/common.ts'
-import type {FC} from '#src/disreact/model/comp/fc.ts'
-import {useIx, usePage, useState} from '#src/disreact/index.ts'
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts'
-import {infoQueryByServer} from '#src/dynamo/operations/info.ts'
-import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts'
-import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts'
+import {NavBar} from '#src/discord/components/nav-bar.tsx';
+import {Link} from '#src/discord/omni-board/link.tsx';
+import {EMPTY} from '#src/disreact/codec/constants/common.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import {useIx, usePage, useState} from '#src/disreact/index.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
+import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
+import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 
 
 
 export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* () {
-  const ix                      = useIx()
-  const [infoKind, setInfoKind] = useState('about')
-  const [embedId, setEmbedId]   = useState(EMPTY)
-  const page                    = usePage([Link])
+  const ix                      = useIx();
+  const [infoKind, setInfoKind] = useState('about');
+  const [embedId, setEmbedId]   = useState(EMPTY);
+  const page                    = usePage([Link]);
 
   const infos = pipe(
     yield* infoQueryByServer({pk: ix.guild_id!}),
@@ -30,13 +30,13 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
       value      : i.embed_id!,
       default    : false,
     })),
-  )
+  );
 
   if (embedId === EMPTY) {
-    setEmbedId(infos[0].value)
+    setEmbedId(infos[0].value);
   }
 
-  const {embed} = yield* MenuCache.embedRead(embedId === EMPTY ? infos[0].value : embedId)
+  const {embed} = yield* MenuCache.embedRead(embedId === EMPTY ? infos[0].value : embedId);
 
   return (
     <message ephemeral>
@@ -47,8 +47,8 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
       </embed>
       <select
         onselect={(event: any) => {
-          setInfoKind(event.values[0])
-          setEmbedId(EMPTY)
+          setInfoKind(event.values[0]);
+          setEmbedId(EMPTY);
         }}
       >
         <option label="About" value="about" default={infoKind === 'about'} />
@@ -57,7 +57,7 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
       </select>
       <select
         onselect={(event: any) => {
-          setEmbedId(event.values[0])
+          setEmbedId(event.values[0]);
         }}
       >
         {infos.map((i) => (
@@ -70,10 +70,10 @@ export const InfoPanel: FC<{description?: string}> = (props) => E.gen(function* 
           primary
           label="Back"
           onclick={() => {
-            page.next(Link, {})
+            page.next(Link, {});
           }}
         />
       </actions>
     </message>
-  )
-})
+  );
+});

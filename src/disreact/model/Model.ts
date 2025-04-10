@@ -1,14 +1,13 @@
-import type {Fibril} from '#src/disreact/model/comp/fibril.ts';
-import type {Events} from '#src/disreact/model/entity/events.ts';
+import type {Fibril, Hydrant} from '#src/disreact/model/entity/fibril.ts';
+import type {Root} from '#src/disreact/model/entity/root.ts';
+import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import type {FC} from './comp/fc.ts';
+import {FiberMap} from 'effect';
+import type {FC} from 'src/disreact/model/entity/fc.ts';
 import type {Elem} from './entity/elem.ts';
 import {Lifecycles} from './lifecycles';
-
-export * as Model from './model.ts';
-export type Model = never;
 
 export const makeEntrypoint = (key: string | FC | Elem, props?: any) =>
   pipe(
@@ -16,7 +15,7 @@ export const makeEntrypoint = (key: string | FC | Elem, props?: any) =>
     E.flatMap((root) => Lifecycles.initialize(root)),
   );
 
-export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Events) =>
+export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Trigger) =>
   pipe(
     E.flatMap(Registry, (registry) => registry.fromHydrant(hydrant)),
     E.tap((original) =>
@@ -43,6 +42,29 @@ export const hydrateInvoke = (hydrant: Fibril.Hydrant, event: Events) =>
       ),
     ),
   );
+
+export class Model extends E.Service<Model>()('disreact/Model', {
+  accessors: true,
+
+  effect: pipe(
+    E.all({
+      fibers: FiberMap.make<Hydrant, Root>(),
+    }),
+    E.map(({fibers}) => {
+      return {
+        invokeHydrant: (hydrant: Fibril.Hydrant, event: Trigger) =>
+          pipe(
+            FiberMap.has(fibers, hydrant),
+          ),
+      };
+    }),
+  ),
+}) {
+  static readonly makeEntrypoint = makeEntrypoint;
+  static readonly hydrateInvoke = hydrateInvoke;
+}
+
+
 
 // E.gen(function* () {
 //     const original = yield* SourceRegistry.withHydrant(hydrant)

@@ -1,27 +1,27 @@
-import {Option} from '#src/disreact/codec/rest-elem/component/option.ts'
-import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {Events} from '#src/disreact/model/entity/events'
-import {S} from '#src/disreact/utils/re-exports.ts'
-import {DAPI} from '../../dapi/dapi'
+import {Option} from '#src/disreact/codec/rest-elem/component/option.ts';
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
+import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
+import {DAPI} from '../../dapi/dapi';
 
-export * as Select from '#src/disreact/codec/rest-elem/component/select.ts'
-export type Select = never
+export * as Select from '#src/disreact/codec/rest-elem/component/select.ts';
+export type Select = never;
 
 export const TAG  = 'select',
-             NORM = Keys.components
+             NORM = Keys.components;
 
 export const EventData = S.Struct({
   data  : DAPI.Component.StringSelectData,
   values: S.Array(S.String),
-})
+});
 
-export const Handler = Events.declareHandler(EventData)
+export const Handler = Trigger.declareHandler(EventData);
 
 export const Children = S.Union(
   Option.Element,
-)
+);
 
 export const Attributes = declareProps(
   S.Struct({
@@ -33,13 +33,13 @@ export const Attributes = declareProps(
     disabled       : S.optional(S.Boolean),
     [Keys.onselect]: Handler,
   }),
-)
+);
 
 export const Element = declareHandlerElem(
   TAG,
   Attributes,
   Handler,
-)
+);
 
 export const encode = (self: Elem, acc: any) => {
   return {
@@ -53,5 +53,5 @@ export const encode = (self: Elem, acc: any) => {
       options    : self.props.options ?? acc[Keys.options],
       disabled   : self.props.disabled,
     }],
-  }
-}
+  };
+};
