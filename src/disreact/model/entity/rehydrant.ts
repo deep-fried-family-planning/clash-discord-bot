@@ -1,150 +1,129 @@
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Tether} from '#src/disreact/model/entity/tether.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
-import * as MsgPack from '@msgpack/msgpack';
-import {pipe} from 'effect';
-import * as pako from 'pako';
-
-export const TypeId = Symbol('disreact/Rehydrant');
+import {decode, encode} from '@msgpack/msgpack';
+import {MutableList, Record} from 'effect';
+import {deflate, inflate} from 'pako';
+import type {Source} from './source';
 
 export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 export type Rehydrant = {
-  [TypeId]: string | number | symbol;
-  id      : string;
-  elem    : Elem;
-  nexus   : Tether.Nexus;
-  key     : string;
+  id     : string;
+  props? : any;
+  elem   : Elem;
+  next   : {id: string; props?: any};
+  data   : any;
+  fibrils: {[id: string]: Fibril};
+  stack  : MutableList.MutableList<Elem>;
 };
 
-export type Source = {
-  [TypeId]: string;
-  id      : string;
-  elem    : Elem;
-};
+// const make = (id: string, props?: any) =>
+//   ({
+//     id,
+//     props,
+//     elem   : null as unknown as Elem,
+//     next   : {id},
+//     data   : {},
+//     fibrils: {},
+//     stack  : MutableList.make(),
+//   });
 
-export const source = (src: Elem | FC): Source => {
-  if (Elem.isTask(src)) {
-    const fc = FC.source(src.type);
-
-    return {
-      [TypeId]: '',
-      id      : FC.getSrcId(fc),
-      elem    : Elem.cloneElem(src),
-    };
-  }
-
-  if (!FC.isFC(src)) {
-    throw new Error();
-  }
-
-  const fc = FC.source(src);
+export const makeRehydrant = (src: Source, props?: any): Rehydrant => {
+  const elem = Elem.cloneElem(src.elem);
+  elem.props = props;
+  elem.id = src.id;
 
   return {
-    [TypeId]: '',
-    id      : FC.getSrcId(fc),
-    elem    : Elem.jsxTask(fc, {}),
+    id     : src.id,
+    props  : props,
+    elem   : elem,
+    next   : {id: src.id},
+    data   : {},
+    fibrils: {},
+    stack  : MutableList.make(),
   };
+};
+
+export const fromDecoded = (src: Source, decoded: Decoded) => {
+  const elem = Elem.cloneElem(src.elem);
+  elem.props = decoded.props;
+  elem.id = src.id;
+
+  return;
 };
 
 export const make = (src: Source, props?: any): Rehydrant => {
-  const elem = Elem.cloneElem(src.elem);
-  elem.props = props;
-  const nexus = Tether.makeNexus(props);
-  elem.id = src.id;
-
-  if (Elem.isTask(elem)) {
-    elem.strand.nexus = nexus;
-    elem.strand.elem = elem;
-    nexus.strands[elem.id] = elem.strand;
-  }
-
-  nexus.id = src.id;
-  nexus.next.id = src.id;
-  nexus.next.props = elem.props;
-  nexus.root = {
-    [TypeId]: '',
-    key     : '',
-    id      : elem.id,
-    elem    : elem,
-    nexus   : nexus,
-  };
-
-  return nexus.root;
-};
-
-export const rehydrate = (src: Source, dehydrated: Dehydrated) => {
-  const rehydrant = make(src, dehydrated.props);
-  rehydrant.nexus = Tether.decodeNexus(dehydrated);
+  const rehydrant = makeRehydrant(src, props);
 
   if (Elem.isTask(rehydrant.elem)) {
-    rehydrant.elem.strand = rehydrant.nexus.strands[rehydrant.elem.id!];
+    rehydrant.elem.fibril.rehydrant = rehydrant;
+    rehydrant.elem.fibril.elem = rehydrant.elem;
+    rehydrant.fibrils[rehydrant.id] = rehydrant.elem.fibril;
   }
 
   return rehydrant;
 };
 
-export const dehydrate = (self: Rehydrant): Dehydrated => {
-  return Tether.encodeNexus(self.nexus);
+export type Encoded = typeof Encoded.Type;
+export const Encoded = S.String;
+
+export type Decoded = typeof Decoded.Type;
+export const Decoded = S.Struct({
+  id    : S.String,
+  props : S.optional(S.Any),
+  stacks: S.Record({key: S.String, value: Fibril.Chain}),
+});
+
+export const Hydrator = S.transform(Encoded, Decoded, {
+  encode: (dry) => {
+    const pack = encode(dry);
+    const pako = deflate(pack);
+    return Buffer.from(pako).toString('base64url');
+  },
+  decode: (hash) => {
+    const buff = Buffer.from(hash, 'base64url');
+    const pako = inflate(buff);
+    return decode(pako) as any;
+  },
+});
+
+export const dehydrate = (rehydrant: Rehydrant): Decoded => {
+  return {
+    id    : rehydrant.id,
+    props : rehydrant.props,
+    stacks: Record.map(rehydrant.fibrils, (fibril) => fibril.stack),
+  };
 };
 
-export const clone = (self: Rehydrant) => {
-  const {elem, nexus, ...rest} = self;
+export const rehydrate = (src: Source, dehydrated: Decoded) => {
+  const rehydrant = make(src, dehydrated.props);
+  rehydrant.id = dehydrated.id;
+  rehydrant.props = dehydrated.props;
+  rehydrant.fibrils = Record.map(dehydrated.stacks, (stack, id) => Fibril.make(stack));
 
-  const cloned = structuredClone(rest) as Rehydrant;
-  cloned.nexus = Tether.cloneNexus(self.nexus);
-  cloned.elem = Elem.deepCloneElem(self.elem);
-  return cloned;
-};
+  if (Elem.isTask(rehydrant.elem)) {
+    rehydrant.elem.fibril = rehydrant.fibrils[rehydrant.elem.id!];
+  }
 
-export const linear = (self: Rehydrant): Rehydrant => {
-  delete self.nexus.root;
-  delete self.nexus.request;
-  Elem.linearizeElem(self.elem);
-  return self;
+  return rehydrant;
 };
 
 export const mount = (root: Rehydrant, elem: Elem) => {
   if (Elem.isTask(elem)) {
-    elem.strand.nexus = root.nexus;
-    elem.strand.elem = elem;
-    root.nexus.strands[elem.id!] = elem.strand;
+    elem.fibril.rehydrant = root;
+    elem.fibril.elem = elem;
+    root.fibrils[elem.id!] = elem.fibril;
   }
 };
 
 export const mountTask = (root: Rehydrant, elem: Elem.Task) => {
-  elem.strand.nexus = root.nexus;
-  elem.strand.elem = elem;
-  root.nexus.strands[elem.id!] = elem.strand;
+  elem.fibril.rehydrant = root;
+  elem.fibril.elem = elem;
+  root.fibrils[elem.id!] = elem.fibril;
 };
 
 export const dismountTask = (root: Rehydrant, elem: Elem.Task) => {
-  delete elem.strand.elem;
-  delete elem.strand.nexus;
-  delete root.nexus.strands[elem.id!];
+  delete elem.fibril.elem;
+  delete elem.fibril.rehydrant;
+  delete root.fibrils[elem.id!];
 };
-
-export type Encoded = typeof Encoded.Type;
-export const Encoded = S.String;
-
-export type Dehydrated = typeof Dehydrated.Type;
-export const Dehydrated = S.Struct({
-  id     : S.String,
-  props  : S.optional(S.Any),
-  strands: S.Record({key: S.String, value: Tether.Chain}),
-});
-
-export const Hydrator = S.transform(Encoded, Dehydrated, {
-  encode: (hydrant) =>
-    pipe(
-      MsgPack.encode(hydrant),
-      pako.deflate,
-      (binary) => Buffer.from(binary).toString('base64url'),
-    ),
-  decode: (hash) =>
-    pipe(
-      Buffer.from(hash, 'base64url'),
-      pako.inflate,
-      MsgPack.decode,
-    ) as any,
-});

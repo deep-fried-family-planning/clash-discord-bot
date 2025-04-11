@@ -1,11 +1,10 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {Tether, type Hydrant} from '#src/disreact/model/entity/tether.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Intrinsic} from './rest-elem';
 import {Keys} from './rest-elem/keys';
 import {RxTx} from './rxtx';
@@ -81,12 +80,7 @@ export const decodeEvent = (route: RxTx.ParamsRequest): Trigger => {
   const req = route.body;
 
   if (req.type === 2) {
-    return {
-      id  : req.data.custom_id,
-      data: {
-        data: route.body.data,
-      },
-    };
+    return Trigger.make(req.data.custom_id, route.body.data);
   }
 
   if (req.type === 5) {
@@ -103,8 +97,8 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
       decodeRequest          : decodeParamsRequest,
       encodeResponseWithCache: (root: Rehydrant, doken: Doken.Active) => {
         const encoded = encodeRoot(root);
-        const hydrant = Tether.encodeNexus(root.nexus);
-        const serial  = Intrinsic.isEphemeral(encoded)
+        const hydrant = Rehydrant.dehydrate(root);
+        const serial = Intrinsic.isEphemeral(encoded)
           ? doken
           : Doken.convertCached(doken);
 
@@ -123,7 +117,7 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
       },
       encodeResponse: (root: Rehydrant, doken: Doken) => {
         const encoded = encodeRoot(root);
-        const hydrant = Tether.encodeNexus(root.nexus);
+        const hydrant = Rehydrant.dehydrate(root);
 
         if (Intrinsic.isModal(encoded)) {
           return encodeParamsResponse({

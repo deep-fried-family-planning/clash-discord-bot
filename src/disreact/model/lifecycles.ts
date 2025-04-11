@@ -1,5 +1,5 @@
 import {Side} from '#src/disreact/model/entity/side.ts';
-import {Tether} from '#src/disreact/model/entity/tether.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
@@ -16,21 +16,19 @@ const relayPartial = (elem: Elem.Rest) => E.flatMap(Relay, (relay) => {
   if (elem.type === 'modal') {
     return pipe(
       relay.sendStatus(
-        Progress.Part({
-          type: 'modal',
-        }),
+        Progress.Part({type: 'modal'}),
       ),
       E.as(true),
     );
   }
   if (elem.type === 'message') {
+    const status = Progress.Part({
+      type       : 'message',
+      isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+    });
+
     return pipe(
-      relay.sendStatus(
-        Progress.Part({
-          type       : 'message',
-          isEphemeral: elem.props.display === 'ephemeral' ? true : false,
-        }),
-      ),
+      relay.sendStatus(status),
       E.as(true),
     );
   }
@@ -41,29 +39,29 @@ const renderElemPiped = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((di
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      Tether.λ.set(self.strand);
-      self.strand.nexus = root.nexus;
-      self.strand.pc = 0;
-      self.strand.elem = self;
-      self.strand.nexus.strands[self.id!] = self.strand;
+      Fibril.λ.set(self.fibril);
+      self.fibril.rehydrant = root;
+      self.fibril.pc = 0;
+      self.fibril.elem = self;
+      self.fibril.rehydrant.fibrils[self.id!] = self.fibril;
       return Elem.render(self);
     }),
     E.tap((children) => {
-      Tether.λ.clear();
+      Fibril.λ.clear();
       return E.as(dispatcher.unlock, children);
     }),
     E.catchAll((err) => {
-      Tether.λ.clear();
+      Fibril.λ.clear();
       return E.fail(err);
     }),
     E.catchAllDefect((err) => {
-      Tether.λ.clear();
+      Fibril.λ.clear();
       return E.die(err);
     }),
     E.map((children) => {
-      self.strand.pc = 0;
-      self.strand.saved = structuredClone(self.strand.stack);
-      self.strand.rc++;
+      self.fibril.pc = 0;
+      self.fibril.saved = structuredClone(self.fibril.stack);
+      self.fibril.rc++;
 
       const filtered = children.filter(Boolean) as Elem.Any[];
 
@@ -89,13 +87,13 @@ const renderEffectPiped = (root: Rehydrant, ef: Side) =>
   );
 
 const renderEffectAtNodePiped = (root: Rehydrant, node: Elem.Task) => {
-  if (!node.strand.queue.length) {
+  if (!node.fibril.queue.length) {
     return E.void;
   }
 
-  const effects = Array<RT<typeof renderEffectPiped>>(node.strand.queue.length);
+  const effects = Array<RT<typeof renderEffectPiped>>(node.fibril.queue.length);
   for (let i = 0; i < effects.length; i++) {
-    effects[i] = renderEffectPiped(root, node.strand.queue[i]);
+    effects[i] = renderEffectPiped(root, node.fibril.queue[i]);
   }
 
   return E.all(effects).pipe(E.asVoid);
@@ -103,8 +101,8 @@ const renderEffectAtNodePiped = (root: Rehydrant, node: Elem.Task) => {
 
 
 const notifyPiped = (root: Rehydrant) => E.flatMap(Relay, (relay) => {
-  const curr = root.nexus;
-  const next = root.nexus.next;
+  const curr = root;
+  const next = root.next;
 
   if (next.id === null) {
     return pipe(
@@ -133,8 +131,8 @@ const notifyPiped = (root: Rehydrant) => E.flatMap(Relay, (relay) => {
 
 
 const notifyOnHandlePiped = (root: Rehydrant) => E.flatMap(Relay, (relay) => {
-  const curr = root.nexus;
-  const next = root.nexus.next;
+  const curr = root;
+  const next = root.next;
 
   if (next.id === null) {
     return E.zip(
@@ -193,11 +191,7 @@ export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => 
 });
 
 
-export const initialize = (root: Rehydrant) =>
-  pipe(
-    initializeSubtree(root, root.elem),
-    E.as(root),
-  );
+export const initialize = (root: Rehydrant) => initializeSubtree(root, root.elem);
 
 const loopNodes = (stack: ML.MutableList<Elem>, root: Rehydrant, elem: Elem) => {
   for (let i = 0; i < elem.nodes.length; i++) {
@@ -245,32 +239,29 @@ export const initializeSubtree = (root: Rehydrant, elem: Elem) => {
 };
 
 export const hydrate = (root: Rehydrant) =>
-  pipe(
-    E.iterate(ML.make<Elem>(root.elem), {
-      while: (stack) => !!ML.tail(stack),
-      body : (stack) => {
-        const elem = ML.pop(stack)!;
+  E.iterate(ML.make<Elem>(root.elem), {
+    while: (stack) => !!ML.tail(stack),
+    body : (stack) => {
+      const elem = ML.pop(stack)!;
 
-        if (Elem.isTask(elem)) {
-          if (root.nexus.strands[elem.id!]) {
-            elem.strand = root.nexus.strands[elem.id!];
-            elem.strand.nexus = root.nexus;
-          }
-
-          return pipe(
-            renderElemPiped(root, elem),
-            E.map((children) => {
-              elem.nodes = children;
-              return loopNodes(stack, root, elem);
-            }),
-          );
+      if (Elem.isTask(elem)) {
+        if (root.fibrils[elem.id!]) {
+          elem.fibril = root.fibrils[elem.id!];
+          elem.fibril.rehydrant = root;
         }
 
-        return E.succeed(loopNodes(stack, root, elem));
-      },
-    }),
-    E.as(root),
-  );
+        return pipe(
+          renderElemPiped(root, elem),
+          E.map((children) => {
+            elem.nodes = children;
+            return loopNodes(stack, root, elem);
+          }),
+        );
+      }
+
+      return E.succeed(loopNodes(stack, root, elem));
+    },
+  });
 
 
 export const rerender = (root: Rehydrant) => E.gen(function* () {
@@ -378,7 +369,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
         else if (
           Props.isEqual(curr.props, rend.props) && // Task Changed
-          Tether.isSameStrand(curr.strand)
+          Fibril.isSameStrand(curr.fibril)
         ) {
           ML.append(stack, [curr, rend.nodes]);
         }

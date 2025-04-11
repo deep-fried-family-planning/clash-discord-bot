@@ -40,7 +40,7 @@ export const MessageParamsSerial = S.transform(
     S.Struct({
       base   : S.String,
       serial : Doken.Serial,
-      hydrant: Rehydrant.Dehydrated,
+      hydrant: Rehydrant.Decoded,
     }),
   ),
   {
@@ -129,7 +129,7 @@ export const MessageParamsRequest = pipe(
       base       : S.String,
       fresh      : Doken.Fresh,
       serial     : S.typeSchema(Doken.Serial),
-      hydrant    : S.typeSchema(Rehydrant.Dehydrated),
+      hydrant    : S.typeSchema(Rehydrant.Decoded),
       body       : S.typeSchema(DAPI.Ix.RequestBody),
       event      : S.Any,
     }),
@@ -175,7 +175,7 @@ export const ModalParamsRequest = pipe(
       base       : S.optional(S.String),
       fresh      : Doken.Fresh,
       serial     : S.typeSchema(Doken.Serial),
-      hydrant    : S.optional(S.typeSchema(Rehydrant.Dehydrated)),
+      hydrant    : S.optional(S.typeSchema(Rehydrant.Decoded)),
       body       : S.typeSchema(DAPI.Ix.ModalRequestBody),
       event      : S.Any,
     }),
@@ -207,7 +207,7 @@ export const MessageResponse = S.transform(
   S.Struct({
     base   : S.String,
     serial : S.typeSchema(Doken.Serial),
-    hydrant: Rehydrant.Dehydrated,
+    hydrant: Rehydrant.Decoded,
     data   : DAPI.Message.Base,
   }),
   {
@@ -229,7 +229,7 @@ export const ModalResponse = S.transform(
   S.Struct({
     base   : S.String,
     serial : S.typeSchema(Doken.Serial),
-    hydrant: Rehydrant.Dehydrated,
+    hydrant: Rehydrant.Decoded,
     data   : DAPI.Modal.Any,
   }),
   {
@@ -254,7 +254,7 @@ export type ParamsResponse = typeof ParamsResponse.Type;
 
 export const ModalOutput = pipe(
   S.Struct({
-    hydrant: Rehydrant.Dehydrated,
+    hydrant: Rehydrant.Decoded,
     data   : DAPI.Modal.Open,
   }),
   S.attachPropertySignature('_tag', 'Modal'),
@@ -262,7 +262,7 @@ export const ModalOutput = pipe(
 
 export const PublicMessageOutput = pipe(
   S.Struct({
-    hydrant: Rehydrant.Dehydrated,
+    hydrant: Rehydrant.Decoded,
     data   : DAPI.Message.Base,
   }),
   S.attachPropertySignature('_tag', 'Public'),
@@ -270,7 +270,7 @@ export const PublicMessageOutput = pipe(
 
 export const EphemeralMessageOutput = pipe(
   S.Struct({
-    hydrant: Rehydrant.Dehydrated,
+    hydrant: Rehydrant.Decoded,
     data   : DAPI.Message.Ephemeral,
   }),
   S.attachPropertySignature('_tag', 'Ephemeral'),

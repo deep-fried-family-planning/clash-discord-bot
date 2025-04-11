@@ -2,7 +2,7 @@ import {D, E, S} from '#src/disreact/utils/re-exports.ts';
 import type {Cause} from 'effect';
 import {Predicate} from 'effect';
 
-export const Id = Symbol('disreact/Trigger');
+export const TypeId = Symbol('disreact/Trigger');
 
 export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
   message?: string;
@@ -14,12 +14,12 @@ export type Trigger<A = any> = {
   id  : string;
   data: A;
 
-  readonly [Id]: undefined;
+  readonly [TypeId]: undefined;
 };
 
 export const make = (id: string, data: any): Trigger =>
   ({
-    [Id]: undefined,
+    [TypeId]: undefined,
     id,
     data,
   });
@@ -32,7 +32,7 @@ export const declare = <A, I, R>(data: S.Schema<A, I, R>) =>
 
 export type Event<A> = Trigger<A>['data'];
 
-export const HandlerId = Symbol('disreact/Trigger/Handler');
+export const HandlerTypeId = Symbol('disreact/Trigger/Handler');
 
 export type Handler<A> = <E, R>(event: Event<A>) =>
   | void

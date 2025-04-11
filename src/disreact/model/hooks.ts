@@ -1,5 +1,5 @@
 import type {FC} from '#src/disreact/model/entity/fc.ts';
-import {Tether} from '#src/disreact/model/entity/tether.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 export * as Hooks from './hooks.ts';
@@ -18,13 +18,13 @@ interface EffectFn {
 //
 //
 export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
-  const node = Tether.λ.get();
+  const node = Fibril.λ.get();
 
   node.stack[node.pc] ??= {s: initial};
 
   const curr = node.stack[node.pc];
 
-  if (!Tether.isState(curr)) {
+  if (!Fibril.isState(curr)) {
     throw new Error('Hooks must be called in the same order');
   }
 
@@ -63,7 +63,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
     }
   }
 
-  const node = Tether.λ.get();
+  const node = Fibril.λ.get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = {d: deps ?? []};
@@ -71,7 +71,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
 
   const curr = node.stack[node.pc];
 
-  if (!Tether.isDependency(curr)) {
+  if (!Fibril.isDependency(curr)) {
     throw new Error('Hooks must be called in the same order');
   }
 
@@ -108,13 +108,13 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
 //
 //
 export const $useIx = () => {
-  const node = Tether.λ.get();
+  const node = Fibril.λ.get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
   }
 
-  if (!Tether.isNull(node.stack[node.pc])) {
+  if (!Fibril.isNull(node.stack[node.pc])) {
     throw new Error('Hooks must be called in the same order');
   }
 
@@ -127,13 +127,13 @@ export const $useIx = () => {
 //
 //
 export const $usePage = (_: FC[]) => {
-  const node = Tether.λ.get();
+  const node = Fibril.λ.get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
   }
 
-  if (!Tether.isNull(node.stack[node.pc])) {
+  if (!Fibril.isNull(node.stack[node.pc])) {
     throw new Error('Hooks must be called in the same order');
   }
 

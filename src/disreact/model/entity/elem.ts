@@ -1,5 +1,5 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys';
-import {Tether} from '#src/disreact/model/entity/tether.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import { Data, Differ} from 'effect';
@@ -9,43 +9,28 @@ import {isPromise} from 'effect/Predicate';
 import {FC} from 'src/disreact/model/entity/fc.ts';
 
 export const TypeId = Symbol('disreact/Elem');
+export type TypeId = typeof TypeId;
 
-export type Children = Elem | Elem[];
-export type JsxProps<A = any> = A & {children?: Elem};
-export type JsxsProps<A = any> = A & {children: Elem[]};
+export type Return = Elem | Elem[];
 
 export * as Elem from '#src/disreact/model/entity/elem.ts';
 export type Elem =
   | Rest
   | Task;
 
-// export type Type =
-//   | symbol
-//   | string
-//   | bigint
-//   | number
-//   | boolean
-//   | null
-//   | undefined
-//   | {
-//       type : string | FC;
-//       props: any;
-//       nodes: Elem[];
-//     };
-
 export type Any =
   | Elem
   | Prim;
 
 export interface MetaProps {
-  type   : any;
-  id?    : string | undefined;
-  ids?   : string | undefined;
-  idn?   : string | undefined;
-  idx?   : number | undefined;
-  parent?: Elem | undefined;
-  props  : any;
-  nodes  : Any[];
+  [TypeId]: TypeId;
+  type    : any;
+  id?     : string | undefined;
+  ids?    : string | undefined;
+  idn?    : string | undefined;
+  idx?    : number | undefined;
+  props   : any;
+  nodes   : Any[];
 }
 
 export type Frag = undefined;
@@ -68,7 +53,7 @@ export interface Rest extends MetaProps {
 
 export interface Task extends MetaProps {
   type  : FC;
-  strand: Tether.Strand;
+  fibril: Fibril;
 }
 
 export const isPrim = (self: unknown): self is Prim => {
@@ -81,16 +66,7 @@ export const isPrim = (self: unknown): self is Prim => {
   return true;
 };
 
-export const clonePrim = (self: Prim): Prim => structuredClone(self);
-
-
-export const isRest = (self: unknown): self is Rest => {
-  switch (typeof self) {
-    case 'object':
-      return typeof (self as any).type === 'string';
-  }
-  return false;
-};
+export const isRest = (self: unknown): self is Rest => typeof self === 'object' && typeof (self as any).type === 'string';
 
 const HANDLER_KEYS = [
   Keys.onclick,
@@ -136,7 +112,7 @@ const RESERVED = [
 ];
 
 export const cloneRest = (self: Rest): Rest => {
-  const {props, nodes, handler, parent, ...rest} = self;
+  const {props, nodes, handler, ...rest} = self;
 
   const reserved = {} as any;
 
@@ -161,7 +137,6 @@ export const cloneRest = (self: Rest): Rest => {
   return cloned;
 };
 
-
 export const jsxTask = (type: any, props: any): Task => {
   const fc = FC.make(type);
   const task = {} as Task;
@@ -169,7 +144,7 @@ export const jsxTask = (type: any, props: any): Task => {
   task.type = fc;
   task.props = props;
   task.nodes = [] as Elem[];
-  task.strand = Tether.makeStrand();
+  task.fibril = Fibril.make();
   return task;
 };
 
@@ -187,10 +162,10 @@ export const isTask = (self: unknown): self is Task => {
 };
 
 export const cloneTask = (self: Task): Task => {
-  const {props, strand, type, nodes, id, idx} = self;
+  const {props, fibril, type, nodes, id, idx} = self;
   const clonedProps = deepCloneTaskProps(props);
   const task = jsxTask(type, clonedProps);
-  task.strand = Tether.cloneStrand(strand);
+  task.fibril = Fibril.cloneStrand(fibril);
   task.nodes = nodes;
   task.id = id;
   task.idx = idx;
@@ -281,12 +256,12 @@ export const cloneElem = (self: Elem) => {
   return cloneTask(self);
 };
 
-export const deepCloneElem = <A extends Any>(self: A): A => {
-  if (isPrim(self)) {
-    return clonePrim(self) as A;
+export const deepCloneElem = <A extends Any>(elem: A): A => {
+  if (isPrim(elem)) {
+    return structuredClone(elem) as A;
   }
 
-  const cloned = cloneElem(self);
+  const cloned = cloneElem(elem);
 
   for (let i = 0; i < cloned.nodes.length; i++) {
     const node = cloned.nodes[i];
@@ -296,25 +271,7 @@ export const deepCloneElem = <A extends Any>(self: A): A => {
   return cloned as A;
 };
 
-export const linearizeElem = <A extends Elem>(self: A): A => {
-  if (isTask(self)) {
-    delete self.strand.nexus;
-    delete self.strand.elem;
-  }
-
-  for (let i = 0; i < self.nodes.length; i++) {
-    const node = self.nodes[i];
-
-    if (!isPrim(node)) {
-      linearizeElem(node);
-    }
-  }
-
-  return self;
-};
-
 export const connectChild = (parent: Elem, child: Elem, idx: number) => {
-  child.parent = parent;
   child.idx = idx;
 
   const child_id = `${child.idn ?? child.type}:${idx}`;

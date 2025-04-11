@@ -1,5 +1,4 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Tether, Hydrant} from '#src/disreact/model/entity/tether.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
@@ -11,10 +10,10 @@ import {Lifecycles} from './lifecycles';
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
     E.flatMap(Registry, (registry) => registry.checkout(key, props)),
-    E.flatMap((root) => Lifecycles.initialize(root)),
+    E.tap((root) => Lifecycles.initialize(root)),
   );
 
-export const hydrateInvoke = (dehydrated: Rehydrant.Dehydrated, event: Trigger) =>
+export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
   pipe(
     Registry.rehydrate(dehydrated),
     E.tap((original) =>
@@ -30,9 +29,9 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Dehydrated, event: Trigger) 
       E.flatMap(Relay, (relay) =>
         pipe(
           relay.awaitOutput(),
-          E.flatMap((output) => {
+          E.tap((output) => {
             if (output === null || output.id === original.id) {
-              return E.succeed(output);
+              return;
             }
             return Lifecycles.initialize(output);
           }),
@@ -45,12 +44,10 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Dehydrated, event: Trigger) 
 export class Model extends E.Service<Model>()('disreact/Model', {
   effect: pipe(
     E.all({
-      roots: FiberMap.make<Hydrant, Rehydrant>(),
+      roots: FiberMap.make<Rehydrant.Rehydrant, Rehydrant>(),
     }),
-    E.map(({}) => {
-      return {
-
-      };
+    E.map(() => {
+      return {};
     }),
   ),
   dependencies: [
@@ -61,7 +58,6 @@ export class Model extends E.Service<Model>()('disreact/Model', {
   static readonly makeEntrypoint = makeEntrypoint;
   static readonly hydrateInvoke = hydrateInvoke;
 }
-
 
 
 // E.gen(function* () {
