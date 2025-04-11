@@ -1,6 +1,6 @@
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {type Cause, pipe, Predicate} from 'effect';
+import {type Cause, Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/fc'),
              NameId = Symbol('disreact/fc/name');
@@ -87,38 +87,29 @@ export const render = (fc: FC, p?: any): E.Effect<Elem.Any[], Cause.UnknownExcep
   if (isSync(fc)) {
     return E.try(() => ensure(fc(p)));
   }
+
   if (isAsync(fc)) {
     return E.tryPromise(() => fc(p).then(ensure));
   }
+
   if (isEffect(fc)) {
     return (fc(p) as E.Effect<Elem.Return>).pipe(E.map(ensure));
   }
+
   return E.suspend(() => {
     const output = fc(p);
+
     if (Predicate.isPromise(output)) {
       fc[TypeId] = ASYNC;
       return E.tryPromise(() => output.then(ensure));
     }
+
     if (E.isEffect(output)) {
       fc[TypeId] = EFFECT;
       return (output as E.Effect<Elem.Return>).pipe(E.map(ensure));
     }
+
     fc[TypeId] = SYNC;
     return E.succeed(ensure(output));
   });
-  return pipe(
-    E.try(() => fc(p)),
-    E.flatMap((output) => {
-      if (Predicate.isPromise(output)) {
-        fc[TypeId] = ASYNC;
-        return E.tryPromise(() => output.then(ensure));
-      }
-      if (E.isEffect(output)) {
-        fc[TypeId] = EFFECT;
-        return (output as E.Effect<Elem.Return>).pipe(E.map(ensure));
-      }
-      fc[TypeId] = SYNC;
-      return E.succeed(ensure(output));
-    }),
-  );
 };

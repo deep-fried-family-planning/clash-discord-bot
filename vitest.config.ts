@@ -1,5 +1,6 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
-import {defineConfig} from 'vitest/config'
+import * as path from 'node:path';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import {defineConfig} from 'vitest/config';
 
 
 
@@ -12,13 +13,25 @@ export default defineConfig({
     includeTaskLocation: true,
     logHeapUsage       : true,
 
-    reporters         : 'verbose',
-    chaiConfig        : {truncateThreshold: 0},
+    reporters         : ['verbose'],
     expandSnapshotDiff: true,
     testTimeout       : 0,
     hookTimeout       : 0,
     teardownTimeout   : 0,
     slowTestThreshold : 5000,
+
+    benchmark: {
+      include   : [],
+      reporters : ['verbose'],
+      compare   : './vitest.bench.json',
+      outputJson: './vitest.bench.json',
+    },
+
+    resolveSnapshotPath: (testPath, snapExtension, context) => {
+      const parsed = path.parse(testPath);
+
+      return `${parsed.dir}/.snap/${parsed.name}${snapExtension}`;
+    },
 
     coverage: {
       provider        : 'v8',
@@ -35,4 +48,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

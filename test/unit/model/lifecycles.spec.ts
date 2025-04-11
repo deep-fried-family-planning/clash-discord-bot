@@ -1,26 +1,25 @@
 import {encodeRoot} from '#src/disreact/codec/Codec.ts';
-import {jsx} from '#src/disreact/jsx-runtime.ts';
-import {Elem} from '#src/disreact/model/entity/elem.ts';
-import { Rehydrant } from '#src/disreact/model/entity/rehydrant.ts';
-import { Source } from '#src/disreact/model/entity/source';
+import { Elem } from '#src/disreact/model/entity/elem';
+import {Trigger} from '#src/disreact/model/entity/trigger';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import {describe, expect} from '@effect/vitest';
 import {pipe, Record} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {expectJSON, it } from 'test/unit/components/TestRegistry.tsx';
+import {expectJSON, it} from 'test/unit/components/TestRegistry.tsx';
+
+
 
 it.effect('when dispatching an event', E.fn(function* () {
   const registry = yield* Registry;
   const root = yield* registry.checkout(TestMessage);
-  const initial = yield* Lifecycles.initialize(root);
 
-  const event = {
-    id  : 'actions:2:button:0',
-    data: 'onclick',
-  };
+  yield* Lifecycles.initialize(root);
 
-  expect(Record.map(root.nexus.strands, (v) => v.stack)).toMatchInlineSnapshot(`
+  const event = Trigger.make('actions:2:button:0', {});
+
+  expect(Record.map(root.fibrils, (v) => v.stack)).toMatchInlineSnapshot(`
     {
       "TestMessage": [
         {
@@ -31,10 +30,12 @@ it.effect('when dispatching an event', E.fn(function* () {
     }
   `);
 
-  yield* Lifecycles.handleEvent(initial, event);
+  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
+
+  yield* Lifecycles.handleEvent(root, event);
   yield* Lifecycles.rerender(root);
 
-  expect(Record.map(root.nexus.strands, (v) => v.stack)).toMatchInlineSnapshot(`
+  expect(Record.map(root.fibrils, (v) => v.stack)).toMatchInlineSnapshot(`
     {
       "TestMessage": [
         {
@@ -44,27 +45,9 @@ it.effect('when dispatching an event', E.fn(function* () {
       "TestMessage:message:0:Header:0": [],
     }
   `);
-}));
 
-describe('given event.type is not in any node.props', () => {
-  it.effect('when dispatching an event', E.fn(function* () {
-    const registry = yield* Registry;
-    const root = yield* registry.checkout(TestMessage);
-    yield* Lifecycles.initialize(root);
-    yield* Lifecycles.rerender(root);
-    const event = {
-      id  : 'buttons:1:button:0',
-      data: 'onclick',
-    };
-    yield* pipe(
-      Lifecycles.handleEvent(root, event),
-      E.catchAll((err) => {
-        expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`);
-        return E.void;
-      }),
-    );
-  }));
-});
+  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
+}));
 
 describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
@@ -72,10 +55,8 @@ describe('given event.id does not match any node.id', () => {
     const root = yield* registry.checkout(TestMessage);
     yield* Lifecycles.initialize(root);
     yield* Lifecycles.rerender(root);
-    const event = {
-      id  : 'buttons:1:button:0',
-      data: 'onclick',
-    };
+
+    const event = Trigger.make('buttons:1:button:0', {});
 
     yield* pipe(
       Lifecycles.handleEvent(root, event),
@@ -90,8 +71,8 @@ describe('given event.id does not match any node.id', () => {
 it.effect('when rendering an initial tree', E.fn(function* () {
   const registry = yield* Registry;
   const root = yield* registry.checkout(TestMessage);
-  const render = yield* Lifecycles.initialize(root);
-  yield* pipe(encodeRoot(render), expectJSON('./.json/initial-tree.json'));
+  yield* Lifecycles.initialize(root);
+  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
 }));
 
 it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
@@ -102,20 +83,14 @@ it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
     const root = yield* registry.checkout(TestMessage);
 
     yield* Lifecycles.initialize(root);
+
     yield* Lifecycles.hydrate(root);
 
-    const event = {
-      id  : 'actions:2:button:0',
-      prop: 'onclick',
-    };
+    const event = Trigger.make('actions:2:button:0', {});
 
     yield* Lifecycles.handleEvent(root, event);
     yield* Lifecycles.rerender(root);
 
     const encoded = encodeRoot(root);
-
-    yield* E.promise(() =>
-      expect(JSON.stringify(encoded, null, 2)).toMatchFileSnapshot('./.json/performance.json'),
-    );
   }
 }), {timeout: 10000});

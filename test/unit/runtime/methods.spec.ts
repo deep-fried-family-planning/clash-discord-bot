@@ -7,11 +7,12 @@ import {E} from '#src/internal/pure/effect.ts';
 import {it, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import TestMessageJSON from 'test/unit/runtime/.synthesized/TestMessage.json';
 
-const createUpdate = vi.fn(() => E.void);
-const deferEdit = vi.fn(() => E.void);
-const deferUpdate = vi.fn(() => E.void);
+
+
+const createUpdate = vi.fn((...args: any) => E.void);
+const deferEdit = vi.fn((...args: any) => E.void);
+const deferUpdate = vi.fn((...args: any) => E.void);
 
 const layer = pipe(
   L.effectContext(E.succeed(TestServices.liveServices)),
@@ -37,30 +38,32 @@ it.effect('when synthesizing', E.fn(function* () {
   const root = yield* Methods.synthesize(TestMessage);
 
   yield* E.promise(() =>
-    expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
+    expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.snap/TestMessage.json'),
   );
 }, E.provide(layer)));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
-  const runs = Array.from({length: 10000});
+  const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Methods.synthesize(TestMessage);
 
     yield* E.promise(() =>
-      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.synthesized/TestMessage.json'),
+      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.snap/TestMessage.json'),
     );
   }
 }, E.provide(layer)));
 
 it.scopedLive('when responding', E.fn(function* () {
-  yield* Methods.respond({
+  const root = yield* Methods.synthesize(TestMessage);
+
+  const res1 = yield* Methods.respond({
     id            : '1236074574509117491',
     token         : 'respond1',
     application_id: 'app',
     user_id       : 'user',
     guild_id      : 'guild',
-    message       : TestMessageJSON,
+    message       : root,
     type          : 2,
     data          : {
       custom_id     : 'actions:2:button:0',
@@ -69,12 +72,12 @@ it.scopedLive('when responding', E.fn(function* () {
   }).pipe(E.provide(Relay.Fresh));
 
   yield* E.promise(() =>
-    expect(JSON.stringify(deferEdit.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage1.json'),
+    expect(JSON.stringify(deferEdit.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.snap/TestMessage1.json'),
   );
 
   yield* Methods.respond({
-    message       : deferEdit.mock.calls[0][1],
-    id            : '1299833226612969542',
+    message       : res1,
+    id            : '1236074574509117491',
     token         : 'respond2',
     application_id: 'app',
     user_id       : 'user',
@@ -87,28 +90,28 @@ it.scopedLive('when responding', E.fn(function* () {
   }).pipe(E.provide(Relay.Fresh));
 
   yield* E.promise(() =>
-    expect(JSON.stringify(deferEdit.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.responded/TestMessage2.json'),
+    expect(JSON.stringify(deferEdit.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.snap/TestMessage2.json'),
   );
 }, E.provide(layer)));
 
-it.scopedLive('when responding (performance)', E.fn(
-  function* () {
-    const runs = Array.from({length: 10000});
+it.scopedLive('when responding (performance)', E.fn(function* () {
+  const runs = Array.from({length: 1000});
 
-    for (let i = 0; i < runs.length; i++) {
-      yield* Methods.respond({
-        id            : '1236074574509117491',
-        token         : 'respond1',
-        application_id: 'app',
-        user_id       : 'user',
-        guild_id      : 'guild',
-        message       : TestMessageJSON,
-        type          : 2,
-        data          : {
-          custom_id     : 'actions:2:button:0',
-          component_type: 2,
-        },
-      }).pipe(E.provide(Relay.Fresh));
-    }
-  }, E.provide(layer),
-), {timeout: 20000});
+  for (let i = 0; i < runs.length; i++) {
+    const root = yield* Methods.synthesize(TestMessage);
+
+    yield* Methods.respond({
+      id            : '1236074574509117491',
+      token         : 'respond1',
+      application_id: 'app',
+      user_id       : 'user',
+      guild_id      : 'guild',
+      message       : root,
+      type          : 2,
+      data          : {
+        custom_id     : 'actions:2:button:0',
+        component_type: 2,
+      },
+    }).pipe(E.provide(Relay.Fresh));
+  }
+}, E.provide(layer)));

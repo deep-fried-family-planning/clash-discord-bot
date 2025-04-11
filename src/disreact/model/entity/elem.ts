@@ -1,8 +1,8 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import { Data, Differ} from 'effect';
+import type {E} from '#src/internal/pure/effect.ts';
+import {Data, Differ, MutableList} from 'effect';
 import {isArray} from 'effect/Array';
 import type {UnknownException} from 'effect/Cause';
 import {isPromise} from 'effect/Predicate';
@@ -291,10 +291,37 @@ export type Ops = Data.TaggedEnum<{
 }>;
 
 export const Ops = Data.taggedEnum<Ops>();
+const empty = Ops.Skip() as Ops;
+const combine = () => {throw new Error();};
 
-export const {diff, patch} = Differ.make({
-  empty  : undefined,
-  diff   : () => Ops.Skip(),
-  combine: () => Ops.Skip(),
-  patch  : () => Ops.Skip(),
+export const isSame = (a: Elem, b: Elem) => {
+  if (a === b) return true;
+  if (isPrim(a) && isPrim(b)) return false;
+  if (isRest(a) && isRest(b)) {
+    if (a.type !== b.type) return false;
+    return true;
+  }
+  if (isTask(a) && isTask(b)) {
+    if (a.type !== b.type) return false;
+    return true;
+  }
+  return false;
+};
+
+export const diffs = Differ.make({
+  empty  : Ops.Skip() as Ops,
+  combine: () => {throw new Error();},
+  diff   : (a, b) => {
+    if (isPrim(a)) {
+
+    }
+  },
+  patch: (p, v) => Ops.$match(p, {
+    Skip   : () => v,
+    Add    : () => {},
+    Delete : () => {},
+    Replace: () => {},
+    Update : () => {},
+    Render : () => {},
+  }),
 });

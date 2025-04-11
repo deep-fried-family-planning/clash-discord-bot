@@ -1,4 +1,4 @@
-import {D, E, S} from '#src/disreact/utils/re-exports.ts';
+import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import type {Cause} from 'effect';
 import {Predicate} from 'effect';
 
@@ -6,20 +6,19 @@ export const TypeId = Symbol('disreact/Trigger');
 
 export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
   message?: string;
-  cause?  : Error;
+  cause?  : unknown;
 }> {}
 
 export * as Trigger from '#src/disreact/model/entity/trigger.ts';
 export type Trigger<A = any> = {
-  id  : string;
-  data: A;
-
-  readonly [TypeId]: undefined;
+  id      : string;
+  data    : A;
+  [TypeId]: typeof TypeId;
 };
 
 export const make = (id: string, data: any): Trigger =>
   ({
-    [TypeId]: undefined,
+    [TypeId]: TypeId,
     id,
     data,
   });
@@ -47,24 +46,38 @@ export const declareHandler = <A, I, R>(data: S.Schema<A, I, R>) =>
     isHandler<typeof data.Type>,
   );
 
-export const apply = <A = any>(handler: Handler<A>, event: Trigger<A>) => {
-  const output = handler(event.data);
-
-  if (!output) {
-    return E.void;
-  }
-
-  if (E.isEffect(output)) {
-    return output as E.Effect<void>;
-  }
-
-  if (Predicate.isPromise(output)) {
-    return E.tryPromise(() => output);
-  }
-
-  return E.fail(
-    new TriggerDefect({
-      message: 'Invalid handler output',
+export const apply = <A = any>(handler: Handler<A>, event: Trigger<A>) =>
+  pipe(
+    E.try({
+      try  : () => handler(event.data),
+      catch: (e) => new TriggerDefect({
+        message: 'Handler threw an exception',
+        cause  : e,
+      }),
     }),
-  ) as E.Effect<void, Cause.UnknownException | TriggerDefect>;
-};
+    E.flatMap((output) => {
+      if (!output) {
+        return E.void;
+      }
+
+      if (E.isEffect(output)) {
+        return output as E.Effect<void>;
+      }
+
+      if (Predicate.isPromise(output)) {
+        return E.tryPromise({
+          try  : () => output,
+          catch: (e) => new TriggerDefect({
+            message: 'Handler threw an exception',
+            cause  : e,
+          }),
+        });
+      }
+
+      return E.fail(
+        new TriggerDefect({
+          message: 'Invalid handler output',
+        }),
+      ) as E.Effect<void, Cause.UnknownException | TriggerDefect>;
+    }),
+  );

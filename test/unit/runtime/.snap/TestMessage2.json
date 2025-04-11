@@ -1,8 +1,12 @@
 {
+  "flags": 64,
   "embeds": [
     {
       "title": "Test Title - NOT markdown",
-      "description": "### H3-# \n@123456\n__$ not a link__"
+      "description": "### H3-# \n@123456\n__$ not a link__",
+      "image": {
+        "url": "https://dffp.org/a/1236074574509117491/respond2/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5B8YFlxSWJydnFTchSExsXFjPtQxKwyoXSBlYeqYkpqUVWBhMAnrQhrg"
+      }
     }
   ],
   "components": [
@@ -10,16 +14,16 @@
       "type": 1,
       "components": [
         {
-          "label": "Start 1",
-          "style": 1,
           "type": 2,
-          "custom_id": "actions:2:button:0"
+          "style": 1,
+          "custom_id": "actions:2:button:0",
+          "label": "Start 2"
         },
         {
-          "label": "Help",
-          "style": 2,
           "type": 2,
-          "custom_id": "actions:2:secondary:1"
+          "style": 2,
+          "custom_id": "actions:2:secondary:1",
+          "label": "Help"
         }
       ]
     },
@@ -27,8 +31,8 @@
       "type": 1,
       "components": [
         {
-          "custom_id": "message:0:select:3",
           "type": 3,
+          "custom_id": "message:0:select:3",
           "options": [
             {
               "value": "1",
@@ -47,6 +51,5 @@
         }
       ]
     }
-  ],
-  "flags": 64
+  ]
 }

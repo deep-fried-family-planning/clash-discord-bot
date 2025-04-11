@@ -120,7 +120,7 @@ export const $useIx = () => {
 
   node.pc++;
 
-  return node.nexus?.request;
+  return node.rehydrant.data;
 };
 
 //
@@ -141,12 +141,12 @@ export const $usePage = (_: FC[]) => {
 
   return {
     next: (next: FC, props: any = {}) => {
-      node.nexus!.next.id = next.name;
-      node.nexus!.next.props = props;
+      node.rehydrant.next.id = next.name;
+      node.rehydrant.next.props = props;
     },
 
     close: () => {
-      node.nexus!.next.id = null;
+      node.rehydrant.next.id = null;
     },
   };
 };

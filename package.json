@@ -12,6 +12,7 @@
   "type": "module",
   "scripts": {
     "pnpmv": "pnpm -v",
+    "bench": "vitest bench",
     "lsp": "typescript-language-server --stdio",
     "merge": "pnpm i --merge-git-branch-lockfiles",
     "proxy": "tsx dev/ws-proxy.ts",

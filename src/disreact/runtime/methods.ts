@@ -1,13 +1,11 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Doken} from '#src/disreact/codec/doken.ts';
-import type {RxTx} from '#src/disreact/codec/rxtx.ts';
-import type {FC} from '#src/disreact/model/entity/fc.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import { Progress} from '#src/disreact/model/Relay.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
-import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import {E} from '#src/disreact/utils/re-exports.ts';
 import {Fiber} from 'effect';
 import {Model} from 'src/disreact/model/Model.ts';
 import {Dokens} from './dokens.ts';
@@ -15,9 +13,6 @@ import {Dokens} from './dokens.ts';
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
 
-/**
- *
- */
 export const synthesize = (id: Elem | FC | string, props?: any) => E.flatMap(Codec, (codec) =>
   Model.makeEntrypoint(id, props).pipe(
     E.map((root) => {
@@ -33,12 +28,8 @@ export const decodeRequestEvent = (input: any) => E.map(Codec, (codec) => {
   return [request, event] as const;
 });
 
-/**
- *
- */
 export const respond = (body: any) => E.gen(function* () {
   const [req, event] = yield* decodeRequestEvent(body);
-
   const relay = yield* Relay;
   const dom = yield* DisReactDOM;
 

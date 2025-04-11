@@ -50,7 +50,6 @@
     </JSON>
     <TypeScriptCodeStyleSettings version="0">
       <option name="JSDOC_INCLUDE_TYPES" value="true" />
-      <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />
       <option name="FORCE_SEMICOLON_STYLE" value="true" />
       <option name="ALIGN_OBJECT_PROPERTIES" value="2" />
       <option name="ALIGN_VAR_STATEMENTS" value="1" />
@@ -156,6 +155,8 @@
     <codeStyleSettings language="TypeScript">
       <option name="RIGHT_MARGIN" value="249" />
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+      <option name="KEEP_BLANK_LINES_IN_CODE" value="3" />
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="3" />
       <option name="BLANK_LINES_AROUND_CLASS" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD" value="0" />
       <option name="BLANK_LINES_AROUND_METHOD_IN_INTERFACE" value="0" />

@@ -11,22 +11,11 @@ export type Rehydrant = {
   id     : string;
   props? : any;
   elem   : Elem;
-  next   : {id: string; props?: any};
+  next   : {id: string | null; props?: any};
   data   : any;
   fibrils: {[id: string]: Fibril};
   stack  : MutableList.MutableList<Elem>;
 };
-
-// const make = (id: string, props?: any) =>
-//   ({
-//     id,
-//     props,
-//     elem   : null as unknown as Elem,
-//     next   : {id},
-//     data   : {},
-//     fibrils: {},
-//     stack  : MutableList.make(),
-//   });
 
 export const makeRehydrant = (src: Source, props?: any): Rehydrant => {
   const elem = Elem.cloneElem(src.elem);
@@ -42,14 +31,6 @@ export const makeRehydrant = (src: Source, props?: any): Rehydrant => {
     fibrils: {},
     stack  : MutableList.make(),
   };
-};
-
-export const fromDecoded = (src: Source, decoded: Decoded) => {
-  const elem = Elem.cloneElem(src.elem);
-  elem.props = decoded.props;
-  elem.id = src.id;
-
-  return;
 };
 
 export const make = (src: Source, props?: any): Rehydrant => {
@@ -123,7 +104,9 @@ export const mountTask = (root: Rehydrant, elem: Elem.Task) => {
 };
 
 export const dismountTask = (root: Rehydrant, elem: Elem.Task) => {
+  // @ts-expect-error temporary
   delete elem.fibril.elem;
+  // @ts-expect-error temporary
   delete elem.fibril.rehydrant;
   delete root.fibrils[elem.id!];
 };

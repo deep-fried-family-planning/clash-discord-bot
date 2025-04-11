@@ -6,7 +6,8 @@ import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fiber, ManagedRuntime } from 'effect';
+import {Fiber, ManagedRuntime, Runtime as Runner, RuntimeFlags} from 'effect';
+import console from 'node:console';
 import {Methods} from './methods';
 
 export * as Runtime from '#src/disreact/runtime/runtime.ts';
@@ -37,22 +38,28 @@ export const makeGlobalRuntimeLayer = (
 
 export type GlobalRuntimeLayer = ReturnType<typeof makeGlobalRuntimeLayer>;
 
+export const makePromise = (layer: GlobalRuntimeLayer) => {
+  const runtime = ManagedRuntime.make(layer);
+};
+
 export const makeRuntime = (layer: GlobalRuntimeLayer) => {
   const runtime = ManagedRuntime.make(layer);
 
   const synthesize = flow(
     Methods.synthesize,
+    E.provide(layer),
     runtime.runFork,
     Fiber.join,
   );
 
-  const respond = flow(
-    Methods.respond,
-    E.provide(Relay.Fresh),
-    E.scoped,
-    runtime.runFork,
-    Fiber.join,
-  );
+  const respond = (input: any) =>
+    pipe(
+      Methods.respond(input),
+      E.scoped,
+      E.provide([layer, Relay.Fresh]),
+      runtime.runFork,
+      Fiber.join,
+    );
 
   return {
     synthesize,

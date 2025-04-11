@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`when closing 1`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "CloseButton",
+          "disabled": undefined,
+          "emoji": undefined,
+          "label": undefined,
+          "style": 2,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+  ],
+  "content": undefined,
+  "embeds": [
+    {
+      "author": undefined,
+      "color": undefined,
+      "description": "Hello World!",
+      "fields": undefined,
+      "footer": undefined,
+      "image": {
+        "url": "https://dffp.org/s/eJxrXpSZssY3tbg4MT3VOSe_OHVpQVF-QfGBZcUlicnZxU0ochNu6iFzrXIhHCsDq8Tkksz8vGIrQyuwjFNpSUl-npXBxAMA3J8n4w",
+      },
+      "title": undefined,
+      "url": undefined,
+    },
+  ],
+  "flags": undefined,
+}
+`;
+
+exports[`when closing 2`] = `null`;
