@@ -1,5 +1,5 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';

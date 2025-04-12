@@ -4,7 +4,6 @@
     "lib"                         : ["esnext"],
     "jsx"                         : "react-jsx",
     "jsxImportSource"             : "src/disreact",
-
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
     "allowJs"                     : true,
@@ -15,23 +14,17 @@
     "allowSyntheticDefaultImports": true,
     "allowArbitraryExtensions"    : true,
     "allowImportingTsExtensions"  : true,
-
-    "baseUrl"                     : "./",
-    "paths"                       : {
-      "#src"  : ["src"],
-      "#src/*": ["src/*"]
-    },
-    "plugins"                     : [
-      {
-        "name": "@effect/language-service"
-      }
-    ],
-
     "strict"                      : true,
     "exactOptionalPropertyTypes"  : true,
     "experimentalDecorators"      : true,
-
     "disableSizeLimit"            : true,
-    "pretty"                      : true
+    "pretty"                      : true,
+    "plugins"                     : [{"name": "@effect/language-service"}],
+    "baseUrl"                     : "./",
+    "paths"                       : {
+      "#src"        : ["src"],
+      "#src/*"      : ["src/*"],
+      "#test/unit/*": ["test/unit/*"]
+    }
   }
 }

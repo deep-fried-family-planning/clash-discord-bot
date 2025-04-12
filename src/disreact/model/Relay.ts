@@ -26,6 +26,7 @@ export class Relay extends E.Service<Relay>()('disreact/Relay', {
         setOutput  : (root: Rehydrant | null) => Deferred.succeed(current, root),
         awaitOutput: () => Deferred.await(current),
         setComplete: () => mailbox.end,
+        fail       : mailbox.fail,
         awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(Progress.Done()))),
         sendStatus : (msg: Relay.Progress) => mailbox.offer(msg),
       }),

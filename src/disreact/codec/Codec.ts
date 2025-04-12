@@ -3,7 +3,7 @@ import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {Intrinsic} from './rest-elem';
 import {Keys} from './rest-elem/keys';

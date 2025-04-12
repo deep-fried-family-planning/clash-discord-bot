@@ -17,8 +17,7 @@ const toStacks = (root: Rehydrant) => Record.map(root.fibrils, (v) => v.stack);
 const hash = flow(Rehydrant.dehydrate, S.encodeSync(Rehydrant.Hydrator));
 
 it.effect('when initial rendering', E.fn(function* () {
-  const registry = yield* Registry;
-  const root = yield* registry.checkout(TestMessage);
+  const root = yield* Registry.checkout(TestMessage);
   yield* Lifecycles.initialize(root);
   expect(snap(root)).toMatchSnapshot();
 }));
@@ -51,16 +50,16 @@ describe('given event.id does not match any node.id', () => {
 
     const event = Trigger.make('buttons:1:button:0', {});
 
-    expect(() => E.runSync(Lifecycles.handleEvent(root, event))).toThrowErrorMatchingSnapshot();
+    expect(() => E.runSync(Lifecycles.handleEvent(root, event) as any)).toThrowErrorMatchingSnapshot();
   }));
 });
 
 it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
   const runs = Array.from({length: 10000});
-  const registry = yield* Registry;
+  // const registry = yield* Registry;
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* registry.checkout(TestMessage);
+    const root = yield* Registry.checkout(TestMessage);
     yield* Lifecycles.initialize(root);
     yield* Lifecycles.hydrate(root);
 

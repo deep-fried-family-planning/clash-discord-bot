@@ -3,12 +3,14 @@ import {it} from '@effect/vitest';
 import {Fiber} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
 import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
-import {makeTestRuntime, Snap} from 'test/unit/scenarios/util.ts';
-import {SNAP} from '../scenarios/snapkey';
+import {makeTestRuntime, Snap} from 'test/unit/util.ts';
+import {SNAP} from 'test/unit/snapkey.ts';
 
 
 
 const runtime = makeTestRuntime([TestMessage]);
+'eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5B8YFlxSWJydnFTchSExsXFjPsQxKwyoXSBlYeqYkpqUVWBhMAnnIhrA';
+'eJy7x8C8KDNldUhqcYlvanFxYnrq0oKi_ILiKwwMy4pLEpOzi-8xMCFLT7zHwLiwmGEfkpBVLpQ2sPJITUxJLbIymAAAQUUi2g';
 
 describe('given function component', () => {
   it.effect('when synthesizing', E.fn(function* () {

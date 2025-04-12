@@ -3,7 +3,7 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
 import {Fiber} from 'effect';

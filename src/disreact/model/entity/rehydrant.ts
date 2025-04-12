@@ -5,6 +5,9 @@ import {decode, encode} from '@msgpack/msgpack';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
 import type {Source} from './source';
+import {MsgPack} from '@effect/platform';
+
+
 
 export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 export type Rehydrant = {
@@ -55,18 +58,22 @@ export const Decoded = S.Struct({
   stacks: S.Record({key: S.String, value: Fibril.Chain}),
 });
 
-export const Hydrator = S.transform(Encoded, Decoded, {
-  encode: (dry) => {
-    const pack = encode(dry);
-    const pako = deflate(pack);
-    return Buffer.from(pako).toString('base64url');
+export const Hydrator = S.transform(
+  Encoded,
+  Decoded,
+  {
+    encode: (dry) => {
+      const pack = encode(dry);
+      const pako = deflate(pack);
+      return Buffer.from(pako).toString('base64url');
+    },
+    decode: (hash) => {
+      const buff = Buffer.from(hash, 'base64url');
+      const pako = inflate(buff);
+      return decode(pako) as any;
+    },
   },
-  decode: (hash) => {
-    const buff = Buffer.from(hash, 'base64url');
-    const pako = inflate(buff);
-    return decode(pako) as any;
-  },
-});
+);
 
 export const dehydrate = (rehydrant: Rehydrant): Decoded => {
   return {

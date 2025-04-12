@@ -1,15 +1,15 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {Runtime} from '#src/disreact/runtime/runtime';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
+import {TestMessage} from '#test/unit/components/test-message.tsx';
+import {testmessage} from '#test/unit/runtime/methods.testdata.ts';
+import {SNAP} from '#test/unit/snapkey.ts';
+import {Snap} from '#test/unit/util.ts';
 import {it, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
-import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
-import { Snap } from 'test/unit/scenarios/util.ts';
-import { SNAP } from '../scenarios/snapkey';
 
 
 
@@ -40,7 +40,7 @@ const layer = pipe(
 it.effect('when synthesizing', E.fn(function* () {
   const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
 
-  yield*Snap.JSON(root, SNAP.TEST_MESSAGE);
+  yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
 }));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
@@ -49,7 +49,7 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
 
-    yield*Snap.JSON(root, SNAP.TEST_MESSAGE);
+    yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
   }
 }));
 

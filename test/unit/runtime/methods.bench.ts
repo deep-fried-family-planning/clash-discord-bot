@@ -1,5 +1,5 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {L, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -8,7 +8,7 @@ import {bench, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
 import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
-import {makeTestRuntime} from 'test/unit/scenarios/util.ts';
+import {makeTestRuntime} from 'test/unit/util.ts';
 
 
 

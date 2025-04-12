@@ -1,7 +1,7 @@
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {Arr, Data, E, Hash, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import { Source } from './entity/source';
 

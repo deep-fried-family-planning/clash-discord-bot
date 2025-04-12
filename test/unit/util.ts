@@ -5,8 +5,8 @@ import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';
@@ -73,7 +73,7 @@ export const makeTestRequest = (data: any, message: any) => {
   };
 };
 
-export * as Snap from './util.ts';
+export * as Snap from '#test/unit/util.ts';
 export type Snap = never;
 
 export const key = (name: string, post?: string) =>

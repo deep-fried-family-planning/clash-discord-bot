@@ -4,12 +4,13 @@ import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {FiberMap} from 'effect';
+import {runMain} from '@effect/platform-node/NodeRuntime';
+import {Fiber, FiberMap} from 'effect';
 import {Lifecycles} from './lifecycles';
 
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
-    E.flatMap(Registry, (registry) => registry.checkout(key, props)),
+    Registry.checkout(key, props),
     E.tap((root) => Lifecycles.initialize(root)),
   );
 
@@ -21,21 +22,27 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
         Lifecycles.hydrate(original),
         E.tap(() => Lifecycles.handleEvent(original, event)),
         E.tap(() => Lifecycles.rerender(original)),
-        E.tap(() => E.tap(Relay, (relay) => relay.setOutput(original))),
-        E.fork,
+        E.flatMap(() =>
+          Relay.use((relay) =>
+            pipe(
+              relay.setOutput(original),
+            ),
+          ),
+        ),
+        E.forkWithErrorHandler((e) => E.die(e as Error)),
       ),
     ),
     E.flatMap((original) =>
-      E.flatMap(Relay, (relay) =>
+      Relay.use((relay) =>
         pipe(
-          relay.awaitOutput(),
+          Relay.use((relay) => relay.awaitOutput()),
           E.tap((output) => {
             if (output === null || output.id === original.id) {
               return;
             }
             return Lifecycles.initialize(output);
           }),
-          E.tap(() => relay.setComplete()),
+          E.tap(() => Relay.use((relay) => relay.setComplete())),
         ),
       ),
     ),

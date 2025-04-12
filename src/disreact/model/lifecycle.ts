@@ -31,13 +31,9 @@ export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((disp
       Fibril.λ.clear();
       return E.as(dispatcher.unlock, children);
     }),
-    E.catchAll((err) => {
-      Fibril.λ.clear();
-      return E.fail(err);
-    }),
     E.catchAllDefect((err) => {
       Fibril.λ.clear();
-      return E.die(err);
+      return E.fail(err as Error);
     }),
     E.map((children) => {
       self.fibril.pc = 0;
@@ -87,6 +83,35 @@ export const invoke = (root: Rehydrant, elem: Elem.Rest, event: Trigger) =>
       return same(root);
     }),
   );
+
+export const part = (elem: Elem.Rest) => {
+  if (elem.type === 'modal') {
+    return pipe(
+      Relay.use((relay) => relay.sendStatus(
+        Progress.Part({
+          type: 'modal',
+        }),
+      )),
+      E.as(true),
+    );
+  }
+
+  if (elem.type === 'message') {
+    return pipe(
+      Relay.use((relay) =>
+        relay.sendStatus(
+          Progress.Part({
+            type       : 'message',
+            isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+          }),
+        ),
+      ),
+      E.as(true),
+    );
+  }
+
+  return E.succeed(false);
+};
 
 const close = Relay.use((relay) =>
   pipe(

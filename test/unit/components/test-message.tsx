@@ -1,7 +1,7 @@
 import {Header} from '#src/discord/components/header.tsx';
 import {useState} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {E} from '#src/disreact/utils/re-exports';
 
 export const TestMessage: FC = () => E.gen(function* () {
   const [num, setNum] = useState(0);

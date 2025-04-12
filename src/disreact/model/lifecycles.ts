@@ -26,12 +26,14 @@ const relayPartial = (elem: Elem.Rest) => {
 
   if (elem.type === 'message') {
     return pipe(
-      Relay.use((relay) => relay.sendStatus(
-        Progress.Part({
-          type       : 'message',
-          isEphemeral: elem.props.display === 'ephemeral' ? true : false,
-        }),
-      )),
+      Relay.use((relay) =>
+        relay.sendStatus(
+          Progress.Part({
+            type       : 'message',
+            isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+          }),
+        ),
+      ),
       E.as(true),
     );
   }
@@ -99,7 +101,7 @@ export const initializeSubtree = (root: Rehydrant, elem: Elem) => {
       }
       else if (!hasSentPartial) {
         return pipe(
-          relayPartial(elem),
+          Lifecycle.part(elem),
           E.map((did) => {
             hasSentPartial = did;
             loopNodes(stack, root, elem);

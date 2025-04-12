@@ -1,5 +1,5 @@
 import type {Doken} from '#src/disreact/codec/doken.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cache, type Cause, Data, Exit, pipe} from 'effect';
