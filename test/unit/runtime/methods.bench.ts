@@ -7,7 +7,8 @@ import {E} from '#src/internal/pure/effect.ts';
 import {bench, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {makeTestRuntime} from 'test/unit/scenarios/util.tsx';
+import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
+import {makeTestRuntime} from 'test/unit/scenarios/util.ts';
 
 
 
@@ -44,19 +45,19 @@ describe('synthesize', () => {
       E.provide(layer),
       E.runPromise,
     );
-  }, {iterations: 1000});
+  });
 
   bench('runtime', async () => {
     await pipe(
       runtime.synthesize(TestMessage),
       E.runPromise,
     );
-  }, {iterations: 1000});
+  });
 });
 
 const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage));
 
-describe('synthesize and then respond', () => {
+describe('respond', () => {
   bench('scoped', async () => {
     await pipe(
       Methods.respond({
@@ -65,7 +66,7 @@ describe('synthesize and then respond', () => {
         application_id: 'app',
         user_id       : 'user',
         guild_id      : 'guild',
-        message       : runtimeRoot,
+        message       : testmessage,
         type          : 2,
         data          : {
           custom_id     : 'actions:2:button:0',
@@ -75,7 +76,7 @@ describe('synthesize and then respond', () => {
       E.provide(layer),
       E.runPromise,
     );
-  }, {iterations: 1000});
+  });
 
   bench('runtime', async () => {
     await pipe(
@@ -85,7 +86,7 @@ describe('synthesize and then respond', () => {
         application_id: 'app',
         user_id       : 'user',
         guild_id      : 'guild',
-        message       : runtimeRoot,
+        message       : testmessage,
         type          : 2,
         data          : {
           custom_id     : 'actions:2:button:0',
@@ -94,5 +95,5 @@ describe('synthesize and then respond', () => {
       }),
       E.runPromise,
     );
-  }, {iterations: 1000});
+  });
 });

@@ -3,8 +3,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import {defineConfig} from 'vitest/config';
 
 
-
 export default defineConfig({
+  appType: 'custom',
   plugins: [tsconfigPaths()],
   test   : {
     globals            : true,
@@ -27,12 +27,6 @@ export default defineConfig({
       outputJson: './vitest.bench.json',
     },
 
-    resolveSnapshotPath: (testPath, snapExtension, context) => {
-      const parsed = path.parse(testPath);
-
-      return `${parsed.dir}/.snap/${parsed.name}${snapExtension}`;
-    },
-
     coverage: {
       provider        : 'v8',
       reporter        : ['lcov'],
@@ -46,6 +40,12 @@ export default defineConfig({
         functions : 0,
         lines     : 0,
       },
+    },
+
+    resolveSnapshotPath: (testPath, snapExtension, context) => {
+      const parsed = path.parse(testPath);
+
+      return `${parsed.dir}/.snap/${parsed.name}${snapExtension}`;
     },
   },
 });

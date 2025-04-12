@@ -1,15 +1,7 @@
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {FiberMap, FiberSet} from 'effect';
-import type { Fibril } from './entity/fibril';
 import {Hooks} from './hooks';
 
-export declare namespace Dispatcher {
-  export type Key = string;
-}
 
-const CALLER = {current: undefined as undefined | Fibril};
-
-const SINGLETON = {current: null as unknown as Fibril};
 
 export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
   effect: pipe(

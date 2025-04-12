@@ -1,9 +1,11 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type {RegistryDefect} from '#src/disreact/model/Registry.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe, type RT} from '#src/disreact/utils/re-exports.ts';
+import type {Cause} from 'effect';
 import {Fibril} from './entity/fibril.ts';
 import {Side} from './entity/side.ts';
 import {Trigger} from './entity/trigger.ts';
@@ -54,53 +56,63 @@ export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((disp
 
       return filtered;
     }),
-    E.tap(() => {
-      if (self.fibril.queue.length) {
-        const effects = Array<RT<typeof Side.apply>>(self.fibril.queue.length);
-
-        for (let i = 0; i < effects.length; i++) {
-          effects[i] = Side.apply(self.fibril.queue[i]);
-        }
-
-        return E.all(effects);
-      }
-    }),
-    E.tap(() => Relay.use(() => {})),
+    E.tap(() => renderEffect(root, self.fibril) as E.Effect<void, RegistryDefect | Cause.UnknownException, Registry | Relay>),
   ),
 );
 
-export const invoke = (root: Rehydrant, elem: Elem.Rest, event: Trigger) => Relay.use((relay) =>
+const renderEffect = (root: Rehydrant, fibril: Fibril) => {
+  if (fibril.queue.length) {
+    const effects = Array<ReturnType<typeof Side.apply>>(fibril.queue.length);
+
+    for (let i = 0; i < effects.length; i++) {
+      effects[i] = Side.apply(fibril.queue[i]);
+    }
+
+    return pipe(
+      E.all(effects),
+      E.tap(() => {
+        if (root.next.id === null) return close;
+        if (root.next.id !== root.id) return next(root);
+      }),
+    );
+  }
+};
+
+export const invoke = (root: Rehydrant, elem: Elem.Rest, event: Trigger) =>
   pipe(
     Trigger.apply(elem.handler, event),
     E.tap(() => {
-      if (root.next.id === null) {
-        return E.zip(
-          relay.setOutput(null),
-          relay.sendStatus(Progress.Close()),
-        );
-      }
+      if (root.next.id === null) return close;
+      if (root.next.id !== root.id) return next(root);
+      return same(root);
+    }),
+  );
 
-      if (root.next.id !== root.id) {
-        const status = Progress.Next({
+const close = Relay.use((relay) =>
+  pipe(
+    relay.setOutput(null),
+    E.tap(() => relay.sendStatus(Progress.Close())),
+  ),
+);
+
+const next = (root: Rehydrant) => Relay.use((relay) => {
+  return pipe(
+    Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
+    E.tap((nextRoot) => relay.setOutput(nextRoot)),
+    E.tap(() =>
+      relay.sendStatus(
+        Progress.Next({
           id   : root.next.id!,
           props: root.next.props,
-        });
+        }),
+      ),
+    ),
+  );
+});
 
-        return pipe(
-          Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
-          E.tap((nextRoot) =>
-            E.zip(
-              relay.setOutput(nextRoot),
-              relay.sendStatus(status),
-            ),
-          ),
-        );
-      }
-
-      return E.zip(
-        relay.setOutput(root),
-        relay.sendStatus(Progress.Same()),
-      );
-    }),
+const same = (root: Rehydrant) => Relay.use((relay) =>
+  pipe(
+    relay.setOutput(root),
+    E.tap(() => relay.sendStatus(Progress.Same())),
   ),
 );

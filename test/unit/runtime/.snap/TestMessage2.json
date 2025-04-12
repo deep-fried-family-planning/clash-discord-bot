@@ -2,11 +2,15 @@
   "flags": 64,
   "embeds": [
     {
-      "title": "Test Title - NOT markdown",
-      "description": "### H3-# \n@123456\n__$ not a link__",
+      "title": "Omni Board",
+      "description": "V2 - JSX Pragma",
       "image": {
         "url": "https://dffp.org/a/1236074574509117491/respond2/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5B8YFlxSWJydnFTchSExsXFjPtQxKwyoXSBlYeqYkpqUVWBhMAnrQhrg"
       }
+    },
+    {
+      "title": "Test Title - NOT markdown",
+      "description": "### H3-# \n@123456\n__$ not a link__"
     }
   ],
   "components": [

@@ -7,6 +7,9 @@ import {E} from '#src/internal/pure/effect.ts';
 import {it, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
+import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
+import { Snap } from 'test/unit/scenarios/util.ts';
+import { SNAP } from '../scenarios/snapkey';
 
 
 
@@ -35,47 +38,39 @@ const layer = pipe(
 );
 
 it.effect('when synthesizing', E.fn(function* () {
-  const root = yield* Methods.synthesize(TestMessage);
+  const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
 
-  yield* E.promise(() =>
-    expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.snap/TestMessage.json'),
-  );
-}, E.provide(layer)));
+  yield*Snap.JSON(root, SNAP.TEST_MESSAGE);
+}));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
   const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Methods.synthesize(TestMessage);
+    const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
 
-    yield* E.promise(() =>
-      expect(JSON.stringify(root, null, 2)).toMatchFileSnapshot('./.snap/TestMessage.json'),
-    );
+    yield*Snap.JSON(root, SNAP.TEST_MESSAGE);
   }
-}, E.provide(layer)));
+}));
 
 it.scopedLive('when responding', E.fn(function* () {
-  const root = yield* Methods.synthesize(TestMessage);
-
-  const res1 = yield* Methods.respond({
+  const req1 = {
     id            : '1236074574509117491',
     token         : 'respond1',
     application_id: 'app',
     user_id       : 'user',
     guild_id      : 'guild',
-    message       : root,
+    message       : testmessage,
     type          : 2,
     data          : {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  }).pipe(E.provide(Relay.Fresh));
+  };
 
-  yield* E.promise(() =>
-    expect(JSON.stringify(deferEdit.mock.calls[0][1], null, 2)).toMatchFileSnapshot('./.snap/TestMessage1.json'),
-  );
+  const res1 = yield* Methods.respond(req1).pipe(E.provide(Relay.Fresh), E.provide(layer));
 
-  yield* Methods.respond({
+  const req2 = {
     message       : res1,
     id            : '1236074574509117491',
     token         : 'respond2',
@@ -87,31 +82,30 @@ it.scopedLive('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  }).pipe(E.provide(Relay.Fresh));
+  };
 
-  yield* E.promise(() =>
-    expect(JSON.stringify(deferEdit.mock.calls[1][1], null, 2)).toMatchFileSnapshot('./.snap/TestMessage2.json'),
-  );
-}, E.provide(layer)));
+  yield* Methods.respond(req2).pipe(E.provide(Relay.Fresh), E.provide(layer));
+
+  yield* Snap.JSON(deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
+  yield* Snap.JSON(deferEdit.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
+}));
 
 it.scopedLive('when responding (performance)', E.fn(function* () {
   const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Methods.synthesize(TestMessage);
-
     yield* Methods.respond({
       id            : '1236074574509117491',
       token         : 'respond1',
       application_id: 'app',
       user_id       : 'user',
       guild_id      : 'guild',
-      message       : root,
+      message       : testmessage,
       type          : 2,
       data          : {
         custom_id     : 'actions:2:button:0',
         component_type: 2,
       },
-    }).pipe(E.provide(Relay.Fresh));
+    }).pipe(E.provide(Relay.Fresh), E.provide(layer));
   }
-}, E.provide(layer)));
+}));

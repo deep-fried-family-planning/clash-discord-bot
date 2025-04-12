@@ -1,7 +1,7 @@
 import {usePage} from '#src/disreact/index.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
-import {makeTestRuntime} from 'test/unit/scenarios/util.tsx';
+import {makeTestRuntime} from 'test/unit/scenarios/util.ts';
 
 
 

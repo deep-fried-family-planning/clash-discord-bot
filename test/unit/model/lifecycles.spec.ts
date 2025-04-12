@@ -1,15 +1,27 @@
 import {encodeRoot} from '#src/disreact/codec/Codec.ts';
-import { Elem } from '#src/disreact/model/entity/elem';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
+import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {describe, expect} from '@effect/vitest';
-import {pipe, Record} from 'effect';
+import {Record} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {expectJSON, it} from 'test/unit/components/TestRegistry.tsx';
+import {it} from 'test/unit/components/TestRegistry.tsx';
 
 
+
+const json = (input: any) => JSON.stringify(input, null, 2);
+const snap = (root: Rehydrant) => json(encodeRoot(root));
+const toStacks = (root: Rehydrant) => Record.map(root.fibrils, (v) => v.stack);
+const hash = flow(Rehydrant.dehydrate, S.encodeSync(Rehydrant.Hydrator));
+
+it.effect('when initial rendering', E.fn(function* () {
+  const registry = yield* Registry;
+  const root = yield* registry.checkout(TestMessage);
+  yield* Lifecycles.initialize(root);
+  expect(snap(root)).toMatchSnapshot();
+}));
 
 it.effect('when dispatching an event', E.fn(function* () {
   const registry = yield* Registry;
@@ -17,36 +29,17 @@ it.effect('when dispatching an event', E.fn(function* () {
 
   yield* Lifecycles.initialize(root);
 
+  expect(toStacks(root)).toMatchSnapshot('initial stacks');
+  expect(hash(root)).toMatchSnapshot('initial hash');
+  expect(snap(root)).toMatchSnapshot('initial encoded');
+
   const event = Trigger.make('actions:2:button:0', {});
-
-  expect(Record.map(root.fibrils, (v) => v.stack)).toMatchInlineSnapshot(`
-    {
-      "TestMessage": [
-        {
-          "s": 0,
-        },
-      ],
-      "TestMessage:message:0:Header:0": [],
-    }
-  `);
-
-  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
-
   yield* Lifecycles.handleEvent(root, event);
   yield* Lifecycles.rerender(root);
 
-  expect(Record.map(root.fibrils, (v) => v.stack)).toMatchInlineSnapshot(`
-    {
-      "TestMessage": [
-        {
-          "s": 1,
-        },
-      ],
-      "TestMessage:message:0:Header:0": [],
-    }
-  `);
-
-  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
+  expect(toStacks(root)).toMatchSnapshot('rerendered stacks');
+  expect(hash(root)).toMatchSnapshot('rerendered hash');
+  expect(snap(root)).toMatchSnapshot('rerendered encoded');
 }));
 
 describe('given event.id does not match any node.id', () => {
@@ -58,22 +51,9 @@ describe('given event.id does not match any node.id', () => {
 
     const event = Trigger.make('buttons:1:button:0', {});
 
-    yield* pipe(
-      Lifecycles.handleEvent(root, event),
-      E.catchAll((err) => {
-        expect(err).toMatchInlineSnapshot(`[Error: Event not handled]`);
-        return E.void;
-      }),
-    );
+    expect(() => E.runSync(Lifecycles.handleEvent(root, event))).toThrowErrorMatchingSnapshot();
   }));
 });
-
-it.effect('when rendering an initial tree', E.fn(function* () {
-  const registry = yield* Registry;
-  const root = yield* registry.checkout(TestMessage);
-  yield* Lifecycles.initialize(root);
-  expect(JSON.stringify(encodeRoot(root), null, 2)).toMatchSnapshot();
-}));
 
 it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
   const runs = Array.from({length: 10000});
@@ -81,16 +61,13 @@ it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* registry.checkout(TestMessage);
-
     yield* Lifecycles.initialize(root);
-
     yield* Lifecycles.hydrate(root);
 
     const event = Trigger.make('actions:2:button:0', {});
 
     yield* Lifecycles.handleEvent(root, event);
     yield* Lifecycles.rerender(root);
-
-    const encoded = encodeRoot(root);
+    encodeRoot(root);
   }
 }), {timeout: 10000});

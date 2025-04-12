@@ -12,6 +12,8 @@ import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';
 import {Redacted} from 'effect';
 
+
+
 const makeStub = (random = true) =>
   vi.fn(() => random
     ? pipe(
@@ -56,4 +58,33 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
     ...makeRuntime(layer),
     layer: layer,
   } as const;
+};
+
+export const makeTestRequest = (data: any, message: any) => {
+  return {
+    id            : '1236074574509117491',
+    token         : 'respond1',
+    type          : 2,
+    data          : data,
+    message       : message,
+    application_id: 'app',
+    user_id       : 'user',
+    guild_id      : 'guild',
+  };
+};
+
+export * as Snap from './util.ts';
+export type Snap = never;
+
+export const key = (name: string, post?: string) =>
+  post
+    ? `./.snap/${name}${post}.json`
+    : `./.snap/${name}.json`;
+
+export const JSON = (input: any, file: string, post?: string) => {
+  const serial = global.JSON.stringify(input, null, 2);
+
+  return E.promise(async () =>
+    await expect(serial).toMatchFileSnapshot(key(file, post)),
+  );
 };

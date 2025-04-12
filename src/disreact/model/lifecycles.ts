@@ -9,7 +9,6 @@ import {MutableList} from 'effect';
 import {Lifecycle} from './lifecycle';
 
 
-
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
 export type Lifecycles = never;
 
@@ -277,7 +276,10 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           Props.isEqual(curr.props, rend.props) && // Task Changed
           Fibril.isSameStrand(curr.fibril)
         ) {
-          ML.append(stack, [curr, rend.nodes]);
+          // console.log('same');
+          // console.log(curr.id);
+          // console.log(rend.type);
+          // ML.append(stack, [curr, rend.nodes]);
         }
         else {
           const rerendered = yield* Lifecycle.render(root, curr);

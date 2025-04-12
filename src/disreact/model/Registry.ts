@@ -64,7 +64,7 @@ const make = pipe(
       const src = STORE.get(id);
 
       if (!src) {
-        return new RegistryDefect({why: `Unregistered Source: ${key}`});
+        return E.fail(new RegistryDefect({why: `Unregistered Source: ${key}`}));
       }
 
       return E.succeed(Rehydrant.make(src, props));

@@ -9,6 +9,18 @@ import {Intrinsic} from './rest-elem';
 import {Keys} from './rest-elem/keys';
 import {RxTx} from './rxtx';
 
+export const encodeSingleElement = (elem: Elem.Rest, args: any) => {
+  const encoded = Intrinsic.ENC[elem.type](elem, args);
+
+  for (const key in Object.keys(encoded)) {
+    if (key === undefined) {
+      delete encoded[key];
+    }
+  }
+
+  return encoded;
+};
+
 export const encodeParamsResponse = S.encodeSync(RxTx.ParamsResponse);
 export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 
@@ -30,10 +42,9 @@ export const encodeRoot = (root: Rehydrant): RxTx.ParamsResponse['data'] => {
       else if (args.has(c as any)) {
         if (Elem.isRest(c)) {
           const norm = Intrinsic.NORM[c.type as any];
-          const encode = Intrinsic.ENC[c.type];
           const arg = args.get(c)!;
           acc[norm] ??= [];
-          acc[norm].push(encode(c, arg));
+          acc[norm].push(encodeSingleElement(c, arg));
         }
         else {
           //
@@ -42,11 +53,10 @@ export const encodeRoot = (root: Rehydrant): RxTx.ParamsResponse['data'] => {
       else if (!c.nodes.length) {
         if (Elem.isRest(c)) {
           const norm = Intrinsic.NORM[c.type as any];
-          const encode = Intrinsic.ENC[c.type];
           const arg = {} as any;
           args.set(c, arg);
           acc[norm] ??= [];
-          acc[norm].push(encode(c, arg));
+          acc[norm].push(encodeSingleElement(c, arg));
         }
         else {
           //
