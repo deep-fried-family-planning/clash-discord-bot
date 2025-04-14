@@ -1,65 +1,40 @@
-/* eslint-disable @typescript-eslint/no-namespace,@typescript-eslint/no-redundant-type-constituents */
-import type {Component, FEC} from '#src/disreact/codec/element/function-element.ts';
-import type {IntrinsicMap} from '#src/disreact/codec/element/intrinsic/index.ts';
-import {dsx, dsxs, fragment} from '#src/disreact/model/dsx/dsx.ts';
-import type {Pragma} from '#src/disreact/model/lifecycle.ts';
+import type {IntrinsicTuplesMapped} from '#src/disreact/codec/rest-elem/index.ts';
+import {Elem} from '#src/disreact/model/entity/elem.ts';
 
 
-
-export const Fragment = fragment;
-export const jsx      = dsx;
-export const jsxs     = dsxs;
-export const jsxDEV   = dsx;
-
-export type {
-  FEC as FC,
-};
-
-declare global {
-  export namespace DisReact {
-    type FC<P = any> = FEC<P>;
-  }
-
-  export namespace DSX {
-    type FC<P = any, R = JSX.Element> = Component<P, R>;
-  }
-}
-
-
+export const Fragment = Elem.Frag;
+export const jsx = Elem.jsx;
+export const jsxs = Elem.jsxs;
+export const jsxDEV = Elem.jsxDEV;
 
 export declare namespace JSX {
   type ElementType =
-    | Component<any, Element>
     | keyof IntrinsicElements
-    | string
-    | boolean
     | null
-    | undefined;
+    | undefined
+    | string
+    | number
+    | boolean
+    | symbol
+    | bigint
+    | ((props?: any) => ElementType | Element);
 
-  type Element = Pragma;
-
-  interface LibraryManagedAttributes {
-    displayName?: string;
-    ref?        : any;
-    key?        : string | number;
-    children?   : any;
-    isSync?     : boolean | undefined;
-    isAsync?    : boolean | undefined;
-    isEffect?   : boolean | undefined;
-    isMemo?     : boolean | undefined;
-  }
+  type Element = Elem;
 
   interface ElementAttributesProperty {
-    props: any;
+    props?: {};
   }
+
   interface ElementChildrenAttribute {
-    children: any;
+    children?: {};
   }
+
   interface IntrinsicAttributes {
-    children?: any | any[];
+
   }
+
   interface IntrinsicClassAttributes {
-    children: any[];
   }
-  interface IntrinsicElements extends IntrinsicMap {}
+
+  interface IntrinsicElements extends IntrinsicTuplesMapped {}
 }

@@ -2,22 +2,29 @@
   "compilerOptions": {
     "target"                      : "esnext",
     "lib"                         : ["esnext"],
-    "module"                      : "esnext",
-    "moduleResolution"            : "bundler",
     "jsx"                         : "react-jsx",
     "jsxImportSource"             : "src/disreact",
-    "isolatedModules"             : true,
+    "module"                      : "esnext",
+    "moduleResolution"            : "bundler",
+    "allowJs"                     : true,
+    "resolveJsonModule"           : true,
     "esModuleInterop"             : true,
-    "allowSyntheticDefaultImports": true,
     "verbatimModuleSyntax"        : true,
+    "isolatedModules"             : true,
+    "allowSyntheticDefaultImports": true,
     "allowArbitraryExtensions"    : true,
     "allowImportingTsExtensions"  : true,
     "strict"                      : true,
     "exactOptionalPropertyTypes"  : true,
+    "experimentalDecorators"      : true,
+    "disableSizeLimit"            : true,
+    "pretty"                      : true,
+    "plugins"                     : [{"name": "@effect/language-service"}],
     "baseUrl"                     : "./",
     "paths"                       : {
-      "#src"  : ["src"],
-      "#src/*": ["src/*"]
+      "#src"        : ["src"],
+      "#src/*"      : ["src/*"],
+      "#test/unit/*": ["test/unit/*"]
     }
   }
 }

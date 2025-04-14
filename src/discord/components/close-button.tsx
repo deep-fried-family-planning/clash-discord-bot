@@ -8,7 +8,9 @@ export const CloseButton = () => {
 
   const [num, setNum] = useState(0);
 
-  useEffect(() => console.log('USE_EFFECT_2'));
+  useEffect(() => {
+    console.log('USE_EFFECT_2');
+  });
 
   return (
     <button
@@ -16,5 +18,5 @@ export const CloseButton = () => {
       label={`Close ${num}`}
       onclick={() => setNum(num + 1)}
     />
-  )
-}
+  );
+};

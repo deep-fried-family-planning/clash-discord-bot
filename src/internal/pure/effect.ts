@@ -7,6 +7,7 @@ export {
   Console as CSL,
   Data as D,
   DateTime as DT,
+  Duration as DR,
   Redacted as RDT,
   Config as CFG,
   Context as CTX,
@@ -25,8 +26,10 @@ export {
   Option as O,
   Option as OPT,
   Equal as EQ,
-
+  Deferred as DFR,
+  Either as LR,
   Cron,
+  FiberMap as FM,
 
   pipe,
   pipe as p,

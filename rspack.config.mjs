@@ -1,6 +1,6 @@
-import {defineConfig} from '@rspack/cli';
-import {resolve} from 'node:path';
-import tsconfig from './tsconfig.json' with {type: 'json'};
+import {defineConfig} from '@rspack/cli'
+import {resolve} from 'node:path'
+import tsconfig from './tsconfig.json' with {type: 'json'}
 
 
 export default defineConfig({
@@ -18,14 +18,15 @@ export default defineConfig({
   },
 
   entry: {
-    'dev_ws/index'       : {import: 'dev/dev_ws.ts'},
-    'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
-    'ix_api/index'       : {import: 'src/ix_api.ts'},
-    'ix_menu/index'      : {import: 'src/ix_menu.ts'},
-    'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
-    'ix_slash/index'     : {import: 'src/ix_slash.ts'},
-    'poll/index'         : {import: 'src/poll.ts'},
-    'task/index'         : {import: 'src/task.ts'},
+    'test/index': {import: 'src/disreact/model/element/unreal.ts'},
+    // 'dev_ws/index'       : {import: 'dev/dev_ws.ts'},
+    // 'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
+    // 'ix_api/index'       : {import: 'src/ix_api.ts'},
+    // 'ix_menu/index'      : {import: 'src/ix_menu.ts'},
+    // 'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
+    // 'ix_slash/index'     : {import: 'src/ix_slash.ts'},
+    // 'poll/index'         : {import: 'src/poll.ts'},
+    // 'task/index'         : {import: 'src/task.ts'},
   },
 
   output: {
@@ -94,7 +95,13 @@ export default defineConfig({
     }],
   },
 
-  devtool    : 'source-map',
+  devtool: 'source-map',
+
+  stats: {
+    preset     : 'errors-only',
+    entrypoints: true,
+    performance: true,
+    children   : true,
+  },
   performance: {hints: 'warning'},
-  stats      : {preset: 'errors-only', entrypoints: true, performance: true, children: true},
-});
+})

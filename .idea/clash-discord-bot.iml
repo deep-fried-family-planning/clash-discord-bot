@@ -2,15 +2,19 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test/fullstack" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/test/integration" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/.husky/_" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/dictionaries" />
-      <excludeFolder url="file://$MODULE_DIR$/node_modules" />
       <excludeFolder url="file://$MODULE_DIR$/terraform/.terraform" />
+      <excludeFolder url="file://$MODULE_DIR$/coverage" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
+    <content url="file://$MODULE_DIR$/node_modules/effect/src" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

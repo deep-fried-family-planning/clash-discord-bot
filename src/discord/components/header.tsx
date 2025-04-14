@@ -1,7 +1,7 @@
 type Props = {
-  title: string;
+  title      : string;
   description: string;
-}
+};
 
 export const Header = (props: Props) => {
   return (

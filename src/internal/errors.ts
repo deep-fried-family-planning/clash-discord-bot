@@ -15,7 +15,7 @@ export class ClashperkError extends D.TaggedError('DeepFryerClashError')<{
 }
 
 
-export const clashErrorFromUndefined = (e: unknown) => new ClashperkError({original: e as Error});
+export const clashErrorFromUndefined = (e: unknown) => E.fail(new ClashperkError({original: e as Error}));
 
 
 export class DeepFryerUnknownError extends D.TaggedError('DeepFryerUnknownError')<{
