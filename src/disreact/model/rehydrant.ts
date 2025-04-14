@@ -1,52 +1,10 @@
 import {Elem} from '#src/disreact/model/entity/elem.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
-import type {Source} from './source';
-import {MsgPack} from '@effect/platform';
-
-
-
-export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-export type Rehydrant = {
-  id     : string;
-  props? : any;
-  elem   : Elem;
-  next   : {id: string | null; props?: any};
-  data   : any;
-  fibrils: {[id: string]: Fibril};
-  stack  : MutableList.MutableList<Elem>;
-};
-
-export const makeRehydrant = (src: Source, props?: any): Rehydrant => {
-  const elem = Elem.cloneElem(src.elem);
-  elem.props = props;
-  elem.id = src.id;
-
-  return {
-    id     : src.id,
-    props  : props,
-    elem   : elem,
-    next   : {id: src.id},
-    data   : {},
-    fibrils: {},
-    stack  : MutableList.make(),
-  };
-};
-
-export const make = (src: Source, props?: any): Rehydrant => {
-  const rehydrant = makeRehydrant(src, props);
-
-  if (Elem.isTask(rehydrant.elem)) {
-    rehydrant.elem.fibril.rehydrant = rehydrant;
-    rehydrant.elem.fibril.elem = rehydrant.elem;
-    rehydrant.fibrils[rehydrant.id] = rehydrant.elem.fibril;
-  }
-
-  return rehydrant;
-};
 
 export type Encoded = typeof Encoded.Type;
 export const Encoded = S.String;
@@ -74,6 +32,66 @@ export const Hydrator = S.transform(
     },
   },
 );
+
+export type Source = {
+  id  : string;
+  elem: Elem;
+};
+
+export const makeSource = (src: Elem | FC): Source => {
+  if (Elem.isValue(src) || Elem.isRest(src)) throw new Error();
+
+  if (Elem.isTask(src)) {
+    if (FC.isAnonymous(src.type)) throw new Error();
+
+    return {
+      id  : FC.getName(src.type),
+      elem: Elem.cloneElem(src),
+    };
+  }
+
+  const fc = FC.make(src);
+
+  if (FC.isAnonymous(fc)) throw new Error();
+
+  return {
+    id  : FC.getName(fc),
+    elem: Object.freeze(Elem.jsxTask(fc, {})),
+  };
+};
+
+export * as Rehydrant from '#src/disreact/model/rehydrant.ts';
+export type Rehydrant = {
+  id     : string;
+  props? : any;
+  elem   : Elem;
+  next   : {id: string | null; props?: any};
+  data   : any;
+  fibrils: {[id: string]: Fibril};
+};
+
+export const make = (src: Source, props?: any): Rehydrant => {
+  const elem = Elem.cloneElem(src.elem);
+  elem.props = props;
+  elem.id = src.id;
+
+  const rehydrant: Rehydrant = {
+    id     : src.id,
+    props  : props,
+    elem   : elem,
+    next   : {id: src.id},
+    data   : {},
+    fibrils: {},
+  };
+
+  if (Elem.isTask(rehydrant.elem)) {
+    rehydrant.elem.fibril.rehydrant = rehydrant;
+    rehydrant.elem.fibril.elem = rehydrant.elem;
+    rehydrant.fibrils[rehydrant.id] = rehydrant.elem.fibril;
+  }
+
+  return rehydrant;
+};
 
 export const dehydrate = (rehydrant: Rehydrant): Decoded => {
   return {

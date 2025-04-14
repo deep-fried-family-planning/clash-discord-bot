@@ -1,5 +1,5 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
@@ -7,6 +7,7 @@ import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {runMain} from '@effect/platform-node/NodeRuntime';
 import {Fiber, FiberMap} from 'effect';
 import {Lifecycles} from './lifecycles';
+import { Hooks } from './hooks';
 
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
@@ -64,6 +65,14 @@ export class Model extends E.Service<Model>()('disreact/Model', {
 }) {
   static readonly makeEntrypoint = makeEntrypoint;
   static readonly hydrateInvoke = hydrateInvoke;
+
+  static readonly impl = {
+    useState  : Hooks.$useState,
+    useReducer: Hooks.$useReducer,
+    useEffect : Hooks.$useEffect,
+    usePage   : Hooks.$usePage,
+    useIx     : Hooks.$useIx,
+  };
 }
 
 

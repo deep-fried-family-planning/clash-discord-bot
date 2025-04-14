@@ -14,9 +14,9 @@ interface EffectFn {
   (): void | Promise<void> | E.Effect<void>;
 }
 
-//
-//
-//
+/**
+ * useReducer
+ */
 export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
   const node = Fibril.λ.get();
 
@@ -42,16 +42,16 @@ export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
   return [curr.s, set];
 };
 
-//
-//
-//
+/**
+ * useReducer
+ */
 export const $useReducer = <A, B>(reducer: (prev: A, action: B) => A, initialState: A): readonly [A, (action: B) => void] => {
   return [] as any;
 };
 
-//
-//
-//
+/**
+ * useEffect
+ */
 export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
   if (deps) {
     for (const dep of deps) {
@@ -104,9 +104,9 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
   }
 };
 
-//
-//
-//
+/**
+ * useIx
+ */
 export const $useIx = () => {
   const node = Fibril.λ.get();
 
@@ -123,9 +123,9 @@ export const $useIx = () => {
   return node.rehydrant.data;
 };
 
-//
-//
-//
+/**
+ * usePage
+ */
 export const $usePage = (_: FC[]) => {
   const node = Fibril.λ.get();
 

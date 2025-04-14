@@ -9,8 +9,6 @@ import {SNAP} from 'test/unit/snapkey.ts';
 
 
 const runtime = makeTestRuntime([TestMessage]);
-'eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5B8YFlxSWJydnFTchSExsXFjPsQxKwyoXSBlYeqYkpqUVWBhMAnnIhrA';
-'eJy7x8C8KDNldUhqcYlvanFxYnrq0oKi_ILiKwwMy4pLEpOzi-8xMCFLT7zHwLiwmGEfkpBVLpQ2sPJITUxJLbIymAAAQUUi2g';
 
 describe('given function component', () => {
   it.effect('when synthesizing', E.fn(function* () {

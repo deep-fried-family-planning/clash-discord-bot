@@ -2,8 +2,6 @@ import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import type {Cause} from 'effect';
 import {Predicate} from 'effect';
 
-export const TypeId = Symbol('disreact/Trigger');
-
 export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
   message?: string;
   cause?  : unknown;
@@ -11,14 +9,12 @@ export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
 
 export * as Trigger from '#src/disreact/model/entity/trigger.ts';
 export type Trigger<A = any> = {
-  id      : string;
-  data    : A;
-  [TypeId]: typeof TypeId;
+  id  : string;
+  data: A;
 };
 
 export const make = (id: string, data: any): Trigger =>
   ({
-    [TypeId]: TypeId,
     id,
     data,
   });
@@ -30,8 +26,6 @@ export const declare = <A, I, R>(data: S.Schema<A, I, R>) =>
   });
 
 export type Event<A> = Trigger<A>['data'];
-
-export const HandlerTypeId = Symbol('disreact/Trigger/Handler');
 
 export type Handler<A> = <E, R>(event: Event<A>) =>
   | void

@@ -1,9 +1,7 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import {Model} from '#src/disreact/model/Model.ts';
 
-
-
-export const useState   = Dispatcher.impl.useState;
-export const useReducer = Dispatcher.impl.useReducer;
-export const useEffect  = Dispatcher.impl.useEffect;
-export const useIx      = Dispatcher.impl.useIx;
-export const usePage    = Dispatcher.impl.usePage;
+export const useState   = Model.impl.useState;
+export const useReducer = Model.impl.useReducer;
+export const useEffect  = Model.impl.useEffect;
+export const useIx      = Model.impl.useIx;
+export const usePage    = Model.impl.usePage;

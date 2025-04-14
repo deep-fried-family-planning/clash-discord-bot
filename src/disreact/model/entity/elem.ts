@@ -1,26 +1,25 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import type {E} from '#src/internal/pure/effect.ts';
-import {Data, Differ, MutableList} from 'effect';
-import {isArray} from 'effect/Array';
-import type {UnknownException} from 'effect/Cause';
-import {isPromise} from 'effect/Predicate';
+import {Data, Differ} from 'effect';
 import {FC} from 'src/disreact/model/entity/fc.ts';
+
+const HANDLER_KEYS = [
+  Keys.onclick,
+  Keys.onselect,
+  Keys.onsubmit,
+];
+
+const RESERVED = [
+  ...HANDLER_KEYS,
+  Keys.children,
+  Keys.handler,
+];
 
 export const TypeId = Symbol('disreact/Elem');
 export type TypeId = typeof TypeId;
 
 export type Return = Elem | Elem[];
-
-export * as Elem from '#src/disreact/model/entity/elem.ts';
-export type Elem =
-  | Rest
-  | Task;
-
-export type Any =
-  | Elem
-  | Prim;
 
 export interface MetaProps {
   [TypeId]: TypeId;
@@ -33,46 +32,51 @@ export interface MetaProps {
   nodes   : Any[];
 }
 
-export type Frag = undefined;
-
-export const Frag = undefined;
-
-export type Prim =
-  | symbol
+/**
+ * Primitive
+ */
+export type Value =
   | string
   | bigint
   | number
   | boolean
   | null
-  | undefined;
+  | undefined
+  | symbol;
 
+export const isValue = (self: unknown): self is Value => {
+  if (!self) return true;
+  if (typeof self === 'object') return false;
+  if (typeof self === 'function') return false;
+  return true;
+};
+
+export const makeValue = (value: any): Value => value;
+
+export const cloneValue = (self: Value): Value => structuredClone(self);
+
+/**
+ * Fragment
+ */
+export type Frag = undefined;
+
+export const Frag = undefined;
+
+export const makeFragment = (type: undefined, props: any) => {
+  return props.children;
+};
+
+/**
+ * Rest
+ */
 export interface Rest extends MetaProps {
   type   : string;
   handler: Trigger.Handler<any>;
 }
 
-export interface Task extends MetaProps {
-  type  : FC;
-  fibril: Fibril;
-}
-
-export const isPrim = (self: unknown): self is Prim => {
-  if (!self) return true;
-  switch (typeof self) {
-    case 'object':
-    case 'function':
-      return false;
-  }
-  return true;
-};
-
-export const isRest = (self: unknown): self is Rest => typeof self === 'object' && typeof (self as any).type === 'string';
-
-const HANDLER_KEYS = [
-  Keys.onclick,
-  Keys.onselect,
-  Keys.onsubmit,
-];
+export const isRest = (self: any): self is Rest =>
+  typeof self === 'object' &&
+  typeof self.type === 'string';
 
 export const makeRest = (type: string, props: any, nodes: any[]): Rest => {
   const rest = {
@@ -82,11 +86,12 @@ export const makeRest = (type: string, props: any, nodes: any[]): Rest => {
   } as Rest;
 
   for (let i = 0; i < HANDLER_KEYS.length; i++) {
-    const hkey = HANDLER_KEYS[i];
-    const handler = props[hkey];
+    const key = HANDLER_KEYS[i];
+    const handler = props[key];
+
     if (handler) {
       rest.handler = handler;
-      delete props[hkey];
+      delete props[key];
     }
   }
 
@@ -104,12 +109,6 @@ export const jsxsRest = (type: string, props: any): Rest => {
   delete props.children;
   return makeRest(type, props, nodes);
 };
-
-const RESERVED = [
-  ...HANDLER_KEYS,
-  Keys.children,
-  Keys.handler,
-];
 
 export const cloneRest = (self: Rest): Rest => {
   const {props, nodes, handler, ...rest} = self;
@@ -136,6 +135,14 @@ export const cloneRest = (self: Rest): Rest => {
 
   return cloned;
 };
+
+/**
+ * Task
+ */
+export interface Task extends MetaProps {
+  type  : FC;
+  fibril: Fibril;
+}
 
 export const jsxTask = (type: any, props: any): Task => {
   const fc = FC.make(type);
@@ -207,7 +214,17 @@ const deepCloneTaskProps = (props: any): any => {
   return props;
 };
 
-export const render = (self: Task) => FC.render(self.type, self.props);
+/**
+ * Elem
+ */
+export * as Elem from '#src/disreact/model/entity/elem.ts';
+export type Elem =
+  | Rest
+  | Task;
+
+export type Any =
+  | Elem
+  | Value;
 
 export const jsx = (type: any, props: any): Elem => {
   if (type === undefined) {
@@ -257,7 +274,7 @@ export const cloneElem = (self: Elem) => {
 };
 
 export const deepCloneElem = <A extends Any>(elem: A): A => {
-  if (isPrim(elem)) {
+  if (isValue(elem)) {
     return structuredClone(elem) as A;
   }
 
@@ -296,7 +313,7 @@ const combine = () => {throw new Error();};
 
 export const isSame = (a: Elem, b: Elem) => {
   if (a === b) return true;
-  if (isPrim(a) && isPrim(b)) return false;
+  if (isValue(a) && isValue(b)) return false;
   if (isRest(a) && isRest(b)) {
     if (a.type !== b.type) return false;
     return true;
@@ -307,21 +324,3 @@ export const isSame = (a: Elem, b: Elem) => {
   }
   return false;
 };
-
-export const diffs = Differ.make({
-  empty  : Ops.Skip() as Ops,
-  combine: () => {throw new Error();},
-  diff   : (a, b) => {
-    if (isPrim(a)) {
-
-    }
-  },
-  patch: (p, v) => Ops.$match(p, {
-    Skip   : () => v,
-    Add    : () => {},
-    Delete : () => {},
-    Replace: () => {},
-    Update : () => {},
-    Render : () => {},
-  }),
-});

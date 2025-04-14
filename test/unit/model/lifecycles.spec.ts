@@ -1,15 +1,13 @@
 import {encodeRoot} from '#src/disreact/codec/Codec.ts';
-import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
+import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Record} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
 import {it} from 'test/unit/components/TestRegistry.tsx';
-
-
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant) => json(encodeRoot(root));

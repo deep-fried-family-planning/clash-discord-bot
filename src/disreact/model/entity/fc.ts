@@ -87,11 +87,9 @@ export const render = (fc: FC, p?: any): E.Effect<Elem.Any[], Cause.UnknownExcep
   if (isSync(fc)) {
     return E.try(() => ensure(fc(p)));
   }
-
   if (isAsync(fc)) {
     return E.tryPromise(() => fc(p).then(ensure));
   }
-
   if (isEffect(fc)) {
     return (fc(p) as E.Effect<Elem.Return>).pipe(E.map(ensure));
   }

@@ -1,7 +1,7 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
@@ -35,7 +35,7 @@ export const encodeRoot = (root: Rehydrant): RxTx.ParamsResponse['data'] => {
     for (let i = 0; i < cs.length; i++) {
       const c = cs[i];
 
-      if (Elem.isPrim(c)) {
+      if (Elem.isValue(c)) {
         acc[Keys.primitive] ??= [];
         acc[Keys.primitive].push(c);
       }

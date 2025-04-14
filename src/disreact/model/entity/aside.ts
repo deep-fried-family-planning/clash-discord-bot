@@ -3,10 +3,10 @@ import {Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/Side');
 
-export * as Side from '#src/disreact/model/entity/side.ts';
-export type Side = () => void | Promise<void> | E.Effect<void>;
+export * as Aside from '#src/disreact/model/entity/aside.ts';
+export type Aside = () => void | Promise<void> | E.Effect<void>;
 
-export const apply = (ef: Side) => E.suspend(() => {
+export const apply = (ef: Aside) => E.suspend(() => {
   const output = ef();
 
   if (Predicate.isPromise(output)) {
@@ -19,5 +19,3 @@ export const apply = (ef: Side) => E.suspend(() => {
 
   return E.void;
 });
-
-export type Queue = Side[];

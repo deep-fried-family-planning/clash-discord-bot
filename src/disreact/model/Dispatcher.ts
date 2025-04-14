@@ -1,7 +1,20 @@
+import type {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Hooks} from './hooks';
 
+const MODE = {current: null as 1 | null};
 
+const GLOBAL = {current: null as Fibril | null};
+
+const setGlobal = (fiber: Fibril | null) => {
+  GLOBAL.current = fiber;
+};
+
+const getGlobal = () => {
+  if (!GLOBAL.current) {
+    throw new Error();
+  }
+  return GLOBAL.current;
+};
 
 export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
   effect: pipe(
@@ -16,11 +29,6 @@ export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
     ),
   ),
 }) {
-  static readonly impl = {
-    useState  : Hooks.$useState,
-    useReducer: Hooks.$useReducer,
-    useEffect : Hooks.$useEffect,
-    usePage   : Hooks.$usePage,
-    useIx     : Hooks.$useIx,
-  };
+  static readonly setGlobal = setGlobal;
+  static readonly getGlobal = getGlobal;
 }

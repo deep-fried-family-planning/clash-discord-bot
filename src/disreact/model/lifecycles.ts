@@ -1,7 +1,7 @@
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
-import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -55,7 +55,7 @@ export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => 
 
     for (let i = 0; i < elem.nodes.length; i++) {
       const node = elem.nodes[i];
-      if (!Elem.isPrim(node)) {
+      if (!Elem.isValue(node)) {
         ML.append(stack, elem.nodes[i]);
       }
     }
@@ -71,7 +71,7 @@ const loopNodes = (stack: ML.MutableList<Elem>, root: Rehydrant, elem: Elem) => 
   for (let i = 0; i < elem.nodes.length; i++) {
     const node = elem.nodes[i];
 
-    if (!Elem.isPrim(node)) {
+    if (!Elem.isValue(node)) {
       Elem.connectChild(elem, node, i);
       Rehydrant.mount(root, node);
       ML.append(stack, node);
@@ -179,7 +179,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
     for (let i = 0; i < root.elem.nodes.length; i++) {
       const node = root.elem.nodes[i];
 
-      if (Elem.isPrim(node)) {
+      if (Elem.isValue(node)) {
         continue;
       }
       else if (Elem.isTask(node)) {
@@ -203,7 +203,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
       const rend = rs[i];
 
       if (!curr) {
-        if (Elem.isPrim(rend)) {
+        if (Elem.isValue(rend)) {
           parent.nodes[i] = rend;
         }
         else {
@@ -212,7 +212,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
       }
       else if (!rend) {
-        if (Elem.isPrim(curr)) {
+        if (Elem.isValue(curr)) {
           delete parent.nodes[i];
         }
         else {
@@ -221,8 +221,8 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
       }
 
-      else if (Elem.isPrim(curr)) {
-        if (Elem.isPrim(rend)) {
+      else if (Elem.isValue(curr)) {
+        if (Elem.isValue(rend)) {
           if (curr !== rend) {
             parent.nodes[i] = rend;
           }
@@ -242,7 +242,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           hasSentPartial = yield* relayPartial(curr);
         }
 
-        if (Elem.isPrim(rend)) {
+        if (Elem.isValue(rend)) {
           dismountSubtree(root, curr);
           parent.nodes[i] = rend;
         }
@@ -265,7 +265,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
       }
 
       else {
-        if (Elem.isPrim(rend)) { // Task => Primitive
+        if (Elem.isValue(rend)) { // Task => Primitive
           dismountSubtree(root, curr);
           parent.nodes[i] = rend;
         }
@@ -309,7 +309,7 @@ export const mountSubtree = (root: Rehydrant, elem: Elem) => E.gen(function* () 
     for (let i = 0; i < elem.nodes.length; i++) {
       const node = elem.nodes[i];
 
-      if (!Elem.isPrim(node)) {
+      if (!Elem.isValue(node)) {
         ML.append(stack, node);
       }
     }
@@ -329,7 +329,7 @@ export const dismountSubtree = (root: Rehydrant, elem: Elem) => {
     for (let i = 0; i < elem.nodes.length; i++) {
       const node = elem.nodes[i];
 
-      if (!Elem.isPrim(node)) {
+      if (!Elem.isValue(node)) {
         ML.append(stack, node);
       }
     }
