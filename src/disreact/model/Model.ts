@@ -1,5 +1,5 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
@@ -59,7 +59,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
     }),
   ),
   dependencies: [
-    Dispatcher.Default,
+    HooksDispatcher.Default,
     Registry.Default,
   ],
 }) {

@@ -1,5 +1,5 @@
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import {Rehydrant} from 'src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
 

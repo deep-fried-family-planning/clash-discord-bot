@@ -33,34 +33,7 @@ export const Hydrator = S.transform(
   },
 );
 
-export type Source = {
-  id  : string;
-  elem: Elem;
-};
-
-export const makeSource = (src: Elem | FC): Source => {
-  if (Elem.isValue(src) || Elem.isRest(src)) throw new Error();
-
-  if (Elem.isTask(src)) {
-    if (FC.isAnonymous(src.type)) throw new Error();
-
-    return {
-      id  : FC.getName(src.type),
-      elem: Elem.cloneElem(src),
-    };
-  }
-
-  const fc = FC.make(src);
-
-  if (FC.isAnonymous(fc)) throw new Error();
-
-  return {
-    id  : FC.getName(fc),
-    elem: Object.freeze(Elem.jsxTask(fc, {})),
-  };
-};
-
-export * as Rehydrant from '#src/disreact/model/rehydrant.ts';
+export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 export type Rehydrant = {
   id     : string;
   props? : any;
@@ -134,4 +107,31 @@ export const dismountTask = (root: Rehydrant, elem: Elem.Task) => {
   // @ts-expect-error temporary
   delete elem.fibril.rehydrant;
   delete root.fibrils[elem.id!];
+};
+
+export type Source = {
+  id  : string;
+  elem: Elem;
+};
+
+export const makeSource = (src: Elem | FC): Source => {
+  if (Elem.isValue(src) || Elem.isRest(src)) throw new Error();
+
+  if (Elem.isTask(src)) {
+    if (FC.isAnonymous(src.type)) throw new Error();
+
+    return {
+      id  : FC.getName(src.type),
+      elem: Elem.cloneElem(src),
+    };
+  }
+
+  const fc = FC.make(src);
+
+  if (FC.isAnonymous(fc)) throw new Error();
+
+  return {
+    id  : FC.getName(fc),
+    elem: Object.freeze(Elem.jsxTask(fc, {})),
+  };
 };

@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
+import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
@@ -11,19 +11,6 @@ import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';
 import {Redacted} from 'effect';
-
-export const makeTestRequest = (data: any, message?: any) => {
-  return {
-    id            : '1236074574509117491',
-    token         : 'respond1',
-    application_id: 'app',
-    user_id       : 'user',
-    guild_id      : 'guild',
-    message       : message,
-    type          : 2,
-    data          : data,
-  };
-};
 
 const makeStub = (random = true) =>
   vi.fn(() => random
@@ -56,7 +43,7 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
       // L.effectContext(E.succeed(TestServices.liveServices)),
       L.succeed(DisReactDOM, DisReactDOM.make(dom as any)),
       Registry.Default,
-      Dispatcher.Default,
+      HooksDispatcher.Default,
       Relay.Default,
       Codec.Default,
       DokenMemory.Default,

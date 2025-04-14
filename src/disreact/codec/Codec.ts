@@ -1,7 +1,7 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
-import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {E, ML, pipe, S} from '#src/disreact/utils/re-exports.ts';
@@ -111,6 +111,21 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
         const serial = Intrinsic.isEphemeral(encoded)
           ? doken
           : Doken.convertCached(doken);
+
+        if (Intrinsic.isModal(encoded)) {
+          return pipe(
+            E.tap(DokenMemory, (memory) => memory.save(doken)),
+            E.as(
+              encodeParamsResponse({
+                _tag: 'Modal',
+                base: config.baseUrl,
+                serial,
+                hydrant,
+                data: encoded,
+              }),
+            ),
+          );
+        }
 
         return pipe(
           E.tap(DokenMemory, (memory) => memory.save(doken)),

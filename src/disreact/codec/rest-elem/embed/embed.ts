@@ -1,17 +1,17 @@
-import {Author} from '#src/disreact/codec/rest-elem/embed/author.ts'
-import {Field} from '#src/disreact/codec/rest-elem/embed/field.ts'
-import {Footer} from '#src/disreact/codec/rest-elem/embed/footer.ts'
-import {Img} from '#src/disreact/codec/rest-elem/embed/img.ts'
-import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import {S} from '#src/disreact/utils/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem.ts'
+import {Author} from '#src/disreact/codec/rest-elem/embed/author.ts';
+import {Field} from '#src/disreact/codec/rest-elem/embed/field.ts';
+import {Footer} from '#src/disreact/codec/rest-elem/embed/footer.ts';
+import {Img} from '#src/disreact/codec/rest-elem/embed/img.ts';
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
+import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
 
-export * as Embed from '#src/disreact/codec/rest-elem/embed/embed.ts'
-export type Embed = never
+export * as Embed from '#src/disreact/codec/rest-elem/embed/embed.ts';
+export type Embed = never;
 
 export const TAG  = 'embed',
-             NORM = Keys.embeds
+             NORM = Keys.embeds;
 
 export const Children = S.Union(
   S.String,
@@ -19,7 +19,7 @@ export const Children = S.Union(
   Footer.Element,
   Img.Element,
   Field.Element,
-)
+);
 
 export const Attributes = declareProps(
   S.Struct({
@@ -32,12 +32,12 @@ export const Attributes = declareProps(
     footer     : S.optional(Footer.Attributes),
     image      : S.optional(Img.Attributes),
   }),
-)
+);
 
 export const Element = declareElem(
   TAG,
   Attributes,
-)
+);
 
 export const encode = (self: Elem, acc: any) => {
   return {
@@ -49,5 +49,5 @@ export const encode = (self: Elem, acc: any) => {
     author     : self.props.author ?? acc.author,
     footer     : self.props.footer ?? acc.footer,
     image      : self.props.image ?? acc[Keys.image],
-  }
-}
+  };
+};

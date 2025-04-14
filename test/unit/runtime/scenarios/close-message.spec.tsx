@@ -1,5 +1,5 @@
 import {E} from '#src/disreact/utils/re-exports.ts';
-import {CloseMessage} from '#test/unit/runtime/scenarios/components/close-message.tsx';
+import {CloseMessage} from '#test/unit/runtime/scenarios/.components/close-message.tsx';
 import {it} from '@effect/vitest';
 import {makeTestRuntime} from 'test/unit/util.ts';
 

@@ -1,26 +1,35 @@
+import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
+import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Data, Equal} from 'effect';
+
+
 
 export * as Props from '#src/disreact/model/entity/props.ts';
 export type Props = any;
 
-export const jsx = (props: any): Props => {
-  if (!props) {
-    return props;
-  }
+const HANDLER_KEYS = [
+  Keys.onclick,
+  Keys.onselect,
+  Keys.onsubmit,
+];
 
-  if (!props.children) {
-    //
-  }
-  else {
-    props.children = [props.children];
-  }
+export const getHandler = (props: Props): Trigger.Handler<any> | undefined => {
+  for (let i = 0; i < HANDLER_KEYS.length; i++) {
+    const key = HANDLER_KEYS[i];
+    const handler = props[key];
 
-  return props;
+    if (handler) {
+      delete props[key];
+      return handler;
+    }
+  }
 };
 
-export const jsxs = (props: any): Props => {
-  return props;
-};
+const RESERVED = [
+  ...HANDLER_KEYS,
+  Keys.children,
+  Keys.handler,
+];
 
 export const isEqual = (a: Props, b: Props): boolean => {
   if (a === b) {

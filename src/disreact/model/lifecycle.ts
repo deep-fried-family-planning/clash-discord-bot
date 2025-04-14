@@ -1,15 +1,15 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {RegistryDefect} from '#src/disreact/model/Registry.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
-import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import type {Cause} from 'effect';
-import {Fibril} from './entity/fibril.ts';
-import {Aside} from 'src/disreact/model/entity/aside.ts';
+import type {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Side} from '#src/disreact/model/entity/side.ts';
 import {Trigger} from './entity/trigger.ts';
-import { FC } from './entity/fc.ts';
+import { FC } from '#src/disreact/model/entity/fc.ts';
 
 export * as Lifecycle from './lifecycle.ts';
 export type Lifecycle = never;
@@ -22,13 +22,18 @@ export const create = (type: any, props: any) => {
 };
 
 /**
+ * clone
+ */
+export const clone = () => {};
+
+/**
  * render
  */
-export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((dispatcher) =>
+export const render = (root: Rehydrant, self: Elem.Task) => HooksDispatcher.use((dispatcher) =>
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      Fibril.λ.set(self.fibril);
+      HooksDispatcher.setGlobal(self.fibril);
       self.fibril.rehydrant = root;
       self.fibril.pc = 0;
       self.fibril.elem = self;
@@ -36,11 +41,11 @@ export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((disp
       return FC.render(self.type, self.props);
     }),
     E.tap((children) => {
-      Fibril.λ.clear();
+      HooksDispatcher.setGlobal(null);
       return E.as(dispatcher.unlock, children);
     }),
     E.catchAllDefect((err) => {
-      Fibril.λ.clear();
+      HooksDispatcher.setGlobal(null);
       return E.fail(err as Error);
     }),
     E.map((children) => {
@@ -68,10 +73,10 @@ export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((disp
  */
 const renderEffect = (root: Rehydrant, fibril: Fibril) => {
   if (fibril.queue.length) {
-    const effects = Array<ReturnType<typeof Aside.apply>>(fibril.queue.length);
+    const effects = Array<ReturnType<typeof Side.apply>>(fibril.queue.length);
 
     for (let i = 0; i < effects.length; i++) {
-      effects[i] = Aside.apply(fibril.queue[i]);
+      effects[i] = Side.apply(fibril.queue[i]);
     }
 
     return pipe(
@@ -89,7 +94,7 @@ const renderEffect = (root: Rehydrant, fibril: Fibril) => {
  */
 export const invoke = (root: Rehydrant, elem: Elem.Rest, event: Trigger) =>
   pipe(
-    Trigger.apply(elem.handler, event),
+    Trigger.apply(elem.handler!, event),
     E.tap(() => {
       if (root.next.id === null) return close;
       if (root.next.id !== root.id) return next(root);

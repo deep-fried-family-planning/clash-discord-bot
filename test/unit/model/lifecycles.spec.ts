@@ -2,7 +2,7 @@ import {encodeRoot} from '#src/disreact/codec/Codec.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Record} from 'effect';

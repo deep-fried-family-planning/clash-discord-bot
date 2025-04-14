@@ -1,11 +1,13 @@
 import {E} from '#src/disreact/utils/re-exports.ts';
+import {SimpleMessage} from '#test/unit/runtime/scenarios/.components/simple-message.tsx';
+import {SimpleModal} from '#test/unit/runtime/scenarios/.components/simple-modal.tsx';
 import {it} from '@effect/vitest';
 import {makeTestRuntime} from 'test/unit/util.ts';
 
-const runtime = makeTestRuntime([MessageClose], false);
+const runtime = makeTestRuntime([SimpleModal, SimpleMessage], false);
 
-it.scoped('when closing', E.fn(function* () {
-  const root = yield* runtime.synthesize(MessageClose);
+it.scoped('when opening', E.fn(function* () {
+  const root = yield* runtime.synthesize(SimpleMessage);
 
   expect(root).toMatchSnapshot();
 
@@ -18,14 +20,13 @@ it.scoped('when closing', E.fn(function* () {
     message       : root,
     type          : 2,
     data          : {
-      custom_id     : 'CloseButton',
+      custom_id     : 'OpenModal',
       component_type: 2,
     },
   });
 
   expect(res).toMatchSnapshot();
   expect(runtime.createUpdate).not.toBeCalled();
-  expect(runtime.deferEdit).not.toBeCalled();
   expect(runtime.deferUpdate).toBeCalled();
-  expect(runtime.dismount).toBeCalled();
+  expect(runtime.createModal).toBeCalled();
 }));

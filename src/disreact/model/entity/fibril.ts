@@ -1,7 +1,6 @@
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
-import {Record} from 'effect';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 
@@ -81,10 +80,3 @@ export const cloneStrand = (self: Fibril): Fibril => {
   const {elem, rehydrant, ...rest} = self;
   return structuredClone(rest) as Fibril;
 };
-
-export namespace λ {
-  const NODE = {current: null as Fibril | null};
-  export const get = () => NODE.current!;
-  export const set = (node: Fibril) => {NODE.current = node;};
-  export const clear = () => {NODE.current = null;};
-}

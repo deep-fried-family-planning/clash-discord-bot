@@ -1,8 +1,9 @@
-import {Keys} from '#src/disreact/codec/rest-elem/keys';
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Data, Differ} from 'effect';
-import {FC} from 'src/disreact/model/entity/fc.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
+import { Props } from './props';
 
 const HANDLER_KEYS = [
   Keys.onclick,
@@ -16,20 +17,16 @@ const RESERVED = [
   Keys.handler,
 ];
 
-export const TypeId = Symbol('disreact/Elem');
-export type TypeId = typeof TypeId;
-
 export type Return = Elem | Elem[];
 
 export interface MetaProps {
-  [TypeId]: TypeId;
-  type    : any;
-  id?     : string | undefined;
-  ids?    : string | undefined;
-  idn?    : string | undefined;
-  idx?    : number | undefined;
-  props   : any;
-  nodes   : Any[];
+  type : any;
+  id?  : string | undefined;
+  ids? : string | undefined;
+  idn? : string | undefined;
+  idx? : number | undefined;
+  props: any;
+  nodes: Any[];
 }
 
 /**
@@ -70,8 +67,8 @@ export const makeFragment = (type: undefined, props: any) => {
  * Rest
  */
 export interface Rest extends MetaProps {
-  type   : string;
-  handler: Trigger.Handler<any>;
+  type    : string;
+  handler?: Trigger.Handler<any> | undefined;
 }
 
 export const isRest = (self: any): self is Rest =>
@@ -79,23 +76,12 @@ export const isRest = (self: any): self is Rest =>
   typeof self.type === 'string';
 
 export const makeRest = (type: string, props: any, nodes: any[]): Rest => {
-  const rest = {
+  return {
     type,
     props,
     nodes,
-  } as Rest;
-
-  for (let i = 0; i < HANDLER_KEYS.length; i++) {
-    const key = HANDLER_KEYS[i];
-    const handler = props[key];
-
-    if (handler) {
-      rest.handler = handler;
-      delete props[key];
-    }
-  }
-
-  return rest;
+    handler: Props.getHandler(props),
+  };
 };
 
 export const jsxRest = (type: string, props: any): Rest => {
@@ -311,7 +297,7 @@ export const Ops = Data.taggedEnum<Ops>();
 const empty = Ops.Skip() as Ops;
 const combine = () => {throw new Error();};
 
-export const isSame = (a: Elem, b: Elem) => {
+export const isSameKind = (a: Elem, b: Elem) => {
   if (a === b) return true;
   if (isValue(a) && isValue(b)) return false;
   if (isRest(a) && isRest(b)) {

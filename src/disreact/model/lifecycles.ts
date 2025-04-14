@@ -1,13 +1,12 @@
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
 import {Lifecycle} from './lifecycle';
-
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
 export type Lifecycles = never;

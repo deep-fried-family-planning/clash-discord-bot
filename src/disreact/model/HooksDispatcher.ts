@@ -16,7 +16,7 @@ const getGlobal = () => {
   return GLOBAL.current;
 };
 
-export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
+export class HooksDispatcher extends E.Service<HooksDispatcher>()('disreact/HooksDispatcher', {
   effect: pipe(
     E.all({
       mutex: E.makeSemaphore(1),

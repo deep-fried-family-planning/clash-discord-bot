@@ -1,6 +1,6 @@
 import {Doken} from '#src/disreact/codec/doken.ts';
-import type {DokenError} from '#src/disreact/codec/DokenMemory.ts';
-import {DokenMemory} from '#src/disreact/codec/DokenMemory.ts';
+import type {DokenError} from '#src/disreact/utils/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Deferred, Duration, Either, type Fiber, FiberHandle, Option, type Scope, SynchronizedRef} from 'effect';
 

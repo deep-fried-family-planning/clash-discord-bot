@@ -1,18 +1,18 @@
-import {Keys} from '#src/disreact/codec/rest-elem/keys.ts'
-import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts'
-import {S} from '#src/disreact/utils/re-exports.ts'
-import type {Elem} from '#src/disreact/model/entity/elem.ts'
-import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component'
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
+import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
 
-export * as TextInput from '#src/disreact/codec/rest-elem/component/textinput.ts'
-export type TextInput = never
+export * as TextInput from '#src/disreact/codec/rest-elem/component/textinput.ts';
+export type TextInput = never;
 
 export const TAG  = 'textinput',
-             NORM = Keys.components
+             NORM = Keys.components;
 
 export const Children = S.Union(
   S.String,
-)
+);
 
 export const Attributes = declareProps(
   S.Struct({
@@ -25,12 +25,12 @@ export const Attributes = declareProps(
     value      : S.optional(S.String),
     placeholder: S.optional(S.String),
   }),
-)
+);
 
 export const Element = declareElem(
   TAG,
   Attributes,
-)
+);
 
 export const encode = (self: Elem, acc: any) => {
   return {
@@ -46,5 +46,5 @@ export const encode = (self: Elem, acc: any) => {
       value      : self.props.value ?? acc[Keys.primitive],
       placeholder: self.props.placeholder,
     }],
-  }
-}
+  };
+};

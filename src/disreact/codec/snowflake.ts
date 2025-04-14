@@ -21,22 +21,6 @@ export const Epoch = S.transform(
   },
 );
 
-export const Meta = S.transform(
-  Id,
-  S.Struct({
-    id   : Id,
-    epoch: Epoch,
-  }),
-  {
-    strict: true,
-    encode: (self) => self.id,
-    decode: (self) => ({
-      id   : self,
-      epoch: self,
-    }),
-  },
-);
-
 export const TimeToLive = (duration: DR.Duration) =>
   S.transform(
     Id,
