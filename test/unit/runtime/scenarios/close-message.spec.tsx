@@ -1,31 +1,12 @@
-import {usePage} from '#src/disreact/index.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
+import {CloseMessage} from '#test/unit/runtime/scenarios/components/close-message.tsx';
 import {it} from '@effect/vitest';
 import {makeTestRuntime} from 'test/unit/util.ts';
 
-
-
-const CloseButton = () => {
-  const page = usePage([]);
-  return (<secondary
-    custom_id={'CloseButton'}
-    onclick={() => page.close()}
-  />);
-};
-
-const MessageClose = () => <message>
-  <embed>
-    {'Hello World!'}
-  </embed>
-  <actions>
-    <CloseButton/>
-  </actions>
-</message>;
-
-const runtime = makeTestRuntime([MessageClose], false);
+const runtime = makeTestRuntime([CloseMessage], false);
 
 it.scoped('when closing', E.fn(function* () {
-  const root = yield* runtime.synthesize(MessageClose);
+  const root = yield* runtime.synthesize(CloseMessage);
 
   expect(root).toMatchSnapshot();
 

@@ -12,7 +12,18 @@ import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';
 import {Redacted} from 'effect';
 
-
+export const makeTestRequest = (data: any, message?: any) => {
+  return {
+    id            : '1236074574509117491',
+    token         : 'respond1',
+    application_id: 'app',
+    user_id       : 'user',
+    guild_id      : 'guild',
+    message       : message,
+    type          : 2,
+    data          : data,
+  };
+};
 
 const makeStub = (random = true) =>
   vi.fn(() => random
