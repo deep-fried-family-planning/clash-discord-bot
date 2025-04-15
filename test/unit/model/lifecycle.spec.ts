@@ -56,7 +56,6 @@ describe('given event.id does not match any node.id', () => {
 
 it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
   const runs = Array.from({length: 10000});
-  // const registry = yield* Registry;
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Registry.checkout(TestMessage);

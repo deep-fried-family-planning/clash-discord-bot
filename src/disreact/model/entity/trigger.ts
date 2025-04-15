@@ -1,4 +1,4 @@
-import {Elem, type Elem} from '#src/disreact/model/entity/elem.ts';
+import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 

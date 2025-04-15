@@ -184,7 +184,14 @@ const renderMount = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispat
     E.map((children) => {
       Fibril.commit(task.fibril);
       task.nodes = children.filter(Boolean) as Elem.Any[];
-      Elem.connectNodes(task, task.nodes);
+      for (let i = 0; i < task.nodes.length; i++) {
+        const node = task.nodes[i];
+
+        if (!Elem.isValue(node)) {
+          Elem.connectChild(task, node, i);
+          MutableList.append(root.mount, node);
+        }
+      }
       return task.nodes;
     }),
     E.tap(() => effect(root, task.fibril)),
@@ -217,7 +224,16 @@ const renderRehydrate = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((di
     E.map((children) => {
       Fibril.commit(task.fibril);
       task.nodes = children.filter(Boolean) as Elem.Any[];
-      Elem.connectNodes(task, task.nodes);
+
+      for (let i = 0; i < task.nodes.length; i++) {
+        const node = task.nodes[i];
+
+        if (!Elem.isValue(node)) {
+          Elem.connectChild(task, node, i);
+          MutableList.append(root.mount, node);
+        }
+      }
+
       return task.nodes;
     }),
   ),
@@ -249,7 +265,15 @@ const render = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher)
     E.map((children) => {
       Fibril.commit(task.fibril);
       const nodes = children.filter(Boolean) as Elem.Any[];
-      Elem.connectNodes(task, nodes);
+
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        if (!Elem.isValue(node)) {
+          Elem.connectChild(task, node, i);
+        }
+      }
+
       return nodes;
     }),
     E.tap(() => effect(root, task.fibril)),
@@ -285,12 +309,66 @@ export const initialize = (root: Rehydrant) => initializeSubtree(root, root.elem
 /**
  * @summary mount
  */
-const mount = (root: Rehydrant, elem: Elem) => initializeSubtree(root, elem);
+const mount = (root: Rehydrant, elem: Elem) => {
+  MutableList.append(root.mount, elem);
+
+  return E.whileLoop({
+    while: () => !!MutableList.tail(root.mount),
+    step : () => {},
+    body : () => {
+      const next = MutableList.pop(root.mount)!;
+
+      if (Elem.isTask(next)) {
+        Rehydrant.mountTask(root, next);
+        return renderMount(root, next);
+      }
+
+      for (let i = 0; i < next.nodes.length; i++) {
+        const child = next.nodes[i];
+
+        if (!Elem.isValue(child)) {
+          Elem.connectChild(next, child, i);
+          MutableList.append(root.mount, child);
+        }
+      }
+
+      return E.void;
+    },
+  });
+};
 
 /**
  * @summary mount
  */
-export const rehydrate = (root: Rehydrant) => {};
+export const hydrate = (root: Rehydrant) => {
+  MutableList.append(root.mount, root.elem);
+
+  return E.iterate(undefined as any, {
+    while: () => !!MutableList.tail(root.mount),
+    body : () => {
+      const next = MutableList.pop(root.mount)!;
+
+      if (Elem.isTask(next)) {
+        if (root.fibrils[next.id!]) {
+          next.fibril = root.fibrils[next.id!];
+          next.fibril.rehydrant = root;
+        }
+        return renderRehydrate(root, next);
+      }
+
+      for (let i = 0; i < next.nodes.length; i++) {
+        const child = next.nodes[i];
+
+        if (!Elem.isValue(child)) {
+          Elem.connectChild(next, child, i);
+          MutableList.append(root.mount, child);
+        }
+      }
+
+      return E.void;
+    },
+  });
+};
 
 /**
  * @summary dismount
@@ -366,31 +444,6 @@ export const initializeSubtree = (root: Rehydrant, elem: Elem) => {
   });
 };
 
-export const hydrate = (root: Rehydrant) =>
-  E.iterate(ML.make<Elem>(root.elem), {
-    while: (stack) => !!ML.tail(stack),
-    body : (stack) => {
-      const elem = ML.pop(stack)!;
-
-      if (Elem.isTask(elem)) {
-        if (root.fibrils[elem.id!]) {
-          elem.fibril = root.fibrils[elem.id!];
-          elem.fibril.rehydrant = root;
-        }
-
-        return pipe(
-          render(root, elem),
-          E.map((children) => {
-            elem.nodes = children;
-            return loopNodes(stack, root, elem);
-          }),
-        );
-      }
-
-      return E.succeed(loopNodes(stack, root, elem));
-    },
-  });
-
 export const renderAgain = (root: Rehydrant) => {
   const stack = MutableList.empty<[Elem.Any, Elem | null]>();
   // eslint-disable-next-line prefer-const
@@ -458,7 +511,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           parent.nodes[i] = rend;
         }
         else {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
@@ -479,11 +532,11 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           }
         }
         else if (Elem.isRest(rend)) {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
         else {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
@@ -500,7 +553,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         else if (Elem.isRest(rend)) {
           if (curr.type !== rend.type) {
             dismount(root, curr);
-            yield* mountSubtree(root, rend);
+            yield* mount(root, rend);
             parent.nodes[i] = rend;
           }
           if (!Props.isEqual(curr.props, rend.props)) {
@@ -510,7 +563,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
         else {
           dismount(root, curr);
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
@@ -522,7 +575,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
         else if (Elem.isRest(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
           dismount(root, curr);
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
         else if (
@@ -543,27 +596,6 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
   }
 
   return root;
-});
-
-export const mountSubtree = (root: Rehydrant, elem: Elem) => E.gen(function* () {
-  const stack = ML.make<Elem>(elem);
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-
-    if (Elem.isTask(elem)) {
-      Rehydrant.mountTask(root, elem);
-      elem.nodes = yield* render(root, elem);
-    }
-
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i];
-
-      if (!Elem.isValue(node)) {
-        ML.append(stack, node);
-      }
-    }
-  }
 });
 
 /**

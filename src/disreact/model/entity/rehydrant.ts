@@ -136,6 +136,6 @@ export const makeSource = (src: Elem | FC): Source => {
 
   return {
     id  : FC.getName(fc),
-    elem: Object.freeze(Elem.makeTask(fc, {})),
+    elem: Elem.makeTask(fc, {}),
   };
 };
