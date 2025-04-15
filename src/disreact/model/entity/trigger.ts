@@ -1,3 +1,4 @@
+import {Elem, type Elem} from '#src/disreact/model/entity/elem.ts';
 import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
@@ -36,6 +37,15 @@ export const declareHandler = <A, I, R>(data: S.Schema<A, I, R>) =>
 export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
   cause: unknown;
 }> {}
+
+export const isTarget = (event: Trigger, elem: Elem): elem is Elem.Rest => {
+  if (Elem.isRest(elem)) {
+    if (elem.props.custom_id === event.id || elem.ids === event.id) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export const apply = <A = any>(handler: Handler<A>, event: Trigger<A>) =>
   pipe(

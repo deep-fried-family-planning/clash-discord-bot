@@ -6,9 +6,8 @@ import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
 import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Side} from '#src/disreact/model/entity/side.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Unsafe} from '#src/disreact/model/entity/unsafe.ts';
-import {LifecycleUnit} from '#src/disreact/model/lifecycle-units.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -271,7 +270,7 @@ const effect = (root: Rehydrant, fibril: Fibril) => {
     return pipe(
       E.all(effects),
       E.tap(() => {
-        if (root.next.id === null) return relayClose;
+        if (root.next.id === null) return relayClose();
         if (root.next.id !== root.id) return relayNext(root);
       }),
     );
@@ -380,7 +379,7 @@ export const hydrate = (root: Rehydrant) =>
         }
 
         return pipe(
-          LifecycleUnit.render(root, elem),
+          render(root, elem),
           E.map((children) => {
             elem.nodes = children;
             return loopNodes(stack, root, elem);
@@ -408,7 +407,7 @@ export const renderAgain = (root: Rehydrant) => {
 
     if (next === null) {
       if (Elem.isTask(curr)) {
-        return LifecycleUnit.render(root, curr).pipe(E.map((children) => {
+        return render(root, curr).pipe(E.map((children) => {
           curr.nodes = children;
         }));
       }
@@ -435,7 +434,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         continue;
       }
       else if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* LifecycleUnit.render(root, node)]);
+        ML.append(stack, [node, yield* render(root, node)]);
       }
       else {
         ML.append(stack, [node, node.nodes]);
@@ -443,7 +442,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* LifecycleUnit.render(root, root.elem)]);
+    ML.append(stack, [root.elem, yield* render(root, root.elem)]);
   }
 
   while (ML.tail(stack)) {
@@ -536,7 +535,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           // ML.append(stack, [curr, rend.nodes]);
         }
         else {
-          const rerendered = yield* LifecycleUnit.render(root, curr);
+          const rerendered = yield* render(root, curr);
           ML.append(stack, [curr, rerendered]);
         }
       }
@@ -554,7 +553,7 @@ export const mountSubtree = (root: Rehydrant, elem: Elem) => E.gen(function* () 
 
     if (Elem.isTask(elem)) {
       Rehydrant.mountTask(root, elem);
-      elem.nodes = yield* LifecycleUnit.render(root, elem);
+      elem.nodes = yield* render(root, elem);
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {
@@ -576,14 +575,20 @@ export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => 
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
 
-    if (Elem.isRest(elem)) {
-      if (elem.props.custom_id === event.id || elem.ids === event.id) {
-        return LifecycleUnit.invoke(root, elem, event);
-      }
+    if (Trigger.isTarget(event, elem)) {
+      return pipe(
+        Trigger.apply(elem.handler!, event),
+        E.tap(() => {
+          if (root.next.id === null) return relayClose();
+          if (root.next.id !== root.id) return relayNext(root);
+          return relaySame(root);
+        }),
+      );
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {
       const node = elem.nodes[i];
+
       if (!Elem.isValue(node)) {
         ML.append(stack, elem.nodes[i]);
       }
