@@ -3,7 +3,8 @@ import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import {MutableList, Record} from 'effect';
+import type {MutableList} from 'effect';
+import { Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
 export type Encoded = typeof Encoded.Type;

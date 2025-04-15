@@ -94,7 +94,7 @@ export const decodeEvent = (route: RxTx.ParamsRequest): Trigger => {
   }
 
   if (req.type === 5) {
-    throw new Error(`Invalid request type: ${req.type}`);
+    return Trigger.make(req.data.custom_id, route.body.data);
   }
 
   // @ts-expect-error temporary
@@ -111,21 +111,6 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
         const serial = Intrinsic.isEphemeral(encoded)
           ? doken
           : Doken.convertCached(doken);
-
-        if (Intrinsic.isModal(encoded)) {
-          return pipe(
-            E.tap(DokenMemory, (memory) => memory.save(doken)),
-            E.as(
-              encodeParamsResponse({
-                _tag: 'Modal',
-                base: config.baseUrl,
-                serial,
-                hydrant,
-                data: encoded,
-              }),
-            ),
-          );
-        }
 
         return pipe(
           E.tap(DokenMemory, (memory) => memory.save(doken)),

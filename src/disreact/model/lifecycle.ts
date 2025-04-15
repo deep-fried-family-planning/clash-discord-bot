@@ -17,7 +17,21 @@ export type Lifecycle = never;
 /**
  * create
  */
-export const create = (type: any, props: any) => {
+export const jsx = (type: any, props: any) => {
+
+};
+
+/**
+ * create
+ */
+export const jsxs = (type: any, props: any) => {
+
+};
+
+/**
+ * create
+ */
+export const jsxDEV = (type: any, props: any) => {
 
 };
 

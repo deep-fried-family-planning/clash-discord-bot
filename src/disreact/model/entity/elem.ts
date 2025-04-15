@@ -1,9 +1,9 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
+import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {Data, Differ} from 'effect';
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import { Props } from './props';
+import {Data} from 'effect';
+import {Props} from './props';
 
 const HANDLER_KEYS = [
   Keys.onclick,
@@ -158,7 +158,7 @@ export const cloneTask = (self: Task): Task => {
   const {props, fibril, type, nodes, id, idx} = self;
   const clonedProps = deepCloneTaskProps(props);
   const task = jsxTask(type, clonedProps);
-  task.fibril = Fibril.cloneStrand(fibril);
+  task.fibril = Fibril.clone(fibril);
   task.nodes = nodes;
   task.id = id;
   task.idx = idx;

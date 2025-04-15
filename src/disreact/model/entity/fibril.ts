@@ -30,11 +30,6 @@ export const isDependency = (self: Monomer): self is Dependency => !!self && 'd'
 export const isModal = (self: Monomer): self is Modal => !!self && 'm' in self;
 export const isMessage = (self: Monomer): self is Message => !!self && 'e' in self;
 
-export type Polymer = {
-  pc   : number;
-  stack: Chain[];
-};
-
 export const Chain = S.mutable(S.Array(Any));
 export type Chain = typeof Chain.Type;
 
@@ -51,8 +46,8 @@ export type Fibril = {
   rehydrant: Rehydrant;
 };
 
-export const make = (stack?: Chain): Fibril =>
-  ({
+export const make = (stack?: Chain): Fibril => {
+  return {
     pc       : 0,
     stack    : stack ?? [],
     saved    : [],
@@ -60,9 +55,27 @@ export const make = (stack?: Chain): Fibril =>
     queue    : [],
     elem     : null as unknown as Elem.Task,
     rehydrant: null as unknown as Rehydrant,
-  });
+  };
+};
 
-export const isSameStrand = (self: Fibril) => {
+export const clone = (self: Fibril): Fibril => {
+  const {elem, rehydrant, ...rest} = self;
+
+  return structuredClone(rest) as Fibril;
+};
+
+const isSameStack = (a: Chain, b: Chain): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  const stackData = Data.array(a.map((s) => s === null ? null : Data.struct(s)));
+  const priorData = Data.array(b.map((s) => s === null ? null : Data.struct(s)));
+
+  return Equal.equals(stackData, priorData);
+};
+
+export const isSame = (self: Fibril) => {
   const a = self.stack;
   const b = self.saved;
 
@@ -74,9 +87,4 @@ export const isSameStrand = (self: Fibril) => {
   const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)));
 
   return Equal.equals(stackData, priorData);
-};
-
-export const cloneStrand = (self: Fibril): Fibril => {
-  const {elem, rehydrant, ...rest} = self;
-  return structuredClone(rest) as Fibril;
 };

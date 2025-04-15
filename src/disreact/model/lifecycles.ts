@@ -275,7 +275,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
         else if (
           Props.isEqual(curr.props, rend.props) && // Task Changed
-          Fibril.isSameStrand(curr.fibril)
+          Fibril.isSame(curr.fibril)
         ) {
           // console.log('same');
           // console.log(curr.id);
