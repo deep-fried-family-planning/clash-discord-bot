@@ -39,25 +39,17 @@ export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
 
 export const apply = <A = any>(handler: Handler<A>, event: Trigger<A>) =>
   pipe(
-    E.try({
-      try  : () => handler(event.data),
-      catch: (e) => new TriggerDefect({cause: e}),
-    }),
+    E.sync(() => handler(event.data)),
     E.flatMap((output) => {
       if (Predicate.isPromise(output)) {
-        return E.tryPromise({
-          try  : async () => await output,
-          catch: (e) => new TriggerDefect({cause: e}),
-        });
+        return E.promise(async () => await output);
       }
 
       if (E.isEffect(output)) {
-        return pipe(
-          output as E.Effect<void>,
-          E.catchAll((e) => new TriggerDefect({cause: e})),
-        );
+        return output as E.Effect<void>;
       }
 
       return E.void;
     }),
+    E.catchAllDefect((e) => E.fail(e as Error)),
   );

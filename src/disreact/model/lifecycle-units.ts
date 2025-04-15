@@ -1,55 +1,122 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {RegistryDefect} from '#src/disreact/model/Registry.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import type {Cause} from 'effect';
-import type {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Side} from '#src/disreact/model/entity/side.ts';
-import {Trigger} from './entity/trigger.ts';
+import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import { FC } from '#src/disreact/model/entity/fc.ts';
+import { Unsafe } from './entity/unsafe';
 
-export * as LifecycleUnits from '#src/disreact/model/lifecycle-units.ts';
-export type LifecycleUnits = never;
+export * as LifecycleUnit from '#src/disreact/model/lifecycle-units.ts';
+export type LifecycleUnit = never;
 
-export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((dispatcher) =>
+const withLock = <A, E, R>(effect: E.Effect<A, E, R>) => Dispatcher.use((dispatcher) =>
+  pipe(
+    dispatcher.lock,
+    E.flatMap(() => effect),
+    E.tap(() => {
+      Unsafe.setNode(undefined);
+      return dispatcher.unlock;
+    }),
+    E.catchAllDefect((e) => {
+      Unsafe.setNode(undefined);
+      return E.zipRight(
+        dispatcher.unlock,
+        E.fail(e as Error),
+      );
+    }),
+  ),
+);
+
+export const mount = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      Dispatcher.setGlobal(self.fibril);
-      self.fibril.rehydrant = root;
-      self.fibril.pc = 0;
-      self.fibril.elem = self;
-      self.fibril.rehydrant.fibrils[self.id!] = self.fibril;
-      return FC.render(self.type, self.props);
+      Fibril.init(root, task, task.fibril);
+      Unsafe.setNode(task.fibril);
+      return FC.render(task.type, task.props);
     }),
-    E.tap((children) => {
-      Dispatcher.setGlobal(null);
-      return E.as(dispatcher.unlock, children);
+    E.tap(() => {
+      Unsafe.setNode(undefined);
+      return dispatcher.unlock;
     }),
-    E.catchAllDefect((err) => {
-      Dispatcher.setGlobal(null);
-      return E.fail(err as Error);
+    E.catchAllDefect((e) => {
+      Unsafe.setNode(undefined);
+
+      return E.zipRight(
+        dispatcher.unlock,
+        E.fail(e as Error),
+      );
     }),
     E.map((children) => {
-      self.fibril.pc = 0;
-      self.fibril.saved = structuredClone(self.fibril.stack);
-      self.fibril.rc++;
-      const filtered = children.filter(Boolean) as Elem.Any[];
-
-      for (let i = 0; i < filtered.length; i++) {
-        const node = filtered[i];
-
-        if (!Elem.isValue(node)) {
-          Elem.connectChild(self, node, i);
-        }
-      }
-
-      return filtered;
+      Fibril.commit(task.fibril);
+      task.nodes = children.filter(Boolean) as Elem.Any[];
+      Elem.connectNodes(task, task.nodes);
+      return task.nodes;
     }),
-    E.tap(() => renderEffect(root, self.fibril) as E.Effect<void, RegistryDefect | Cause.UnknownException, Registry | Relay>),
+    E.tap(() => renderEffect(root, task.fibril)),
+  ),
+);
+
+export const hydrate = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
+  pipe(
+    dispatcher.lock,
+    E.flatMap(() => {
+      Fibril.hydrate(root, task, task.fibril);
+      Unsafe.setNode(task.fibril);
+      return FC.render(task.type, task.props);
+    }),
+    E.tap(() => {
+      Unsafe.setNode(undefined);
+      return dispatcher.unlock;
+    }),
+    E.catchAllDefect((e) => {
+      Unsafe.setNode(undefined);
+
+      return E.zipRight(
+        dispatcher.unlock,
+        E.fail(e as Error),
+      );
+    }),
+    E.map((children) => {
+      Fibril.commit(task.fibril);
+      task.nodes = children.filter(Boolean) as Elem.Any[];
+      Elem.connectNodes(task, task.nodes);
+      return task.nodes;
+    }),
+  ),
+);
+
+export const render = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
+  pipe(
+    dispatcher.lock,
+    E.flatMap(() => {
+      Fibril.connect(root, task, task.fibril);
+      Unsafe.setNode(task.fibril);
+      return FC.render(task.type, task.props);
+    }),
+    E.tap(() => {
+      Unsafe.setNode(undefined);
+      return dispatcher.unlock;
+    }),
+    E.catchAllDefect((e) => {
+      Unsafe.setNode(undefined);
+
+      return E.zipRight(
+        dispatcher.unlock,
+        E.fail(e as Error),
+      );
+    }),
+    E.map((children) => {
+      Fibril.commit(task.fibril);
+      const nodes = children.filter(Boolean) as Elem.Any[];
+      Elem.connectNodes(task, nodes);
+      return nodes;
+    }),
+    E.tap(() => renderEffect(root, task.fibril)),
   ),
 );
 

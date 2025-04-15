@@ -43,6 +43,7 @@ export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
       }),
     ),
   ),
+  accessors: true,
 }) {
   static readonly setGlobal = setGlobal;
   static readonly getGlobal = getGlobal;

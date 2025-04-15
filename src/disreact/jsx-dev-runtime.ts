@@ -1,6 +1,6 @@
-import {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 
-export const Fragment = Elem.Frag;
-export const jsx = Elem.jsx;
-export const jsxs = Elem.jsxs;
-export const jsxDEV = Elem.jsxDEV;
+export const Fragment = Lifecycle.Fragment;
+export const jsx = Lifecycle.jsx;
+export const jsxs = Lifecycle.jsxs;
+export const jsxDEV = Lifecycle.jsxDEV;

@@ -2,8 +2,9 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 import {Data} from 'effect';
-import {Props} from './props';
+import {Props} from '#src/disreact/model/entity/props.ts';
 
 const HANDLER_KEYS = [
   Keys.onclick,
@@ -29,7 +30,6 @@ export interface MetaProps {
   nodes: Any[];
 }
 
-
 /**
  * Elem
  */
@@ -42,53 +42,15 @@ export type Any =
   | Elem
   | Value;
 
-export const jsx = (type: any, props: any): Elem => {
-  if (type === undefined) {
-    return props.children;
-  }
-
-  switch (typeof type) {
-    case 'string':
-      return jsxRest(type, props);
-    case 'function':
-      return jsxTask(type, props);
-    default:
-      throw new Error();
+export const connectNodes = (parent: Elem, nodes: Any[]) => {
+  for (let i = 0; i < nodes.length; i++) {
+    const child = nodes[i];
+    if (isValue(child)) {
+      continue;
+    }
+    connectChild(parent, child, i);
   }
 };
-
-export const jsxs = (type: any, props: any): Elem => {
-  props.children = props.children.flat();
-
-  if (type === undefined) {
-    return props.children;
-  }
-
-  switch (typeof type) {
-    case 'string':
-      return jsxsRest(type, props);
-    case 'function':
-      return jsxsTask(type, props);
-    default:
-      throw new Error();
-  }
-};
-
-export const jsxDEV = (type: any, props: any): Elem => {
-  if (!Array.isArray(props.children)) {
-    return jsx(type, props);
-  }
-  return jsxs(type, props);
-};
-
-export const cloneElem = (self: Elem) => {
-  if (isRest(self)) {
-    return cloneRest(self);
-  }
-
-  return cloneTask(self);
-};
-
 
 export const connectChild = (parent: Elem, child: Elem, idx: number) => {
   child.idx = idx;
@@ -119,7 +81,6 @@ export const isSame = (a: Elem, b: Elem) => {
   return a.type === b.type;
 };
 
-
 /**
  * Task
  */
@@ -140,7 +101,7 @@ export const isTask = (self: unknown): self is Task => {
   return false;
 };
 
-export const jsxTask = (type: any, props: any): Task => {
+export const makeTask = (type: any, props: any): Task => {
   const fc = FC.make(type);
   const task = {} as Task;
   task.idn = FC.getName(fc);
@@ -151,15 +112,10 @@ export const jsxTask = (type: any, props: any): Task => {
   return task;
 };
 
-export const jsxsTask = (type: any, props: any): Task => {
-  const init = jsxTask(type, props);
-  return init;
-};
-
 export const cloneTask = (self: Task): Task => {
   const {props, fibril, type, nodes, id, idx} = self;
   const clonedProps = Props.deepCloneTaskProps(props);
-  const task = jsxTask(type, clonedProps);
+  const task = makeTask(type, clonedProps);
   task.fibril = Fibril.clone(fibril);
   task.nodes = nodes;
   task.id = id;
@@ -190,18 +146,6 @@ export const makeRest = (type: string, props: any, nodes: any[]): Rest => {
     nodes,
     handler: Props.getHandler(props),
   };
-};
-
-export const jsxRest = (type: string, props: any): Rest => {
-  const child = props.children;
-  delete props.children;
-  return makeRest(type, props, child ? [child] : []);
-};
-
-export const jsxsRest = (type: string, props: any): Rest => {
-  const nodes = props.children;
-  delete props.children;
-  return makeRest(type, props, nodes);
 };
 
 export const cloneRest = (self: Rest): Rest => {
@@ -284,3 +228,19 @@ export const isValue = (self: unknown): self is Value => {
 export const makeValue = (value: any): Value => value;
 
 export const cloneValue = (self: Value): Value => structuredClone(self);
+
+/**
+ * schema
+ */
+export type Encoded<A extends string = string, B = any> =
+  | {
+      _tag: A;
+      data: B;
+    }
+  | null;
+
+export const declareEncoded = <T extends string, A, I, R>(_tag: T, data: S.Schema<A, I, R>) =>
+  S.Struct({
+    _tag: S.Literal(_tag),
+    data: data,
+  });

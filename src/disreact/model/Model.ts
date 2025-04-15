@@ -1,14 +1,12 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {Hooks} from '#src/disreact/model/hooks.ts';
+import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {runMain} from '@effect/platform-node/NodeRuntime';
-import {Fiber, FiberMap} from 'effect';
-import {Lifecycle} from 'src/disreact/model/lifecycle.ts';
-import { Hooks } from './hooks';
-import { LifecycleIO } from './lifecycle-io';
+import {FiberMap} from 'effect';
 
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
@@ -16,7 +14,7 @@ export const makeEntrypoint = (key: Registry.Key, props?: any) =>
     E.tap((root) => Lifecycle.initialize(root)),
     E.flatMap((root) =>
       pipe(
-        LifecycleIO.encode(root.elem),
+        Lifecycle.encode(root),
         E.map((encoded) => [root, encoded] as const),
       ),
     ),

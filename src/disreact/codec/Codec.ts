@@ -4,10 +4,10 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {RxTx} from '#src/disreact/codec/rxtx.ts';
 import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import type {LifecycleIO} from '#src/disreact/model/lifecycle-io.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, pipe, S} from '#src/disreact/utils/re-exports.ts';
+import type { Elem } from '../model/entity/elem';
 
 export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 
@@ -26,7 +26,7 @@ export const decodeEvent = (route: RxTx.ParamsRequest): Trigger => {
 
 const finalEncoder = S.encodeSync(RxTx.OutTransform);
 
-const encodeFinal = (config: DisReactConfig.Resolved) => (hydrant: Rehydrant, doken: Doken, encoding: LifecycleIO.Encoded) => {
+const encodeFinal = (config: DisReactConfig.Resolved) => (hydrant: Rehydrant, doken: Doken, encoding: Elem.Encoded) => {
   if (!encoding) {
     return E.succeed(null);
   }

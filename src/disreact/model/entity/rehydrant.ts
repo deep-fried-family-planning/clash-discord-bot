@@ -1,33 +1,39 @@
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import {Record} from 'effect';
+import {MutableList} from 'effect';
+import { Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
 export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 export type Rehydrant = {
-  id     : string;
-  props? : any;
-  elem   : Elem;
-  next   : {id: string | null; props?: any};
-  data   : any;
-  fibrils: {[id: string]: Fibril};
+  id      : string;
+  props?  : any;
+  elem    : Elem;
+  next    : {id: string | null; props?: any};
+  data    : any;
+  fibrils : {[id: string]: Fibril};
+  mount   : MutableList.MutableList<Elem>;
+  dismount: MutableList.MutableList<Elem>;
 };
 
 export const make = (src: Source, props?: any): Rehydrant => {
-  const elem = Elem.cloneElem(src.elem);
+  const elem = Lifecycle.clone(src.elem);
   elem.props = props;
   elem.id = src.id;
 
   const rehydrant: Rehydrant = {
-    id     : src.id,
-    props  : props,
-    elem   : elem,
-    next   : {id: src.id},
-    data   : {},
-    fibrils: {},
+    id      : src.id,
+    props   : props,
+    elem    : elem,
+    next    : {id: src.id},
+    data    : {},
+    fibrils : {},
+    mount   : MutableList.empty(),
+    dismount: MutableList.empty(),
   };
 
   if (Elem.isTask(rehydrant.elem)) {
@@ -120,7 +126,7 @@ export const makeSource = (src: Elem | FC): Source => {
 
     return {
       id  : FC.getName(src.type),
-      elem: Elem.cloneElem(src),
+      elem: Lifecycle.clone(src),
     };
   }
 
@@ -130,6 +136,6 @@ export const makeSource = (src: Elem | FC): Source => {
 
   return {
     id  : FC.getName(fc),
-    elem: Object.freeze(Elem.jsxTask(fc, {})),
+    elem: Object.freeze(Elem.makeTask(fc, {})),
   };
 };

@@ -1,6 +1,6 @@
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
-import {Data, Predicate} from 'effect';
+import {Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/fc'),
              NameId = Symbol('disreact/fc/name');
@@ -72,10 +72,6 @@ const ensure = (cs: Elem.Return) => {
   }
   return [cs];
 };
-
-export class RenderDefect extends Data.TaggedError('disreact/RenderDefect')<{
-  cause?: unknown;
-}> {}
 
 export const render = (fc: FC, p?: any): E.Effect<Elem.Any[]> => {
   if (isSync(fc)) {

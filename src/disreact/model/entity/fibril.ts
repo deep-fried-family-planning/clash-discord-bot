@@ -60,7 +60,6 @@ export const make = (stack?: Chain): Fibril => {
 
 export const clone = (self: Fibril): Fibril => {
   const {elem, rehydrant, ...rest} = self;
-
   return structuredClone(rest) as Fibril;
 };
 
@@ -76,4 +75,33 @@ export const isSame = (self: Fibril) => {
   const priorData = Data.array(self.saved.map((s) => s === null ? null : Data.struct(s)));
 
   return Equal.equals(stackData, priorData);
+};
+
+export const init = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
+  fibril.elem = task;
+  fibril.rehydrant = root;
+  root.fibrils[task.id!] = fibril;
+  fibril.pc = 0;
+  fibril.rc = 0;
+};
+
+export const connect = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
+  fibril.elem = task;
+  fibril.rehydrant = root;
+  root.fibrils[task.id!] = fibril;
+  fibril.pc = 0;
+};
+
+export const hydrate = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
+  fibril.elem = task;
+  fibril.rehydrant = root;
+  root.fibrils[task.id!] = fibril;
+  fibril.pc = 0;
+  fibril.rc = 1;
+};
+
+export const commit = (self: Fibril) => {
+  self.pc = 0;
+  self.saved = structuredClone(self.stack);
+  self.rc++;
 };

@@ -6,8 +6,6 @@ import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
 import {makeTestRuntime, Snap} from 'test/unit/util.ts';
 import {SNAP} from 'test/unit/snapkey.ts';
 
-
-
 const runtime = makeTestRuntime([TestMessage]);
 
 describe('given function component', () => {

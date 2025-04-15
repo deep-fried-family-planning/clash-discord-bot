@@ -1,9 +1,9 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import { Unsafe} from '#src/disreact/model/entity/unsafe.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
-export * as Hooks from './hooks.ts';
+export * as Hooks from '#src/disreact/model/hooks.ts';
 export type Hooks = never;
 
 interface SetState<A> {
@@ -16,10 +16,10 @@ interface EffectFn {
 }
 
 /**
- * useReducer
+ * useState
  */
 export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
-  const node = Dispatcher.getGlobal();
+  const node = Unsafe.getNode();
 
   node.stack[node.pc] ??= {s: initial};
 
@@ -64,7 +64,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
     }
   }
 
-  const node = Dispatcher.getGlobal();
+  const node = Unsafe.getNode();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = {d: deps ?? []};
@@ -109,7 +109,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
  * useIx
  */
 export const $useIx = () => {
-  const node = Dispatcher.getGlobal();
+  const node = Unsafe.getNode();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
@@ -128,7 +128,7 @@ export const $useIx = () => {
  * usePage
  */
 export const $usePage = (_: FC[]) => {
-  const node = Dispatcher.getGlobal();
+  const node = Unsafe.getNode();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;

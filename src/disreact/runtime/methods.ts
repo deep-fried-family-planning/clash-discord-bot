@@ -8,8 +8,8 @@ import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Fiber} from 'effect';
 import {Model} from 'src/disreact/model/Model.ts';
+import {Lifecycle} from 'src/disreact/model/lifecycle.ts';
 import {Dokens} from './dokens.ts';
-import { LifecycleIO } from '../model/lifecycle-io.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
@@ -87,7 +87,7 @@ export const respond = (body: any) => E.gen(function* () {
     return null;
   }
 
-  const final = yield* LifecycleIO.encode(root.elem);
+  const final = yield* Lifecycle.encode(root);
 
   if (!final) {
     return null;
