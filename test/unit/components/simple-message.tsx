@@ -1,5 +1,5 @@
 import {usePage} from '#src/disreact/index.ts';
-import {SimpleModal} from '#test/unit/runtime/scenarios/.components/simple-modal.tsx';
+import {SimpleModal} from '#test/unit/components/simple-modal.tsx';
 
 export const SimpleMessage = () => {
   const page = usePage([SimpleModal]);

@@ -1,6 +1,7 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {Data} from 'effect';
@@ -183,10 +184,6 @@ export const FragmentType = undefined;
 
 export const isFragmentType = (self: any): self is FragmentType => self === undefined;
 
-export type Frag = undefined;
-
-export const Frag = undefined;
-
 export const makeFragment = (type: undefined, props: any) => {
   return props.children;
 };
@@ -234,8 +231,9 @@ export const cloneValue = (self: Value): Value => structuredClone(self);
  */
 export type Encoded<A extends string = string, B = any> =
   | {
-      _tag: A;
-      data: B;
+      _tag     : A;
+      rehydrant: Rehydrant.Decoded;
+      data     : B;
     }
   | null;
 

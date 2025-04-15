@@ -8,7 +8,7 @@ import {MutableList} from 'effect';
 import { Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
-export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+export * as Rehydrant from '#src/disreact/model/rehydrant.ts';
 export type Rehydrant = {
   id      : string;
   props?  : any;
@@ -18,6 +18,8 @@ export type Rehydrant = {
   fibrils : {[id: string]: Fibril};
   mount   : MutableList.MutableList<Elem>;
   dismount: MutableList.MutableList<Elem>;
+  diffs   : MutableList.MutableList<[Elem.Any, Elem.Any]>;
+  render  : MutableList.MutableList<[Elem, Elem] | [Elem.Task, number]>;
 };
 
 export const make = (src: Source, props?: any): Rehydrant => {
@@ -34,6 +36,8 @@ export const make = (src: Source, props?: any): Rehydrant => {
     fibrils : {},
     mount   : MutableList.empty(),
     dismount: MutableList.empty(),
+    diffs   : MutableList.empty(),
+    render  : MutableList.empty(),
   };
 
   if (Elem.isTask(rehydrant.elem)) {
@@ -91,26 +95,10 @@ export const rehydrate = (src: Source, dehydrated: Decoded) => {
   return rehydrant;
 };
 
-export const mount = (root: Rehydrant, elem: Elem) => {
-  if (Elem.isTask(elem)) {
-    elem.fibril.rehydrant = root;
-    elem.fibril.elem = elem;
-    root.fibrils[elem.id!] = elem.fibril;
-  }
-};
-
 export const mountTask = (root: Rehydrant, elem: Elem.Task) => {
   elem.fibril.rehydrant = root;
   elem.fibril.elem = elem;
   root.fibrils[elem.id!] = elem.fibril;
-};
-
-export const dismountTask = (root: Rehydrant, elem: Elem.Task) => {
-  // @ts-expect-error temporary
-  delete elem.fibril.elem;
-  // @ts-expect-error temporary
-  delete elem.fibril.rehydrant;
-  delete root.fibrils[elem.id!];
 };
 
 export type Source = {

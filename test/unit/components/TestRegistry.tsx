@@ -6,11 +6,14 @@ import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import {MessageAsync} from '#test/unit/components/message-async.tsx';
 import {TestDialog} from '#test/unit/components/test-dialog.tsx';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import type {Vitest} from '@effect/vitest';
 import {it as vfx, vi} from '@effect/vitest';
 import {Logger, Redacted, TestServices} from 'effect';
+import { MessageSync } from './message-sync';
+import { MessageEffect } from 'test/unit/components/message-effect.tsx';
 
 const config = DisReactConfig.configLayer(
   {
@@ -18,6 +21,9 @@ const config = DisReactConfig.configLayer(
     sources: [
       <TestDialog/>,
       <TestMessage/>,
+      <MessageEffect/>,
+      <MessageSync/>,
+      <MessageAsync/>,
     ],
   },
 );

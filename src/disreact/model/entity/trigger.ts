@@ -21,7 +21,7 @@ export const declare = <A, I, R>(data: S.Schema<A, I, R>) =>
 
 export type Event<A> = Trigger<A>['data'];
 
-export type Handler<A> = <E, R>(event: Event<A>) =>
+export type Handler<A, E = any, R = any> = (event: Event<A>) =>
   | void
   | Promise<void>
   | E.Effect<void, E, R>;

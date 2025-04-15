@@ -1,5 +1,6 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Hooks} from '#src/disreact/model/hooks.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
@@ -25,8 +26,8 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
     Registry.rehydrate(dehydrated),
     E.tap((original) =>
       pipe(
-        Lifecycle.hydrate(original),
-        E.andThen(() => Lifecycle.handleEvent(original, event)),
+        Lifecycle.rehydrate(original),
+        E.andThen(() => Lifecycle.invoke(original, event)),
         E.andThen(() => Lifecycle.rerender(original)),
         E.andThen(() =>
           Relay.use((relay) =>
@@ -51,15 +52,69 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
     ),
   );
 
+;
+
+const make = pipe(
+  E.all({
+    roots: FiberMap.make<string, Elem.Encoded>(),
+  }),
+  E.map(({roots}) => {
+    const create = (id: string, key: Registry.Key, props: any = {}) =>
+      pipe(
+        Registry.checkout(key, props),
+        E.tap((root) => Lifecycle.initialize(root)),
+        E.flatMap((root) => Lifecycle.encode(root)),
+        FiberMap.run(roots, id),
+      );
+
+    const invoke = (id: string, rehydrant: Rehydrant.Decoded, event: Trigger) =>
+      pipe(
+        Registry.rehydrate(rehydrant),
+        E.flatMap((original) =>
+          pipe(
+            Lifecycle.rehydrate(original),
+            E.andThen(() => Lifecycle.invoke(original, event)),
+            E.andThen(() => Lifecycle.rerender(original)),
+            E.andThen(() =>
+              Relay.use((relay) =>
+                relay.setOutput(original),
+              ),
+            ),
+            E.zipRight(
+              Relay.use((relay) =>
+                pipe(
+                  relay.awaitOutput(),
+                  E.flatMap((output) => {
+                    if (output === null) {
+                      return E.succeed(output);
+                    }
+                    if (output.id === original.id) {
+                      return Lifecycle.encode(output);
+                    }
+                    return pipe(
+                      Lifecycle.initialize(output),
+                      E.flatMap(() => Lifecycle.encode(output)),
+                    );
+                  }),
+                  E.tap(() => relay.setComplete()),
+                ),
+              ),
+              {concurrent: true},
+            ),
+          ),
+        ),
+        FiberMap.run(roots, id),
+      );
+
+    return {
+      create,
+      invoke,
+    };
+  }),
+);
+
 export class Model extends E.Service<Model>()('disreact/Model', {
-  effect: pipe(
-    E.all({
-      roots: FiberMap.make<Rehydrant.Rehydrant, Rehydrant>(),
-    }),
-    E.map(() => {
-      return {};
-    }),
-  ),
+  effect      : make,
   dependencies: [
     Dispatcher.Default,
     Registry.Default,
@@ -75,4 +130,49 @@ export class Model extends E.Service<Model>()('disreact/Model', {
     usePage   : Hooks.$usePage,
     useIx     : Hooks.$useIx,
   };
+
+  static readonly create = (key: Registry.Key, props: any = {}) =>
+    pipe(
+      Registry.checkout(key, props),
+      E.tap((root) => Lifecycle.initialize(root)),
+      E.flatMap((root) => Lifecycle.encode(root)),
+    );
+
+  static readonly invoke = (rehydrant: Rehydrant.Decoded, event: Trigger) =>
+    pipe(
+      Registry.rehydrate(rehydrant),
+      E.flatMap((original) =>
+        pipe(
+          Lifecycle.rehydrate(original),
+          E.andThen(() => Lifecycle.invoke(original, event)),
+          E.andThen(() => Lifecycle.rerender(original)),
+          E.andThen(() =>
+            Relay.use((relay) =>
+              relay.setOutput(original),
+            ),
+          ),
+          E.zipRight(
+            Relay.use((relay) =>
+              pipe(
+                relay.awaitOutput(),
+                E.flatMap((output) => {
+                  if (output === null) {
+                    return E.succeed(output);
+                  }
+                  if (output.id === original.id) {
+                    return Lifecycle.encode(output);
+                  }
+                  return pipe(
+                    Lifecycle.initialize(output),
+                    E.flatMap(() => Lifecycle.encode(output)),
+                  );
+                }),
+                E.tap(() => relay.setComplete()),
+              ),
+            ),
+            {concurrent: true},
+          ),
+        ),
+      ),
+    );
 }

@@ -16,13 +16,15 @@ export type Methods = never;
 
 export const synthesize = (id: Elem | FC | string, props?: any) =>
   pipe(
-    Model.makeEntrypoint(id, props),
-    E.flatMap(([root, encoding]) =>
-      Codec.encodeFinal(
-        root,
-        Doken.synthetic(),
-        encoding,
-      ),
+    Model.create(id, props),
+    E.flatMap((root) =>
+      root
+        ? Codec.encodeFinal(
+          root.rehydrant,
+          Doken.synthetic(),
+          root,
+        )
+        : E.succeed(null),
     ),
   );
 
