@@ -20,7 +20,7 @@ export const SimpleModal = () => {
         yield* SimpleModalService.log(event);
       })}
     >
-      <textinput label={'SimpleTextValue'}/>
+      <textinput label={'SimpleTextValue'} value={'Ope'}/>
     </modal>
   );
 };

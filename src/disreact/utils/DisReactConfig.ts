@@ -2,7 +2,6 @@ import type {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Redacted} from 'effect';
 import {E, flow, L} from '#src/disreact/utils/re-exports.ts';
-import {RxTx} from 'src/disreact/codec/rxtx.ts';
 
 export namespace DisReactConfig {
   export type Input = {
@@ -33,7 +32,7 @@ const makeDefaultOptions = (input: DisReactConfig.Input): DisReactConfig.Resolve
     options.token = Redacted.make(options.token);
   }
 
-  options.baseUrl ??= RxTx.DEFAULT_BASE_URL;
+  options.baseUrl ??= 'https://dffp.org';
   options.dokenCapacity ??= 100;
 
   return options;

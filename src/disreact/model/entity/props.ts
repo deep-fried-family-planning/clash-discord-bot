@@ -72,3 +72,38 @@ export const isDeepEqual = (a: any, b: any) => {
     return true;
   }
 };
+
+export const deepCloneTaskProps = (props: any): any => {
+  if (!props) {
+    return props;
+  }
+
+  try {
+    return structuredClone(props);
+  }
+  catch (e) {/**/}
+
+  const acc = {} as any;
+
+  for (const key of Object.keys(props)) {
+    const original = props[key];
+    const originalType = typeof original;
+
+    if (originalType === 'object') {
+      if (!original) {
+        acc[key] = null;
+        continue;
+      }
+      if (Array.isArray(original)) {
+        acc[key] = original.map((item) => deepCloneTaskProps(item));
+        continue;
+      }
+      acc[key] = deepCloneTaskProps(original);
+      continue;
+    }
+
+    acc[key] = original;
+  }
+
+  return props;
+};

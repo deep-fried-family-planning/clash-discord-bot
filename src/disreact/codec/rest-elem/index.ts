@@ -42,6 +42,7 @@ import {Underline} from '#src/disreact/codec/rest-elem/markdown/u.ts';
 import {UnorderedList} from '#src/disreact/codec/rest-elem/markdown/ul.ts';
 import {Message} from '#src/disreact/codec/rest-elem/container/message.ts';
 import {Modal} from '#src/disreact/codec/rest-elem/container/modal.ts';
+import {Ephemeral} from '#src/disreact/codec/rest-elem/container/ephemeral.ts';
 import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
 import {pipe, S} from '#src/disreact/utils/re-exports.ts';
 import { DAPI } from '../dapi/dapi';
@@ -221,6 +222,7 @@ export const Attributes = {
   [Time.TAG]         : Time.Attributes,
   [Underline.TAG]    : Underline.Attributes,
   [UnorderedList.TAG]: UnorderedList.Attributes,
+  [Ephemeral.TAG]    : Ephemeral.Attributes,
 };
 
 export const NORM = {
@@ -268,11 +270,13 @@ export const NORM = {
   [Time.TAG]         : Time.NORM,
   [Underline.TAG]    : Underline.NORM,
   [UnorderedList.TAG]: UnorderedList.NORM,
+  [Ephemeral.TAG]    : Ephemeral.NORM,
 } as any;
 
 export const ENC =  {
   [Emoji.TAG]        : Emoji.encode,
   [Message.TAG]      : Message.encode,
+  [Ephemeral.TAG]    : Ephemeral.encode,
   [Embed.TAG]        : Embed.encode,
   [Author.TAG]       : Author.encode,
   [Footer.TAG]       : Footer.encode,
@@ -408,7 +412,8 @@ export type IntrinsicTuples =
   | [typeof Small.TAG, typeof Small.Attributes.Type]
   | [typeof Time.TAG, typeof Time.Attributes.Type]
   | [typeof Underline.TAG, typeof Underline.Attributes.Type]
-  | [typeof UnorderedList.TAG, typeof UnorderedList.Attributes.Type];
+  | [typeof UnorderedList.TAG, typeof UnorderedList.Attributes.Type]
+  | [typeof Ephemeral.TAG, typeof Ephemeral.Attributes.Type];
 
 export type IntrinsicTuplesMapped = {
   [K in IntrinsicTuples as K[0]]: K[1];

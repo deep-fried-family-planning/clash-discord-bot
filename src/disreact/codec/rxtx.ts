@@ -1,12 +1,13 @@
-import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
+import {encoding} from '#src/disreact/model/declarations.ts';
 import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
+import {Keys} from './rest-elem/keys.ts';
 
 export * as RxTx from './rxtx.ts';
 export type RxTx = never;
 
-export const DEFAULT_BASE_URL = 'https://dffp.org';
 export const MESSAGE = 'Message';
 export const MODAL = 'Modal';
 
@@ -30,6 +31,51 @@ export const ModalParamsSerial = S.transform(
       ({
         id    : id,
         serial: serial,
+      }),
+  },
+);
+
+
+const ModalCustomIdTransform = pipe(
+  S.TemplateLiteralParser(
+    S.String,
+    '/', S.String,
+  ),
+  S.transform(
+    S.Struct({
+      root_id  : S.String,
+      custom_id: S.String,
+    }),
+    {
+      encode: ({root_id, custom_id}) =>
+        [
+          root_id, '/', custom_id,
+        ] as const,
+      decode: ([root_id, , custom_id]) =>
+        ({
+          root_id,
+          custom_id,
+        }),
+    },
+  ),
+);
+
+const ModalParamsTransform = S.transform(
+  S.typeSchema(DAPI.Modal.Any),
+  S.Struct({
+    params: ModalCustomIdTransform,
+    data  : S.typeSchema(DAPI.Modal.Any),
+  }),
+  {
+    encode: ({params, data}) =>
+      ({
+        ...data,
+        custom_id: params,
+      }),
+    decode: (modal) =>
+      ({
+        params: modal.custom_id as any,
+        data  : modal,
       }),
   },
 );
@@ -87,26 +133,6 @@ export const MessageParamsTransform = S.transform(
   },
 );
 
-export const ModalParamsTransform = S.transform(
-  S.typeSchema(DAPI.Modal.Any),
-  S.Struct({
-    params: ModalParamsSerial,
-    data  : S.typeSchema(DAPI.Modal.Any),
-  }),
-  {
-    encode: ({params, data}) =>
-      ({
-        ...data,
-        custom_id: params,
-      }),
-    decode: (modal) =>
-      ({
-        params: modal.custom_id as any,
-        data  : modal,
-      }),
-  },
-);
-
 export const MessageParamsRequest = pipe(
   DAPI.Ix.ComponentRequestBody,
   S.transform(
@@ -130,7 +156,7 @@ export const MessageParamsRequest = pipe(
       fresh      : Doken.Fresh,
       serial     : S.typeSchema(Doken.Serial),
       hydrant    : S.typeSchema(Rehydrant.Decoded),
-      body       : S.typeSchema(DAPI.Ix.RequestBody),
+      body       : S.typeSchema(DAPI.Ix.ComponentRequestBody),
       event      : S.Any,
     }),
     {
@@ -151,11 +177,13 @@ export const MessageParamsRequest = pipe(
   S.mutable,
 );
 
+
+
 export const ModalParamsRequest = pipe(
   DAPI.Ix.ModalRequestBody,
   S.transform(
     S.Struct({
-      modal  : ModalParamsTransform,
+      modal  : ModalCustomIdTransform,
       message: S.optional(MessageParamsTransform),
       request: S.typeSchema(DAPI.Ix.ModalRequestBody),
     }),
@@ -163,7 +191,7 @@ export const ModalParamsRequest = pipe(
       encode: hole,
       decode: (request) =>
         ({
-          modal  : request.data,
+          modal  : request.data.custom_id as any,
           message: request.message,
           request: request,
         }),
@@ -171,10 +199,11 @@ export const ModalParamsRequest = pipe(
   ),
   S.transform(
     S.Struct({
+      root_id    : S.String,
+      custom_id  : S.String,
       isEphemeral: S.optional(S.Boolean),
-      base       : S.optional(S.String),
       fresh      : Doken.Fresh,
-      serial     : S.typeSchema(Doken.Serial),
+      serial     : S.optional(S.typeSchema(Doken.Serial)),
       hydrant    : S.optional(S.typeSchema(Rehydrant.Decoded)),
       body       : S.typeSchema(DAPI.Ix.ModalRequestBody),
       event      : S.Any,
@@ -183,9 +212,11 @@ export const ModalParamsRequest = pipe(
       encode: hole,
       decode: ({modal, message, request}) =>
         ({
+          root_id    : modal.root_id,
+          custom_id  : modal.custom_id,
           isEphemeral: request.message?.flags === 64,
           fresh      : request,
-          serial     : message?.params?.serial ?? modal.params.serial,
+          serial     : message?.params?.serial,
           hydrant    : message?.params?.hydrant,
           body       : request,
           event      : {},
@@ -202,82 +233,67 @@ export const ParamsRequest = S.Union(
 );
 export type ParamsRequest = typeof ParamsRequest.Type;
 
-export const MessageResponse = S.transform(
+export const OutModalTransform = S.transform(
+  DAPI.Modal.Open,
+  S.Struct({
+    base    : S.optional(S.String),
+    serial  : S.optional(S.typeSchema(Doken.Serial)),
+    hydrant : Rehydrant.Decoded,
+    encoding: encoding(Keys.modal, DAPI.Modal.Open),
+  }),
+  {
+    encode: ({hydrant, encoding}) => ({
+      ...encoding.data,
+      custom_id: `${hydrant.id}/${encoding.data.custom_id}`,
+    }),
+    decode: hole,
+  },
+);
+
+export const OutEphemeralTransform = S.transform(
   MessageParamsTransform,
   S.Struct({
-    base   : S.String,
-    serial : S.typeSchema(Doken.Serial),
-    hydrant: Rehydrant.Decoded,
-    data   : DAPI.Message.Base,
+    base    : S.String,
+    serial  : S.typeSchema(Doken.Serial),
+    hydrant : Rehydrant.Decoded,
+    encoding: encoding(Keys.ephemeral, DAPI.Message.Base),
   }),
   {
-    encode: ({base, data, hydrant, serial}) =>
-      ({
-        params: {
-          base   : base,
-          serial : serial,
-          hydrant: hydrant,
-        },
-        data: data,
-      }),
+    encode: ({base, serial, hydrant, encoding}) => ({
+      params: {
+        base,
+        serial,
+        hydrant,
+      },
+      data: encoding.data,
+    }),
     decode: hole,
   },
 );
 
-export const ModalResponse = S.transform(
-  ModalParamsTransform,
+export const OutMessageTransform = S.transform(
+  MessageParamsTransform,
   S.Struct({
-    base   : S.String,
-    serial : S.typeSchema(Doken.Serial),
-    hydrant: Rehydrant.Decoded,
-    data   : DAPI.Modal.Any,
+    base    : S.String,
+    serial  : S.typeSchema(Doken.Serial),
+    hydrant : Rehydrant.Decoded,
+    encoding: encoding(Keys.message, DAPI.Message.Base),
   }),
   {
-    encode: ({base, data, hydrant, serial}) =>
-      ({
-        params: {
-          id    : hydrant.id,
-          serial: serial,
-        },
-        data: data,
-      }),
+    encode: ({base, serial, hydrant, encoding}) => ({
+      params: {
+        base,
+        serial,
+        hydrant,
+      },
+      data: encoding.data,
+    }),
     decode: hole,
   },
 );
 
-export const ParamsResponse = S.Union(
-  MessageResponse.pipe(S.attachPropertySignature('_tag', MESSAGE), S.mutable),
-  ModalResponse.pipe(S.attachPropertySignature('_tag', MODAL), S.mutable),
-);
-export type ParamsResponse = typeof ParamsResponse.Type;
-
-
-export const ModalOutput = pipe(
-  S.Struct({
-    hydrant: Rehydrant.Decoded,
-    data   : DAPI.Modal.Open,
-  }),
-  S.attachPropertySignature('_tag', 'Modal'),
-);
-
-export const PublicMessageOutput = pipe(
-  S.Struct({
-    hydrant: Rehydrant.Decoded,
-    data   : DAPI.Message.Base,
-  }),
-  S.attachPropertySignature('_tag', 'Public'),
-);
-
-export const EphemeralMessageOutput = pipe(
-  S.Struct({
-    hydrant: Rehydrant.Decoded,
-    data   : DAPI.Message.Ephemeral,
-  }),
-  S.attachPropertySignature('_tag', 'Ephemeral'),
-);
-
-export const Output = S.Union(
-  ModalOutput,
-  PublicMessageOutput,
-  EphemeralMessageOutput,
+export const OutTransform = S.Union(
+  OutModalTransform,
+  OutEphemeralTransform,
+  OutMessageTransform,
 );

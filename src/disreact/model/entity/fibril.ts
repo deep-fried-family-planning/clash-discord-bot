@@ -64,17 +64,6 @@ export const clone = (self: Fibril): Fibril => {
   return structuredClone(rest) as Fibril;
 };
 
-const isSameStack = (a: Chain, b: Chain): boolean => {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  const stackData = Data.array(a.map((s) => s === null ? null : Data.struct(s)));
-  const priorData = Data.array(b.map((s) => s === null ? null : Data.struct(s)));
-
-  return Equal.equals(stackData, priorData);
-};
-
 export const isSame = (self: Fibril) => {
   const a = self.stack;
   const b = self.saved;

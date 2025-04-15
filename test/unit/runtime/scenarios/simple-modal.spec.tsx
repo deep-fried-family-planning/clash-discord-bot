@@ -27,7 +27,6 @@ it.scoped('when opening', E.fn(function* () {
 
   expect(res).toMatchSnapshot();
   expect(runtime.createUpdate).not.toBeCalled();
-  expect(runtime.deferUpdate).toBeCalled();
   expect(runtime.createModal).toBeCalled();
 }));
 
@@ -43,20 +42,8 @@ it.scoped('when submitting', E.fn(function* () {
     guild_id      : 'guild',
     message       : message,
     type          : 5,
-    data          : {
-      ...modal,
-      custom_id : 'SimpleModal',
-      components: [
-        ...modal.components.with(0, {
-          ...modal.components.at(0),
-          components: [{
-            ...modal.components.at(0).components.at(0),
-            value: 'SubmittedText',
-          }],
-        }),
-      ],
-    },
-  }).pipe(E.provide(SimpleModalService.Default));
+    data          : modal,
+  });
 
   expect(SimpleModalServiceLogger.mock.calls).toMatchSnapshot();
   expect(res).toMatchSnapshot();

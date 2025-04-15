@@ -6,13 +6,20 @@ import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {runMain} from '@effect/platform-node/NodeRuntime';
 import {Fiber, FiberMap} from 'effect';
-import {Lifecycles} from './lifecycles';
+import {Lifecycle} from 'src/disreact/model/lifecycle.ts';
 import { Hooks } from './hooks';
+import { LifecycleIO } from './lifecycle-io';
 
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
     Registry.checkout(key, props),
-    E.tap((root) => Lifecycles.initialize(root)),
+    E.tap((root) => Lifecycle.initialize(root)),
+    E.flatMap((root) =>
+      pipe(
+        LifecycleIO.encode(root.elem),
+        E.map((encoded) => [root, encoded] as const),
+      ),
+    ),
   );
 
 export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
@@ -20,30 +27,27 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
     Registry.rehydrate(dehydrated),
     E.tap((original) =>
       pipe(
-        Lifecycles.hydrate(original),
-        E.tap(() => Lifecycles.handleEvent(original, event)),
-        E.tap(() => Lifecycles.rerender(original)),
-        E.flatMap(() =>
+        Lifecycle.hydrate(original),
+        E.andThen(() => Lifecycle.handleEvent(original, event)),
+        E.andThen(() => Lifecycle.rerender(original)),
+        E.andThen(() =>
           Relay.use((relay) =>
-            pipe(
-              relay.setOutput(original),
-            ),
+            relay.setOutput(original),
           ),
         ),
-        E.forkWithErrorHandler((e) => E.die(e as Error)),
       ),
     ),
     E.flatMap((original) =>
       Relay.use((relay) =>
         pipe(
-          Relay.use((relay) => relay.awaitOutput()),
+          relay.awaitOutput(),
           E.tap((output) => {
             if (output === null || output.id === original.id) {
               return;
             }
-            return Lifecycles.initialize(output);
+            return Lifecycle.initialize(output);
           }),
-          E.tap(() => Relay.use((relay) => relay.setComplete())),
+          E.tap(() => relay.setComplete()),
         ),
       ),
     ),

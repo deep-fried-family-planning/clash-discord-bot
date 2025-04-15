@@ -43,20 +43,19 @@ exports[`when opening 2`] = `
       "components": [
         {
           "custom_id": "modal:0:textinput:0",
-          "label": "test text",
           "max_length": undefined,
           "min_length": undefined,
           "placeholder": undefined,
           "required": undefined,
           "style": 1,
           "type": 4,
-          "value": undefined,
+          "value": "Ope",
         },
       ],
       "type": 1,
     },
   ],
-  "custom_id": "c/1236074574509117491/SimpleModal",
+  "custom_id": "SimpleModal/SimpleModal",
   "title": "Hello World!",
 }
 `;

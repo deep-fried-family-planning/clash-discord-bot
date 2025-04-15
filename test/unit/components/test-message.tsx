@@ -5,7 +5,6 @@ import {E} from '#src/disreact/utils/re-exports';
 
 export const TestMessage: FC = () => E.gen(function* () {
   const [num, setNum] = useState(0);
-
   return (
     <message display={'ephemeral'}>
       <Header

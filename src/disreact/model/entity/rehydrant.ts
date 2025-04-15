@@ -3,36 +3,8 @@ import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import type {MutableList} from 'effect';
-import { Record} from 'effect';
+import {Record} from 'effect';
 import {deflate, inflate} from 'pako';
-
-export type Encoded = typeof Encoded.Type;
-export const Encoded = S.String;
-
-export type Decoded = typeof Decoded.Type;
-export const Decoded = S.Struct({
-  id    : S.String,
-  props : S.optional(S.Any),
-  stacks: S.Record({key: S.String, value: Fibril.Chain}),
-});
-
-export const Hydrator = S.transform(
-  Encoded,
-  Decoded,
-  {
-    encode: (dry) => {
-      const pack = encode(dry);
-      const pako = deflate(pack);
-      return Buffer.from(pako).toString('base64url');
-    },
-    decode: (hash) => {
-      const buff = Buffer.from(hash, 'base64url');
-      const pako = inflate(buff);
-      return decode(pako) as any;
-    },
-  },
-);
 
 export * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 export type Rehydrant = {
@@ -67,13 +39,34 @@ export const make = (src: Source, props?: any): Rehydrant => {
   return rehydrant;
 };
 
-export const dehydrate = (rehydrant: Rehydrant): Decoded => {
-  return {
-    id    : rehydrant.id,
-    props : rehydrant.props,
-    stacks: Record.map(rehydrant.fibrils, (fibril) => fibril.stack),
-  };
-};
+export type Encoded = typeof Encoded.Type;
+export const Encoded = S.String;
+
+export type Decoded = typeof Decoded.Type;
+export const Decoded = S.Struct({
+  id    : S.String,
+  props : S.optional(S.Any),
+  stacks: S.Record({key: S.String, value: Fibril.Chain}),
+});
+
+export const Hydrator = S.transform(Encoded, Decoded, {
+  encode: (dry) => {
+    const pack = encode(dry);
+    const pako = deflate(pack);
+    return Buffer.from(pako).toString('base64url');
+  },
+  decode: (hash) => {
+    const buff = Buffer.from(hash, 'base64url');
+    const pako = inflate(buff);
+    return decode(pako) as any;
+  },
+});
+
+export const dehydrate = (rehydrant: Rehydrant): Decoded => ({
+  id    : rehydrant.id,
+  props : rehydrant.props,
+  stacks: Record.map(rehydrant.fibrils, (fibril) => fibril.stack),
+});
 
 export const rehydrate = (src: Source, dehydrated: Decoded) => {
   const rehydrant = make(src, dehydrated.props);

@@ -1,7 +1,6 @@
 import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import {RenderDefect} from '#src/disreact/model/entity/error.ts';
-import {E} from '#src/internal/pure/effect.ts';
-import {Predicate} from 'effect';
+import {E} from '#src/disreact/utils/re-exports.ts';
+import {Data, Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/fc'),
              NameId = Symbol('disreact/fc/name');
@@ -16,11 +15,11 @@ export const SYNC           = 1,
              ASYNC_FUNCTION = 'AsyncFunction';
 
 interface Input {
-  [TypeId]?   : number;
-  [NameId]?   : string;
   (p?: any): Elem.Return | Promise<Elem.Return> | E.Effect<Elem.Return, any, any>;
   displayName?: string;
   sourceName? : string;
+  [TypeId]?   : number;
+  [NameId]?   : string;
 }
 export interface Sync extends Input {
   [TypeId]: typeof SYNC;
@@ -74,47 +73,37 @@ const ensure = (cs: Elem.Return) => {
   return [cs];
 };
 
-export const render = (fc: FC, p?: any): E.Effect<Elem.Any[], RenderDefect> => {
+export class RenderDefect extends Data.TaggedError('disreact/RenderDefect')<{
+  cause?: unknown;
+}> {}
+
+export const render = (fc: FC, p?: any): E.Effect<Elem.Any[]> => {
   if (isSync(fc)) {
-    return E.try({
-      try  : () => ensure(fc(p)),
-      catch: (e) => new RenderDefect({cause: e}),
-    });
+    return E.sync(() => ensure(fc(p)));
   }
   if (isAsync(fc)) {
-    return E.tryPromise({
-      try  : () => fc(p).then(ensure),
-      catch: (e) => new RenderDefect({cause: e}),
-    });
+    return E.promise(() => fc(p).then(ensure));
   }
   if (isEffect(fc)) {
     return (fc(p) as E.Effect<Elem.Return>).pipe(E.map(ensure));
   }
 
   return E.suspend(() => {
-    try {
-      const output = fc(p);
+    const output = fc(p);
 
-      if (Predicate.isPromise(output)) {
-        fc[TypeId] = ASYNC;
+    if (Predicate.isPromise(output)) {
+      fc[TypeId] = ASYNC;
 
-        return E.tryPromise({
-          try  : () => output.then(ensure),
-          catch: (e) => new RenderDefect({cause: e}),
-        });
-      }
-
-      if (E.isEffect(output)) {
-        fc[TypeId] = EFFECT;
-
-        return (output as E.Effect<Elem.Return>).pipe(E.map(ensure));
-      }
-
-      fc[TypeId] = SYNC;
-      return E.succeed(ensure(output));
+      return E.promise(() => output.then(ensure));
     }
-    catch (e) {
-      return E.fail(new RenderDefect({cause: e}));
+
+    if (E.isEffect(output)) {
+      fc[TypeId] = EFFECT;
+
+      return (output as E.Effect<Elem.Return>).pipe(E.map(ensure));
     }
+
+    fc[TypeId] = SYNC;
+    return E.succeed(ensure(output));
   });
 };
