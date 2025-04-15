@@ -1,11 +1,6 @@
+import {TriggerDefect} from '#src/disreact/model/entity/error.ts';
 import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import type {Cause} from 'effect';
 import {Predicate} from 'effect';
-
-export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
-  message?: string;
-  cause?  : unknown;
-}> {}
 
 export * as Trigger from '#src/disreact/model/entity/trigger.ts';
 export type Trigger<A = any> = {
@@ -44,34 +39,20 @@ export const apply = <A = any>(handler: Handler<A>, event: Trigger<A>) =>
   pipe(
     E.try({
       try  : () => handler(event.data),
-      catch: (e) => new TriggerDefect({
-        message: 'Handler threw an exception',
-        cause  : e,
-      }),
+      catch: (e) => new TriggerDefect({cause: e}),
     }),
     E.flatMap((output) => {
-      if (!output) {
-        return E.void;
+      if (Predicate.isPromise(output)) {
+        return E.tryPromise({
+          try  : () => output,
+          catch: (e) => new TriggerDefect({cause: e}),
+        });
       }
 
       if (E.isEffect(output)) {
         return output as E.Effect<void>;
       }
 
-      if (Predicate.isPromise(output)) {
-        return E.tryPromise({
-          try  : () => output,
-          catch: (e) => new TriggerDefect({
-            message: 'Handler threw an exception',
-            cause  : e,
-          }),
-        });
-      }
-
-      return E.fail(
-        new TriggerDefect({
-          message: 'Invalid handler output',
-        }),
-      ) as E.Effect<void, Cause.UnknownException | TriggerDefect>;
+      return E.void;
     }),
   );

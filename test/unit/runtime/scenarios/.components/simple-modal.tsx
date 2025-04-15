@@ -14,12 +14,13 @@ export class SimpleModalService extends E.Service<SimpleModalService>()('test/Si
 export const SimpleModal = () => {
   return (
     <modal
+      custom_id={'SimpleModal'}
       title={'Hello World!'}
-      onsubmit={(event: any) => {
-        return SimpleModalService.log(event);
-      }}
+      onsubmit={(event: any) => E.gen(function* () {
+        yield* SimpleModalService.log(event);
+      })}
     >
-      <textinput label={'test text'}/>
+      <textinput label={'SimpleTextValue'}/>
     </modal>
   );
 };
