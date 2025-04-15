@@ -39,6 +39,10 @@ export const make = (src: Source, props?: any): Rehydrant => {
   return rehydrant;
 };
 
+export const isClose = (self: Rehydrant) => self.next.id === null;
+export const isNext = (self: Rehydrant) => self.next.id !== self.id;
+export const isSame = (self: Rehydrant) => self.next.id === self.id;
+
 export type Encoded = typeof Encoded.Type;
 export const Encoded = S.String;
 

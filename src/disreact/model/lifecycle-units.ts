@@ -1,4 +1,4 @@
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/entity/elem.ts';
 import type {RegistryDefect} from '#src/disreact/model/Registry.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
@@ -14,11 +14,11 @@ import { FC } from '#src/disreact/model/entity/fc.ts';
 export * as LifecycleUnits from '#src/disreact/model/lifecycle-units.ts';
 export type LifecycleUnits = never;
 
-export const render = (root: Rehydrant, self: Elem.Task) => HooksDispatcher.use((dispatcher) =>
+export const render = (root: Rehydrant, self: Elem.Task) => Dispatcher.use((dispatcher) =>
   pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      HooksDispatcher.setGlobal(self.fibril);
+      Dispatcher.setGlobal(self.fibril);
       self.fibril.rehydrant = root;
       self.fibril.pc = 0;
       self.fibril.elem = self;
@@ -26,11 +26,11 @@ export const render = (root: Rehydrant, self: Elem.Task) => HooksDispatcher.use(
       return FC.render(self.type, self.props);
     }),
     E.tap((children) => {
-      HooksDispatcher.setGlobal(null);
+      Dispatcher.setGlobal(null);
       return E.as(dispatcher.unlock, children);
     }),
     E.catchAllDefect((err) => {
-      HooksDispatcher.setGlobal(null);
+      Dispatcher.setGlobal(null);
       return E.fail(err as Error);
     }),
     E.map((children) => {
