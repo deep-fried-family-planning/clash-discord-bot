@@ -3,8 +3,7 @@ import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
-import type {Data} from 'effect';
-import { Differ} from 'effect';
+import {Data} from 'effect';
 
 export type Type =
   | TaskType
@@ -225,8 +224,7 @@ export type Value =
   | string
   | bigint
   | number
-  | true
-  | undefined;
+  | true;
 
 export const isValue = (self: Elem): self is Value =>
   typeof self !== 'object' ||
@@ -242,3 +240,98 @@ export const isEqualValue = (a: Value, b: Value) => a === b;
 export const cloneValue = (self: Value) => structuredClone(self) as Value;
 
 export const encodeValue = (self: Value) => structuredClone(self);
+
+type Diffs = Data.TaggedEnum<{
+  Skip    : {};
+  Set     : {};
+  Update  : {};
+  Jump    : {};
+  Next    : {};
+  Mount   : {};
+  Dismount: {};
+  Replace : {};
+  Render  : {elem: Elem.Task};
+}>;
+const tags = Data.taggedEnum<Diffs>();
+
+const Skip     = tags.Skip,
+      Set      = tags.Set,
+      Update   = tags.Update,
+      Jump     = tags.Jump,
+      Next     = tags.Next,
+      Mount    = tags.Mount,
+      Dismount = tags.Dismount,
+      Replace  = tags.Replace,
+      Render   = tags.Render;
+
+const diff = (a: Elem, b: Elem) => {
+  if (!a && !b) {
+    return Skip();
+  }
+  if (a === b) {
+    return Skip();
+  }
+  if (!a && b) {
+    return Mount();
+  }
+  if (a && !b) {
+    return Dismount();
+  }
+
+  if (Elem.isValue(a)) {
+    if (Elem.isValue(b)) {
+      if (a === b) {
+        return Skip();
+      }
+      return Set();
+    }
+    return Replace();
+  }
+
+  if (Elem.isFragment(a)) {
+    if (Elem.isValue(b)) {
+      return Set();
+    }
+    if (Elem.isFragment(b)) {
+      return Update();
+    }
+    return Replace();
+  }
+
+  if (Elem.isRest(a)) {
+    if (Elem.isValue(b)) {
+      return Set();
+    }
+    if (Elem.isRest(b)) {
+      if (a.type !== b.type) {
+        return Replace();
+      }
+      if (!Props.isEqual(a.props, b.props)) {
+        return Update();
+      }
+      return Next();
+    }
+    return Replace();
+  }
+
+  if (Elem.isTask(a)) {
+    if (Elem.isValue(b)) {
+      return Set();
+    }
+    if (Elem.isTask(b)) {
+      if (a.type !== b.type) {
+        return Replace();
+      }
+      if (!Props.isEqual(a.props, b.props)) {
+        return Render({elem: a});
+      }
+      if (!Fibril.isSame(a.fibril)) {
+        return Render({elem: a});
+      }
+      return Skip();
+    }
+    return Replace();
+  }
+
+  return Skip();
+};

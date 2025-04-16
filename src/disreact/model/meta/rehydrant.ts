@@ -2,12 +2,14 @@ import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
+import type {Relay} from '#src/disreact/model/Relay.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
+import type { Runtime} from 'effect';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
-export * as Rehydrant from '#src/disreact/model/schema/rehydrant.ts';
+export * as Rehydrant from '#src/disreact/model/meta/rehydrant.ts';
 export type Rehydrant = {
   id      : string;
   props?  : any;

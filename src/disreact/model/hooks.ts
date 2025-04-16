@@ -1,9 +1,6 @@
 import type {FC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import type {Relay} from '#src/disreact/model/Relay.ts';
 import type {E} from '#src/internal/pure/effect.ts';
-import {node} from '@rspack/core';
-import type {Runtime} from 'effect';
 
 export * as Hooks from '#src/disreact/model/hooks.ts';
 export type Hooks = never;

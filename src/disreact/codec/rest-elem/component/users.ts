@@ -1,7 +1,7 @@
 import {Default} from '#src/disreact/codec/rest-elem/component/default.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
-import { Declare } from '#src/disreact/model/schema/declare.ts';
+import { Declare } from '#src/disreact/model/declare.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from '../../dapi/dapi';

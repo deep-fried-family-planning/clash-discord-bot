@@ -1,18 +1,18 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Declare} from '#src/disreact/model/schema/declare.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem, type Task} from '#src/disreact/model/elem/elem.ts';
+import {Props} from '#src/disreact/model/elem/props.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import {Props} from '#src/disreact/model/elem/props.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
-import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
-import {Rehydrant} from '#src/disreact/model/schema/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
+import type {Declare} from '#src/disreact/model/declare.ts';
+import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Data, E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Differ, MutableList, Predicate} from 'effect';
-import { Hooks } from './hooks';
+import {Hooks} from './hooks';
 
 export * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 export type Lifecycle = never;
@@ -569,6 +569,9 @@ const renderTask = (root: Rehydrant, elem: Elem.Task) =>
     E.tap(() => effect(root, elem.fibril)),
   );
 
+/**
+ * @summary rerender
+ */
 export const renderAgain = (root: Rehydrant) => {
   const stack = MutableList.empty<[Elem, Elem] | [Elem.Task]>();
   // eslint-disable-next-line prefer-const
@@ -611,7 +614,7 @@ export const renderAgain = (root: Rehydrant) => {
 };
 
 /**
- * @summary render
+ * @summary rerender
  */
 export const rerender = (root: Rehydrant) => E.gen(function* () {
   const stack = ML.empty<[Elem.Node, Elem[]]>();

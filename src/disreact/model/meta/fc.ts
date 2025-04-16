@@ -1,5 +1,5 @@
-import type {Children, Elem} from '#src/disreact/model/elem/elem.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import {E} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/fc'),
@@ -71,33 +71,31 @@ export const isAnonymous = (fc: Input) => fc[NameId] === 'Anonymous';
 
 export const getName = (fc: Input) => fc[NameId]!;
 
-export const render = (fc: FC, p?: any) =>
-  pipe(
-    E.suspend(() => {
-      if (isSync(fc)) {
-        return E.sync(() => fc(p));
-      }
-      if (isAsync(fc)) {
-        return E.promise(async ()  => await  fc(p));
-      }
-      if (isEffect(fc)) {
-        return (fc(p) as E.Effect<Elem.Child>);
-      }
-      return pipe(
-        E.sync(() => fc(p)),
-        E.flatMap((output) => {
-          if (Predicate.isPromise(output)) {
-            fc[TypeId] = ASYNC;
-            return E.promise(() => output);
-          }
-          if (E.isEffect(output)) {
-            fc[TypeId] = EFFECT;
-            return (output as E.Effect<Elem.Child>);
-          }
-          fc[TypeId] = SYNC;
-          return E.succeed(output);
-        }),
-      );
-    }),
-    E.catchAllDefect((e) => E.fail(e as Error)),
-  );
+export const render = (fc: FC, p?: any) => {
+  if (isSync(fc)) {
+    return E.sync(() => fc(p));
+  }
+
+  if (isAsync(fc)) {
+    return E.promise(async () => await fc(p));
+  }
+
+  if (isEffect(fc)) {
+    return (fc(p) as E.Effect<Elem.Child>);
+  }
+
+  return E.suspend(() => {
+    const output = fc(p);
+
+    if (Predicate.isPromise(output)) {
+      fc[TypeId] = ASYNC;
+      return E.promise(() => output);
+    }
+    if (E.isEffect(output)) {
+      fc[TypeId] = EFFECT;
+      return (output as E.Effect<Elem.Child>);
+    }
+    fc[TypeId] = SYNC;
+    return E.succeed(output);
+  });
+};
