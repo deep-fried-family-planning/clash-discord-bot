@@ -1,18 +1,19 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Declare} from '#src/disreact/model/declare.ts';
+import type {Declare} from '#src/disreact/model/meta/declare.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Elem, type Task} from '#src/disreact/model/entity/elem.ts';
-import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
-import {Props} from '#src/disreact/model/entity/props.ts';
-import {Side} from '#src/disreact/model/entity/side.ts';
-import {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {Unsafe} from '#src/disreact/model/entity/unsafe.ts';
+import {Elem, type Task} from '#src/disreact/model/elem/elem.ts';
+import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/meta/fc.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import {Props} from '#src/disreact/model/elem/props.ts';
+import {Side} from '#src/disreact/model/meta/side.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
+import {Unsafe} from '#src/disreact/model/meta/unsafe.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {Data, E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Differ, MutableList, Predicate} from 'effect';
+import { Hooks } from './hooks';
 
 export * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 export type Lifecycle = never;
@@ -89,7 +90,6 @@ export const clone = <A extends Elem>(elem: A): A => {
   else {
     first = Elem.cloneTask(elem) as A;
   }
-
 
   const stack = ML.make<Elem>(elem);
 
@@ -204,6 +204,113 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Enc
   return null;
 });
 
+
+/**
+ * @summary relay
+ */
+const relayClose = () => Relay.use((relay) =>
+  pipe(
+    relay.setOutput(null),
+    E.tap(() => relay.sendStatus(
+      Progress.Close(),
+    )),
+  ),
+);
+
+/**
+ * @summary relay
+ */
+const relaySame = (root: Rehydrant) => Relay.use((relay) =>
+  pipe(
+    relay.setOutput(root),
+    E.tap(() => relay.sendStatus(
+      Progress.Same(),
+    )),
+  ),
+);
+
+/**
+ * @summary relay
+ */
+const relayNext = (root: Rehydrant) => Relay.use((relay) =>
+  pipe(
+    Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
+    E.tap((next) => relay.setOutput(next)),
+    E.tap(() => relay.sendStatus(
+      Progress.Next({
+        id   : root.next.id,
+        props: root.next.props,
+      }),
+    )),
+  ),
+);
+
+/**
+ * @summary relay
+ */
+const relayPartial = (elem: Elem.Rest) => {
+  if (elem.type === 'modal') {
+    return pipe(
+      Relay.use((relay) => relay.sendStatus(
+        Progress.Part({
+          type: 'modal',
+        }),
+      )),
+      E.as(true),
+    );
+  }
+
+  if (elem.type === 'message') {
+    return pipe(
+      Relay.use((relay) =>
+        relay.sendStatus(
+          Progress.Part({
+            type       : 'message',
+            isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+          }),
+        ),
+      ),
+      E.as(true),
+    );
+  }
+
+  return E.succeed(false);
+};
+
+/**
+ * @summary invoke
+ */
+export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
+  const stack = ML.make<Elem>(root.elem);
+
+  while (ML.tail(stack)) {
+    const elem = ML.pop(stack)!;
+
+    if (Elem.isValue(elem)) continue;
+
+    if (Trigger.isTarget(event, elem)) {
+      return pipe(
+        Trigger.apply(elem.handler!, event),
+        E.tap(() => {
+          if (root.next.id === null) return relayClose();
+          if (root.next.id !== root.id) return relayNext(root);
+          return relaySame(root);
+        }),
+      );
+    }
+
+    for (let i = 0; i < elem.nodes.length; i++) {
+      const node = elem.nodes[i];
+
+      if (!Elem.isValue(node)) {
+        ML.append(stack, elem.nodes[i]);
+      }
+    }
+  }
+
+  return E.fail(new Error('Event not handled'));
+});
+
 /**
  * @summary render
  */
@@ -218,11 +325,11 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
   //   return pipe(
   //     dispatcher.lock,
   //     E.flatMap(() => {
-  //       Unsafe.setNode(task.fibril);
+  //       Hooks.setup(task.fibril);
   //       return E.sync(() => fc(p));
   //     }),
   //     E.tap(() => {
-  //       Unsafe.setNode(undefined);
+  //       Hooks.setup(undefined);
   //       return dispatcher.unlock;
   //     }),
   //   );
@@ -237,7 +344,7 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
   return pipe(
     dispatcher.lock,
     E.flatMap(() => {
-      Unsafe.setNode(elem.fibril);
+      Hooks.setup(elem.fibril);
 
       if (FC.isSync(fc)) {
         return E.sync(() => fc(p));
@@ -268,12 +375,12 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
       );
     }),
     E.flatMap((children) => {
-      Unsafe.setNode(undefined);
+      Hooks.setup(undefined);
       Fibril.commit(elem.fibril);
       return E.as(dispatcher.unlock, Elem.connectChildren(elem, children));
     }),
     E.catchAllDefect((e) => {
-      Unsafe.setNode(undefined);
+      Hooks.setup(undefined);
       return E.zipRight(dispatcher.unlock, E.fail(e as Error));
     }),
   );
@@ -396,6 +503,7 @@ export const rehydrate = (root: Rehydrant) => {
         if (root.fibrils[next.id!]) {
           next.fibril = root.fibrils[next.id!];
           next.fibril.rehydrant = root;
+          next.fibril.rc = 1;
         }
         return rehydrateRender(root, next);
       }
@@ -462,40 +570,6 @@ const renderTask = (root: Rehydrant, elem: Elem.Task) =>
     }),
     E.tap(() => effect(root, elem.fibril)),
   );
-
-
-//
-// const diff = (prev: Elem, next: Elem): Diff => {
-//   if (Elem.isValue(prev)) {
-//     if (!Elem.isValue(next)) return Diff.Replace({next});
-//     if (prev !== next) return Diff.Replace({next});
-//   }
-//   if (Elem.isFragment(prev)) {
-//     if (!Elem.isFragment(next)) return Diff.Replace({next});
-//     if (prev.nodes.length !== next.nodes.length) return Diff.Replace({next});
-//   }
-// };
-//
-// export const Thing = Differ.make<Elem | undefined, Diff>(
-//   {
-//     empty  : Diff.Skip() as Diff,
-//     combine: () => {throw new Error();},
-//     diff   : (prev: Elem | undefined, next: Elem | undefined) => {
-//       if (!prev && !next) return Diff.Skip();
-//       if (!prev && next) return Diff.Mount({next});
-//       if (prev && !next) return Diff.Dismount({prev});
-//     },
-//     patch: (patch: Diff, prev: Elem | undefined) =>
-//       Diff.$match(patch, {
-//         Skip    : () => prev,
-//         Update  : (d) => prev,
-//         Mount   : (d) => prev,
-//         Dismount: (d) => prev,
-//         Replace : (d) => d.next,
-//         Render  : (d) => prev,
-//       }),
-//   },
-// );
 
 export const renderAgain = (root: Rehydrant) => {
   const stack = MutableList.empty<[Elem, Elem] | [Elem.Task]>();
@@ -699,109 +773,3 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
 
   return root;
 });
-
-/**
- * @summary invoke
- */
-export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
-  const stack = ML.make<Elem>(root.elem);
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-
-    if (Elem.isValue(elem)) continue;
-
-    if (Trigger.isTarget(event, elem)) {
-      return pipe(
-        Trigger.apply(elem.handler!, event),
-        E.tap(() => {
-          if (root.next.id === null) return relayClose();
-          if (root.next.id !== root.id) return relayNext(root);
-          return relaySame(root);
-        }),
-      );
-    }
-
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i];
-
-      if (!Elem.isValue(node)) {
-        ML.append(stack, elem.nodes[i]);
-      }
-    }
-  }
-
-  return E.fail(new Error('Event not handled'));
-});
-
-/**
- * @summary relay
- */
-const relayClose = () => Relay.use((relay) =>
-  pipe(
-    relay.setOutput(null),
-    E.tap(() => relay.sendStatus(
-      Progress.Close(),
-    )),
-  ),
-);
-
-/**
- * @summary relay
- */
-const relaySame = (root: Rehydrant) => Relay.use((relay) =>
-  pipe(
-    relay.setOutput(root),
-    E.tap(() => relay.sendStatus(
-      Progress.Same(),
-    )),
-  ),
-);
-
-/**
- * @summary relay
- */
-const relayNext = (root: Rehydrant) => Relay.use((relay) =>
-  pipe(
-    Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
-    E.tap((next) => relay.setOutput(next)),
-    E.tap(() => relay.sendStatus(
-      Progress.Next({
-        id   : root.next.id,
-        props: root.next.props,
-      }),
-    )),
-  ),
-);
-
-/**
- * @summary relay
- */
-const relayPartial = (elem: Elem.Rest) => {
-  if (elem.type === 'modal') {
-    return pipe(
-      Relay.use((relay) => relay.sendStatus(
-        Progress.Part({
-          type: 'modal',
-        }),
-      )),
-      E.as(true),
-    );
-  }
-
-  if (elem.type === 'message') {
-    return pipe(
-      Relay.use((relay) =>
-        relay.sendStatus(
-          Progress.Part({
-            type       : 'message',
-            isEphemeral: elem.props.display === 'ephemeral' ? true : false,
-          }),
-        ),
-      ),
-      E.as(true),
-    );
-  }
-
-  return E.succeed(false);
-};

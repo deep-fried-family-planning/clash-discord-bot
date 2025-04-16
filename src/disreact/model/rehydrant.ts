@@ -1,6 +1,6 @@
-import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
+import {FC} from '#src/disreact/model/meta/fc.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';

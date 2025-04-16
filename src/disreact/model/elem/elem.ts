@@ -1,7 +1,7 @@
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
-import {Props} from '#src/disreact/model/entity/props.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {FC} from '#src/disreact/model/meta/fc.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import {Props} from '#src/disreact/model/elem/props.ts';
+import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
 import type {Data} from 'effect';
 import { Differ} from 'effect';
@@ -12,7 +12,7 @@ export type Type =
   | FragmentType
   | ValueType;
 
-export * as Elem from '#src/disreact/model/entity/elem.ts';
+export * as Elem from '#src/disreact/model/elem/elem.ts';
 export type Elem =
   | Task
   | Rest

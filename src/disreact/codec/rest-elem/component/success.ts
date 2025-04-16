@@ -1,8 +1,8 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import { Declare } from '#src/disreact/model/meta/declare.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from '../../dapi/dapi';
 
@@ -16,7 +16,7 @@ export const EventData = S.Struct({
   data: DAPI.Component.ButtonData,
 });
 
-export const Handler = Trigger.declareHandler(EventData);
+export const Handler = Declare.handler(EventData);
 
 export const Children = S.Union(
   S.String,
@@ -40,7 +40,7 @@ export const Element = declareHandlerElem(
   Handler,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     type     : DAPI.Component.BUTTON,
     custom_id: self.props.custom_id ?? self.ids,

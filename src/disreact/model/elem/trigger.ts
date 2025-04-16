@@ -1,8 +1,8 @@
-import {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
-export * as Trigger from '#src/disreact/model/entity/trigger.ts';
+export * as Trigger from '#src/disreact/model/elem/trigger.ts';
 export type Trigger<A = any> = {
   id  : string;
   data: A;

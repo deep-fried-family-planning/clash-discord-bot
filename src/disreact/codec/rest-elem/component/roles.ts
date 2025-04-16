@@ -1,7 +1,7 @@
 import {Default} from '#src/disreact/codec/rest-elem/component/default.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from '../../dapi/dapi';
 
@@ -38,7 +38,7 @@ export const Element = declareHandlerElem(
   Handler,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     type      : DAPI.Component.ACTION_ROW,
     components: [{

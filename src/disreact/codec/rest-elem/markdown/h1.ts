@@ -1,6 +1,6 @@
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import { Keys } from '../keys';
 
 export * as H1 from '#src/disreact/codec/rest-elem/markdown/h1.ts';
@@ -22,6 +22,6 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return `# ${acc[Keys.primitive][0]}`;
 };

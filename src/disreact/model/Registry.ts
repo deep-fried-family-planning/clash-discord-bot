@@ -1,8 +1,8 @@
-import {FC} from '#src/disreact/model/entity/fc.ts';
-import {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
+import {FC} from '#src/disreact/model/meta/fc.ts';
 import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
-import {Arr, Data, E, Hash, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import {Arr, Data, E, Hash, pipe} from '#src/disreact/utils/re-exports.ts';
 
 export declare namespace Registry {
   export type Key = string | FC | Elem;
@@ -16,9 +16,10 @@ export class RegistryDefect extends Data.TaggedError('disreact/RegistryException
 
 const resolveId = (key: Registry.Key): string => {
   if (typeof key === 'string') return key;
+  if (FC.isFC(key)) return FC.getName(key);
   if (Elem.isRest(key)) throw new Error();
   if (Elem.isTask(key)) return FC.getName(key.type);
-  return FC.getName(key);
+  throw new Error();
 };
 
 const make = pipe(
@@ -29,10 +30,6 @@ const make = pipe(
     const STORE = new Map<string, Rehydrant.Source>();
 
     for (const src of config.sources) {
-      if (Elem.isValue(src)) {
-        return new RegistryDefect({why: `Primitive Source: ${String(src)}`});
-      }
-
       if (Elem.isRest(src)) {
         return new RegistryDefect({why: `Rest Source: ${src.type}`});
       }

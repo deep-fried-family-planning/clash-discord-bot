@@ -1,8 +1,8 @@
 import {Default} from '#src/disreact/codec/rest-elem/component/default.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import { Declare } from '#src/disreact/model/meta/declare.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from '../../dapi/dapi';
 
@@ -16,7 +16,7 @@ export const EventData = S.Struct({
   data: DAPI.Component.UserSelectData,
 });
 
-export const Handler = Trigger.declareHandler(EventData);
+export const Handler = Declare.handler(EventData);
 
 export const Children = S.Union(
   Default.Element,
@@ -39,7 +39,7 @@ export const Element = declareHandlerElem(
   Handler,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     type      : DAPI.Component.ACTION_ROW,
     components: [{

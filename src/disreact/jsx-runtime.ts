@@ -1,5 +1,5 @@
 import type {IntrinsicTuplesMapped} from '#src/disreact/codec/rest-elem/index.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 
 export const Fragment = Lifecycle.Fragment;

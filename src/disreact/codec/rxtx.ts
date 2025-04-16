@@ -1,7 +1,7 @@
-import {Elem} from '#src/disreact/model/entity/elem.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import { Declare } from '../model/declare.ts';
+import { Declare } from 'src/disreact/model/meta/declare.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
 import {Keys} from './rest-elem/keys.ts';
@@ -240,7 +240,7 @@ export const OutModalTransform = S.transform(
     base    : S.optional(S.String),
     serial  : S.optional(S.typeSchema(Doken.Serial)),
     hydrant : Rehydrant.Decoded,
-    encoding: Declare.declareEncoded(Keys.modal, DAPI.Modal.Open),
+    encoding: Declare.encoded(Keys.modal, DAPI.Modal.Open),
   }),
   {
     encode: ({hydrant, encoding}) => ({
@@ -257,7 +257,7 @@ export const OutEphemeralTransform = S.transform(
     base    : S.String,
     serial  : S.typeSchema(Doken.Serial),
     hydrant : Rehydrant.Decoded,
-    encoding: Declare.declareEncoded(Keys.ephemeral, DAPI.Message.Base),
+    encoding: Declare.encoded(Keys.ephemeral, DAPI.Message.Base),
   }),
   {
     encode: ({base, serial, hydrant, encoding}) => ({
@@ -278,7 +278,7 @@ export const OutMessageTransform = S.transform(
     base    : S.String,
     serial  : S.typeSchema(Doken.Serial),
     hydrant : Rehydrant.Decoded,
-    encoding: Declare.declareEncoded(Keys.message, DAPI.Message.Base),
+    encoding: Declare.encoded(Keys.message, DAPI.Message.Base),
   }),
   {
     encode: ({base, serial, hydrant, encoding}) => ({

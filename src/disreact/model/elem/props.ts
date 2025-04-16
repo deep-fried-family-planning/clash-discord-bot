@@ -1,5 +1,5 @@
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Data, Equal} from 'effect';
 
 const HANDLER_KEYS = [
@@ -14,7 +14,7 @@ const RESERVED = [
   Keys.handler,
 ];
 
-export * as Props from '#src/disreact/model/entity/props.ts';
+export * as Props from '#src/disreact/model/elem/props.ts';
 export type Props = any;
 
 export const cloneKnownProps = (props: Props): Props => {

@@ -7,7 +7,7 @@ import {Secondary} from '#src/disreact/codec/rest-elem/component/secondary.ts';
 import {Success} from '#src/disreact/codec/rest-elem/component/success.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Util} from '../util';
 
 export * as Actions from '#src/disreact/codec/rest-elem/container/actions.ts';

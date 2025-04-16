@@ -2,7 +2,7 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 
 export * as Option from '#src/disreact/codec/rest-elem/component/option.ts';
 export type Option = never;
@@ -30,7 +30,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     value      : self.props.value,
     label      : self.props.label,

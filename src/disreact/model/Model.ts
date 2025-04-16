@@ -1,7 +1,7 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Hooks} from '#src/disreact/model/hooks.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';

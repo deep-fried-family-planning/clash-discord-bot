@@ -1,5 +1,5 @@
 import {Util} from '#src/disreact/codec/rest-elem/util.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/internal/pure/effect';
 import { Keys } from '../keys';
 
@@ -21,7 +21,7 @@ export const Element = Util.declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     content   : self.props.content ?? acc[Keys.primitive]?.[0] ?? undefined,
     embeds    : acc[Keys.embeds],

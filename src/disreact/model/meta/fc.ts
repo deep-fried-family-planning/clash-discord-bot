@@ -1,11 +1,11 @@
-import type {Children, Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Children, Elem} from '#src/disreact/model/elem/elem.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
 export const TypeId = Symbol('disreact/fc'),
              NameId = Symbol('disreact/fc/name');
 
-export * as FC from '#src/disreact/model/entity/fc.ts';
+export * as FC from '#src/disreact/model/meta/fc.ts';
 export type FC = Input;
 
 export const isFC = (fc: any): fc is FC => typeof fc === 'function';

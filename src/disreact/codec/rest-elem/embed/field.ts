@@ -1,7 +1,7 @@
 import {declareElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 
 export * as Field from '#src/disreact/codec/rest-elem/embed/field.ts';
 export type Field = never;
@@ -24,7 +24,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem, acc: any) => {
+export const encode = (self: Elem.Rest, acc: any) => {
   return {
     name  : self.props.name,
     value : self.props.value ?? acc[Keys.primitive]?.join(''),

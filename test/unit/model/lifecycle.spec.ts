@@ -1,4 +1,4 @@
-import {Trigger} from '#src/disreact/model/entity/trigger';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
@@ -10,7 +10,7 @@ import {MessageSync} from '#test/unit/components/message-sync.tsx';
 import {Record} from 'effect';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {it} from '#test/unit/components/TestRegistry.tsx';
-import { FC } from '#src/disreact/model/entity/fc';
+import { FC } from '#src/disreact/model/meta/fc.ts';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant) => json(root);

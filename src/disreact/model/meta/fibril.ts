@@ -1,4 +1,4 @@
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import * as Data from 'effect/Data';
@@ -35,7 +35,7 @@ export type Chain = typeof Chain.Type;
 
 export const TypeId = Symbol('disreact/Fibril');
 
-export * as Fibril from '#src/disreact/model/entity/fibril.ts';
+export * as Fibril from '#src/disreact/model/meta/fibril.ts';
 export type Fibril = {
   pc       : number;
   stack    : Chain;
@@ -83,21 +83,6 @@ export const init = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
   root.fibrils[task.id!] = fibril;
   fibril.pc = 0;
   fibril.rc = 0;
-};
-
-export const connect = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
-  fibril.elem = task;
-  fibril.rehydrant = root;
-  root.fibrils[task.id!] = fibril;
-  fibril.pc = 0;
-};
-
-export const hydrate = (root: Rehydrant, task: Elem.Task, fibril: Fibril) => {
-  fibril.elem = task;
-  fibril.rehydrant = root;
-  root.fibrils[task.id!] = fibril;
-  fibril.pc = 0;
-  fibril.rc = 1;
 };
 
 export const commit = (self: Fibril) => {

@@ -3,11 +3,11 @@ import {Intrinsic} from '#src/disreact/codec/rest-elem/index.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {RxTx} from '#src/disreact/codec/rxtx.ts';
 import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
-import {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import type { Elem } from '../model/entity/elem';
+import type { Elem } from 'src/disreact/model/elem/elem.ts';
 
 export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 

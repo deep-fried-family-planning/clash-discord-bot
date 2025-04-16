@@ -1,10 +1,30 @@
-import type {FC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
-import { Unsafe} from '#src/disreact/model/entity/unsafe.ts';
+import type {FC} from '#src/disreact/model/meta/fc.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import { Unsafe} from '#src/disreact/model/meta/unsafe.ts';
+import type {Relay} from '#src/disreact/model/Relay.ts';
 import type {E} from '#src/internal/pure/effect.ts';
+import {node} from '@rspack/core';
+import type {Runtime} from 'effect';
 
 export * as Hooks from '#src/disreact/model/hooks.ts';
 export type Hooks = never;
+
+const internal = {
+  hydrate: false,
+  node   : undefined as undefined | Fibril,
+};
+
+export const setup = (node?: Fibril, hydrate = false) => {
+  internal.hydrate = hydrate;
+  internal.node = node;
+};
+
+const get = () => {
+  if (!internal.node) {
+    throw new Error('Hooks must be called within a component.');
+  }
+  return internal.node;
+};
 
 interface SetState<A> {
   (next: A): void;
@@ -19,7 +39,7 @@ interface EffectFn {
  * useState
  */
 export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
-  const node = Unsafe.getNode();
+  const node = get();
 
   node.stack[node.pc] ??= {s: initial};
 
@@ -64,7 +84,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
     }
   }
 
-  const node = Unsafe.getNode();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = {d: deps ?? []};
@@ -105,11 +125,13 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
   }
 };
 
+export const $useRoot = () => {};
+
 /**
  * useIx
  */
 export const $useIx = () => {
-  const node = Unsafe.getNode();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
@@ -128,7 +150,7 @@ export const $useIx = () => {
  * usePage
  */
 export const $usePage = (_: FC[]) => {
-  const node = Unsafe.getNode();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
