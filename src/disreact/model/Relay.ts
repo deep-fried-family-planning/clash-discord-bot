@@ -15,15 +15,6 @@ export declare namespace Relay {
   }>;
 }
 
-const thing = E.gen(function* () {
-  const relay = yield * Relay;
-
-  const myEff = () => pipe(
-    E.void,
-    E.provide(L.succeed(Relay, Relay.make(relay))),
-  );
-});
-
 export class Relay extends E.Service<Relay>()('disreact/Relay', {
   effect: E.map(
     E.all([

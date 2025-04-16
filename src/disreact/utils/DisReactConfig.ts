@@ -1,17 +1,17 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/meta/fc.ts';
-import {Redacted} from 'effect';
 import {E, flow, L} from '#src/disreact/utils/re-exports.ts';
+import {Redacted} from 'effect';
 
 export namespace DisReactConfig {
   export type Input = {
     token: Redacted.Redacted<string> | string;
 
     sources:
-      // | (Elem.Any | FC)
-      | (Elem.Any | FC)[];
-      // | [string, Elem.Any | FC][]
-      // | Record<string, Elem.Any | FC>;
+    // | (Elem.Any | FC)
+      | (Elem | FC)[];
+    // | [string, Elem.Any | FC][]
+    // | Record<string, Elem.Any | FC>;
 
     version?      : number | string;
     baseUrl?      : string;

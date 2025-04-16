@@ -3,27 +3,27 @@ import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem, type Task} from '#src/disreact/model/elem/elem.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
+import type {Declare} from '#src/disreact/model/meta/declare.ts';
 import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
-import type {Declare} from '#src/disreact/model/declare.ts';
-import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Data, E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Differ, MutableList, Predicate} from 'effect';
+import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
+import {MutableList, Predicate} from 'effect';
 import {Hooks} from './hooks';
 
 export * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 export type Lifecycle = never;
 
 /**
- * @summary jsx
+ * @desc jsx
  */
 export const Fragment = Elem.FragmentType;
 
 /**
- * @summary jsx
+ * @desc jsx
  */
 export const jsx = (type: any, props: any): Elem => {
   if (Elem.isFragmentType(type)) {
@@ -41,7 +41,7 @@ export const jsx = (type: any, props: any): Elem => {
 };
 
 /**
- * @summary jsx
+ * @desc jsx
  */
 export const jsxs = (type: any, props: any): Elem => {
   props.children = props.children.flat();
@@ -61,7 +61,7 @@ export const jsxs = (type: any, props: any): Elem => {
 };
 
 /**
- * @summary jsx
+ * @desc jsx
  */
 export const jsxDEV = (type: any, props: any): Elem => {
   if (Array.isArray(props.children)) {
@@ -71,7 +71,7 @@ export const jsxDEV = (type: any, props: any): Elem => {
 };
 
 /**
- * @summary clone
+ * @desc clone
  */
 export const clone = <A extends Elem>(elem: A): A => {
   if (Elem.isValue(elem)) {
@@ -87,7 +87,7 @@ export const clone = <A extends Elem>(elem: A): A => {
 };
 
 /**
- * @summary clone
+ * @desc clone
  */
 export const deepClone = <A extends Elem>(elem: A): A => {
   const cloned = clone(elem);
@@ -116,7 +116,7 @@ export const deepClone = <A extends Elem>(elem: A): A => {
 };
 
 /**
- * @summary encode
+ * @desc encode
  */
 const removeUndefined = (encoded: any): any => {
   for (const key in Object.keys(encoded)) {
@@ -128,7 +128,7 @@ const removeUndefined = (encoded: any): any => {
 };
 
 /**
- * @summary encode
+ * @desc encode
  */
 export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Encoded => {
   if (!root) return null;
@@ -198,7 +198,7 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Enc
 });
 
 /**
- * @summary relay
+ * @desc relay
  */
 const relayClose = () => Relay.use((relay) =>
   pipe(
@@ -210,7 +210,7 @@ const relayClose = () => Relay.use((relay) =>
 );
 
 /**
- * @summary relay
+ * @desc relay
  */
 const relaySame = (root: Rehydrant) => Relay.use((relay) =>
   pipe(
@@ -222,7 +222,7 @@ const relaySame = (root: Rehydrant) => Relay.use((relay) =>
 );
 
 /**
- * @summary relay
+ * @desc relay
  */
 const relayNext = (root: Rehydrant) => Relay.use((relay) =>
   pipe(
@@ -238,7 +238,7 @@ const relayNext = (root: Rehydrant) => Relay.use((relay) =>
 );
 
 /**
- * @summary relay
+ * @desc relay
  */
 const relayPartial = (elem: Elem.Rest) => {
   if (elem.type === 'modal') {
@@ -270,7 +270,7 @@ const relayPartial = (elem: Elem.Rest) => {
 };
 
 /**
- * @summary invoke
+ * @desc invoke
  */
 export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
   const stack = ML.make<Elem>(root.elem);
@@ -310,7 +310,7 @@ export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
 });
 
 /**
- * @summary render
+ * @desc render
  */
 export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher) => {
   const fc = elem.type;
@@ -385,7 +385,7 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
 });
 
 /**
- * @summary render
+ * @desc render
  */
 const effect = (root: Rehydrant, fibril: Fibril) => {
   if (fibril.queue.length) {
@@ -406,7 +406,7 @@ const effect = (root: Rehydrant, fibril: Fibril) => {
 };
 
 /**
- * @summary mount
+ * @desc mount
  */
 const renderMount = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
@@ -428,7 +428,7 @@ const renderMount = (root: Rehydrant, elem: Elem.Task) =>
   );
 
 /**
- * @summary mount
+ * @desc mount
  */
 const mount = (root: Rehydrant, elem: Elem.Node) => {
   MutableList.append(root.mount, elem);
@@ -459,12 +459,12 @@ const mount = (root: Rehydrant, elem: Elem.Node) => {
 };
 
 /**
- * @summary mount
+ * @desc mount
  */
 export const initialize = (root: Rehydrant) => mount(root, root.elem);
 
 /**
- * @summary rehydrate
+ * @desc rehydrate
  */
 const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
@@ -487,7 +487,7 @@ const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
   );
 
 /**
- * @summary rehydrate
+ * @desc rehydrate
  */
 export const rehydrate = (root: Rehydrant) => {
   MutableList.append(root.mount, root.elem);
@@ -521,7 +521,7 @@ export const rehydrate = (root: Rehydrant) => {
 };
 
 /**
- * @summary dismount
+ * @desc dismount
  */
 export const dismount = (root: Rehydrant, elem: Elem.Node) => {
   MutableList.append(root.dismount, elem);
@@ -547,7 +547,7 @@ export const dismount = (root: Rehydrant, elem: Elem.Node) => {
 };
 
 /**
- * @summary render
+ * @desc render
  */
 const renderTask = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
@@ -570,51 +570,7 @@ const renderTask = (root: Rehydrant, elem: Elem.Task) =>
   );
 
 /**
- * @summary rerender
- */
-export const renderAgain = (root: Rehydrant) => {
-  const stack = MutableList.empty<[Elem, Elem] | [Elem.Task]>();
-  // eslint-disable-next-line prefer-const
-  let hasSentPartial = false;
-
-  const parents = new WeakMap<Elem.Node, Elem>();
-  parents.set(root.elem, root.elem);
-  MutableList.append(stack, [root.elem, null]);
-
-  const condition = () => MutableList.tail(stack);
-
-  const body = () => {
-    const pop = MutableList.pop(stack)!;
-
-    if (pop.length === 1) {
-      return pipe(
-        task(root, pop[0]),
-        E.map((children) => {
-          for (let i = 0; i < children.length; i++) {
-            const child = children[i];
-          }
-        }),
-      );
-    }
-
-    const [curr, next] = pop;
-
-    if (next === null) {
-      if (Elem.isTask(curr)) {
-        return renderTask(root, curr).pipe(E.map((children) => {
-          curr.nodes = children;
-        }));
-      }
-    }
-  };
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-  }
-};
-
-/**
- * @summary rerender
+ * @desc rerender
  */
 export const rerender = (root: Rehydrant) => E.gen(function* () {
   const stack = ML.empty<[Elem.Node, Elem[]]>();
@@ -636,7 +592,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* renderTask(root, root.elem)]);
+    ML.append(stack, [root.elem, yield* renderTask(root, root.elem as Elem.Task)]);
   }
 
   while (ML.tail(stack)) {

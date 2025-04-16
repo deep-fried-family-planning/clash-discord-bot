@@ -2,6 +2,7 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import {Intrinsic} from '#src/disreact/codec/rest-elem/index.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {RxTx} from '#src/disreact/codec/rxtx.ts';
+import type {Declare} from '#src/disreact/model/meta/declare.ts';
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
@@ -26,7 +27,7 @@ export const decodeEvent = (route: RxTx.ParamsRequest): Trigger => {
 
 const finalEncoder = S.encodeSync(RxTx.OutTransform);
 
-const encodeFinal = (config: DisReactConfig.Resolved) => (hydrant: Rehydrant, doken: Doken, encoding: Elem.Encoded) => {
+const encodeFinal = (config: DisReactConfig.Resolved) => (doken: Doken, encoding: Declare.Encoded) => {
   if (!encoding) {
     return E.succeed(null);
   }
@@ -37,7 +38,7 @@ const encodeFinal = (config: DisReactConfig.Resolved) => (hydrant: Rehydrant, do
         finalEncoder({
           base    : config.baseUrl,
           serial  : Doken.cache(doken),
-          hydrant : Rehydrant.dehydrate(hydrant),
+          hydrant : encoding.rehydrant,
           encoding: encoding as any,
         }),
       ),
@@ -51,7 +52,7 @@ const encodeFinal = (config: DisReactConfig.Resolved) => (hydrant: Rehydrant, do
     finalEncoder({
       base    : config.baseUrl,
       serial  : doken as any,
-      hydrant : Rehydrant.dehydrate(hydrant),
+      hydrant : encoding.rehydrant,
       encoding: encoding as any,
     }),
   );
@@ -66,62 +67,6 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
       decodeRequest: decodeParamsRequest,
       decodeEvent,
       encodeFinal  : encodeFinal(config),
-
-      // encodeResponseWithCache: (root: Rehydrant, doken: Doken.Active) => {
-      //   const encoded = encodeRoot(root);
-      //   const hydrant = Rehydrant.dehydrate(root);
-      //   const serial = Intrinsic.isEphemeral(encoded)
-      //     ? doken
-      //     : Doken.convertCached(doken);
-      //
-      //   return pipe(
-      //     E.tap(DokenMemory, (memory) => memory.save(doken)),
-      //     E.as(
-      //       encodeParamsResponse({
-      //         _tag: 'Message',
-      //         base: config.baseUrl,
-      //         serial,
-      //         hydrant,
-      //         data: encoded,
-      //       }),
-      //     ),
-      //   );
-      // },
-      // encodeResponse: (root: Rehydrant, doken: Doken) => {
-      //   const encoded = encodeRoot(root);
-      //   const hydrant = Rehydrant.dehydrate(root);
-      //
-      //   if (Intrinsic.isModal(encoded)) {
-      //     return encodeParamsResponse({
-      //       _tag   : 'Modal',
-      //       base   : config.baseUrl,
-      //       serial : Doken.single(doken),
-      //       hydrant: hydrant,
-      //       data   : encoded as any,
-      //     });
-      //   }
-      //
-      //   const serial = Doken.convertSerial(doken);
-      //
-      //   if (Intrinsic.isEphemeral(encoded)) {
-      //     return encodeParamsResponse({
-      //       _tag   : 'Message',
-      //       base   : config.baseUrl,
-      //       serial : serial,
-      //       hydrant: hydrant,
-      //       data   : encoded as any,
-      //     });
-      //   }
-      //
-      //   return encodeParamsResponse({
-      //     _tag   : 'Message',
-      //     base   : config.baseUrl,
-      //     serial : serial,
-      //     hydrant: hydrant,
-      //     data   : encoded as any,
-      //   });
-      // },
-      // encodeRoot,
     };
   }),
   accessors: true,

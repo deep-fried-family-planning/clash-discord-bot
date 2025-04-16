@@ -1,5 +1,5 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {D, E, pipe, S} from '#src/disreact/utils/re-exports.ts';
+import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
 export * as Trigger from '#src/disreact/model/elem/trigger.ts';
@@ -19,10 +19,6 @@ export type Handler<A, E = any, R = any> = (event: Event<A>) =>
   | void
   | Promise<void>
   | E.Effect<void, E, R>;
-
-export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
-  cause: unknown;
-}> {}
 
 export const isTarget = (event: Trigger, elem: Elem): elem is Elem.Rest => {
   if (Elem.isRest(elem)) {

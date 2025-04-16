@@ -1,11 +1,9 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
+import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {FC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
-import type {Relay} from '#src/disreact/model/Relay.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import type { Runtime} from 'effect';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
@@ -49,10 +47,6 @@ export const make = (src: Source, props?: any): Rehydrant => {
 
   return rehydrant;
 };
-
-export const isClose = (self: Rehydrant) => self.next.id === null;
-export const isNext = (self: Rehydrant) => self.next.id !== self.id;
-export const isSame = (self: Rehydrant) => self.next.id === self.id;
 
 export type Encoded = typeof Encoded.Type;
 export const Encoded = S.String;

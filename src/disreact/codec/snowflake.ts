@@ -1,5 +1,5 @@
 import type {DR} from 'src/disreact/utils/re-exports.ts';
-import { DT, hole, S} from 'src/disreact/utils/re-exports.ts';
+import {DT, hole, S} from 'src/disreact/utils/re-exports.ts';
 
 export * as Snowflake from '#src/disreact/codec/snowflake.ts';
 export type Snowflake = string;

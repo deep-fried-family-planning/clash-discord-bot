@@ -3,12 +3,12 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/meta/fc.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Fiber} from 'effect';
-import {Model} from 'src/disreact/model/Model.ts';
 import {Lifecycle} from 'src/disreact/model/lifecycle.ts';
+import {Model} from 'src/disreact/model/Model.ts';
 import {Dokens} from './dokens.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
@@ -19,15 +19,10 @@ export const synthesize = (id: Elem | FC | string, props?: any) =>
     Model.create(id, props),
     E.flatMap((root) =>
       root
-        ? Codec.encodeFinal(
-          root.rehydrant,
-          Doken.synthetic(),
-          root,
-        )
+        ? Codec.encodeFinal(Doken.synthetic(), root)
         : E.succeed(null),
     ),
   );
-
 
 export const decodeRequestEvent = (input: any) => E.map(Codec, (codec) => {
   const request = codec.decodeRequest(input);
@@ -98,7 +93,7 @@ export const respond = (body: any) => E.gen(function* () {
   const modal = yield* Dokens.current(ds);
 
   if (Doken.isModal(modal)) {
-    const payload = yield* codec.encodeFinal(root, Doken.synthetic(), final);
+    const payload = yield* codec.encodeFinal(Doken.synthetic(), final);
     yield* dom.createModal(modal, payload);
     return payload;
   }
@@ -113,7 +108,7 @@ export const respond = (body: any) => E.gen(function* () {
       return E.die('Never token found.');
     }
 
-    const payload = yield* codec.encodeFinal(root, doken, final);
+    const payload = yield* codec.encodeFinal(doken, final);
 
     yield* dom.deferEdit(doken, payload);
     return payload;
@@ -122,13 +117,13 @@ export const respond = (body: any) => E.gen(function* () {
   const doken = yield* Dokens.current(ds);
 
   if (doken._tag === Doken.ACTIVE) {
-    const payload = yield* codec.encodeFinal(root, doken, final);
+    const payload = yield* codec.encodeFinal(doken, final);
 
     yield* dom.deferEdit(doken, payload);
     return payload;
   }
 
-  const payload = yield* codec.encodeFinal(root, doken, final);
+  const payload = yield* codec.encodeFinal(doken, final);
 
   if (Doken.isModal(doken)) {
     yield* dom.createModal(doken, payload);

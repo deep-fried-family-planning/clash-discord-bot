@@ -4,7 +4,7 @@ import {TPriorityQueue} from 'effect';
 export class Root extends E.Service<Root>()('disreact/Root', {
   effect: pipe(
     E.all({
-      queue: TPriorityQueue.make(),
+      queue: E.succeed({}),
     }),
   ),
 }) {}

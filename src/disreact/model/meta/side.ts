@@ -1,12 +1,8 @@
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Data, Predicate} from 'effect';
+import {Predicate} from 'effect';
 
 export * as Side from '#src/disreact/model/meta/side.ts';
 export type Side = () => void | Promise<void> | E.Effect<void>;
-
-export class SideEffectDefect extends Data.TaggedError('disreact/SideEffectDefect')<{
-  cause: unknown;
-}> {}
 
 export const effect = (ef: Side) =>
   pipe(

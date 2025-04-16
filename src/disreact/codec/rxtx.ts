@@ -1,7 +1,7 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import { Declare } from '#src/disreact/model/declare.ts';
+import { Declare } from '#src/disreact/model/meta/declare.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
 import {Keys} from './rest-elem/keys.ts';

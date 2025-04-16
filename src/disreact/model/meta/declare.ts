@@ -1,9 +1,8 @@
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import type {E} from '#src/disreact/utils/re-exports.ts';
-import { S} from '#src/disreact/utils/re-exports.ts';
-import type { Rehydrant } from '#src/disreact/model/meta/rehydrant.ts';
-import {h} from '#src/poll.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 
-export * as Declare from '#src/disreact/model/declare.ts';
+export * as Declare from '#src/disreact/model/meta/declare.ts';
 export type Declare = never;
 
 export type Encoded<A extends string = string, B = any> =

@@ -1,6 +1,6 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 
-export * as ETree from '#src/disreact/model/meta/etree.ts';
+export * as ETree from '#src/disreact/model/elem/etree.ts';
 export type ETree =
   | Leaf
   | Node;

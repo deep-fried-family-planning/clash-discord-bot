@@ -1,13 +1,12 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fiber, ManagedRuntime, Runtime as Runner, RuntimeFlags} from 'effect';
-import console from 'node:console';
+import {Fiber, ManagedRuntime} from 'effect';
 import {Methods} from './methods';
 
 export * as Runtime from '#src/disreact/runtime/runtime.ts';

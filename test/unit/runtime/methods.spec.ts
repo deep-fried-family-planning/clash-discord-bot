@@ -11,8 +11,6 @@ import {Snap} from '#test/unit/util.ts';
 import {it, vi} from '@effect/vitest';
 import {TestServices} from 'effect';
 
-
-
 const createUpdate = vi.fn((...args: any) => E.void);
 const deferEdit = vi.fn((...args: any) => E.void);
 const deferUpdate = vi.fn((...args: any) => E.void);

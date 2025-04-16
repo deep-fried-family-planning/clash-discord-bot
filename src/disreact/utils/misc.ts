@@ -10,7 +10,7 @@ export const pollFiber = <A, E>(fiber: Fiber.Fiber<A, E>) =>
       pipe(
         O.map(result, (r) => Exit.getOrElse(r, () => undefined)),
         O.getOrElse(() => undefined),
-    ),
+      ),
     ),
   );
 

@@ -1,9 +1,9 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Hooks} from '#src/disreact/model/hooks.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
+import type {Declare} from '#src/disreact/model/meta/declare.ts';
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -56,7 +56,7 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
 
 const make = pipe(
   E.all({
-    roots: FiberMap.make<string, Elem.Encoded>(),
+    roots: FiberMap.make<string, Declare.Encoded>(),
   }),
   E.map(({roots}) => {
     const create = (id: string, key: Registry.Key, props: any = {}) =>
