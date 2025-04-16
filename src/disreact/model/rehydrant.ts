@@ -4,21 +4,20 @@ import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import {MutableList} from 'effect';
-import { Record} from 'effect';
+import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
 export * as Rehydrant from '#src/disreact/model/rehydrant.ts';
 export type Rehydrant = {
   id      : string;
   props?  : any;
-  elem    : Elem;
+  elem    : Elem.Node;
   next    : {id: string | null; props?: any};
   data    : any;
   fibrils : {[id: string]: Fibril};
-  mount   : MutableList.MutableList<Elem>;
-  dismount: MutableList.MutableList<Elem>;
-  diffs   : MutableList.MutableList<[Elem.Any, Elem.Any]>;
+  mount   : MutableList.MutableList<Elem.Node>;
+  dismount: MutableList.MutableList<Elem.Node>;
+  diffs   : MutableList.MutableList<[Elem, Elem]>;
   render  : MutableList.MutableList<[Elem, Elem] | [Elem.Task, number]>;
 };
 
@@ -103,27 +102,28 @@ export const mountTask = (root: Rehydrant, elem: Elem.Task) => {
 
 export type Source = {
   id  : string;
-  elem: Elem;
+  elem: Elem.Node;
 };
 
 export const makeSource = (src: Elem | FC): Source => {
-  if (Elem.isValue(src) || Elem.isRest(src)) throw new Error();
+  if (FC.isFC(src)) {
+    const fc = FC.make(src);
 
-  if (Elem.isTask(src)) {
-    if (FC.isAnonymous(src.type)) throw new Error();
+    if (FC.isAnonymous(fc)) throw new Error();
 
     return {
-      id  : FC.getName(src.type),
-      elem: Lifecycle.clone(src),
+      id  : FC.getName(fc),
+      elem: Elem.makeTask(fc, {}),
     };
   }
 
-  const fc = FC.make(src);
-
-  if (FC.isAnonymous(fc)) throw new Error();
+  if (Elem.isValue(src)) throw new Error();
+  if (Elem.isFragment(src)) throw new Error();
+  if (Elem.isRest(src)) throw new Error();
+  if (FC.isAnonymous(src.type)) throw new Error();
 
   return {
-    id  : FC.getName(fc),
-    elem: Elem.makeTask(fc, {}),
+    id  : FC.getName(src.type),
+    elem: Lifecycle.clone(src),
   };
 };

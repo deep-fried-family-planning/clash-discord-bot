@@ -1,17 +1,18 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
+import type {Declare} from '#src/disreact/model/declare.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {FC} from '#src/disreact/model/entity/fc.ts';
+import {Elem, type Task} from '#src/disreact/model/entity/elem.ts';
+import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
 import {Props} from '#src/disreact/model/entity/props.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {Side} from '#src/disreact/model/entity/side.ts';
 import {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Unsafe} from '#src/disreact/model/entity/unsafe.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
+import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
-import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
-import {MutableList} from 'effect';
+import {Data, E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
+import {Differ, MutableList, Predicate} from 'effect';
 
 export * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 export type Lifecycle = never;
@@ -73,10 +74,52 @@ export const jsxDEV = (type: any, props: any): Elem => {
  * @summary clone
  */
 export const clone = <A extends Elem>(elem: A): A => {
-  if (Elem.isRest(elem)) {
-    return Elem.cloneRest(elem) as A;
+  if (Elem.isValue(elem)) {
+    return Elem.cloneValue(elem) as A;
   }
-  return Elem.cloneTask(elem) as A;
+
+  let first: A;
+
+  if (Elem.isFragment(elem)) {
+    first = Elem.cloneFragment(elem) as A;
+  }
+  else if (Elem.isRest(elem)) {
+    first = Elem.cloneRest(elem) as A;
+  }
+  else {
+    first = Elem.cloneTask(elem) as A;
+  }
+
+
+  const stack = ML.make<Elem>(elem);
+
+  while (ML.tail(stack)) {
+    const next = ML.pop(stack)!;
+
+    let cloned: Elem;
+
+    if (Elem.isValue(next)) {
+      cloned = Elem.cloneValue(next);
+      continue;
+    }
+
+    if (Elem.isFragment(elem)) {
+      cloned = Elem.cloneFragment(elem);
+    }
+    else if (Elem.isRest(elem)) {
+      cloned = Elem.cloneRest(elem);
+    }
+    else {
+      cloned = Elem.cloneTask(elem);
+    }
+
+    for (let i = 0; i < cloned.nodes.length; i++) {
+      const child = next.nodes[i];
+      ML.append(stack, child);
+    }
+  }
+
+  return first;
 };
 
 /**
@@ -94,12 +137,13 @@ const removeUndefined = (encoded: any): any => {
 /**
  * @summary encode
  */
-export const encode = (root: Rehydrant | null) => Codec.use((codec): Elem.Encoded => {
-  if (!root || Elem.isValue(root.elem)) return null;
+export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Encoded => {
+  if (!root) return null;
+  if (Elem.isValue(root.elem)) return null;
 
   const result = {} as any,
-        stack  = ML.make<[any, Elem.Any[]]>([result, [root.elem]]),
-        args   = new WeakMap<Elem, any>();
+        stack  = ML.make<[any, Elem[]]>([result, [root.elem]]),
+        args   = new WeakMap<Elem.Node, any>();
 
   while (ML.tail(stack)) {
     const [acc, cs] = ML.pop(stack)!;
@@ -110,6 +154,9 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Elem.Encode
       if (Elem.isValue(c)) {
         acc[codec.primitive] ??= [];
         acc[codec.primitive].push(c);
+      }
+      else if (Elem.isFragment(c)) {
+        ML.append(stack, [acc, c.nodes]);
       }
       else if (args.has(c as any)) {
         if (Elem.isRest(c)) {
@@ -160,6 +207,81 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Elem.Encode
 /**
  * @summary render
  */
+export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher) => {
+  const fc = elem.type;
+  const p = elem.props;
+  root.fibrils[elem.id!] = elem.fibril;
+  elem.fibril.elem = elem;
+  elem.fibril.rehydrant = root;
+  //
+  // if (FC.isSync(fc)) {
+  //   return pipe(
+  //     dispatcher.lock,
+  //     E.flatMap(() => {
+  //       Unsafe.setNode(task.fibril);
+  //       return E.sync(() => fc(p));
+  //     }),
+  //     E.tap(() => {
+  //       Unsafe.setNode(undefined);
+  //       return dispatcher.unlock;
+  //     }),
+  //   );
+  // }
+  // if (FC.isAsync(fc)) {
+  //   return E.promise(async () => await fc(p));
+  // }
+  // if (FC.isEffect(fc)) {
+  //   return fc(p);
+  // }
+
+  return pipe(
+    dispatcher.lock,
+    E.flatMap(() => {
+      Unsafe.setNode(elem.fibril);
+
+      if (FC.isSync(fc)) {
+        return E.sync(() => fc(p));
+      }
+      if (FC.isAsync(fc)) {
+        return E.promise(async () => await fc(p));
+      }
+      if (FC.isEffect(fc)) {
+        return fc(p);
+      }
+
+      return pipe(
+        E.sync(() => fc(p)),
+        E.flatMap((children) => {
+          if (Predicate.isPromise(children)) {
+            fc[FC.TypeId] = ASYNC;
+            return E.promise(async () => await children);
+          }
+
+          if (E.isEffect(children)) {
+            fc[FC.TypeId] = EFFECT;
+            return children;
+          }
+
+          fc[FC.TypeId] = SYNC;
+          return E.succeed(children);
+        }),
+      );
+    }),
+    E.flatMap((children) => {
+      Unsafe.setNode(undefined);
+      Fibril.commit(elem.fibril);
+      return E.as(dispatcher.unlock, Elem.connectChildren(elem, children));
+    }),
+    E.catchAllDefect((e) => {
+      Unsafe.setNode(undefined);
+      return E.zipRight(dispatcher.unlock, E.fail(e as Error));
+    }),
+  );
+});
+
+/**
+ * @summary render
+ */
 const effect = (root: Rehydrant, fibril: Fibril) => {
   if (fibril.queue.length) {
     const effects = Array<ReturnType<typeof Side.apply>>(fibril.queue.length);
@@ -181,47 +303,29 @@ const effect = (root: Rehydrant, fibril: Fibril) => {
 /**
  * @summary mount
  */
-const renderMount = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
+const renderMount = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
-    dispatcher.lock,
-    E.flatMap(() => {
-      Fibril.init(root, task, task.fibril);
-      Unsafe.setNode(task.fibril);
-      return FC.render(task.type, task.props);
-    }),
-    E.tap(() => {
-      Unsafe.setNode(undefined);
-      return dispatcher.unlock;
-    }),
-    E.catchAllDefect((e) => {
-      Unsafe.setNode(undefined);
+    task(root, elem),
+    E.tap((children) => {
+      elem.nodes = children;
 
-      return E.zipRight(
-        dispatcher.unlock,
-        E.fail(e as Error),
-      );
-    }),
-    E.map((children) => {
-      Fibril.commit(task.fibril);
-      task.nodes = children.filter(Boolean) as Elem.Any[];
-      for (let i = 0; i < task.nodes.length; i++) {
-        const node = task.nodes[i];
+      for (let i = 0; i < elem.nodes.length; i++) {
+        const node = elem.nodes[i];
 
         if (!Elem.isValue(node)) {
-          Elem.connectChild(task, node, i);
           MutableList.append(root.mount, node);
         }
       }
-      return task.nodes;
+
+      return effect(root, elem.fibril);
     }),
-    E.tap(() => effect(root, task.fibril)),
-  ),
-);
+    E.asVoid,
+  );
 
 /**
  * @summary mount
  */
-const mount = (root: Rehydrant, elem: Elem) => {
+const mount = (root: Rehydrant, elem: Elem.Node) => {
   MutableList.append(root.mount, elem);
 
   return E.whileLoop({
@@ -254,47 +358,28 @@ const mount = (root: Rehydrant, elem: Elem) => {
  */
 export const initialize = (root: Rehydrant) => mount(root, root.elem);
 
-
 /**
  * @summary rehydrate
  */
-const rehydrateRender = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
+const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
-    dispatcher.lock,
-    E.flatMap(() => {
-      Fibril.hydrate(root, task, task.fibril);
-      Unsafe.setNode(task.fibril);
-      return FC.render(task.type, task.props);
-    }),
-    E.tap(() => {
-      Unsafe.setNode(undefined);
-      return dispatcher.unlock;
-    }),
-    E.catchAllDefect((e) => {
-      Unsafe.setNode(undefined);
-
-      return E.zipRight(
-        dispatcher.unlock,
-        E.fail(e as Error),
-      );
-    }),
+    task(root, elem),
     E.map((children) => {
-      Fibril.commit(task.fibril);
-      task.nodes = children.filter(Boolean) as Elem.Any[];
+      Fibril.commit(elem.fibril);
+      elem.nodes = children.filter(Boolean);
 
-      for (let i = 0; i < task.nodes.length; i++) {
-        const node = task.nodes[i];
+      for (let i = 0; i < elem.nodes.length; i++) {
+        const node = elem.nodes[i];
 
         if (!Elem.isValue(node)) {
-          Elem.connectChild(task, node, i);
+          Elem.connectChild(elem, node, i);
           MutableList.append(root.mount, node);
         }
       }
 
-      return task.nodes;
+      return elem.nodes;
     }),
-  ),
-);
+  );
 
 /**
  * @summary rehydrate
@@ -332,7 +417,7 @@ export const rehydrate = (root: Rehydrant) => {
 /**
  * @summary dismount
  */
-export const dismount = (root: Rehydrant, elem: Elem) => {
+export const dismount = (root: Rehydrant, elem: Elem.Node) => {
   MutableList.append(root.dismount, elem);
 
   while (MutableList.tail(root.dismount)) {
@@ -358,61 +443,90 @@ export const dismount = (root: Rehydrant, elem: Elem) => {
 /**
  * @summary render
  */
-const render = (root: Rehydrant, task: Elem.Task) => Dispatcher.use((dispatcher) =>
+const renderTask = (root: Rehydrant, elem: Elem.Task) =>
   pipe(
-    dispatcher.lock,
-    E.flatMap(() => {
-      Fibril.connect(root, task, task.fibril);
-      Unsafe.setNode(task.fibril);
-      return FC.render(task.type, task.props);
-    }),
-    E.tap(() => {
-      Unsafe.setNode(undefined);
-      return dispatcher.unlock;
-    }),
-    E.catchAllDefect((e) => {
-      Unsafe.setNode(undefined);
-
-      return E.zipRight(
-        dispatcher.unlock,
-        E.fail(e as Error),
-      );
-    }),
+    task(root, elem),
     E.map((children) => {
-      Fibril.commit(task.fibril);
-      const nodes = children.filter(Boolean) as Elem.Any[];
+      Fibril.commit(elem.fibril);
+      const nodes = children.filter(Boolean);
 
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
 
         if (!Elem.isValue(node)) {
-          Elem.connectChild(task, node, i);
+          Elem.connectChild(elem, node, i);
         }
       }
 
       return nodes;
     }),
-    E.tap(() => effect(root, task.fibril)),
-  ),
-);
+    E.tap(() => effect(root, elem.fibril)),
+  );
+
+
+//
+// const diff = (prev: Elem, next: Elem): Diff => {
+//   if (Elem.isValue(prev)) {
+//     if (!Elem.isValue(next)) return Diff.Replace({next});
+//     if (prev !== next) return Diff.Replace({next});
+//   }
+//   if (Elem.isFragment(prev)) {
+//     if (!Elem.isFragment(next)) return Diff.Replace({next});
+//     if (prev.nodes.length !== next.nodes.length) return Diff.Replace({next});
+//   }
+// };
+//
+// export const Thing = Differ.make<Elem | undefined, Diff>(
+//   {
+//     empty  : Diff.Skip() as Diff,
+//     combine: () => {throw new Error();},
+//     diff   : (prev: Elem | undefined, next: Elem | undefined) => {
+//       if (!prev && !next) return Diff.Skip();
+//       if (!prev && next) return Diff.Mount({next});
+//       if (prev && !next) return Diff.Dismount({prev});
+//     },
+//     patch: (patch: Diff, prev: Elem | undefined) =>
+//       Diff.$match(patch, {
+//         Skip    : () => prev,
+//         Update  : (d) => prev,
+//         Mount   : (d) => prev,
+//         Dismount: (d) => prev,
+//         Replace : (d) => d.next,
+//         Render  : (d) => prev,
+//       }),
+//   },
+// );
 
 export const renderAgain = (root: Rehydrant) => {
-  const stack = MutableList.empty<[Elem.Any, Elem | null]>();
+  const stack = MutableList.empty<[Elem, Elem] | [Elem.Task]>();
   // eslint-disable-next-line prefer-const
   let hasSentPartial = false;
 
-  const parents = new WeakMap<Elem, Elem>();
+  const parents = new WeakMap<Elem.Node, Elem>();
   parents.set(root.elem, root.elem);
   MutableList.append(stack, [root.elem, null]);
 
   const condition = () => MutableList.tail(stack);
 
   const body = () => {
-    const [curr, next] = MutableList.pop(stack)!;
+    const pop = MutableList.pop(stack)!;
+
+    if (pop.length === 1) {
+      return pipe(
+        task(root, pop[0]),
+        E.map((children) => {
+          for (let i = 0; i < children.length; i++) {
+            const child = children[i];
+          }
+        }),
+      );
+    }
+
+    const [curr, next] = pop;
 
     if (next === null) {
       if (Elem.isTask(curr)) {
-        return render(root, curr).pipe(E.map((children) => {
+        return renderTask(root, curr).pipe(E.map((children) => {
           curr.nodes = children;
         }));
       }
@@ -428,10 +542,10 @@ export const renderAgain = (root: Rehydrant) => {
  * @summary render
  */
 export const rerender = (root: Rehydrant) => E.gen(function* () {
-  const stack = ML.empty<[Elem, Elem.Any[]]>();
+  const stack = ML.empty<[Elem.Node, Elem[]]>();
   const hasSentPartial = false;
 
-  if (Elem.isRest(root.elem)) {
+  if (Elem.isRest(root.elem) || Elem.isFragment(root.elem)) {
     for (let i = 0; i < root.elem.nodes.length; i++) {
       const node = root.elem.nodes[i];
 
@@ -439,7 +553,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         continue;
       }
       else if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* render(root, node)]);
+        ML.append(stack, [node, yield* renderTask(root, node)]);
       }
       else {
         ML.append(stack, [node, node.nodes]);
@@ -447,7 +561,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* render(root, root.elem)]);
+    ML.append(stack, [root.elem, yield* renderTask(root, root.elem)]);
   }
 
   while (ML.tail(stack)) {
@@ -520,12 +634,48 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         }
       }
 
+      else if (Elem.isFragment(curr)) {
+        if (!hasSentPartial) {
+          // hasSentPartial = yield* LifecycleUnits.part(curr);
+        }
+
+        if (Elem.isValue(rend)) {
+          dismount(root, curr);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isRest(rend)) {
+          dismount(root, curr);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isFragment(rend)) {
+          if (curr.type !== rend.type) {
+            dismount(root, curr);
+            yield* mount(root, rend);
+            parent.nodes[i] = rend;
+          }
+          if (!Props.isEqual(curr.props, rend.props)) {
+            curr.props = rend.props;
+          }
+          ML.append(stack, [curr, rend.nodes]);
+        }
+        else {
+          dismount(root, curr);
+          yield* mount(root, rend);
+          parent.nodes[i] = rend;
+        }
+      }
+
       else {
         if (Elem.isValue(rend)) { // Task => Primitive
           dismount(root, curr);
           parent.nodes[i] = rend;
         }
         else if (Elem.isRest(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
+          dismount(root, curr);
+          yield* mount(root, rend);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isFragment(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
           dismount(root, curr);
           yield* mount(root, rend);
           parent.nodes[i] = rend;
@@ -540,7 +690,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           // ML.append(stack, [curr, rend.nodes]);
         }
         else {
-          const rerendered = yield* render(root, curr);
+          const rerendered = yield* renderTask(root, curr);
           ML.append(stack, [curr, rerendered]);
         }
       }
@@ -558,6 +708,8 @@ export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
 
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
+
+    if (Elem.isValue(elem)) continue;
 
     if (Trigger.isTarget(event, elem)) {
       return pipe(

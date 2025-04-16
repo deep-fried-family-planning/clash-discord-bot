@@ -1,179 +1,169 @@
-import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {FC} from '#src/disreact/model/entity/fc.ts';
 import {Fibril} from '#src/disreact/model/entity/fibril.ts';
-import type {Rehydrant} from '#src/disreact/model/rehydrant.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
-import {Data} from 'effect';
 import {Props} from '#src/disreact/model/entity/props.ts';
+import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {E} from '#src/disreact/utils/re-exports.ts';
+import type {Data} from 'effect';
+import { Differ} from 'effect';
 
-const HANDLER_KEYS = [
-  Keys.onclick,
-  Keys.onselect,
-  Keys.onsubmit,
-];
+export type Type =
+  | TaskType
+  | RestType
+  | FragmentType
+  | ValueType;
 
-const RESERVED = [
-  ...HANDLER_KEYS,
-  Keys.children,
-  Keys.handler,
-];
-
-export type Return = Elem | Elem[];
-
-export interface MetaProps {
-  type : any;
-  id?  : string | undefined;
-  ids? : string | undefined;
-  idn? : string | undefined;
-  idx? : number | undefined;
-  props: any;
-  nodes: Any[];
-}
-
-/**
- * Elem
- */
 export * as Elem from '#src/disreact/model/entity/elem.ts';
 export type Elem =
+  | Task
   | Rest
-  | Task;
-
-export type Any =
-  | Elem
+  | Fragment
   | Value;
 
-export const connectNodes = (parent: Elem, nodes: Any[]) => {
-  for (let i = 0; i < nodes.length; i++) {
-    const child = nodes[i];
-    if (isValue(child)) {
-      continue;
-    }
-    connectChild(parent, child, i);
-  }
-};
+export interface Node {
+  type   : any;
+  id?    : string | undefined;
+  ids?   : string | undefined;
+  idn?   : string | undefined;
+  idx?   : number | undefined;
+  length?: number | undefined;
+  fibril?: Fibril | undefined;
+  props  : Props;
+  nodes  : Elem[];
+}
 
-export const connectChild = (parent: Elem, child: Elem, idx: number) => {
-  child.idx = idx;
+export type Child =
+  | Task
+  | Rest
+  | Fragment
+  | ValueType;
 
-  const child_id = `${child.idn ?? child.type}:${idx}`;
-  const parent_id = `${parent.idn ?? parent.type}:${parent.idx}`;
+export type Children = Child | Child[];
 
-  child.id = `${parent.id}:${child_id}`;
-  child.ids = `${parent_id}:${child_id}`;
-};
-
-export type Ops = Data.TaggedEnum<{
-  Skip   : {};
-  Add    : {node: Any};
-  Delete : {node: Any; idx: number};
-  Replace: {node: Any; idx: number; child: Any};
-  Update : {node: Any; idx: number; child: Any};
-  Render : {};
-}>;
-
-export const Ops = Data.taggedEnum<Ops>();
-const empty = Ops.Skip() as Ops;
-const combine = () => {throw new Error();};
+export const isNode = (self: any): self is Node => typeof self === 'object' && self.nodes;
 
 export const isSame = (a: Elem, b: Elem) => {
   if (a === b) return true;
-  if (isValue(a) && isValue(b)) return false;
+  if (isValue(a) || isValue(b)) return false;
+  if (!a || !b) return false;
   return a.type === b.type;
+};
+
+export const isChild = (children: any): children is Child => !children.length;
+
+export const connectChildren = (parent: Node, children: Children): Elem[] => {
+  if (isValueType(children)) return [makeValue(children)];
+  if (isChild(children)) return [connectChild(parent, children)];
+  return connectNodes(parent, children);
+};
+
+export const connectNodes = (parent: Node, children: Child[]): Elem[] => {
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    children[i] = isValueType(child)
+      ? makeValue(child)
+      : connectChild(parent, child, i);
+  }
+  return children as Elem[];
+};
+
+export const connectChild = (parent: Node, child: Node, idx: number = 0): Elem => {
+  child.idx = idx;
+  const child_id = `${child.idn ?? child.type ?? ''}:${idx}`;
+  const parent_id = `${parent.idn ?? parent.type ?? ''}:${parent.idx}`;
+  child.id = `${parent.id}:${child_id}`;
+  child.ids = `${parent_id}:${child_id}`;
+  return child;
 };
 
 /**
  * Task
  */
-export type TaskType = (prop?: any) => any;
+export type TaskType<E = any, R = any> = (prop?: any) =>
+  | Child
+  | Promise<Child>
+  | E.Effect<Child, E, R>;
 
-export interface Task extends MetaProps {
+export interface Task extends Node {
   type  : FC;
   fibril: Fibril;
 }
 
 export const isTaskType = (self: any): self is TaskType => typeof self === 'function';
 
-export const isTask = (self: unknown): self is Task => {
-  switch (typeof self) {
-    case 'object':
-      return typeof (self as any).type === 'function';
-  }
-  return false;
+export const isTask = (self: any): self is Task => typeof self === 'object' && typeof self.type === 'function';
+
+export const isEqualTask = (a: Task, b: Task) => {
+  if (a === b) return true;
+  if (a.type !== b.type) return false;
+  if (!Props.isEqual(a.props, b.props)) return false;
+  if (a.nodes.length !== b.nodes.length) return false;
+  return true;
 };
 
 export const makeTask = (type: any, props: any): Task => {
   const fc = FC.make(type);
-  const task = {} as Task;
-  task.idn = FC.getName(fc);
-  task.type = fc;
-  task.props = props;
-  task.nodes = [] as Elem[];
-  task.fibril = Fibril.make();
-  return task;
+  return {
+    type  : fc,
+    idn   : FC.getName(fc),
+    props,
+    nodes : [],
+    fibril: Fibril.make(),
+  };
 };
 
 export const cloneTask = (self: Task): Task => {
-  const {props, fibril, type, nodes, id, idx} = self;
-  const clonedProps = Props.deepCloneTaskProps(props);
-  const task = makeTask(type, clonedProps);
-  task.fibril = Fibril.clone(fibril);
-  task.nodes = nodes;
-  task.id = id;
-  task.idx = idx;
-  return task;
+  const {type, props, nodes, fibril, ...rest} = self;
+  const cloned = structuredClone(rest) as Task;
+  cloned.type = type;
+  cloned.fibril = Fibril.clone(fibril);
+  cloned.props = Props.deepCloneTaskProps(props);
+  cloned.nodes = nodes;
+  return cloned;
 };
+
+export const encodeTask = (self: Task) => self.nodes;
 
 /**
  * Rest
  */
 export type RestType = string;
 
-export interface Rest extends MetaProps {
+export interface Rest extends Node {
   type    : string;
   handler?: Trigger.Handler<any> | undefined;
 }
 
 export const isRestType = (self: any): self is RestType => typeof self === 'string';
 
-export const isRest = (self: any): self is Rest =>
-  typeof self === 'object' &&
-  typeof self.type === 'string';
+export const isRest = (self: any): self is Rest => typeof self === 'object' && typeof self.type === 'string';
 
-export const makeRest = (type: string, props: any, nodes: any[]): Rest => {
-  return {
+export const isEqualRest = (a: Rest, b: Rest) => {
+  if (a === b) return true;
+  if (a.type !== b.type) return false;
+  if (!a.handler || !b.handler) return false;
+  if (!Props.isEqual(a.props, b.props)) return false;
+  if (a.nodes.length !== b.nodes.length) return false;
+  return true;
+};
+
+export const makeRest = (type: string, props: any, nodes: any[]): Rest =>
+  ({
     type,
     props,
     nodes,
     handler: Props.getHandler(props),
-  };
-};
+  });
 
 export const cloneRest = (self: Rest): Rest => {
   const {props, nodes, handler, ...rest} = self;
-
-  const reserved = {} as any;
-
-  for (const key of RESERVED) {
-    const prop = props[key];
-    if (prop) {
-      reserved[key] = prop;
-      delete props[key];
-    }
-  }
-
   const cloned = structuredClone(rest) as Rest;
-  cloned.props = structuredClone(props);
+  cloned.props = Props.cloneKnownProps(props);
   cloned.nodes = nodes;
   cloned.handler = handler;
-
-  for (const key of Object.keys(reserved)) {
-    cloned.props[key] = reserved[key];
-    props[key] = reserved[key];
-  }
-
   return cloned;
 };
+
+export const encodeRest = (self: Rest) => self.props;
 
 /**
  * Fragment
@@ -182,11 +172,38 @@ export type FragmentType = undefined;
 
 export const FragmentType = undefined;
 
-export const isFragmentType = (self: any): self is FragmentType => self === undefined;
-
-export const makeFragment = (type: undefined, props: any) => {
-  return props.children;
+export interface Fragment extends Node {
+  type: FragmentType;
 };
+
+export const isFragmentType = (self: any): self is FragmentType => self === FragmentType;
+
+export const isFragment = (self: any): self is Fragment => self.type === FragmentType;
+
+export const isEqualFragment = (a: Fragment, b: Fragment) => {
+  if (a === b) return true;
+  if (a.type !== b.type) return false;
+  if (!Props.isEqual(a.props, b.props)) return false;
+  if (a.nodes.length !== b.nodes.length) return false;
+  return true;
+};
+
+export const makeFragment = (type: undefined, props: any): Fragment =>
+  ({
+    type,
+    props,
+    nodes: props.children,
+  });
+
+export const cloneFragment = (self: Fragment) => {
+  const {props, nodes, ...rest} = self;
+  const cloned = structuredClone(rest) as Fragment;
+  cloned.props = Props.cloneKnownProps(props);
+  cloned.nodes = nodes;
+  return cloned;
+};
+
+export const encodeFragment = (self: Fragment) => self.nodes;
 
 /**
  * Value
@@ -200,45 +217,28 @@ export type ValueType =
   | undefined
   | symbol;
 
-export const isValueType = (self: any): self is ValueType => {
-  if (typeof self === 'object') return false;
-  if (typeof self === 'function') return false;
-  return true;
-};
+export const isValueType = (type: any): type is ValueType =>
+  !type ||
+  typeof type !== 'object';
 
 export type Value =
   | string
   | bigint
   | number
-  | boolean
-  | null
-  | undefined
-  | symbol;
+  | true
+  | undefined;
 
-export const isValue = (self: unknown): self is Value => {
-  if (!self) return true;
-  if (typeof self === 'object') return false;
-  if (typeof self === 'function') return false;
-  return true;
+export const isValue = (self: Elem): self is Value =>
+  typeof self !== 'object' ||
+  self === null;
+
+export const makeValue = (type: any): Value => {
+  if (!type) return undefined;
+  return type;
 };
 
-export const makeValue = (value: any): Value => value;
+export const isEqualValue = (a: Value, b: Value) => a === b;
 
-export const cloneValue = (self: Value): Value => structuredClone(self);
+export const cloneValue = (self: Value) => structuredClone(self) as Value;
 
-/**
- * schema
- */
-export type Encoded<A extends string = string, B = any> =
-  | {
-      _tag     : A;
-      rehydrant: Rehydrant.Decoded;
-      data     : B;
-    }
-  | null;
-
-export const declareEncoded = <T extends string, A, I, R>(_tag: T, data: S.Schema<A, I, R>) =>
-  S.Struct({
-    _tag: S.Literal(_tag),
-    data: data,
-  });
+export const encodeValue = (self: Value) => structuredClone(self);

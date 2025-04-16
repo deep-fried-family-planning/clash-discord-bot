@@ -1,15 +1,41 @@
-import { Keys } from '#src/disreact/codec/rest-elem/keys.ts';
+import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
 import {Data, Equal} from 'effect';
-
-export * as Props from '#src/disreact/model/entity/props.ts';
-export type Props = any;
 
 const HANDLER_KEYS = [
   Keys.onclick,
   Keys.onselect,
   Keys.onsubmit,
 ];
+
+const RESERVED = [
+  ...HANDLER_KEYS,
+  Keys.children,
+  Keys.handler,
+];
+
+export * as Props from '#src/disreact/model/entity/props.ts';
+export type Props = any;
+
+export const cloneKnownProps = (props: Props): Props => {
+  const reserved = {} as any;
+
+  for (const key of RESERVED) {
+    const prop = props[key];
+    if (prop) {
+      reserved[key] = prop;
+      delete props[key];
+    }
+  }
+
+  const cloned = structuredClone(props);
+
+  for (const key of Object.keys(reserved)) {
+    cloned[key] = reserved[key];
+  }
+
+  return cloned;
+};
 
 export const getHandler = (props: Props): Trigger.Handler<any> | undefined => {
   for (let i = 0; i < HANDLER_KEYS.length; i++) {
@@ -23,27 +49,12 @@ export const getHandler = (props: Props): Trigger.Handler<any> | undefined => {
   }
 };
 
-const RESERVED = [
-  ...HANDLER_KEYS,
-  Keys.children,
-  Keys.handler,
-];
-
 export const isEqual = (a: Props, b: Props): boolean => {
-  if (a === b) {
-    return true;
-  }
-  if (!a || !b) {
-    return false;
-  }
-  if (a === null || b === null) {
-    return false;
-  }
-  if (a === undefined || b === undefined) {
-    return false;
-  }
-  if (a._tag !== b._tag) {
-    return false;
+  if (a === b) return true;
+  if (!a || !b) return false;
+
+  if (a.children && b.children) {
+    if (a.children.length !== b.children.length) return false;
   }
 
   const cprops = Data.struct(a);

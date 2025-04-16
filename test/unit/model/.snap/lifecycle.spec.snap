@@ -349,6 +349,42 @@ exports[`when rendering effect > MessageAsync 1`] = `
 }"
 `;
 
+exports[`when rendering effect > MessageEffect 1`] = `
+"{
+  "embeds": [
+    {
+      "description": "EphemeralEffect"
+    }
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "label": "ButtonSync",
+          "style": 1,
+          "type": 2,
+          "custom_id": "ButtonSync:0:button:0"
+        },
+        {
+          "label": "ButtonAsync",
+          "style": 1,
+          "type": 2,
+          "custom_id": "ButtonAsync:1:button:0"
+        },
+        {
+          "label": "ButtonEffect",
+          "style": 1,
+          "type": 2,
+          "custom_id": "ButtonEffect:2:button:0"
+        }
+      ]
+    }
+  ],
+  "flags": 64
+}"
+`;
+
 exports[`when rendering effect 1`] = `
 "{
   "embeds": [
