@@ -8,7 +8,7 @@ export class SideEffectDefect extends Data.TaggedError('disreact/SideEffectDefec
   cause: unknown;
 }> {}
 
-export const apply = (ef: Side) =>
+export const effect = (ef: Side) =>
   pipe(
     E.suspend(() => {
       const output = ef();
@@ -25,3 +25,5 @@ export const apply = (ef: Side) =>
     }),
     E.catchAllDefect((e) => E.fail(e as Error)),
   );
+
+export const invoke = (ef: Side) => ef();

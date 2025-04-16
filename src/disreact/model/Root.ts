@@ -8,3 +8,5 @@ export class Root extends E.Service<Root>()('disreact/Root', {
     }),
   ),
 }) {}
+
+TPriorityQueue.takeOption;

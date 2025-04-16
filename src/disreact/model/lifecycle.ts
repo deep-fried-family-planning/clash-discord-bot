@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Declare} from '#src/disreact/model/meta/declare.ts';
+import type {Declare} from '#src/disreact/model/schema/declare.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem, type Task} from '#src/disreact/model/elem/elem.ts';
 import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/meta/fc.ts';
@@ -7,9 +7,8 @@ import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Unsafe} from '#src/disreact/model/meta/unsafe.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/schema/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {Data, E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Differ, MutableList, Predicate} from 'effect';
@@ -21,7 +20,7 @@ export type Lifecycle = never;
 /**
  * @summary jsx
  */
-export const Fragment = undefined;
+export const Fragment = Elem.FragmentType;
 
 /**
  * @summary jsx
@@ -78,48 +77,42 @@ export const clone = <A extends Elem>(elem: A): A => {
   if (Elem.isValue(elem)) {
     return Elem.cloneValue(elem) as A;
   }
-
-  let first: A;
-
   if (Elem.isFragment(elem)) {
-    first = Elem.cloneFragment(elem) as A;
+    return Elem.cloneFragment(elem) as A;
   }
-  else if (Elem.isRest(elem)) {
-    first = Elem.cloneRest(elem) as A;
+  if (Elem.isRest(elem)) {
+    return Elem.cloneRest(elem) as A;
   }
-  else {
-    first = Elem.cloneTask(elem) as A;
+  return Elem.cloneTask(elem) as A;
+};
+
+/**
+ * @summary clone
+ */
+export const deepClone = <A extends Elem>(elem: A): A => {
+  const cloned = clone(elem);
+
+  if (!Elem.isNode(cloned)) {
+    return cloned;
   }
 
-  const stack = ML.make<Elem>(elem);
+  const stack = ML.make<Elem.Node>(cloned);
 
   while (ML.tail(stack)) {
     const next = ML.pop(stack)!;
 
-    let cloned: Elem;
+    for (let i = 0; i < next.nodes.length; i++) {
+      const child = clone(next.nodes[i]);
 
-    if (Elem.isValue(next)) {
-      cloned = Elem.cloneValue(next);
-      continue;
-    }
+      next.nodes[i] = child;
 
-    if (Elem.isFragment(elem)) {
-      cloned = Elem.cloneFragment(elem);
-    }
-    else if (Elem.isRest(elem)) {
-      cloned = Elem.cloneRest(elem);
-    }
-    else {
-      cloned = Elem.cloneTask(elem);
-    }
-
-    for (let i = 0; i < cloned.nodes.length; i++) {
-      const child = next.nodes[i];
-      ML.append(stack, child);
+      if (Elem.isNode(child)) {
+        MutableList.append(stack, child);
+      }
     }
   }
 
-  return first;
+  return cloned;
 };
 
 /**
@@ -204,7 +197,6 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Enc
   return null;
 });
 
-
 /**
  * @summary relay
  */
@@ -286,14 +278,20 @@ export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
 
-    if (Elem.isValue(elem)) continue;
+    if (Elem.isValue(elem)) {
+      continue;
+    }
 
     if (Trigger.isTarget(event, elem)) {
       return pipe(
         Trigger.apply(elem.handler!, event),
         E.tap(() => {
-          if (root.next.id === null) return relayClose();
-          if (root.next.id !== root.id) return relayNext(root);
+          if (root.next.id === null) {
+            return relayClose();
+          }
+          if (root.next.id !== root.id) {
+            return relayNext(root);
+          }
           return relaySame(root);
         }),
       );
@@ -391,10 +389,10 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
  */
 const effect = (root: Rehydrant, fibril: Fibril) => {
   if (fibril.queue.length) {
-    const effects = Array<ReturnType<typeof Side.apply>>(fibril.queue.length);
+    const effects = Array<ReturnType<typeof Side.effect>>(fibril.queue.length);
 
     for (let i = 0; i < effects.length; i++) {
-      effects[i] = Side.apply(fibril.queue[i]);
+      effects[i] = Side.effect(fibril.queue[i]);
     }
 
     return pipe(

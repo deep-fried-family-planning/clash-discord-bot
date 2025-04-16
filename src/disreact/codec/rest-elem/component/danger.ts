@@ -2,7 +2,7 @@ import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {Emoji} from '#src/disreact/codec/rest-elem/markdown/emoji.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/rest-elem/util.ts';
-import { Declare } from '#src/disreact/model/meta/declare.ts';
+import { Declare } from '#src/disreact/model/schema/declare.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from '../../dapi/dapi';

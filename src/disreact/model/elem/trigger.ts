@@ -13,26 +13,12 @@ export const make = (id: string, data: any): Trigger => ({
   data,
 });
 
-export const declare = <A, I, R>(data: S.Schema<A, I, R>) =>
-  S.Struct({
-    id  : S.String,
-    data: data,
-  });
-
 export type Event<A> = Trigger<A>['data'];
 
 export type Handler<A, E = any, R = any> = (event: Event<A>) =>
   | void
   | Promise<void>
   | E.Effect<void, E, R>;
-
-const isHandler = <A>(h: unknown): h is Handler<A> =>
-  typeof h === 'function';
-
-export const declareHandler = <A, I, R>(data: S.Schema<A, I, R>) =>
-  S.declare(
-    isHandler<typeof data.Type>,
-  );
 
 export class TriggerDefect extends D.TaggedError('disreact/TriggerDefect')<{
   cause: unknown;

@@ -7,7 +7,7 @@ import {decode, encode} from '@msgpack/msgpack';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
 
-export * as Rehydrant from '#src/disreact/model/rehydrant.ts';
+export * as Rehydrant from '#src/disreact/model/schema/rehydrant.ts';
 export type Rehydrant = {
   id      : string;
   props?  : any;

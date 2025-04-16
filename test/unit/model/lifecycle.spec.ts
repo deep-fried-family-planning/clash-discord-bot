@@ -1,7 +1,7 @@
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
-import {Rehydrant} from '#src/disreact/model/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/schema/rehydrant.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {MessageEffect} from '#test/unit/components/message-effect.tsx';
