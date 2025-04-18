@@ -26,7 +26,7 @@ export const TimeToLive = (duration: DR.Duration) =>
     Id,
     S.typeSchema(S.DateTimeUtcFromSelf),
     {
-      encode: (ttl) => '',
+      encode: () => '',
       decode: (id) => DT.addDuration(toDateTime(id), duration),
     },
   );

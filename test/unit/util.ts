@@ -2,7 +2,7 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from '#src/disreact/model/meta/fc.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';

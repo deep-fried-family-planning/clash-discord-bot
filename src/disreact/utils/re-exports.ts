@@ -26,6 +26,7 @@ import * as SR from 'effect/SubscriptionRef';
 export {
   pipe,
   hole,
+  hole as forbidden,
   flow,
 } from 'effect/Function';
 

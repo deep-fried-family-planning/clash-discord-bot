@@ -17,8 +17,6 @@ export const handleSame = (ds: Dokens) =>
     ),
     E.flatMap(([active, now]) => {
       const freshLeft = DateTime.distanceDurationEither(now, ds.fresh.ttl).pipe(Either.getOrUndefined);
-      console.log(now);
-      console.log(freshLeft);
       const activeLeft = active
         ? DateTime.distanceDurationEither(now, active.ttl).pipe(Either.getOrUndefined)
         : undefined;

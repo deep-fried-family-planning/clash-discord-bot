@@ -1,12 +1,13 @@
 import {usePage} from '#src/disreact/index.ts';
 import {SimpleModal} from '#test/unit/components/simple-modal.tsx';
 
-export const SimpleMessage = () => {
+export const SimpleMessage = (props) => {
   const page = usePage([SimpleModal]);
 
   return (
     <message>
       <embed>{'Hello World!'}</embed>
+      {props.title && <embed>{props.title}</embed>}
       <actions>
         <primary
           custom_id={'OpenModal'}

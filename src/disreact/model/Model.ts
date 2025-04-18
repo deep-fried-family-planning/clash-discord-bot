@@ -1,9 +1,9 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Hooks} from '#src/disreact/model/hooks.ts';
-import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
-import type {Declare} from '#src/disreact/model/meta/declare.ts';
-import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
+import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
+import type {Declare} from '#src/disreact/model/exp/declare.ts';
+import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -12,10 +12,10 @@ import {FiberMap} from 'effect';
 export const makeEntrypoint = (key: Registry.Key, props?: any) =>
   pipe(
     Registry.checkout(key, props),
-    E.tap((root) => Lifecycle.initialize(root)),
+    E.tap((root) => Lifecycles.initialize(root)),
     E.flatMap((root) =>
       pipe(
-        Lifecycle.encode(root),
+        Lifecycles.encode(root),
         E.map((encoded) => [root, encoded] as const),
       ),
     ),
@@ -26,9 +26,9 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
     Registry.rehydrate(dehydrated),
     E.tap((original) =>
       pipe(
-        Lifecycle.rehydrate(original),
-        E.andThen(() => Lifecycle.invoke(original, event)),
-        E.andThen(() => Lifecycle.rerender(original)),
+        Lifecycles.rehydrate(original),
+        E.andThen(() => Lifecycles.invoke(original, event)),
+        E.andThen(() => Lifecycles.rerender(original)),
         E.andThen(() =>
           Relay.use((relay) =>
             relay.setOutput(original),
@@ -44,7 +44,7 @@ export const hydrateInvoke = (dehydrated: Rehydrant.Decoded, event: Trigger) =>
             if (output === null || output.id === original.id) {
               return;
             }
-            return Lifecycle.initialize(output);
+            return Lifecycles.initialize(output);
           }),
           E.tap(() => relay.setComplete()),
         ),
@@ -62,8 +62,8 @@ const make = pipe(
     const create = (id: string, key: Registry.Key, props: any = {}) =>
       pipe(
         Registry.checkout(key, props),
-        E.tap((root) => Lifecycle.initialize(root)),
-        E.flatMap((root) => Lifecycle.encode(root)),
+        E.tap((root) => Lifecycles.initialize(root)),
+        E.flatMap((root) => Lifecycles.encode(root)),
         FiberMap.run(roots, id),
       );
 
@@ -72,9 +72,9 @@ const make = pipe(
         Registry.rehydrate(rehydrant),
         E.flatMap((original) =>
           pipe(
-            Lifecycle.rehydrate(original),
-            E.andThen(() => Lifecycle.invoke(original, event)),
-            E.andThen(() => Lifecycle.rerender(original)),
+            Lifecycles.rehydrate(original),
+            E.andThen(() => Lifecycles.invoke(original, event)),
+            E.andThen(() => Lifecycles.rerender(original)),
             E.andThen(() =>
               Relay.use((relay) =>
                 relay.setOutput(original),
@@ -89,11 +89,11 @@ const make = pipe(
                       return E.succeed(output);
                     }
                     if (output.id === original.id) {
-                      return Lifecycle.encode(output);
+                      return Lifecycles.encode(output);
                     }
                     return pipe(
-                      Lifecycle.initialize(output),
-                      E.flatMap(() => Lifecycle.encode(output)),
+                      Lifecycles.initialize(output),
+                      E.flatMap(() => Lifecycles.encode(output)),
                     );
                   }),
                   E.tap(() => relay.setComplete()),
@@ -131,8 +131,8 @@ export class Model extends E.Service<Model>()('disreact/Model', {
   static readonly create = (key: Registry.Key, props: any = {}) =>
     pipe(
       Registry.checkout(key, props),
-      E.tap((root) => Lifecycle.initialize(root)),
-      E.flatMap((root) => Lifecycle.encode(root)),
+      E.tap((root) => Lifecycles.initialize(root)),
+      E.flatMap((root) => Lifecycles.encode(root)),
     );
 
   static readonly invoke = (rehydrant: Rehydrant.Decoded, event: Trigger) =>
@@ -140,9 +140,9 @@ export class Model extends E.Service<Model>()('disreact/Model', {
       Registry.rehydrate(rehydrant),
       E.flatMap((original) =>
         pipe(
-          Lifecycle.rehydrate(original),
-          E.andThen(() => Lifecycle.invoke(original, event)),
-          E.andThen(() => Lifecycle.rerender(original)),
+          Lifecycles.rehydrate(original),
+          E.andThen(() => Lifecycles.invoke(original, event)),
+          E.andThen(() => Lifecycles.rerender(original)),
           E.andThen(() =>
             Relay.use((relay) =>
               relay.setOutput(original),
@@ -157,11 +157,11 @@ export class Model extends E.Service<Model>()('disreact/Model', {
                     return E.succeed(output);
                   }
                   if (output.id === original.id) {
-                    return Lifecycle.encode(output);
+                    return Lifecycles.encode(output);
                   }
                   return pipe(
-                    Lifecycle.initialize(output),
-                    E.flatMap(() => Lifecycle.encode(output)),
+                    Lifecycles.initialize(output),
+                    E.flatMap(() => Lifecycles.encode(output)),
                   );
                 }),
                 E.tap(() => relay.setComplete()),

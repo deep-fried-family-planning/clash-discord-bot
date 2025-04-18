@@ -30,7 +30,7 @@ it.effect('when opening', E.fn(function* () {
   expect(runtime.createModal).toBeCalled();
 }));
 
-it.effect('when submitting', E.fn(function* () {
+it.live('when submitting', E.fn(function* () {
   const message = yield* runtime.synthesize(SimpleMessage);
   const modal = yield* runtime.synthesize(SimpleModal);
 
@@ -43,7 +43,7 @@ it.effect('when submitting', E.fn(function* () {
     message       : message,
     type          : 5,
     data          : modal,
-  });
+  }).pipe(E.provide(SimpleModalService.Default));
 
   expect(SimpleModalServiceLogger.mock.calls).toMatchSnapshot();
   expect(res).toMatchSnapshot();

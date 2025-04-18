@@ -1,5 +1,5 @@
-import type {FC} from '#src/disreact/model/meta/fc.ts';
-import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
+import {Fibril} from '#src/disreact/model/elem/fibril.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
 export * as Hooks from '#src/disreact/model/hooks.ts';

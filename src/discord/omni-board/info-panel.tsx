@@ -1,7 +1,7 @@
 import {NavBar} from '#src/discord/components/nav-bar.tsx';
 import {Link} from '#src/discord/omni-board/link.tsx';
 import {EMPTY} from '#src/disreact/codec/constants/common.ts';
-import type {FC} from '#src/disreact/model/meta/fc.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {useIx, usePage, useState} from '#src/disreact/index.ts';
 import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/dynamo/operations/info.ts';

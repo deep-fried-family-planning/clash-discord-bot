@@ -1,5 +1,4 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DokenManager} from '#src/disreact/utils/DokenManager.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';

@@ -68,8 +68,8 @@ it.effect('when responding', E.fn(function* () {
   // yield* TestClock.setTime(17214773545718);
   yield* Fiber.join(fib2);
 
-  yield * Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
-  yield* Snap.JSON(runtime.createUpdate.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
+  yield * Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
+  yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '4');
 }));
 
 it.effect('when responding (performance)', E.fn(function* () {

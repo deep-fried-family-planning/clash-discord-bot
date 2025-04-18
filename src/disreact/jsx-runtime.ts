@@ -1,11 +1,11 @@
-import type {IntrinsicTuplesMapped} from '#src/disreact/codec/rest-elem/index.ts';
+import type {IntrinsicTuplesMapped} from '#src/disreact/codec/dapi-elem/index.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {Lifecycle} from '#src/disreact/model/lifecycle.ts';
+import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 
-export const Fragment = Lifecycle.Fragment;
-export const jsx = Lifecycle.jsx;
-export const jsxs = Lifecycle.jsxs;
-export const jsxDEV = Lifecycle.jsxDEV;
+export const Fragment = Lifecycles.Fragment;
+export const jsx = Lifecycles.jsx;
+export const jsxs = Lifecycles.jsxs;
+export const jsxDEV = Lifecycles.jsxDEV;
 
 export declare namespace JSX {
   type ElementType =

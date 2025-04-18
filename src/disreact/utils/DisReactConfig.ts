@@ -1,5 +1,5 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from '#src/disreact/model/meta/fc.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {E, flow, L} from '#src/disreact/utils/re-exports.ts';
 import {Redacted} from 'effect';
 

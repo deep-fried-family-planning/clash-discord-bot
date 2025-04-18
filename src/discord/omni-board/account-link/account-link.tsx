@@ -1,4 +1,4 @@
-import type {FC} from '#src/disreact/model/meta/fc.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
 
 
 

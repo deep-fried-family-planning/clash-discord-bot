@@ -59,3 +59,71 @@ exports[`when opening 2`] = `
   "title": "Hello World!",
 }
 `;
+
+exports[`when submitting 1`] = `
+[
+  [
+    {
+      "components": [
+        {
+          "components": [
+            {
+              "custom_id": "modal:0:textinput:0",
+              "type": 4,
+              "value": "Ope",
+            },
+          ],
+          "type": 1,
+        },
+      ],
+      "custom_id": "SimpleModal/SimpleModal",
+    },
+  ],
+]
+`;
+
+exports[`when submitting 2`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "OpenModal",
+          "disabled": undefined,
+          "emoji": undefined,
+          "label": "Modal",
+          "style": 1,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+  ],
+  "content": undefined,
+  "embeds": [
+    {
+      "author": undefined,
+      "color": undefined,
+      "description": "Hello World!",
+      "fields": undefined,
+      "footer": undefined,
+      "image": {
+        "url": "https://dffp.org/a/1236074574509117491/respond1/eJxrXpSZsjY4M7cgJ9U3tbg4MT11aUFRfkFx49KSzJKc1O1QqfyUxBx9JPay4pLE5OziRlStEw8AAGVdImE",
+      },
+      "title": undefined,
+      "url": undefined,
+    },
+    {
+      "author": undefined,
+      "color": undefined,
+      "description": "SimpleModal/SimpleModal",
+      "fields": undefined,
+      "footer": undefined,
+      "image": undefined,
+      "title": undefined,
+      "url": undefined,
+    },
+  ],
+  "flags": undefined,
+}
+`;

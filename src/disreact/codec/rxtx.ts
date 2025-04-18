@@ -1,41 +1,15 @@
-import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
+import {Declare} from '#src/disreact/model/exp/declare.ts';
+import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
 import {hole, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import { Declare } from '#src/disreact/model/meta/declare.ts';
 import {DAPI} from './dapi/dapi.ts';
 import {Doken} from './doken.ts';
-import {Keys} from './rest-elem/keys.ts';
+import {Keys} from '#src/disreact/codec/dapi-elem/keys.ts';
 
 export * as RxTx from './rxtx.ts';
 export type RxTx = never;
 
 export const MESSAGE = 'Message';
 export const MODAL = 'Modal';
-
-export const ModalParamsSerial = S.transform(
-  S.TemplateLiteralParser(
-    Doken.Serial,
-    '/', S.String,
-  ),
-  S.typeSchema(
-    S.Struct({
-      id    : S.String,
-      serial: Doken.Serial,
-    }),
-  ),
-  {
-    encode: ({id, serial}) =>
-      [
-        serial, '/', id,
-      ] as const,
-    decode: ([serial, , id]) =>
-      ({
-        id    : id,
-        serial: serial,
-      }),
-  },
-);
-
 
 const ModalCustomIdTransform = pipe(
   S.TemplateLiteralParser(
@@ -59,26 +33,6 @@ const ModalCustomIdTransform = pipe(
         }),
     },
   ),
-);
-
-const ModalParamsTransform = S.transform(
-  S.typeSchema(DAPI.Modal.Any),
-  S.Struct({
-    params: ModalCustomIdTransform,
-    data  : S.typeSchema(DAPI.Modal.Any),
-  }),
-  {
-    encode: ({params, data}) =>
-      ({
-        ...data,
-        custom_id: params,
-      }),
-    decode: (modal) =>
-      ({
-        params: modal.custom_id as any,
-        data  : modal,
-      }),
-  },
 );
 
 export const MessageParamsSerial = S.transform(
@@ -178,8 +132,6 @@ export const MessageParamsRequest = pipe(
   S.mutable,
 );
 
-
-
 export const ModalParamsRequest = pipe(
   DAPI.Ix.ModalRequestBody,
   S.transform(
@@ -207,7 +159,7 @@ export const ModalParamsRequest = pipe(
       serial     : S.optional(S.typeSchema(Doken.Serial)),
       hydrant    : S.optional(S.typeSchema(Rehydrant.Decoded)),
       body       : S.typeSchema(DAPI.Ix.ModalRequestBody),
-      event      : S.Any,
+      event      : Declare.trigger(DAPI.Modal.Data),
     }),
     {
       encode: hole,
@@ -220,7 +172,10 @@ export const ModalParamsRequest = pipe(
           serial     : message?.params?.serial,
           hydrant    : message?.params?.hydrant,
           body       : request,
-          event      : {},
+          event      : {
+            id  : modal.custom_id,
+            data: request.data,
+          },
         }),
     },
   ),
@@ -233,68 +188,3 @@ export const ParamsRequest = S.Union(
   ModalParamsRequest,
 );
 export type ParamsRequest = typeof ParamsRequest.Type;
-
-export const OutModalTransform = S.transform(
-  DAPI.Modal.Open,
-  S.Struct({
-    base    : S.optional(S.String),
-    serial  : S.optional(S.typeSchema(Doken.Serial)),
-    hydrant : Rehydrant.Decoded,
-    encoding: Declare.encoded(Keys.modal, DAPI.Modal.Open),
-  }),
-  {
-    encode: ({hydrant, encoding}) => ({
-      ...encoding.data,
-      custom_id: `${hydrant.id}/${encoding.data.custom_id}`,
-    }),
-    decode: hole,
-  },
-);
-
-export const OutEphemeralTransform = S.transform(
-  MessageParamsTransform,
-  S.Struct({
-    base    : S.String,
-    serial  : S.typeSchema(Doken.Serial),
-    hydrant : Rehydrant.Decoded,
-    encoding: Declare.encoded(Keys.ephemeral, DAPI.Message.Base),
-  }),
-  {
-    encode: ({base, serial, hydrant, encoding}) => ({
-      params: {
-        base,
-        serial,
-        hydrant,
-      },
-      data: encoding.data,
-    }),
-    decode: hole,
-  },
-);
-
-export const OutMessageTransform = S.transform(
-  MessageParamsTransform,
-  S.Struct({
-    base    : S.String,
-    serial  : S.typeSchema(Doken.Serial),
-    hydrant : Rehydrant.Decoded,
-    encoding: Declare.encoded(Keys.message, DAPI.Message.Base),
-  }),
-  {
-    encode: ({base, serial, hydrant, encoding}) => ({
-      params: {
-        base,
-        serial,
-        hydrant,
-      },
-      data: encoding.data,
-    }),
-    decode: hole,
-  },
-);
-
-export const OutTransform = S.Union(
-  OutModalTransform,
-  OutEphemeralTransform,
-  OutMessageTransform,
-);
