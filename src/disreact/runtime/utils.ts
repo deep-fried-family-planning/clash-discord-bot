@@ -3,6 +3,7 @@ import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Either, Fiber, SynchronizedRef} from 'effect';
+import console from 'node:console';
 import {Misc} from '../utils/misc';
 
 export const handleSame = (ds: Dokens) =>
@@ -16,7 +17,8 @@ export const handleSame = (ds: Dokens) =>
     ),
     E.flatMap(([active, now]) => {
       const freshLeft = DateTime.distanceDurationEither(now, ds.fresh.ttl).pipe(Either.getOrUndefined);
-
+      console.log(now);
+      console.log(freshLeft);
       const activeLeft = active
         ? DateTime.distanceDurationEither(now, active.ttl).pipe(Either.getOrUndefined)
         : undefined;
@@ -32,8 +34,8 @@ export const handleSame = (ds: Dokens) =>
             pipe(
               E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
               Dokens.finalizeWith(ds),
-              E.delay(freshLeft),
               Dokens.fiber(ds),
+              E.delay(freshLeft),
             ),
           ),
         );

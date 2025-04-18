@@ -1,6 +1,7 @@
-import {D, DT, hole} from '#src/disreact/utils/re-exports.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
+import {D, DT, E, hole} from '#src/disreact/utils/re-exports.ts';
 import {DR, pipe, S} from '#src/internal/pure/effect.ts';
-import { Either} from 'effect';
+import {Duration, Either, Option} from 'effect';
 import {DateTime} from 'effect';
 import { Redacted} from 'effect';
 import {Snowflake} from './snowflake';
@@ -223,7 +224,6 @@ export const active = (doken: Doken): Active => {
   };
 };
 
-
 export const CACHED = 'Cached';
 export type Cached = typeof Cached.Type;
 export const Cached = pipe(
@@ -318,4 +318,33 @@ export const reduce = (state: Doken, action: Doken) => {
   ) {
     return action;
   }
+};
+
+export const resolveSerial = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
+  if (!serial || Doken.isSingle(serial)) {
+    return E.succeed(undefined);
+  }
+  if (Doken.isActive(serial)) {
+    return pipe(
+      DateTime.isFuture(serial.ttl),
+      E.map((isFuture) => isFuture ? serial : undefined),
+    );
+  }
+  return pipe(
+    DokenMemory.use((memory) => memory.load(serial.id)),
+    E.orElseSucceed(() => undefined),
+    E.timeoutTo({
+      duration : Duration.seconds(1),
+      onTimeout: () => undefined,
+      onSuccess: (cached) => {
+        if (!cached) {
+          return cached;
+        }
+        cached.app = fresh.app;
+        return cached;
+      },
+    }),
+    E.whenEffect(DateTime.isFuture(serial.ttl)),
+    E.map(Option.getOrUndefined),
+  );
 };

@@ -6,8 +6,8 @@ import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {DateTime, Deferred, Duration, Either, Fiber, FiberHandle, type Mailbox, SynchronizedRef} from 'effect';
-import {Misc} from '../utils/misc.ts';
-import {E, L, pipe} from '../utils/re-exports.ts';
+import {Misc} from 'src/disreact/utils/misc.ts';
+import {E, L, pipe} from 'src/disreact/utils/re-exports.ts';
 
 const resolveActive = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
   if (!serial || Doken.isSingle(serial)) {

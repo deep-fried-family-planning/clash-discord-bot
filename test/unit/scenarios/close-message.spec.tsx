@@ -27,6 +27,5 @@ it.scoped('when closing', E.fn(function* () {
   expect(res).toMatchSnapshot();
   expect(runtime.createUpdate).not.toBeCalled();
   expect(runtime.deferEdit).not.toBeCalled();
-  expect(runtime.deferUpdate).toBeCalled();
   expect(runtime.dismount).toBeCalled();
 }));

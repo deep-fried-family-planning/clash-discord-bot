@@ -145,9 +145,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
           E.andThen(() => Lifecycle.rerender(original)),
           E.andThen(() =>
             Relay.use((relay) =>
-              relay.setOutput(original).pipe(
-                E.tap(() => relay.setComplete()),
-              ),
+              relay.setOutput(original),
             ),
           ),
           E.zipRight(

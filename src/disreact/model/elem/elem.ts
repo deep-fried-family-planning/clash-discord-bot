@@ -4,12 +4,6 @@ import {FC} from '#src/disreact/model/meta/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
 
-export type Type =
-  | TaskType
-  | RestType
-  | FragmentType
-  | ValueType;
-
 export * as Elem from '#src/disreact/model/elem/elem.ts';
 export type Elem =
   | Task
@@ -29,6 +23,8 @@ export interface Node {
   nodes  : Elem[];
 }
 
+export const isNode = (self: any): self is Node => typeof self === 'object';
+
 export type Child =
   | Task
   | Rest
@@ -36,15 +32,6 @@ export type Child =
   | ValueType;
 
 export type Children = Child | Child[];
-
-export const isNode = (self: any): self is Node => typeof self === 'object' && self.nodes;
-
-export const isSame = (a: Elem, b: Elem) => {
-  if (a === b) return true;
-  if (isValue(a) || isValue(b)) return false;
-  if (!a || !b) return false;
-  return a.type === b.type;
-};
 
 export const isChild = (children: any): children is Child => !children.length;
 
@@ -73,9 +60,6 @@ export const connectChild = (parent: Node, child: Node, idx: number = 0): Elem =
   return child;
 };
 
-/**
- * Task
- */
 export type TaskType<E = any, R = any> = (prop?: any) =>
   | Child
   | Promise<Child>
@@ -119,11 +103,6 @@ export const cloneTask = (self: Task): Task => {
   return cloned;
 };
 
-export const encodeTask = (self: Task) => self.nodes;
-
-/**
- * Rest
- */
 export type RestType = string;
 
 export interface Rest extends Node {

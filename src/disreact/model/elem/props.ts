@@ -2,6 +2,9 @@ import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Data, Equal} from 'effect';
 
+export * as Props from '#src/disreact/model/elem/props.ts';
+export type Props = any;
+
 const HANDLER_KEYS = [
   Keys.onclick,
   Keys.onselect,
@@ -13,9 +16,6 @@ const RESERVED = [
   Keys.children,
   Keys.handler,
 ];
-
-export * as Props from '#src/disreact/model/elem/props.ts';
-export type Props = any;
 
 export const cloneKnownProps = (props: Props): Props => {
   const reserved = {} as any;
@@ -52,10 +52,8 @@ export const getHandler = (props: Props): Trigger.Handler<any> | undefined => {
 export const isEqual = (a: Props, b: Props): boolean => {
   if (a === b) return true;
   if (!a || !b) return false;
-
-  if (a.children && b.children) {
-    if (a.children.length !== b.children.length) return false;
-  }
+  if (a.children?.type !== b.children?.type) return false;
+  if (a.children?.length !== b.children?.length) return false;
 
   const cprops = Data.struct(a);
   const rprops = Data.struct(b);
