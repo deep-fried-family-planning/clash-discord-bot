@@ -11,7 +11,7 @@ import {Side} from '#src/disreact/model/meta/side.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
-import {MutableList, Predicate} from 'effect';
+import {Fiber, MutableList, Predicate} from 'effect';
 import {Hooks} from './hooks';
 
 export * as Lifecycle from '#src/disreact/model/lifecycle.ts';
@@ -426,7 +426,7 @@ const mount = (root: Rehydrant, elem: Elem.Node) => {
   return E.whileLoop({
     while: () => !!MutableList.tail(root.mount),
     step : () => {},
-    body : () => {
+    body : (): E.Effect<void, Error, Relay | Registry | Dispatcher> => {
       const next = MutableList.pop(root.mount)!;
 
       if (Elem.isTask(next)) {

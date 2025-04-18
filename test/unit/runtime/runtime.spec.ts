@@ -1,4 +1,4 @@
-import {E} from '#src/disreact/utils/re-exports.ts';
+import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
 import {Fiber, TestClock} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
@@ -46,25 +46,29 @@ it.effect('when responding', E.fn(function* () {
 
   const res1 = yield* Fiber.join(fib1);
 
-  yield* TestClock.setTime(0);
-
-  const fib2 = yield* E.fork(runtime.respond({
-    message       : res1,
-    id            : '1236074574509117491',
-    token         : 'respond2',
-    application_id: 'app',
-    user_id       : 'user',
-    guild_id      : 'guild',
-    type          : 2,
-    data          : {
-      custom_id     : 'actions:2:button:0',
-      component_type: 2,
-    },
-  }));
   yield* TestClock.setTime(17214773545718);
+
+  const fib2 = yield* pipe(
+    runtime.respond({
+      message       : res1,
+      id            : '1236074574509117491',
+      token         : 'respond2',
+      application_id: 'app',
+      user_id       : 'user',
+      guild_id      : 'guild',
+      type          : 2,
+      data          : {
+        custom_id     : 'actions:2:button:0',
+        component_type: 2,
+      },
+    }),
+    E.fork,
+    TestClock.adjustWith(2000),
+  );
+  // yield* TestClock.setTime(17214773545718);
   yield* Fiber.join(fib2);
 
-  yield* Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
+  yield * Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
   yield* Snap.JSON(runtime.createUpdate.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
 }));
 

@@ -114,15 +114,6 @@ export const isRestType = (self: any): self is RestType => typeof self === 'stri
 
 export const isRest = (self: any): self is Rest => typeof self === 'object' && typeof self.type === 'string';
 
-export const isEqualRest = (a: Rest, b: Rest) => {
-  if (a === b) return true;
-  if (a.type !== b.type) return false;
-  if (!a.handler || !b.handler) return false;
-  if (!Props.isEqual(a.props, b.props)) return false;
-  if (a.nodes.length !== b.nodes.length) return false;
-  return true;
-};
-
 export const makeRest = (type: string, props: any, nodes: any[]): Rest =>
   ({
     type,
@@ -140,8 +131,6 @@ export const cloneRest = (self: Rest): Rest => {
   return cloned;
 };
 
-export const encodeRest = (self: Rest) => self.props;
-
 /**
  * Fragment
  */
@@ -157,14 +146,6 @@ export const isFragmentType = (self: any): self is FragmentType => self === Frag
 
 export const isFragment = (self: any): self is Fragment => self.type === FragmentType;
 
-export const isEqualFragment = (a: Fragment, b: Fragment) => {
-  if (a === b) return true;
-  if (a.type !== b.type) return false;
-  if (!Props.isEqual(a.props, b.props)) return false;
-  if (a.nodes.length !== b.nodes.length) return false;
-  return true;
-};
-
 export const makeFragment = (type: undefined, props: any): Fragment =>
   ({
     type,
@@ -179,8 +160,6 @@ export const cloneFragment = (self: Fragment) => {
   cloned.nodes = nodes;
   return cloned;
 };
-
-export const encodeFragment = (self: Fragment) => self.nodes;
 
 /**
  * Value
@@ -212,8 +191,4 @@ export const makeValue = (type: any): Value => {
   return type;
 };
 
-export const isEqualValue = (a: Value, b: Value) => a === b;
-
 export const cloneValue = (self: Value) => structuredClone(self) as Value;
-
-export const encodeValue = (self: Value) => structuredClone(self);

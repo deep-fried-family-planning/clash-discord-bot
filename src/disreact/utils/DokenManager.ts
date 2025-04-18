@@ -1,8 +1,6 @@
 import {Defer} from '#src/disreact/codec/dapi/callback-type.ts';
 import {Doken} from '#src/disreact/codec/doken.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import type {Dokens} from '#src/disreact/runtime/dokens.ts';
-import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {DateTime, Deferred, Duration, Either, Fiber, FiberHandle, type Mailbox, SynchronizedRef} from 'effect';

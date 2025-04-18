@@ -2,9 +2,7 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import type {DokenError} from '#src/disreact/utils/DokenMemory.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, flow, pipe} from '#src/disreact/utils/re-exports.ts';
-import { Fiber} from 'effect';
-import type { FiberHandle} from 'effect';
-import {DateTime, Deferred, Duration, type Scope, SynchronizedRef} from 'effect';
+import {DateTime, Deferred, Duration, Fiber, SynchronizedRef} from 'effect';
 
 const resolveActive = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
   if (!serial || Doken.isSingle(serial)) {
@@ -46,7 +44,7 @@ export type Dokens = {
   active  : Fiber.Fiber<Doken.Active | undefined, DokenError>;
   current : SynchronizedRef.SynchronizedRef<Doken>;
   deferred: Deferred.Deferred<Doken.Active | Doken.Never>;
-  handle  : FiberHandle.FiberHandle;
+  handle  : Fiber.Fiber<any>;
 };
 
 export const make = (fresh: Doken.Fresh, serial?: Doken.Serial) =>
@@ -129,7 +127,7 @@ export const stop = (d: Dokens) => pipe(
 export const fiber = (d: Dokens) => flow(
   E.fork,
   E.tap((fiber) => {
-    d.handle = fiber;
+    d.handle = fiber as unknown as Fiber.Fiber<any>;
   }),
 );
 

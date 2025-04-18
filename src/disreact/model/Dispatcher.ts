@@ -15,7 +15,7 @@ const make = pipe(
   }),
 );
 
-export class Dispatcher extends E.Service<dispatcher>()('disreact/Dispatcher', {
+export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
   effect: E.map(E.makeSemaphore(1), (mutex) => {
     return {
       lock  : mutex.take(1),

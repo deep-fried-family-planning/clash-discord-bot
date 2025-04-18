@@ -3,12 +3,10 @@ import {Intrinsic} from '#src/disreact/codec/rest-elem/index.ts';
 import {Keys} from '#src/disreact/codec/rest-elem/keys.ts';
 import {RxTx} from '#src/disreact/codec/rxtx.ts';
 import type {Declare} from '#src/disreact/model/meta/declare.ts';
-import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import type { Elem } from 'src/disreact/model/elem/elem.ts';
 
 export const decodeParamsRequest = S.decodeSync(RxTx.ParamsRequest);
 
@@ -61,12 +59,13 @@ const encodeFinal = (config: DisReactConfig.Resolved) => (doken: Doken, encoding
 export class Codec extends E.Service<Codec>()('disreact/Codec', {
   effect: DisReactConfig.use((config) => {
     return {
-      primitive    : Keys.primitive,
-      normalization: Intrinsic.NORM,
-      encoding     : Intrinsic.ENC,
-      decodeRequest: decodeParamsRequest,
+      primitive     : Keys.primitive,
+      normalization : Intrinsic.NORM,
+      encoding      : Intrinsic.ENC,
+      decodeRequest : decodeParamsRequest,
       decodeEvent,
-      encodeFinal  : encodeFinal(config),
+      encodeResponse: S.encodeSync(RxTx.OutTransform),
+      encodeFinal   : encodeFinal(config),
     };
   }),
   accessors: true,
