@@ -62,19 +62,18 @@ export const handleClose = (ds: Dokens) =>
         return E.void;
       }
       if (final) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(final));
+        return DisReactDOM.dismount(final);
       }
       if (Doken.isActive(current)) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(current));
+        return DisReactDOM.dismount(current);
       }
       if (active) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(active));
+        return DisReactDOM.dismount(active);
       }
       if (Doken.isFresh(current)) {
         return pipe(
-          DisReactDOM,
-          E.tap((dom) => dom.deferUpdate(current)),
-          E.tap((dom) => dom.dismount(current)),
+          DisReactDOM.deferUpdate(current),
+          E.tap(() => DisReactDOM.dismount(current)),
         );
       }
       return new DokenDefect({msg: 'No tokens available to dismount.'});

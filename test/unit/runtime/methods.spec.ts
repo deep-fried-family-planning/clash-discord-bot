@@ -1,4 +1,5 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
+import {DokenManager} from '#src/disreact/runtime/DokenManager.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
@@ -45,13 +46,13 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
   const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
+    const root = yield* Methods.synthesize(TestMessage).pipe(E.provide([layer]));
 
     yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
   }
 }));
 
-it.scopedLive('when responding', E.fn(function* () {
+it.live('when responding', E.fn(function* () {
   const req1 = {
     id            : '1236074574509117491',
     token         : 'respond1',
@@ -66,7 +67,7 @@ it.scopedLive('when responding', E.fn(function* () {
     },
   };
 
-  const res1 = yield* Methods.respond(req1).pipe(E.provide(Relay.Fresh), E.provide(layer));
+  const res1 = yield* Methods.respond(req1).pipe(E.provide(Relay.Fresh), E.provide(layer), E.provide(DokenManager.Fresh));
 
   const req2 = {
     message       : res1,
@@ -82,13 +83,13 @@ it.scopedLive('when responding', E.fn(function* () {
     },
   };
 
-  yield* Methods.respond(req2).pipe(E.provide(Relay.Fresh), E.provide(layer));
+  yield* Methods.respond(req2).pipe(E.provide(Relay.Fresh), E.provide(layer), E.provide(DokenManager.Fresh));
 
   yield* Snap.JSON(deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
   yield* Snap.JSON(deferEdit.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
 }));
 
-it.scopedLive('when responding (performance)', E.fn(function* () {
+it.effect('when responding (performance)', E.fn(function* () {
   const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
@@ -104,6 +105,6 @@ it.scopedLive('when responding (performance)', E.fn(function* () {
         custom_id     : 'actions:2:button:0',
         component_type: 2,
       },
-    }).pipe(E.provide(Relay.Fresh), E.provide(layer));
+    }).pipe(E.provide(Relay.Fresh), E.provide(layer), E.provide(DokenManager.Fresh));
   }
 }));

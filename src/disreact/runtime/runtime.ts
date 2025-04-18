@@ -2,6 +2,7 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
+import {DokenManager} from '#src/disreact/runtime/DokenManager.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
@@ -54,10 +55,8 @@ export const makeRuntime = (layer: GlobalRuntimeLayer) => {
   const respond = (input: any) =>
     pipe(
       Methods.respond(input),
-      E.scoped,
-      E.provide([layer, Relay.Fresh]),
+      E.provide([layer, Relay.Fresh, DokenManager.Fresh]),
       runtime.runFork,
-      Fiber.join,
     );
 
   return {

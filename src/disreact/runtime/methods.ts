@@ -3,11 +3,12 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/meta/fc.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
+import {DokenManager} from '#src/disreact/runtime/DokenManager.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fiber} from 'effect';
-import {Lifecycle} from 'src/disreact/model/lifecycle.ts';
+import {DateTime, Fiber} from 'effect';
+import console from 'node:console';
 import {Model} from 'src/disreact/model/Model.ts';
 import {Dokens} from './dokens.ts';
 
@@ -36,46 +37,49 @@ export const respond = (body: any) => E.gen(function* () {
   const relay = yield* Relay;
   const dom = yield* DisReactDOM;
 
-  const ds = yield* Dokens.make(req.fresh);
+  yield* DokenManager.init(req);
 
-  const model = yield* E.fork(Model.hydrateInvoke(req.hydrant!, event));
+  // const ds = yield* Dokens.make(req.fresh);
 
-  let isSame = false;
+  const model = yield* E.fork(Model.invoke(req.hydrant!, event));
 
-  yield* E.fork(
-    E.iterate(Progress.Start(), {
-      while: (r) =>
-        r._tag !== 'Done',
+  yield* E.fork(DokenManager.listen(relay.mailbox));
 
-      body: () =>
-        E.tap(relay.awaitStatus, (r) => {
-          if (r._tag === 'Close') {
-            return handleClose(ds);
-          }
-
-          if (r._tag === 'Same') {
-            isSame = true;
-            return handleSame(ds);
-          }
-
-          if (r._tag === 'Part') {
-            if (isSame) {
-              return E.void;
-            }
-
-            if (r.type === 'modal') {
-              return Dokens.finalizeModal(ds);
-            }
-
-            if (r.isEphemeral === req.isEphemeral) {
-              return handleUpdate(ds);
-            }
-
-            return handleSource(ds);
-          }
-        }),
-    }),
-  );
+  // let isSame = false;
+  // yield* E.fork(
+  //   E.iterate(Progress.Start(), {
+  //     while: (r) =>
+  //       r._tag !== 'Done',
+  //
+  //     body: () =>
+  //       E.tap(relay.awaitStatus, (r) => {
+  //         if (r._tag === 'Close') {
+  //           return handleClose(ds);
+  //         }
+  //
+  //         if (r._tag === 'Same') {
+  //           isSame = true;
+  //           return handleSame(ds);
+  //         }
+  //
+  //         if (r._tag === 'Part') {
+  //           if (isSame) {
+  //             return E.void;
+  //           }
+  //
+  //           if (r.type === 'modal') {
+  //             return Dokens.finalizeModal(ds);
+  //           }
+  //
+  //           if (r.isEphemeral === req.isEphemeral) {
+  //             return handleUpdate(ds);
+  //           }
+  //
+  //           return handleSource(ds);
+  //         }
+  //       }),
+  //   }),
+  // );
 
   const codec = yield* Codec;
   const root = yield* Fiber.join(model);
@@ -84,46 +88,43 @@ export const respond = (body: any) => E.gen(function* () {
     return null;
   }
 
-  const final = yield* Lifecycle.encode(root);
+  const modal = yield* DokenManager.current;
 
-  if (!final) {
-    return null;
-  }
-
-  const modal = yield* Dokens.current(ds);
+  console.log('modal', modal);
 
   if (Doken.isModal(modal)) {
-    const payload = yield* codec.encodeFinal(Doken.synthetic(), final);
+    const payload = yield* codec.encodeFinal(Doken.synthetic(), root);
     yield* dom.createModal(modal, payload);
     return payload;
   }
 
-  yield* Dokens.wait(ds);
-  const isDeferPhase = yield* Dokens.isDeferPhase(ds);
+  const isDeferPhase = yield* DateTime.isPast(req.fresh.ttl);
 
   if (isDeferPhase) {
-    const doken = yield* Dokens.final(ds);
+    const doken = yield* DokenManager.final;
+
+    console.log('doken', doken);
 
     if (Doken.isNever(doken)) {
-      return E.die('Never token found.');
+      return E.fail('Never token found.');
     }
 
-    const payload = yield* codec.encodeFinal(doken, final);
+    const payload = yield* codec.encodeFinal(doken, root);
 
     yield* dom.deferEdit(doken, payload);
     return payload;
   }
 
-  const doken = yield* Dokens.current(ds);
+  const doken = yield* DokenManager.current;
 
   if (doken._tag === Doken.ACTIVE) {
-    const payload = yield* codec.encodeFinal(doken, final);
+    const payload = yield* codec.encodeFinal(doken, root);
 
     yield* dom.deferEdit(doken, payload);
     return payload;
   }
 
-  const payload = yield* codec.encodeFinal(doken, final);
+  const payload = yield* codec.encodeFinal(doken, root);
 
   if (Doken.isModal(doken)) {
     yield* dom.createModal(doken, payload);

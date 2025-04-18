@@ -27,7 +27,7 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
   }
 }));
 
-it.live('when responding', E.fn(function* () {
+it.effect('when responding', E.fn(function* () {
   const res1 = yield* runtime.respond({
     id            : '1236074574509117491',
     token         : 'respond1',

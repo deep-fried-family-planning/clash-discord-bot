@@ -351,7 +351,7 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
         return E.promise(async () => await fc(p));
       }
       if (FC.isEffect(fc)) {
-        return fc(p);
+        return fc(p) as E.Effect<Elem.Children>;
       }
 
       return pipe(
@@ -364,7 +364,7 @@ export const task = (root: Rehydrant, elem: Task) => Dispatcher.use((dispatcher)
 
           if (E.isEffect(children)) {
             fc[FC.TypeId] = EFFECT;
-            return children;
+            return children as E.Effect<Elem.Children>;
           }
 
           fc[FC.TypeId] = SYNC;
@@ -433,6 +433,8 @@ const renderMount = (root: Rehydrant, elem: Elem.Task) =>
 const mount = (root: Rehydrant, elem: Elem.Node) => {
   MutableList.append(root.mount, elem);
 
+  let sent = false;
+
   return E.whileLoop({
     while: () => !!MutableList.tail(root.mount),
     step : () => {},
@@ -451,6 +453,15 @@ const mount = (root: Rehydrant, elem: Elem.Node) => {
           Elem.connectChild(next, child, i);
           MutableList.append(root.mount, child);
         }
+      }
+
+      if (!sent && Elem.isRest(next)) {
+        return pipe(
+          relayPartial(next),
+          E.map((did) => {
+            sent = did;
+          }),
+        );
       }
 
       return E.void;
@@ -640,7 +651,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
 
       else if (Elem.isRest(curr)) {
         if (!hasSentPartial) {
-          // hasSentPartial = yield* LifecycleUnits.part(curr);
+          // hasSentPartial = yield* relayPartial(curr);
         }
 
         if (Elem.isValue(rend)) {
@@ -667,7 +678,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
 
       else if (Elem.isFragment(curr)) {
         if (!hasSentPartial) {
-          // hasSentPartial = yield* LifecycleUnits.part(curr);
+          // hasSentPartial = yield* relayPartial(curr);
         }
 
         if (Elem.isValue(rend)) {

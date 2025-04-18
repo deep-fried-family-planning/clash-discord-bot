@@ -6,7 +6,7 @@ import {makeTestRuntime} from '#test/unit/util.ts';
 
 const runtime = makeTestRuntime([SimpleModal, SimpleMessage], false);
 
-it.scoped('when opening', E.fn(function* () {
+it.effect('when opening', E.fn(function* () {
   const root = yield* runtime.synthesize(SimpleMessage);
 
   expect(root).toMatchSnapshot();

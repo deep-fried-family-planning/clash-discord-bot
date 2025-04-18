@@ -12,6 +12,7 @@ export const SimpleMessage = () => {
           custom_id={'OpenModal'}
           label={'Modal'}
           onclick={() => {
+            console.log('OpenModal');
             page.next(SimpleModal);
           }}
         />

@@ -51,7 +51,7 @@ const encodeFinal = (config: DisReactConfig.Resolved) => (doken: Doken, encoding
   return E.succeed(
     finalEncoder({
       base    : config.baseUrl,
-      serial  : doken as any,
+      serial  : Doken.convertSerial(doken) as any,
       hydrant : encoding.rehydrant,
       encoding: encoding as any,
     }),
