@@ -60,7 +60,7 @@ it.effect('when responding', E.fn(function* () {
   yield* Snap.JSON(runtime.deferEdit.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
 }));
 
-it.live('when responding (performance)', E.fn(function* () {
+it.effect('when responding (performance)', E.fn(function* () {
   const times = Array.from({length: 1000});
 
   for (let i = 0; i < times.length; i++) {

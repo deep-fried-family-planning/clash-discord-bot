@@ -90,8 +90,6 @@ export const respond = (body: any) => E.gen(function* () {
 
   const modal = yield* DokenManager.current;
 
-  console.log('modal', modal);
-
   if (Doken.isModal(modal)) {
     const payload = yield* codec.encodeFinal(Doken.synthetic(), root);
     yield* dom.createModal(modal, payload);
@@ -102,8 +100,6 @@ export const respond = (body: any) => E.gen(function* () {
 
   if (isDeferPhase) {
     const doken = yield* DokenManager.final;
-
-    console.log('doken', doken);
 
     if (Doken.isNever(doken)) {
       return E.fail('Never token found.');

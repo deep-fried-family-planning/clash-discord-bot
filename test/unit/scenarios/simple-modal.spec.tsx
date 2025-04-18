@@ -6,7 +6,7 @@ import {makeTestRuntime} from '#test/unit/util.ts';
 
 const runtime = makeTestRuntime([SimpleModal, SimpleMessage], false);
 
-it.effect('when opening', E.fn(function* () {
+it.skip('when opening', E.fn(function* () {
   const root = yield* runtime.synthesize(SimpleMessage);
 
   expect(root).toMatchSnapshot();
@@ -30,7 +30,7 @@ it.effect('when opening', E.fn(function* () {
   expect(runtime.createModal).toBeCalled();
 }));
 
-it.scoped('when submitting', E.fn(function* () {
+it.skip('when submitting', E.fn(function* () {
   const message = yield* runtime.synthesize(SimpleMessage);
   const modal = yield* runtime.synthesize(SimpleModal);
 

@@ -2,7 +2,8 @@ import {Doken} from '#src/disreact/codec/doken.ts';
 import type {DokenError} from '#src/disreact/utils/DokenMemory.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {DateTime, Deferred, Duration, type Fiber, FiberHandle, FiberRef, type Scope, SynchronizedRef} from 'effect';
+import type { FiberRef} from 'effect';
+import {DateTime, Deferred, Duration, Fiber, FiberHandle, type Scope, SynchronizedRef} from 'effect';
 
 const resolveActive = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
   if (!serial || Doken.isSingle(serial)) {
@@ -44,16 +45,16 @@ export type Dokens = {
   active  : Fiber.Fiber<Doken.Active | undefined, DokenError>;
   current : SynchronizedRef.SynchronizedRef<Doken>;
   deferred: Deferred.Deferred<Doken.Active | Doken.Never>;
-  handle  : FiberHandle.FiberHandle<void>;
+  handle  : Fiber.Fiber<any>;
 };
 
-export const make = (fresh: Doken.Fresh, serial?: Doken.Serial): E.Effect<Dokens, DokenError, Scope.Scope | DokenMemory> =>
+export const make = (fresh: Doken.Fresh, serial?: Doken.Serial): E.Effect<Dokens, DokenError, DokenMemory> =>
   E.all({
     fresh   : E.succeed(fresh),
     active  : E.fork(resolveActive(fresh, serial)),
     current : SynchronizedRef.make<Doken>(fresh),
     deferred: Deferred.make<Doken.Active | Doken.Never>(),
-    handle  : FiberHandle.make<void>(),
+    handle  : Fiber.void as Fiber.Fiber<any>,
   });
 
 export const isDeferPhase = (ds: Dokens) => DateTime.isPast(ds.fresh.ttl);

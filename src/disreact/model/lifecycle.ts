@@ -118,18 +118,6 @@ export const deepClone = <A extends Elem>(elem: A): A => {
 /**
  * @desc encode
  */
-const removeUndefined = (encoded: any): any => {
-  for (const key in Object.keys(encoded)) {
-    if (encoded[key] === undefined) {
-      delete encoded[key];
-    }
-  }
-  return encoded;
-};
-
-/**
- * @desc encode
- */
 export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Encoded => {
   if (!root) return null;
   if (Elem.isValue(root.elem)) return null;
@@ -156,7 +144,7 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Enc
           const norm = codec.normalization[c.type as any];
           const arg = args.get(c)!;
           acc[norm] ??= [];
-          acc[norm].push(removeUndefined(codec.encoding[c.type](c, removeUndefined(arg))));
+          acc[norm].push((codec.encoding[c.type](c, arg)));
         }
       }
       else if (!c.nodes.length) {
@@ -165,7 +153,7 @@ export const encode = (root: Rehydrant | null) => Codec.use((codec): Declare.Enc
           const arg = {} as any;
           args.set(c, arg);
           acc[norm] ??= [];
-          acc[norm].push(removeUndefined(codec.encoding[c.type](c, removeUndefined(arg))));
+          acc[norm].push((codec.encoding[c.type](c, arg)));
         }
       }
       else {

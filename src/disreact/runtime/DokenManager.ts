@@ -188,7 +188,6 @@ const make = E.gen(function* () {
     final  : Deferred.await(final),
 
     init: (req: any) => {
-      console.log('init', req);
       fresh = req.fresh;
       request = req;
       return pipe(

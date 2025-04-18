@@ -120,9 +120,6 @@ export class Model extends E.Service<Model>()('disreact/Model', {
     Registry.Default,
   ],
 }) {
-  static readonly makeEntrypoint = makeEntrypoint;
-  static readonly hydrateInvoke = hydrateInvoke;
-
   static readonly impl = {
     useState  : Hooks.$useState,
     useReducer: Hooks.$useReducer,
