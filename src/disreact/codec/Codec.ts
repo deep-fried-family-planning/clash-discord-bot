@@ -1,5 +1,5 @@
-import {Intrinsic} from '#src/disreact/codec/elem/index.ts';
-import {Keys} from '#src/disreact/codec/elem/keys.ts';
+import {Intrinsic} from '#src/disreact/codec/intrinsic/index.ts';
+import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {E, S} from '#src/disreact/utils/re-exports.ts';
 import {Rx} from '#src/disreact/codec/rx.ts';

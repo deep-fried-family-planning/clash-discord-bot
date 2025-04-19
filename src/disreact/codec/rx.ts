@@ -1,6 +1,6 @@
 import {forbidden, pipe, S} from '#src/disreact/utils/re-exports.ts';
 import {Declare} from '#src/disreact/model/declare.ts';
-import {Keys} from '#src/disreact/codec/elem/keys.ts';
+import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {Params} from '#src/disreact/codec/rest/params.ts';
