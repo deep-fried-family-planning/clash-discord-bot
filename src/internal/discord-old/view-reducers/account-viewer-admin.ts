@@ -14,7 +14,7 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 
-const submit       = (s: St, playerTag: str, accountType: str) => E.gen(function * () {
+const submit       = (s: St, playerTag: str, accountType: str) => E.gen(function* () {
   const record = yield * getDiscordPlayer({pk: s.user_id, sk: playerTag});
   yield * putDiscordPlayer({
     ...record,
@@ -22,7 +22,7 @@ const submit       = (s: St, playerTag: str, accountType: str) => E.gen(function
     account_type: accountType,
   });
 });
-const deletePlayer = (s: St, playerTag: str) => E.gen(function * () {
+const deletePlayer = (s: St, playerTag: str) => E.gen(function* () {
   yield * deleteDiscordPlayer({pk: s.user_id, sk: playerTag});
 });
 
@@ -37,7 +37,7 @@ const Delete                     = DeleteB.as(makeId(RK_DELETE, 'AVA'));
 const DeleteConfirm              = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'AVA'));
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Account     = AccountViewerAccountS.fromMap(s.cmap);

@@ -24,7 +24,7 @@ const CountdownS              = SingleChannelS.as(makeId(RK_UPDATE, 'CVAC'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const ClanType  = ClanTypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

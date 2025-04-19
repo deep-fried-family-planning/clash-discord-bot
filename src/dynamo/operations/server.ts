@@ -7,7 +7,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const serverRead = (server: str) => E.gen(function * () {
+export const serverRead = (server: str) => E.gen(function* () {
   const serverId = yield * encodeServerId(server);
 
   const item = yield * DynamoDBDocument.get({

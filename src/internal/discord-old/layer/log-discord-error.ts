@@ -11,7 +11,7 @@ import {inspect} from 'node:util';
 
 
 
-export const logDiscordError = (e: unknown[]) => E.gen(function * () {
+export const logDiscordError = (e: unknown[]) => E.gen(function* () {
   yield * CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
   const url = process.env.DFFP_DISCORD_ERROR_URL;
@@ -25,10 +25,10 @@ export const logDiscordError = (e: unknown[]) => E.gen(function * () {
       description: dLinesS(
         dLinesS(...pipe(e, mapL((err) => dLinesS(
           // @ts-expect-error bad types...
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
           err.name,
           // @ts-expect-error bad types...
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
           err.e,
         )))),
         '',

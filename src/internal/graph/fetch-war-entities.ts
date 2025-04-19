@@ -8,7 +8,7 @@ import type {Clan, ClanWar, ClanWarLeagueGroup, Player} from 'clashofclans.js';
 
 type Kinda = {options: SharedOptions; currentWar: ClanWar[]; current: {clans: Clan[]; cwl: ClanWarLeagueGroup; players: Player[]; wars: ClanWar[]}};
 
-export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
+export const fetchWarEntities = (ops: SharedOptions) => E.gen(function* () {
   const cwl = yield * ClashOfClans.getClanWarLeagueGroup(ops.cid1).pipe(E.catchAll(() => E.succeed(null)));
 
   const returnable = {
@@ -61,7 +61,7 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function * () {
 });
 
 
-export const getTaskWars = (data: typeof WarThreadData.Type) => g(function * () {
+export const getTaskWars = (data: typeof WarThreadData.Type) => g(function* () {
   const entities = yield * fetchWarEntities({
     cid1       : data.clan.sk,
     exhaustive : false,

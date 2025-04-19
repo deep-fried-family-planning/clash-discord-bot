@@ -16,7 +16,7 @@ import type {Embed} from 'dfx/types';
 
 
 
-const getClans = (s: St, ax: Ax) => E.gen(function * () {
+const getClans = (s: St, ax: Ax) => E.gen(function* () {
   const records = pipe(
     yield * queryDiscordClanForServer({pk: s.server_id}),
     sortWithL((r) => r.sk, ORDS),
@@ -51,7 +51,7 @@ export const ClanViewerSelector = SingleS.as(makeId(RK_UPDATE, 'CV'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
   let Clan       = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 

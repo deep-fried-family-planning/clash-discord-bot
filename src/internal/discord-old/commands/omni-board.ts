@@ -17,6 +17,6 @@ export const OMNI_BOARD
 /**
  * @desc [SLASH /omni-board]
  */
-export const omniBoard = (data: IxD) => E.gen(function * () {
+export const omniBoard = (data: IxD) => E.gen(function* () {
   // return yield * DisReactDOM.synthesize(OmniPublic);
 });

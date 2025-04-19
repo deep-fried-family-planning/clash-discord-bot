@@ -9,7 +9,7 @@ import {join} from 'effect/Array';
 
 
 
-export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function * () {
+export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function* () {
   yield * DiscordApi.modifyChannel(data.thread, {
     name: `🗡│${data.clanName}`,
   });

@@ -20,7 +20,7 @@ export const SetInviteOnly = makeTask(
   S.Struct({
     server: DiscordServer,
   }),
-  (data) => g(function * () {
+  (data) => g(function* () {
     yield * DiscordApi.createMessage(data.server.raids!, message());
   }),
 );

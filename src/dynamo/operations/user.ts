@@ -7,7 +7,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const userRead = (user: str) => E.gen(function * () {
+export const userRead = (user: str) => E.gen(function* () {
   const userId = yield * encodeUserId(user);
 
   const item = yield * DynamoDBDocument.get({
@@ -26,7 +26,7 @@ export const userRead = (user: str) => E.gen(function * () {
 });
 
 
-export const userCreate = (user: DUser) => E.gen(function * () {
+export const userCreate = (user: DUser) => E.gen(function* () {
   const encoded = yield * encodeDiscordUser(user);
 
   yield * DynamoDBDocument.put({
@@ -36,7 +36,7 @@ export const userCreate = (user: DUser) => E.gen(function * () {
 });
 
 
-export const userDelete = (user: str) => E.gen(function * () {
+export const userDelete = (user: str) => E.gen(function* () {
   const userId = yield * encodeUserId(user);
 
   yield * DynamoDBDocument.delete({

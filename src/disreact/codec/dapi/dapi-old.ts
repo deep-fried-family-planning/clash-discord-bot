@@ -1,8 +1,8 @@
-import {CallbackType} from '#src/disreact/codec/dapi/enum/index.ts'
-import {AssetHash, AvatarHash, BannerHash, EmailAddress, EmailVerified, InteractionId, LocaleOption, MFAEnabled, OAuth2BotUser, SnowFlake, OfficialSystemUser, UserDiscordTag, UserDisplayName, UserId, UserName, MessageId, VisiblePlainText, MarkdownString, CustomId, SkuId, RoleId, ChannelId, EmojiObject} from '#src/disreact/codec/dapi/common.ts'
-import {RedactionTerminus} from '#src/disreact/codec/dapi/shared.ts'
-import {PremiumType} from 'dfx/types'
-import {Any, Array, Boolean, Enums, greaterThan, Int, Literal, maxItems, maxLength, minItems, optional, Record, String, Struct, Union} from 'effect/Schema'
+import {CallbackType} from '#src/disreact/codec/dapi/enum/index.ts';
+import {AssetHash, AvatarHash, BannerHash, EmailAddress, EmailVerified, InteractionId, LocaleOption, MFAEnabled, OAuth2BotUser, SnowFlake, OfficialSystemUser, UserDiscordTag, UserDisplayName, UserId, UserName, MessageId, VisiblePlainText, MarkdownString, CustomId, SkuId, RoleId, ChannelId, EmojiObject} from '#src/disreact/codec/dapi/common.ts';
+import {RedactionTerminus} from '#src/disreact/codec/dapi/shared.ts';
+import {PremiumType} from 'dfx/types';
+import {Any, Array, Boolean, Enums, greaterThan, Int, Literal, maxItems, maxLength, minItems, optional, Record, String, Struct, Union} from 'effect/Schema';
 
 
 
@@ -27,7 +27,7 @@ export const InteractionMetadataUser = Struct({
     asset : AssetHash,
     sku_id: SnowFlake,
   })),
-})
+});
 
 export const CommandInteractionMetadata = Struct({
   id                            : InteractionId,
@@ -37,7 +37,7 @@ export const CommandInteractionMetadata = Struct({
   original_response_message_id  : optional(SnowFlake),
   target_user                   : Any,
   target_message_id             : SnowFlake,
-})
+});
 
 export const MessageComponentInteractionMetadata = Struct({
   id                            : InteractionId,
@@ -46,7 +46,7 @@ export const MessageComponentInteractionMetadata = Struct({
   authorizing_integration_owners: Any,
   original_response_message_id  : optional(SnowFlake),
   interacted_message_id         : SnowFlake,
-})
+});
 
 export const ModalInteractionMetadataFromComponent = Struct({
   id                             : InteractionId,
@@ -57,7 +57,7 @@ export const ModalInteractionMetadataFromComponent = Struct({
   triggering_interaction_metadata: Union(
     MessageComponentInteractionMetadata,
   ),
-})
+});
 
 export const ModalInteractionMetadataFromCommand = Struct({
   id                             : InteractionId,
@@ -68,34 +68,34 @@ export const ModalInteractionMetadataFromCommand = Struct({
   triggering_interaction_metadata: Union(
     CommandInteractionMetadata,
   ),
-})
+});
 
 export const InteractionMetadata = Union(
   CommandInteractionMetadata,
   MessageComponentInteractionMetadata,
   ModalInteractionMetadataFromComponent,
   ModalInteractionMetadataFromCommand,
-)
+);
 
 
 
 export const EmbedAuthor = Struct({
   name: VisiblePlainText.pipe(maxLength(256)),
-})
+});
 
 export const EmbedField = Struct({
   name  : VisiblePlainText.pipe(maxLength(256)),
   value : MarkdownString.pipe(maxLength(1024)),
   inline: optional(Boolean),
-})
+});
 
 export const EmbedFooter = Struct({
   text: VisiblePlainText.pipe(maxLength(2048)),
-})
+});
 
 export const EmbedImage = Struct({
   url: optional(String),
-})
+});
 
 export const Embed = Struct({
   author     : optional(EmbedAuthor),
@@ -105,7 +105,7 @@ export const Embed = Struct({
   fields     : optional(Array(EmbedField).pipe(maxItems(25))),
   footer     : optional(EmbedFooter),
   color      : optional(Int),
-})
+});
 
 
 
@@ -118,12 +118,12 @@ export const Button = Struct({
   sku_id   : optional(SkuId),
   url      : optional(String),
   emoji    : optional(EmojiObject),
-})
+});
 
 export const ButtonRow = Struct({
   type      : Literal(1),
   components: Array(Button).pipe(minItems(1), maxItems(5)),
-})
+});
 
 export const SelectOption = Struct({
   label      : VisiblePlainText.pipe(maxLength(100)),
@@ -131,7 +131,7 @@ export const SelectOption = Struct({
   description: optional(VisiblePlainText.pipe(maxLength(100))),
   emoji      : optional(EmojiObject),
   default    : optional(Boolean),
-})
+});
 
 export const StringSelect = Struct({
   type       : Literal(3),
@@ -140,12 +140,12 @@ export const StringSelect = Struct({
   min_values : optional(Int.pipe(greaterThan(0))),
   max_values : optional(Int.pipe(greaterThan(1))),
   options    : Array(SelectOption).pipe(minItems(1), maxItems(25)),
-})
+});
 
 export const SelectUserValue = Struct({
   type: Literal('user'),
   id  : UserId,
-})
+});
 
 export const UserSelect = Struct({
   type          : Literal(5),
@@ -154,12 +154,12 @@ export const UserSelect = Struct({
   min_values    : optional(Int.pipe(greaterThan(0))),
   max_values    : optional(Int.pipe(greaterThan(1))),
   default_values: optional(Array(SelectUserValue).pipe(minItems(1), maxItems(25))),
-})
+});
 
 export const SelectRoleValue = Struct({
   type: Literal('role'),
   id  : RoleId,
-})
+});
 
 export const RoleSelect = Struct({
   type          : Literal(6),
@@ -168,12 +168,12 @@ export const RoleSelect = Struct({
   min_values    : optional(Int.pipe(greaterThan(0))),
   max_values    : optional(Int.pipe(greaterThan(1))),
   default_values: optional(Array(SelectRoleValue).pipe(minItems(1), maxItems(25))),
-})
+});
 
 export const SelectChannelValue = Struct({
   type: Literal('channel'),
   id  : ChannelId,
-})
+});
 
 export const ChannelSelect = Struct({
   type          : Literal(8),
@@ -183,13 +183,13 @@ export const ChannelSelect = Struct({
   max_values    : optional(Int.pipe(greaterThan(1))),
   channel_types : optional(Array(Int)),
   default_values: optional(Array(SelectChannelValue).pipe(minItems(1), maxItems(25))),
-})
+});
 
 export const SelectValue = Union(
   SelectUserValue,
   SelectRoleValue,
   SelectChannelValue,
-)
+);
 
 export const MentionSelect = Struct({
   type          : Literal(7),
@@ -198,7 +198,7 @@ export const MentionSelect = Struct({
   min_values    : optional(Int.pipe(greaterThan(0))),
   max_values    : optional(Int.pipe(greaterThan(1))),
   default_values: optional(Array(SelectValue).pipe(minItems(1), maxItems(25))),
-})
+});
 
 export const SelectComponent = Union(
   StringSelect,
@@ -206,62 +206,62 @@ export const SelectComponent = Union(
   RoleSelect,
   ChannelSelect,
   MentionSelect,
-)
+);
 
 export const SelectRow = Struct({
   type      : Literal(1),
   components: Array(SelectComponent).pipe(minItems(1), maxItems(1)),
-})
+});
 
 export const MessageRow = Union(
   ButtonRow,
   SelectRow,
-)
+);
 
 export const BaseMessage = Struct({
   content   : optional(String.pipe(maxLength(2000))),
   embeds    : optional(Array(Embed).pipe(maxItems(10))),
   components: optional(Array(MessageRow).pipe(minItems(1), maxItems(5))),
   flags     : optional(Int),
-})
+});
 
 export const CommandMessage = Struct({
   ...BaseMessage.fields,
   interaction_metadata: CommandInteractionMetadata,
-})
+});
 
 export const MessageComponentMessage = Struct({
   ...BaseMessage.fields,
   interaction_metadata: MessageComponentInteractionMetadata,
-})
+});
 
 export const ModalSubmitComponentMessage = Struct({
   ...BaseMessage.fields,
   interaction_metadata: ModalInteractionMetadataFromComponent,
-})
+});
 
 export const ModalSubmitCommandMessage = Struct({
   ...BaseMessage.fields,
   interaction_metadata: ModalInteractionMetadataFromCommand,
-})
+});
 
 export const IngressMessage = Union(
   CommandMessage,
   MessageComponentMessage,
   ModalSubmitCommandMessage,
   ModalSubmitComponentMessage,
-)
+);
 
 export const ButtonData = Struct({
   custom_id     : CustomId,
   component_type: Literal(2),
-})
+});
 
 export const StringSelectData = Struct({
   custom_id     : CustomId,
   component_type: Literal(3),
   values        : Array(String.pipe(maxLength(100))).pipe(minItems(1), maxItems(25)),
-})
+});
 
 export const UserSelectData = Struct({
   custom_id     : CustomId,
@@ -271,7 +271,7 @@ export const UserSelectData = Struct({
     users  : Record({key: UserId, value: Any}),
     members: optional(Record({key: UserId, value: Any})),
   }),
-})
+});
 
 export const RoleSelectData = Struct({
   custom_id     : CustomId,
@@ -280,7 +280,7 @@ export const RoleSelectData = Struct({
   resolved      : Struct({
     roles: Record({key: RoleId, value: Any}),
   }),
-})
+});
 
 export const ChannelSelectData = Struct({
   custom_id     : CustomId,
@@ -289,7 +289,7 @@ export const ChannelSelectData = Struct({
   resolved      : Struct({
     channels: Record({key: ChannelId, value: Any}),
   }),
-})
+});
 
 export const MentionSelectData = Struct({
   custom_id     : CustomId,
@@ -301,7 +301,7 @@ export const MentionSelectData = Struct({
     users   : Record({key: UserId, value: Any}),
     members : optional(Record({key: UserId, value: Any})),
   }),
-})
+});
 
 export const ComponentData = Union(
   ButtonData,
@@ -310,7 +310,7 @@ export const ComponentData = Union(
   RoleSelectData,
   ChannelSelectData,
   MentionSelectData,
-)
+);
 
 
 
@@ -318,17 +318,17 @@ export const TextInputData = Struct({
   type     : Literal(4),
   custom_id: CustomId,
   value    : VisiblePlainText.pipe(maxLength(4000)),
-})
+});
 
 export const ModalRowData = Struct({
   type      : Literal(1),
   components: Array(TextInputData).pipe(minItems(1), maxItems(1)),
-})
+});
 
 export const ModalData = Struct({
   custom_id : CustomId,
   components: Array(ModalRowData).pipe(minItems(1), maxItems(5)),
-})
+});
 
 
 
@@ -338,84 +338,84 @@ export const BaseRequest = Struct({
   application_id: RedactionTerminus,
   user_id       : RedactionTerminus,
   guild_id      : optional(RedactionTerminus),
-})
+});
 
 export const ComponentRequest = Struct({
   ...BaseRequest.fields,
   type   : Literal(3),
   data   : ComponentData,
   message: IngressMessage,
-})
+});
 
 export const ComponentModalRequest = Struct({
   ...BaseRequest.fields,
   type   : Literal(5),
   data   : ModalData,
   message: ModalSubmitComponentMessage,
-})
+});
 
 export const CommandModalRequest = Struct({
   ...BaseRequest.fields,
   type: Literal(5),
   data: ModalData,
-})
+});
 
 export const ModalRequest = Struct({
   ...BaseRequest.fields,
   type   : Literal(5),
   data   : ModalData,
   message: optional(BaseMessage),
-})
+});
 
 export const InteractionRequest = Union(
   ComponentRequest,
   ModalRequest,
-)
+);
 
 export const TextInput = Struct({
   type : Literal(1),
   style: Literal(1, 2),
   label: String,
   value: String,
-})
+});
 
 export const ModalRow = Struct({
   type      : Literal(1),
   components: Array(TextInput),
-})
+});
 
 export const Modal = Struct({
   custom_id : String,
   title     : String,
   components: Array(ModalRow),
-})
+});
 
 export const CallbackModal = Struct({
   type: CallbackType.Modal,
   data: Modal,
-})
+});
 
 export const CallbackSpent = Struct({
   type: CallbackType.Spent,
   data: BaseMessage,
-})
+});
 
 export const CallbackDefer = Struct({
   type: CallbackType.Defer,
-})
+});
 
 export const CreateResponse = Union(
   CallbackModal,
   CallbackSpent,
   CallbackDefer,
-)
+);
 
 export const EditResponse = Struct({
   id    : InteractionId,
   app_id: String,
   token : String,
   data  : BaseMessage,
-})
+});
 
-export type SnowFlake = typeof SnowFlake.Type
-export type Input = typeof InteractionRequest.Type
+export type SnowFlake = typeof SnowFlake.Type;
+export type Input = typeof InteractionRequest.Type;

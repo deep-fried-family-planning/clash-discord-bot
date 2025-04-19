@@ -21,7 +21,7 @@ import {v4} from 'uuid';
 
 
 
-const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function * () {
+const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function* () {
   const rosterId = v4();
   const embedId  = v4();
 
@@ -83,7 +83,7 @@ const PositionS                   = SingleS.as(makeId(RK_UPDATE, 'RVCP'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Type     = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

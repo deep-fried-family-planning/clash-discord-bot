@@ -7,7 +7,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 
-const getRosters = () => E.gen(function * () {
+const getRosters = () => E.gen(function* () {
   return [{
     value: 'NOOP',
     label: 'NOOP',
@@ -28,7 +28,7 @@ const RosterS = SingleS.as(makeId(RK_UPDATE, 'SER'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   let Roster = RosterS.fromMap(s.cmap);

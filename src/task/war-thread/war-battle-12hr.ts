@@ -10,7 +10,7 @@ import {join} from 'effect/Array';
 
 
 
-export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function * () {
+export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function* () {
   const maxHits = war.battle.attacksPerMember;
   const hits    = pipe(
     war.battle.clan.attacks,

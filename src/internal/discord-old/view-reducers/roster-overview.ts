@@ -20,7 +20,7 @@ export const RosterOverviewB = PrimaryB.as(makeId(RK_OPEN, 'RO'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const Roster = RosterS.fromMap(s.cmap);
 
   const roster = yield * rosterRead({

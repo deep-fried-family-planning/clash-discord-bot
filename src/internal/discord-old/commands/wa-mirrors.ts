@@ -27,7 +27,7 @@ export const WA_MIRRORS = {
 } as const;
 
 
-export const waMirrors = (ix: IxD, ops: IxDS<typeof WA_MIRRORS>) => E.gen(function * () {
+export const waMirrors = (ix: IxD, ops: IxDS<typeof WA_MIRRORS>) => E.gen(function* () {
   yield * validateServer(ix);
 
   const clan = getAliasTag(ops.clan);

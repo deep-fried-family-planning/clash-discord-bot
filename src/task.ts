@@ -46,7 +46,7 @@ const lookup = pipe(
 );
 
 
-const h = (event: SQSEvent) => g(function * () {
+const h = (event: SQSEvent) => g(function* () {
   if (yield * wsBypass('task', event, E.void)) {
     return;
   }
@@ -54,31 +54,28 @@ const h = (event: SQSEvent) => g(function * () {
   yield * pipe(
     event.Records,
     mapL((r) => pipe(
-      E.gen(function * () {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      E.gen(function* () {
         const json = JSON.parse(r.body);
 
         yield * CSL.debug('ScheduledTask', inspect(json, true, null));
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
         if (json.type === 'remind me') {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
           yield * DiscordApi.createMessage(json.channel_id, {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
             content: `<@${json.user_id}> reminder - ${json.message_url}`,
           });
         }
 
         if (json.id in newLookup) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           yield * newLookup[json.id](json.data);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
         yield * lookup[json.name as keyof typeof lookup](json);
       }),
       E.catchAll((err) => logDiscordError([err])),
-      E.catchAllCause((e) => E.gen(function * () {
+      E.catchAllCause((e) => E.gen(function* () {
         const error = Cause.prettyErrors(e);
 
         yield * logDiscordError([error]);

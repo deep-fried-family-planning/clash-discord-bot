@@ -6,7 +6,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const infoCreate = (info: DInfo) => E.gen(function * () {
+export const infoCreate = (info: DInfo) => E.gen(function* () {
   const encoded = yield * encodeDiscordInfo(info);
 
   yield * DynamoDBDocument.put({
@@ -18,7 +18,7 @@ export const infoCreate = (info: DInfo) => E.gen(function * () {
 });
 
 
-export const infoRead = (info: DInfoKey) => E.gen(function * () {
+export const infoRead = (info: DInfoKey) => E.gen(function* () {
   const pk = yield * encodeServerId(info.pk);
   const sk = yield * encodeInfoId(info.sk);
 
@@ -31,7 +31,7 @@ export const infoRead = (info: DInfoKey) => E.gen(function * () {
 });
 
 
-export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function * () {
+export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function* () {
   const pk = yield * encodeServerId(info.pk);
 
   const items = yield * DynamoDBDocument.query({
@@ -47,7 +47,7 @@ export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function 
 });
 
 
-export const infoUpdate = (info: DRoster) => E.gen(function * () {
+export const infoUpdate = (info: DRoster) => E.gen(function* () {
   const encoded = yield * encodeDiscordInfo(info);
 
   const item = yield * DynamoDBDocument.get({
@@ -68,7 +68,7 @@ export const infoUpdate = (info: DRoster) => E.gen(function * () {
 });
 
 
-export const infoDelete = (info: DRosterKey) => E.gen(function * () {
+export const infoDelete = (info: DRosterKey) => E.gen(function* () {
   const pk = yield * encodeServerId(info.pk);
   const sk = yield * encodeInfoId(info.sk);
 

@@ -5,7 +5,7 @@ import {makeLambda} from '@effect-aws/lambda';
 
 
 
-const menuClose = (ix: IxD) => g(function * () {
+const menuClose = (ix: IxD) => g(function* () {
   yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
 });
 

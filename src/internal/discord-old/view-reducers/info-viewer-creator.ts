@@ -21,7 +21,7 @@ import {v4} from 'uuid';
 
 
 
-const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(function * () {
+const createInfoEmbed = (s: St, kind: str, order: num, embed?: Embed) => E.gen(function* () {
   const embedId = v4();
   const infoId  = v4();
 
@@ -71,7 +71,7 @@ const PositionS                 = SingleS.as(makeId(RK_UPDATE, 'ICVP'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const persisted = decodePersist(s.description);
 
   const Kind     = KindS.fromMap(s.cmap).setDefaultValuesIf(KindS.id.predicate, extractPersist(persisted, ax, KindS));

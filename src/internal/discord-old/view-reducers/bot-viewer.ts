@@ -17,7 +17,7 @@ export const BotViewer = PrimaryB.as(makeId(RK_OPEN, 'BV'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : LABEL_TITLE_ABOUT_DEEPFRYER,

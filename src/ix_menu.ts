@@ -1,24 +1,24 @@
-import {runtimeLayer} from '#src/disreact/runtime/service/DisReactRuntime.ts'
-import {interact} from '#src/disreact/runtime/old/interact.ts'
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts'
-import type {IxD} from '#src/internal/discord.ts'
-import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts'
-import {makeLambda} from '@effect-aws/lambda'
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb'
-import {NodeHttpClient} from '@effect/platform-node'
-import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx'
-import console from 'node:console'
-import * as process from 'node:process'
+import {runtimeLayer} from '#src/disreact/runtime/service/DisReactRuntime.ts';
+import {interact} from '#src/disreact/runtime/old/interact.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import {DT, E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {makeLambda} from '@effect-aws/lambda';
+import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {NodeHttpClient} from '@effect/platform-node';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import console from 'node:console';
+import * as process from 'node:process';
 
 
 
 const menu = (ix: IxD) => pipe(
   E.gen(function* () {
-    yield * E.logTrace('ix_menu', ix.data)
-    yield * interact(ix as any).pipe(E.awaitAllChildren, E.catchAll((e) => E.sync(() => {console.error(e)})))
+    yield * E.logTrace('ix_menu', ix.data);
+    yield * interact(ix as any).pipe(E.awaitAllChildren, E.catchAll((e) => E.sync(() => {console.error(e);})));
   }),
-  E.catchAllDefect((e) => E.sync(() => {console.error(e)})),
-)
+  E.catchAllDefect((e) => E.sync(() => {console.error(e);})),
+);
 
 
 const live = pipe(
@@ -47,9 +47,9 @@ const live = pipe(
   // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
   L.provideMerge(DT.layerCurrentZoneLocal),
   L.provideMerge(L.scope),
-)
+);
 
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export const handler = makeLambda(menu, live)
+export const handler = makeLambda(menu, live);

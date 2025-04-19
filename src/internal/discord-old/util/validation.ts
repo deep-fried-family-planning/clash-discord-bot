@@ -5,7 +5,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 
-export const validateServer      = (data: IxD) => E.gen(function * () {
+export const validateServer      = (data: IxD) => E.gen(function* () {
   if (!data.member) {
     return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
   }

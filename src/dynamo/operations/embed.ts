@@ -7,7 +7,7 @@ import console from 'node:console';
 
 
 
-export const discordEmbedCreate = (embed: DEmbed) => E.gen(function * () {
+export const discordEmbedCreate = (embed: DEmbed) => E.gen(function* () {
   const encoded = yield * encodeDiscordEmbed(embed);
 
   yield * DynamoDBDocument.put({
@@ -17,7 +17,7 @@ export const discordEmbedCreate = (embed: DEmbed) => E.gen(function * () {
 });
 
 
-export const discordEmbedRead = (id: DEmbedKey['pk']) => E.gen(function * () {
+export const discordEmbedRead = (id: DEmbedKey['pk']) => E.gen(function* () {
   console.log('discordEmbedRead', id);
 
   const embedId = yield * encodeEmbedId(id);
@@ -34,7 +34,7 @@ export const discordEmbedRead = (id: DEmbedKey['pk']) => E.gen(function * () {
 });
 
 
-export const discordEmbedDelete = (id: str) => E.gen(function * () {
+export const discordEmbedDelete = (id: str) => E.gen(function* () {
   const embedId = yield * encodeEmbedId(id);
 
   yield * DynamoDBDocument.delete({

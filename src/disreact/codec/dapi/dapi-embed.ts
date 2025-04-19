@@ -1,7 +1,7 @@
-import {S} from '#src/disreact/utils/re-exports.ts'
+import {S} from '#src/disreact/utils/re-exports.ts';
 
-export * as DAPIEmbed from './dapi-embed.ts'
-export type DAPIEmbed = never
+export * as DAPIEmbed from './dapi-embed.ts';
+export type DAPIEmbed = never;
 
 export const Embed = S.Struct({
   author: S.optional(S.Struct({
@@ -28,4 +28,4 @@ export const Embed = S.Struct({
   footer: S.optional(S.Struct({
     text: S.String,
   })),
-})
+});

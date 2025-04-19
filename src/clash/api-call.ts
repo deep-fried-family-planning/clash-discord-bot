@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 
 import console from 'node:console';
 import {URL} from 'node:url';
@@ -74,7 +74,7 @@ export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
     try {
       json = await resp.json() as RJSON;
     }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     catch (e) {
       json = {} as RJSON;
     }

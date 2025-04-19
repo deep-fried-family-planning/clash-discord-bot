@@ -7,5 +7,5 @@ export const Thing = () => {
         </select>
       </actions>
     </message>
-  )
-}
+  );
+};

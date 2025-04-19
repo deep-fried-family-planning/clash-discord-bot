@@ -33,7 +33,7 @@ export const InfoNavS    = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
 
   let Kind = KindNavS.fromMap(s.cmap)

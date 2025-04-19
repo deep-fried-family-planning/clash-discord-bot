@@ -14,10 +14,10 @@ import {Cause} from 'effect';
 
 
 
-const slash = (ix: IxD) => E.gen(function * () {
+const slash = (ix: IxD) => E.gen(function* () {
   yield * ixsRouter(ix);
 }).pipe(
-  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
+  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
     const userMessage = yield * logDiscordError([e]);
 
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
@@ -28,7 +28,7 @@ const slash = (ix: IxD) => E.gen(function * () {
       }],
     } as Partial<IxRE>);
   })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
+  E.catchTag('DeepFryerClashError', (e) => E.gen(function* () {
     const userMessage = yield * logDiscordError([e]);
 
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
@@ -39,7 +39,7 @@ const slash = (ix: IxD) => E.gen(function * () {
       }],
     } as Partial<IxRE>);
   })),
-  E.catchAllCause((error) => E.gen(function * () {
+  E.catchAllCause((error) => E.gen(function* () {
     const e = Cause.prettyErrors(error);
 
     const userMessage = yield * logDiscordError(e);

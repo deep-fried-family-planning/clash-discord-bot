@@ -30,7 +30,7 @@ const UserS                    = SingleUserS.as(makeId(RK_UPDATE, 'LAAU'), {
 });
 
 
-const view1 = (s: St, ax: Ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -58,7 +58,7 @@ const view1 = (s: St, ax: Ax) => E.gen(function * () {
 });
 
 
-const view2 = (s: St, ax: Ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function* () {
   const tag  = PlayerTagT.fromMap(ax.cmap);
   const Type = TypeS.fromMap(s.cmap);
   const User = UserS.fromMap(s.cmap);

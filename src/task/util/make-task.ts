@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -43,8 +43,7 @@ export const makeTask = <
         after: DurationInput;
         data : Schema['Type'];
       },
-    ) => g(function * () {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ) => g(function* () {
       const encoded = encode(schedule.data);
 
       const maybeTime = pipe(
@@ -77,8 +76,8 @@ export const makeTask = <
           Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
           RoleArn: process.env.LAMBDA_ROLE_ARN,
           Input  : JSON.stringify({
-            id  : id.literals[0],
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            id: id.literals[0],
+
             data: encoded,
           }),
         },
@@ -86,7 +85,7 @@ export const makeTask = <
       });
     }),
 
-    evaluator: (data: unknown) => g(function * () {
+    evaluator: (data: unknown) => g(function* () {
       const decoded = decode(data);
 
       return yield * evaluator(decoded);

@@ -27,7 +27,7 @@ export const WA_LINKS = {
 } as const satisfies CommandSpec;
 
 
-export const waLinks = (ix: IxD, ops: IxDS<typeof WA_LINKS>) => E.gen(function * () {
+export const waLinks = (ix: IxD, ops: IxDS<typeof WA_LINKS>) => E.gen(function* () {
   yield * validateServer(ix);
 
   const clan = getAliasTag(ops.clan);

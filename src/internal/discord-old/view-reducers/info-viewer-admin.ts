@@ -34,7 +34,7 @@ const PositionS               = SingleS.as(makeId(RK_UPDATE, 'IVAP'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   let infoKind = '';
   let infoId   = '';
   let embedId  = '';

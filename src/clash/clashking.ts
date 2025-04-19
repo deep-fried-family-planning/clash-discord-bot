@@ -19,7 +19,7 @@ const rate = RL.make({
 });
 
 
-const program = E.gen(function * () {
+const program = E.gen(function* () {
   const api       = bindApiCall('https://api.clashking.xyz');
   const rateLimit = yield * rate;
 

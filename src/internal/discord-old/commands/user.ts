@@ -50,7 +50,7 @@ export const USER
 /**
  * @desc [SLASH /user]
  */
-export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function * () {
+export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* () {
   if (!data.member) {
     return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
   }

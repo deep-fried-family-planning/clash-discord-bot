@@ -5,14 +5,14 @@ import type {EA} from '#src/internal/types.ts';
 
 
 
-const cache = E.gen(function * () {
+const cache = E.gen(function* () {
   const cache = yield * C.make({
     capacity  : 50,
     timeToLive: process.env.LAMBDA_ENV === 'qual'
       ? '1 minutes'
       : '15 minutes',
 
-    lookup: (key: `${string}/${string}`) => E.gen(function * () {
+    lookup: (key: `${string}/${string}`) => E.gen(function* () {
       yield * CSL.log('cache miss!');
 
       const [pk, sk] = key.split('/');

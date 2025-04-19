@@ -13,7 +13,7 @@ import {E} from '#src/internal/pure/effect.ts';
 
 
 
-const saveUserRecord = (s: St, tz: string) => E.gen(function * () {
+const saveUserRecord = (s: St, tz: string) => E.gen(function* () {
   yield * userCreate({
     type           : 'DiscordUser',
     pk             : s.user_id,
@@ -38,7 +38,7 @@ const UserTzS       = SingleS.as(makeId(RK_UPDATE, 'UTZ'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   let Timezone = UserTzS

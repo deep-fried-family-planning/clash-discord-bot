@@ -39,7 +39,7 @@ export const TIME
 /**
  * @desc [SLASH /time]
  */
-export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function * () {
+export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function* () {
   yield * validateServer(ix);
 
   dayjs.extend(dayutc);

@@ -36,7 +36,7 @@ export const REMINDME
 /**
  * @desc [SLASH /remind-me]
  */
-export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function * () {
+export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function* () {
   yield * validateServer(ix);
 
   const time = pipe(

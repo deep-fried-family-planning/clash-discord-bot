@@ -5,7 +5,7 @@ import type {EA} from '#src/internal/types.ts';
 
 
 
-const cache = E.gen(function * () {
+const cache = E.gen(function* () {
   yield * CSL.log('player cache');
   const players = yield * scanDiscordPlayers();
 

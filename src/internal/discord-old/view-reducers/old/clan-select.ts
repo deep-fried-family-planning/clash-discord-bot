@@ -10,7 +10,7 @@ import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 
 
 
-const getClans = (s: St) => E.gen(function * () {
+const getClans = (s: St) => E.gen(function* () {
   const records = pipe(
     yield * queryDiscordClanForServer({pk: s.server_id}),
     sortWithL((r) => r.sk, ORDS),
@@ -41,7 +41,7 @@ export const ClanSelectB = PrimaryB.as(makeId(RK_OPEN, 'CLAN'), {label: 'Select 
 const ClanS              = SingleS.as(makeId(RK_UPDATE, 'CLAN'), {placeholder: 'Select Clan'});
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   let Clan = ClanS.fromMap(s.cmap);

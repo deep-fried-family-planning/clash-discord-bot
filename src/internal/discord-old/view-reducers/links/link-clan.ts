@@ -23,7 +23,7 @@ const TypeToModalB     = SuccessB.as(LINK_CLAN_MODAL_OPEN, {
 });
 
 
-const view1 = (s: St, ax: Ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Countdown = ChannelS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -50,7 +50,7 @@ const view1 = (s: St, ax: Ax) => E.gen(function * () {
 });
 
 
-const view2 = (s: St, ax: Ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function* () {
   const tag = ClanTagT.fromMap(ax.cmap);
 
   const Countdown = ChannelS.fromMap(s.cmap);
