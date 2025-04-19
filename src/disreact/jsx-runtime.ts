@@ -1,4 +1,4 @@
-import type {IntrinsicTuplesMapped} from '#src/disreact/codec/dapi-elem/index.ts';
+import type {IntrinsicTuplesMapped} from '#src/disreact/codec/elem/index.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Pragma} from './model/pragma';
 

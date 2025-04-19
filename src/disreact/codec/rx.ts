@@ -1,11 +1,11 @@
 import {forbidden, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import {Declare} from '../model/exp/declare.ts';
-import {Keys} from './dapi-elem/keys.ts';
-import {DAPI} from './dapi/dapi.ts';
-import {Doken} from './doken.ts';
-import {Params} from './params.ts';
+import {Declare} from '#src/disreact/model/declare.ts';
+import {Keys} from '#src/disreact/codec/elem/keys.ts';
+import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
+import {Doken} from '#src/disreact/codec/rest/doken.ts';
+import {Params} from '#src/disreact/codec/rest/params.ts';
 
-export * as Rx from './rx.ts';
+export * as Rx from '#src/disreact/codec/rx.ts';
 export type Rx = never;
 
 const Modal = pipe(

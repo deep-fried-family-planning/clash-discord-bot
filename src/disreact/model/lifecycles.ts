@@ -1,4 +1,3 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Fibril} from '#src/disreact/model/elem/fibril.ts';

@@ -21,5 +21,3 @@ export const effect = (ef: Side) =>
     }),
     E.catchAllDefect((e) => E.fail(e as Error)),
   );
-
-export const invoke = (ef: Side) => ef();

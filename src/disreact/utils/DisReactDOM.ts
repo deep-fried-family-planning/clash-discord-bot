@@ -1,4 +1,4 @@
-import {Doken} from '#src/disreact/codec/doken.ts';
+import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {NodeHttpClient} from '@effect/platform-node';

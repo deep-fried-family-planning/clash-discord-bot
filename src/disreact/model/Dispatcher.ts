@@ -1,10 +1,9 @@
-import {Elem, type Task} from '#src/disreact/model/elem/elem.ts';
-import {ASYNC, EFFECT, FC, SYNC} from '#src/disreact/model/elem/fc.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
+import {FC} from '#src/disreact/model/elem/fc.ts';
 import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Predicate} from 'effect';
-import { Hooks } from './hooks';
-import { Fibril } from 'src/disreact/model/elem/fibril.ts';
+import {Fibril} from 'src/disreact/model/elem/fibril.ts';
+import {Hooks} from './hooks';
 
 const mount = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   pipe(
