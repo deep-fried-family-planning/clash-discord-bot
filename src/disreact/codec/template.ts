@@ -1,7 +1,6 @@
 import {S} from '#src/disreact/utils/re-exports.ts';
-import { Rehydrant } from '../model/elem/rehydrant.ts';
-import { Declare } from '../model/exp/declare.ts';
-import { Doken } from './doken.ts';
+import {Declare} from '../model/exp/declare.ts';
+import {Doken} from './doken.ts';
 
 export * as Template from './template.ts';
 export type Template = never;
@@ -27,12 +26,12 @@ export const DokenRehydrantUrl = S.transform(
   S.TemplateLiteralParser(
     S.String,
     '/', Doken.Serial,
-    '/', Rehydrant.Hydrator,
+    '/', Declare.Hydrator,
   ),
   S.typeSchema(S.Struct({
     base    : S.String,
     doken   : Doken.Serial,
-    hydrator: Rehydrant.Hydrator,
+    hydrator: Declare.Hydrator,
   })),
   {
     encode: ({base, doken, hydrator}) =>

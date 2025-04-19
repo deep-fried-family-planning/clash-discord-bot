@@ -33,8 +33,6 @@ export const isMessage = (self: Monomer): self is Message => !!self && 'e' in se
 export const Chain = S.mutable(S.Array(Any));
 export type Chain = typeof Chain.Type;
 
-export const TypeId = Symbol('disreact/Fibril');
-
 export * as Fibril from '#src/disreact/model/elem/fibril.ts';
 export type Fibril = {
   pc       : number;

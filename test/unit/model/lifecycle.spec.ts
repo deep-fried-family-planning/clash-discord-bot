@@ -1,22 +1,23 @@
-import {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
+import {Declare} from '#src/disreact/model/exp/declare';
+import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
+import {Pragma} from '#src/disreact/model/pragma';
+import {Registry} from '#src/disreact/model/Registry.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {MessageEffect} from '#test/unit/components/message-effect.tsx';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
+import {MessageEffect} from '#test/unit/components/message-effect.tsx';
 import {MessageSync} from '#test/unit/components/message-sync.tsx';
-import {Record} from 'effect';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {it} from '#test/unit/components/TestRegistry.tsx';
-import {FC} from '#src/disreact/model/elem/fc.ts';
-import {Pragma} from '#src/disreact/model/pragma';
+import {Record} from 'effect';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant) => json(root);
 const toStacks = (root: Rehydrant) => Record.map(root.fibrils, (v) => v.stack);
-const hash = flow(Rehydrant.dehydrate, S.encodeSync(Rehydrant.Hydrator));
+const hash = flow(Rehydrant.dehydrate, S.encodeSync(Declare.Hydrator));
 
 it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Registry.checkout(MessageSync);

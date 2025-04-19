@@ -1,11 +1,9 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/elem/fibril.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
-import {decode, encode} from '@msgpack/msgpack';
 import {MutableList, Record} from 'effect';
-import {deflate, inflate} from 'pako';
-import { Pragma } from '../pragma';
+import type {Declare} from '../exp/declare';
+import {Pragma} from '../pragma';
 
 export * as Rehydrant from '#src/disreact/model/elem/rehydrant.ts';
 export type Rehydrant = {
@@ -20,6 +18,8 @@ export type Rehydrant = {
   diffs   : MutableList.MutableList<[Elem, Elem]>;
   render  : MutableList.MutableList<[Elem, Elem] | [Elem.Task, number]>;
 };
+export type Decoded = typeof Declare.Hydrator.Type;
+export type Encoded = typeof Declare.Hydrator.Encoded;
 
 export const make = (src: Source, props?: any): Rehydrant => {
   const elem = Pragma.clone(src.elem);
@@ -47,29 +47,6 @@ export const make = (src: Source, props?: any): Rehydrant => {
 
   return rehydrant;
 };
-
-export type Encoded = typeof Encoded.Type;
-export const Encoded = S.String;
-
-export type Decoded = typeof Decoded.Type;
-export const Decoded = S.Struct({
-  id    : S.String,
-  props : S.optional(S.Any),
-  stacks: S.Record({key: S.String, value: Fibril.Chain}),
-});
-
-export const Hydrator = S.transform(Encoded, Decoded, {
-  encode: (dry) => {
-    const pack = encode(dry);
-    const pako = deflate(pack);
-    return Buffer.from(pako).toString('base64url');
-  },
-  decode: (hash) => {
-    const buff = Buffer.from(hash, 'base64url');
-    const pako = inflate(buff);
-    return decode(pako) as any;
-  },
-});
 
 export const dehydrate = (rehydrant: Rehydrant): Decoded => ({
   id    : rehydrant.id,

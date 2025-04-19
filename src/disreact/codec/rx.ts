@@ -1,5 +1,4 @@
 import {forbidden, pipe, S} from '#src/disreact/utils/re-exports.ts';
-import {Rehydrant} from '../model/elem/rehydrant.ts';
 import {Declare} from '../model/exp/declare.ts';
 import {Keys} from './dapi-elem/keys.ts';
 import {DAPI} from './dapi/dapi.ts';
@@ -35,9 +34,9 @@ const Modal = pipe(
       isEphemeral: S.optional(S.Boolean),
       fresh      : S.typeSchema(Doken.Fresh),
       doken      : S.optional(S.typeSchema(Doken.Serial)),
-      hydrator   : S.typeSchema(Rehydrant.Decoded),
+      hydrator   : S.typeSchema(Declare.Hydrator),
       event      : Declare.trigger(DAPI.Modal.Data),
-      message    : S.optional(S.typeSchema(Rehydrant.Decoded)),
+      message    : S.optional(S.typeSchema(Declare.Hydrator)),
     }),
     {
       encode: forbidden,
@@ -87,7 +86,7 @@ const Message = pipe(
       isEphemeral: S.Boolean,
       fresh      : S.typeSchema(Doken.Fresh),
       doken      : S.typeSchema(Doken.Serial),
-      hydrator   : S.typeSchema(Rehydrant.Decoded),
+      hydrator   : S.typeSchema(Declare.Hydrator),
       event      : Declare.trigger(DAPI.Ix.ComponentData),
     }),
     {

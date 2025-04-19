@@ -1,5 +1,4 @@
-import {pipe, S, forbidden} from '#src/disreact/utils/re-exports.ts';
-import {Rehydrant} from '../model/elem/rehydrant.ts';
+import {forbidden, S} from '#src/disreact/utils/re-exports.ts';
 import {Declare} from '../model/exp/declare.ts';
 import {Keys} from './dapi-elem/keys.ts';
 import {DAPI} from './dapi/dapi.ts';

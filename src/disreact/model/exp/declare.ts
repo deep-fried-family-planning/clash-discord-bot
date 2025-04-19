@@ -1,11 +1,35 @@
-import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
 import type {E} from '#src/disreact/utils/re-exports.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
+import {decode, encode} from '@msgpack/msgpack';
+import {deflate, inflate} from 'pako';
+import {Fibril} from '../elem/fibril';
 
 export * as Declare from '#src/disreact/model/exp/declare.ts';
 export type Declare = never;
 
 export const SourceId = S.String;
+
+export const HydratorHash = S.String;
+
+export const HydratorStruct = S.Struct({
+  id    : S.String,
+  props : S.optional(S.Any),
+  stacks: S.Record({key: S.String, value: Fibril.Chain}),
+});
+
+export const Hydrator = S.transform(HydratorHash, HydratorStruct, {
+  encode: (dry) => {
+    const pack = encode(dry);
+    const pako = deflate(pack);
+    return Buffer.from(pako).toString('base64url');
+  },
+  decode: (hash) => {
+    const buff = Buffer.from(hash, 'base64url');
+    const pako = inflate(buff);
+    return decode(pako) as any;
+  },
+});
 
 export type Encoded<A extends string = string, B = any> =
   | {
@@ -18,7 +42,7 @@ export type Encoded<A extends string = string, B = any> =
 export const encoded = <T extends string, A, I, R>(_tag: T, data: S.Schema<A, I, R>) =>
   S.Struct({
     _tag    : S.Literal(_tag),
-    hydrator: S.typeSchema(Rehydrant.Decoded),
+    hydrator: S.typeSchema(Hydrator),
     data    : data,
   });
 

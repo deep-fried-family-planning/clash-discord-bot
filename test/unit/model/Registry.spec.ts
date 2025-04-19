@@ -5,11 +5,11 @@ import {it} from '#test/unit/components/TestRegistry.tsx';
 it.effect('when hashing version', E.fn(function* () {
   const version = yield* Registry.version;
 
-  expect(version).toMatchInlineSnapshot(`981993584`);
+  expect(version).toMatchInlineSnapshot(`-334885204`);
 }));
 
 it.effect('when hashing version again', E.fn(function* () {
   const version = yield* Registry.version;
 
-  expect(version).toMatchInlineSnapshot(`981993584`);
+  expect(version).toMatchInlineSnapshot(`-334885204`);
 }));
