@@ -1,5 +1,5 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {L, pipe} from '#src/disreact/utils/re-exports.ts';
@@ -41,7 +41,7 @@ const runtime = makeTestRuntime([TestMessage], false);
 describe('synthesize', () => {
   bench('scoped', async () => {
     await pipe(
-      Methods.synthesize(TestMessage),
+      Methods.createRoot(TestMessage),
       E.provide(layer),
       E.runPromise,
     );

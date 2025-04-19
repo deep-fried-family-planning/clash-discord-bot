@@ -5,15 +5,18 @@ import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Fiber} from 'effect';
 import {Model} from '#src/disreact/model/model.ts';
+import type { Source } from '../model/meta/source';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
 
-export const synthesize = (id: Elem | FC | string, props?: any) =>
+export const registerRoot = Model.register;
+
+export const createRoot = (id: Source.Key, props?: any) =>
   pipe(
     Model.create(id, props),
     E.flatMap((root) => {
@@ -79,7 +82,7 @@ export const respond = (body: any) => E.gen(function* () {
     const doken = yield* Dokens.final(ds);
 
     if (Doken.isNever(doken)) {
-      return E.fail(new Error('Never token found.'));
+      return yield* E.fail(new Error('Never token found.'));
     }
     const payload = codec.encodeResponse({
       base    : 'https://dffp.org',

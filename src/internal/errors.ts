@@ -26,6 +26,7 @@ export class DeepFryerUnknownError extends D.TaggedError('DeepFryerUnknownError'
 
 
 export class SlashError extends D.TaggedError('DeepFryerSlashError')<{
+  issue?  : string;
   original: unknown;
 }> {
 }

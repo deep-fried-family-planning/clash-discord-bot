@@ -1,7 +1,7 @@
 import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
 import {LABEL_ACCOUNT_LINK, LABEL_ACCOUNT_TYPE, LABEL_LINK, LABEL_PLAYER_TAG_API_TOKEN, LABEL_TRY_AGAIN} from '#src/constants/label.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {oneofus} from '#src/internal/discord-old/commands/oneofus.ts';
+import {oneofus} from '#src/discord/commands/oneofus.ts';
 import {asFailure, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, ForwardB, SingleS, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import {ApiTokenT, LINK_ACCOUNT_MODAL_OPEN, LINK_ACCOUNT_MODAL_SUBMIT, PlayerTagT} from '#src/internal/discord-old/modals/link-account-modal.ts';

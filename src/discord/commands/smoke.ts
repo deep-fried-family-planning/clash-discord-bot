@@ -1,11 +1,8 @@
+import {COLOR, nColor} from '#src/constants/colors.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {synthesize} from '#src/disreact/runtime/methods.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import type {Message} from 'dfx/types';
-
-
 
 export const SMOKE = {
   type       : 1,
@@ -15,7 +12,6 @@ export const SMOKE = {
     ...OPTION_CLAN,
   },
 } as const satisfies CommandSpec;
-
 
 /**
  * @desc [SLASH /smoke]
@@ -41,4 +37,8 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function*
   // };
 
   // return (yield * synthesize(OmniPublic)) as unknown as Message;
+
+  return {
+    embeds: [{description: '', color: nColor(COLOR.ORIGINAL)}],
+  };
 });

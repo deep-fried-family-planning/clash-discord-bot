@@ -17,6 +17,8 @@ export const defaultLayers = L.mergeAll(
   Relay.Default,
 );
 
+export const register = Sources.register;
+
 export const create = (key: Source.Key, props: any = {}) =>
   pipe(
     Sources.checkout(key, props),

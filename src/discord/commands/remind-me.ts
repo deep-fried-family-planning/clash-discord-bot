@@ -8,10 +8,7 @@ import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import * as DateTime from 'effect/DateTime';
 
-
-
-export const REMINDME
-               = {
+export const REMINDME = {
   type       : 1,
   name       : 'remind_me',
   description: 'do your hits or something',
@@ -32,12 +29,11 @@ export const REMINDME
   },
 } as const satisfies CommandSpec;
 
-
 /**
  * @desc [SLASH /remind-me]
  */
 export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function* () {
-  yield * validateServer(ix);
+  yield* validateServer(ix);
 
   const time = pipe(
     new Date(Date.now()),
@@ -46,7 +42,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
     DT.formatIso,
     (iso) => iso.replace(/\..+Z/, ''),
   );
-  yield * Scheduler.createSchedule({
+  yield* Scheduler.createSchedule({
     Name: `remind-me-user${ix.member!.user!.id}-${Date.now()}`,
 
     ScheduleExpression        : `at(${time})`,
@@ -67,14 +63,14 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
     ActionAfterCompletion: 'DELETE',
   });
   const user_time = pipe(
-    yield * DateTime.nowInCurrentZone,
+    yield* DateTime.nowInCurrentZone,
     DateTime.addDuration(`${ops.hours_ahead as number} hour`),
     DateTime.toEpochMillis,
   );
   return {
     embeds: [{
       color      : nColor(COLOR.ORIGINAL),
-      description: pipe(`Reminder created at ${dtRel(user_time)}`),
+      description: pipe(`Reminder created: ${dtRel(user_time)}`),
     }],
   };
 });

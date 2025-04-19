@@ -13,10 +13,7 @@ import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {toEntries} from 'effect/Record';
 
-
-
-export const WA_SCOUT
-               = {
+export const WA_SCOUT = {
   type       : 1,
   name       : 'wa-scout',
   description: 'learn enemy clan behaviors and capabilities through a range of war statistics',
@@ -27,13 +24,12 @@ export const WA_SCOUT
   },
 } as const satisfies CommandSpec;
 
-
 export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* () {
-  yield * validateServer(ix);
+  yield* validateServer(ix);
 
   const clan = getAliasTag(ops.clan);
 
-  const graph = yield * buildGraphModel({
+  const graph = yield* buildGraphModel({
     cid1       : clan,
     exhaustive : Boolean(ops.exhaustive),
     from       : 1,
@@ -44,7 +40,7 @@ export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* 
   });
 
   const n_samples = describeSamples(graph.model);
-  const scout     = describeScout(graph);
+  const scout = describeScout(graph);
 
   return {
     embeds: [{
@@ -61,7 +57,6 @@ export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* 
     }],
   };
 });
-
 
 export const messageEmbedScout = (scout: ReturnType<typeof describeScout>) => {
   return dLines([

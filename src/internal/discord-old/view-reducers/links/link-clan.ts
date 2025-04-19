@@ -1,7 +1,7 @@
 import {LABEL_CLAN_LINK, LABEL_CLAN_TAG} from '#src/constants/label.ts';
 import {PLACEHOLDER_WAR_COUNTDOWN} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {clanfam} from '#src/internal/discord-old/commands/clanfam.ts';
+import {clanfam} from '#src/discord/commands/clanfam.ts';
 import {asFailure, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import {ClanTagT, LINK_CLAN_MODAL_OPEN, LINK_CLAN_MODAL_SUBMIT} from '#src/internal/discord-old/modals/link-clan-modal.ts';

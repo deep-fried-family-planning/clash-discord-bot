@@ -1,6 +1,6 @@
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {resolveId, Source} from '#src/disreact/model/meta/source.ts';
-import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {E, Hash, pipe} from '#src/disreact/utils/re-exports.ts';
 
 const makeVersion = (store: Map<string, Source>, version?: string | number) =>

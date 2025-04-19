@@ -11,8 +11,6 @@ import {descriptiveHitRates} from '#src/internal/graph/model-descriptive/descrip
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/internal/pure/pure-list.ts';
 
-
-
 export const WA_MIRRORS = {
   type       : 1,
   name       : 'wa-opponent',
@@ -26,9 +24,8 @@ export const WA_MIRRORS = {
   },
 } as const;
 
-
 export const waMirrors = (ix: IxD, ops: IxDS<typeof WA_MIRRORS>) => E.gen(function* () {
-  yield * validateServer(ix);
+  yield* validateServer(ix);
 
   const clan = getAliasTag(ops.clan);
 
@@ -42,9 +39,9 @@ export const waMirrors = (ix: IxD, ops: IxDS<typeof WA_MIRRORS>) => E.gen(functi
     limit      : (ops.limit ?? 50) as number,
   };
 
-  const graph = yield * buildGraphModel(options);
+  const graph = yield* buildGraphModel(options);
 
-  const clanRates     = descriptiveHitRates(graph.clanTag, graph.clanMembers, graph.model);
+  const clanRates = descriptiveHitRates(graph.clanTag, graph.clanMembers, graph.model);
   const opponentRates = descriptiveHitRates(graph.opponentTag, graph.opponentMembers, graph.model);
 
   const [from, to] = [options.from, options.to];

@@ -6,10 +6,7 @@ import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
-export const GIMME_DATA
-               = {
+export const GIMME_DATA = {
   type       : 1,
   name       : 'gimme',
   description: 'devs & inner circle ONLY!!!',
@@ -45,18 +42,17 @@ export const GIMME_DATA
   },
 } as const satisfies CommandSpec;
 
-
 /**
  * @desc [SLASH /gimme]
  */
 export const gimmeData = (data: IxD, options: IxDS<typeof GIMME_DATA>) => E.gen(function* () {
-  const [server, user] = yield * validateServer(data);
+  const [server, user] = yield* validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {
-    return yield * new SlashUserError({issue: 'inner circle ONLY!!!'});
+    return yield* new SlashUserError({issue: 'inner circle ONLY!!!'});
   }
 
-  const ddb = yield * DynamoDBDocument.get({
+  const ddb = yield* DynamoDBDocument.get({
     TableName     : process.env.DDB_OPERATIONS,
     ConsistentRead: true,
     Key           : {

@@ -10,10 +10,7 @@ import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
 
-
-
-export const TIME
-               = {
+export const TIME = {
   type       : 1,
   name       : 'time',
   description: 'find current time in multiple timezones',
@@ -35,12 +32,11 @@ export const TIME
   },
 } as const satisfies CommandSpec;
 
-
 /**
  * @desc [SLASH /time]
  */
 export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function* () {
-  yield * validateServer(ix);
+  yield* validateServer(ix);
 
   dayjs.extend(dayutc);
   dayjs.extend(daytimezone);

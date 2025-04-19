@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
+import {commandRouter} from '#src/discord/command-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import type {IxD, IxRE} from '#src/internal/discord.ts';
@@ -12,12 +12,12 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 
 const slash = (ix: IxD) => E.gen(function* () {
-  yield * ixsRouter(ix);
+  yield* commandRouter(ix);
 }).pipe(
   E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
-    const userMessage = yield * logDiscordError([e]);
+    const userMessage = yield* logDiscordError([e]);
 
-    yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
+    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
       ...userMessage,
       embeds: [{
         ...userMessage.embeds[0],
@@ -26,9 +26,9 @@ const slash = (ix: IxD) => E.gen(function* () {
     } as Partial<IxRE>);
   })),
   E.catchTag('DeepFryerClashError', (e) => E.gen(function* () {
-    const userMessage = yield * logDiscordError([e]);
+    const userMessage = yield* logDiscordError([e]);
 
-    yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
+    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
       ...userMessage,
       embeds: [{
         ...userMessage.embeds[0],
@@ -40,17 +40,15 @@ const slash = (ix: IxD) => E.gen(function* () {
   E.catchAllCause((error) => E.gen(function* () {
     const e = Cause.prettyErrors(error);
 
-    const userMessage = yield * logDiscordError(e);
+    const userMessage = yield* logDiscordError(e);
 
-    yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
+    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
   })),
 );
-
 
 const h = (event: IxD) => pipe(
   slash(event),
 );
-
 
 export const handler = makeLambda(h, pipe(
   DiscordLayerLive,

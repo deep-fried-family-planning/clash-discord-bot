@@ -1,19 +1,16 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {deleteDiscordPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
-import {deleteDiscordPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
-export const ONE_OF_US
-               = {
+export const ONE_OF_US = {
   type       : 1,
   name       : 'oneofus',
   description: 'link clash account to discord',
@@ -53,36 +50,35 @@ export const ONE_OF_US
   },
 } as const satisfies CommandSpec;
 
-
 /**
  * @desc [SLASH /oneofus]
  */
 export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E.gen(function* () {
   const [server, user] = s
     ? [s.server!, s.original.member!]
-    : yield * validateServer(data);
+    : yield* validateServer(data);
 
-  const tag = yield * ClashOfClans.validateTag(options.player_tag);
+  const tag = yield* ClashOfClans.validateTag(options.player_tag);
 
-  const coc_player = yield * ClashOfClans.getPlayer(tag);
+  const coc_player = yield* ClashOfClans.getPlayer(tag);
 
   // server admin role link
   if (options.api_token === 'admin') {
     if (!user.roles.includes(server.admin as snflk)) {
-      return yield * new SlashUserError({issue: 'admin role required'});
+      return yield* new SlashUserError({issue: 'admin role required'});
     }
     if (!options.discord_user) {
-      return yield * new SlashUserError({issue: 'admin links must have discord_user'});
+      return yield* new SlashUserError({issue: 'admin links must have discord_user'});
     }
 
-    const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
+    const [player, ...rest] = yield* queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
     if (rest.length) {
-      return yield * new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
+      return yield* new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
     }
 
     if (!player) {
-      yield * putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_kind));
+      yield* putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_kind));
       return {
         embeds: [{
           color      : nColor(COLOR.SUCCESS),
@@ -94,8 +90,8 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
       };
     }
 
-    yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
-    yield * putDiscordPlayer({
+    yield* deleteDiscordPlayer({pk: player.pk, sk: player.sk});
+    yield* putDiscordPlayer({
       ...player,
       pk          : user.user!.id,
       gsi_user_id : user.user!.id,
@@ -115,17 +111,17 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
   }
 
   // COC player API token validity
-  const tokenValid = yield * ClashOfClans.verifyPlayerToken(coc_player.tag, options.api_token);
+  const tokenValid = yield* ClashOfClans.verifyPlayerToken(coc_player.tag, options.api_token);
 
   if (!tokenValid) {
-    return yield * new SlashUserError({issue: 'invalid api_token'});
+    return yield* new SlashUserError({issue: 'invalid api_token'});
   }
 
-  const [player, ...rest] = yield * queryDiscordPlayer({sk: `p-${options.player_tag}`});
+  const [player, ...rest] = yield* queryDiscordPlayer({sk: `p-${options.player_tag}`});
 
   // new player record
   if (!player) {
-    yield * putDiscordPlayer(makeDiscordPlayer(user.user!.id, coc_player.tag, 2, options.account_kind));
+    yield* putDiscordPlayer(makeDiscordPlayer(user.user!.id, coc_player.tag, 2, options.account_kind));
 
     return {
       embeds: [{
@@ -139,22 +135,22 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
   }
 
   if (rest.length) {
-    return yield * new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
+    return yield* new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
   }
 
   // already linked to current account
   if (player.sk === coc_player.tag) {
-    return yield * new SlashUserError({issue: 'your account is already linked'});
+    return yield* new SlashUserError({issue: 'your account is already linked'});
   }
 
   // disallow higher verification override
   if (player.verification > 2) {
-    return yield * new SlashUserError({issue: 'cannot override verification already present'});
+    return yield* new SlashUserError({issue: 'cannot override verification already present'});
   }
 
   // update player record
-  yield * deleteDiscordPlayer({pk: player.pk, sk: player.sk});
-  yield * putDiscordPlayer({
+  yield* deleteDiscordPlayer({pk: player.pk, sk: player.sk});
+  yield* putDiscordPlayer({
     ...player,
     pk          : user.user!.id,
     gsi_user_id : user.user!.id,
@@ -172,7 +168,6 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
     }],
   };
 });
-
 
 const makeDiscordPlayer
         = (userId: string, playerTag: string, verification: DPlayer['verification'], accountType?: string) => ({

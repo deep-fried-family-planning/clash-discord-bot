@@ -1,15 +1,59 @@
-import type {Tx} from '#src/disreact/codec/tx.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {E} from '#src/disreact/utils/re-exports.ts';
-import type {Rx} from '../codec/rx';
+import {Codec} from '#src/disreact/codec/Codec.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import type {Source} from '#src/disreact/model/meta/source.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
+import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import {Methods} from './methods';
 
-export class DisReact extends E.Tag('disreact/DisReact')<
-  DisReact,
-  {
-    createRoot: (id: Elem | FC | string, props?: any) => E.Effect<Tx.Response>;
-    respond   : (input: Rx.Request) => E.Effect<Tx.Response>;
-  }
->() {
+const make = (options: DisReactConfig.Input) => {
+  const layers = pipe(
+    L.mergeAll(
+      Sources.Default,
+      Dispatcher.Default,
+      Codec.Default,
+      Relay.Default,
+      DisReactDOM.Default,
+      DokenMemory.Default,
+    ),
+    L.provideMerge(DisReactConfig.configLayer(options)),
+  );
 
+  return {
+    registerRoot: (src: Source.Registrant, id?: string) =>
+      pipe(
+        Methods.registerRoot(src, id),
+        E.provide(layers),
+      ),
+
+    createRoot: (id: Source.Key, props?: any) =>
+      pipe(
+        Methods.createRoot(id, props),
+        E.provide(layers),
+      ),
+
+    respond: (input: any) =>
+      pipe(
+        Methods.respond(input),
+        E.provide(layers),
+        E.provide(Relay.Fresh),
+      ),
+  };
+};
+
+export class DisReact extends E.Service<ReturnType<typeof make>>()('disreact/DisReact', {
+  succeed: make({
+    token  : '',
+    sources: [],
+  }),
+  accessors: true,
+}) {
+  static readonly configLayer = (options: DisReactConfig.Input) =>
+    pipe(
+      make(options),
+      L.succeed(this),
+    );
 }

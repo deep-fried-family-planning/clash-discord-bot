@@ -1,7 +1,7 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {Runtime} from '#src/disreact/runtime/runtime';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
@@ -36,7 +36,7 @@ const layer = pipe(
 );
 
 it.effect('when synthesizing', E.fn(function* () {
-  const root = yield* Methods.synthesize(TestMessage).pipe(E.provide(layer));
+  const root = yield* Methods.createRoot(TestMessage).pipe(E.provide(layer));
 
   yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
 }));
@@ -45,7 +45,7 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
   const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Methods.synthesize(TestMessage).pipe(E.provide([layer]));
+    const root = yield* Methods.createRoot(TestMessage).pipe(E.provide([layer]));
 
     yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
   }

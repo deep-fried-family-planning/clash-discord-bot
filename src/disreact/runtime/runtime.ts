@@ -2,9 +2,9 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
-import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
+import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Fiber, ManagedRuntime, Runtime as Run} from 'effect';
 import {Methods} from './methods';
@@ -39,7 +39,7 @@ export type GlobalRuntimeLayer = ReturnType<typeof makeGlobalRuntimeLayer>;
 
 export const makeRuntime = (layer: GlobalRuntimeLayer) => {
   const synthesize = flow(
-    Methods.synthesize,
+    Methods.createRoot,
     E.provide(layer),
   );
 
