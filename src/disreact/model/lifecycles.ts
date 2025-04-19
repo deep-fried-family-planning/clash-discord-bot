@@ -1,11 +1,11 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {Fibril} from '#src/disreact/model/elem/fibril.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
-import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
-import {Side} from '#src/disreact/model/elem/side.ts';
+import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
+import {Side} from '#src/disreact/model/meta/side.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
@@ -34,7 +34,7 @@ const relaySame = (root: Rehydrant) =>
 
 const relayNext = (root: Rehydrant) => Relay.use((relay) =>
   pipe(
-    Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
+    Sources.use((registry) => registry.checkout(root.next.id!, root.next.props)),
     E.tap((next) => relay.setOutput(next)),
     E.tap(() => relay.sendStatus(
       Progress.Next({
@@ -67,6 +67,20 @@ const relayPartial = (elem: Elem.Rest) => {
           Progress.Part({
             type       : 'message',
             isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+          }),
+        ),
+      ),
+      E.as(true),
+    );
+  }
+
+  if (elem.type === 'ephemeral') {
+    return pipe(
+      Relay.use((relay) =>
+        relay.sendStatus(
+          Progress.Part({
+            type       : 'ephemeral',
+            isEphemeral: true,
           }),
         ),
       ),
@@ -168,7 +182,7 @@ const mount = (root: Rehydrant, elem: Elem.Node) => {
   return E.whileLoop({
     while: () => !!MutableList.tail(root.mount),
     step : () => {},
-    body : (): E.Effect<void, Error, Relay | Registry | Dispatcher> => {
+    body : (): E.Effect<void, Error, Relay | Sources | Dispatcher> => {
       const next = MutableList.pop(root.mount)!;
 
       if (Elem.isTask(next)) {

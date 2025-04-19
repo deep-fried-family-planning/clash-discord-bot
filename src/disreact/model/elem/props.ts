@@ -1,4 +1,4 @@
-import {Keys} from '#src/disreact/codec/elem/keys.ts';
+import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Data, Equal} from 'effect';
 

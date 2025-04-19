@@ -2,7 +2,7 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {ML} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
 import { Elem } from './elem/elem';
-import { Rehydrant } from './elem/rehydrant';
+import { Rehydrant } from 'src/disreact/model/meta/rehydrant.ts';
 import type { Declare } from 'src/disreact/model/declare.ts';
 
 export * as Pragma from '#src/disreact/model/pragma.ts';

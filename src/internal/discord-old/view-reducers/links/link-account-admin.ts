@@ -2,7 +2,7 @@ import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
 import {LABEL_ADMIN_LINK, LABEL_LINK, LABEL_PLAYER_TAG, LABEL_TITLE_ADMIN_LINK, LABEL_TRY_AGAIN} from '#src/constants/label.ts';
 import {PLACEHOLDER_ACCOUNT_TYPE, PLACEHOLDER_SELECT_USER} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {oneofus} from '#src/internal/discord-old/commands/oneofus.ts';
+import {oneofus} from '#src/discord/commands/oneofus.ts';
 import {asFailure, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, DangerB, ForwardB, SingleS, SingleUserS, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import {LINK_ACCOUNT_ADMIN_MODAL_OPEN, LINK_ACCOUNT_ADMIN_MODAL_SUBMIT} from '#src/internal/discord-old/modals/link-account-admin-modal.ts';

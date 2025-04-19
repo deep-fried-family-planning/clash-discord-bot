@@ -1,6 +1,6 @@
 import {Doken, DokenDefect} from '#src/disreact/codec/rest/doken.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Either, Fiber, SynchronizedRef} from 'effect';
 import {Misc} from '../utils/misc';
@@ -103,9 +103,6 @@ export const handleSource = (ds: Dokens) =>
         ),
       ),
     ),
-    E.whenEffect(
-      Misc.pollDeferred(ds.deferred).pipe(E.map((deferred) => !deferred)),
-    ),
   );
 
 export const handleUpdate = (ds: Dokens) =>
@@ -131,8 +128,5 @@ export const handleUpdate = (ds: Dokens) =>
           ),
         ),
       ),
-    ),
-    E.whenEffect(
-      Misc.pollDeferred(ds.deferred).pipe(E.map((deferred) => !deferred)),
     ),
   );

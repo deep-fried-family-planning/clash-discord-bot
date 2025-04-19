@@ -1,4 +1,4 @@
-import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {D, DT, E, hole} from '#src/disreact/utils/re-exports.ts';
 import {DR, pipe, S} from '#src/internal/pure/effect.ts';
 import {Duration, Either, Option} from 'effect';

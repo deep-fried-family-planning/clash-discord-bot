@@ -1,8 +1,8 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
-import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fibril} from 'src/disreact/model/elem/fibril.ts';
 import {Hooks} from './hooks';
 
 const mount = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
@@ -100,15 +100,22 @@ const render = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   );
 
 export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
-  effect: E.map(E.makeSemaphore(1), (mutex) => {
-    return {
-      lock  : mutex.take(1),
-      unlock: mutex.release(1),
 
-      render : render(mutex),
-      hydrate: hydrate(mutex),
-      mount  : mount(mutex),
-    };
-  }),
+  effect: E.map(E.makeSemaphore(1), (mutex) => ({
+    lock  : mutex.take(1),
+    unlock: mutex.release(1),
+
+    render : render(mutex),
+    hydrate: hydrate(mutex),
+    mount  : mount(mutex),
+
+    mutex,
+
+    doRender: () =>
+      pipe(
+        mutex.take(1),
+      ),
+  })),
+
   accessors: true,
 }) {}

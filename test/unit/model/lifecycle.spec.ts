@@ -1,10 +1,10 @@
 import {FC} from '#src/disreact/model/elem/fc.ts';
-import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Declare} from '#src/disreact/model/declare.ts';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Pragma} from '#src/disreact/model/pragma';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
@@ -20,35 +20,35 @@ const toStacks = (root: Rehydrant) => Record.map(root.fibrils, (v) => v.stack);
 const hash = flow(Rehydrant.dehydrate, S.encodeSync(Declare.Hydrator));
 
 it.effect('when rendering sync', E.fn(function* () {
-  const root = yield* Registry.checkout(MessageSync);
+  const root = yield* Sources.checkout(MessageSync);
   yield* Lifecycles.initialize(root);
   const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageSync));
 }));
 
 it.effect('when rendering async', E.fn(function* () {
-  const root = yield* Registry.checkout(MessageAsync);
+  const root = yield* Sources.checkout(MessageAsync);
   yield* Lifecycles.initialize(root);
   const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageAsync));
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
-  const root = yield* Registry.checkout(MessageEffect);
+  const root = yield* Sources.checkout(MessageEffect);
   yield* Lifecycles.initialize(root);
   const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageEffect));
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
-  const root = yield* Registry.checkout(TestMessage);
+  const root = yield* Sources.checkout(TestMessage);
   yield* Lifecycles.initialize(root);
   const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
 it.effect('when dispatching an event', E.fn(function* () {
-  const registry = yield* Registry;
+  const registry = yield* Sources;
   const root = yield* registry.checkout(TestMessage);
 
   yield* Lifecycles.initialize(root);
@@ -70,7 +70,7 @@ it.effect('when dispatching an event', E.fn(function* () {
 
 describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
-    const registry = yield* Registry;
+    const registry = yield* Sources;
     const root = yield* registry.checkout(TestMessage);
     yield* Lifecycles.initialize(root);
     yield* Lifecycles.rerender(root);
@@ -85,7 +85,7 @@ it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
   const runs = Array.from({length: 10000});
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Registry.checkout(TestMessage);
+    const root = yield* Sources.checkout(TestMessage);
     yield* Lifecycles.initialize(root);
     yield* Lifecycles.rehydrate(root);
 

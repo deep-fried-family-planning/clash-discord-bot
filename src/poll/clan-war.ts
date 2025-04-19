@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {messageEmbedScout} from '#src/internal/discord-old/commands/wa-scout.ts';
+import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
 import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
