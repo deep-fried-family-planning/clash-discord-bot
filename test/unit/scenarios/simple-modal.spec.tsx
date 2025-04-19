@@ -18,7 +18,7 @@ it.effect('when opening', E.fn(function* () {
     user_id       : 'user',
     guild_id      : 'guild',
     message       : root,
-    type          : 2,
+    type          : 3,
     data          : {
       custom_id     : 'OpenModal',
       component_type: 2,

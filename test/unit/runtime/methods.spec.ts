@@ -59,7 +59,7 @@ it.live('when responding', E.fn(function* () {
     user_id       : 'user',
     guild_id      : 'guild',
     message       : testmessage,
-    type          : 2,
+    type          : 3,
     data          : {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
@@ -75,7 +75,7 @@ it.live('when responding', E.fn(function* () {
     application_id: 'app',
     user_id       : 'user',
     guild_id      : 'guild',
-    type          : 2,
+    type          : 3,
     data          : {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
@@ -99,7 +99,7 @@ it.live('when responding (performance)', E.fn(function* () {
       user_id       : 'user',
       guild_id      : 'guild',
       message       : testmessage,
-      type          : 2,
+      type          : 3,
       data          : {
         custom_id     : 'actions:2:button:0',
         component_type: 2,

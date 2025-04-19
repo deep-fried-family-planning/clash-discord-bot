@@ -67,7 +67,7 @@ describe('respond', () => {
         user_id       : 'user',
         guild_id      : 'guild',
         message       : testmessage,
-        type          : 2,
+        type          : 3,
         data          : {
           custom_id     : 'actions:2:button:0',
           component_type: 2,
@@ -87,7 +87,7 @@ describe('respond', () => {
         user_id       : 'user',
         guild_id      : 'guild',
         message       : testmessage,
-        type          : 2,
+        type          : 3,
         data          : {
           custom_id     : 'actions:2:button:0',
           component_type: 2,
