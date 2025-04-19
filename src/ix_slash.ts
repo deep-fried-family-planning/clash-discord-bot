@@ -1,6 +1,5 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {runtimeLayer} from '#src/disreact/runtime/service/DisReactRuntime.ts';
 import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -11,8 +10,6 @@ import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
-
-
 
 const slash = (ix: IxD) => E.gen(function* () {
   yield * ixsRouter(ix);
@@ -35,6 +32,7 @@ const slash = (ix: IxD) => E.gen(function* () {
       ...userMessage,
       embeds: [{
         ...userMessage.embeds[0],
+        // @ts-expect-error temporary
         title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
       }],
     } as Partial<IxRE>);
@@ -55,8 +53,7 @@ const h = (event: IxD) => pipe(
 
 
 export const handler = makeLambda(h, pipe(
-  runtimeLayer,
-  L.provideMerge(DiscordLayerLive),
+  DiscordLayerLive,
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),

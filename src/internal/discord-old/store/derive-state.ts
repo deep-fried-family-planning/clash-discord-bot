@@ -93,8 +93,8 @@ export const deriveState = (ix: IxD) => E.gen(function* () {
   return {
     original  : ix,
     server_id : ix.guild_id!,
-    user      : ix.member!.user!.id,
     user_roles: ix.member!.roles,
+    user_id   : ix.member!.user!.id,
     user      : user,
     server    : server,
 

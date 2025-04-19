@@ -34,12 +34,12 @@ export const waMirrors = (ix: IxD, ops: IxDS<typeof WA_MIRRORS>) => E.gen(functi
 
   const options = {
     cid1       : clan,
-    from       : ops.from ?? 1,
-    to         : ops.to ?? 50,
+    from       : (ops.from ?? 1) as number,
+    to         : (ops.to ?? 50) as number,
     showCurrent: false,
     showN      : false,
     exhaustive : ops.exhaustive ?? false,
-    limit      : ops.limit ?? 50,
+    limit      : (ops.limit ?? 50) as number,
   };
 
   const graph = yield * buildGraphModel(options);

@@ -42,7 +42,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
   const time = pipe(
     new Date(Date.now()),
     DT.unsafeMake,
-    DT.addDuration(`${ops.hours_ahead} hour`),
+    DT.addDuration(`${ops.hours_ahead as number} hour`),
     DT.formatIso,
     (iso) => iso.replace(/\..+Z/, ''),
   );
@@ -68,7 +68,7 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
   });
   const user_time = pipe(
     yield * DateTime.nowInCurrentZone,
-    DateTime.addDuration(`${ops.hours_ahead} hour`),
+    DateTime.addDuration(`${ops.hours_ahead as number} hour`),
     DateTime.toEpochMillis,
   );
   return {

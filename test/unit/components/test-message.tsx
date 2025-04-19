@@ -1,7 +1,16 @@
-import {Header} from '#src/discord/components/header.tsx';
 import {useState} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {E} from '#src/disreact/utils/re-exports';
+
+const Header = (props: {title: string; description: string}) => {
+  return (
+    <embed
+      title={props.title}
+    >
+      {props.description}
+    </embed>
+  );
+};
 
 export const TestMessage: FC = () => E.gen(function* () {
   const [num, setNum] = useState(0);
