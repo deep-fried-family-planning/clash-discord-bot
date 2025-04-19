@@ -1,12 +1,9 @@
-import {E} from '#src/disreact/utils/re-exports.ts';
+import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
-import {Fiber} from 'effect';
+import {Fiber, TestClock} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
 import {makeTestRuntime, Snap} from 'test/unit/util.ts';
 import {SNAP} from 'test/unit/snapkey.ts';
-
-
 
 const runtime = makeTestRuntime([TestMessage]);
 
@@ -29,8 +26,10 @@ it.effect('when synthesizing (performance)', E.fn(function* () {
   }
 }));
 
-it.live('when responding', E.fn(function* () {
-  const res1 = yield* runtime.respond({
+const testmessage = await import(Snap.key(SNAP.TEST_MESSAGE));
+
+it.effect('when responding', E.fn(function* () {
+  const fib1 = yield* E.fork(runtime.respond({
     id            : '1236074574509117491',
     token         : 'respond1',
     application_id: 'app',
@@ -42,27 +41,38 @@ it.live('when responding', E.fn(function* () {
       custom_id     : 'actions:2:button:0',
       component_type: 2,
     },
-  });
+  }));
+  yield* TestClock.setTime(17214773545718);
 
-  yield* runtime.respond({
-    message       : res1,
-    id            : '1236074574509117491',
-    token         : 'respond2',
-    application_id: 'app',
-    user_id       : 'user',
-    guild_id      : 'guild',
-    type          : 2,
-    data          : {
-      custom_id     : 'actions:2:button:0',
-      component_type: 2,
-    },
-  });
+  const res1 = yield* Fiber.join(fib1);
 
-  yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '1');
-  yield* Snap.JSON(runtime.deferEdit.mock.calls[1][1], SNAP.TEST_MESSAGE, '2');
+  yield* TestClock.setTime(17214773545718);
+
+  const fib2 = yield* pipe(
+    runtime.respond({
+      message       : res1,
+      id            : '1236074574509117491',
+      token         : 'respond2',
+      application_id: 'app',
+      user_id       : 'user',
+      guild_id      : 'guild',
+      type          : 2,
+      data          : {
+        custom_id     : 'actions:2:button:0',
+        component_type: 2,
+      },
+    }),
+    E.fork,
+    TestClock.adjustWith(2000),
+  );
+  // yield* TestClock.setTime(17214773545718);
+  yield* Fiber.join(fib2);
+
+  yield * Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
+  yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '4');
 }));
 
-it.live('when responding (performance)', E.fn(function* () {
+it.effect('when responding (performance)', E.fn(function* () {
   const times = Array.from({length: 1000});
 
   for (let i = 0; i < times.length; i++) {
@@ -81,5 +91,6 @@ it.live('when responding (performance)', E.fn(function* () {
     });
   }
   const fibers = yield* E.forkAll(times as E.Effect<void>[]);
+  yield* TestClock.setTime(17214773545718);
   yield* Fiber.join(fibers);
 }));

@@ -1,7 +1,7 @@
-import {Model} from '#src/disreact/model/Model.ts';
+import {Hooks} from './model/hooks';
 
-export const useState   = Model.impl.useState;
-export const useReducer = Model.impl.useReducer;
-export const useEffect  = Model.impl.useEffect;
-export const useIx      = Model.impl.useIx;
-export const usePage    = Model.impl.usePage;
+export const useState = Hooks.$useState;
+export const useReducer = Hooks.$useReducer;
+export const useEffect = Hooks.$useEffect;
+export const useIx = Hooks.$useIx;
+export const usePage = Hooks.$usePage;

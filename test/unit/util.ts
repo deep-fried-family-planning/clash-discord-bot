@@ -1,8 +1,8 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
-import type {Elem} from '#src/disreact/model/entity/elem.ts';
-import type {FC} from '#src/disreact/model/entity/fc.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
@@ -43,7 +43,7 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
       // L.effectContext(E.succeed(TestServices.liveServices)),
       L.succeed(DisReactDOM, DisReactDOM.make(dom as any)),
       Registry.Default,
-      HooksDispatcher.Default,
+      Dispatcher.Default,
       Relay.Default,
       Codec.Default,
       DokenMemory.Default,

@@ -47,7 +47,6 @@ const service = E.map(DiscordREST, (api) => {
       },
     );
 
-
   const deferSource = (doken: Doken, isEphemeral?: boolean) =>
     api.createInteractionResponse(
       doken.id,

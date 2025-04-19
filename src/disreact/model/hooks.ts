@@ -1,10 +1,26 @@
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
-import type {FC} from '#src/disreact/model/entity/fc.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
+import type {FC} from '#src/disreact/model/elem/fc.ts';
+import {Fibril} from '#src/disreact/model/elem/fibril.ts';
 import type {E} from '#src/internal/pure/effect.ts';
 
-export * as Hooks from './hooks.ts';
+export * as Hooks from '#src/disreact/model/hooks.ts';
 export type Hooks = never;
+
+const internal = {
+  hydrate: false,
+  node   : undefined as undefined | Fibril,
+};
+
+export const setup = (node?: Fibril, hydrate = false) => {
+  internal.hydrate = hydrate;
+  internal.node = node;
+};
+
+const get = () => {
+  if (!internal.node) {
+    throw new Error('Hooks must be called within a component.');
+  }
+  return internal.node;
+};
 
 interface SetState<A> {
   (next: A): void;
@@ -16,10 +32,10 @@ interface EffectFn {
 }
 
 /**
- * useReducer
+ * useState
  */
 export const $useState = <A>(initial: A): readonly [A, SetState<A>] => {
-  const node = HooksDispatcher.getGlobal();
+  const node = get();
 
   node.stack[node.pc] ??= {s: initial};
 
@@ -64,7 +80,7 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
     }
   }
 
-  const node = HooksDispatcher.getGlobal();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = {d: deps ?? []};
@@ -105,11 +121,13 @@ export const $useEffect = (effect: EffectFn, deps?: any[]): void => {
   }
 };
 
+export const $useRoot = () => {};
+
 /**
  * useIx
  */
 export const $useIx = () => {
-  const node = HooksDispatcher.getGlobal();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
@@ -128,7 +146,7 @@ export const $useIx = () => {
  * usePage
  */
 export const $usePage = (_: FC[]) => {
-  const node = HooksDispatcher.getGlobal();
+  const node = get();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;

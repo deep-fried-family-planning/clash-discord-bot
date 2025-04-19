@@ -1,13 +1,12 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
-import {HooksDispatcher} from '#src/disreact/model/HooksDispatcher.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
+import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fiber, ManagedRuntime, Runtime as Runner, RuntimeFlags} from 'effect';
-import console from 'node:console';
+import {Fiber, ManagedRuntime, Runtime as Run} from 'effect';
 import {Methods} from './methods';
 
 export * as Runtime from '#src/disreact/runtime/runtime.ts';
@@ -22,7 +21,7 @@ export const makeGlobalRuntimeLayer = (
 ) =>
   pipe(
     L.mergeAll(
-      HooksDispatcher.Default,
+      Dispatcher.Default,
       Codec.Default,
       Registry.Default,
       Relay.Default,
@@ -38,27 +37,17 @@ export const makeGlobalRuntimeLayer = (
 
 export type GlobalRuntimeLayer = ReturnType<typeof makeGlobalRuntimeLayer>;
 
-export const makePromise = (layer: GlobalRuntimeLayer) => {
-  const runtime = ManagedRuntime.make(layer);
-};
-
 export const makeRuntime = (layer: GlobalRuntimeLayer) => {
-  const runtime = ManagedRuntime.make(layer);
-
   const synthesize = flow(
     Methods.synthesize,
     E.provide(layer),
-    runtime.runFork,
-    Fiber.join,
   );
 
   const respond = (input: any) =>
     pipe(
       Methods.respond(input),
-      E.scoped,
-      E.provide([layer, Relay.Fresh]),
-      runtime.runFork,
-      Fiber.join,
+      E.provide(layer),
+      E.provide(Relay.Fresh),
     );
 
   return {

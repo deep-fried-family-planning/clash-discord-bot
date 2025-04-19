@@ -1,8 +1,9 @@
 import {Doken, DokenDefect} from '#src/disreact/codec/doken.ts';
-import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
+import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Either, Fiber, SynchronizedRef} from 'effect';
+import console from 'node:console';
 import {Misc} from '../utils/misc';
 
 export const handleSame = (ds: Dokens) =>
@@ -16,7 +17,6 @@ export const handleSame = (ds: Dokens) =>
     ),
     E.flatMap(([active, now]) => {
       const freshLeft = DateTime.distanceDurationEither(now, ds.fresh.ttl).pipe(Either.getOrUndefined);
-
       const activeLeft = active
         ? DateTime.distanceDurationEither(now, active.ttl).pipe(Either.getOrUndefined)
         : undefined;
@@ -32,8 +32,8 @@ export const handleSame = (ds: Dokens) =>
             pipe(
               E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
               Dokens.finalizeWith(ds),
-              E.delay(freshLeft),
               Dokens.fiber(ds),
+              E.delay(freshLeft),
             ),
           ),
         );
@@ -62,19 +62,18 @@ export const handleClose = (ds: Dokens) =>
         return E.void;
       }
       if (final) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(final));
+        return DisReactDOM.dismount(final);
       }
       if (Doken.isActive(current)) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(current));
+        return DisReactDOM.dismount(current);
       }
       if (active) {
-        return E.tap(DisReactDOM, (dom) => dom.dismount(active));
+        return DisReactDOM.dismount(active);
       }
       if (Doken.isFresh(current)) {
         return pipe(
-          DisReactDOM,
-          E.tap((dom) => dom.deferUpdate(current)),
-          E.tap((dom) => dom.dismount(current)),
+          DisReactDOM.deferUpdate(current),
+          E.tap(() => DisReactDOM.dismount(current)),
         );
       }
       return new DokenDefect({msg: 'No tokens available to dismount.'});

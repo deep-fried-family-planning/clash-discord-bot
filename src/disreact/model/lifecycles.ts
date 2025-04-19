@@ -1,16 +1,54 @@
-import {Elem} from '#src/disreact/model/entity/elem.ts';
-import {Fibril} from '#src/disreact/model/entity/fibril.ts';
-import {Props} from '#src/disreact/model/entity/props.ts';
-import {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
-import type {Trigger} from '#src/disreact/model/entity/trigger.ts';
+import {Codec} from '#src/disreact/codec/Codec.ts';
+import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
+import {Elem} from '#src/disreact/model/elem/elem.ts';
+import {Fibril} from '#src/disreact/model/elem/fibril.ts';
+import {Props} from '#src/disreact/model/elem/props.ts';
+import {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import {Side} from '#src/disreact/model/elem/side.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
+import {Registry} from '#src/disreact/model/Registry.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
-import {Lifecycle} from './lifecycle';
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
 export type Lifecycles = never;
 
+const relayClose = () => Relay.use((relay) =>
+  pipe(
+    relay.setOutput(null),
+    E.tap(() => relay.sendStatus(
+      Progress.Close(),
+    )),
+  ),
+);
+
+const relaySame = (root: Rehydrant) =>
+  Relay.use((relay) =>
+    pipe(
+      relay.setOutput(root),
+      E.tap(() => relay.sendStatus(
+        Progress.Same(),
+      )),
+    ),
+  );
+
+const relayNext = (root: Rehydrant) => Relay.use((relay) =>
+  pipe(
+    Registry.use((registry) => registry.checkout(root.next.id!, root.next.props)),
+    E.tap((next) => relay.setOutput(next)),
+    E.tap(() => relay.sendStatus(
+      Progress.Next({
+        id   : root.next.id,
+        props: root.next.props,
+      }),
+    )),
+  ),
+);
+
+/**
+ * @desc relay
+ */
 const relayPartial = (elem: Elem.Rest) => {
   if (elem.type === 'modal') {
     return pipe(
@@ -40,20 +78,34 @@ const relayPartial = (elem: Elem.Rest) => {
   return E.succeed(false);
 };
 
-export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => {
+export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
   const stack = ML.make<Elem>(root.elem);
 
   while (ML.tail(stack)) {
     const elem = ML.pop(stack)!;
 
-    if (Elem.isRest(elem)) {
-      if (elem.props.custom_id === event.id || elem.ids === event.id) {
-        return Lifecycle.invoke(root, elem, event);
-      }
+    if (Elem.isValue(elem)) {
+      continue;
+    }
+
+    if (Trigger.isTarget(event, elem)) {
+      return pipe(
+        Trigger.apply(elem.handler!, event),
+        E.tap(() => {
+          if (root.next.id === null) {
+            return relayClose();
+          }
+          if (root.next.id !== root.id) {
+            return relayNext(root);
+          }
+          return relaySame(root);
+        }),
+      );
     }
 
     for (let i = 0; i < elem.nodes.length; i++) {
       const node = elem.nodes[i];
+
       if (!Elem.isValue(node)) {
         ML.append(stack, elem.nodes[i]);
       }
@@ -63,118 +115,210 @@ export const handleEvent = (root: Rehydrant, event: Trigger) => E.suspend(() => 
   return E.fail(new Error('Event not handled'));
 });
 
+/**
+ * @desc render
+ */
+const effect = (root: Rehydrant, fibril: Fibril) => {
+  if (fibril.queue.length) {
+    const effects = Array<ReturnType<typeof Side.effect>>(fibril.queue.length);
 
-export const initialize = (root: Rehydrant) => initializeSubtree(root, root.elem);
-
-const loopNodes = (stack: ML.MutableList<Elem>, root: Rehydrant, elem: Elem) => {
-  for (let i = 0; i < elem.nodes.length; i++) {
-    const node = elem.nodes[i];
-
-    if (!Elem.isValue(node)) {
-      Elem.connectChild(elem, node, i);
-      Rehydrant.mount(root, node);
-      ML.append(stack, node);
+    for (let i = 0; i < effects.length; i++) {
+      effects[i] = Side.effect(fibril.queue[i]);
     }
+
+    return pipe(
+      E.all(effects),
+      E.tap(() => {
+        if (root.next.id === null) return relayClose();
+        if (root.next.id !== root.id) return relayNext(root);
+      }),
+    );
   }
-  return stack;
 };
 
-export const initializeSubtree = (root: Rehydrant, elem: Elem) => {
-  let hasSentPartial = false;
+/**
+ * @desc mount
+ */
+const renderMount = (root: Rehydrant, elem: Elem.Task) =>
+  pipe(
+    Dispatcher.mount(root, elem),
+    E.tap((children) => {
+      elem.nodes = children;
 
-  const stack = ML.make<Elem>(elem);
+      for (let i = 0; i < elem.nodes.length; i++) {
+        const node = elem.nodes[i];
 
-  return E.iterate(undefined as any, {
-    while: () => !!ML.tail(stack),
-    body : () => {
-      const elem = ML.pop(stack)!;
-
-      if (Elem.isTask(elem)) {
-        return pipe(
-          Lifecycle.render(root, elem),
-          E.map((children) => {
-            elem.nodes = children;
-            loopNodes(stack, root, elem);
-          }),
-        );
+        if (!Elem.isValue(node)) {
+          MutableList.append(root.mount, node);
+        }
       }
-      else if (!hasSentPartial) {
+
+      return effect(root, elem.fibril);
+    }),
+    E.asVoid,
+  );
+
+/**
+ * @desc mount
+ */
+const mount = (root: Rehydrant, elem: Elem.Node) => {
+  MutableList.append(root.mount, elem);
+
+  let sent = false;
+
+  return E.whileLoop({
+    while: () => !!MutableList.tail(root.mount),
+    step : () => {},
+    body : (): E.Effect<void, Error, Relay | Registry | Dispatcher> => {
+      const next = MutableList.pop(root.mount)!;
+
+      if (Elem.isTask(next)) {
+        Rehydrant.mountTask(root, next);
+        return renderMount(root, next);
+      }
+
+      for (let i = 0; i < next.nodes.length; i++) {
+        const child = next.nodes[i];
+
+        if (!Elem.isValue(child)) {
+          Elem.connectChild(next, child, i);
+          MutableList.append(root.mount, child);
+        }
+      }
+
+      if (!sent && Elem.isRest(next)) {
         return pipe(
-          Lifecycle.part(elem),
+          relayPartial(next),
           E.map((did) => {
-            hasSentPartial = did;
-            loopNodes(stack, root, elem);
+            sent = did;
           }),
         );
       }
-
-      loopNodes(stack, root, elem);
 
       return E.void;
     },
   });
 };
 
-export const hydrate = (root: Rehydrant) =>
-  E.iterate(ML.make<Elem>(root.elem), {
-    while: (stack) => !!ML.tail(stack),
-    body : (stack) => {
-      const elem = ML.pop(stack)!;
+/**
+ * @desc mount
+ */
+export const initialize = (root: Rehydrant) => mount(root, root.elem);
 
-      if (Elem.isTask(elem)) {
-        if (root.fibrils[elem.id!]) {
-          elem.fibril = root.fibrils[elem.id!];
-          elem.fibril.rehydrant = root;
+/**
+ * @desc rehydrate
+ */
+const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
+  pipe(
+    Dispatcher.hydrate(root, elem),
+    E.map((children) => {
+      Fibril.commit(elem.fibril);
+      elem.nodes = children.filter(Boolean);
+
+      for (let i = 0; i < elem.nodes.length; i++) {
+        const node = elem.nodes[i];
+
+        if (!Elem.isValue(node)) {
+          Elem.connectChild(elem, node, i);
+          MutableList.append(root.mount, node);
         }
-
-        return pipe(
-          Lifecycle.render(root, elem),
-          E.map((children) => {
-            elem.nodes = children;
-            return loopNodes(stack, root, elem);
-          }),
-        );
       }
 
-      return E.succeed(loopNodes(stack, root, elem));
+      return elem.nodes;
+    }),
+  );
+
+/**
+ * @desc rehydrate
+ */
+export const rehydrate = (root: Rehydrant) => {
+  MutableList.append(root.mount, root.elem);
+
+  return E.iterate(undefined as any, {
+    while: () => !!MutableList.tail(root.mount),
+    body : () => {
+      const next = MutableList.pop(root.mount)!;
+
+      if (Elem.isTask(next)) {
+        if (root.fibrils[next.id!]) {
+          next.fibril = root.fibrils[next.id!];
+          next.fibril.rehydrant = root;
+          next.fibril.rc = 1;
+        }
+        return rehydrateRender(root, next);
+      }
+
+      for (let i = 0; i < next.nodes.length; i++) {
+        const child = next.nodes[i];
+
+        if (!Elem.isValue(child)) {
+          Elem.connectChild(next, child, i);
+          MutableList.append(root.mount, child);
+        }
+      }
+
+      return E.void;
     },
   });
+};
 
-export const renderAgain = (root: Rehydrant) => {
-  const stack = MutableList.empty<[Elem.Any, Elem | null]>();
-  // eslint-disable-next-line prefer-const
-  let hasSentPartial = false;
+/**
+ * @desc dismount
+ */
+export const dismount = (root: Rehydrant, elem: Elem.Node) => {
+  MutableList.append(root.dismount, elem);
 
-  const parents = new WeakMap<Elem, Elem>();
-  parents.set(root.elem, root.elem);
-  MutableList.append(stack, [root.elem, null]);
+  while (MutableList.tail(root.dismount)) {
+    const next = MutableList.pop(root.dismount)!;
 
-  const condition = () => MutableList.tail(stack);
-
-  const body = () => {
-    const [curr, next] = MutableList.pop(stack)!;
-
-    if (next === null) {
-      if (Elem.isTask(curr)) {
-        return Lifecycle.render(root, curr).pipe(E.map((children) => {
-          curr.nodes = children;
-          ;
-        }));
-      }
+    if (Elem.isTask(next)) {
+      // @ts-expect-error temporary
+      delete next.fibril.elem;
+      // @ts-expect-error temporary
+      delete next.fibril.rehydrant;
+      // @ts-expect-error temporary
+      delete next.fibril;
+      delete root.fibrils[next.id!];
     }
-  };
 
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
+    for (const child of next.nodes) {
+      if (Elem.isValue(child)) continue;
+      MutableList.append(root.dismount, child);
+    }
   }
 };
 
+/**
+ * @desc render
+ */
+const renderTask = (root: Rehydrant, elem: Elem.Task) =>
+  pipe(
+    Dispatcher.render(root, elem),
+    E.map((children) => {
+      Fibril.commit(elem.fibril);
+      const nodes = children.filter(Boolean);
 
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        if (!Elem.isValue(node)) {
+          Elem.connectChild(elem, node, i);
+        }
+      }
+
+      return nodes;
+    }),
+    E.tap(() => effect(root, elem.fibril)),
+  );
+
+/**
+ * @desc rerender
+ */
 export const rerender = (root: Rehydrant) => E.gen(function* () {
-  const stack = ML.empty<[Elem, Elem.Any[]]>();
-  let hasSentPartial = false;
+  const stack = ML.empty<[Elem.Node, Elem[]]>();
+  const hasSentPartial = false;
 
-  if (Elem.isRest(root.elem)) {
+  if (Elem.isRest(root.elem) || Elem.isFragment(root.elem)) {
     for (let i = 0; i < root.elem.nodes.length; i++) {
       const node = root.elem.nodes[i];
 
@@ -182,7 +326,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
         continue;
       }
       else if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* Lifecycle.render(root, node)]);
+        ML.append(stack, [node, yield* renderTask(root, node)]);
       }
       else {
         ML.append(stack, [node, node.nodes]);
@@ -190,7 +334,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
     }
   }
   else {
-    ML.append(stack, [root.elem, yield* Lifecycle.render(root, root.elem)]);
+    ML.append(stack, [root.elem, yield* renderTask(root, root.elem as Elem.Task)]);
   }
 
   while (ML.tail(stack)) {
@@ -206,7 +350,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           parent.nodes[i] = rend;
         }
         else {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
@@ -215,7 +359,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           delete parent.nodes[i];
         }
         else {
-          dismountSubtree(root, curr);
+          dismount(root, curr);
           delete parent.nodes[i];
         }
       }
@@ -227,28 +371,28 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           }
         }
         else if (Elem.isRest(rend)) {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
         else {
-          yield* mountSubtree(root, rend);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
 
       else if (Elem.isRest(curr)) {
         if (!hasSentPartial) {
-          hasSentPartial = yield* relayPartial(curr);
+          // hasSentPartial = yield* relayPartial(curr);
         }
 
         if (Elem.isValue(rend)) {
-          dismountSubtree(root, curr);
+          dismount(root, curr);
           parent.nodes[i] = rend;
         }
         else if (Elem.isRest(rend)) {
           if (curr.type !== rend.type) {
-            dismountSubtree(root, curr);
-            yield* mountSubtree(root, rend);
+            dismount(root, curr);
+            yield* mount(root, rend);
             parent.nodes[i] = rend;
           }
           if (!Props.isEqual(curr.props, rend.props)) {
@@ -257,20 +401,56 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           ML.append(stack, [curr, rend.nodes]);
         }
         else {
-          dismountSubtree(root, curr);
-          yield* mountSubtree(root, rend);
+          dismount(root, curr);
+          yield* mount(root, rend);
+          parent.nodes[i] = rend;
+        }
+      }
+
+      else if (Elem.isFragment(curr)) {
+        if (!hasSentPartial) {
+          // hasSentPartial = yield* relayPartial(curr);
+        }
+
+        if (Elem.isValue(rend)) {
+          dismount(root, curr);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isRest(rend)) {
+          dismount(root, curr);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isFragment(rend)) {
+          if (curr.type !== rend.type) {
+            dismount(root, curr);
+            yield* mount(root, rend);
+            parent.nodes[i] = rend;
+          }
+          if (!Props.isEqual(curr.props, rend.props)) {
+            curr.props = rend.props;
+          }
+          ML.append(stack, [curr, rend.nodes]);
+        }
+        else {
+          dismount(root, curr);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
       }
 
       else {
         if (Elem.isValue(rend)) { // Task => Primitive
-          dismountSubtree(root, curr);
+          dismount(root, curr);
           parent.nodes[i] = rend;
         }
         else if (Elem.isRest(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
-          dismountSubtree(root, curr);
-          yield* mountSubtree(root, rend);
+          dismount(root, curr);
+          yield* mount(root, rend);
+          parent.nodes[i] = rend;
+        }
+        else if (Elem.isFragment(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
+          dismount(root, curr);
+          yield* mount(root, rend);
           parent.nodes[i] = rend;
         }
         else if (
@@ -283,7 +463,7 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
           // ML.append(stack, [curr, rend.nodes]);
         }
         else {
-          const rerendered = yield* Lifecycle.render(root, curr);
+          const rerendered = yield* renderTask(root, curr);
           ML.append(stack, [curr, rerendered]);
         }
       }
@@ -292,45 +472,3 @@ export const rerender = (root: Rehydrant) => E.gen(function* () {
 
   return root;
 });
-
-
-export const mountSubtree = (root: Rehydrant, elem: Elem) => E.gen(function* () {
-  const stack = ML.make<Elem>(elem);
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-
-    if (Elem.isTask(elem)) {
-      Rehydrant.mountTask(root, elem);
-      elem.nodes = yield* Lifecycle.render(root, elem);
-    }
-
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i];
-
-      if (!Elem.isValue(node)) {
-        ML.append(stack, node);
-      }
-    }
-  }
-});
-
-export const dismountSubtree = (root: Rehydrant, elem: Elem) => {
-  const stack = ML.make<Elem>(elem);
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-
-    if (Elem.isTask(elem)) {
-      Rehydrant.dismountTask(root, elem);
-    }
-
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i];
-
-      if (!Elem.isValue(node)) {
-        ML.append(stack, node);
-      }
-    }
-  }
-};
