@@ -2,7 +2,6 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Registry} from '#src/disreact/model/Registry.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DokenManager} from '#src/disreact/utils/DokenManager.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
@@ -37,10 +36,6 @@ export const makeGlobalRuntimeLayer = (
   );
 
 export type GlobalRuntimeLayer = ReturnType<typeof makeGlobalRuntimeLayer>;
-
-export const makePromise = (layer: GlobalRuntimeLayer) => {
-  const runtime = ManagedRuntime.make(layer);
-};
 
 export const makeRuntime = (layer: GlobalRuntimeLayer) => {
   const synthesize = flow(

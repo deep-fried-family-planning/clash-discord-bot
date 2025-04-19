@@ -1,11 +1,11 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/elem/fibril.ts';
-import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import {MutableList, Record} from 'effect';
 import {deflate, inflate} from 'pako';
+import { Pragma } from '../pragma';
 
 export * as Rehydrant from '#src/disreact/model/elem/rehydrant.ts';
 export type Rehydrant = {
@@ -22,7 +22,7 @@ export type Rehydrant = {
 };
 
 export const make = (src: Source, props?: any): Rehydrant => {
-  const elem = Lifecycles.clone(src.elem);
+  const elem = Pragma.clone(src.elem);
   elem.props = props;
   elem.id = src.id;
 
@@ -122,6 +122,6 @@ export const makeSource = (src: Elem | FC): Source => {
 
   return {
     id  : FC.getName(src.type),
-    elem: Lifecycles.clone(src),
+    elem: Pragma.clone(src),
   };
 };

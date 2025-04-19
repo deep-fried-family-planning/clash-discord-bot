@@ -1,6 +1,6 @@
-import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
+import {Pragma} from './model/pragma';
 
-export const Fragment = Lifecycles.Fragment;
-export const jsx = Lifecycles.jsx;
-export const jsxs = Lifecycles.jsxs;
-export const jsxDEV = Lifecycles.jsxDEV;
+export const Fragment = Pragma.Fragment;
+export const jsx = Pragma.jsx;
+export const jsxs = Pragma.jsxs;
+export const jsxDEV = Pragma.jsxDEV;

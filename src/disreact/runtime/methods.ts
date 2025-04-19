@@ -8,7 +8,7 @@ import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Fiber} from 'effect';
-import {Model} from 'src/disreact/model/Model.ts';
+import {Model} from '#src/disreact/model/model.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
@@ -76,7 +76,6 @@ export const respond = (body: any) => E.gen(function* () {
   const dom = yield* DisReactDOM;
 
   if (isDeferPhase) {
-    // const doken = yield* DokenManager.final;
     const doken = yield* Dokens.final(ds);
 
     if (Doken.isNever(doken)) {

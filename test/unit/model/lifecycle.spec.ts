@@ -10,7 +10,8 @@ import {MessageSync} from '#test/unit/components/message-sync.tsx';
 import {Record} from 'effect';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {it} from '#test/unit/components/TestRegistry.tsx';
-import { FC } from '#src/disreact/model/elem/fc.ts';
+import {FC} from '#src/disreact/model/elem/fc.ts';
+import {Pragma} from '#src/disreact/model/pragma';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant) => json(root);
@@ -20,28 +21,28 @@ const hash = flow(Rehydrant.dehydrate, S.encodeSync(Rehydrant.Hydrator));
 it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Registry.checkout(MessageSync);
   yield* Lifecycles.initialize(root);
-  const encoding = yield* Lifecycles.encode(root);
+  const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageSync));
 }));
 
 it.effect('when rendering async', E.fn(function* () {
   const root = yield* Registry.checkout(MessageAsync);
   yield* Lifecycles.initialize(root);
-  const encoding = yield* Lifecycles.encode(root);
+  const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageAsync));
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
   const root = yield* Registry.checkout(MessageEffect);
   yield* Lifecycles.initialize(root);
-  const encoding = yield* Lifecycles.encode(root);
+  const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.getName(MessageEffect));
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
   const root = yield* Registry.checkout(TestMessage);
   yield* Lifecycles.initialize(root);
-  const encoding = yield* Lifecycles.encode(root);
+  const encoding = yield* Pragma.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
@@ -53,7 +54,7 @@ it.effect('when dispatching an event', E.fn(function* () {
 
   expect(toStacks(root)).toMatchSnapshot('initial stacks');
   expect(hash(root)).toMatchSnapshot('initial hash');
-  const initial = yield* Lifecycles.encode(root);
+  const initial = yield* Pragma.encode(root);
   expect(snap(initial?.data)).toMatchSnapshot('initial encoded');
 
   const event = Trigger.make('actions:2:button:0', {});
@@ -62,7 +63,7 @@ it.effect('when dispatching an event', E.fn(function* () {
 
   expect(toStacks(root)).toMatchSnapshot('rerendered stacks');
   expect(hash(root)).toMatchSnapshot('rerendered hash');
-  const rerendered = yield* Lifecycles.encode(root);
+  const rerendered = yield* Pragma.encode(root);
   expect(snap(rerendered?.data)).toMatchSnapshot('rerendered encoded');
 }));
 
@@ -92,6 +93,6 @@ it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
     yield* Lifecycles.invoke(root, event);
     yield* Lifecycles.rerender(root);
 
-    yield* Lifecycles.encode(root);
+    yield* Pragma.encode(root);
   }
 }), {timeout: 10000});
