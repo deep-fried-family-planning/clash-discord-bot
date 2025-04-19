@@ -1,8 +1,8 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
-import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fibril} from 'src/disreact/model/elem/fibril.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Hooks} from './hooks';
 
 const mount = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>

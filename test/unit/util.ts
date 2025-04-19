@@ -3,7 +3,7 @@ import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
@@ -42,7 +42,7 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
     L.mergeAll(
       // L.effectContext(E.succeed(TestServices.liveServices)),
       L.succeed(DisReactDOM, DisReactDOM.make(dom as any)),
-      Registry.Default,
+      Sources.Default,
       Dispatcher.Default,
       Relay.Default,
       Codec.Default,

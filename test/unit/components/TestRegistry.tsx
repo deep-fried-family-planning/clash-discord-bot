@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
@@ -32,7 +32,7 @@ export const TestRegistry = pipe(
   L.mergeAll(
     L.effectContext(E.succeed(TestServices.liveServices)),
     pipe(
-      Registry.Default,
+      Sources.Default,
       L.provide(config),
     ),
     Codec.Default.pipe(L.provide(config)),

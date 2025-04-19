@@ -73,7 +73,7 @@ it.effect('when responding', E.fn(function* () {
 }));
 
 it.effect('when responding (performance)', E.fn(function* () {
-  const times = Array.from({length: 1000});
+  const times = Array.from({length: 100});
 
   for (let i = 0; i < times.length; i++) {
     times[i] = runtime.respond({

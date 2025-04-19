@@ -1,11 +1,11 @@
+import type {Declare} from '#src/disreact/model/declare.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {FC} from '#src/disreact/model/elem/fc.ts';
-import {Fibril} from '#src/disreact/model/elem/fibril.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import type {Source} from '#src/disreact/model/meta/source.ts';
 import {MutableList, Record} from 'effect';
-import type {Declare} from 'src/disreact/model/declare.ts';
-import {Pragma} from '../pragma';
+import {Pragma} from 'src/disreact/model/pragma.ts';
 
-export * as Rehydrant from '#src/disreact/model/elem/rehydrant.ts';
+export * as Rehydrant from '#src/disreact/model/meta/rehydrant.ts';
 export type Rehydrant = {
   id      : string;
   props?  : any;
@@ -22,7 +22,7 @@ export type Decoded = typeof Declare.Hydrator.Type;
 export type Encoded = typeof Declare.Hydrator.Encoded;
 
 export const make = (src: Source, props?: any): Rehydrant => {
-  const elem = Pragma.clone(src.elem);
+  const elem = Pragma.clone(src.elem) as Elem.Node;
   elem.props = props;
   elem.id = src.id;
 
@@ -73,32 +73,4 @@ export const mountTask = (root: Rehydrant, elem: Elem.Task) => {
   elem.fibril.rehydrant = root;
   elem.fibril.elem = elem;
   root.fibrils[elem.id!] = elem.fibril;
-};
-
-export type Source = {
-  id  : string;
-  elem: Elem.Node;
-};
-
-export const makeSource = (src: Elem | FC): Source => {
-  if (FC.isFC(src)) {
-    const fc = FC.make(src);
-
-    if (FC.isAnonymous(fc)) throw new Error();
-
-    return {
-      id  : FC.getName(fc),
-      elem: Elem.makeTask(fc, {}),
-    };
-  }
-
-  if (Elem.isValue(src)) throw new Error();
-  if (Elem.isFragment(src)) throw new Error();
-  if (Elem.isRest(src)) throw new Error();
-  if (FC.isAnonymous(src.type)) throw new Error();
-
-  return {
-    id  : FC.getName(src.type),
-    elem: Pragma.clone(src),
-  };
 };

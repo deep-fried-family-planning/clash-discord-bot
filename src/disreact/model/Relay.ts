@@ -1,4 +1,4 @@
-import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {E, L} from '#src/disreact/utils/re-exports.ts';
 import {Data, Deferred, Mailbox} from 'effect';
 

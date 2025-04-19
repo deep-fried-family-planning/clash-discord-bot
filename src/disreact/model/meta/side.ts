@@ -1,7 +1,7 @@
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Predicate} from 'effect';
 
-export * as Side from '#src/disreact/model/elem/side.ts';
+export * as Side from '#src/disreact/model/meta/side.ts';
 export type Side = () => void | Promise<void> | E.Effect<void>;
 
 export const effect = (ef: Side) =>

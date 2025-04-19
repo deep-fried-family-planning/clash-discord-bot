@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Registry} from '#src/disreact/model/Registry.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactConfig} from '#src/disreact/utils/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/utils/DisReactDOM.ts';
@@ -23,7 +23,7 @@ export const makeGlobalRuntimeLayer = (
     L.mergeAll(
       Dispatcher.Default,
       Codec.Default,
-      Registry.Default,
+      Sources.Default,
       Relay.Default,
       config?.dom ?? DisReactDOM.Default,
       config?.memory ?? DokenMemory.Default,

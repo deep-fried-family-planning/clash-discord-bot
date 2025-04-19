@@ -1,5 +1,5 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {Rehydrant} from '#src/disreact/model/elem/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
@@ -33,7 +33,7 @@ export const isMessage = (self: Monomer): self is Message => !!self && 'e' in se
 export const Chain = S.mutable(S.Array(Any));
 export type Chain = typeof Chain.Type;
 
-export * as Fibril from '#src/disreact/model/elem/fibril.ts';
+export * as Fibril from '#src/disreact/model/meta/fibril.ts';
 export type Fibril = {
   pc       : number;
   stack    : Chain;
