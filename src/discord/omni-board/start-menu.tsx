@@ -1,3 +1,4 @@
+import {CloseButton} from '#src/discord/components/close-button.tsx';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 
 export const StartMenu: FC = () => {
@@ -8,6 +9,9 @@ export const StartMenu: FC = () => {
       >
         {'Hello World!'}
       </embed>
+      <actions>
+        <CloseButton/>
+      </actions>
     </ephemeral>
   );
 };

@@ -74,6 +74,20 @@ const relayPartial = (elem: Elem.Rest) => {
     );
   }
 
+  if (elem.type === 'ephemeral') {
+    return pipe(
+      Relay.use((relay) =>
+        relay.sendStatus(
+          Progress.Part({
+            type       : 'ephemeral',
+            isEphemeral: true,
+          }),
+        ),
+      ),
+      E.as(true),
+    );
+  }
+
   return E.succeed(false);
 };
 

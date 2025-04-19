@@ -103,9 +103,8 @@ const service = E.map(DiscordREST, (api) => {
 });
 
 export class DisReactDOM extends E.Service<DisReactDOM>()('disreact/DisReactDOM', {
-  accessors   : true,
-  effect      : service,
-  dependencies: [layer],
+  accessors: true,
+  effect   : service,
 }) {
 
 }

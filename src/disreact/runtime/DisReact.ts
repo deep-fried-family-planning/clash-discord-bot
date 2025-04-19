@@ -3,13 +3,13 @@ import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Source} from '#src/disreact/model/meta/source.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import type {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {Methods} from './methods';
 
-const make = (options: DisReactConfig.Input) => {
+const make = () => {
   const layers = pipe(
     L.mergeAll(
       Sources.Default,
@@ -19,7 +19,6 @@ const make = (options: DisReactConfig.Input) => {
       DisReactDOM.Default,
       DokenMemory.Default,
     ),
-    L.provideMerge(DisReactConfig.configLayer(options)),
   );
 
   return {
@@ -44,16 +43,7 @@ const make = (options: DisReactConfig.Input) => {
   };
 };
 
-export class DisReact extends E.Service<ReturnType<typeof make>>()('disreact/DisReact', {
-  succeed: make({
-    token  : '',
-    sources: [],
-  }),
+export class DisReact extends E.Service<DisReact>()('disreact/DisReact', {
+  succeed  : make(),
   accessors: true,
-}) {
-  static readonly configLayer = (options: DisReactConfig.Input) =>
-    pipe(
-      make(options),
-      L.succeed(this),
-    );
-}
+}) {}

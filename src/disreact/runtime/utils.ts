@@ -103,9 +103,6 @@ export const handleSource = (ds: Dokens) =>
         ),
       ),
     ),
-    E.whenEffect(
-      Misc.pollDeferred(ds.deferred).pipe(E.map((deferred) => !deferred)),
-    ),
   );
 
 export const handleUpdate = (ds: Dokens) =>
@@ -131,8 +128,5 @@ export const handleUpdate = (ds: Dokens) =>
           ),
         ),
       ),
-    ),
-    E.whenEffect(
-      Misc.pollDeferred(ds.deferred).pipe(E.map((deferred) => !deferred)),
     ),
   );

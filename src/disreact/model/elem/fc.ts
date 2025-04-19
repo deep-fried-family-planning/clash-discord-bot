@@ -6,7 +6,7 @@ export const TypeId = Symbol('disreact/fc'),
              NameId = Symbol('disreact/fc/name');
 
 export * as FC from '#src/disreact/model/elem/fc.ts';
-export type FC = Input;
+export type FC<P = any> = Input<P>;
 
 export const isFC = (fc: any): fc is FC => typeof fc === 'function';
 
@@ -16,8 +16,8 @@ export const SYNC           = 1,
              ANONYMOUS      = 'Anonymous',
              ASYNC_FUNCTION = 'AsyncFunction';
 
-interface Input {
-  (p?: any): Elem.Children | Promise<Elem.Children> | E.Effect<Elem.Children, any, any>;
+interface Input<P = any> {
+  (p: P): Elem.Children | Promise<Elem.Children> | E.Effect<Elem.Children, any, any>;
   _tag?       : Sync | Async | Effect;
   displayName?: string;
   sourceName? : string;

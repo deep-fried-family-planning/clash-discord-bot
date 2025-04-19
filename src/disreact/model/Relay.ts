@@ -10,7 +10,7 @@ export declare namespace Relay {
     Close: {};
     Same : {};
     Next : {id: string | null; props?: any};
-    Part : {type: 'modal' | 'message'; isEphemeral?: boolean};
+    Part : {type: 'modal' | 'message' | 'ephemeral'; isEphemeral?: boolean};
     Done : {};
   }>;
 }

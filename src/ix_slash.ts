@@ -1,6 +1,7 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {commandRouter} from '#src/discord/command-router.ts';
+import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import type {IxD, IxRE} from '#src/internal/discord.ts';
@@ -51,7 +52,9 @@ const h = (event: IxD) => pipe(
 );
 
 export const handler = makeLambda(h, pipe(
-  DiscordLayerLive,
+  L.empty,
+  L.provideMerge(ComponentRouter),
+  L.provideMerge(DiscordLayerLive),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),

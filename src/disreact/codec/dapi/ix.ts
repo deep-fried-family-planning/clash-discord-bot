@@ -158,13 +158,12 @@ export const BaseBody = S.Struct({
   id            : S.String,
   token         : S.Redacted(S.String),
   application_id: S.String,
-  user_id       : S.String,
   guild_id      : S.String,
 });
 
 export const ComponentRequestBody = S.Struct({
   ...BaseBody.fields,
-  type   : S.Literal(2),
+  type   : S.Literal(3),
   data   : ComponentData,
   message: DAPIMessage.Base,
 });
