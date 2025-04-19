@@ -2,7 +2,7 @@ import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/elem/fibril.ts';
 import {MutableList, Record} from 'effect';
-import type {Declare} from '../exp/declare';
+import type {Declare} from 'src/disreact/model/declare.ts';
 import {Pragma} from '../pragma';
 
 export * as Rehydrant from '#src/disreact/model/elem/rehydrant.ts';

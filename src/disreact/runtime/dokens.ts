@@ -1,4 +1,4 @@
-import {Doken} from '#src/disreact/codec/doken.ts';
+import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import type {DokenError} from '#src/disreact/utils/DokenMemory.ts';
 import {DokenMemory} from '#src/disreact/utils/DokenMemory.ts';
 import {E, flow, pipe} from '#src/disreact/utils/re-exports.ts';

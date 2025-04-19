@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {Doken} from '#src/disreact/codec/doken.ts';
+import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';

@@ -16,9 +16,16 @@ export const create = (key: Registry.Key, props: any = {}) =>
     E.flatMap((root) => Pragma.encode(root)),
   );
 
-export const invoke = (rehydrant: Rehydrant.Decoded, event: Trigger) =>
+export const rehydrate = (hydrator: Rehydrant.Decoded) =>
   pipe(
-    Registry.rehydrate(rehydrant),
+    Registry.rehydrate(hydrator),
+    E.tap((root) => Lifecycles.rehydrate(root)),
+    E.flatMap((root) => Pragma.encode(root)),
+  );
+
+export const invoke = (hydrator: Rehydrant.Decoded, event: Trigger) =>
+  pipe(
+    Registry.rehydrate(hydrator),
     E.flatMap((original) =>
       pipe(
         Lifecycles.rehydrate(original),
@@ -32,7 +39,7 @@ export const invoke = (rehydrant: Rehydrant.Decoded, event: Trigger) =>
         E.zipRight(
           Relay.use((relay) =>
             pipe(
-              relay.awaitOutput(),
+              relay.awaitOutput,
               E.flatMap((output) => {
                 if (output === null) {
                   return E.succeed(output);

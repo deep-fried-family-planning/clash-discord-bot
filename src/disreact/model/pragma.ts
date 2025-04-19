@@ -3,7 +3,7 @@ import {ML} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
 import { Elem } from './elem/elem';
 import { Rehydrant } from './elem/rehydrant';
-import type { Declare } from './exp/declare';
+import type { Declare } from 'src/disreact/model/declare.ts';
 
 export * as Pragma from '#src/disreact/model/pragma.ts';
 export type Pragma = never;

@@ -7,8 +7,8 @@ export class DokenState extends E.Service<DokenState>()('disreact/DokenState', {
 
     ]),
     E.map(() => {
+      // eslint-disable-next-line prefer-const
       let fiber = Fiber.void as Fiber.RuntimeFiber<any> | Fiber.Fiber<any>;
-      fiber = fiber.parent;
 
       return {
 
