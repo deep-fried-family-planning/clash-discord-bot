@@ -22,7 +22,7 @@ import {DiscordREST} from 'dfx';
 
 
 
-export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function * () {
+export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function* () {
   const discord = yield * DiscordREST;
 
   const wars = yield * pipe(

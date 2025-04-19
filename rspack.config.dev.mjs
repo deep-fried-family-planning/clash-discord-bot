@@ -1,6 +1,6 @@
-import {defineConfig} from '@rspack/cli'
-import {rspack} from '@rspack/core'
-import config from './rspack.config.mjs'
+import {defineConfig} from '@rspack/cli';
+import {rspack} from '@rspack/core';
+import config from './rspack.config.mjs';
 
 
 
@@ -43,4 +43,4 @@ export default defineConfig({
     providedExports       : true,
     sideEffects           : true,
   },
-})
+});

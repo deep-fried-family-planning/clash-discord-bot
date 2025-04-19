@@ -57,7 +57,7 @@ export const ONE_OF_US
 /**
  * @desc [SLASH /oneofus]
  */
-export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E.gen(function * () {
+export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E.gen(function* () {
   const [server, user] = s
     ? [s.server!, s.original.member!]
     : yield * validateServer(data);

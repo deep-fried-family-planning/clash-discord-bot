@@ -74,7 +74,7 @@ const specToREST = (spec: CommandSpec) => ({
 } as unknown as CreateGlobalApplicationCommandParams);
 
 
-const h = () => E.gen(function * () {
+const h = () => E.gen(function* () {
   yield * invokeCount(showMetric(invokeCount));
 
 

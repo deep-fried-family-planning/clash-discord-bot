@@ -30,7 +30,7 @@ import {toEntries} from 'effect/Record';
 
 
 
-const getRosters = (s: St) => E.gen(function * () {
+const getRosters = (s: St) => E.gen(function* () {
   const rosters = yield * rosterQueryByServer({pk: s.server_id});
 
   return rosters;
@@ -70,7 +70,7 @@ const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOp
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
   let Roster     = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 

@@ -19,7 +19,7 @@ const raidWeekendDone = Cron.make({
 });
 
 
-export const serverRaid = (server: DServer) => g(function * () {
+export const serverRaid = (server: DServer) => g(function* () {
   const discord = yield * DiscordREST;
 
   if (server.raids) {

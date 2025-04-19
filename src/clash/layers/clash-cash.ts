@@ -9,18 +9,18 @@ import {Cache} from 'effect';
 const cache = Cache.make({
   capacity  : 100,
   timeToLive: '1 hour',
-  lookup    : (playerTag: str) => E.gen(function * () {
+  lookup    : (playerTag: str) => E.gen(function* () {
     const player = yield * ClashOfClans.getPlayer(playerTag);
 
     return player;
   }),
 });
 
-const program = E.gen(function * () {
+const program = E.gen(function* () {
   const clash = yield * cache;
 
   return {
-    getPlayers: (tags: str[]) => E.gen(function * () {
+    getPlayers: (tags: str[]) => E.gen(function* () {
       const inTags  = [];
       const outTags = [];
       for (const player of tags) {

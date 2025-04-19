@@ -5,7 +5,7 @@ import {makeTask} from '#src/task/war-thread/common.ts';
 
 
 
-export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(function * () {
+export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(function* () {
   yield * DiscordApi.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(`${data.clanName} | Final ${dtRel(war.battle.endTime.getTime())}`),

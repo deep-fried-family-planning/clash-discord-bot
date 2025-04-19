@@ -10,7 +10,7 @@ import {join} from 'effect/Array';
 
 
 
-export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function * () {
+export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function* () {
   const maxHits = war.battle.attacksPerMember;
   const hits    = pipe(
     war.battle.clan.attacks,
@@ -49,7 +49,6 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
       '2. ALWAYS bring a poison spell',
       `3. ${dBold('[CWL] Check thread pinned messages for most updated base calls.')}`,
     ),
-    // @ts-expect-error dfx types slightly wrong
     allowed_mentions: {
       roles: [
         TEMP_ROLES.warmanager,

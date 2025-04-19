@@ -23,7 +23,7 @@ import type {SelectOption} from 'dfx/types';
 
 
 
-const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function * () {
+const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function* () {
   const records = yield * queryPlayersForUser({pk: userId});
   const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
@@ -81,7 +81,7 @@ const signupRoster = (
   designation: str,
   rounds: str[],
   tags: str[],
-) => E.gen(function * () {
+) => E.gen(function* () {
   const signup = yield * rosterSignupRead({
     pk: rosterId,
     sk: userId,
@@ -159,7 +159,7 @@ const SelectDesignation  = SingleS.as(makeId(RK_UPDATE, 'RVSUAD'), {
 const UserS              = SingleUserS.as(makeId(RK_UPDATE, 'RVSUAU'));
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const User = UserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

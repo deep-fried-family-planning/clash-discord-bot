@@ -31,7 +31,7 @@ const raidWeekend = Cron.make({
 
 
 // todo this lambda is annoying asl, fullstack test
-export const h = () => E.gen(function * () {
+export const h = () => E.gen(function* () {
   yield * invokeCount(E.succeed(''));
   yield * showMetric(invokeCount);
 
@@ -48,7 +48,7 @@ export const h = () => E.gen(function * () {
       mapL((server) => pipe(
         serverRaid(server),
         E.catchAll((err) => logDiscordError([err])),
-        E.catchAllCause((e) => E.gen(function * () {
+        E.catchAllCause((e) => E.gen(function* () {
           const error = Cause.prettyErrors(e);
 
           yield * logDiscordError([error]);
@@ -67,7 +67,7 @@ export const h = () => E.gen(function * () {
     }),
     (set) => [...set],
     mapL((k) => pipe(
-      E.gen(function * () {
+      E.gen(function* () {
         const [pk] = k.split('/');
 
         const server = yield * ServerCache.get(pk);
@@ -76,7 +76,7 @@ export const h = () => E.gen(function * () {
         yield * eachClan(server, clan, pipe(players, toEntries, mapL(([, p]) => p)));
       }),
       E.catchAll((err) => logDiscordError([err])),
-      E.catchAllCause((e) => E.gen(function * () {
+      E.catchAllCause((e) => E.gen(function* () {
         const error = Cause.prettyErrors(e);
 
         yield * logDiscordError([error]);

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument */
+
 
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {handler as lambda_ix_menu} from '#src/ix_menu.ts';

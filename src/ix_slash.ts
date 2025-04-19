@@ -1,6 +1,5 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {runtimeLayer} from '#src/disreact/runtime/service/DisReactRuntime.ts';
 import {ixsRouter} from '#src/internal/discord-old/ixs-router.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -12,12 +11,10 @@ import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 
-
-
-const slash = (ix: IxD) => E.gen(function * () {
+const slash = (ix: IxD) => E.gen(function* () {
   yield * ixsRouter(ix);
 }).pipe(
-  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function * () {
+  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
     const userMessage = yield * logDiscordError([e]);
 
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
@@ -28,18 +25,19 @@ const slash = (ix: IxD) => E.gen(function * () {
       }],
     } as Partial<IxRE>);
   })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function * () {
+  E.catchTag('DeepFryerClashError', (e) => E.gen(function* () {
     const userMessage = yield * logDiscordError([e]);
 
     yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
       ...userMessage,
       embeds: [{
         ...userMessage.embeds[0],
+        // @ts-expect-error temporary
         title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
       }],
     } as Partial<IxRE>);
   })),
-  E.catchAllCause((error) => E.gen(function * () {
+  E.catchAllCause((error) => E.gen(function* () {
     const e = Cause.prettyErrors(error);
 
     const userMessage = yield * logDiscordError(e);
@@ -55,8 +53,7 @@ const h = (event: IxD) => pipe(
 
 
 export const handler = makeLambda(h, pipe(
-  runtimeLayer,
-  L.provideMerge(DiscordLayerLive),
+  DiscordLayerLive,
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(ClashKing.Live),
   L.provideMerge(Scheduler.defaultLayer),

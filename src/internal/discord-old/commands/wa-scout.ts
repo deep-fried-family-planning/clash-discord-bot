@@ -28,7 +28,7 @@ export const WA_SCOUT
 } as const satisfies CommandSpec;
 
 
-export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function * () {
+export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* () {
   yield * validateServer(ix);
 
   const clan = getAliasTag(ops.clan);
@@ -38,7 +38,7 @@ export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function *
     exhaustive : Boolean(ops.exhaustive),
     from       : 1,
     to         : 50,
-    limit      : ops.limit ?? 50,
+    limit      : (ops.limit ?? 50) as number,
     showCurrent: false,
     showN      : false,
   });

@@ -36,7 +36,7 @@ export const CLAN_FAM
 /**
  * @desc [SLASH /clanfam]
  */
-export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(function * () {
+export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(function* () {
   const [server, user] = yield * validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {

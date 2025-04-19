@@ -17,7 +17,7 @@ export const ServerViewerB = PrimaryB.as(makeId(RK_OPEN, 'SV'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : 'Server',

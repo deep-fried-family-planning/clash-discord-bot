@@ -5,7 +5,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const rosterCreate = (roster: DRoster) => E.gen(function * () {
+export const rosterCreate = (roster: DRoster) => E.gen(function* () {
   const encoded = yield * encodeDiscordRoster(roster);
 
   yield * DynamoDBDocument.put({
@@ -15,7 +15,7 @@ export const rosterCreate = (roster: DRoster) => E.gen(function * () {
 });
 
 
-export const rosterRead = (roster: DRosterKey) => E.gen(function * () {
+export const rosterRead = (roster: DRosterKey) => E.gen(function* () {
   const pk = yield * encodeServerId(roster.pk);
   const sk = yield * encodeRosterId(roster.sk);
 
@@ -28,7 +28,7 @@ export const rosterRead = (roster: DRosterKey) => E.gen(function * () {
 });
 
 
-export const rosterQueryByServer = (roster: Pick<DRosterKey, 'pk'>) => E.gen(function * () {
+export const rosterQueryByServer = (roster: Pick<DRosterKey, 'pk'>) => E.gen(function* () {
   const pk = yield * encodeServerId(roster.pk);
 
   const items = yield * DynamoDBDocument.query({
@@ -44,7 +44,7 @@ export const rosterQueryByServer = (roster: Pick<DRosterKey, 'pk'>) => E.gen(fun
 });
 
 
-export const rosterUpdate = (roster: DRoster) => E.gen(function * () {
+export const rosterUpdate = (roster: DRoster) => E.gen(function* () {
   const encoded = yield * encodeDiscordRoster(roster);
 
   const item = yield * DynamoDBDocument.get({
@@ -65,7 +65,7 @@ export const rosterUpdate = (roster: DRoster) => E.gen(function * () {
 });
 
 
-export const rosterDelete = (roster: DRosterKey) => E.gen(function * () {
+export const rosterDelete = (roster: DRosterKey) => E.gen(function* () {
   const pk = yield * encodeServerId(roster.pk);
   const sk = yield * encodeRosterId(roster.sk);
 

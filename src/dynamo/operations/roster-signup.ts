@@ -6,7 +6,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function * () {
+export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function* () {
   const encoded = yield * encodeDiscordRosterSignup(signup);
 
   yield * DynamoDBDocument.put({
@@ -16,7 +16,7 @@ export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function * ()
 });
 
 
-export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function * () {
+export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function* () {
   const pk = yield * encodeRosterId(signup.pk);
   const sk = yield * encodeUserId(signup.sk);
 
@@ -33,7 +33,7 @@ export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function * (
 });
 
 
-export const rosterSignupByRoster = (signup: Pick<DRosterSignupKey, 'pk'>) => E.gen(function * () {
+export const rosterSignupByRoster = (signup: Pick<DRosterSignupKey, 'pk'>) => E.gen(function* () {
   const pk = yield * encodeRosterId(signup.pk);
 
   const items = yield * DynamoDBDocument.query({
@@ -52,7 +52,7 @@ export const rosterSignupByRoster = (signup: Pick<DRosterSignupKey, 'pk'>) => E.
 });
 
 
-export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function * () {
+export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function* () {
   const encoded = yield * encodeDiscordRosterSignup(signup);
 
   const item = yield * DynamoDBDocument.get({
@@ -74,7 +74,7 @@ export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function * ()
 });
 
 
-export const rosterSignupDelete = (signup: DRosterSignupKey) => E.gen(function * () {
+export const rosterSignupDelete = (signup: DRosterSignupKey) => E.gen(function* () {
   const pk = yield * encodeRosterId(signup.pk);
   const sk = yield * encodeUserId(signup.sk);
 

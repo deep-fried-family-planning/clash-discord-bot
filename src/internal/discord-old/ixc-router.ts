@@ -14,7 +14,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
 
 
-export const ixcRouter = (ix: IxD) => E.gen(function * () {
+export const ixcRouter = (ix: IxD) => E.gen(function* () {
   const ax = deriveAction(ix, ix.data as IxDc);
 
   let s: St | und;

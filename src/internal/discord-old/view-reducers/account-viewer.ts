@@ -25,7 +25,7 @@ export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
 });
 
 
-export const getPlayers = (s: St) => E.gen(function * () {
+export const getPlayers = (s: St) => E.gen(function* () {
   const records = yield * queryPlayersForUser({pk: s.user_id});
   const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
@@ -33,7 +33,7 @@ export const getPlayers = (s: St) => E.gen(function * () {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   let Account = AccountViewerAccountS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

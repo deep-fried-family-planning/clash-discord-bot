@@ -31,7 +31,7 @@ const embeds = C.make({
 });
 
 
-const program = E.gen(function * () {
+const program = E.gen(function* () {
   const server = yield * servers;
   const user   = yield * users;
   const embed  = yield * embeds;

@@ -6,6 +6,7 @@
     "pretty"             : true,
     "noErrorTruncation"  : true,
     "disableSizeLimit"   : true,
-    "skipDefaultLibCheck": true
+    "skipDefaultLibCheck": true,
+    "skipLibCheck"       : true
   }
 }

@@ -35,10 +35,10 @@ const IXS_LOOKUP = {
 } as const;
 
 
-export const ixsRouter = (ix: IxD) => E.gen(function * () {
+export const ixsRouter = (ix: IxD) => E.gen(function* () {
   const root = (ix.data as IxDs).name as keyof typeof IXS_LOOKUP;
 
-  const message = yield * IXS_LOOKUP[root](ix as never, nameOptions(ix));
+  const message = yield * IXS_LOOKUP[root](ix, nameOptions(ix));
 
   return yield * DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
 });

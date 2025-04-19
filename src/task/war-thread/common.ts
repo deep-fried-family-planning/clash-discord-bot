@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import {ThreadId} from '#src/dynamo/schema/common.ts';
 import {type DClan, DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
@@ -68,7 +68,7 @@ export const makeTask = <
       war: ClanWar,
       thread: Channel,
       links: Record<str, str>,
-    ) => g(function * () {
+    ) => g(function* () {
       const encoded = yield * encode({
         name: name,
         data: {
@@ -122,7 +122,7 @@ export const makeTask = <
       });
     }),
 
-    evaluator: (task: unknown) => g(function * () {
+    evaluator: (task: unknown) => g(function* () {
       const decoded = yield * decode(task);
 
       const taskWars = yield * getTaskWars(decoded.data);

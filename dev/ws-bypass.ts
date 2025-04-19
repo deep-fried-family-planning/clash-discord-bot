@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment */
+
 
 import {type E, g} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -20,7 +20,7 @@ export const wsBypass = <
   kind: str,
   data: any,
   nonbypass: Nonbypass,
-) => g(function * () {
+) => g(function* () {
   if (process.env.LAMBDA_ENV === 'prod' || process.env.LAMBDA_LOCAL === 'true') {
     yield * nonbypass;
     return false;

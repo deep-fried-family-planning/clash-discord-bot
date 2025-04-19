@@ -26,7 +26,7 @@ export const DirectoryViewerUserS    = SingleUserS.as(makeId(RK_UPDATE, 'DVU'), 
 });
 
 
-export const getPlayers = (user: str) => E.gen(function * () {
+export const getPlayers = (user: str) => E.gen(function* () {
   const records = yield * queryPlayersForUser({pk: user});
 
   const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
@@ -35,7 +35,7 @@ export const getPlayers = (user: str) => E.gen(function * () {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const User  = DirectoryViewerUserS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);

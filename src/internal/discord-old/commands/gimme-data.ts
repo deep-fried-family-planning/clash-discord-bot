@@ -49,7 +49,7 @@ export const GIMME_DATA
 /**
  * @desc [SLASH /gimme]
  */
-export const gimmeData = (data: IxD, options: IxDS<typeof GIMME_DATA>) => E.gen(function * () {
+export const gimmeData = (data: IxD, options: IxDS<typeof GIMME_DATA>) => E.gen(function* () {
   const [server, user] = yield * validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {

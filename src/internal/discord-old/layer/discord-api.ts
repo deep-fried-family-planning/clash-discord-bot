@@ -14,7 +14,7 @@ type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof Discor
 type DE<T> = E.Effect<T, DiscordRESTError | ResponseError>;
 
 
-const api = E.gen(function * () {
+const api = E.gen(function* () {
   const discord = yield * DiscordREST;
 
   const executeWebhookJson = (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {

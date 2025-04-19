@@ -26,7 +26,7 @@ const TypeS                     = SingleS.as(makeId(RK_UPDATE, 'RCT'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Roster = RosterS.fromMap(s.cmap);

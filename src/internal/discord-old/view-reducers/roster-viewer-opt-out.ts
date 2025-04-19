@@ -18,7 +18,7 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 
 
 
-const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
+const getAccounts = (s: St, rosterId: str) => E.gen(function* () {
   const records = yield * queryPlayersForUser({pk: s.user_id});
   const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
 
@@ -44,7 +44,7 @@ const getAccounts = (s: St, rosterId: str) => E.gen(function * () {
 });
 
 
-const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function * () {
+const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function* () {
   const signup = yield * rosterSignupRead({pk: rosterId, sk: s.user_id});
 
   yield * rosterSignupCreate({
@@ -69,7 +69,7 @@ const Delete         = DeleteB.as(makeId(RK_DELETE, 'RVOO'));
 const DeleteConfirm  = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOO'));
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Roster = RosterS.fromMap(s.cmap);

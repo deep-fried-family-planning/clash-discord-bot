@@ -3,7 +3,7 @@ import {makeLambda} from '@effect-aws/lambda';
 
 
 
-const h = () => E.gen(function * () {});
+const h = () => E.gen(function* () {});
 
 
 export const handler = makeLambda(h);

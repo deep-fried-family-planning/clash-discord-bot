@@ -38,7 +38,7 @@ export const SERVER
 /**
  * @desc [SLASH /server]
  */
-export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(function * () {
+export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(function* () {
   const [server, user] = yield * validateServer(data).pipe(E.catchAll(() => E.succeed([undefined, data.member!] as const)));
 
   if (server) {

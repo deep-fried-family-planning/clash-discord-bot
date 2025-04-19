@@ -23,7 +23,7 @@ export const CACHE_BUST
 /**
  * @desc [SLASH /bust]
  */
-export const cacheBust = (data: IxD, options: IxDS<typeof CACHE_BUST>) => E.gen(function * () {
+export const cacheBust = (data: IxD, options: IxDS<typeof CACHE_BUST>) => E.gen(function* () {
   const [server, user] = yield * validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {

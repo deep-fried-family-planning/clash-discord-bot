@@ -39,7 +39,7 @@ const modals     = {
 const modalKinds = [RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD];
 
 
-const component = (body: IxD) => E.gen(function * () {
+const component = (body: IxD) => E.gen(function* () {
   const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
   const id   = fromId(data.custom_id);
 
@@ -144,7 +144,7 @@ const component = (body: IxD) => E.gen(function * () {
 });
 
 
-const modal = (body: IxD) => E.gen(function * () {
+const modal = (body: IxD) => E.gen(function* () {
   yield * wsBypass(
     'ix_menu',
     body,
@@ -176,7 +176,7 @@ const r202    = (body: object | string) => respond({status: 202, body});
 const ping         = (body: IxD) => E.succeed(r200({type: body.type}));
 const autocomplete = (body: IxD) => E.succeed(r202({type: body.type}));
 
-const slashCmd = (body: IxD) => E.gen(function * () {
+const slashCmd = (body: IxD) => E.gen(function* () {
   yield * wsBypass(
     'ix_menu',
     body,
@@ -201,7 +201,7 @@ const router = {
 
 
 const h = (req: APIGatewayProxyEventBase<null>) => pipe(
-  E.gen(function * () {
+  E.gen(function* () {
     const signature = req.headers['x-signature-ed25519']!;
     const timestamp = req.headers['x-signature-timestamp']!;
 
@@ -225,7 +225,7 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
     return yield * router[body.type](body);
   }),
-  E.catchAllCause((error) => E.gen(function * () {
+  E.catchAllCause((error) => E.gen(function* () {
     const e = Cause.prettyErrors(error);
 
     yield * logDiscordError(e);
@@ -237,7 +237,7 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
       body  : boom.output.payload,
     });
   })),
-  E.catchAllDefect((defect) => E.gen(function * () {
+  E.catchAllDefect((defect) => E.gen(function* () {
     yield * logDiscordError([defect]).pipe(E.ignoreLogged);
 
     const boom = badImplementation();

@@ -20,7 +20,7 @@ export const EditEmbedB   = PrimaryB.as(EDIT_EMBED_MODAL_OPEN, {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const name        = EditEmbedTitleT.fromMap(ax.cmap);
   const description = EditEmbedDescriptionT.fromMap(ax.cmap);
   const color       = EditEmbedColorT.fromMap(ax.cmap);

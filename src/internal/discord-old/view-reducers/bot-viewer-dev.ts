@@ -20,7 +20,7 @@ export const BotViewerDevB = DangerB.as(makeId(RK_OPEN, 'BVD'), {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : 'Secret',

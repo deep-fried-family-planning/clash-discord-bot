@@ -39,7 +39,7 @@ export const TIME
 /**
  * @desc [SLASH /time]
  */
-export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function * () {
+export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function* () {
   yield * validateServer(ix);
 
   dayjs.extend(dayutc);
@@ -48,11 +48,11 @@ export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function * () {
   let utc = dayjs();
 
   if (ops.hours_ahead) {
-    utc = utc.add(ops.hours_ahead, 'h');
+    utc = utc.add(ops.hours_ahead as number, 'h');
   }
 
   if (ops.minutes_ahead) {
-    utc = utc.add(ops.minutes_ahead, 'm');
+    utc = utc.add(ops.minutes_ahead as number, 'm');
   }
 
   utc = utc.utc();

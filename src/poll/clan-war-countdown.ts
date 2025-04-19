@@ -22,7 +22,7 @@ const channel_names = {
 } as const;
 
 
-export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(function * () {
+export const updateWarCountdown = (clan: DClan, apiWars: ClanWar[]) => E.gen(function* () {
   const apiClan = yield * ClashOfClans.getClan(clan.sk);
 
   const cname = apiClan.name in nicknames

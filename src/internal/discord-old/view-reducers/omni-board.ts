@@ -35,7 +35,7 @@ export const OmbiBoardB  = SuccessB.as(axn.OPEN, {
 });
 
 
-const start = (s: St, ax: Ax) => E.gen(function * () {
+const start = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title:
@@ -67,7 +67,7 @@ const start = (s: St, ax: Ax) => E.gen(function * () {
 export const LinkB = SuccessB.as(makeId(RK_OPEN, 'LINK'), {
   label: LABEL_LINK,
 });
-const link         = (s: St, ax: Ax) => E.gen(function * () {
+const link         = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : LABEL_TITLE_LINK,

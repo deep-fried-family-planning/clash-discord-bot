@@ -19,7 +19,7 @@ const DateTimeEditB          = PrimaryB.as(EDIT_DATE_TIME_MODAL_OPEN, {
 });
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   const time    = EditEpochT.fromMap(ax.cmap);
   const Forward = ForwardB.forward(ax.id);
 

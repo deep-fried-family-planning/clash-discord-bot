@@ -1,6 +1,6 @@
-import {defineConfig} from '@rspack/cli'
-import {resolve} from 'node:path'
-import tsconfig from './tsconfig.json' with {type: 'json'}
+import {defineConfig} from '@rspack/cli';
+import {resolve} from 'node:path';
+import tsconfig from './tsconfig.json' with {type: 'json'};
 
 
 export default defineConfig({
@@ -104,4 +104,4 @@ export default defineConfig({
     children   : true,
   },
   performance: {hints: 'warning'},
-})
+});

@@ -9,7 +9,7 @@ export type isodate = string;
 export type unixdate = number;
 export type url = string;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export type AnyKV = { [k in any]: any };
 export type KV<T extends AnyKV = AnyKV> = { [k in keyof T]: T[k] };
 
@@ -17,7 +17,7 @@ export const tryOrDefault = <T>(fn: () => T, def: T): T => {
   try {
     return fn();
   }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   catch (e) {
     return def;
   }

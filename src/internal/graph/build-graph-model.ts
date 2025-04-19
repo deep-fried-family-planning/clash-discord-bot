@@ -16,7 +16,7 @@ import {findFirst} from 'effect/Array';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 
-export const buildGraphModel = (ops: SharedOptions) => E.gen(function * () {
+export const buildGraphModel = (ops: SharedOptions) => E.gen(function* () {
   const entities = yield * fetchWarEntities(ops);
 
   if (!entities.currentWar.length) {

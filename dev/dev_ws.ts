@@ -13,7 +13,7 @@ import {WS_BYPASS_KEY} from './ws-bypass.ts';
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 
 
-const h = (event: APIGatewayProxyWebsocketEventV2) => g(function * () {
+const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
   const route = event.requestContext.routeKey;
 
   const [token, id] = process.env.DFFP_DISCORD_DEBUG_URL.split('/').reverse();

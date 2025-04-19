@@ -13,7 +13,7 @@ import {E} from '#src/internal/pure/effect.ts';
 export const ServerViewerAdminB = AdminB.as(makeId(RK_OPEN, 'SVA'));
 
 
-const view = (s: St, ax: Ax) => E.gen(function * () {
+const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : 'Edit Server',

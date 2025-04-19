@@ -25,7 +25,7 @@ const TypeToModalB        = SuccessB.as(LINK_ACCOUNT_MODAL_OPEN, {
 });
 
 
-const view1 = (s: St, ax: Ax) => E.gen(function * () {
+const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
@@ -48,7 +48,7 @@ const view1 = (s: St, ax: Ax) => E.gen(function * () {
 });
 
 
-const view2 = (s: St, ax: Ax) => E.gen(function * () {
+const view2 = (s: St, ax: Ax) => E.gen(function* () {
   const tag          = PlayerTagT.fromMap(ax.cmap);
   const api          = ApiTokenT.fromMap(ax.cmap);
   const account_kind = ax.id.params.data![0];
