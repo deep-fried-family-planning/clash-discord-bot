@@ -5,7 +5,7 @@ import {makeTestRuntime} from '#test/unit/util.ts';
 
 const runtime = makeTestRuntime([CloseMessage], false);
 
-it.scoped('when closing', E.fn(function* () {
+it.effect('when closing', E.fn(function* () {
   const root = yield* runtime.synthesize(CloseMessage);
 
   expect(root).toMatchSnapshot();
@@ -17,7 +17,7 @@ it.scoped('when closing', E.fn(function* () {
     user_id       : 'user',
     guild_id      : 'guild',
     message       : root,
-    type          : 2,
+    type          : 3,
     data          : {
       custom_id     : 'CloseButton',
       component_type: 2,
