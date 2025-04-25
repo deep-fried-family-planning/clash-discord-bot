@@ -30,14 +30,16 @@ export const h = () => E.gen(function* () {
   yield* invokeCount(E.succeed(''));
   yield* showMetric(invokeCount);
 
-  if (yield* wsBypass('poll', {}, E.void)) {
-    return;
-  }
+  // if (yield* wsBypass('poll', {}, E.void)) {
+  //   return;
+  // }
 
   const now = yield* DT.now;
   const isRaidWeekend = Cron.match(raidWeekend, now);
 
   const servers = yield* scanServers();
+
+  console.log(servers);
 
   if (isRaidWeekend) {
     yield* pipe(
@@ -75,7 +77,10 @@ export const h = () => E.gen(function* () {
     )),
     E.allWith({concurrency: 5}),
   );
-});
+}).pipe(
+  E.awaitAllChildren,
+  E.catchAllDefect((d) => console.log(d)),
+);
 
 export const LambdaLive = pipe(
   DatabaseDriver.Default,

@@ -12,8 +12,8 @@ export const Key = asKey(
 
 export const Latest = asLatest(Key, {
   name   : S.String,
-  servers: S.Map({
-    key  : PkSk.ServerId,
+  servers: S.Record({
+    key  : S.typeSchema(PkSk.ServerId),
     value: S.Struct({}),
   }),
 });

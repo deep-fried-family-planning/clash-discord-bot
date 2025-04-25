@@ -17,6 +17,7 @@
     "merge": "pnpm i --merge-git-branch-lockfiles",
     "proxy": "tsx dev/ws-proxy.ts",
     "dev": "nodemon --exec tsx dev/ws-client.ts",
+    "devrun": "tsx dev/run.ts",
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "rspack build",
     "build:doc": "rspack build --config rspack.config.doctor.mjs",

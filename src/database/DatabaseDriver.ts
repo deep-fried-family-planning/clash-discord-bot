@@ -2,7 +2,7 @@ import type {CacheKey, CompositeKey} from '#src/database/arch/arch.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Cache, Chunk, Duration, RateLimiter} from 'effect';
+import {Cache, Chunk, Console, Duration, RateLimiter} from 'effect';
 
 const cacheKey = (key: CompositeKey | Record<string, any>): CacheKey =>
   `${key.pk}/${key.sk}`;
@@ -52,32 +52,41 @@ const service = E.gen(function* () {
 
   const readPartition = (pk: string) =>
     pipe(
-      E.loop(null as null | QueryCommandOutput, {
-        while: (res) => !!res,
-        step : (res) => res,
-        body : (res) => {
-          if (!res) {
-            return dynamo.query({
-              TableName,
-              ConsistentRead           : true,
-              KeyConditionExpression   : 'pk = :pk',
-              ExpressionAttributeValues: {':pk': pk},
-            });
+      E.loop({done: null as null | QueryCommandOutput}, {
+        discard: false,
+        while  : (res) => !res.done || !!res.done?.LastEvaluatedKey,
+        step   : (res) => res,
+        body   : (res) => {
+          if (!res.done) {
+            return pipe(
+              dynamo.query({
+                TableName,
+                ConsistentRead           : true,
+                KeyConditionExpression   : 'pk = :pk',
+                ExpressionAttributeValues: {':pk': pk},
+              }),
+              readLimiter,
+              RateLimiter.withCost(readCapacity / 2),
+              E.tap((r) => res.done = r),
+            );
           }
-          if (res.LastEvaluatedKey) {
-            return dynamo.query({
-              TableName,
-              ConsistentRead           : true,
-              KeyConditionExpression   : 'pk = :pk',
-              ExpressionAttributeValues: {':pk': pk},
-              ExclusiveStartKey        : res.LastEvaluatedKey,
-            });
+          if (res.done.LastEvaluatedKey) {
+            return pipe(
+              dynamo.query({
+                TableName,
+                ConsistentRead           : true,
+                KeyConditionExpression   : 'pk = :pk',
+                ExpressionAttributeValues: {':pk': pk},
+                ExclusiveStartKey        : res.done.LastEvaluatedKey,
+              }),
+              readLimiter,
+              RateLimiter.withCost(readCapacity / 2),
+              E.tap((r) => res.done = r),
+            );
           }
-          return E.succeed(res);
+          return E.succeed(res.done);
         },
       }),
-      readLimiter,
-      RateLimiter.withCost(readCapacity),
       E.map((rs) =>
         rs.flatMap((res) => res.Items ?? []),
       ),
@@ -85,28 +94,37 @@ const service = E.gen(function* () {
 
   const scanIndex = (key: string) =>
     pipe(
-      E.loop(null as null | ScanCommandOutput, {
-        while: (c) => !!c,
-        step : (c) => c,
-        body : (c) => {
-          if (!c) {
-            return dynamo.scan({
-              TableName,
-              IndexName: key,
-            });
+      E.loop({done: null as null | ScanCommandOutput}, {
+        discard: false,
+        while  : (c) => c.done === null || !!c.done?.LastEvaluatedKey,
+        step   : (c) => c,
+        body   : (c) => {
+          if (!c.done) {
+            return pipe(
+              dynamo.scan({
+                TableName,
+                IndexName: key,
+              }),
+              readLimiter,
+              RateLimiter.withCost(readCapacity / 2),
+              E.tap((r) => c.done = r),
+            );
           }
-          if (c.LastEvaluatedKey) {
-            return dynamo.scan({
-              TableName,
-              IndexName        : key,
-              ExclusiveStartKey: c.LastEvaluatedKey,
-            });
+          if (c.done.LastEvaluatedKey) {
+            return pipe(
+              dynamo.scan({
+                TableName,
+                IndexName        : key,
+                ExclusiveStartKey: c.done.LastEvaluatedKey,
+              }),
+              readLimiter,
+              RateLimiter.withCost(readCapacity / 2),
+              E.tap((r) => c.done = r),
+            );
           }
-          return E.succeed(c);
+          return E.succeed(c.done);
         },
       }),
-      readLimiter,
-      RateLimiter.withCost(readCapacity),
       E.map((rs) =>
         rs.flatMap((res) => res.Items ?? []),
       ),
@@ -347,7 +365,7 @@ const service = E.gen(function* () {
     cachedReadPartition,
     cachedScanIndex,
     cachedReadIndex,
-    cachedSave: (...p: any) => E.void,
+    cachedSave: (...p: any) => E.log(p),
     cachedErase,
     batchedCachedRead,
     batchedCachedSave,

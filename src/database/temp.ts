@@ -1,6 +1,7 @@
 import {DatabaseDriver} from '#src/database/DatabaseDriver.ts';
 import {ServerClan, UserPlayer} from '#src/database/schema/index.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
+import { GSITag } from './arch/enum';
 import { Db } from './Db';
 
 export const getClansForServer = (pk: string) =>
@@ -40,11 +41,7 @@ export const queryServerClans = (sk: string) =>
 
 export const scanServerClans = () =>
   pipe(
-    DatabaseDriver.scan({
-      TableName: process.env.DDB_OPERATIONS,
-      IndexName: 'GSI_ALL_CLANS',
-    }),
-    E.flatMap((res) => E.fromNullable(res.Items)),
+    DatabaseDriver.cachedScanIndex(GSITag.ALL_CLANS),
     E.map((items) =>
       items.map((item) =>
         pipe(
@@ -103,11 +100,7 @@ export const queryUserPlayers = (sk: string) =>
 
 export const scanUserPlayers = () =>
   pipe(
-    DatabaseDriver.scan({
-      TableName: process.env.DDB_OPERATIONS,
-      IndexName: 'GSI_ALL_PLAYERS',
-    }),
-    E.flatMap((res) => E.fromNullable(res.Items)),
+    DatabaseDriver.cachedScanIndex(GSITag.ALL_PLAYERS),
     E.map((items) =>
       items.map((item) =>
         pipe(
@@ -118,7 +111,7 @@ export const scanUserPlayers = () =>
               return;
             }
             return pipe(
-              UserPlayer.encode(item),
+              UserPlayer.encode(dec),
               E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
             );
           }),
@@ -126,27 +119,30 @@ export const scanUserPlayers = () =>
       ),
     ),
     E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
-    E.map((items) => items.filter(Boolean) as typeof UserPlayer.Type[]),
+    E.map((items) => {
+      console.log(items);
+      return items.filter(Boolean) as typeof UserPlayer.Type[];
+    }),
   );
 
 export const scanServers = () =>
   pipe(
-    DatabaseDriver.scan({
-      TableName: process.env.DDB_OPERATIONS,
-      IndexName: 'GSI_ALL_SERVERS',
-    }),
-    E.flatMap((res) => E.fromNullable(res.Items)),
+    DatabaseDriver.scanIndex('GSI_ALL_SERVERS'),
     E.map((items) =>
       items.map((item) =>
         pipe(
           Db.Server.decode(item),
-          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.catchTag('ParseError', (e) => {
+            console.log(e);
+            return E.succeed(undefined);
+          }),
           E.tap((dec) => {
+            console.log(dec);
             if (!dec?.upgraded) {
               return;
             }
             return pipe(
-              Db.Server.encode(item),
+              Db.Server.encode(dec),
               E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
             );
           }),
@@ -154,5 +150,4 @@ export const scanServers = () =>
       ),
     ),
     E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
-    E.map((items) => items.filter(Boolean) as typeof Db.Server.Type[]),
   );

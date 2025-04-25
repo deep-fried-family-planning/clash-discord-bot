@@ -1,6 +1,6 @@
 import type {DataTag} from '#src/database/arch/index.ts';
 import {E, forbiddenTransform, pipe, S} from '#src/internal/pure/effect.ts';
-import {DateTime} from 'effect';
+import {Console, DateTime, flow} from 'effect';
 
 export type CompositeKey = {
   pk: string;
@@ -133,6 +133,7 @@ export const toStandard = <
 >(
   config: {
     Key     : Key;
+    Latest  : Latest;
     Versions: S.Schema<A, I, R>;
   },
 ) => {
@@ -143,8 +144,8 @@ export const toStandard = <
     encodePk,
     encodeSk,
     encodeKey: (p: string, s: string) => ({pk: encodePk(p), sk: encodeSk(s)}),
-    decode   : S.decodeUnknown(config.Versions),
-    encode   : S.encodeUnknown(config.Versions),
+    decode   : flow(S.decodeUnknown(config.Versions), E.tap((dec) => console.log('decode', dec))),
+    encode   : flow(S.encodeUnknown(config.Latest), E.tap((dec) => console.log('encode', dec))),
     equals   : S.equivalence(config.Versions),
     Schema   : config.Versions,
     Key      : config.Key,
