@@ -40,6 +40,8 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.796.0",
+    "@aws-sdk/lib-dynamodb": "3.796.0",
     "@effect-aws/client-api-gateway-management-api": "1.9.5",
     "@effect-aws/client-dynamodb": "1.9.5",
     "@effect-aws/client-eventbridge": "1.9.5",

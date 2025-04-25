@@ -30,6 +30,7 @@ export {
   Either as LR,
   Cron,
   FiberMap as FM,
+  Match as M,
 
   pipe,
   pipe as p,
@@ -47,6 +48,7 @@ export {
 
 export {
   compose,
+  hole as forbiddenTransform,
 } from 'effect/Function';
 
 

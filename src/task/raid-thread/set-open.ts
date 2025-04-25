@@ -1,10 +1,8 @@
+import {Db} from '#src/database/Db';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
-import {DiscordServer} from '#src/dynamo/schema/discord-server.ts';
 import {g, S} from '#src/internal/pure/effect';
 import {MD} from '#src/internal/pure/pure';
 import {makeTask, TEMP_TEMP_ROLES} from '#src/task/util/make-task.ts';
-
-
 
 const message = () => ({
   content: MD.content(
@@ -14,13 +12,12 @@ const message = () => ({
   ),
 });
 
-
 export const SetOpen = makeTask(
   S.Literal('SetOpen'),
   S.Struct({
-    server: DiscordServer,
+    server: Db.Server.Schema,
   }),
   (data) => g(function* () {
-    yield * DiscordApi.createMessage(data.server.raids!, message());
+    yield* DiscordApi.createMessage(data.server.raids!, message());
   }),
 );

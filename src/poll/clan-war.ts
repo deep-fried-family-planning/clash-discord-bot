@@ -1,10 +1,7 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
+import {Db} from '#src/database/Db';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
-import {ClanCache} from '#src/dynamo/cache/clan-cache.ts';
-import {type DClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
-import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
-import type {DServer} from '#src/dynamo/schema/discord-server.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
@@ -20,12 +17,10 @@ import {WarPrep24hr} from '#src/task/war-thread/war-prep-24hr.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
 
+export const eachClan = (server: Db.Server, clan: Db.ServerClan, players: Db.UserPlayer[]) => E.gen(function* () {
+  const discord = yield* DiscordREST;
 
-
-export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.gen(function* () {
-  const discord = yield * DiscordREST;
-
-  const wars = yield * pipe(
+  const wars = yield* pipe(
     ClashOfClans.getWars(clan.sk),
     E.catchAll(() => ClashOfClans.getCurrentWar(clan.sk).pipe(
       E.map((w) => w ? [w] : []),
@@ -33,7 +28,7 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
     )),
   );
 
-  yield * E.timeout(updateWarCountdown(clan, wars), '15 second').pipe(E.ignore);
+  yield* E.timeout(updateWarCountdown(clan, wars), '15 second').pipe(E.ignore);
 
   const prepWar = wars.find((w) => w.isPreparationDay);
 
@@ -45,21 +40,21 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
     return;
   }
 
-  const group = yield * pipe(
+  const group = yield* pipe(
     Scheduler.getScheduleGroup({Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`}),
     E.catchTag('ResourceNotFoundException', () => E.succeed({Name: undefined})),
   );
 
-  yield * CSL.log('new schedule group', group);
+  yield* CSL.log('new schedule group', group);
 
   if (!group.Name) {
-    const newgroup = yield * Scheduler.createScheduleGroup({
+    const newgroup = yield* Scheduler.createScheduleGroup({
       Name: `s-${clan.pk}-c-${clan.sk.replace('#', '')}`,
     });
-    yield * CSL.log('new schedule group', newgroup.ScheduleGroupArn);
+    yield* CSL.log('new schedule group', newgroup.ScheduleGroupArn);
   }
 
-  const graph = yield * buildGraphModel({
+  const graph = yield* buildGraphModel({
     cid1       : clan.sk,
     exhaustive : false,
     from       : 1,
@@ -70,7 +65,7 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
   });
   const scout = describeScout(graph);
 
-  const thread = yield * discord.startThreadInForumOrMediaChannel(server.forum!, {
+  const thread = yield* discord.startThreadInForumOrMediaChannel(server.forum!, {
     name   : `🛠️│${prepWar.clan.name}`,
     // @ts-expect-error dfx types need to be fixed
     message: {
@@ -117,13 +112,11 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
     auto_archive_duration: 1440,
   }).json;
 
-  const updatedClan = yield * putDiscordClan({
+  yield* Db.save(Db.ServerClan, {
     ...clan,
     prep_opponent: prepWar.opponent.tag,
     thread_prep  : thread.id,
   });
-
-  yield * ClanCache.set(`${updatedClan.pk}/${updatedClan.sk}`, updatedClan);
 
   const links = pipe(
     players,
@@ -133,7 +126,7 @@ export const eachClan = (server: DServer, clan: DClan, players: DPlayer[]) => E.
     }),
   );
 
-  yield * E.all([
+  yield* E.all([
     WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
     WarPrep12hr.send(prepWar.preparationStartTime, '12 hour', server, clan, prepWar, thread, links),
     // WarPrep06hr.send(prepWar.preparationStartTime, '18 hour', server, clan, prepWar, thread, links),

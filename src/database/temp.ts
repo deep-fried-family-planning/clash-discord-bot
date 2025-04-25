@@ -1,0 +1,158 @@
+import {DatabaseDriver} from '#src/database/DatabaseDriver.ts';
+import {ServerClan, UserPlayer} from '#src/database/schema/index.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import { Db } from './Db';
+
+export const getClansForServer = (pk: string) =>
+  Db.readPartition(ServerClan, pk);
+
+export const queryServerClans = (sk: string) =>
+  pipe(
+    DatabaseDriver.query({
+      TableName                : process.env.DDB_OPERATIONS,
+      IndexName                : 'GSI_ALL_CLANS',
+      KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
+      ExpressionAttributeValues: {
+        ':gsi_clan_tag': ServerClan.encodeSk(sk),
+      },
+    }),
+    E.flatMap((res) => E.fromNullable(res.Items)),
+    E.map((items) =>
+      items.map((item) =>
+        pipe(
+          ServerClan.decode(item),
+          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.tap((dec) => {
+            if (!dec?.upgraded) {
+              return;
+            }
+            return pipe(
+              ServerClan.encode(dec),
+              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+            );
+          }),
+        ),
+      ),
+    ),
+    E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
+    E.map((items) => items.filter(Boolean) as typeof ServerClan.Type[]),
+  );
+
+export const scanServerClans = () =>
+  pipe(
+    DatabaseDriver.scan({
+      TableName: process.env.DDB_OPERATIONS,
+      IndexName: 'GSI_ALL_CLANS',
+    }),
+    E.flatMap((res) => E.fromNullable(res.Items)),
+    E.map((items) =>
+      items.map((item) =>
+        pipe(
+          ServerClan.decode(item),
+          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.tap((dec) => {
+            if (!dec?.upgraded) {
+              return;
+            }
+            return pipe(
+              ServerClan.encode(dec),
+              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+            );
+          }),
+        ),
+      ),
+    ),
+    E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
+    E.map((items) => items.filter(Boolean) as typeof ServerClan.Type[]),
+  );
+
+export const getPlayersForServer = (pk: string) =>
+  Db.readPartition(UserPlayer, pk);
+
+export const queryUserPlayers = (sk: string) =>
+  pipe(
+    DatabaseDriver.query({
+      TableName                : process.env.DDB_OPERATIONS,
+      IndexName                : 'GSI_ALL_PLAYERS',
+      KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
+      ExpressionAttributeValues: {
+        ':gsi_player_tag': UserPlayer.encodeSk(sk),
+      },
+    }),
+    E.flatMap((res) => E.fromNullable(res.Items)),
+    E.map((items) =>
+      items.map((item) =>
+        pipe(
+          UserPlayer.decode(item),
+          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.tap((dec) => {
+            if (!dec?.upgraded) {
+              return;
+            }
+            return pipe(
+              UserPlayer.encode(dec),
+              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+            );
+          }),
+        ),
+      ),
+    ),
+    E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
+    E.map((items) => items.filter(Boolean) as typeof UserPlayer.Type[]),
+  );
+
+export const scanUserPlayers = () =>
+  pipe(
+    DatabaseDriver.scan({
+      TableName: process.env.DDB_OPERATIONS,
+      IndexName: 'GSI_ALL_PLAYERS',
+    }),
+    E.flatMap((res) => E.fromNullable(res.Items)),
+    E.map((items) =>
+      items.map((item) =>
+        pipe(
+          UserPlayer.decode(item),
+          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.tap((dec) => {
+            if (!dec?.upgraded) {
+              return;
+            }
+            return pipe(
+              UserPlayer.encode(item),
+              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+            );
+          }),
+        ),
+      ),
+    ),
+    E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
+    E.map((items) => items.filter(Boolean) as typeof UserPlayer.Type[]),
+  );
+
+export const scanServers = () =>
+  pipe(
+    DatabaseDriver.scan({
+      TableName: process.env.DDB_OPERATIONS,
+      IndexName: 'GSI_ALL_SERVERS',
+    }),
+    E.flatMap((res) => E.fromNullable(res.Items)),
+    E.map((items) =>
+      items.map((item) =>
+        pipe(
+          Db.Server.decode(item),
+          E.catchTag('ParseError', () => E.succeed(undefined)),
+          E.tap((dec) => {
+            if (!dec?.upgraded) {
+              return;
+            }
+            return pipe(
+              Db.Server.encode(item),
+              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+            );
+          }),
+        ),
+      ),
+    ),
+    E.flatMap((items) => E.all(items, {concurrency: 'unbounded'})),
+    E.map((items) => items.filter(Boolean) as typeof Db.Server.Type[]),
+  );

@@ -19,13 +19,10 @@ import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
 import {wsBypass} from '../dev/ws-bypass.ts';
 
-
-
 const newLookup = {
   [SetInviteOnly.id]: SetInviteOnly.evaluator,
   [SetOpen.id]      : SetOpen.evaluator,
 };
-
 
 const lookup = pipe(
   [
@@ -45,46 +42,42 @@ const lookup = pipe(
   fromEntries,
 );
 
-
 const h = (event: SQSEvent) => g(function* () {
-  if (yield * wsBypass('task', event, E.void)) {
+  if (yield* wsBypass('task', event, E.void)) {
     return;
   }
 
-  yield * pipe(
+  yield* pipe(
     event.Records,
     mapL((r) => pipe(
       E.gen(function* () {
         const json = JSON.parse(r.body);
 
-        yield * CSL.debug('ScheduledTask', inspect(json, true, null));
-
+        yield* CSL.debug('ScheduledTask', inspect(json, true, null));
 
         if (json.type === 'remind me') {
-          yield * DiscordApi.createMessage(json.channel_id, {
+          yield* DiscordApi.createMessage(json.channel_id, {
 
             content: `<@${json.user_id}> reminder - ${json.message_url}`,
           });
         }
 
         if (json.id in newLookup) {
-          yield * newLookup[json.id](json.data);
+          yield* newLookup[json.id](json.data);
         }
 
-
-        yield * lookup[json.name as keyof typeof lookup](json);
+        yield* lookup[json.name as keyof typeof lookup](json);
       }),
       E.catchAll((err) => logDiscordError([err])),
       E.catchAllCause((e) => E.gen(function* () {
         const error = Cause.prettyErrors(e);
 
-        yield * logDiscordError([error]);
+        yield* logDiscordError([error]);
       })),
     )),
     E.allWith({concurrency: 5}),
   );
 });
-
 
 const LambdaLive = pipe(
   DiscordLayerLive,
@@ -95,6 +88,5 @@ const LambdaLive = pipe(
   })),
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
-
 
 export const handler = makeLambda(h, LambdaLive);
