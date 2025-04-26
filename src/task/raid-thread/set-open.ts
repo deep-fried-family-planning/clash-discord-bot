@@ -1,4 +1,4 @@
-import {Db} from '#src/database/Db';
+import {Db} from '#src/database/schema-methods.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {g, S} from '#src/internal/pure/effect';
 import {MD} from '#src/internal/pure/pure';

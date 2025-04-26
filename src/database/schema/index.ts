@@ -1,4 +1,3 @@
-import {toStandard} from '#src/database/setup/arch.ts';
 import * as AllianceData from '#src/database/schema/alliance-now.ts';
 import * as DiscordEmbedData from '#src/database/schema/discord-embed.ts';
 import * as ServerClanData from '#src/database/schema/server-clan.ts';
@@ -6,9 +5,7 @@ import * as ServerInfoData from '#src/database/schema/server-info.ts';
 import * as ServerData from '#src/database/schema/server-now.ts';
 import * as UserData from '#src/database/schema/user-now.ts';
 import * as UserPlayerData from '#src/database/schema/user-player.ts';
-
-export * as DatabaseSchema from './index.ts';
-export type DatabaseSchema = never;
+import {toStandard} from '#src/database/arch-schema/arch.ts';
 
 export const Alliance = toStandard(AllianceData);
 export const DiscordEmbed = toStandard(DiscordEmbedData);
@@ -35,3 +32,12 @@ export const TagMap = {
   [User.Key.tag]        : User,
   [UserPlayer.Key.tag]  : UserPlayer,
 } as const;
+
+export type Any =
+  | typeof Alliance
+  | typeof DiscordEmbed
+  | typeof Server
+  | typeof ServerInfo
+  | typeof ServerClan
+  | typeof User
+  | typeof UserPlayer;

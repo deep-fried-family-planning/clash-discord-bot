@@ -109,7 +109,7 @@ export class DbClient extends E.Service<DbClient>()('deepfryer/DbClient', {
         limiter.partitionReadUnits,
       );
 
-    const queryIndex = (idx: any, last?: QueryCommandOutput) =>
+    const queryIndex = (idx: any, expression: any, values: any, last?: QueryCommandOutput | null) =>
       pipe(
         dynamo.query({
           TableName        : process.env.DDB_OPERATIONS,

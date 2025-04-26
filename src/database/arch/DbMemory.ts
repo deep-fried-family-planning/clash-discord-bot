@@ -113,4 +113,5 @@ export class DbMemory extends E.Service<DbMemory>()('deepfryer/DbMemory', {
       IndexScans,
     };
   }),
+  dependencies: [DbClient.Default],
 }) {}

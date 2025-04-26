@@ -1,4 +1,4 @@
-import {PkSk} from '#src/database/setup/index.ts';
+import {PkSk} from '#src/database/arch-schema/index.ts';
 import type {GsiKey, GsiName, GsiType} from '#src/database/constants/index.ts';
 import {S} from '#src/internal/pure/effect.ts';
 

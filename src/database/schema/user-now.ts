@@ -1,8 +1,8 @@
-import {asKey, asLatest, toLatest} from '#src/database/setup/arch.ts';
+import {asKey, asLatest, toLatest} from '#src/database/arch-schema/arch.ts';
 import {DiscordUser} from '#src/dynamo/schema/discord-user';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
-import {PkSk, DataTag} from '#src/database/setup/index.ts';
+import {PkSk, DataTag} from '#src/database/arch-schema/index.ts';
 
 export const Key = asKey(
   DataTag.USER,

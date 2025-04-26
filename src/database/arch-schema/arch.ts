@@ -1,4 +1,4 @@
-import type {DataTag} from '#src/database/setup/index.ts';
+import type {DataTag} from '#src/database/arch-schema/index.ts';
 import {E, forbiddenTransform, pipe, S} from '#src/internal/pure/effect.ts';
 import {DateTime, Duration, flow} from 'effect';
 
@@ -9,6 +9,36 @@ export type CompositeKey =
   }
   | Record<string, any>;
 export type CacheKey = string;
+
+export const prependKey = (start: string) =>
+  pipe(
+    S.String,
+    S.startsWith(start),
+    S.transform(
+      S.String,
+      {
+        decode: (s) => s.slice(start.length),
+        encode: (s) => start.concat(s),
+      },
+    ),
+    S.transform(
+      S.String,
+      {
+        decode: (s) => {
+          if (s.startsWith(start)) {
+            throw new Error();
+          }
+          return s;
+        },
+        encode: (s) => {
+          if (s.startsWith(start)) {
+            throw new Error();
+          }
+          return s;
+        },
+      },
+    ),
+  );
 
 export const Created = S.transformOrFail(
   S.DateTimeUtc,

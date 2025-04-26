@@ -1,148 +1,56 @@
 import {Database} from '#src/database/arch/Database.ts';
-import {ServerClan, UserPlayer} from '#src/database/schema/index.ts';
-import {GSITag} from '#src/database/setup/enum.ts';
+import {GSI_ALL_CLANS, GSI_ALL_PLAYERS, GSI_ALL_SERVERS} from '#src/database/constants/gtag.ts';
+import {Db} from '#src/database/schema-methods.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {Db, saveItem, readPartition} from '#src/database/Db.ts';
 
 export const getClansForServer = (pk: string) =>
-  readPartition(ServerClan, pk);
+  Db.readPartition(Db.ServerClan, pk);
 
 export const queryServerClans = (sk: string) =>
   pipe(
-    Database.query({
-      TableName                : process.env.DDB_OPERATIONS,
-      IndexName                : 'GSI_ALL_CLANS',
-      KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
-      ExpressionAttributeValues: {
-        ':gsi_clan_tag': ServerClan.encodeSk(sk),
+    Database.queryIndexCached(
+      'GSI_ALL_CLANS',
+      'gsi_clan_tag = :gsi_clan_tag',
+      {
+        ':gsi_clan_tag': Db.ServerClan.encodeSk(sk),
       },
-    }),
-    E.flatMap((res) => E.fromNullable(res.Items)),
-    E.flatMap((items) =>
-      E.all(
-        items.map((item) =>
-          pipe(
-            ServerClan.decode(item),
-            E.catchTag('ParseError', () => E.succeed(undefined)),
-            E.tap((dec) => {
-              if (!dec?.upgraded) {
-                return;
-              }
-              return saveItem(ServerClan, dec);
-            }),
-          ),
-        ),
-        {concurrency: 'unbounded'},
-      ),
     ),
-    E.map((items) => items.filter(Boolean) as typeof ServerClan.Type[]),
+    E.flatMap((items) => Db.decodeUpgradeItems(Db.ServerClan, items)),
   );
 
 export const scanServerClans = () =>
   pipe(
-    Database.readIndexCached(GSITag.ALL_CLANS),
-    E.flatMap((items) =>
-      E.all(
-        items.map((item) =>
-          pipe(
-            ServerClan.decode(item),
-            E.catchTag('ParseError', () => E.succeed(undefined)),
-            E.tap((dec) => {
-              if (!dec?.upgraded) {
-                return;
-              }
-              return saveItem(ServerClan, dec);
-            }),
-          ),
-        ),
-        {concurrency: 'unbounded'},
-      ),
-    ),
-    E.map((items) => items.filter(Boolean) as typeof ServerClan.Type[]),
+    Database.readIndexCached(GSI_ALL_CLANS),
+    E.flatMap((items) => Db.decodeUpgradeItems(Db.ServerClan, items)),
   );
 
 export const getPlayersForServer = (pk: string) =>
-  readPartition(UserPlayer, pk);
+  Db.readPartition(Db.UserPlayer, pk);
 
 export const queryUserPlayers = (sk: string) =>
   pipe(
-    Database.query({
-      TableName                : process.env.DDB_OPERATIONS,
-      IndexName                : 'GSI_ALL_PLAYERS',
-      KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
-      ExpressionAttributeValues: {
-        ':gsi_player_tag': UserPlayer.encodeSk(sk),
+    Database.queryIndexCached(
+      GSI_ALL_PLAYERS,
+      'gsi_player_tag = :gsi_player_tag',
+      {
+        ':gsi_player_tag': Db.UserPlayer.encodeSk(sk),
       },
-    }),
-    E.flatMap((res) => E.fromNullable(res.Items)),
-    E.flatMap((items) =>
-      E.all(
-        items.map((item) =>
-          pipe(
-            UserPlayer.decode(item),
-            E.catchTag('ParseError', () => E.succeed(undefined)),
-            E.tap((dec) => {
-              if (!dec?.upgraded) {
-                return;
-              }
-              return saveItem(UserPlayer, dec);
-            }),
-          ),
-        ),
-        {concurrency: 'unbounded'},
-      ),
     ),
-    E.map((items) => items.filter(Boolean) as typeof UserPlayer.Type[]),
+    E.flatMap((items) => Db.decodeUpgradeItems(Db.UserPlayer, items)),
   );
 
 export const scanUserPlayers = () =>
   pipe(
-    Database.readIndexCached(GSITag.ALL_PLAYERS),
-    E.flatMap((items) =>
-      E.all(
-        items.map((item) =>
-          pipe(
-            UserPlayer.decode(item),
-            E.catchTag('ParseError', () => E.succeed(undefined)),
-            E.tap((dec) => {
-              if (!dec?.upgraded) {
-                return;
-              }
-              return saveItem(UserPlayer, dec);
-            }),
-          ),
-        ),
-        {concurrency: 'unbounded'},
-      ),
-    ),
+    Database.readIndexCached(GSI_ALL_PLAYERS),
+    E.flatMap((items) => Db.decodeUpgradeItems(Db.UserPlayer, items)),
     E.map((items) => {
       console.log(items);
-      return items.filter(Boolean) as typeof UserPlayer.Type[];
+      return items.filter(Boolean) as typeof Db.UserPlayer.Type[];
     }),
   );
 
 export const scanServers = () =>
   pipe(
-    Database.readIndexCached(GSITag.ALL_SERVERS),
-    E.flatMap((items) =>
-      E.all(
-        items.map((item) =>
-          pipe(
-            Db.Server.decode(item),
-            E.catchTag('ParseError', (e) => {
-              console.log(e);
-              return E.succeed(undefined);
-            }),
-            E.tap((dec) => {
-              console.log(dec);
-              if (!dec?.upgraded) {
-                return;
-              }
-              return saveItem(Db.Server, dec);
-            }),
-          ),
-          {concurrency: 'unbounded'},
-        ),
-      ),
-    ),
+    Database.readIndexCached(GSI_ALL_SERVERS),
+    E.flatMap((items) => Db.decodeUpgradeItems(Db.Server, items)),
   );

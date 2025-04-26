@@ -1,7 +1,7 @@
-import {asLatest} from '#src/database/setup/arch.ts';
-import {PkSk, DataTag} from '#src/database/setup/index.ts';
+import {asLatest} from '#src/database/arch-schema/arch.ts';
+import {PkSk, DataTag} from '#src/database/arch-schema/index.ts';
 import {S} from '#src/internal/pure/effect.ts';
-import {asKey} from '#src/database/setup/arch.ts';
+import {asKey} from '#src/database/arch-schema/arch.ts';
 
 export const Key = asKey(
   DataTag.ALLIANCE,

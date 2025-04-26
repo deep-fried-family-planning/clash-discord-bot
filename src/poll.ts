@@ -79,21 +79,27 @@ export const h = () => E.gen(function* () {
   );
 }).pipe(
   E.awaitAllChildren,
-  E.catchAllDefect((d) => console.log(d)),
+  E.catchAllDefect((d) => {
+    console.log(d);
+    return E.die(d);
+  }),
 );
 
-export const LambdaLive = pipe(
-  Database.Default,
-  L.provideMerge(ClashKing.Live),
-  L.provideMerge(ClashOfClans.Live),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-  L.provideMerge(Scheduler.defaultLayer),
-  L.provideMerge(SQS.defaultLayer),
-  L.provideMerge(ApiGatewayManagementApi.layer({
-    endpoint: process.env.APIGW_DEV_WS,
-  })),
-  L.provideMerge(DiscordLayerLive),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-);
-
-export const handler = makeLambda(h, LambdaLive);
+export const handler = makeLambda({
+  handler: h,
+  layer  : pipe(
+    L.mergeAll(
+      Database.Default,
+      ClashKing.Live,
+      ClashOfClans.Live,
+      Scheduler.defaultLayer,
+      SQS.defaultLayer,
+      ApiGatewayManagementApi.layer({
+        endpoint: process.env.APIGW_DEV_WS,
+      }),
+      DiscordLayerLive,
+    ),
+    L.provide(DynamoDBDocument.defaultLayer),
+    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+  ),
+});

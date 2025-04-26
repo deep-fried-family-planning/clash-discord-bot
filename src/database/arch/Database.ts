@@ -1,7 +1,9 @@
+import type {CacheKey, CompositeKey} from '#src/database/arch-schema/arch.ts';
 import {DbClient} from '#src/database/arch/DbClient.ts';
 import {DbMemory} from '#src/database/arch/DbMemory.ts';
-import type {CacheKey, CompositeKey} from '#src/database/setup/arch.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {E} from '#src/internal/pure/effect.ts';
+import type {QueryCommandOutput} from '@aws-sdk/lib-dynamodb';
+import {identity, pipe} from 'effect';
 
 const cacheKey = (key: CompositeKey | Record<string, any>): CacheKey =>
   `${key.pk}/${key.sk}`;
@@ -118,10 +120,27 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         E.tap(IndexScans.invalidateAll),
       );
 
+    const queryIndexCached = (index: string, expression: string, values: any) =>
+      pipe(
+        E.loop({done: null as null | QueryCommandOutput}, {
+          step : identity,
+          while: (c) => !c.done || !c.done.LastEvaluatedKey,
+          body : (c) =>
+            pipe(
+              client.queryIndex(index, expression, values, c.done),
+              E.map((r) => {
+                c.done = r;
+                return r.Items ?? [];
+              }),
+            ),
+        }),
+        E.map((rs) => rs.flat()),
+      );
+
     return {
       memory,
       ...client,
-      createItemCached: (...p: any) => E.log('createItem', p),
+      createItemCached,
       createItemsCached,
       readItemCached,
       readItemsCached,
@@ -130,6 +149,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
       updateItemCached,
       deleteItemCached,
       deleteItemsCached,
+      queryIndexCached,
     };
   }),
   dependencies: [DbClient.Default, DbMemory.Default],

@@ -73,6 +73,7 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
+    "@aws-sdk/lib-dynamodb": "3.797.0",
     "@changesets/cli": "2.29.2",
     "@commitlint/cli": "19.8.0",
     "@commitlint/config-conventional": "19.8.0",

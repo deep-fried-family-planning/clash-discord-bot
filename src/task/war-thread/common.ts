@@ -1,4 +1,4 @@
-import {Db} from '#src/database/Db.ts';
+import {Db} from '#src/database/schema-methods.ts';
 import {ThreadId} from '#src/dynamo/schema/common.ts';
 import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';

@@ -1,5 +1,5 @@
-import {asKey, asLatest, ClanVerification, SelectMetadata, toLatest} from '#src/database/setup/arch.ts';
-import {PkSk, DataTag} from '#src/database/setup/index.ts';
+import {asKey, asLatest, ClanVerification, SelectMetadata, toLatest} from '#src/database/arch-schema/arch.ts';
+import {PkSk, DataTag} from '#src/database/arch-schema/index.ts';
 import {DiscordClan} from '#src/dynamo/schema/discord-clan';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
