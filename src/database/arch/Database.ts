@@ -1,8 +1,7 @@
-import {Client} from '#src/database/arch/Client.ts';
+import {DbClient} from '#src/database/arch/DbClient.ts';
+import {DbMemory} from '#src/database/arch/DbMemory.ts';
 import type {CacheKey, CompositeKey} from '#src/database/setup/arch.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
-import {Cache, Chunk, Duration, identity} from 'effect';
 
 const cacheKey = (key: CompositeKey | Record<string, any>): CacheKey =>
   `${key.pk}/${key.sk}`;
@@ -18,79 +17,19 @@ const compKey = (key: CacheKey): CompositeKey => {
 
 export class Database extends E.Service<Database>()('deepfryer/Database', {
   effect: E.gen(function* () {
-    const client = yield* Client;
+    const {_, _tag, ...client} = yield* DbClient;
     const {TableName} = client;
+    const memory = yield* DbMemory;
+    const {Items, Partitions, IndexScans} = memory;
 
-    const lookupItem = (key: string) =>
-      pipe(
-        client.readItem(compKey(key)),
-        E.flatMap((res) => E.fromNullable(res.Item)),
-      );
-
-    const lookupPartition = (pk: string) =>
-      pipe(
-        E.loop({done: null as null | QueryCommandOutput}, {
-          step : identity,
-          while: (c) => !c.done || !!c.done?.LastEvaluatedKey,
-          body : (c) =>
-            pipe(
-              client.readPartition(pk, c.done),
-              E.map((res) => {
-                c.done = res;
-                return res.Items ?? [];
-              }),
-            ),
-        }),
-        E.map((cs) => cs.flat()),
-      );
-
-    const lookupIndex = (key: string) =>
-      pipe(
-        E.loop({done: null as null | ScanCommandOutput}, {
-          step : identity,
-          while: (c) => c.done === null || !!c.done?.LastEvaluatedKey,
-          body : (c) =>
-            pipe(
-              client.scan({
-                TableName        : client.TableName,
-                IndexName        : key,
-                ExclusiveStartKey: c.done?.LastEvaluatedKey,
-              }),
-              E.map((res) => {
-                c.done = res;
-                return res.Items ?? [];
-              }),
-            ),
-        }),
-        E.map((rs) => rs.flat()),
-      );
-
-    const Items = yield* Cache.make({
-      capacity  : 10000,
-      timeToLive: Duration.minutes(3),
-      lookup    : lookupItem,
-    });
-
-    const Partitions = yield* Cache.make({
-      capacity  : 1000,
-      timeToLive: Duration.minutes(3),
-      lookup    : lookupPartition,
-    });
-
-    const IndexScans = yield* Cache.make({
-      capacity  : 10,
-      timeToLive: Duration.minutes(3),
-      lookup    : lookupIndex,
-    });
-
-    const createItem = (item: CompositeKey | Record<string, any>) =>
+    const createItemCached = (item: CompositeKey | Record<string, any>) =>
       pipe(
         client.createItem(item),
         E.tap(Items.set(cacheKey(item), item)),
         E.tap(Partitions.invalidate(item.pk)),
       );
 
-    const createItems = (items: (CompositeKey | Record<string, any>)[]) =>
+    const createItemsCached = (items: (CompositeKey | Record<string, any>)[]) =>
       pipe(
         client.createItems(items),
         E.tap(
@@ -106,10 +45,10 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const readItem = (key: CompositeKey) =>
+    const readItemCached = (key: CompositeKey) =>
       Items.get(cacheKey(key));
 
-    const readItems = (keys: CompositeKey[]) =>
+    const readItemsCached = (keys: CompositeKey[]) =>
       pipe(
         client.readItems(keys),
         E.map((res) => res.Responses![TableName]),
@@ -120,7 +59,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const readPartition = (pk: string) =>
+    const readPartitionCached = (pk: string) =>
       pipe(
         Partitions.get(pk),
         E.tap((items) =>
@@ -130,9 +69,9 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const readIndex = (key: string) =>
+    const readIndexCached = (idx: string) =>
       pipe(
-        IndexScans.get(key),
+        IndexScans.get(idx),
         E.tap((items) =>
           E.fork(
             E.forEach(items, (item) => Items.set(cacheKey(item), item)),
@@ -140,7 +79,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const updateItem = (key: CompositeKey, update: Record<string, any>) =>
+    const updateItemCached = (key: CompositeKey, update: Record<string, any>) =>
       pipe(
         client.update({
           TableName,
@@ -155,7 +94,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         }),
       );
 
-    const deleteItem = (key: CompositeKey) =>
+    const deleteItemCached = (key: CompositeKey) =>
       pipe(
         client.deleteItem(key),
         E.tap(Items.invalidate(cacheKey(key))),
@@ -163,7 +102,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         E.tap(IndexScans.invalidateAll),
       );
 
-    const deleteItems = (keys: CompositeKey[]) =>
+    const deleteItemsCached = (keys: CompositeKey[]) =>
       pipe(
         client.deleteItems(keys),
         E.tap(
@@ -180,25 +119,20 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
       );
 
     return {
-      client,
-      Items,
-      Partitions,
-      TableName,
-      createItem: (...p: any) => E.log('createItem', p),
-      createItems,
-      readItem,
-      readItems,
-      readPartition,
-      readIndex,
-      updateItem,
-      deleteItem,
-      deleteItems,
-      lookupItem,
-      lookupPartition,
-      lookupIndex,
+      memory,
+      ...client,
+      createItemCached: (...p: any) => E.log('createItem', p),
+      createItemsCached,
+      readItemCached,
+      readItemsCached,
+      readPartitionCached,
+      readIndexCached,
+      updateItemCached,
+      deleteItemCached,
+      deleteItemsCached,
     };
   }),
-  dependencies: [Client.Default],
+  dependencies: [DbClient.Default, DbMemory.Default],
   accessors   : true,
 }) {}
 

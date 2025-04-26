@@ -1,134 +1,138 @@
-import {Capacity} from '#src/database/arch/Capacity.ts';
+import {DbLimiter} from '#src/database/arch/DbLimiter.ts';
 import {E, pipe} from '#src/internal/pure/effect';
 import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {Data} from 'effect';
 
-export class Client extends E.Service<Client>()('deepfryer/Client', {
+export class DbClientError extends Data.TaggedError('deepfryer/DbClientError')<{}> {}
+
+export class DbClient extends E.Service<DbClient>()('deepfryer/DbClient', {
   effect: E.gen(function* () {
-    const dynamoDB = yield* DynamoDBDocument;
-    const capacity = yield* Capacity;
+    const dynamo = yield* DynamoDBDocument;
+    const limiter = yield* DbLimiter;
 
     const createItem = (encoded: any) =>
       pipe(
-        dynamoDB.put({
+        dynamo.put({
           TableName: process.env.DDB_OPERATIONS,
           Item     : encoded,
         }),
-        capacity.withEncodedWriteCapacity(encoded),
+        limiter.encodedWriteUnits(encoded),
       );
 
     const createItems = (items: any[]) =>
       pipe(
-        dynamoDB.batchWrite({
+        dynamo.batchWrite({
           RequestItems: {
             [process.env.DDB_OPERATIONS]: items.map((item) => ({PutRequest: {Item: item}})),
           },
         }),
-        capacity.withEncodedWriteCapacity(items),
+        limiter.encodedWriteUnits(items),
       );
 
     const readItem = (key: any, estimate?: number) =>
       pipe(
-        dynamoDB.get({
+        dynamo.get({
           TableName     : process.env.DDB_OPERATIONS,
           Key           : key,
           ConsistentRead: true,
         }),
-        capacity.withEstimatedReadCapacity(estimate),
+        limiter.estimateReadUnits(estimate),
       );
 
     const readItems = (ks: any[], estimate?: number) =>
       pipe(
-        dynamoDB.batchGet({
+        dynamo.batchGet({
           RequestItems: {
             [process.env.DDB_OPERATIONS]: {Keys: ks.map((key) => ({Key: key}))},
           },
         }),
-        capacity.withEstimatedReadCapacity(estimate ?? ks.length),
+        limiter.estimateReadUnits(estimate ?? ks.length),
       );
 
     const updateItem = (key: any, fields: any, estimate?: number) =>
       pipe(
-        dynamoDB.update({
+        dynamo.update({
           TableName: process.env.DDB_OPERATIONS,
           Key      : key,
         }),
-        capacity.withEstimatedWriteCapacity(estimate),
+        limiter.estimateWriteUnits(estimate),
       );
 
     const updateItems = (ks: any[], estimate?: number) =>
       pipe(
-        dynamoDB.update({
+        dynamo.update({
           TableName: process.env.DDB_OPERATIONS,
           Key      : {},
         }),
-        capacity.withEstimatedWriteCapacity(estimate ?? ks.length),
+        limiter.estimateWriteUnits(estimate ?? ks.length),
       );
 
     const deleteItem = (key: any, estimate?: number) =>
       pipe(
-        dynamoDB.delete({
+        dynamo.delete({
           TableName: process.env.DDB_OPERATIONS,
           Key      : key,
         }),
-        capacity.withEstimatedWriteCapacity(estimate),
+        limiter.estimateWriteUnits(estimate),
       );
 
     const deleteItems = (ks: any[], estimate?: number) =>
       pipe(
-        dynamoDB.batchWrite({
+        dynamo.batchWrite({
           RequestItems: {
             [process.env.DDB_OPERATIONS]: ks.map((key) => ({DeleteRequest: {Key: key}})),
           },
         }),
-        capacity.withEstimatedWriteCapacity(estimate ?? ks.length),
+        limiter.estimateWriteUnits(estimate ?? ks.length),
       );
 
     const readPartition = (pk: string, last?: QueryCommandOutput | null) =>
       pipe(
-        dynamoDB.query({
+        dynamo.query({
           TableName                : process.env.DDB_OPERATIONS,
           ConsistentRead           : true,
           KeyConditionExpression   : 'pk = :pk',
           ExpressionAttributeValues: {':pk': pk},
           ExclusiveStartKey        : last?.LastEvaluatedKey,
         }),
-        capacity.partitionedReadUnits,
+        limiter.partitionReadUnits,
       );
 
     const queryPartition = (key: string, last?: QueryCommandOutput, limit?: number) =>
       pipe(
-        dynamoDB.query({
+        dynamo.query({
           TableName        : process.env.DDB_OPERATIONS,
           Limit            : limit ?? undefined,
           ExclusiveStartKey: last?.LastEvaluatedKey,
         }),
-        capacity.partitionedReadUnits,
+        limiter.partitionReadUnits,
       );
 
     const queryIndex = (idx: any, last?: QueryCommandOutput) =>
       pipe(
-        dynamoDB.query({
+        dynamo.query({
           TableName        : process.env.DDB_OPERATIONS,
           IndexName        : idx.name,
           ExclusiveStartKey: last?.LastEvaluatedKey,
         }),
-        capacity.indexedReadUnits,
+        limiter.indexReadUnits,
       );
 
     const scanIndex = (name: string, last?: ScanCommandOutput) =>
       pipe(
-        dynamoDB.scan({
+        dynamo.scan({
           TableName        : process.env.DDB_OPERATIONS,
           IndexName        : name,
           ExclusiveStartKey: last?.LastEvaluatedKey,
         }),
-        capacity.indexedReadUnits,
+        limiter.indexReadUnits,
       );
 
     return {
+      limiter,
       TableName: process.env.DDB_OPERATIONS,
-      ...dynamoDB,
+      ...dynamo,
       createItem,
       readItem,
       updateItem,
@@ -143,5 +147,5 @@ export class Client extends E.Service<Client>()('deepfryer/Client', {
       scanIndex,
     };
   }),
-  dependencies: [DynamoDBDocument.defaultLayer, Capacity.Default],
+  dependencies: [DynamoDBDocument.defaultLayer, DbLimiter.Default],
 }) {}

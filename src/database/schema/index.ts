@@ -25,3 +25,13 @@ export type ServerInfo = typeof ServerInfo.Type;
 export type ServerClan = typeof ServerClan.Type;
 export type User = typeof User.Type;
 export type UserPlayer = typeof UserPlayer.Type;
+
+export const TagMap = {
+  [Alliance.Key.tag]    : Alliance,
+  [DiscordEmbed.Key.tag]: DiscordEmbed,
+  [Server.Key.tag]      : Server,
+  [ServerInfo.Key.tag]  : ServerInfo,
+  [ServerClan.Key.tag]  : ServerClan,
+  [User.Key.tag]        : User,
+  [UserPlayer.Key.tag]  : UserPlayer,
+} as const;

@@ -1,11 +1,13 @@
 import type {DataTag} from '#src/database/setup/index.ts';
 import {E, forbiddenTransform, pipe, S} from '#src/internal/pure/effect.ts';
-import {Console, DateTime, flow} from 'effect';
+import {DateTime, Duration, flow} from 'effect';
 
-export type CompositeKey = {
-  pk: string;
-  sk: string;
-} | Record<string, any>;
+export type CompositeKey =
+  {
+    pk: string;
+    sk: string;
+  }
+  | Record<string, any>;
 export type CacheKey = string;
 
 export const Created = S.transformOrFail(
@@ -23,6 +25,24 @@ export const Updated = S.transformOrFail(
   {
     decode: (dt) => E.succeed(dt),
     encode: () => DateTime.now,
+  },
+);
+
+export const DynamoTimeToLive = S.transformOrFail(
+  S.DateTimeUtcFromNumber,
+  S.NullishOr(S.DateTimeUtcFromSelf),
+  {
+    decode: (dt) => E.succeed(dt),
+    encode: (dt) => dt
+      ? E.succeed(dt)
+      : pipe(
+        DateTime.now,
+        E.map(
+          DateTime.addDuration(
+            Duration.minutes(3),
+          ),
+        ),
+      ),
   },
 );
 
@@ -126,7 +146,7 @@ export const toLatest = <
 
 export const toStandard = <
   Key extends ReturnType<typeof asKey>,
-  Latest extends ReturnType<typeof toLatest>,
+  Latest extends S.Schema<any, any>,
   A extends Latest['Type'],
   I,
   R,

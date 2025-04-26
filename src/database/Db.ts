@@ -16,9 +16,15 @@ export type Any =
   | typeof Schema.User
   | typeof Schema.UserPlayer;
 
+export const saveItem = <A extends Any>(s: A, item: A['Type']) =>
+  pipe(
+    s.encode(item) as E.Effect<any, ParseError>,
+    E.flatMap((enc) => Database.createItemCached(enc as any)),
+  );
+
 export const readItem = <A extends Any>(s: A, pk: string, sk: string) =>
   pipe(
-    Database.readItem(
+    Database.readItemCached(
       s.encodeKey(pk, sk),
     ),
     E.flatMap((item) => s.decode(item) as E.Effect<A['Type'], ParseError>),
@@ -26,11 +32,7 @@ export const readItem = <A extends Any>(s: A, pk: string, sk: string) =>
       if (!dec.upgraded) {
         return;
       }
-      return pipe(
-        s.encode(dec) as E.Effect<A['Encoded'], ParseError>,
-        E.flatMap((enc) => Database.createItem(enc)),
-        E.fork,
-      );
+      return E.fork(saveItem(s, dec));
     }),
   );
 
@@ -38,7 +40,7 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
   pipe(
     s.encodePk(pk),
     E.succeed,
-    E.flatMap((enc) => Database.readPartition(enc)),
+    E.flatMap((enc) => Database.readPartitionCached(enc)),
     E.flatMap((partition) =>
       pipe(
         partition.map((item) =>
@@ -49,11 +51,7 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
               if (!dec?.upgraded) {
                 return;
               }
-              return pipe(
-                s.encode(dec) as E.Effect<A['Encoded'], ParseError>,
-                E.flatMap((enc) => Database.createItem(enc)),
-                E.fork,
-              );
+              return E.fork(saveItem(s, dec));
             }),
           ),
         ),
@@ -63,13 +61,7 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
     ),
   );
 
-export const saveItem = <A extends Any>(s: A, item: A['Type']) =>
-  pipe(
-    s.encode(item) as E.Effect<any, ParseError>,
-    E.flatMap((enc) => Database.createItem(enc as any)),
-  );
-
 export const deleteItem = <A extends Any>(s: A, pk: string, sk: string) =>
-  Database.deleteItem(
+  Database.deleteItemCached(
     s.encodeKey(pk, sk),
   );
