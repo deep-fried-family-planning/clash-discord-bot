@@ -53,7 +53,7 @@ export const serverRaid = (server: Db.Server) => g(function* () {
     raids: thread.id,
   };
 
-  yield* Db.save(Db.Server, updated);
+  yield* Db.saveItem(Db.Server, updated);
 
   yield* SetInviteOnly.send({
     group: yield* encodeServerId(server.pk),

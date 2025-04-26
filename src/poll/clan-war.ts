@@ -112,7 +112,7 @@ export const eachClan = (server: Db.Server, clan: Db.ServerClan, players: Db.Use
     auto_archive_duration: 1440,
   }).json;
 
-  yield* Db.save(Db.ServerClan, {
+  yield* Db.saveItem(Db.ServerClan, {
     ...clan,
     prep_opponent: prepWar.opponent.tag,
     thread_prep  : thread.id,

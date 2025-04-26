@@ -1,7 +1,7 @@
-import {DatabaseDriver} from '#src/database/DatabaseDriver.ts';
+import {Database} from '#src/database/arch/Database.ts';
 import {ServerClan, UserPlayer} from '#src/database/schema/index.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import { GSITag } from './arch/enum';
+import { GSITag } from '#src/database/setup/enum';
 import { Db } from './Db';
 
 export const getClansForServer = (pk: string) =>
@@ -9,7 +9,7 @@ export const getClansForServer = (pk: string) =>
 
 export const queryServerClans = (sk: string) =>
   pipe(
-    DatabaseDriver.query({
+    Database.query({
       TableName                : process.env.DDB_OPERATIONS,
       IndexName                : 'GSI_ALL_CLANS',
       KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
@@ -29,7 +29,7 @@ export const queryServerClans = (sk: string) =>
             }
             return pipe(
               ServerClan.encode(dec),
-              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+              E.flatMap((enc) => Database.cachedSave(enc)),
             );
           }),
         ),
@@ -41,7 +41,7 @@ export const queryServerClans = (sk: string) =>
 
 export const scanServerClans = () =>
   pipe(
-    DatabaseDriver.cachedScanIndex(GSITag.ALL_CLANS),
+    Database.cachedScanIndex(GSITag.ALL_CLANS),
     E.map((items) =>
       items.map((item) =>
         pipe(
@@ -53,7 +53,7 @@ export const scanServerClans = () =>
             }
             return pipe(
               ServerClan.encode(dec),
-              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+              E.flatMap((enc) => Database.cachedSave(enc)),
             );
           }),
         ),
@@ -68,7 +68,7 @@ export const getPlayersForServer = (pk: string) =>
 
 export const queryUserPlayers = (sk: string) =>
   pipe(
-    DatabaseDriver.query({
+    Database.query({
       TableName                : process.env.DDB_OPERATIONS,
       IndexName                : 'GSI_ALL_PLAYERS',
       KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
@@ -88,7 +88,7 @@ export const queryUserPlayers = (sk: string) =>
             }
             return pipe(
               UserPlayer.encode(dec),
-              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+              E.flatMap((enc) => Database.cachedSave(enc)),
             );
           }),
         ),
@@ -100,7 +100,7 @@ export const queryUserPlayers = (sk: string) =>
 
 export const scanUserPlayers = () =>
   pipe(
-    DatabaseDriver.cachedScanIndex(GSITag.ALL_PLAYERS),
+    Database.cachedScanIndex(GSITag.ALL_PLAYERS),
     E.map((items) =>
       items.map((item) =>
         pipe(
@@ -112,7 +112,7 @@ export const scanUserPlayers = () =>
             }
             return pipe(
               UserPlayer.encode(dec),
-              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+              E.flatMap((enc) => Database.cachedSave(enc)),
             );
           }),
         ),
@@ -127,7 +127,7 @@ export const scanUserPlayers = () =>
 
 export const scanServers = () =>
   pipe(
-    DatabaseDriver.scanIndex('GSI_ALL_SERVERS'),
+    Database.scanIndex('GSI_ALL_SERVERS'),
     E.map((items) =>
       items.map((item) =>
         pipe(
@@ -143,7 +143,7 @@ export const scanServers = () =>
             }
             return pipe(
               Db.Server.encode(dec),
-              E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+              E.flatMap((enc) => Database.cachedSave(enc)),
             );
           }),
         ),

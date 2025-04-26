@@ -1,5 +1,5 @@
 import type * as Schema from '#src/database/schema/index.ts';
-import {DatabaseDriver} from '#src/database/DatabaseDriver.ts';
+import {Database} from '#src/database/arch/Database.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {ParseError} from 'effect/ParseResult';
 
@@ -16,9 +16,9 @@ export type Any =
   | typeof Schema.User
   | typeof Schema.UserPlayer;
 
-export const read = <A extends Any>(s: A, pk: string, sk: string) =>
+export const readItem = <A extends Any>(s: A, pk: string, sk: string) =>
   pipe(
-    DatabaseDriver.cachedRead(
+    Database.readItem(
       s.encodeKey(pk, sk),
     ),
     E.flatMap((item) => s.decode(item) as E.Effect<A['Type'], ParseError>),
@@ -28,7 +28,7 @@ export const read = <A extends Any>(s: A, pk: string, sk: string) =>
       }
       return pipe(
         s.encode(dec) as E.Effect<A['Encoded'], ParseError>,
-        E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+        E.flatMap((enc) => Database.createItem(enc)),
         E.fork,
       );
     }),
@@ -38,7 +38,7 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
   pipe(
     s.encodePk(pk),
     E.succeed,
-    E.flatMap((enc) => DatabaseDriver.cachedReadPartition(enc)),
+    E.flatMap((enc) => Database.readPartition(enc)),
     E.flatMap((partition) =>
       pipe(
         partition.map((item) =>
@@ -51,7 +51,7 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
               }
               return pipe(
                 s.encode(dec) as E.Effect<A['Encoded'], ParseError>,
-                E.flatMap((enc) => DatabaseDriver.cachedSave(enc)),
+                E.flatMap((enc) => Database.createItem(enc)),
                 E.fork,
               );
             }),
@@ -63,13 +63,13 @@ export const readPartition = <A extends Any>(s: A, pk: string) =>
     ),
   );
 
-export const save = <A extends Any>(s: A, item: A['Type']) =>
+export const saveItem = <A extends Any>(s: A, item: A['Type']) =>
   pipe(
     s.encode(item) as E.Effect<any, ParseError>,
-    E.flatMap((enc) => DatabaseDriver.cachedSave(enc as any)),
+    E.flatMap((enc) => Database.createItem(enc as any)),
   );
 
-export const erase = <A extends Any>(s: A, pk: string, sk: string) =>
-  DatabaseDriver.cachedErase(
+export const deleteItem = <A extends Any>(s: A, pk: string, sk: string) =>
+  Database.deleteItem(
     s.encodeKey(pk, sk),
   );

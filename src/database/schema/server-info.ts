@@ -1,5 +1,5 @@
-import {asKey, asLatest, SelectMetadata, toLatest} from '#src/database/arch/arch.ts';
-import {PkSk, DataTag} from '#src/database/arch/index.ts';
+import {asKey, asLatest, SelectMetadata, toLatest} from '#src/database/setup/arch.ts';
+import {PkSk, DataTag} from '#src/database/setup/index.ts';
 import {DiscordInfo} from '#src/dynamo/schema/discord-info';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';

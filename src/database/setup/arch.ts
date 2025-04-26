@@ -1,4 +1,4 @@
-import type {DataTag} from '#src/database/arch/index.ts';
+import type {DataTag} from '#src/database/setup/index.ts';
 import {E, forbiddenTransform, pipe, S} from '#src/internal/pure/effect.ts';
 import {Console, DateTime, flow} from 'effect';
 

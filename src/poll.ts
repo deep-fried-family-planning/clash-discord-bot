@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DatabaseDriver} from '#src/database/DatabaseDriver.ts';
+import {Database} from '#src/database/arch/Database.ts';
 import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/temp.ts';
 import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -30,9 +30,9 @@ export const h = () => E.gen(function* () {
   yield* invokeCount(E.succeed(''));
   yield* showMetric(invokeCount);
 
-  // if (yield* wsBypass('poll', {}, E.void)) {
-  //   return;
-  // }
+  if (yield* wsBypass('poll', {}, E.void)) {
+    return;
+  }
 
   const now = yield* DT.now;
   const isRaidWeekend = Cron.match(raidWeekend, now);
@@ -83,7 +83,7 @@ export const h = () => E.gen(function* () {
 );
 
 export const LambdaLive = pipe(
-  DatabaseDriver.Default,
+  Database.Default,
   L.provideMerge(ClashKing.Live),
   L.provideMerge(ClashOfClans.Live),
   L.provideMerge(DynamoDBDocument.defaultLayer),

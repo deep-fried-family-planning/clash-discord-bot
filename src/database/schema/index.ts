@@ -1,4 +1,4 @@
-import {toStandard} from '#src/database/arch/arch.ts';
+import {toStandard} from '#src/database/setup/arch.ts';
 import * as AllianceData from '#src/database/schema/alliance-now.ts';
 import * as DiscordEmbedData from '#src/database/schema/discord-embed.ts';
 import * as ServerClanData from '#src/database/schema/server-clan.ts';
