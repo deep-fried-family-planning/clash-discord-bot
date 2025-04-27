@@ -1,8 +1,5 @@
-
-
+import {Db} from '#src/database/db.ts';
 import {ThreadId} from '#src/dynamo/schema/common.ts';
-import {type DClan, DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
-import {DiscordServer, type DServer} from '#src/dynamo/schema/discord-server.ts';
 import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
@@ -12,8 +9,6 @@ import type {ClanWar} from 'clashofclans.js';
 import type {Channel} from 'dfx/types';
 import type {DurationInput} from 'effect/Duration';
 
-
-
 export const TEMP_ROLES = {
   warmanager : '1269057897577578577',
   staff      : '1266214350339969127',
@@ -22,10 +17,9 @@ export const TEMP_ROLES = {
   donator    : '1254791225022615623',
 };
 
-
 export const WarThreadData = S.Struct({
-  server  : DiscordServer,
-  clan    : DiscordClan,
+  server  : Db.Server.Schema,
+  clan    : Db.ServerClan.Schema,
   clanName: S.String,
   opponent: S.Struct({
     name: S.String,
@@ -38,10 +32,8 @@ export const WarThreadData = S.Struct({
   }),
 });
 
-
 export type TaskEffect = E.Effect<void, any, any>;
 export type TaskSchema = S.Schema<{name: str}, any, any>;
-
 
 export const makeTask = <
   Eval extends TaskEffect,
@@ -63,13 +55,13 @@ export const makeTask = <
     send: (
       fromTime: Date,
       withDuration: DurationInput,
-      server: DServer,
-      clan: DClan,
+      server: Db.Server,
+      clan: Db.ServerClan,
       war: ClanWar,
       thread: Channel,
       links: Record<str, str>,
     ) => g(function* () {
-      const encoded = yield * encode({
+      const encoded = yield* encode({
         name: name,
         data: {
           server,
@@ -90,7 +82,7 @@ export const makeTask = <
         DT.addDuration(withDuration),
       );
 
-      const resolvedTime = (yield * DT.isFuture(maybeTime))
+      const resolvedTime = (yield* DT.isFuture(maybeTime))
         ? maybeTime
         : pipe(
           new Date(Date.now()),
@@ -104,7 +96,7 @@ export const makeTask = <
         (iso) => iso.replace(/\..+Z/, ''),
       );
 
-      yield * Scheduler.createSchedule({
+      yield* Scheduler.createSchedule({
         GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
         Name     : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
 
@@ -123,11 +115,11 @@ export const makeTask = <
     }),
 
     evaluator: (task: unknown) => g(function* () {
-      const decoded = yield * decode(task);
+      const decoded = yield* decode(task);
 
-      const taskWars = yield * getTaskWars(decoded.data);
+      const taskWars = yield* getTaskWars(decoded.data);
 
-      return yield * evaluator(decoded.data, taskWars);
+      return yield* evaluator(decoded.data, taskWars);
     }),
   };
 };
