@@ -4,11 +4,8 @@ import {toId} from '#src/internal/discord-old/store/id-build.ts';
 import {IXCTS} from '#src/internal/discord.ts';
 import {UI} from 'dfx';
 
-
-
-export const EDIT_DATE_TIME_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'EDT'});
+export const EDIT_DATE_TIME_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'EDT'});
 export const EDIT_DATE_TIME_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'EDT'});
-
 
 export const EditEpochT = makeText({
   kind: RK_TEXT,
@@ -18,7 +15,6 @@ export const EditEpochT = makeText({
   style      : IXCTS.SHORT,
   placeholder: 'epoch timestamp',
 });
-
 
 export const EditDateTimeModal = {
   title     : 'Edit Date Time',

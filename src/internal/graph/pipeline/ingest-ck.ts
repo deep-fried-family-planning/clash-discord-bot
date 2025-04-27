@@ -10,8 +10,6 @@ import {concatL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import type {Player} from 'clashofclans.js';
 import {toEntries} from 'effect/Record';
 
-
-
 export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPrevious?: CK_Player_PreviousHits[]) => {
   console.log('[INGEST]: starting...');
 
@@ -26,7 +24,7 @@ export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPr
         concatL(wars),
         reduceL({} as IDKV<DispatchedWar>, (acc, w) => {
           const ordered = [w.clans[0].cid, w.clans[1].cid].sort();
-          const key     = `${ordered[0]}_${ordered[1]}`;
+          const key = `${ordered[0]}_${ordered[1]}`;
 
           if (key in acc) {
             acc[key] = w.hits.length > acc[key].hits.length

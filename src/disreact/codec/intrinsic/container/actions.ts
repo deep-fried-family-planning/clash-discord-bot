@@ -6,8 +6,8 @@ import {Primary} from '#src/disreact/codec/intrinsic/component/primary.ts';
 import {Secondary} from '#src/disreact/codec/intrinsic/component/secondary.ts';
 import {Success} from '#src/disreact/codec/intrinsic/component/success.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 import {Util} from '../util';
 
 export * as Actions from '#src/disreact/codec/intrinsic/container/actions.ts';

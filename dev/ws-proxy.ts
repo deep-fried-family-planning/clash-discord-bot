@@ -1,12 +1,9 @@
 import {CFG, E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
 import {fromParameterStore} from '@effect-aws/ssm';
 import hapi from '@hapi/hapi';
 import Nes from '@hapi/nes';
 import {delay} from 'effect/Effect';
 import {WebSocket} from 'ws';
-
-
 
 const wss = await pipe(
   CFG.redacted('/dffp/qual/dev_ws'),
@@ -14,9 +11,7 @@ const wss = await pipe(
   E.runPromise,
 );
 
-
 const socket = new WebSocket(RDT.value(wss));
-
 
 process.on('unhandledRejection', (err) => {
   console.log(err);
@@ -24,13 +19,12 @@ process.on('unhandledRejection', (err) => {
   process.exit(1);
 });
 
-socket.onopen  = () => {
+socket.onopen = () => {
   console.log('WebSocket connected');
 };
 socket.onclose = () => {
   console.log('WebSocket closed', socket);
 };
-
 
 while (!socket.readyState) {
   console.log('readyState', socket.readyState);
@@ -42,7 +36,6 @@ while (!socket.readyState) {
 socket.onerror = (error) => {
   console.error('WebSocket error:', error);
 };
-
 
 const server = hapi.server({
   host: 'localhost',

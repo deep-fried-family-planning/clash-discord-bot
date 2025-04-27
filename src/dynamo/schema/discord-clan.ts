@@ -8,8 +8,6 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Console, Schema as S} from 'effect';
 
-
-
 export const DiscordClan = S.Struct({
   type: S.Literal('DiscordClan'),
 
@@ -46,10 +44,8 @@ export const DiscordClan = S.Struct({
 });
 export type DClan = S.Schema.Type<typeof DiscordClan>;
 
-
 export const encodeDiscordClan = S.encodeUnknown(DiscordClan);
 export const decodeDiscordClan = S.decodeUnknown(DiscordClan);
-
 
 export const putDiscordClan = (record: DClan) => pipe(
   encodeDiscordClan(record),
@@ -62,7 +58,6 @@ export const putDiscordClan = (record: DClan) => pipe(
   )),
   E.as(record),
 );
-
 
 export const getDiscordClan = (key: CompKey<DClan>) => pipe(
   [encodeServerId(key.pk), encodeClanTag(key.sk)],
@@ -90,7 +85,6 @@ export const getDiscordClan = (key: CompKey<DClan>) => pipe(
   )),
 );
 
-
 export const queryDiscordClanForServer = (key: Pick<CompKey<DClan>, 'pk'>) => pipe(
   encodeServerId(key.pk),
   E.flatMap((pk) => DynamoDBDocument.query({
@@ -112,7 +106,6 @@ export const queryDiscordClanForServer = (key: Pick<CompKey<DClan>, 'pk'>) => pi
     )),
   )),
 );
-
 
 export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
   encodeClanTag(key.sk),
@@ -136,7 +129,6 @@ export const queryDiscordClan = (key: Pick<CompKey<DClan>, 'sk'>) => pipe(
   )),
 );
 
-
 export const scanDiscordClans = () => pipe(
   DynamoDBDocument.scan({
     TableName: process.env.DDB_OPERATIONS,
@@ -153,7 +145,6 @@ export const scanDiscordClans = () => pipe(
     )),
   )),
 );
-
 
 export const deleteDiscordClan = (key: CompKey<DClan>) => pipe(
   [encodeServerId(key.pk), encodeClanTag(key.sk)],

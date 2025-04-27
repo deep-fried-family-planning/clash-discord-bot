@@ -5,8 +5,6 @@ import type {DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 
-
-
 export const ingestCkPlayerPreviousWars = (playerPreviousHits: CK_Player_PreviousHits[]): DispatchedWar[] => pipe(
   playerPreviousHits,
   mapL((p): CK_War => ({

@@ -1,8 +1,6 @@
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {parse} from 'regexparam';
 
-
-
 export type Route = {
   custom_id: str;
   template : str;
@@ -21,7 +19,6 @@ export type Route = {
   backPredicate: str;
 };
 export type RouteParams = Route['params'];
-
 
 const templates = [
   '/k/:kind/t/:type/nk/:nextKind/nt/:nextType/bk/:backKind/bt/:backType/f/:forward/d/:data',
@@ -46,7 +43,6 @@ const templates = [
 
   '/k/:kind',
 ] as const;
-
 
 export const ID_ROUTES = templates.map((template) => {
   const route = parse(template);

@@ -1,8 +1,6 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
 import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
@@ -40,7 +38,6 @@ export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function*
   // };
 
   // return (yield * synthesize(OmniPublic)) as unknown as Message;
-
 
   return yield* DisReact.createRoot(OmniBoard);
 });

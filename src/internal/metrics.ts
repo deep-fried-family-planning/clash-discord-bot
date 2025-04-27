@@ -1,8 +1,6 @@
 import {E, flow, Metric, pipe} from '#src/internal/pure/effect.ts';
 import {Console} from 'effect';
 
-
-
 export const invokeCount = Metric
   .counter('invoke_count', {
     description: 'total invokes in lambda instance lifetime',

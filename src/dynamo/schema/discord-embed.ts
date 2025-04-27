@@ -2,14 +2,11 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {EmbedId, NowId, ServerId, UserId} from '#src/dynamo/schema/common.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
-
-
 export const equalField = S.equivalence(S.Struct({
   name  : S.String,
   value : S.String,
   inline: S.optional(S.Boolean),
 }));
-
 
 const DiscordApiEmbed = S.Struct({
   type: S.optional(S.Enums({
@@ -66,14 +63,11 @@ const DiscordApiEmbed = S.Struct({
   timestamp: S.optional(S.String),
 });
 
-
 export type DApiEmbed = S.Schema.Type<typeof DiscordApiEmbed>;
 export const equalDiscordApiEmbed = S.equivalence(DiscordApiEmbed);
 
-
 export type DEmbed = S.Schema.Type<typeof DiscordEmbed>;
 export type DEmbedKey = CompKey<DEmbed>;
-
 
 export const DiscordEmbed = S.Struct({
   type: S.Literal('DiscordEmbed'),
@@ -95,7 +89,6 @@ export const DiscordEmbed = S.Struct({
 
   embed: DiscordApiEmbed,
 });
-
 
 export const encodeDiscordEmbed = S.encodeUnknown(DiscordEmbed);
 export const decodeDiscordEmbed = S.decodeUnknown(DiscordEmbed);

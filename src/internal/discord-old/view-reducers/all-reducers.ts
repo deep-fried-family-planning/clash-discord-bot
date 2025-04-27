@@ -28,8 +28,6 @@ import {serverViewerAdminReducer} from '#src/internal/discord-old/view-reducers/
 import {serverViewerReducer} from '#src/internal/discord-old/view-reducers/server-viewer.ts';
 import {userEditReducer} from '#src/internal/discord-old/view-reducers/user-settings.ts';
 
-
-
 export const allReducers = {
   ...linkAccountReducer,
   ...linkAccountAdminReducer,

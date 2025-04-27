@@ -6,10 +6,7 @@ import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {EmbedField} from 'dfx/types';
 
-
-
 export const isAdmin = (s: St) => s.user_roles.includes(s.server?.admin as snflk);
-
 
 export const toReferenceFields = (fields: Record<str, EmbedField | und>) => pipe(
   fields,
@@ -20,7 +17,6 @@ export const toReferenceFields = (fields: Record<str, EmbedField | und>) => pipe
     return fs;
   }),
 );
-
 
 export const toReferenceFieldssssss = (fields: Record<str, str | und>) => pipe(
   fields,
@@ -34,7 +30,6 @@ export const toReferenceFieldssssss = (fields: Record<str, str | und>) => pipe(
     return fs;
   }),
 );
-
 
 export const fromReferenceFields = (fields?: EmbedField[]) => fields
   ? pipe(

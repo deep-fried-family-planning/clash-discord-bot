@@ -4,18 +4,14 @@ import {toId} from '#src/internal/discord-old/store/id-build.ts';
 import {IXCTS} from '#src/internal/discord.ts';
 import {UI} from 'dfx';
 
-
-
-export const LINK_ACCOUNT_BULK_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'LAB'});
+export const LINK_ACCOUNT_BULK_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'LAB'});
 export const LINK_ACCOUNT_BULK_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'LAB'});
-
 
 export const BulkCSV = makeText({kind: RK_TEXT, type: 'PT'}, {
   label      : 'CSV',
   style      : IXCTS.PARAGRAPH,
   placeholder: 'discord_id, player_tag,',
 });
-
 
 export const LinkAccountBulkModal = {
   title     : 'Link Account',

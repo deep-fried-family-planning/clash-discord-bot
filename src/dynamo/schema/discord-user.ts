@@ -5,8 +5,6 @@ import {DynamoError} from '#src/internal/errors.ts';
 import {CSL, E, pipe, S} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
 export const DiscordUser = S.Struct({
   pk     : UserId,
   sk     : NowId,
@@ -25,10 +23,8 @@ export const DiscordUser = S.Struct({
 });
 export type DUser = S.Schema.Type<typeof DiscordUser>;
 
-
 export const decodeDiscordUser = S.decodeUnknown(DiscordUser);
 export const encodeDiscordUser = S.encodeUnknown(DiscordUser);
-
 
 export const putDiscordUser = (record: DUser) => pipe(
   encodeDiscordUser(record),
@@ -40,7 +36,6 @@ export const putDiscordUser = (record: DUser) => pipe(
     E.tap(CSL.log('[PUT DDB]: player encoded', encoded)),
   )),
 );
-
 
 export const getDiscordUser = (key: Pick<CompKey<DUser>, 'pk'>) => pipe(
   encodeUserId(key.pk),

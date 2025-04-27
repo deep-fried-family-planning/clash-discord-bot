@@ -4,11 +4,8 @@ import {toId} from '#src/internal/discord-old/store/id-build.ts';
 import {IXCTS} from '#src/internal/discord.ts';
 import {UI} from 'dfx';
 
-
-
-export const EDIT_EMBED_MODAL_OPEN   = toId({kind: RK_MODAL_OPEN, type: 'EE'});
+export const EDIT_EMBED_MODAL_OPEN = toId({kind: RK_MODAL_OPEN, type: 'EE'});
 export const EDIT_EMBED_MODAL_SUBMIT = toId({kind: RK_MODAL_SUBMIT, type: 'EE'});
-
 
 export const EditEmbedTitleT = makeText({
   kind: RK_TEXT,
@@ -19,7 +16,6 @@ export const EditEmbedTitleT = makeText({
   placeholder: 'title',
 });
 
-
 export const EditEmbedDescriptionT = makeText({
   kind: RK_TEXT,
   type: 'EED',
@@ -29,7 +25,6 @@ export const EditEmbedDescriptionT = makeText({
   placeholder: 'description',
 });
 
-
 export const EditEmbedColorT = makeText({
   kind: RK_TEXT,
   type: 'EEC',
@@ -38,7 +33,6 @@ export const EditEmbedColorT = makeText({
   style      : IXCTS.SHORT,
   placeholder: 'hex value',
 });
-
 
 export const EditEmbedModal = {
   title     : 'Edit Embed',

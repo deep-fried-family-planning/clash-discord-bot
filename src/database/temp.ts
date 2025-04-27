@@ -1,6 +1,6 @@
-import {Database} from '#src/database/service/Database.ts';
 import {GSI_ALL_CLANS, GSI_ALL_PLAYERS, GSI_ALL_SERVERS} from '#src/database/arch-data/constants/gsi-tag.ts';
 import {Db} from '#src/database/db.ts';
+import {Database} from '#src/database/service/Database.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 
 export const getClansForServer = (pk: string) =>

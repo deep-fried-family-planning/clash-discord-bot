@@ -2,6 +2,7 @@ import {SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.ts';
 import {LABEL_TITLE_ROSTER_ADMIN} from '#src/constants/label.ts';
 import {PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {rosterDelete} from '#src/dynamo/operations/roster.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -11,26 +12,22 @@ import {DateTimeEditorB} from '#src/internal/discord-old/view-reducers/editors/e
 import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-editor.ts';
 import {ClanSelectB} from '#src/internal/discord-old/view-reducers/old/clan-select.ts';
 import {RosterS, RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
-import {rosterDelete} from '#src/dynamo/operations/roster.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const RosterViewerAdminB = AdminB.as(makeId(RK_OPEN, 'RVA'));
-const Submit                    = SubmitB.as(makeId(RK_SUBMIT, 'RVA'));
-const Delete                    = DeleteB.as(makeId(RK_DELETE, 'RVA'));
-const ConfirmDelete             = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVA'));
-const TypeS                     = SingleS.as(makeId(RK_UPDATE, 'RCT'), {
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'RVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'RVA'));
+const ConfirmDelete = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVA'));
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'RCT'), {
   placeholder: PLACEHOLDER_ROSTER_TYPE,
   options    : SELECT_ROSTER_TYPE,
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Roster = RosterS.fromMap(s.cmap);
-  const Type   = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
   const isEditDisabled
           = (Submit.clicked(ax)
@@ -40,7 +37,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     : {};
 
   if (ConfirmDelete.clicked(ax)) {
-    yield * rosterDelete({pk: s.server_id, sk: Roster.values[0]});
+    yield* rosterDelete({pk: s.server_id, sk: Roster.values[0]});
   }
 
   return {
@@ -86,7 +83,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       }),
   } satisfies St;
 });
-
 
 export const rosterViewerAdminReducer = {
   [RosterViewerAdminB.id.predicate]: view,

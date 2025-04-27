@@ -1,10 +1,7 @@
 import {RestCache} from '#src/clash/layers/restcache.ts';
 import {clashErrorFromUndefined, type ClashperkError, SlashUserError} from '#src/internal/errors.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Client, type Player} from 'clashofclans.js';
-
-
 
 type ClashClient = {
                      [k in keyof Pick<
@@ -22,7 +19,6 @@ type ClashClient = {
                    } & {
                      validateTag: (tag: string) => E.Effect<string, SlashUserError>;
                    };
-
 
 const program = E.gen(function* () {
   const client = new Client({
@@ -119,10 +115,8 @@ const program = E.gen(function* () {
         E.catchAll(clashErrorFromUndefined),
       ),
 
-
   } as ClashClient;
 });
-
 
 export class ClashOfClans extends E.Tag('ClashOfClans')<ClashOfClans, ClashClient>() {
   static Live = pipe(
@@ -130,4 +124,3 @@ export class ClashOfClans extends E.Tag('ClashOfClans')<ClashOfClans, ClashClien
     L.provide(RestCache.Live),
   );
 }
-

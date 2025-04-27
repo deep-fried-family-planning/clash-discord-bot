@@ -1,4 +1,4 @@
-import {Metric, MetricBoundaries} from 'effect';
+import {Metric} from 'effect';
 
 export const DatabaseRequestCount = Metric.counter(
   'database_request_count',

@@ -12,16 +12,13 @@ import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embe
 import {LinkB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const LinkClanB = NewB.as(makeId(RK_OPEN, 'LCT'));
-const ChannelS         = SingleChannelS.as(makeId(RK_UPDATE, 'LCT'), {
+const ChannelS = SingleChannelS.as(makeId(RK_UPDATE, 'LCT'), {
   placeholder: PLACEHOLDER_WAR_COUNTDOWN,
 });
-const TypeToModalB     = SuccessB.as(LINK_CLAN_MODAL_OPEN, {
+const TypeToModalB = SuccessB.as(LINK_CLAN_MODAL_OPEN, {
   label: LABEL_CLAN_TAG,
 });
-
 
 const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -49,13 +46,12 @@ const view1 = (s: St, ax: Ax) => E.gen(function* () {
   } satisfies St;
 });
 
-
 const view2 = (s: St, ax: Ax) => E.gen(function* () {
   const tag = ClanTagT.fromMap(ax.cmap);
 
   const Countdown = ChannelS.fromMap(s.cmap);
 
-  const message = yield * clanfam(s.original, {
+  const message = yield* clanfam(s.original, {
     clan     : tag?.component.value ?? '',
     countdown: Countdown.values[0],
   }).pipe(
@@ -66,7 +62,6 @@ const view2 = (s: St, ax: Ax) => E.gen(function* () {
       }],
     })),
   );
-
 
   return {
     ...s,
@@ -87,7 +82,6 @@ const view2 = (s: St, ax: Ax) => E.gen(function* () {
     forward: ForwardB.as(LinkB.id),
   } satisfies St;
 });
-
 
 export const linkClanReducer = {
   [LinkClanB.id.predicate]          : view1,

@@ -1,9 +1,9 @@
 import {RestCache} from '#src/clash/layers/restcache.ts';
 import {E, L} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {it} from '@effect/vitest';
 import {pipe} from 'effect';
 import {describe} from 'vitest';
-import {it} from '@effect/vitest';
 
 describe('restcache', () => {
   const mockPut = vi.fn();
@@ -19,8 +19,8 @@ describe('restcache', () => {
     'thing', E.fn(
       function* () {
         mockPut.mockReturnValue(E.void);
-        const restcache = yield * RestCache;
-        yield * E.awaitAllChildren(restcache.set('test key', {}));
+        const restcache = yield* RestCache;
+        yield* E.awaitAllChildren(restcache.set('test key', {}));
         expect(mockPut.mock.calls).toMatchInlineSnapshot(`
           [
             [

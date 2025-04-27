@@ -5,23 +5,19 @@ import {DeepFryerUnknownError} from '#src/internal/errors.ts';
 import {E, L, pipe, RL} from '#src/internal/pure/effect.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 
-
-
 type ClashKingClient = {
   previousHits: (pid: string, limit: num) => E.Effect<CK_Player_PreviousHits[], DeepFryerUnknownError>;
   previousWars: (cid: string, limit: num) => E.Effect<CK_War[], DeepFryerUnknownError>;
 };
-
 
 const rate = RL.make({
   limit   : 5,
   interval: '1 seconds',
 });
 
-
 const program = E.gen(function* () {
-  const api       = bindApiCall('https://api.clashking.xyz');
-  const rateLimit = yield * rate;
+  const api = bindApiCall('https://api.clashking.xyz');
+  const rateLimit = yield* rate;
 
   return {
     previousHits: (pid, limit: num) => pipe(
@@ -63,7 +59,6 @@ const program = E.gen(function* () {
     ),
   } as ClashKingClient;
 });
-
 
 export class ClashKing extends E.Tag('ClashKingService')<ClashKing, ClashKingClient>() {
   static Live = L.scoped(this, program);

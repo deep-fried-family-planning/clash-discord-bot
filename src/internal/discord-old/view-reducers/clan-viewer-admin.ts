@@ -10,26 +10,23 @@ import {ClanViewerB, ClanViewerSelector} from '#src/internal/discord-old/view-re
 import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-editor.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const ClanViewerAdminB = AdminB.as(makeId(RK_OPEN, 'CVA'), {});
-const Submit                  = SubmitB.as(makeId(RK_SUBMIT, 'CVA'));
-const Delete                  = DeleteB.as(makeId(RK_DELETE, 'CVA'));
-const DeleteConfirm           = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'CVA'));
-const ClanTypeS               = SingleS.as(makeId(RK_UPDATE, 'CVAT'), {
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'CVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'CVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'CVA'));
+const ClanTypeS = SingleS.as(makeId(RK_UPDATE, 'CVAT'), {
   placeholder: PLACEHOLDER_CLAN_TYPE,
 });
-const CountdownS              = SingleChannelS.as(makeId(RK_UPDATE, 'CVAC'), {
+const CountdownS = SingleChannelS.as(makeId(RK_UPDATE, 'CVAC'), {
   placeholder: PLACEHOLDER_WAR_COUNTDOWN,
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
-  const ClanType  = ClanTypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  const ClanType = ClanTypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
   const Countdown = CountdownS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-  const Clan      = ClanViewerSelector.fromMap(s.cmap);
+  const Clan = ClanViewerSelector.fromMap(s.cmap);
 
   return {
     ...s,
@@ -76,7 +73,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     forward: ForwardB.fwd(ClanViewerB.id),
   } satisfies St;
 });
-
 
 export const clanViewerAdminReducer = {
   [ClanViewerAdminB.id.predicate]: view,

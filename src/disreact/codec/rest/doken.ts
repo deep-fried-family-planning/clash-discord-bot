@@ -1,9 +1,7 @@
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {D, DT, E, hole} from '#src/disreact/utils/re-exports.ts';
 import {DR, pipe, S} from '#src/internal/pure/effect.ts';
-import {Duration, Either, Option} from 'effect';
-import {DateTime} from 'effect';
-import { Redacted} from 'effect';
+import {DateTime, Duration, Either, Option, Redacted} from 'effect';
 import {Snowflake} from 'src/disreact/codec/snowflake.ts';
 
 export * as Doken from '#src/disreact/codec/rest/doken.ts';

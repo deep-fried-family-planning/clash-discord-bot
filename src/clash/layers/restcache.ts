@@ -1,8 +1,6 @@
-
 import {C, E, L, S} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {DateTime, Exit, pipe} from 'effect';
-import {satisfies} from 'effect/Function';
 
 const RestCacheKey = S.Struct(
   {
@@ -28,10 +26,8 @@ const RestCacheDataOrUndefined = S.Union(
 type RestCacheData = typeof RestCacheData.Type;
 type RestCacheDataOrUndefined = typeof RestCacheDataOrUndefined.Type;
 
-
 const encodeRestCacheData = S.encodeSync(RestCacheData);
 const decodeRestCacheData = S.decodeUnknownSync(RestCacheDataOrUndefined);
-
 
 type IRestCache = {
   set: (key: string, data: any) => E.Effect<void>;
@@ -41,8 +37,6 @@ type IRestCache = {
 export class RestCache extends E.Tag('DeepFryer.RestCache')<RestCache, IRestCache>() {
   static readonly Live = L.suspend(() => L.effect(this, make));
 }
-
-
 
 const make = E.gen(function* () {
   const dynamo = yield* DynamoDBDocument;
@@ -56,7 +50,7 @@ const make = E.gen(function* () {
           onFailure: () => '0 minutes',
           onSuccess: (cached) => {
             if (!cached) return '0 minutes';
-            const now       = E.runSync(DateTime.now);
+            const now = E.runSync(DateTime.now);
             const remaining = DateTime.distanceDuration(now, cached.ttl);
             return remaining;
           },
@@ -75,7 +69,6 @@ const make = E.gen(function* () {
         }),
       ),
   });
-
 
   const set = (key: string, data: any) =>
     pipe(

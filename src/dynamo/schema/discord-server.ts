@@ -7,8 +7,6 @@ import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Console} from 'effect';
 
-
-
 export const DiscordServer = S.Struct({
   type: S.Literal('DiscordServer'),
 
@@ -49,10 +47,8 @@ export const DiscordServer = S.Struct({
 });
 export type DServer = S.Schema.Type<typeof DiscordServer>;
 
-
 export const encodeDiscordServer = S.encodeUnknown(DiscordServer);
 export const decodeDiscordServer = S.decodeUnknown(DiscordServer);
-
 
 export const putDiscordServer = (record: DServer) => pipe(
   encodeDiscordServer(record),
@@ -64,7 +60,6 @@ export const putDiscordServer = (record: DServer) => pipe(
     E.tap(Console.log('[PUT DDB]: server encoded', encoded)),
   )),
 );
-
 
 export const getDiscordServer = (key: CompKey<DServer>) => pipe(
   encodeServerId(key.pk),
@@ -87,7 +82,6 @@ export const getDiscordServer = (key: CompKey<DServer>) => pipe(
     )),
   )),
 );
-
 
 export const scanDiscordServers = () => pipe(
   DynamoDBDocument.scan({

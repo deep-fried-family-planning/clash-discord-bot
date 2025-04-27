@@ -6,8 +6,6 @@ import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {tryOrDefault} from '#src/internal/pure/types-pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 
-
-
 export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: GraphModel) => {
   const [attacks, defenses] = pipe(
     graph.players,

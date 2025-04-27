@@ -9,8 +9,6 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ActionRow, TextInput} from 'dfx/types';
 
-
-
 export type Ax = {
   id      : Route;
   selected: {
@@ -21,7 +19,6 @@ export type Ax = {
   original: IxDm;
   cmap?   : Record<string, Maybe<ComponentMapItem<TextInput>>> | undefined;
 };
-
 
 export const deriveAction = (ix: IxD, d: IxDc | IxDm) => {
   const id = fromId(d.custom_id);

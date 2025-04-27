@@ -8,7 +8,6 @@ export type {
   ApplicationCommandDatum as IxDs,
 } from 'dfx/types';
 
-
 export {
   InteractionType as IXT,
   InteractionCallbackType as IXRT,

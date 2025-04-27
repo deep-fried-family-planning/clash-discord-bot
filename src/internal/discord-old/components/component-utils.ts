@@ -5,10 +5,7 @@ import type {Route} from '#src/internal/discord-old/store/id-routes.ts';
 import type {bool, str, und} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
 
-
-
 export const unset = undefined;
-
 
 export const embedIf = (condition: Embed | bool | und, embed?: Embed) => {
   if (condition) {
@@ -16,7 +13,6 @@ export const embedIf = (condition: Embed | bool | und, embed?: Embed) => {
   }
   return undefined;
 };
-
 
 export const isSystem = (embed?: Embed) => embed?.author?.name === AUTHOR_OMNI_BOARD;
 export const asSystem = (embed?: Embed): Embed => {
@@ -29,7 +25,6 @@ export const asSystem = (embed?: Embed): Embed => {
   };
 };
 
-
 export const isViewer = (embed?: Embed) => embed?.author?.name === AUTHOR_VIEWING;
 export const asViewer = (embed?: Embed): Embed => {
   return {
@@ -39,7 +34,6 @@ export const asViewer = (embed?: Embed): Embed => {
     },
   };
 };
-
 
 export const isEditor = (embed?: Embed) => embed?.author?.name === AUTHOR_EDITING;
 export const asEditor = (embed?: Embed): Embed => {
@@ -51,8 +45,7 @@ export const asEditor = (embed?: Embed): Embed => {
   };
 };
 
-
-export const isStatus  = (embed?: Embed) => [AUTHOR_CONFIRM, AUTHOR_SUCCESS, AUTHOR_FAILURE].includes(embed?.author?.name as str);
+export const isStatus = (embed?: Embed) => [AUTHOR_CONFIRM, AUTHOR_SUCCESS, AUTHOR_FAILURE].includes(embed?.author?.name as str);
 export const asConfirm = (embed?: Embed): Embed => {
   return {
     ...embed,
@@ -80,7 +73,6 @@ export const asFailure = (embed?: Embed): Embed => {
     color: nColor(COLOR.ERROR),
   };
 };
-
 
 export const isClicked = (c: {id: Route}, ax: Ax) =>
   ax.id.predicate === c.id.predicate

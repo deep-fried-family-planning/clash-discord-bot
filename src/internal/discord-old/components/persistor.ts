@@ -9,8 +9,6 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
-
-
 export const encodePersist = (
   ...components: (MadeSelect | MadeButton | MadeSelectChannel | MadeSelectUser | MadeSelectRole)[]
 ) => {
@@ -23,11 +21,9 @@ export const encodePersist = (
   ));
 };
 
-
 export const decodePersist = (components?: str) => components
   ? JSON.parse(components) as Record<str, str[]>
   : {};
-
 
 export const extractPersist = (
   decodedPersist: Record<str, str[]>,

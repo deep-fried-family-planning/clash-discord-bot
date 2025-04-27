@@ -2,11 +2,8 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {EmbedId, InfoId, ServerId} from '#src/dynamo/schema/common.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
-
-
 export type DInfo = S.Schema.Type<typeof DiscordInfo>;
 export type DInfoKey = CompKey<DInfo>;
-
 
 export const DiscordInfo = S.Struct({
   type: S.Literal('DiscordInfo'),
@@ -30,14 +27,12 @@ export const DiscordInfo = S.Struct({
     rule : 'rule',
   } as const),
 
-
   after: S.optional(S.String),
   name : S.optional(S.String),
   desc : S.optional(S.String),
   color: S.optional(S.Number),
   image: S.optional(S.String),
 });
-
 
 export const encodeDiscordInfo = S.encodeUnknown(DiscordInfo);
 export const decodeDiscordInfo = S.decodeUnknown(DiscordInfo);

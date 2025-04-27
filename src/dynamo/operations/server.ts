@@ -5,12 +5,10 @@ import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
 export const serverRead = (server: str) => E.gen(function* () {
-  const serverId = yield * encodeServerId(server);
+  const serverId = yield* encodeServerId(server);
 
-  const item = yield * DynamoDBDocument.get({
+  const item = yield* DynamoDBDocument.get({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {
       pk: serverId,
@@ -19,8 +17,8 @@ export const serverRead = (server: str) => E.gen(function* () {
   });
 
   if (!item.Item) {
-    return yield * new DynamoError({message: '[DiscordServer]: Not found'});
+    return yield* new DynamoError({message: '[DiscordServer]: Not found'});
   }
 
-  return yield * decodeDiscordServer(item.Item);
+  return yield* decodeDiscordServer(item.Item);
 });

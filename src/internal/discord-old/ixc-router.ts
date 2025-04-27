@@ -12,15 +12,13 @@ import {CSL, E} from '#src/internal/pure/effect.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
 export const ixcRouter = (ix: IxD) => E.gen(function* () {
   const ax = deriveAction(ix, ix.data as IxDc);
 
   let s: St | und;
 
   if ([RK_CLOSE].includes(ax.id.params.kind)) {
-    return yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
+    return yield* DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
   }
 
   if ([RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD].includes(ax.id.params.kind)) {
@@ -28,7 +26,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function* () {
   }
 
   if ([RK_MODAL_SUBMIT, RK_MODAL_SUBMIT_FORWARD].includes(ax.id.params.kind)) {
-    const modalState = yield * DynamoDBDocument.get({
+    const modalState = yield* DynamoDBDocument.get({
       TableName: process.env.DDB_OPERATIONS,
       Key      : {
         pk: `t-${ax.id.params.forward!}`,
@@ -37,7 +35,7 @@ export const ixcRouter = (ix: IxD) => E.gen(function* () {
       ConsistentRead: true,
     });
     // yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, modalState.Item!.token as str);
-    yield * DynamoDBDocument.delete({
+    yield* DynamoDBDocument.delete({
       TableName: process.env.DDB_OPERATIONS,
       Key      : {
         pk: `t-${ax.id.params.forward!}`,
@@ -47,37 +45,36 @@ export const ixcRouter = (ix: IxD) => E.gen(function* () {
 
     const json = JSON.parse(modalState.Item!.bodyJSON as str) as IxD;
 
-    s = yield * deriveState(json);
+    s = yield* deriveState(json);
   }
 
-  s ??= yield * deriveState(ix);
+  s ??= yield* deriveState(ix);
 
   if (!s.user) {
     if (ax.id.predicate in userEditReducer) {
-      const next    = yield * allReducers[ax.id.predicate](s, ax);
+      const next = yield* allReducers[ax.id.predicate](s, ax);
       const message = deriveView(next);
 
-      return yield * DiscordApi.editMenu(ix, message);
+      return yield* DiscordApi.editMenu(ix, message);
     }
 
-    const next    = yield * allReducers[UserB.id.predicate](s, {
+    const next = yield* allReducers[UserB.id.predicate](s, {
       ...ax,
       id: UserB.fwd(LinkAccountB.id).id,
     });
     const message = deriveView(next);
 
-    return yield * DiscordApi.editMenu(ix, message);
+    return yield* DiscordApi.editMenu(ix, message);
   }
 
-
   if (ax.id.params.kind === RK_MODAL_SUBMIT) {
-    yield * CSL.debug(s);
-    yield * CSL.debug(ax);
+    yield* CSL.debug(s);
+    yield* CSL.debug(ax);
 
-    const next    = yield * allReducers[ax.id.predicate](s, ax);
+    const next = yield* allReducers[ax.id.predicate](s, ax);
     const message = deriveView(next);
 
-    return yield * DiscordApi.editMenu(ix, message);
+    return yield* DiscordApi.editMenu(ix, message);
   }
 
   const predicate
@@ -87,15 +84,15 @@ export const ixcRouter = (ix: IxD) => E.gen(function* () {
         : ax.id.predicate;
 
   if (!(predicate in allReducers)) {
-    return yield * new SlashUserError({issue: 'Unknown Interaction'});
+    return yield* new SlashUserError({issue: 'Unknown Interaction'});
   }
 
-  const next    = yield * allReducers[predicate](s, ax);
+  const next = yield* allReducers[predicate](s, ax);
   const message = deriveView(next);
 
   // if (ax.id.params.kind === RK_ENTRY) {
   //     return yield * DiscordApi.entryMenu(ix, message);
   // }
 
-  return yield * DiscordApi.editMenu(ix, message);
+  return yield* DiscordApi.editMenu(ix, message);
 });

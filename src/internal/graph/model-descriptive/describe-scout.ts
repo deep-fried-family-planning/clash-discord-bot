@@ -11,8 +11,6 @@ import {collect} from 'effect/Record';
 import {mean as meanThrowable, median as medianThrowable, standardDeviation as stdThrowable} from 'simple-statistics';
 import {compareTwoStrings} from 'string-similarity';
 
-
-
 const median = (xs: num[]) => {
   try {
     return medianThrowable(xs);
@@ -41,7 +39,7 @@ const mean = (xs: num[]) => {
 };
 
 export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
-  const wars    = pipe(graph.model, queryWarsByClan(graph.opponentTag));
+  const wars = pipe(graph.model, queryWarsByClan(graph.opponentTag));
   const attacks = pipe(graph.model, queryAttacksByClan(graph.opponentTag));
 
   const record = pipe(graph.model, queryClan(graph.opponentTag), reduceL([0, 0, 0], (rs, c) => {
@@ -111,8 +109,8 @@ export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
     (n) => 1 - (2 * 0.68 * n),
   );
 
-  const hitsAttempt  = pipe(attacks, filterL((a) => a.data.ore1 === 0));
-  const hitsOre      = pipe(attacks, filterL((a) => a.data.ore1 > 0));
+  const hitsAttempt = pipe(attacks, filterL((a) => a.data.ore1 === 0));
+  const hitsOre = pipe(attacks, filterL((a) => a.data.ore1 > 0));
   const hitsCcReveal = pipe(attacks, filterL((a) => a.data.ccre > 0));
   const hitsPossible = pipe(wars, reduceL(0, (ws, w) => ws + w.data.rules_size * w.data.rules_atks));
 
@@ -121,7 +119,7 @@ export const describeScout = (graph: EAR<typeof buildGraphModel>) => {
   const warsizes = pipe(wars, mapL((w) => w.data.rules_size));
 
   const averageWarSize = pipe(warsizes, mean, (n) => n / 5, Math.round, (n) => Math.trunc(n * 5));
-  const medianWarSize  = median(warsizes);
+  const medianWarSize = median(warsizes);
 
   const th17hr = pipe(
     attacks,

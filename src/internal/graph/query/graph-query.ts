@@ -1,20 +1,17 @@
-
 import type {GClans, GHits, GPlayers, GraphModel, GWars, OptimizedClan, OptimizedHit, OptimizedPlayer, OptimizedWar} from '#src/internal/graph/pipeline/optimize-types.ts';
 import type {CID, PID} from '#src/internal/graph/types.ts';
 import {flow} from '#src/internal/pure/effect.ts';
 import {filterKV, toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {flattenL, mapL} from '#src/internal/pure/pure-list.ts';
 
-
-
 type GQ<I, O> = (m: I) => O;
 type MQ<O> = (model: GraphModel) => O;
 type CGQ<C, O> = (criteria: C) => (model: GraphModel) => O;
 
-const toWars: MQ<GWars>       = flow((m) => m.wars);
-const toClans: MQ<GClans>     = flow((m) => m.clans);
+const toWars: MQ<GWars> = flow((m) => m.wars);
+const toClans: MQ<GClans> = flow((m) => m.clans);
 const toPlayers: MQ<GPlayers> = flow((m) => m.players);
-const toHits: MQ<GHits>       = flow((m) => m.hits);
+const toHits: MQ<GHits> = flow((m) => m.hits);
 
 export const queryClan: CGQ<CID, OptimizedClan[]> = (criteria) => flow(toClans, filterKV((c) => c.data.cid === criteria), toValuesKV);
 

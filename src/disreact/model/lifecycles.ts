@@ -1,12 +1,12 @@
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
+import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
-import {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
 import {MutableList} from 'effect';
 

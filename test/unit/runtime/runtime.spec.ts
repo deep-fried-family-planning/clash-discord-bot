@@ -2,8 +2,8 @@ import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
 import {Fiber, TestClock} from 'effect';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
-import {makeTestRuntime, Snap} from 'test/unit/util.ts';
 import {SNAP} from 'test/unit/snapkey.ts';
+import {makeTestRuntime, Snap} from 'test/unit/util.ts';
 
 const runtime = makeTestRuntime([TestMessage]);
 
@@ -68,7 +68,7 @@ it.effect('when responding', E.fn(function* () {
   // yield* TestClock.setTime(17214773545718);
   yield* Fiber.join(fib2);
 
-  yield * Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
+  yield* Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
   yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '4');
 }));
 

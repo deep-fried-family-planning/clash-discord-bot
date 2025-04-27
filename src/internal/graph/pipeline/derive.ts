@@ -6,8 +6,6 @@ import {filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
 import {orderHits} from '#src/internal/pure/pure.ts';
 import type {n_bool} from '#src/internal/pure/types-pure.ts';
 
-
-
 export const deriveWar = (war: DispatchedWar): DerivedWar => {
   const clans = pipe(war.clans, reduceL({} as IDKV<DispatchedClan>, (acc, c) => {
     acc[c.cid] = c;
@@ -32,11 +30,11 @@ export const deriveWar = (war: DispatchedWar): DerivedWar => {
 
       if (h.stars === 3 && ore1 === 0) {
         acc.ore[h.d_pid] = 1;
-        ore0             = 1;
+        ore0 = 1;
       }
 
-      const attacker    = players[h.a_pid];
-      const defender    = players[h.d_pid];
+      const attacker = players[h.a_pid];
+      const defender = players[h.d_pid];
       const th_lvl_diff = defender.th_lvl - attacker.th_lvl;
 
       acc.hits.push({

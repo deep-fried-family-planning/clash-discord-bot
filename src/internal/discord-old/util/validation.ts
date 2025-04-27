@@ -3,15 +3,13 @@ import type {IxD} from '#src/internal/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
-export const validateServer      = (data: IxD) => E.gen(function* () {
+export const validateServer = (data: IxD) => E.gen(function* () {
   if (!data.member) {
-    return yield * new SlashUserError({issue: 'Contextual authentication failed.'});
+    return yield* new SlashUserError({issue: 'Contextual authentication failed.'});
   }
 
   const server
-          = yield * getDiscordServer({pk: data.guild_id!, sk: 'now'})
+          = yield* getDiscordServer({pk: data.guild_id!, sk: 'now'})
     .pipe(replyError('Server is not registered.'));
 
   return [server, data.member] as const;

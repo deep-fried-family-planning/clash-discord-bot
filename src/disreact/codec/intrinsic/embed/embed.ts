@@ -4,8 +4,8 @@ import {Footer} from '#src/disreact/codec/intrinsic/embed/footer.ts';
 import {Img} from '#src/disreact/codec/intrinsic/embed/img.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 
 export * as Embed from '#src/disreact/codec/intrinsic/embed/embed.ts';
 export type Embed = never;

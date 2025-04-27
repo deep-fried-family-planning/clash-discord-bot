@@ -3,6 +3,7 @@ import {DESC_NO_ACCOUNT_SELECTED} from '#src/constants/description.ts';
 import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/constants/label.ts';
 import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, NewB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -12,26 +13,21 @@ import {AccountViewerAdminB} from '#src/internal/discord-old/view-reducers/accou
 import {LinkAccountB} from '#src/internal/discord-old/view-reducers/links/link-account.ts';
 import {LinkB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {viewUserPlayerOptions} from '#src/internal/discord-old/views/user-player-options.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
-export const AccountViewerB        = PrimaryB.as(makeId(RK_OPEN, 'AV'), {
+export const AccountViewerB = PrimaryB.as(makeId(RK_OPEN, 'AV'), {
   label: LABEL_ACCOUNTS,
 });
 export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
   placeholder: PLACEHOLDER_SELECT_ACCOUNT,
 });
 
-
 export const getPlayers = (s: St) => E.gen(function* () {
-  const records = yield * queryPlayersForUser({pk: s.user_id});
-  const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
+  const records = yield* queryPlayersForUser({pk: s.user_id});
+  const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
   return viewUserPlayerOptions(records, players);
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -40,7 +36,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
 
   if (AccountViewerB.clicked(ax)) {
     Account = AccountViewerAccountS.render({
-      options: yield * getPlayers(s),
+      options: yield* getPlayers(s),
     });
   }
 
@@ -67,7 +63,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
 
     back: BackB.as(LinkB.id),
 
-
     submit:
       !Account.values.length
         ? LinkAccountB.render({
@@ -77,7 +72,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
         : AccountViewerAdminB,
   } satisfies St;
 });
-
 
 export const accountViewerReducer = {
   [AccountViewerB.id.predicate]       : view,

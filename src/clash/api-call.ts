@@ -1,9 +1,5 @@
-
-
 import console from 'node:console';
 import {URL} from 'node:url';
-
-
 
 export const bindApiCall = /* @__PURE__ */ (baseUrl: string) =>
   async <

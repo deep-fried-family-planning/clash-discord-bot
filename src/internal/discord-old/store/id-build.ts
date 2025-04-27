@@ -7,8 +7,6 @@ import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {inject} from 'regexparam';
 
-
-
 export const toId = (params: RouteParams): Route => {
   const redefined = {
     ...params,

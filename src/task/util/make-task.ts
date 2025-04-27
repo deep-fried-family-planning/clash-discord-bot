@@ -1,15 +1,10 @@
-
-
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import type {DurationInput} from 'effect/Duration';
 
-
-
 export type TaskEffect = E.Effect<void, any, any>;
 export type TaskSchema = S.Schema<any, any>;
-
 
 export const TEMP_TEMP_ROLES = {
   warmanager : '1269057897577578577',
@@ -18,7 +13,6 @@ export const TEMP_TEMP_ROLES = {
   coleadtrial: '1269059230955077674',
   donator    : '1254791225022615623',
 };
-
 
 export const makeTask = <
   Eval extends TaskEffect,
@@ -52,7 +46,7 @@ export const makeTask = <
         DT.addDuration(schedule.after),
       );
 
-      const resolvedTime = (yield * DT.isFuture(maybeTime))
+      const resolvedTime = (yield* DT.isFuture(maybeTime))
         ? maybeTime
         : pipe(
           new Date(Date.now()),
@@ -66,7 +60,7 @@ export const makeTask = <
         (iso) => iso.replace(/\..+Z/, ''),
       );
 
-      yield * Scheduler.createSchedule({
+      yield* Scheduler.createSchedule({
         GroupName                 : schedule.group,
         Name                      : schedule.name,
         ScheduleExpression        : `at(${time})`,
@@ -88,7 +82,7 @@ export const makeTask = <
     evaluator: (data: unknown) => g(function* () {
       const decoded = decode(data);
 
-      return yield * evaluator(decoded);
+      return yield* evaluator(decoded);
     }),
   };
 };

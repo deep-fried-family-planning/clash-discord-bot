@@ -3,7 +3,6 @@ import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Source} from '#src/disreact/model/meta/source.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import type {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';

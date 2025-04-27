@@ -2,6 +2,9 @@ import {SELECT_POSITIONS, SELECT_ROSTER_TYPE} from '#src/constants/ix-constants.
 import {LABEL_TITLE_CREATE_ROSTER} from '#src/constants/label.ts';
 import {PLACEHOLDER_POSITION, PLACEHOLDER_ROSTER_TYPE} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
+import {rosterCreate} from '#src/dynamo/operations/roster.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, NewB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -11,21 +14,16 @@ import {dtNow, dtNowIso} from '#src/internal/discord-old/util/markdown.ts';
 import {DateTimeEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-date-time-editor.ts';
 import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-editor.ts';
 import {RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
-import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
-import {rosterCreate} from '#src/dynamo/operations/roster.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {Embed} from 'dfx/types';
 import {v4} from 'uuid';
 
-
-
 const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(function* () {
   const rosterId = v4();
-  const embedId  = v4();
+  const embedId = v4();
 
-  yield * rosterCreate({
+  yield* rosterCreate({
     type: 'DiscordRoster',
     pk  : s.server_id,
     sk  : rosterId,
@@ -49,8 +47,7 @@ const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(fun
     roster_type: type as DRoster['roster_type'],
   });
 
-
-  yield * discordEmbedCreate({
+  yield* discordEmbedCreate({
     type        : 'DiscordEmbed',
     pk          : embedId,
     sk          : 'now',
@@ -70,27 +67,25 @@ const saveRoster = (s: St, type: string, order: num, embed?: Embed) => E.gen(fun
   });
 });
 
-
 export const RosterViewerCreatorB = NewB.as(makeId(RK_OPEN, 'RVC'));
-const Submit                      = SubmitB.as(makeId(RK_SUBMIT, 'RVC'));
-const TypeS                       = SingleS.as(makeId(RK_UPDATE, 'RVCT'), {
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'RVC'));
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'RVCT'), {
   placeholder: PLACEHOLDER_ROSTER_TYPE,
   options    : SELECT_ROSTER_TYPE,
 });
-const PositionS                   = SingleS.as(makeId(RK_UPDATE, 'RVCP'), {
+const PositionS = SingleS.as(makeId(RK_UPDATE, 'RVCP'), {
   placeholder: PLACEHOLDER_POSITION,
   options    : SELECT_POSITIONS,
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
-  const Type     = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  const Type = TypeS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
   const Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
   if (Submit.clicked(ax)) {
-    yield * saveRoster(s, Type.values[0], parseInt(Position.values[0]), s.editor);
+    yield* saveRoster(s, Type.values[0], parseInt(Position.values[0]), s.editor);
   }
 
   return {
@@ -139,7 +134,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     }),
   };
 });
-
 
 export const rosterViewerCreatorReducer = {
   [RosterViewerCreatorB.id.predicate]: view,

@@ -1,8 +1,8 @@
-import {FC} from '#src/disreact/model/elem/fc.ts';
-import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Declare} from '#src/disreact/model/declare.ts';
+import {FC} from '#src/disreact/model/elem/fc.ts';
+import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
+import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Pragma} from '#src/disreact/model/pragma';
 import {Sources} from '#src/disreact/model/Sources.ts';
 import {flow, S} from '#src/disreact/utils/re-exports.ts';

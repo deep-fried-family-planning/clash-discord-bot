@@ -1,10 +1,7 @@
 import {PlayerTag, ServerUserRefId, UserId} from '#src/dynamo/schema/common.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
-
-
 export type DServerUserRef = S.Schema.Type<typeof DiscordServerUserRef>;
-
 
 export const DiscordServerUserRef = S.Struct({
   pk: ServerUserRefId,

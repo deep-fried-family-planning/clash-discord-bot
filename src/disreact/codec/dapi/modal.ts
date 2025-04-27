@@ -1,5 +1,5 @@
 import {S} from '#src/disreact/utils/re-exports.ts';
-import { DAPIComponent } from './dapi-component.ts';
+import {DAPIComponent} from './dapi-component.ts';
 
 export * as DAPIModal from 'src/disreact/codec/dapi/modal.ts';
 export type Modal = never;

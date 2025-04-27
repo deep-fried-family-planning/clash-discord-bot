@@ -1,6 +1,6 @@
 import {Doken, DokenDefect} from '#src/disreact/codec/rest/doken.ts';
-import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Either, Fiber, SynchronizedRef} from 'effect';
 import {Misc} from '../utils/misc';

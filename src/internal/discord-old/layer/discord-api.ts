@@ -8,14 +8,11 @@ import type {DiscordRESTError} from 'dfx/DiscordREST';
 import {DiscordREST} from 'dfx/DiscordREST';
 import type {Message} from 'dfx/types';
 
-
-
 type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof DiscordREST.Service[T]>;
 type DE<T> = E.Effect<T, DiscordRESTError | ResponseError>;
 
-
 const api = E.gen(function* () {
-  const discord = yield * DiscordREST;
+  const discord = yield* DiscordREST;
 
   const executeWebhookJson = (...p: Orig<'executeWebhook'>) => discord.executeWebhook(p[0], p[1], p[2], {
     ...p[3],
@@ -40,14 +37,12 @@ const api = E.gen(function* () {
   };
 });
 
-
 export class DiscordApi extends E.Tag('DeepFryerDiscord')<
   DiscordApi,
   EA<typeof api>
 >() {
   static Live = L.effect(this, api);
 }
-
 
 export const DiscordLayerLive = pipe(
   DiscordApi.Live,

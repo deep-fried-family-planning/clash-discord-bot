@@ -11,19 +11,16 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {LinkB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const LinkAccountB = SuccessB.as(makeId(RK_OPEN, 'SPTO'), {
   label: LABEL_LINK,
 });
-const TypeS               = SingleS.as(makeId(RK_UPDATE, 'SPTU'), {
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'SPTU'), {
   placeholder: LABEL_ACCOUNT_TYPE,
   options    : SELECT_ACCOUNT_TYPE,
 });
-const TypeToModalB        = SuccessB.as(LINK_ACCOUNT_MODAL_OPEN, {
+const TypeToModalB = SuccessB.as(LINK_ACCOUNT_MODAL_OPEN, {
   label: LABEL_PLAYER_TAG_API_TOKEN,
 });
-
 
 const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -47,13 +44,12 @@ const view1 = (s: St, ax: Ax) => E.gen(function* () {
   } satisfies St;
 });
 
-
 const view2 = (s: St, ax: Ax) => E.gen(function* () {
-  const tag          = PlayerTagT.fromMap(ax.cmap);
-  const api          = ApiTokenT.fromMap(ax.cmap);
+  const tag = PlayerTagT.fromMap(ax.cmap);
+  const api = ApiTokenT.fromMap(ax.cmap);
   const account_kind = ax.id.params.data![0];
 
-  const message = yield * oneofus(s.original, {
+  const message = yield* oneofus(s.original, {
     player_tag  : tag?.component.value ?? '',
     api_token   : api?.component.value ?? '',
     account_kind: account_kind,
@@ -93,7 +89,6 @@ const view2 = (s: St, ax: Ax) => E.gen(function* () {
     forward: ForwardB.as(LinkB.id),
   } satisfies St;
 });
-
 
 export const linkAccountReducer = {
   [LinkAccountB.id.predicate]          : view1,

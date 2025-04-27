@@ -4,12 +4,10 @@ import type {DRoster, DRosterKey} from '#src/dynamo/schema/discord-roster.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
 export const infoCreate = (info: DInfo) => E.gen(function* () {
-  const encoded = yield * encodeDiscordInfo(info);
+  const encoded = yield* encodeDiscordInfo(info);
 
-  yield * DynamoDBDocument.put({
+  yield* DynamoDBDocument.put({
     TableName: process.env.DDB_OPERATIONS,
     Item     : encoded,
   });
@@ -17,24 +15,22 @@ export const infoCreate = (info: DInfo) => E.gen(function* () {
   return encoded;
 });
 
-
 export const infoRead = (info: DInfoKey) => E.gen(function* () {
-  const pk = yield * encodeServerId(info.pk);
-  const sk = yield * encodeInfoId(info.sk);
+  const pk = yield* encodeServerId(info.pk);
+  const sk = yield* encodeInfoId(info.sk);
 
-  const item = yield * DynamoDBDocument.get({
+  const item = yield* DynamoDBDocument.get({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {pk, sk},
   });
 
-  return yield * decodeDiscordInfo(item.Item);
+  return yield* decodeDiscordInfo(item.Item);
 });
 
-
 export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function* () {
-  const pk = yield * encodeServerId(info.pk);
+  const pk = yield* encodeServerId(info.pk);
 
-  const items = yield * DynamoDBDocument.query({
+  const items = yield* DynamoDBDocument.query({
     TableName                : process.env.DDB_OPERATIONS,
     KeyConditionExpression   : 'pk = :pk AND begins_with(sk, :sk)',
     ExpressionAttributeValues: {
@@ -43,14 +39,13 @@ export const infoQueryByServer = (info: Pick<DInfoKey, 'pk'>) => E.gen(function*
     },
   });
 
-  return yield * E.all(items.Items!.map((i) => decodeDiscordInfo(i)));
+  return yield* E.all(items.Items!.map((i) => decodeDiscordInfo(i)));
 });
 
-
 export const infoUpdate = (info: DRoster) => E.gen(function* () {
-  const encoded = yield * encodeDiscordInfo(info);
+  const encoded = yield* encodeDiscordInfo(info);
 
-  const item = yield * DynamoDBDocument.get({
+  const item = yield* DynamoDBDocument.get({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {
       pk: encoded.pk,
@@ -58,7 +53,7 @@ export const infoUpdate = (info: DRoster) => E.gen(function* () {
     },
   });
 
-  yield * DynamoDBDocument.put({
+  yield* DynamoDBDocument.put({
     TableName: process.env.DDB_OPERATIONS,
     Item     : {
       ...item.Item,
@@ -67,12 +62,11 @@ export const infoUpdate = (info: DRoster) => E.gen(function* () {
   });
 });
 
-
 export const infoDelete = (info: DRosterKey) => E.gen(function* () {
-  const pk = yield * encodeServerId(info.pk);
-  const sk = yield * encodeInfoId(info.sk);
+  const pk = yield* encodeServerId(info.pk);
+  const sk = yield* encodeInfoId(info.sk);
 
-  yield * DynamoDBDocument.delete({
+  yield* DynamoDBDocument.delete({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {pk, sk},
   });

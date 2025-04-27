@@ -6,10 +6,7 @@ import type {Maybe} from '#src/internal/pure/types.ts';
 import {UI} from 'dfx';
 import type {TextInput} from 'dfx/types';
 
-
-
 export type MadeText = ReturnType<typeof makeText>;
-
 
 export const makeText = (
   params: RouteParams | Route,

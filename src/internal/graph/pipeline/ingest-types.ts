@@ -2,8 +2,6 @@ import type {_Model, CID, IGNAME, PID} from '#src/internal/graph/types.ts';
 import type {int, isodate} from '#src/internal/pure/types-pure.ts';
 import type {Player} from 'clashofclans.js';
 
-
-
 export type DispatchedWar =
   & _Model
     & {

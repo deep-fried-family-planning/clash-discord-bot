@@ -8,10 +8,7 @@ import {ServerViewerB} from '#src/internal/discord-old/view-reducers/server-view
 
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const ServerViewerAdminB = AdminB.as(makeId(RK_OPEN, 'SVA'));
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
@@ -26,7 +23,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     back: BackB.as(ServerViewerB.id),
   };
 });
-
 
 export const serverViewerAdminReducer = {
   [ServerViewerAdminB.id.predicate]: view,

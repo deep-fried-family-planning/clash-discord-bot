@@ -1,8 +1,6 @@
 import type {AnyKV, unixdate} from '#src/internal/pure/types-pure.ts';
 import {v4} from 'uuid';
 
-
-
 export type UUID = string;
 export type CID = string;
 export type PID = string;
@@ -14,7 +12,6 @@ export type _Model = {
   _id: UUID;
   _tm: unixdate;
 };
-
 
 export type Any = any;
 

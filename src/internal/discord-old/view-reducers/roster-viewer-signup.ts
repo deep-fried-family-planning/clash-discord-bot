@@ -2,6 +2,11 @@ import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, ROSTER_ROUNDS_ODCWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
 import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
+import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
+import {rosterRead} from '#src/dynamo/operations/roster.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {asSuccess, asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, SingleS, SubmitB, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -10,24 +15,17 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {dtNow} from '#src/internal/discord-old/util/markdown.ts';
 import {RosterS, RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
 import {viewUserPlayerOptions} from '#src/internal/discord-old/views/user-player-options.ts';
-import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
-import {rosterRead} from '#src/dynamo/operations/roster.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {CSL, DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
 import type {SelectOption} from 'dfx/types';
 
-
-
 const getAccounts = (s: St, rosterId: str) => E.gen(function* () {
-  const records = yield * queryPlayersForUser({pk: s.user_id});
-  const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
+  const records = yield* queryPlayersForUser({pk: s.user_id});
+  const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
-  const signup = yield * rosterSignupRead({
+  const signup = yield* rosterSignupRead({
     pk: rosterId,
     sk: s.user_id,
   });
@@ -48,8 +46,7 @@ const getAccounts = (s: St, rosterId: str) => E.gen(function* () {
   );
 });
 
-
-const approximateRoundStartTimesCWL   = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
   ...o,
   description: `war start approx: ${pipe(
     DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
@@ -74,7 +71,6 @@ const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOp
   )}`,
 });
 
-
 const signupRoster = (
   userId: str,
   rosterId: str,
@@ -82,9 +78,9 @@ const signupRoster = (
   rounds: str[],
   tags: str[],
 ) => E.gen(function* () {
-  yield * CSL.debug('selected', userId, rosterId, designation, rounds, tags);
+  yield* CSL.debug('selected', userId, rosterId, designation, rounds, tags);
 
-  const signup = yield * rosterSignupRead({
+  const signup = yield* rosterSignupRead({
     pk: rosterId,
     sk: userId,
   });
@@ -96,7 +92,7 @@ const signupRoster = (
       return rs;
     }),
   );
-  const accounts        = pipe(
+  const accounts = pipe(
     tags,
     reduceL(emptyKV<str, DRosterSignup['accounts'][str]>(), (ts, t) => {
       ts[t] = pipe(
@@ -119,7 +115,7 @@ const signupRoster = (
   );
 
   if (!signup) {
-    return yield * rosterSignupCreate({
+    return yield* rosterSignupCreate({
       type         : 'DiscordRosterSignup',
       pk           : rosterId,
       sk           : userId,
@@ -132,7 +128,7 @@ const signupRoster = (
     });
   }
 
-  yield * rosterSignupCreate({
+  yield* rosterSignupCreate({
     ...signup,
     accounts: {
       ...signup.accounts,
@@ -142,32 +138,29 @@ const signupRoster = (
   });
 });
 
-
 export const RosterViewerSignupB = SuccessB.as(makeId(RK_OPEN, 'RVSU'), {
   label: 'Signup',
 });
-const SubmitSignup               = SubmitB.as(makeId(RK_SUBMIT, 'RVSU'), {label: 'Signup'});
+const SubmitSignup = SubmitB.as(makeId(RK_SUBMIT, 'RVSU'), {label: 'Signup'});
 
-const SelectAccounts     = SingleS.as(makeId(RK_UPDATE, 'RVSUAC'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAC'), {
   placeholder: 'Select Accounts',
 });
 const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAV'), {
   placeholder: 'Select Availability',
   options    : ROSTER_ROUNDS_CWL,
 });
-const SelectDesignation  = SingleS.as(makeId(RK_UPDATE, 'RVSUD'), {
+const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUD'), {
   placeholder: 'Select Designation',
   options    : ROSTER_DESIGNATIONS,
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
   const Roster = RosterS.fromMap(s.cmap);
 
-
-  const roster = yield * rosterRead({
+  const roster = yield* rosterRead({
     pk: s.server_id,
     sk: Roster.values[0],
   });
@@ -178,17 +171,17 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     .fromMap(s.cmap)
     .setDefaultValuesIf(ax.id.predicate, selected);
 
-  let Accounts    = SelectAccounts.fromMap(s.cmap);
+  let Accounts = SelectAccounts.fromMap(s.cmap);
   let Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
   if (RosterViewerSignupB.clicked(ax)) {
-    const accounts = yield * getAccounts(s, Roster.values[0]);
+    const accounts = yield* getAccounts(s, Roster.values[0]);
 
     const availabilityOptions = ['cwl', 'cwl-at-large'].includes(roster.roster_type) ? ROSTER_ROUNDS_CWL.map(approximateRoundStartTimesCWL(s, roster))
       : roster.roster_type === 'odcwl' ? ROSTER_ROUNDS_ODCWL.map(approximateRoundStartTimesODCWL(s, roster))
         : OPTION_UNAVAILABLE;
 
-    Accounts     = SelectAccounts.render({
+    Accounts = SelectAccounts.render({
       options: accounts.length
         ? accounts
         : [{
@@ -201,7 +194,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       options   : availabilityOptions,
       max_values: availabilityOptions.length,
     });
-    Designation  = Designation.render({
+    Designation = Designation.render({
       disabled: !['cwl', 'cwl-at-large'].includes(roster.roster_type),
       options:
         ['cwl', 'cwl-at-large'].includes(roster.roster_type) ? ROSTER_DESIGNATIONS
@@ -213,9 +206,8 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
   // const Forward = ForwardB.fromMap(s.cmap) ?? ForwardB.forward(ax.id);
 
-
   if (Submit.clicked(ax)) {
-    yield * signupRoster(
+    yield* signupRoster(
       s.user_id,
       Roster.values[0],
       Designation.values[0],
@@ -223,7 +215,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       Accounts.values,
     );
   }
-
 
   return {
     ...s,
@@ -268,7 +259,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     back: BackB.as(RosterViewerB.id),
   } satisfies St;
 });
-
 
 export const rosterViewerSignupReducer = {
   [RosterViewerSignupB.id.predicate]: view,

@@ -1,7 +1,7 @@
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 
 export * as Default from '#src/disreact/codec/intrinsic/component/default.ts';
 export type Default = never;

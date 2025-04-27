@@ -1,6 +1,6 @@
+import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
 import {defineConfig} from '@rspack/cli';
 import config from './rspack.config.dev.mjs';
-import {RsdoctorRspackPlugin} from '@rsdoctor/rspack-plugin';
 
 export default defineConfig({
   ...config,

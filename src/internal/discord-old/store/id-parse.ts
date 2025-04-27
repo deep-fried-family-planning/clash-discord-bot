@@ -7,8 +7,6 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
-
-
 export const fromId = (custom_id: str): Route => {
   const route = ID_ROUTES.find((r) => r.pattern.test(custom_id));
 

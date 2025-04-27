@@ -137,7 +137,6 @@ export const ComponentData = S.Union(
   MentionSelectData,
 );
 
-
 export const TextInputData = S.Struct({
   type     : S.Literal(4),
   custom_id: CustomId,

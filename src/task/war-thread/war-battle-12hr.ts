@@ -8,11 +8,9 @@ import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
 import type {ClanWarAttack, ClanWarMember} from 'clashofclans.js';
 import {join} from 'effect/Array';
 
-
-
 export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function* () {
   const maxHits = war.battle.attacksPerMember;
-  const hits    = pipe(
+  const hits = pipe(
     war.battle.clan.attacks,
     reduceL({} as Record<string, ClanWarAttack[]>, (acc, attack) => {
       if (attack.attackerTag in acc) {
@@ -24,12 +22,12 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
       return acc;
     }),
   );
-  const p       = pipe(
+  const p = pipe(
     war.battle.clan.members,
     sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition))),
     mapL((m) => [m, `${dmUser(data.links[m.tag])} (${m.name})`] as const),
   );
-  yield * DiscordApi.createMessage(data.thread, {
+  yield* DiscordApi.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Battle ends ${dtRel(war.battle.endTime.getTime())}`),

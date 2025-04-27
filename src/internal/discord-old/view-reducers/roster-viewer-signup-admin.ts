@@ -2,6 +2,11 @@ import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {ROSTER_DESIGNATIONS, ROSTER_ROUNDS_CWL, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {REF_ROSTER_ID} from '#src/constants/reference.ts';
 import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
+import {rosterRead} from '#src/dynamo/operations/roster.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {asSuccess, asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, SingleS, SingleUserS, SubmitB, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -10,24 +15,17 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {dtNow} from '#src/internal/discord-old/util/markdown.ts';
 import {RosterS, RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
 import {viewUserPlayerOptions} from '#src/internal/discord-old/views/user-player-options.ts';
-import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
-import {rosterRead} from '#src/dynamo/operations/roster.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
-import type {DRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {filterL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import type {bool, num, str} from '#src/internal/pure/types-pure.ts';
 import type {SelectOption} from 'dfx/types';
 
-
-
 const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function* () {
-  const records = yield * queryPlayersForUser({pk: userId});
-  const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
+  const records = yield* queryPlayersForUser({pk: userId});
+  const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
-  const signup = yield * rosterSignupRead({
+  const signup = yield* rosterSignupRead({
     pk: rosterId,
     sk: userId,
   });
@@ -48,8 +46,7 @@ const getAccountsByUser = (userId: str, rosterId: str) => E.gen(function* () {
   );
 });
 
-
-const approximateRoundStartTimesCWL   = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
   ...o,
   description: `war start approx: ${pipe(
     DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
@@ -74,7 +71,6 @@ const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOp
   )}`,
 });
 
-
 const signupRoster = (
   userId: str,
   rosterId: str,
@@ -82,7 +78,7 @@ const signupRoster = (
   rounds: str[],
   tags: str[],
 ) => E.gen(function* () {
-  const signup = yield * rosterSignupRead({
+  const signup = yield* rosterSignupRead({
     pk: rosterId,
     sk: userId,
   });
@@ -94,7 +90,7 @@ const signupRoster = (
       return rs;
     }),
   );
-  const accounts        = pipe(
+  const accounts = pipe(
     tags,
     reduceL(emptyKV<str, DRosterSignup['accounts'][str]>(), (ts, t) => {
       ts[t] = pipe(
@@ -115,7 +111,7 @@ const signupRoster = (
   );
 
   if (!signup) {
-    return yield * rosterSignupCreate({
+    return yield* rosterSignupCreate({
       type         : 'DiscordRosterSignup',
       pk           : rosterId,
       sk           : userId,
@@ -128,7 +124,7 @@ const signupRoster = (
     });
   }
 
-  yield * rosterSignupCreate({
+  yield* rosterSignupCreate({
     ...signup,
     accounts: {
       ...signup.accounts,
@@ -138,13 +134,12 @@ const signupRoster = (
   });
 });
 
-
 export const RosterViewerSignupAdminB = SuccessB.as(makeId(RK_OPEN, 'RVSUA'), {
   label: 'Admin Signup',
 });
-const SubmitSignup                    = SubmitB.as(makeId(RK_SUBMIT, 'RVSUA'), {label: 'Signup'});
+const SubmitSignup = SubmitB.as(makeId(RK_SUBMIT, 'RVSUA'), {label: 'Signup'});
 
-const SelectAccounts     = SingleS.as(makeId(RK_UPDATE, 'RVSUAAC'), {
+const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVSUAAC'), {
   placeholder: 'Select Accounts',
 });
 const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAAV'), {
@@ -152,12 +147,11 @@ const SelectAvailability = SingleS.as(makeId(RK_UPDATE, 'RVSUAAV'), {
   options    : ROSTER_ROUNDS_CWL,
   max_values : ROSTER_ROUNDS_CWL.length,
 });
-const SelectDesignation  = SingleS.as(makeId(RK_UPDATE, 'RVSUAD'), {
+const SelectDesignation = SingleS.as(makeId(RK_UPDATE, 'RVSUAD'), {
   placeholder: 'Select Designation',
   options    : ROSTER_DESIGNATIONS,
 });
-const UserS              = SingleUserS.as(makeId(RK_UPDATE, 'RVSUAU'));
-
+const UserS = SingleUserS.as(makeId(RK_UPDATE, 'RVSUAU'));
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -176,16 +170,16 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   }
 
   let Availability = SelectAvailability.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-  let Accounts     = SelectAccounts.fromMap(s.cmap);
+  let Accounts = SelectAccounts.fromMap(s.cmap);
 
   if (User.id.predicate === ax.id.predicate) {
-    const roster   = yield * rosterRead({
+    const roster = yield* rosterRead({
       pk: s.server_id,
       sk: roster_id,
     });
-    const accounts = yield * getAccountsByUser(User.values[0], roster_id);
+    const accounts = yield* getAccountsByUser(User.values[0], roster_id);
 
-    Accounts     = SelectAccounts.render({
+    Accounts = SelectAccounts.render({
       options: accounts.length
         ? accounts
         : [{
@@ -200,10 +194,10 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
   const Designation = SelectDesignation.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
-  const Submit      = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
+  const Submit = SubmitSignup.fromMap(s.cmap) ?? SubmitSignup;
 
   if (Submit.clicked(ax)) {
-    yield * signupRoster(
+    yield* signupRoster(
       User.values[0],
       roster_id,
       Designation.values[0],
@@ -258,7 +252,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     back: BackB.as(RosterViewerB.id),
   } satisfies St;
 });
-
 
 export const rosterViewerSignupAdminReducer = {
   [RosterViewerSignupAdminB.id.predicate]: view,
