@@ -1,12 +1,12 @@
-import {DynamoClient} from '#src/database/arch/DynamoClient.ts';
-import type {KeyItem} from '#src/database/data-arch/codec-key-item.ts';
-import {Codec} from '#src/database/data-arch/codec.ts';
+import {DynamoClient} from '#src/database/service/DynamoClient.ts';
+import type {KeyItem} from '#src/database/arch-data/key-item.ts';
+import {Codec} from '#src/database/arch-data/codec.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Cache, Duration, Exit} from 'effect';
 
 const toCacheKey = (key: KeyItem.ItemLike) => `${key.pk}/${key.sk}`;
 
-const toCompositeKey = (key: string) => {
+const toCompositeKey = (key: string): KeyItem.CompositeKey => {
   const [pk, sk] = key.split('/');
   return {pk, sk};
 };

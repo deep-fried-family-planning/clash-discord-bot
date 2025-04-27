@@ -1,5 +1,5 @@
-import {DynamoLimiter} from '#src/database/arch/DynamoLimiter.ts';
-import type {KeyItem} from '#src/database/data-arch/codec-key-item.ts';
+import {DynamoLimiter} from '#src/database/service/DynamoLimiter.ts';
+import type {KeyItem} from '#src/database/arch-data/key-item.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
 import type * as DynamoErrors from '@effect-aws/client-dynamodb/Errors';

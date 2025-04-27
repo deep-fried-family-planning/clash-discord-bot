@@ -1,9 +1,18 @@
-import {asKey, asLatest, ClanVerification, SelectMetadata, toLatest} from '#src/database/data-arch/codec-standard.ts';
-import {Id} from '#src/database/data-arch/id.ts';
-import {DataTag} from '#src/database/data-const/index.ts';
+import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
+import {Id} from '#src/database/arch-data/id.ts';
+import {DataTag} from '#src/database/arch-data/constants/index.ts';
+import {SelectMetadata} from '#src/database/arch-data/util.ts';
 import {DiscordClan} from '#src/dynamo/schema/discord-clan.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
+
+export const ClanVerification = S.Enums({
+  admin    : 0,
+  elder    : 1,
+  coleader : 2,
+  leader   : 3,
+  developer: 4,
+} as const);
 
 export const Key = asKey(
   DataTag.SERVER_CLAN,

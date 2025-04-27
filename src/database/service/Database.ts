@@ -1,13 +1,9 @@
-import {DataCache} from '#src/database/arch/DataCache.ts';
-import {DynamoClient} from '#src/database/arch/DynamoClient.ts';
-import type {KeyItem} from '#src/database/data-arch/codec-key-item.ts';
-import type {CacheKey, CompositeKey} from '#src/database/data-arch/codec-standard.ts';
-import {type Codec, decodeItem, encodeItem} from '#src/database/data-arch/codec.ts';
+import {DataCache} from '#src/database/service/DataCache.ts';
+import {DynamoClient} from '#src/database/service/DynamoClient.ts';
+import type {KeyItem} from '#src/database/arch-data/key-item.ts';
+import {type Codec, decodeItem, encodeItem} from '#src/database/arch-data/codec.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {pipe} from 'effect';
-
-const cacheKey = (key: CompositeKey | Record<string, any>): CacheKey =>
-  `${key.pk}/${key.sk}`;
 
 const WILL_UPGRADE = false;
 const DEFAULT_FRESH = false;
