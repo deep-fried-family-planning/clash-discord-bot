@@ -8,10 +8,7 @@ import type {APIGatewayProxyWebsocketEventV2} from 'aws-lambda';
 import type {APIGatewayProxyResultV2} from 'aws-lambda/trigger/api-gateway-proxy';
 import {WS_BYPASS_KEY} from './ws-bypass.ts';
 
-
-
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
-
 
 const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
   const route = event.requestContext.routeKey;
@@ -19,7 +16,7 @@ const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
   const [token, id] = process.env.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
 
   if (route === '$connect') {
-    yield * DynamoDBDocument.put({
+    yield* DynamoDBDocument.put({
       TableName: process.env.DDB_OPERATIONS,
       Item     : {
         ...WS_BYPASS_KEY,
@@ -27,7 +24,7 @@ const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
       },
     });
 
-    yield * DiscordApi.executeWebhookJson(id, token, {
+    yield* DiscordApi.executeWebhookJson(id, token, {
       embeds: [{
         color      : nColor(COLOR.SUCCESS),
         title      : 'dev: connect',
@@ -43,12 +40,12 @@ const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
   }
 
   if (route === '$disconnect') {
-    yield * DynamoDBDocument.delete({
+    yield* DynamoDBDocument.delete({
       TableName: process.env.DDB_OPERATIONS,
       Key      : WS_BYPASS_KEY,
     });
 
-    yield * DiscordApi.executeWebhookJson(id, token, {
+    yield* DiscordApi.executeWebhookJson(id, token, {
       embeds: [{
         color      : nColor(COLOR.ERROR),
         title      : 'dev: disconnect',
@@ -63,7 +60,7 @@ const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
     return {statusCode: 200};
   }
 
-  yield * DiscordApi.executeWebhookJson(id, token, {
+  yield* DiscordApi.executeWebhookJson(id, token, {
     embeds: [{
       color      : nColor(COLOR.INFO),
       title      : 'dev: received',
@@ -81,7 +78,6 @@ const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
   } satisfies APIGatewayProxyResultV2;
 });
 
-
 const live = pipe(
   DiscordLayerLive,
   L.provideMerge(L.mergeAll(
@@ -89,6 +85,5 @@ const live = pipe(
   )),
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
-
 
 export const handler = makeLambda(h, live);

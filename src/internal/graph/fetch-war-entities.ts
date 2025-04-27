@@ -4,12 +4,10 @@ import {E, g} from '#src/internal/pure/effect.ts';
 import type {WarThreadData} from '#src/task/war-thread/common.ts';
 import type {Clan, ClanWar, ClanWarLeagueGroup, Player} from 'clashofclans.js';
 
-
-
 type Kinda = {options: SharedOptions; currentWar: ClanWar[]; current: {clans: Clan[]; cwl: ClanWarLeagueGroup; players: Player[]; wars: ClanWar[]}};
 
 export const fetchWarEntities = (ops: SharedOptions) => E.gen(function* () {
-  const cwl = yield * ClashOfClans.getClanWarLeagueGroup(ops.cid1).pipe(E.catchAll(() => E.succeed(null)));
+  const cwl = yield* ClashOfClans.getClanWarLeagueGroup(ops.cid1).pipe(E.catchAll(() => E.succeed(null)));
 
   const returnable = {
     options   : ops,
@@ -22,35 +20,34 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function* () {
     },
   } as Kinda;
 
-
   if (cwl) {
-    const wars  = yield * ClashOfClans.getWars(ops.cid1);
+    const wars = yield* ClashOfClans.getWars(ops.cid1);
     const cwars = wars.filter((w) => w.state !== 'notInWar');
 
-    returnable.currentWar      = cwars;
-    returnable.current.wars    = cwars;
-    returnable.current.players = yield * ClashOfClans.getPlayers([
+    returnable.currentWar = cwars;
+    returnable.current.wars = cwars;
+    returnable.current.players = yield* ClashOfClans.getPlayers([
       ...cwars.map((c) => [
         ...c.clan.members.map((m) => m.tag),
         ...c.opponent.members.map((m) => m.tag),
       ]),
     ].flat());
-    returnable.current.clans   = yield * ClashOfClans.getClans([
+    returnable.current.clans = yield* ClashOfClans.getClans([
       ops.cid1,
       ...cwars.map((c) => c.opponent.tag),
     ].flat());
   }
   else {
-    const war = yield * ClashOfClans.getClanWar(ops.cid1);
+    const war = yield* ClashOfClans.getClanWar(ops.cid1);
 
     if (war.state !== 'notInWar') {
-      returnable.currentWar      = [war];
-      returnable.current.wars    = [war];
-      returnable.current.players = yield * ClashOfClans.getPlayers([
+      returnable.currentWar = [war];
+      returnable.current.wars = [war];
+      returnable.current.players = yield* ClashOfClans.getPlayers([
         ...war.clan.members.map((m) => m.tag),
         ...war.opponent.members.map((m) => m.tag),
       ]);
-      returnable.current.clans   = yield * ClashOfClans.getClans([
+      returnable.current.clans = yield* ClashOfClans.getClans([
         ops.cid1,
         war.opponent.tag,
       ]);
@@ -60,9 +57,8 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function* () {
   return returnable;
 });
 
-
 export const getTaskWars = (data: typeof WarThreadData.Type) => g(function* () {
-  const entities = yield * fetchWarEntities({
+  const entities = yield* fetchWarEntities({
     cid1       : data.clan.sk,
     exhaustive : false,
     from       : 0,

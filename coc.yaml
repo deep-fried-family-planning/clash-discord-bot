@@ -1,44 +1,38 @@
-openapi: 3.0.0
-info:
-  title: Clash of Clans API
-  description: |
+openapi            : 3.0.0
+info               :
+  title         : Clash of Clans API
+  description   : |
     Check out <a href="https://developer.clashofclans.com/#/getting-started" target="_parent">Getting Started</a> for instructions and links to other resources. Clash of Clans API uses <a href="https://jwt.io/" target="_blank">JSON Web Tokens</a> for authorizing the requests. Tokens are created by developers on <a href="https://developer.clashofclans.com/#/account" target="_parent">My Account</a> page and must be passed in every API request in Authorization HTTP header using Bearer authentication scheme. Correct Authorization header looks like this: "Authorization: Bearer API_TOKEN".
-  version: v1
+  version       : v1
   termsOfService: http://supercell.com/en/terms-of-service/
-host: api.clashofclans.com
-basePath: /v1
-schemes:
+host               : api.clashofclans.com
+basePath           : /v1
+schemes            :
   - https
   - http
-consumes:
+consumes           :
   - application/json
-produces:
+produces           :
   - application/json
-tags:
-  -
-    name: clans
+tags               :
+  - name       : clans
     description: Access clan specific information
-  -
-    name: players
+  - name       : players
     description: Access player specific information
-  -
-    name: leagues
+  - name       : leagues
     description: Access league information
-  -
-    name: locations
+  - name       : locations
     description: Access global and local rankings
-  -
-    name: goldpass
+  - name       : goldpass
     description: Access information about gold pass
-  -
-    name: esports
+  - name       : esports
     description: Esports related APIs
 
-components:
+components         :
   responses:
     InMaintenanceSpec   :
       description: Service is temprorarily unavailable because of maintenance.
-      content:
+      content    :
         application/json:
           schema:
             $ref: '#/components/schemas/ClientError'
@@ -64,227 +58,227 @@ components:
       description: Client provided incorrect parameters for the request.
       schema     :
         $ref: '#/components/schemas/ClientError'
-  schemas:
-    WarLeagueList:
-      type: array
+  schemas  :
+    WarLeagueList                       :
+      type : array
       items:
         $ref: '#/components/schemas/WarLeague'
-    WarLeague:
-      type: object
+    WarLeague                           :
+      type      : object
       properties:
         name:
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id  :
           type: integer
-    JsonLocalizedName:
+    JsonLocalizedName                   :
       type: object
-    ServiceVersion:
-      type: object
+    ServiceVersion                      :
+      type      : object
       properties:
-        major:
+        major  :
           type: integer
-        minor:
+        minor  :
           type: integer
         content:
           type: integer
-    LabelList:
-      type: array
+    LabelList                           :
+      type : array
       items:
         $ref: '#/components/schemas/Label'
-    Label:
-      type: object
+    Label                               :
+      type      : object
       properties:
-        name:
+        name    :
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id      :
           type: integer
         iconUrls:
           type: object
-    ClanCapitalRaidSeasons:
-      type: array
+    ClanCapitalRaidSeasons              :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeason'
-    ClanCapitalRaidSeason:
-      type: object
+    ClanCapitalRaidSeason               :
+      type      : object
       properties:
-        attackLog:
+        attackLog              :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonAttackLogList'
-        defenseLog:
+        defenseLog             :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonDefenseLogList'
-        state:
+        state                  :
           type: string
-        startTime:
+        startTime              :
           type: string
-        endTime:
+        endTime                :
           type: string
-        capitalTotalLoot:
+        capitalTotalLoot       :
           type: integer
-        raidsCompleted:
+        raidsCompleted         :
           type: integer
-        totalAttacks:
+        totalAttacks           :
           type: integer
         enemyDistrictsDestroyed:
           type: integer
-        offensiveReward:
+        offensiveReward        :
           type: integer
-        defensiveReward:
+        defensiveReward        :
           type: integer
-        members:
+        members                :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonMemberList'
-    ClanCapitalRaidSeasonMemberList:
-      type: array
+    ClanCapitalRaidSeasonMemberList     :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeasonMember'
-    ClanCapitalRaidSeasonMember:
-      type: object
+    ClanCapitalRaidSeasonMember         :
+      type      : object
       properties:
-        tag:
+        tag                   :
           type: string
-        name:
+        name                  :
           type: string
-        attacks:
+        attacks               :
           type: integer
-        attackLimit:
+        attackLimit           :
           type: integer
-        bonusAttackLimit:
+        bonusAttackLimit      :
           type: integer
         capitalResourcesLooted:
           type: integer
-    ClanCapitalRaidSeasonDefenseLogList:
-      type: array
+    ClanCapitalRaidSeasonDefenseLogList :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeasonDefenseLogEntry'
     ClanCapitalRaidSeasonDefenseLogEntry:
-      type: object
+      type      : object
       properties:
-        attacker:
+        attacker          :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonClanInfo'
-        attackCount:
+        attackCount       :
           type: integer
-        districtCount:
+        districtCount     :
           type: integer
         districtsDestroyed:
           type: integer
-        districts:
+        districts         :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonDistrictList'
-    ClanCapitalRaidSeasonDistrictList:
-      type: array
+    ClanCapitalRaidSeasonDistrictList   :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeasonDistrict'
-    ClanCapitalRaidSeasonDistrict:
-      type: object
+    ClanCapitalRaidSeasonDistrict       :
+      type      : object
       properties:
-        stars:
+        stars             :
           type: integer
-        name:
+        name              :
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id                :
           type: integer
         destructionPercent:
           type: integer
-        attackCount:
+        attackCount       :
           type: integer
-        totalLooted:
+        totalLooted       :
           type: integer
-        attacks:
+        attacks           :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonAttackList'
-        districtHallLevel:
+        districtHallLevel :
           type: integer
-    ClanCapitalRaidSeasonAttackList:
-      type: array
+    ClanCapitalRaidSeasonAttackList     :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeasonAttack'
-    ClanCapitalRaidSeasonAttack:
-      type: object
+    ClanCapitalRaidSeasonAttack         :
+      type      : object
       properties:
-        attacker:
+        attacker          :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonAttacker'
         destructionPercent:
           type: integer
-        stars:
+        stars             :
           type: integer
-    ClanCapitalRaidSeasonAttacker:
-      type: object
+    ClanCapitalRaidSeasonAttacker       :
+      type      : object
       properties:
-        tag:
+        tag :
           type: string
         name:
           type: string
-    ClanCapitalRaidSeasonClanInfo:
-      type: object
+    ClanCapitalRaidSeasonClanInfo       :
+      type      : object
       properties:
-        tag:
+        tag      :
           type: string
-        name:
+        name     :
           type: string
-        level:
+        level    :
           type: integer
         badgeUrls:
           type: object
-    ClanCapitalRaidSeasonAttackLogList:
-      type: array
+    ClanCapitalRaidSeasonAttackLogList  :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRaidSeasonAttackLogEntry'
-    ClanCapitalRaidSeasonAttackLogEntry:
-      type: object
+    ClanCapitalRaidSeasonAttackLogEntry :
+      type      : object
       properties:
-        defender:
+        defender          :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonClanInfo'
-        attackCount:
+        attackCount       :
           type: integer
-        districtCount:
+        districtCount     :
           type: integer
         districtsDestroyed:
           type: integer
-        districts:
+        districts         :
           $ref: '#/components/schemas/ClanCapitalRaidSeasonDistrictList'
-    Location:
-      type: object
+    Location                            :
+      type      : object
       properties:
         localizedName:
           type: string
-        id:
+        id           :
           type: integer
-        name:
+        name         :
           type: string
-        isCountry:
+        isCountry    :
           type: boolean
-        countryCode:
+        countryCode  :
           type: string
-    Replay:
-      type: object
+    Replay                              :
+      type      : object
       properties:
         replayData:
           $ref: '#/components/schemas/JsonNode'
-        replayTag:
+        replayTag :
           type: string
-    JsonNode:
+    JsonNode                            :
       type: object
-    ClanCapitalRankingList:
-      type: array
+    ClanCapitalRankingList              :
+      type : array
       items:
         $ref: '#/components/schemas/ClanCapitalRanking'
-    ClanCapitalRanking:
-      type: object
+    ClanCapitalRanking                  :
+      type      : object
       properties:
         clanCapitalPoints:
           type: integer
-        clanPoints:
+        clanPoints       :
           type: integer
-    WarStatusList:
-      type: array
+    WarStatusList                       :
+      type : array
       items:
         $ref: '#/components/schemas/WarStatus'
-    WarStatus:
-      type: object
+    WarStatus                           :
+      type      : object
       properties:
-        clanTag:
+        clanTag     :
           type: string
-        statusCode:
+        statusCode  :
           type: integer
         enemyClanTag:
           type: string
-        warState:
+        warState    :
           type: string
           enum:
             - CLAN_NOT_FOUND
@@ -297,28 +291,28 @@ components:
             - WAR
             - IN_WAR
             - ENDED
-        timestamp:
+        timestamp   :
           type: string
-    LocationList:
-      type: array
+    LocationList                        :
+      type : array
       items:
         $ref: '#/components/schemas/Location'
-    ClanMemberList:
-      type: array
+    ClanMemberList                      :
+      type : array
       items:
         $ref: '#/components/schemas/ClanMember'
-    ClanMember:
-      type: object
+    ClanMember                          :
+      type      : object
       properties:
-        league:
+        league             :
           $ref: '#/components/schemas/League'
-        builderBaseLeague:
+        builderBaseLeague  :
           $ref: '#/components/schemas/BuilderBaseLeague'
-        tag:
+        tag                :
           type: string
-        name:
+        name               :
           type: string
-        role:
+        role               :
           type: string
           enum:
             - NOT_MEMBER
@@ -326,37 +320,37 @@ components:
             - LEADER
             - ADMIN
             - COLEADER
-        townHallLevel:
+        townHallLevel      :
           type: integer
-        expLevel:
+        expLevel           :
           type: integer
-        clanRank:
+        clanRank           :
           type: integer
-        previousClanRank:
+        previousClanRank   :
           type: integer
-        donations:
+        donations          :
           type: integer
-        donationsReceived:
+        donationsReceived  :
           type: integer
-        trophies:
+        trophies           :
           type: integer
         builderBaseTrophies:
           type: integer
-        playerHouse:
+        playerHouse        :
           $ref: '#/components/schemas/PlayerHouse'
-    PlayerHouse:
-      type: object
+    PlayerHouse                         :
+      type      : object
       properties:
         elements:
           $ref: '#/components/schemas/PlayerHouseElementList'
-    PlayerHouseElementList:
-      type: array
+    PlayerHouseElementList              :
+      type : array
       items:
         $ref: '#/components/schemas/PlayerHouseElement'
-    PlayerHouseElement:
-      type: object
+    PlayerHouseElement                  :
+      type      : object
       properties:
-        id:
+        id  :
           type: integer
         type:
           type: string
@@ -365,85 +359,85 @@ components:
             - ROOF
             - FOOT
             - DECO
-    BuilderBaseLeague:
-      type: object
+    BuilderBaseLeague                   :
+      type      : object
       properties:
         name:
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id  :
           type: integer
-    League:
-      type: object
+    League                              :
+      type      : object
       properties:
-        name:
+        name    :
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id      :
           type: integer
         iconUrls:
           type: object
-    LeagueSeasonList:
-      type: array
+    LeagueSeasonList                    :
+      type : array
       items:
         $ref: '#/components/schemas/LeagueSeason'
-    LeagueSeason:
-      type: object
+    LeagueSeason                        :
+      type      : object
       properties:
         id:
           type: string
-    BuilderBaseLeagueList:
-      type: array
+    BuilderBaseLeagueList               :
+      type : array
       items:
         $ref: '#/components/schemas/BuilderBaseLeague'
-    VerifyTokenRequest:
-      type: object
+    VerifyTokenRequest                  :
+      type      : object
       properties:
         token:
           type: string
-    VerifyTokenResponse:
-      type: object
+    VerifyTokenResponse                 :
+      type      : object
       properties:
-        tag:
+        tag   :
           type: string
-        token:
+        token :
           type: string
         status:
           type: string
-    Clan:
-      type: object
+    Clan                                :
+      type      : object
       properties:
-        warLeague:
+        warLeague                  :
           $ref: '#/components/schemas/WarLeague'
-        capitalLeague:
+        capitalLeague              :
           $ref: '#/components/schemas/CapitalLeague'
-        memberList:
+        memberList                 :
           $ref: '#/components/schemas/ClanMemberList'
-        tag:
+        tag                        :
           type: string
-        clanCapitalPoints:
+        clanCapitalPoints          :
           type: integer
-        requiredTrophies:
+        requiredTrophies           :
           type: integer
         requiredBuilderBaseTrophies:
           type: integer
-        requiredTownhallLevel:
+        requiredTownhallLevel      :
           type: integer
-        isFamilyFriendly:
+        isFamilyFriendly           :
           type: boolean
-        clanLevel:
+        clanLevel                  :
           type: integer
-        warWinStreak:
+        warWinStreak               :
           type: integer
-        warWins:
+        warWins                    :
           type: integer
-        warTies:
+        warTies                    :
           type: integer
-        warLosses:
+        warLosses                  :
           type: integer
-        clanPoints:
+        clanPoints                 :
           type: integer
-        clanBuilderBasePoints:
+        clanBuilderBasePoints      :
           type: integer
-        warFrequency:
+        warFrequency               :
           type: string
           enum:
             - UNKNOWN
@@ -453,85 +447,85 @@ components:
             - LESS_THAN_ONCE_PER_WEEK
             - NEVER
             - ANY
-        isWarLogPublic:
+        isWarLogPublic             :
           type: boolean
-        chatLanguage:
+        chatLanguage               :
           $ref: '#/components/schemas/Language'
-        labels:
+        labels                     :
           $ref: '#/components/schemas/LabelList'
-        name:
+        name                       :
           type: string
-        location:
+        location                   :
           $ref: '#/components/schemas/Location'
-        type:
+        type                       :
           type: string
           enum:
             - OPEN
             - INVITE_ONLY
             - CLOSED
-        members:
+        members                    :
           type: integer
-        description:
+        description                :
           type: string
-        clanCapital:
+        clanCapital                :
           $ref: '#/components/schemas/ClanCapital'
-        badgeUrls:
+        badgeUrls                  :
           type: object
-    ClanCapital:
-      type: object
+    ClanCapital                         :
+      type      : object
       properties:
         capitalHallLevel:
           type: integer
-        districts:
+        districts       :
           $ref: '#/components/schemas/ClanDistrictDataList'
-    ClanDistrictDataList:
-      type: array
+    ClanDistrictDataList                :
+      type : array
       items:
         $ref: '#/components/schemas/ClanDistrictData'
-    ClanDistrictData:
-      type: object
+    ClanDistrictData                    :
+      type      : object
       properties:
-        name:
+        name             :
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id               :
           type: integer
         districtHallLevel:
           type: integer
-    Language:
-      type: object
+    Language                            :
+      type      : object
       properties:
-        name:
+        name        :
           type: string
-        id:
+        id          :
           type: integer
         languageCode:
           type: string
-    CapitalLeague:
-      type: object
+    CapitalLeague                       :
+      type      : object
       properties:
         name:
           $ref: '#/components/schemas/JsonLocalizedName'
-        id:
+        id  :
           type: integer
-    ClanWar:
-      type: object
+    ClanWar                             :
+      type      : object
       properties:
-        clan:
+        clan                :
           $ref: '#/components/schemas/WarClan'
-        opponent:
+        opponent            :
           $ref: '#/components/schemas/WarClan'
-        teamSize:
+        teamSize            :
           type: integer
-        attacksPerMember:
+        attacksPerMember    :
           type: integer
-        battleModifier:
+        battleModifier      :
           type: string
           enum:
             - NONE
             - HARD_MODE
-        startTime:
+        startTime           :
           type: string
-        state:
+        state               :
           type: string
           enum:
             - CLAN_NOT_FOUND
@@ -544,212 +538,212 @@ components:
             - WAR
             - IN_WAR
             - ENDED
-        endTime:
+        endTime             :
           type: string
         preparationStartTime:
           type: string
-    WarClan:
-      type: object
+    WarClan                             :
+      type      : object
       properties:
         destructionPercentage:
           $ref: '#/components/schemas/Float'
-        tag:
+        tag                  :
           type: string
-        name:
+        name                 :
           type: string
-        badgeUrls:
+        badgeUrls            :
           type: object
-        clanLevel:
+        clanLevel            :
           type: integer
-        attacks:
+        attacks              :
           type: integer
-        stars:
+        stars                :
           type: integer
-        expEarned:
+        expEarned            :
           type: integer
-        members:
+        members              :
           $ref: '#/components/schemas/ClanWarMemberList'
-    ClanWarMemberList:
-      type: array
+    ClanWarMemberList                   :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarMember'
-    ClanWarMember:
-      type: object
+    ClanWarMember                       :
+      type      : object
       properties:
-        tag:
+        tag               :
           type: string
-        name:
+        name              :
           type: string
-        mapPosition:
+        mapPosition       :
           type: integer
-        townhallLevel:
+        townhallLevel     :
           type: integer
-        opponentAttacks:
+        opponentAttacks   :
           type: integer
         bestOpponentAttack:
           $ref: '#/components/schemas/ClanWarAttack'
-        attacks:
+        attacks           :
           $ref: '#/components/schemas/ClanWarAttackList'
-    ClanWarAttackList:
-      type: array
+    ClanWarAttackList                   :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarAttack'
-    ClanWarAttack:
-      type: object
+    ClanWarAttack                       :
+      type      : object
       properties:
-        order:
+        order                :
           type: integer
-        attackerTag:
+        attackerTag          :
           type: string
-        defenderTag:
+        defenderTag          :
           type: string
-        stars:
+        stars                :
           type: integer
         destructionPercentage:
           type: integer
-        duration:
+        duration             :
           type: integer
-    Float:
+    Float                               :
       type: object
-    ClanBuilderBaseRankingList:
-      type: array
+    ClanBuilderBaseRankingList          :
+      type : array
       items:
         $ref: '#/components/schemas/ClanBuilderBaseRanking'
-    ClanBuilderBaseRanking:
-      type: object
+    ClanBuilderBaseRanking              :
+      type      : object
       properties:
-        clanPoints:
+        clanPoints           :
           type: integer
         clanBuilderBasePoints:
           type: integer
-    PlayerBuilderBaseRankingList:
-      type: array
+    PlayerBuilderBaseRankingList        :
+      type : array
       items:
         $ref: '#/components/schemas/PlayerBuilderBaseRanking'
-    PlayerBuilderBaseRanking:
-      type: object
+    PlayerBuilderBaseRanking            :
+      type      : object
       properties:
-        builderBaseLeague:
+        builderBaseLeague  :
           $ref: '#/components/schemas/BuilderBaseLeague'
-        clan:
+        clan               :
           $ref: '#/components/schemas/PlayerRankingClan'
-        tag:
+        tag                :
           type: string
-        name:
+        name               :
           type: string
-        expLevel:
+        expLevel           :
           type: integer
-        rank:
+        rank               :
           type: integer
-        previousRank:
+        previousRank       :
           type: integer
         builderBaseTrophies:
           type: integer
-    PlayerRankingClan:
-      type: object
+    PlayerRankingClan                   :
+      type      : object
       properties:
-        tag:
+        tag      :
           type: string
-        name:
+        name     :
           type: string
         badgeUrls:
           type: object
-    ClanList:
-      type: array
+    ClanList                            :
+      type : array
       items:
         $ref: '#/components/schemas/Clan'
-    PlayerRankingList:
-      type: array
+    PlayerRankingList                   :
+      type : array
       items:
         $ref: '#/components/schemas/PlayerRanking'
-    PlayerRanking:
-      type: object
+    PlayerRanking                       :
+      type      : object
       properties:
-        league:
+        league      :
           $ref: '#/components/schemas/League'
-        clan:
+        clan        :
           $ref: '#/components/schemas/PlayerRankingClan'
-        attackWins:
+        attackWins  :
           type: integer
-        defenseWins:
+        defenseWins :
           type: integer
-        tag:
+        tag         :
           type: string
-        name:
+        name        :
           type: string
-        expLevel:
+        expLevel    :
           type: integer
-        rank:
+        rank        :
           type: integer
         previousRank:
           type: integer
-        trophies:
+        trophies    :
           type: integer
-    LeagueList:
-      type: array
+    LeagueList                          :
+      type : array
       items:
         $ref: '#/components/schemas/League'
-    ClanWarLog:
-      type: array
+    ClanWarLog                          :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarLogEntry'
-    ClanWarLogEntry:
-      type: object
+    ClanWarLogEntry                     :
+      type      : object
       properties:
-        clan:
+        clan            :
           $ref: '#/components/schemas/WarClan'
-        opponent:
+        opponent        :
           $ref: '#/components/schemas/WarClan'
-        teamSize:
+        teamSize        :
           type: integer
         attacksPerMember:
           type: integer
-        battleModifier:
+        battleModifier  :
           type: string
           enum:
             - NONE
             - HARD_MODE
-        endTime:
+        endTime         :
           type: string
-        result:
+        result          :
           type: string
           enum:
             - LOSE
             - WIN
             - TIE
-    GoldPassSeason:
-      type: object
+    GoldPassSeason                      :
+      type      : object
       properties:
         startTime:
           type: string
-        endTime:
+        endTime  :
           type: string
-    DeepLinkCreationRequest:
-      type: object
+    DeepLinkCreationRequest             :
+      type      : object
       properties:
-        playerTags:
+        playerTags     :
           $ref: '#/components/schemas/StringList'
-        clanTag:
+        clanTag        :
           type: string
         opponentClanTag:
           type: string
-    StringList:
-      type: array
+    StringList                          :
+      type : array
       items:
         type: string
-    String:
+    String                              :
       type: object
-    DeepLinkCreationResponse:
-      type: object
+    DeepLinkCreationResponse            :
+      type      : object
       properties:
         link:
           type: string
-    ClanWarLeagueGroup:
-      type: object
+    ClanWarLeagueGroup                  :
+      type      : object
       properties:
-        tag:
+        tag   :
           type: string
-        state:
+        state :
           type: string
           enum:
             - GROUP_NOT_FOUND
@@ -759,88 +753,88 @@ components:
             - ENDED
         season:
           type: string
-        clans:
+        clans :
           $ref: '#/components/schemas/ClanWarLeagueClanList'
         rounds:
           $ref: '#/components/schemas/ClanWarLeagueRoundList'
-    ClanWarLeagueRoundList:
-      type: array
+    ClanWarLeagueRoundList              :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarLeagueRound'
-    ClanWarLeagueRound:
-      type: object
+    ClanWarLeagueRound                  :
+      type      : object
       properties:
         warTags:
           $ref: '#/components/schemas/StringList'
-    ClanWarLeagueClanList:
-      type: array
+    ClanWarLeagueClanList               :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarLeagueClan'
-    ClanWarLeagueClan:
-      type: object
+    ClanWarLeagueClan                   :
+      type      : object
       properties:
-        tag:
+        tag      :
           type: string
         clanLevel:
           type: integer
-        name:
+        name     :
           type: string
-        members:
+        members  :
           $ref: '#/components/schemas/ClanWarLeagueClanMemberList'
         badgeUrls:
           type: object
-    ClanWarLeagueClanMemberList:
-      type: array
+    ClanWarLeagueClanMemberList         :
+      type : array
       items:
         $ref: '#/components/schemas/ClanWarLeagueClanMember'
-    ClanWarLeagueClanMember:
-      type: object
+    ClanWarLeagueClanMember             :
+      type      : object
       properties:
-        tag:
+        tag          :
           type: string
         townHallLevel:
           type: integer
-        name:
+        name         :
           type: string
-    ClanRankingList:
-      type: array
+    ClanRankingList                     :
+      type : array
       items:
         $ref: '#/components/schemas/ClanRanking'
-    ClanRanking:
-      type: object
+    ClanRanking                         :
+      type      : object
       properties:
-        clanLevel:
+        clanLevel   :
           type: integer
-        clanPoints:
+        clanPoints  :
           type: integer
-        location:
+        location    :
           $ref: '#/components/schemas/Location'
-        members:
+        members     :
           type: integer
-        tag:
+        tag         :
           type: string
-        name:
+        name        :
           type: string
-        rank:
+        rank        :
           type: integer
         previousRank:
           type: integer
-        badgeUrls:
+        badgeUrls   :
           type: object
-    CapitalLeagueList:
-      type: array
+    CapitalLeagueList                   :
+      type : array
       items:
         $ref: '#/components/schemas/CapitalLeague'
-    Player:
-      type: object
+    Player                              :
+      type      : object
       properties:
-        league:
+        league                  :
           $ref: '#/components/schemas/League'
-        builderBaseLeague:
+        builderBaseLeague       :
           $ref: '#/components/schemas/BuilderBaseLeague'
-        clan:
+        clan                    :
           $ref: '#/components/schemas/PlayerClan'
-        role:
+        role                    :
           type: string
           enum:
             - NOT_MEMBER
@@ -848,98 +842,98 @@ components:
             - LEADER
             - ADMIN
             - COLEADER
-        warPreference:
+        warPreference           :
           type: string
           enum:
             - OUT
             - IN
-        attackWins:
+        attackWins              :
           type: integer
-        defenseWins:
+        defenseWins             :
           type: integer
-        townHallLevel:
+        townHallLevel           :
           type: integer
-        townHallWeaponLevel:
+        townHallWeaponLevel     :
           type: integer
-        legendStatistics:
+        legendStatistics        :
           $ref: '#/components/schemas/PlayerLegendStatistics'
-        troops:
+        troops                  :
           $ref: '#/components/schemas/PlayerItemLevelList'
-        heroes:
+        heroes                  :
           $ref: '#/components/schemas/PlayerItemLevelList'
-        heroEquipment:
+        heroEquipment           :
           $ref: '#/components/schemas/PlayerItemLevelList'
-        spells:
+        spells                  :
           $ref: '#/components/schemas/PlayerItemLevelList'
-        labels:
+        labels                  :
           $ref: '#/components/schemas/LabelList'
-        tag:
+        tag                     :
           type: string
-        name:
+        name                    :
           type: string
-        expLevel:
+        expLevel                :
           type: integer
-        trophies:
+        trophies                :
           type: integer
-        bestTrophies:
+        bestTrophies            :
           type: integer
-        donations:
+        donations               :
           type: integer
-        donationsReceived:
+        donationsReceived       :
           type: integer
-        builderHallLevel:
+        builderHallLevel        :
           type: integer
-        builderBaseTrophies:
+        builderBaseTrophies     :
           type: integer
-        bestBuilderBaseTrophies:
+        bestBuilderBaseTrophies :
           type: integer
-        warStars:
+        warStars                :
           type: integer
-        achievements:
+        achievements            :
           $ref: '#/components/schemas/PlayerAchievementProgressList'
         clanCapitalContributions:
           type: integer
-        playerHouse:
+        playerHouse             :
           $ref: '#/components/schemas/PlayerHouse'
-    PlayerAchievementProgressList:
-      type: array
+    PlayerAchievementProgressList       :
+      type : array
       items:
         $ref: '#/components/schemas/PlayerAchievementProgress'
-    PlayerAchievementProgress:
-      type: object
+    PlayerAchievementProgress           :
+      type      : object
       properties:
-        stars:
+        stars         :
           type: integer
-        value:
+        value         :
           type: integer
-        name:
+        name          :
           $ref: '#/components/schemas/JsonLocalizedName'
-        target:
+        target        :
           type: integer
-        info:
+        info          :
           $ref: '#/components/schemas/JsonLocalizedName'
         completionInfo:
           $ref: '#/components/schemas/JsonLocalizedName'
-        village:
+        village       :
           type: string
           enum:
             - HOME_VILLAGE
             - BUILDER_BASE
             - CLAN_CAPITAL
-    PlayerItemLevelList:
-      type: array
+    PlayerItemLevelList                 :
+      type : array
       items:
         $ref: '#/components/schemas/PlayerItemLevel'
-    PlayerItemLevel:
-      type: object
+    PlayerItemLevel                     :
+      type      : object
       properties:
-        level:
+        level             :
           type: integer
-        name:
+        name              :
           $ref: '#/components/schemas/JsonLocalizedName'
-        maxLevel:
+        maxLevel          :
           type: integer
-        village:
+        village           :
           type: string
           enum:
             - HOME_VILLAGE
@@ -947,55 +941,55 @@ components:
             - CLAN_CAPITAL
         superTroopIsActive:
           type: boolean
-        equipment:
+        equipment         :
           $ref: '#/components/schemas/PlayerItemLevelList'
-    PlayerLegendStatistics:
-      type: object
+    PlayerLegendStatistics              :
+      type      : object
       properties:
-        legendTrophies:
+        legendTrophies           :
           type: integer
-        currentSeason:
+        currentSeason            :
           $ref: '#/components/schemas/LegendLeagueTournamentSeasonResult'
-        bestBuilderBaseSeason:
+        bestBuilderBaseSeason    :
           $ref: '#/components/schemas/LegendLeagueTournamentSeasonResult'
-        previousSeason:
+        previousSeason           :
           $ref: '#/components/schemas/LegendLeagueTournamentSeasonResult'
-        bestSeason:
+        bestSeason               :
           $ref: '#/components/schemas/LegendLeagueTournamentSeasonResult'
         previousBuilderBaseSeason:
           $ref: '#/components/schemas/LegendLeagueTournamentSeasonResult'
-    LegendLeagueTournamentSeasonResult:
-      type: object
+    LegendLeagueTournamentSeasonResult  :
+      type      : object
       properties:
         trophies:
           type: integer
-        id:
+        id      :
           type: string
-        rank:
+        rank    :
           type: integer
-    PlayerClan:
-      type: object
+    PlayerClan                          :
+      type      : object
       properties:
-        tag:
+        tag      :
           type: string
         clanLevel:
           type: integer
-        name:
+        name     :
           type: string
         badgeUrls:
           type: object
-    ClientError:
-      type: object
+    ClientError                         :
+      type      : object
       properties:
-        reason:
+        reason :
           type: string
         message:
           type: string
-        type:
+        type   :
           type: string
-        detail:
+        detail :
           type: object
-paths:
+paths              :
   /clans/{clanTag}/currentwar/leaguegroup              :
     get:
       summary    : Retrieve information about clan's current clan war league group
@@ -1198,7 +1192,7 @@ paths:
           $ref: '#/components/responses/InMaintenanceSpec'
         '200':
           description: Successful Response
-          content:
+          content    :
             application/json:
               schema:
                 $ref: '#/components/schemas/GoldPassSeason'
@@ -2219,10 +2213,9 @@ paths:
             $ref: '#/components/schemas/WarLeagueList'
 securityDefinitions:
   JWT:
-    type: apiKey
+    type       : apiKey
     description: JSON Web Token used as an API key
-    name: authorization
-    in: header
-security:
-  -
-    JWT: []
+    name       : authorization
+    in         : header
+security           :
+  - JWT: [ ]

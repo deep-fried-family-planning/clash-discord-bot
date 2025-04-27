@@ -1,7 +1,7 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods.ts';
 import {Runtime} from '#src/disreact/runtime/runtime';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {L, pipe} from '#src/disreact/utils/re-exports.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {TestMessage} from '#test/unit/components/test-message.tsx';

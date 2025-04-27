@@ -10,8 +10,6 @@ import {TestMessage} from 'test/unit/components/test-message.tsx';
 import {testmessage} from 'test/unit/runtime/methods.testdata.ts';
 import {makeTestRuntime} from 'test/unit/util.ts';
 
-
-
 const createUpdate = vi.fn((...args: any) => E.void);
 const deferEdit = vi.fn((...args: any) => E.void);
 const deferUpdate = vi.fn((...args: any) => E.void);

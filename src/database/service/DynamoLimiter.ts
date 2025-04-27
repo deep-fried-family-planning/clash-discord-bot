@@ -1,5 +1,4 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Data, Duration, flow, Number, RateLimiter} from 'effect';
 
 export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{}> {}

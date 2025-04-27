@@ -13,8 +13,6 @@ import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {ClanWar, ClanWarMember} from 'clashofclans.js';
 
-
-
 export const WA_LINKS = {
   type       : 1,
   name       : 'wa-links',
@@ -26,9 +24,8 @@ export const WA_LINKS = {
   },
 } as const satisfies CommandSpec;
 
-
 export const waLinks = (ix: IxD, ops: IxDS<typeof WA_LINKS>) => E.gen(function* () {
-  yield * validateServer(ix);
+  yield* validateServer(ix);
 
   const clan = getAliasTag(ops.clan);
 
@@ -42,14 +39,12 @@ export const waLinks = (ix: IxD, ops: IxDS<typeof WA_LINKS>) => E.gen(function* 
     limit      : 50,
   };
 
-  const entities = yield * fetchWarEntities(options);
-
+  const entities = yield* fetchWarEntities(options);
 
   return {
     embeds: [waLinksEmbed(entities.currentWar[0], options.from)],
   };
 });
-
 
 export const waLinksEmbed = (war: ClanWar, from: num) => {
   const opponentMembers = pipe(
@@ -78,7 +73,6 @@ export const waLinksEmbed = (war: ClanWar, from: num) => {
     ).join(''),
   };
 };
-
 
 export const ourRosterEmbed = (war: ClanWar, from: num) => {
   const opponentMembers = pipe(

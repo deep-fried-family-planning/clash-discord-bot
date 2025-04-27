@@ -13,22 +13,19 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {LinkB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const LinkAccountAdminB = DangerB.as(makeId(RK_OPEN, 'LAA'), {
   label: LABEL_ADMIN_LINK,
 });
-const TypeToModalB             = SuccessB.as(LINK_ACCOUNT_ADMIN_MODAL_OPEN, {
+const TypeToModalB = SuccessB.as(LINK_ACCOUNT_ADMIN_MODAL_OPEN, {
   label: LABEL_PLAYER_TAG,
 });
-const TypeS                    = SingleS.as(makeId(RK_UPDATE, 'LAAT'), {
+const TypeS = SingleS.as(makeId(RK_UPDATE, 'LAAT'), {
   placeholder: PLACEHOLDER_ACCOUNT_TYPE,
   options    : SELECT_ACCOUNT_TYPE,
 });
-const UserS                    = SingleUserS.as(makeId(RK_UPDATE, 'LAAU'), {
+const UserS = SingleUserS.as(makeId(RK_UPDATE, 'LAAU'), {
   placeholder: PLACEHOLDER_SELECT_USER,
 });
-
 
 const view1 = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -57,13 +54,12 @@ const view1 = (s: St, ax: Ax) => E.gen(function* () {
   } satisfies St;
 });
 
-
 const view2 = (s: St, ax: Ax) => E.gen(function* () {
-  const tag  = PlayerTagT.fromMap(ax.cmap);
+  const tag = PlayerTagT.fromMap(ax.cmap);
   const Type = TypeS.fromMap(s.cmap);
   const User = UserS.fromMap(s.cmap);
 
-  const message = yield * oneofus(s.original, {
+  const message = yield* oneofus(s.original, {
     player_tag  : tag?.component.value ?? '',
     api_token   : 'admin',
     account_kind: Type.values[0],
@@ -103,7 +99,6 @@ const view2 = (s: St, ax: Ax) => E.gen(function* () {
     forward: ForwardB.as(LinkB.id),
   } satisfies St;
 });
-
 
 export const linkAccountAdminReducer = {
   [LinkAccountAdminB.id.predicate]           : view1,

@@ -1,9 +1,9 @@
+import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Emoji} from '#src/disreact/codec/intrinsic/markdown/emoji.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
+import {S} from '#src/disreact/utils/re-exports.ts';
 
 export * as Link from '#src/disreact/codec/intrinsic/component/link.ts';
 export type Link = never;

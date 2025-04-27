@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
@@ -12,8 +12,8 @@ import {TestMessage} from '#test/unit/components/test-message.tsx';
 import type {Vitest} from '@effect/vitest';
 import {it as vfx, vi} from '@effect/vitest';
 import {Logger, Redacted, TestServices} from 'effect';
-import { MessageSync } from './message-sync';
-import { MessageEffect } from 'test/unit/components/message-effect.tsx';
+import {MessageEffect} from 'test/unit/components/message-effect.tsx';
+import {MessageSync} from './message-sync';
 
 const config = DisReactConfig.configLayer(
   {

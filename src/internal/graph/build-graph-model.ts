@@ -12,15 +12,13 @@ import type {ClanWarMember} from 'clashofclans.js';
 import {Option} from 'effect';
 import {findFirst} from 'effect/Array';
 
-
-
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 
 export const buildGraphModel = (ops: SharedOptions) => E.gen(function* () {
-  const entities = yield * fetchWarEntities(ops);
+  const entities = yield* fetchWarEntities(ops);
 
   if (!entities.currentWar.length) {
-    return yield * new SlashUserError({issue: 'no current war found'});
+    return yield* new SlashUserError({issue: 'no current war found'});
   }
 
   const cids = pipe(entities.current.clans, mapL((c) => c.tag));
@@ -42,7 +40,7 @@ export const buildGraphModel = (ops: SharedOptions) => E.gen(function* () {
     )
     : E.succeed([]);
 
-  const [previousWars, previousWarsByPlayer] = yield * pipe(
+  const [previousWars, previousWarsByPlayer] = yield* pipe(
     [warCalls, playerWarCalls] as const,
     E.allWith({concurrency: 'unbounded'}),
   );

@@ -1,6 +1,8 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
 import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
+import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {asConfirm, asSuccess, asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, DangerB, DeleteB, DeleteConfirmB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -9,20 +11,16 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {dtNow} from '#src/internal/discord-old/util/markdown.ts';
 import {RosterS, RosterViewerB} from '#src/internal/discord-old/view-reducers/roster-viewer.ts';
 import {viewUserPlayerOptions} from '#src/internal/discord-old/views/user-player-options.ts';
-import {rosterSignupCreate, rosterSignupRead} from '#src/dynamo/operations/roster-signup.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {filterKV} from '#src/internal/pure/pure-kv.ts';
 import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
-
-
 const getAccounts = (s: St, rosterId: str) => E.gen(function* () {
-  const records = yield * queryPlayersForUser({pk: s.user_id});
-  const players = yield * ClashCache.getPlayers(records.map((r) => r.sk));
+  const records = yield* queryPlayersForUser({pk: s.user_id});
+  const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
-  const signup = yield * rosterSignupRead({
+  const signup = yield* rosterSignupRead({
     pk: rosterId,
     sk: s.user_id,
   });
@@ -43,11 +41,10 @@ const getAccounts = (s: St, rosterId: str) => E.gen(function* () {
   );
 });
 
-
 const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function* () {
-  const signup = yield * rosterSignupRead({pk: rosterId, sk: s.user_id});
+  const signup = yield* rosterSignupRead({pk: rosterId, sk: s.user_id});
 
-  yield * rosterSignupCreate({
+  yield* rosterSignupCreate({
     ...signup!,
     updated : dtNow(),
     accounts: pipe(
@@ -57,7 +54,6 @@ const deleteSignup = (s: St, rosterId: str, tag: str) => E.gen(function* () {
   });
 });
 
-
 export const RosterViewerOptOutB = DangerB.as(makeId(RK_OPEN, 'RVOO'), {
   label: 'Opt Out',
 });
@@ -65,9 +61,8 @@ export const RosterViewerOptOutB = DangerB.as(makeId(RK_OPEN, 'RVOO'), {
 const SelectAccounts = SingleS.as(makeId(RK_UPDATE, 'RVOO'), {
   placeholder: 'Select Accounts',
 });
-const Delete         = DeleteB.as(makeId(RK_DELETE, 'RVOO'));
-const DeleteConfirm  = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOO'));
-
+const Delete = DeleteB.as(makeId(RK_DELETE, 'RVOO'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'RVOO'));
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -76,7 +71,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   let Accounts = SelectAccounts.fromMap(s.cmap);
 
   if (RosterViewerOptOutB.clicked(ax)) {
-    const accounts = yield * getAccounts(s, Roster.values[0]);
+    const accounts = yield* getAccounts(s, Roster.values[0]);
 
     Accounts = SelectAccounts.render({
       options: accounts.length
@@ -91,7 +86,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   Accounts = Accounts.setDefaultValuesIf(ax.id.predicate, selected);
 
   if (DeleteConfirm.clicked(ax)) {
-    yield * deleteSignup(s, Roster.values[0], Accounts.values[0]);
+    yield* deleteSignup(s, Roster.values[0], Accounts.values[0]);
   }
 
   return {
@@ -126,7 +121,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     back: BackB.as(RosterViewerB.id),
   } satisfies St;
 });
-
 
 export const rosterViewerOptOutReducer = {
   [RosterViewerOptOutB.id.predicate]: view,

@@ -1,7 +1,5 @@
 import type {CommandSpec} from '#src/internal/discord-old/types.ts';
 
-
-
 export const SELECT_ACCOUNT_TYPE = [
   {
     label      : 'Main',
@@ -50,7 +48,6 @@ export const SELECT_ACCOUNT_TYPE = [
   },
 ];
 
-
 export const SELECT_INFO_KIND = [
   {
     label: 'About',
@@ -65,7 +62,6 @@ export const SELECT_INFO_KIND = [
     value: 'rule',
   },
 ];
-
 
 export const SELECT_ROSTER_TYPE = [
   {
@@ -94,7 +90,6 @@ export const SELECT_ROSTER_TYPE = [
     description: '[O]re [D]uring [CWL] (wars for 2x ore during Clan War League)',
   },
 ];
-
 
 export const SELECT_TIMEZONES = [
   {
@@ -164,12 +159,10 @@ export const SELECT_TIMEZONES = [
   },
 ];
 
-
 // export const SELECT_TIMES = Array(24).fill(0).map((_, idx) => ({
 //     label: `${idx.toString().padStart(2, '0')}:00`,
 //     value: `${idx.toString().padStart(2, '0')}:00`,
 // } as const));
-
 
 export const OPTION_TZ = {
   tz: {
@@ -245,7 +238,6 @@ export const OPTION_TZ = {
   },
 } as const satisfies CommandSpec['options'];
 
-
 export const OPTION_CLAN = {
   clan: {
     type       : 3,
@@ -255,7 +247,6 @@ export const OPTION_CLAN = {
   },
 } as const satisfies CommandSpec['options'];
 
-
 export const OPTION_EXHAUSTIVE = {
   exhaustive: {
     type       : 5,
@@ -263,7 +254,6 @@ export const OPTION_EXHAUSTIVE = {
     description: 'try player-based bypass when enemy war log is private (warning: slow)',
   },
 } as const satisfies CommandSpec['options'];
-
 
 export const OPTION_FROM = {
   from: {
@@ -273,7 +263,6 @@ export const OPTION_FROM = {
   },
 } as const satisfies CommandSpec['options'];
 
-
 export const OPTION_TO = {
   to: {
     type       : 4,
@@ -281,7 +270,6 @@ export const OPTION_TO = {
     description: 'ending war rank (def: # of bases in current war)',
   },
 } as const satisfies CommandSpec['options'];
-
 
 export const OPTION_LIMIT = {
   limit: {
@@ -291,8 +279,7 @@ export const OPTION_LIMIT = {
   },
 } as const satisfies CommandSpec['options'];
 
-
-export const ROSTER_ROUNDS_CWL   = [
+export const ROSTER_ROUNDS_CWL = [
   {label: 'Round 1', value: '0', default: true},
   {label: 'Round 2', value: '1', default: true},
   {label: 'Round 3', value: '2', default: true},
@@ -307,7 +294,6 @@ export const ROSTER_ROUNDS_ODCWL = [
   {label: 'ODCWL 3', value: '2', default: true},
 ];
 
-
 export const ROSTER_DESIGNATIONS = [{
   label  : 'Default',
   value  : 'default',
@@ -318,9 +304,7 @@ export const ROSTER_DESIGNATIONS = [{
   description: '2 star higher bases as a lower TH account',
 }];
 
-
 export const UNAVAILABLE = 'Unavailable';
-
 
 export const SELECT_POSITIONS = [
   {value: '1', label: '1'},

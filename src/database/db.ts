@@ -1,5 +1,5 @@
-import {Database} from '#src/database/service/Database.ts';
 import type {Codec} from '#src/database/arch-data/codec.ts';
+import {Database} from '#src/database/service/Database.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {ParseError} from 'effect/ParseResult';
 

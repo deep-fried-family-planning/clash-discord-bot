@@ -7,14 +7,12 @@ import {makeTask} from '#src/task/war-thread/common.ts';
 import type {ClanWarMember} from 'clashofclans.js';
 import {join} from 'effect/Array';
 
-
-
 export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function* () {
-  yield * DiscordApi.modifyChannel(data.thread, {
+  yield* DiscordApi.modifyChannel(data.thread, {
     name: `🗡│${data.clanName}`,
   });
 
-  yield * DiscordApi.createMessage(data.thread, {
+  yield* DiscordApi.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Battle ends ${dtRel(war.battle.endTime.getTime())}`),

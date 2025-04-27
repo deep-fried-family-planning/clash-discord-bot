@@ -5,10 +5,7 @@ import type {str} from '#src/internal/pure/types-pure.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import {UI} from 'dfx';
 
-
-
 export type MadeSelectRole = ReturnType<typeof makeSelectRole>;
-
 
 export const makeSelectRole = (
   params: RouteParams | Route,

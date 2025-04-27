@@ -19,21 +19,17 @@ import {ServerViewerB} from '#src/internal/discord-old/view-reducers/server-view
 import {E} from '#src/internal/pure/effect.ts';
 import {UserB} from 'src/internal/discord-old/view-reducers/user-settings.ts';
 
-
-
 const axn = {
   ENTRY: makeId(RK_ENTRY, 'INFO'),
   OPEN : makeId(RK_OPEN, 'INFO'),
 };
 
-
 export const OmbiBoardEB = SuccessB.as(axn.ENTRY, {
   label: LABEL_START,
 });
-export const OmbiBoardB  = SuccessB.as(axn.OPEN, {
+export const OmbiBoardB = SuccessB.as(axn.OPEN, {
   label: LABEL_START,
 });
-
 
 const start = (s: St, ax: Ax) => E.gen(function* () {
   return {
@@ -63,11 +59,10 @@ const start = (s: St, ax: Ax) => E.gen(function* () {
   } satisfies St;
 });
 
-
 export const LinkB = SuccessB.as(makeId(RK_OPEN, 'LINK'), {
   label: LABEL_LINK,
 });
-const link         = (s: St, ax: Ax) => E.gen(function* () {
+const link = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
     title      : LABEL_TITLE_LINK,
@@ -87,7 +82,6 @@ const link         = (s: St, ax: Ax) => E.gen(function* () {
     delete: LinkAccountAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
   } satisfies St;
 });
-
 
 export const infoBoardReducer = {
   [OmbiBoardEB.id.predicate]: start,

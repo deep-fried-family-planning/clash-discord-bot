@@ -1,7 +1,7 @@
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {S} from '#src/internal/pure/effect';
-import { Keys } from '../keys';
+import {Keys} from '../keys';
 
 export * as Ephemeral from '#src/disreact/codec/intrinsic/container/ephemeral.ts';
 export type Ephemeral = never;

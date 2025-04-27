@@ -7,8 +7,6 @@ import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Console, Schema as S} from 'effect';
 
-
-
 export const DiscordPlayer = S.Struct({
   pk: UserId,
   sk: PlayerTag,
@@ -37,10 +35,8 @@ export const DiscordPlayer = S.Struct({
 });
 export type DPlayer = S.Schema.Type<typeof DiscordPlayer>;
 
-
 export const decodeDiscordPlayer = S.decodeUnknown(DiscordPlayer);
 export const encodeDiscordPlayer = S.encodeUnknown(DiscordPlayer);
-
 
 export const putDiscordPlayer = (record: DPlayer) => pipe(
   encodeDiscordPlayer(record),
@@ -52,7 +48,6 @@ export const putDiscordPlayer = (record: DPlayer) => pipe(
     E.tap(Console.log('[PUT DDB]: player encoded', encoded)),
   )),
 );
-
 
 export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
   [encodeUserId(key.pk), encodePlayerTag(key.sk)],
@@ -77,7 +72,6 @@ export const getDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
   )),
 );
 
-
 export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
   encodeUserId(key.pk),
   E.flatMap((pk) => DynamoDBDocument.query({
@@ -99,7 +93,6 @@ export const queryPlayersForUser = (key: Pick<CompKey<DPlayer>, 'pk'>) => pipe(
     )),
   )),
 );
-
 
 export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
   encodePlayerTag(key.sk),
@@ -123,7 +116,6 @@ export const queryDiscordPlayer = (key: Pick<CompKey<DPlayer>, 'sk'>) => pipe(
   )),
 );
 
-
 export const scanDiscordPlayers = () => pipe(
   DynamoDBDocument.scan({
     TableName: process.env.DDB_OPERATIONS,
@@ -140,7 +132,6 @@ export const scanDiscordPlayers = () => pipe(
     )),
   )),
 );
-
 
 export const deleteDiscordPlayer = (key: CompKey<DPlayer>) => pipe(
   [encodeUserId(key.pk), encodePlayerTag(key.sk)],

@@ -1,23 +1,21 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
-import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 
-
-
 const getClans = (s: St) => E.gen(function* () {
   const records = pipe(
-    yield * queryDiscordClanForServer({pk: s.server_id}),
+    yield* queryDiscordClanForServer({pk: s.server_id}),
     sortWithL((r) => r.sk, ORDS),
   );
 
   const clans = pipe(
-    yield * ClashOfClans.getClans(records.map((r) => r.sk)),
+    yield* ClashOfClans.getClans(records.map((r) => r.sk)),
     sortWithL((c) => c.tag, ORDS),
   );
 
@@ -36,10 +34,8 @@ const getClans = (s: St) => E.gen(function* () {
   );
 });
 
-
 export const ClanSelectB = PrimaryB.as(makeId(RK_OPEN, 'CLAN'), {label: 'Select Clan'});
-const ClanS              = SingleS.as(makeId(RK_UPDATE, 'CLAN'), {placeholder: 'Select Clan'});
-
+const ClanS = SingleS.as(makeId(RK_UPDATE, 'CLAN'), {placeholder: 'Select Clan'});
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
@@ -48,7 +44,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
 
   if (ClanSelectB.clicked(ax)) {
     Clan = Clan.render({
-      options: yield * getClans(s),
+      options: yield* getClans(s),
     });
   }
 
@@ -69,7 +65,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       }),
   } satisfies St;
 });
-
 
 export const clanSelectReducer = {
   [ClanSelectB.id.predicate]: view,

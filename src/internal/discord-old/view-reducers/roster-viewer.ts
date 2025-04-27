@@ -2,6 +2,9 @@ import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {LABEL_ROSTERS, LABEL_TITLE_ROSTERS} from '#src/constants/label.ts';
 import {PLACEHOLDER_ROSTER} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
+import {rosterQueryByServer, rosterRead} from '#src/dynamo/operations/roster.ts';
+import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -19,32 +22,26 @@ import {RosterViewerSignupAdminB} from '#src/internal/discord-old/view-reducers/
 import {RosterViewerSignupB} from '#src/internal/discord-old/view-reducers/roster-viewer-signup.ts';
 import {viewServerRosterOptions} from '#src/internal/discord-old/views/server-roster-options.ts';
 import {isAdmin} from '#src/internal/discord-old/views/util.ts';
-import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
-import {rosterQueryByServer, rosterRead} from '#src/dynamo/operations/roster.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import type {num, und} from '#src/internal/pure/types-pure.ts';
 import type {Embed, SelectOption} from 'dfx/types';
 import {toEntries} from 'effect/Record';
 
-
-
 const getRosters = (s: St) => E.gen(function* () {
-  const rosters = yield * rosterQueryByServer({pk: s.server_id});
+  const rosters = yield* rosterQueryByServer({pk: s.server_id});
 
   return rosters;
 });
 
-
 export const RosterViewerB = PrimaryB.as(makeId(RK_OPEN, 'RV'), {
   label: LABEL_ROSTERS,
 });
-export const RosterS       = SingleS.as(makeId(RK_UPDATE, 'RV'), {
+export const RosterS = SingleS.as(makeId(RK_UPDATE, 'RV'), {
   placeholder: PLACEHOLDER_ROSTER,
 });
 
-const approximateRoundStartTimesCWL   = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
+const approximateRoundStartTimesCWL = (s: St, roster: DRoster) => (o: SelectOption, idx: num) => ({
   ...o,
   description: `Round ${idx + 1}/7 ~start: ${pipe(
     DT.unsafeMakeZoned(roster.search_time, {timeZone: s.user!.timezone}),
@@ -69,15 +66,14 @@ const approximateRoundStartTimesODCWL = (s: St, roster: DRoster) => (o: SelectOp
   )}`,
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
-  let Roster     = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  let Roster = RosterS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
   let viewer: Embed | und;
 
   if (RosterViewerB.clicked(ax)) {
-    const rosters = yield * getRosters(s);
+    const rosters = yield* getRosters(s);
 
     Roster = RosterS
       .render({
@@ -95,13 +91,13 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   }
 
   if (Roster.values.length) {
-    const roster = yield * rosterRead({
+    const roster = yield* rosterRead({
       pk: s.server_id,
       sk: Roster.values[0],
     });
 
-    const rosterSignups = yield * rosterSignupByRoster({pk: Roster.values[0]});
-    const signups       = rosterSignups.flatMap((s) => pipe(s.accounts, toEntries));
+    const rosterSignups = yield* rosterSignupByRoster({pk: Roster.values[0]});
+    const signups = rosterSignups.flatMap((s) => pipe(s.accounts, toEntries));
 
     viewer = {
       title      : roster.name!,
@@ -134,7 +130,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     };
   }
 
-
   return {
     ...s,
     title      : LABEL_TITLE_ROSTERS,
@@ -166,7 +161,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
         : RosterViewerCreatorB.if(s.user_roles.includes(s.server!.admin as snflk)),
   } satisfies St;
 });
-
 
 export const rosterViewerReducer = {
   [RosterViewerB.id.predicate]: view,

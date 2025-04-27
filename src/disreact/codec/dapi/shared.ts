@@ -2,8 +2,6 @@ import {E} from '#src/internal/pure/effect.ts';
 import {DateTime, ParseResult, pipe} from 'effect';
 import {annotations, DateTimeUtcFromSelf, Never, Redacted, RedactedFromSelf, String, transformOrFail, Union} from 'effect/Schema';
 
-
-
 export const UtcNow = transformOrFail(
   pipe(
     DateTimeUtcFromSelf,
@@ -18,7 +16,7 @@ export const UtcNow = transformOrFail(
   },
 );
 
-export const Redaction         = Union(RedactedFromSelf(String));
+export const Redaction = Union(RedactedFromSelf(String));
 export const RedactionTerminus = Redacted(String);
 
 export const ForbiddenSync = (val: any = undefined) => {

@@ -26,9 +26,7 @@ import {verifyKey} from 'discord-interactions';
 import {Cause} from 'effect';
 import {wsBypass} from '../dev/ws-bypass.ts';
 
-
-
-const modals     = {
+const modals = {
   [LINK_ACCOUNT_MODAL_OPEN.predicate]      : LinkAccountModal,
   [LINK_ACCOUNT_ADMIN_MODAL_OPEN.predicate]: LinkAccountAdminModal,
   [LINK_ACCOUNT_BULK_MODAL_OPEN.predicate] : LinkAccountBulkModal,
@@ -38,13 +36,12 @@ const modals     = {
 };
 const modalKinds = [RK_MODAL_OPEN, RK_MODAL_OPEN_FORWARD];
 
-
 const component = (body: IxD) => E.gen(function* () {
   const data = body.data! as ModalSubmitDatum | MessageComponentDatum;
-  const id   = fromId(data.custom_id);
+  const id = fromId(data.custom_id);
 
   if (id.params.kind === RK_CLOSE) {
-    yield * wsBypass(
+    yield* wsBypass(
       'ix_menu_close',
       body,
       Lambda.invoke({
@@ -56,7 +53,6 @@ const component = (body: IxD) => E.gen(function* () {
 
     return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
   }
-
 
   if (modalKinds.includes(id.params.kind)) {
     const editor = body.message?.embeds.at(-1);
@@ -86,7 +82,7 @@ const component = (body: IxD) => E.gen(function* () {
 
     const newId = fromId(curModal.custom_id);
 
-    yield * DynamoDBDocument.put({
+    yield* DynamoDBDocument.put({
       TableName: process.env.DDB_OPERATIONS,
       Item     : {
         pk      : `t-${body.id}`,
@@ -96,7 +92,7 @@ const component = (body: IxD) => E.gen(function* () {
       },
     });
 
-    yield * wsBypass(
+    yield* wsBypass(
       'ix_menu',
       body,
       Lambda.invoke({
@@ -121,7 +117,7 @@ const component = (body: IxD) => E.gen(function* () {
     });
   }
 
-  yield * wsBypass(
+  yield* wsBypass(
     'ix_menu',
     body,
     Lambda.invoke({
@@ -143,9 +139,8 @@ const component = (body: IxD) => E.gen(function* () {
   return r200({type: IXRT.DEFERRED_UPDATE_MESSAGE});
 });
 
-
 const modal = (body: IxD) => E.gen(function* () {
-  yield * wsBypass(
+  yield* wsBypass(
     'ix_menu',
     body,
     Lambda.invoke({
@@ -164,20 +159,18 @@ const modal = (body: IxD) => E.gen(function* () {
   );
 });
 
-
 const respond = ({status, body}: {status: number; body: object | string}) => ({
   statusCode: status,
   body      : JSON.stringify(body),
 });
-const r200    = (body: object | string) => respond({status: 200, body});
-const r202    = (body: object | string) => respond({status: 202, body});
+const r200 = (body: object | string) => respond({status: 200, body});
+const r202 = (body: object | string) => respond({status: 202, body});
 
-
-const ping         = (body: IxD) => E.succeed(r200({type: body.type}));
+const ping = (body: IxD) => E.succeed(r200({type: body.type}));
 const autocomplete = (body: IxD) => E.succeed(r202({type: body.type}));
 
 const slashCmd = (body: IxD) => E.gen(function* () {
-  yield * wsBypass(
+  yield* wsBypass(
     'ix_menu',
     body,
     Lambda.invoke({
@@ -190,7 +183,6 @@ const slashCmd = (body: IxD) => E.gen(function* () {
   return r200({type: IXRT.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE});
 });
 
-
 const router = {
   [IXT.PING]                            : ping,
   [IXT.APPLICATION_COMMAND]             : slashCmd,
@@ -199,13 +191,12 @@ const router = {
   [IXT.MESSAGE_COMPONENT]               : component,
 } as const;
 
-
 const h = (req: APIGatewayProxyEventBase<null>) => pipe(
   E.gen(function* () {
     const signature = req.headers['x-signature-ed25519']!;
     const timestamp = req.headers['x-signature-timestamp']!;
 
-    const isVerified = yield * E.tryPromise(() => verifyKey(
+    const isVerified = yield* E.tryPromise(() => verifyKey(
       Buffer.from(req.body!),
       signature,
       timestamp,
@@ -223,12 +214,12 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
 
     const body = JSON.parse(req.body!) as IxD;
 
-    return yield * router[body.type](body);
+    return yield* router[body.type](body);
   }),
   E.catchAllCause((error) => E.gen(function* () {
     const e = Cause.prettyErrors(error);
 
-    yield * logDiscordError(e);
+    yield* logDiscordError(e);
 
     const boom = badImplementation();
 
@@ -238,7 +229,7 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
     });
   })),
   E.catchAllDefect((defect) => E.gen(function* () {
-    yield * logDiscordError([defect]).pipe(E.ignoreLogged);
+    yield* logDiscordError([defect]).pipe(E.ignoreLogged);
 
     const boom = badImplementation();
 
@@ -248,7 +239,6 @@ const h = (req: APIGatewayProxyEventBase<null>) => pipe(
     });
   })),
 );
-
 
 const live = pipe(
   DiscordLayerLive,

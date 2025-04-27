@@ -1,6 +1,6 @@
+import {Template} from '#src/disreact/codec/rest/template.ts';
 import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
-import {Template} from '#src/disreact/codec/rest/template.ts';
 
 export * as Params from '#src/disreact/codec/rest/params.ts';
 export type Params = never;
@@ -14,9 +14,9 @@ export const Modal = S.transform(
   {
     encode: ({params, data}) =>
       ({
-      ...data,
-      custom_id: params,
-    }),
+        ...data,
+        custom_id: params,
+      }),
     decode: (data) =>
       ({
         params: data.custom_id as any,

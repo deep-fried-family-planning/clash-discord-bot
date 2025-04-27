@@ -2,8 +2,6 @@ import type {DispatchedClan, DispatchedHit, DispatchedModel, DispatchedPlayer, D
 import type {UUID} from '#src/internal/graph/types.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 
-
-
 export type DerivedWar =
   & DispatchedWar
     & {

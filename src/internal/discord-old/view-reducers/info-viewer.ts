@@ -3,6 +3,8 @@ import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/constants/ix-constants.ts';
 import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/constants/label.ts';
 import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {asViewer, isClicked, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -13,25 +15,20 @@ import {InfoViewerAdminB} from '#src/internal/discord-old/view-reducers/info-vie
 import {InfoViewerCreatorB} from '#src/internal/discord-old/view-reducers/info-viewer-creator.ts';
 import {OmbiBoardB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {viewInfoEmbed} from '#src/internal/discord-old/views/info-embed.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {infoQueryByServer} from '#src/dynamo/operations/info.ts';
 import {E, ORD, ORDN, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {filterL, mapL, sortByL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
 
-
-
 export const InfoViewerB = PrimaryB.as(makeId(RK_OPEN, 'IV'), {
   label: LABEL_INFO,
 });
-export const KindNavS    = SingleS.as(makeId(RK_UPDATE, 'IVK'), {
+export const KindNavS = SingleS.as(makeId(RK_UPDATE, 'IVK'), {
   placeholder: PLACEHOLDER_INFO_KIND,
   options    : SELECT_INFO_KIND,
 });
-export const InfoNavS    = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
+export const InfoNavS = SingleS.as(makeId(RK_UPDATE, 'IVI'), {
   placeholder: PLACEHOLDER_INFO_EMBED,
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
@@ -50,7 +47,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     });
 
     const infos = pipe(
-      yield * infoQueryByServer({pk: s.server_id}),
+      yield* infoQueryByServer({pk: s.server_id}),
       filterL((i) => i.kind === Kind.values[0]),
       sortByL(
         ORD.mapInput(ORDN, (i) => i.selector_order ?? 100),
@@ -78,10 +75,9 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     });
   }
 
-
   if (Kind.id.predicate === ax.id.predicate) {
     const infos = pipe(
-      yield * infoQueryByServer({pk: s.server_id}),
+      yield* infoQueryByServer({pk: s.server_id}),
       filterL((i) => i.kind === Kind.values[0]),
       sortByL(
         ORD.mapInput(ORDN, (i) => i.selector_order ?? 100),
@@ -114,11 +110,10 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   if (Info.id.predicate === ax.id.predicate || Kind.id.predicate === ax.id.predicate || isClicked(InfoViewerB, ax)) {
     const [infoId, embedId] = Info.values[0].split(DELIM_DATA);
 
-    const embed = yield * MenuCache.embedRead(embedId);
+    const embed = yield* MenuCache.embedRead(embedId);
 
     viewer = asViewer(viewInfoEmbed(embed));
   }
-
 
   return {
     ...s,
@@ -150,7 +145,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
         }),
   } satisfies St;
 });
-
 
 export const infoViewerReducer = {
   [InfoViewerB.id.predicate]: view,

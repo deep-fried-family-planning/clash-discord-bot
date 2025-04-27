@@ -1,8 +1,6 @@
 import type {CID, PID} from '#src/internal/graph/types.ts';
 import type {int, isodate, num, url} from '#src/internal/pure/types-pure.ts';
 
-
-
 export type CK_Player_PreviousHitsClan = {
   tag      : CID;
   name     : string;

@@ -1,7 +1,7 @@
-import {Data} from 'effect';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import {Data} from 'effect';
 
 type Diffs = Data.TaggedEnum<{
   Skip    : {};

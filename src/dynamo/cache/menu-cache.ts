@@ -8,14 +8,11 @@ import type {DUser} from '#src/dynamo/schema/discord-user.ts';
 import {C, E, L} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
 
-
-
 const users = C.make({
   capacity  : 100,
   timeToLive: '10 minutes',
   lookup    : (userId: CompKey<DUser>['pk']) => userRead(userId),
 });
-
 
 const servers = C.make({
   capacity  : 100,
@@ -23,18 +20,16 @@ const servers = C.make({
   lookup    : (serverId: CompKey<DServer>['pk']) => serverRead(serverId),
 });
 
-
 const embeds = C.make({
   capacity  : 100,
   timeToLive: '10 minutes',
   lookup    : (embedId: CompKey<DEmbed>['pk']) => discordEmbedRead(embedId),
 });
 
-
 const program = E.gen(function* () {
-  const server = yield * servers;
-  const user   = yield * users;
-  const embed  = yield * embeds;
+  const server = yield* servers;
+  const user = yield* users;
+  const embed = yield* embeds;
 
   return {
     embedRead       : (...p: Parameters<typeof embed.get>) => embed.get(...p),
@@ -48,7 +43,6 @@ const program = E.gen(function* () {
     userInvalidate  : (...p: Parameters<typeof user.invalidate>) => user.invalidate(...p),
   };
 });
-
 
 export class MenuCache extends E.Tag('MenuCache')<
   MenuCache,

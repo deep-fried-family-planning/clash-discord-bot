@@ -1,7 +1,7 @@
 import {E} from '#src/disreact/utils/re-exports.ts';
 import {CloseMessage} from '#test/unit/components/close-message.tsx';
-import {it} from '@effect/vitest';
 import {makeTestRuntime} from '#test/unit/util.ts';
+import {it} from '@effect/vitest';
 
 const runtime = makeTestRuntime([CloseMessage], false);
 

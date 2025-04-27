@@ -1,12 +1,12 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
+import {Sources} from '#src/disreact/model/Sources.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
 import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';

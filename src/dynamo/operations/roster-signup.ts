@@ -1,26 +1,23 @@
-import {dtNowIso} from '#src/internal/discord-old/util/markdown.ts';
 import {encodeRosterId, encodeUserId} from '#src/dynamo/schema/common-encoding.ts';
 import {decodeDiscordRosterSignup, type DRosterSignup, type DRosterSignupKey, encodeDiscordRosterSignup} from '#src/dynamo/schema/discord-roster-signup.ts';
+import {dtNowIso} from '#src/internal/discord-old/util/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 
-
-
 export const rosterSignupCreate = (signup: DRosterSignup) => E.gen(function* () {
-  const encoded = yield * encodeDiscordRosterSignup(signup);
+  const encoded = yield* encodeDiscordRosterSignup(signup);
 
-  yield * DynamoDBDocument.put({
+  yield* DynamoDBDocument.put({
     TableName: process.env.DDB_OPERATIONS,
     Item     : encoded,
   });
 });
 
-
 export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function* () {
-  const pk = yield * encodeRosterId(signup.pk);
-  const sk = yield * encodeUserId(signup.sk);
+  const pk = yield* encodeRosterId(signup.pk);
+  const sk = yield* encodeUserId(signup.sk);
 
-  const item = yield * DynamoDBDocument.get({
+  const item = yield* DynamoDBDocument.get({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {pk, sk},
   });
@@ -29,14 +26,13 @@ export const rosterSignupRead = (signup: DRosterSignupKey) => E.gen(function* ()
     return null;
   }
 
-  return yield * decodeDiscordRosterSignup(item.Item);
+  return yield* decodeDiscordRosterSignup(item.Item);
 });
 
-
 export const rosterSignupByRoster = (signup: Pick<DRosterSignupKey, 'pk'>) => E.gen(function* () {
-  const pk = yield * encodeRosterId(signup.pk);
+  const pk = yield* encodeRosterId(signup.pk);
 
-  const items = yield * DynamoDBDocument.query({
+  const items = yield* DynamoDBDocument.query({
     TableName                : process.env.DDB_OPERATIONS,
     KeyConditionExpression   : 'pk = :pk',
     ExpressionAttributeValues: {
@@ -48,14 +44,13 @@ export const rosterSignupByRoster = (signup: Pick<DRosterSignupKey, 'pk'>) => E.
     return [];
   }
 
-  return yield * E.all(items.Items.map((i) => decodeDiscordRosterSignup(i)));
+  return yield* E.all(items.Items.map((i) => decodeDiscordRosterSignup(i)));
 });
 
-
 export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function* () {
-  const encoded = yield * encodeDiscordRosterSignup(signup);
+  const encoded = yield* encodeDiscordRosterSignup(signup);
 
-  const item = yield * DynamoDBDocument.get({
+  const item = yield* DynamoDBDocument.get({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {
       pk: encoded.pk,
@@ -63,7 +58,7 @@ export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function* () 
     },
   });
 
-  yield * DynamoDBDocument.put({
+  yield* DynamoDBDocument.put({
     TableName: process.env.DDB_OPERATIONS,
     Item     : {
       ...item.Item,
@@ -73,12 +68,11 @@ export const rosterSignupUpdate = (signup: DRosterSignup) => E.gen(function* () 
   });
 });
 
-
 export const rosterSignupDelete = (signup: DRosterSignupKey) => E.gen(function* () {
-  const pk = yield * encodeRosterId(signup.pk);
-  const sk = yield * encodeUserId(signup.sk);
+  const pk = yield* encodeRosterId(signup.pk);
+  const sk = yield* encodeUserId(signup.sk);
 
-  yield * DynamoDBDocument.delete({
+  yield* DynamoDBDocument.delete({
     TableName: process.env.DDB_OPERATIONS,
     Key      : {pk, sk},
   });

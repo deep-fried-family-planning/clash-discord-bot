@@ -10,12 +10,9 @@ import {DirectoryViewerB} from '#src/internal/discord-old/view-reducers/director
 import {OmbiBoardB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const BotViewer = PrimaryB.as(makeId(RK_OPEN, 'BV'), {
   label: 'Bot',
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
@@ -35,7 +32,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     delete: BotViewerDevB.if(DEVS.includes(s.user_id)),
   };
 });
-
 
 export const botViewerReducer = {
   [BotViewer.id.predicate]: view,

@@ -1,8 +1,6 @@
 import {S} from '#src/internal/pure/effect.ts';
 import type {Brand} from 'effect';
 
-
-
 export const StartsWithId = <T extends string>(start: string, brand: T) => S.transform(
   S.String.pipe(S.startsWith(start), S.brand(brand)),
   S.String,

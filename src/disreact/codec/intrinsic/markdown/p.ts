@@ -1,7 +1,7 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import { Keys } from '../keys';
+import {S} from '#src/disreact/utils/re-exports.ts';
+import {Keys} from '../keys';
 
 export * as Paragraph from '#src/disreact/codec/intrinsic/markdown/p.ts';
 export type Paragraph = never;

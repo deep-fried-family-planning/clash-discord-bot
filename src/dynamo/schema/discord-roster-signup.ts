@@ -2,11 +2,8 @@ import type {CompKey} from '#src/dynamo/dynamo.ts';
 import {RosterId, UserId} from '#src/dynamo/schema/common.ts';
 import {Schema as S} from 'effect';
 
-
-
 export type DRosterSignup = S.Schema.Type<typeof DiscordRosterSignup>;
 export type DRosterSignupKey = CompKey<DRosterSignup>;
-
 
 export const DiscordRosterSignup = S.Struct({
   type: S.Literal('DiscordRosterSignup'),
@@ -33,7 +30,6 @@ export const DiscordRosterSignup = S.Struct({
     ),
   }),
 });
-
 
 export const encodeDiscordRosterSignup = S.encodeUnknown(DiscordRosterSignup);
 export const decodeDiscordRosterSignup = S.decodeUnknown(DiscordRosterSignup);

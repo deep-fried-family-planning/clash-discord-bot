@@ -7,10 +7,7 @@ import type {Maybe} from '#src/internal/pure/types.ts';
 import {UI} from 'dfx';
 import type {Button} from 'dfx/types';
 
-
-
 export type MadeButton = ReturnType<typeof makeButton>;
-
 
 export const makeButton = (
   params: Route | RouteParams,
@@ -20,7 +17,6 @@ export const makeButton = (
   const id = 'predicate' in params
     ? (inId ?? params)
     : toId(params);
-
 
   return {
     id,
@@ -40,7 +36,6 @@ export const makeButton = (
       },
       options,
     ),
-
 
     forward: (newId: Route, forward?: string) => makeButton(
       {
@@ -70,7 +65,6 @@ export const makeButton = (
       options,
     ),
 
-
     render: (newOptions: typeof options) => makeButton(
       id,
       {
@@ -79,7 +73,6 @@ export const makeButton = (
       },
       id,
     ),
-
 
     as: (newId: Route, newOptions?: typeof options) => {
       return makeButton(

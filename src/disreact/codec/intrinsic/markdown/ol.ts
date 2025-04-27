@@ -1,6 +1,6 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import {S} from '#src/disreact/utils/re-exports.ts';
 
 export * as OrderedList from '#src/disreact/codec/intrinsic/markdown/ol.ts';
 export type OrderedList = never;

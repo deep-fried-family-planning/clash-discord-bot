@@ -3,12 +3,9 @@ import type {IxD} from '#src/internal/discord.ts';
 import {DT, g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambda} from '@effect-aws/lambda';
 
-
-
 const menuClose = (ix: IxD) => g(function* () {
-  yield * DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
+  yield* DiscordApi.deleteOriginalInteractionResponse(ix.application_id, ix.token);
 });
-
 
 const live = pipe(
   DiscordLayerLive,

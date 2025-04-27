@@ -8,19 +8,16 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {IXCBS} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const DateTimeEditorB = PrimaryB.as(makeId(RK_OPEN, 'DTE'), {
   label: 'Date/Time',
 });
-const DateTimeEditB          = PrimaryB.as(EDIT_DATE_TIME_MODAL_OPEN, {
+const DateTimeEditB = PrimaryB.as(EDIT_DATE_TIME_MODAL_OPEN, {
   label: 'Modal',
   style: IXCBS.SUCCESS,
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
-  const time    = EditEpochT.fromMap(ax.cmap);
+  const time = EditEpochT.fromMap(ax.cmap);
   const Forward = ForwardB.forward(ax.id);
 
   return {
@@ -41,7 +38,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     }),
   } satisfies St;
 });
-
 
 export const dateTimeEditorReducer = {
   [DateTimeEditorB.id.predicate]         : view,

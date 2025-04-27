@@ -2,7 +2,6 @@ import * as path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import {defineConfig} from 'vitest/config';
 
-
 export default defineConfig({
   appType: 'custom',
   plugins: [tsconfigPaths()],

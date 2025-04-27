@@ -9,16 +9,14 @@ import {mapL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';
 import {inspect} from 'node:util';
 
-
-
 export const logDiscordError = (e: unknown[]) => E.gen(function* () {
-  yield * CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
+  yield* CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
   const url = process.env.DFFP_DISCORD_ERROR_URL;
 
   const [token, id] = url.split('/').reverse();
 
-  const log = yield * DiscordApi.executeWebhookJson(id, token, {
+  const log = yield* DiscordApi.executeWebhookJson(id, token, {
     embeds: [{
       color      : nColor(COLOR.ERROR),
       title      : process.env.AWS_LAMBDA_FUNCTION_NAME,

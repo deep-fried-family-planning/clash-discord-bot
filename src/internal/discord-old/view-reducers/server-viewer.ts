@@ -10,12 +10,9 @@ import {ServerViewerAdminB} from '#src/internal/discord-old/view-reducers/server
 
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const ServerViewerB = PrimaryB.as(makeId(RK_OPEN, 'SV'), {
   label: 'Server',
 });
-
 
 const view = (s: St, ax: Ax) => E.gen(function* () {
   return {
@@ -33,7 +30,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       .if(s.user_roles.includes(s.server!.admin as snflk)),
   } satisfies St;
 });
-
 
 export const serverViewerReducer = {
   [ServerViewerB.id.predicate]: view,

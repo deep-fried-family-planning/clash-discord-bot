@@ -3,10 +3,8 @@ import {dHdr1, dHdr3, dLinesS, dmRole, dtRel} from '#src/internal/discord-old/ut
 import {g} from '#src/internal/pure/effect.ts';
 import {makeTask, TEMP_ROLES} from '#src/task/war-thread/common.ts';
 
-
-
 export const WarPrep24hr = makeTask('WarPrep24hr', (data, war) => g(function* () {
-  yield * DiscordApi.createMessage(data.thread, {
+  yield* DiscordApi.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Prep ends ${dtRel(war.prep.startTime.getTime())}`),

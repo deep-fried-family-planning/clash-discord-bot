@@ -1,7 +1,6 @@
 import {StartMenu} from '#src/discord/omni-board/start-menu.tsx';
 import {usePage} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
-import { E } from '#src/internal/pure/effect';
 
 export const OmniBoard: FC = () => {
   const page = usePage([StartMenu]);

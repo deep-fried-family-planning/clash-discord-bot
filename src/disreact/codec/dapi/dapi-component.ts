@@ -1,6 +1,5 @@
 import {pipe, S} from '#src/disreact/utils/re-exports.ts';
 
-
 export * as DAPIComponent from '#src/disreact/codec/dapi/dapi-component.ts';
 export type DAPIComponent = never;
 

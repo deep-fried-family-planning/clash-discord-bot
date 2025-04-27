@@ -1,7 +1,5 @@
 import type {int, isodate, unixdate, url} from '#src/internal/pure/types-pure.ts';
 
-
-
 export type CK_War_Member = {
   tag               : string;
   name              : string;

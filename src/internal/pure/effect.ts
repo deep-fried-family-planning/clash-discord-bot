@@ -1,7 +1,5 @@
 import {Order} from 'effect';
 
-
-
 export {
   Effect as E,
   Console as CSL,
@@ -39,24 +37,20 @@ export {
 
 } from 'effect';
 
-
 export {
   gen as g,
 
 } from 'effect/Effect';
-
 
 export {
   compose,
   hole as forbiddenTransform,
 } from 'effect/Function';
 
-
-export const ORDS  = Order.string;
+export const ORDS = Order.string;
 export const ORDSR = Order.reverse(Order.string);
-export const ORDN  = Order.number;
+export const ORDN = Order.number;
 export const ORDNR = Order.reverse(Order.number);
-
 
 export * as Ar from 'effect/Array'; // collection array
 export * as Kv from 'effect/Record'; // collection key-value

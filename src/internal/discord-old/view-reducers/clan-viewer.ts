@@ -1,5 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -9,21 +10,18 @@ import type {snflk} from '#src/internal/discord-old/types.ts';
 import {ClanViewerAdminB} from '#src/internal/discord-old/view-reducers/clan-viewer-admin.ts';
 import {LinkClanB} from '#src/internal/discord-old/view-reducers/links/link-clan.ts';
 import {OmbiBoardB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
-import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
 import {E, ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import type {Embed} from 'dfx/types';
 
-
-
 const getClans = (s: St, ax: Ax) => E.gen(function* () {
   const records = pipe(
-    yield * queryDiscordClanForServer({pk: s.server_id}),
+    yield* queryDiscordClanForServer({pk: s.server_id}),
     sortWithL((r) => r.sk, ORDS),
   );
 
   const clans = pipe(
-    yield * ClashOfClans.getClans(records.map((r) => r.sk)),
+    yield* ClashOfClans.getClans(records.map((r) => r.sk)),
     sortWithL((c) => c.tag, ORDS),
   );
 
@@ -42,32 +40,28 @@ const getClans = (s: St, ax: Ax) => E.gen(function* () {
   );
 });
 
-
-export const ClanViewerB        = PrimaryB.as(makeId(RK_OPEN, 'CV'), {
+export const ClanViewerB = PrimaryB.as(makeId(RK_OPEN, 'CV'), {
   label: 'Clans',
 });
 export const ClanViewerSelector = SingleS.as(makeId(RK_UPDATE, 'CV'), {
   placeholder: 'Select Clan',
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((v) => v.value);
-  let Clan       = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
+  let Clan = ClanViewerSelector.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, selected);
 
   let viewer: Embed | undefined = undefined;
 
-
   if (ax.id.predicate === ClanViewerB.id.predicate) {
     Clan = ClanViewerSelector.render({
-      options: yield * getClans(s, ax),
+      options: yield* getClans(s, ax),
     });
 
     viewer = {
       description: 'No Clan Selected',
     };
   }
-
 
   return {
     ...s,
@@ -91,7 +85,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
         : ClanViewerAdminB.if(s.user_roles.includes(s.server!.admin as snflk)),
   } satisfies St;
 });
-
 
 export const clanViewerReducer = {
   [ClanViewerB.id.predicate]       : view,

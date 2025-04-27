@@ -4,6 +4,10 @@ import {LABEL_TITLE_EDIT_INFO} from '#src/constants/label.ts';
 import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
 import {REF_EMBED_ID, REF_INFO_ID, REF_INFO_KIND, REF_INFO_POSITION} from '#src/constants/reference.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
+import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
+import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
+import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
@@ -12,58 +16,50 @@ import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {dtNow, dtNowIso} from '#src/internal/discord-old/util/markdown.ts';
 import {EmbedEditorB} from '#src/internal/discord-old/view-reducers/editors/embed-editor.ts';
 import {InfoNavS, InfoViewerB, KindNavS} from '#src/internal/discord-old/view-reducers/info-viewer.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/dynamo/operations/embed.ts';
-import {infoCreate, infoDelete, infoRead} from '#src/dynamo/operations/info.ts';
-import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 export const InfoViewerAdminB = AdminB.as(makeId(RK_OPEN, 'IVA'));
-const Submit                  = SubmitB.as(makeId(RK_SUBMIT, 'IVA'));
-const Delete                  = DeleteB.as(makeId(RK_DELETE, 'IVA'));
-const DeleteConfirm           = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'IVA'));
-const KindS                   = SingleS.as(makeId(RK_UPDATE, 'IVAK'), {
+const Submit = SubmitB.as(makeId(RK_SUBMIT, 'IVA'));
+const Delete = DeleteB.as(makeId(RK_DELETE, 'IVA'));
+const DeleteConfirm = DeleteConfirmB.as(makeId(RK_DELETE_CONFIRM, 'IVA'));
+const KindS = SingleS.as(makeId(RK_UPDATE, 'IVAK'), {
   placeholder: PLACEHOLDER_INFO_KIND,
   options    : SELECT_INFO_KIND,
 });
-const PositionS               = SingleS.as(makeId(RK_UPDATE, 'IVAP'), {
+const PositionS = SingleS.as(makeId(RK_UPDATE, 'IVAP'), {
   placeholder: PLACEHOLDER_POSITION,
   options    : SELECT_POSITIONS,
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
   let infoKind = '';
-  let infoId   = '';
-  let embedId  = '';
+  let infoId = '';
+  let embedId = '';
   let position = '';
 
   let Position = PositionS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
-  let Kind     = KindS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
+  let Kind = KindS.fromMap(s.cmap).setDefaultValuesIf(ax.id.predicate, ax.selected.map((s) => s.value));
 
   if (InfoViewerAdminB.clicked(ax)) {
     infoKind = KindNavS.fromMap(s.cmap).values[0];
 
     const [info, embed] = InfoNavS.fromMap(s.cmap).values[0].split(DELIM_DATA);
 
-    infoId  = info;
+    infoId = info;
     embedId = embed;
   }
   else {
     infoKind = s.reference[REF_INFO_KIND];
-    infoId   = s.reference[REF_INFO_ID];
-    embedId  = s.reference[REF_EMBED_ID];
+    infoId = s.reference[REF_INFO_ID];
+    embedId = s.reference[REF_EMBED_ID];
     position = s.reference[REF_INFO_POSITION];
   }
 
-
   if (ax.id.predicate === InfoViewerAdminB.id.predicate || ax.id.nextPredicate === InfoViewerAdminB.id.predicate) {
-    const info = yield * infoRead({pk: s.server_id, sk: infoId});
+    const info = yield* infoRead({pk: s.server_id, sk: infoId});
 
     Position = Position.setDefaultValuesIf(Position.id.predicate, [`${info.selector_order ?? '25'}`]);
-    Kind     = Kind.setDefaultValuesIf(Kind.id.predicate, [infoKind]);
+    Kind = Kind.setDefaultValuesIf(Kind.id.predicate, [infoKind]);
     position = Position.values[0];
   }
 
@@ -76,31 +72,29 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   }
 
   if (DeleteConfirm.clicked(ax)) {
-    yield * infoDelete({pk: s.server_id, sk: infoId});
-    yield * discordEmbedDelete(embedId);
-    yield * MenuCache.embedInvalidate(embedId);
+    yield* infoDelete({pk: s.server_id, sk: infoId});
+    yield* discordEmbedDelete(embedId);
+    yield* MenuCache.embedInvalidate(embedId);
   }
 
-
   if (Submit.clicked(ax)) {
-    const info  = yield * infoRead({pk: s.server_id, sk: infoId});
-    const embed = yield * discordEmbedRead(embedId);
+    const info = yield* infoRead({pk: s.server_id, sk: infoId});
+    const embed = yield* discordEmbedRead(embedId);
 
-    yield * infoCreate({
+    yield* infoCreate({
       ...info,
       updated       : dtNow(),
       kind          : infoKind as DInfo['kind'],
       selector_order: parseInt(position),
       selector_label: embed.embed.title,
     });
-    yield * discordEmbedCreate({
+    yield* discordEmbedCreate({
       ...embed,
       updated: dtNow(),
       embed  : s.editor!,
     });
-    yield * MenuCache.embedInvalidate(embedId);
+    yield* MenuCache.embedInvalidate(embedId);
   }
-
 
   return {
     ...s,
@@ -167,7 +161,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
     back: BackB.as(InfoViewerB.id),
   } satisfies St;
 });
-
 
 export const infoViewerAdminReducer = {
   [InfoViewerAdminB.id.predicate]: view,

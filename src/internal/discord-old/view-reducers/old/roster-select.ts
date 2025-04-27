@@ -5,15 +5,12 @@ import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
-
-
 const getRosters = () => E.gen(function* () {
   return [{
     value: 'NOOP',
     label: 'NOOP',
   }];
 });
-
 
 export const SelectRosterB = PrimaryB.as(makeId(RK_INIT, 'SER'), {
   label: 'Select Roster',
@@ -27,7 +24,6 @@ const RosterS = SingleS.as(makeId(RK_UPDATE, 'SER'), {
   }],
 });
 
-
 const view = (s: St, ax: Ax) => E.gen(function* () {
   const selected = ax.selected.map((s) => s.value);
 
@@ -35,7 +31,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
 
   if (SelectRosterB.clicked(ax)) {
     Roster = Roster.render({
-      options: yield * getRosters(),
+      options: yield* getRosters(),
     });
   }
 
@@ -56,7 +52,6 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
       }),
   } satisfies St;
 });
-
 
 export const rosterSelectReducer = {
   [SelectRosterB.id.predicate]: view,

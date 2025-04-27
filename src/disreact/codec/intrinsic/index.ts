@@ -1,4 +1,3 @@
-import {Actions} from '#src/disreact/codec/intrinsic/container/actions.ts';
 import {Button} from '#src/disreact/codec/intrinsic/component/button.ts';
 import {Channels} from '#src/disreact/codec/intrinsic/component/channels.ts';
 import {Danger} from '#src/disreact/codec/intrinsic/component/danger.ts';
@@ -14,18 +13,22 @@ import {Select} from '#src/disreact/codec/intrinsic/component/select.ts';
 import {Success} from '#src/disreact/codec/intrinsic/component/success.ts';
 import {TextInput} from '#src/disreact/codec/intrinsic/component/textinput.ts';
 import {Users} from '#src/disreact/codec/intrinsic/component/users.ts';
+import {Actions} from '#src/disreact/codec/intrinsic/container/actions.ts';
+import {Ephemeral} from '#src/disreact/codec/intrinsic/container/ephemeral.ts';
+import {Message} from '#src/disreact/codec/intrinsic/container/message.ts';
+import {Modal} from '#src/disreact/codec/intrinsic/container/modal.ts';
 import {Author} from '#src/disreact/codec/intrinsic/embed/author.ts';
 import {Embed} from '#src/disreact/codec/intrinsic/embed/embed.ts';
 import {Field} from '#src/disreact/codec/intrinsic/embed/field.ts';
 import {Footer} from '#src/disreact/codec/intrinsic/embed/footer.ts';
 import {Img} from '#src/disreact/codec/intrinsic/embed/img.ts';
-import {Emoji} from '#src/disreact/codec/intrinsic/markdown/emoji.ts';
 import {Anchor} from '#src/disreact/codec/intrinsic/markdown/a.ts';
 import {AtMention} from '#src/disreact/codec/intrinsic/markdown/at.ts';
 import {Bold} from '#src/disreact/codec/intrinsic/markdown/b.ts';
 import {BlockQuote} from '#src/disreact/codec/intrinsic/markdown/blockquote.ts';
 import {Break} from '#src/disreact/codec/intrinsic/markdown/br.ts';
 import {Code} from '#src/disreact/codec/intrinsic/markdown/code.ts';
+import {Emoji} from '#src/disreact/codec/intrinsic/markdown/emoji.ts';
 import {H1} from '#src/disreact/codec/intrinsic/markdown/h1.ts';
 import {H2} from '#src/disreact/codec/intrinsic/markdown/h2.ts';
 import {H3} from '#src/disreact/codec/intrinsic/markdown/h3.ts';
@@ -40,12 +43,6 @@ import {Small} from '#src/disreact/codec/intrinsic/markdown/small.ts';
 import {Time} from '#src/disreact/codec/intrinsic/markdown/time.ts';
 import {Underline} from '#src/disreact/codec/intrinsic/markdown/u.ts';
 import {UnorderedList} from '#src/disreact/codec/intrinsic/markdown/ul.ts';
-import {Message} from '#src/disreact/codec/intrinsic/container/message.ts';
-import {Modal} from '#src/disreact/codec/intrinsic/container/modal.ts';
-import {Ephemeral} from '#src/disreact/codec/intrinsic/container/ephemeral.ts';
-import { Keys } from '#src/disreact/codec/intrinsic/keys.ts';
-import {pipe, S} from '#src/disreact/utils/re-exports.ts';
-import { DAPI } from '../dapi/dapi';
 
 export * as Intrinsic from '#src/disreact/codec/intrinsic/index.ts';
 export type Intrinsic = never;
@@ -273,7 +270,7 @@ export const NORM = {
   [Ephemeral.TAG]    : Ephemeral.NORM,
 } as any;
 
-export const ENC =  {
+export const ENC = {
   [Emoji.TAG]        : Emoji.encode,
   [Message.TAG]      : Message.encode,
   [Ephemeral.TAG]    : Ephemeral.encode,

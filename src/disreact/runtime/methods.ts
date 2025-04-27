@@ -1,16 +1,14 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
+import {Model} from '#src/disreact/model/model.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
+import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {DateTime, Fiber} from 'effect';
-import {Model} from '#src/disreact/model/model.ts';
 import console from 'node:console';
-import type { Source } from '../model/meta/source';
+import type {Source} from '../model/meta/source';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;

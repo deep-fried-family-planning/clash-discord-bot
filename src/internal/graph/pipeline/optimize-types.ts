@@ -2,8 +2,6 @@ import type {DerivedClan, DerivedHit, DerivedPlayer, DerivedWar} from '#src/inte
 import type {IDKV} from '#src/internal/graph/types.ts';
 import type {Player} from 'clashofclans.js';
 
-
-
 export type OptimizedWar = {
   data : DerivedWar;
   clan1: OptimizedClan;

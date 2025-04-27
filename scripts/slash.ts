@@ -28,8 +28,6 @@ import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {map} from 'effect/Array';
 import {mapEntries, toEntries} from 'effect/Record';
 
-
-
 const specs = {
   CLAN_FAM,
   ONE_OF_US,
@@ -46,9 +44,8 @@ const specs = {
   REMINDME,
 } as const;
 
-
 type Sorted = {required?: boolean};
-const sorter     = (a: Sorted, b: Sorted) => OrdB(Boolean(b.required), Boolean(a.required));
+const sorter = (a: Sorted, b: Sorted) => OrdB(Boolean(b.required), Boolean(a.required));
 const specToREST = (spec: CommandSpec) => ({
   ...spec,
   options: pipe(
@@ -56,8 +53,8 @@ const specToREST = (spec: CommandSpec) => ({
     toValuesKV,
     sortL(sorter),
     mapL((v) => 'options' in v
-      // @ts-expect-error todo bad types
       ? {
+        // @ts-expect-error todo bad types
         ...v, options: pipe(v.options, toValuesKV, sortL(sorter), mapL((v2) =>
           'options' in v2
             ? {
@@ -73,15 +70,13 @@ const specToREST = (spec: CommandSpec) => ({
   ),
 } as unknown as CreateGlobalApplicationCommandParams);
 
-
 const h = () => E.gen(function* () {
-  yield * invokeCount(showMetric(invokeCount));
+  yield* invokeCount(showMetric(invokeCount));
 
+  const discord = yield* DiscordREST;
+  const APP_ID = yield* CFG.redacted(REDACTED_DISCORD_APP_ID);
 
-  const discord = yield * DiscordREST;
-  const APP_ID  = yield * CFG.redacted(REDACTED_DISCORD_APP_ID);
-
-  const globalCommands = yield * discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
+  const globalCommands = yield* discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
 
   const commands = pipe(
     specs satisfies { [k in string]: CommandSpec },
@@ -102,7 +97,7 @@ const h = () => E.gen(function* () {
     mapL(([, cmd]) => discord.createGlobalApplicationCommand(RDT.value(APP_ID), cmd)),
   );
 
-  yield * pipe(
+  yield* pipe(
     deletes,
     concatL(updates),
     E.allWith({concurrency: 'unbounded'}),

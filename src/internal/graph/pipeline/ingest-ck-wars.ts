@@ -4,8 +4,6 @@ import {attachModelId} from '#src/internal/graph/types.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {flatMapL, mapL} from '#src/internal/pure/pure-list.ts';
 
-
-
 const ingestCkWarPlayers = (clan: CK_War_Clan): DispatchedPlayer[] => pipe(
   clan.members,
   mapL((m) => attachModelId({
