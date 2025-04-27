@@ -1,9 +1,16 @@
-import {DataTag} from '#src/database/data-const/index.ts';
-import {Id} from '#src/database/data-arch/id.ts';
-import {asKey, asLatest, PlayerVerification, toLatest} from '#src/database/data-arch/codec-standard.ts';
+import {DataTag} from '#src/database/arch-data/constants/index.ts';
+import {Id} from '#src/database/arch-data/id.ts';
+import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
 import {DiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
+
+export const PlayerVerification = S.Enums({
+  none     : 0,
+  admin    : 1,
+  token    : 2,
+  developer: 3,
+} as const);
 
 export const Key = asKey(
   DataTag.USER_PLAYER,

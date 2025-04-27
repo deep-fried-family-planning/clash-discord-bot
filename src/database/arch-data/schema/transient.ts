@@ -1,6 +1,7 @@
-import {asKey, asLatest, CompressedBinary, TimeToLive} from '#src/database/data-arch/codec-standard.ts';
-import {Id} from '#src/database/data-arch/id.ts';
-import {DataTag} from '#src/database/data-const/index.ts';
+import {DataTag} from '#src/database/arch-data/constants/index.ts';
+import {Id} from '#src/database/arch-data/id.ts';
+import {asKey, asLatest} from '#src/database/arch-data/standard.ts';
+import {CompressedBinary, TimeToLive} from '#src/database/arch-data/util.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {Duration} from 'effect';
 

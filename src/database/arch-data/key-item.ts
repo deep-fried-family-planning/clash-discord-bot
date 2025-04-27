@@ -1,13 +1,4 @@
-import type {DataTag} from '#src/database/data-const/index.ts';
-
-type ItemTags = Exclude<
-  DataTag,
-  | typeof DataTag.PARTITION_KEY
-  | typeof DataTag.SORT_KEY
-  | typeof DataTag.COMPOSITE_KEY
-  | typeof DataTag.HASH_KEY
-  | typeof DataTag.RANGE_KEY
->;
+import type {DataTag} from '#src/database/arch-data/constants/index.ts';
 
 export type PartitionKey = string;
 
@@ -22,7 +13,7 @@ export type Item = {
   sk  : any;
 };
 
-export * as KeyItem from '#src/database/data-arch/codec-key-item.ts';
+export * as KeyItem from '#src/database/arch-data/key-item.ts';
 export type KeyItem = | PartitionKey
                       | CompositeKey
                       | Item;

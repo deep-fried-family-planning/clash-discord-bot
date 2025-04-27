@@ -1,13 +1,13 @@
-import {toStandard} from '#src/database/data-arch/codec-standard.ts';
-import * as AllianceData from '#src/database/data-schema/alliance.ts';
-import * as DiscordEmbedData from '#src/database/data-schema/discord-embed.ts';
-import * as InvocationData from '#src/database/data-schema/invocation.ts';
-import * as ServerClanData from '#src/database/data-schema/server-clan.ts';
-import * as ServerInfoData from '#src/database/data-schema/server-info.ts';
-import * as ServerData from '#src/database/data-schema/server.ts';
-import * as TransientData from '#src/database/data-schema/transient.ts';
-import * as UserData from '#src/database/data-schema/user.ts';
-import * as UserPlayerData from '#src/database/data-schema/user-player.ts';
+import {toStandard} from '#src/database/arch-data/standard.ts';
+import * as AllianceData from '#src/database/arch-data/schema/alliance.ts';
+import * as DiscordEmbedData from '#src/database/arch-data/schema/discord-embed.ts';
+import * as InvocationData from '#src/database/arch-data/schema/invocation.ts';
+import * as ServerClanData from '#src/database/arch-data/schema/server-clan.ts';
+import * as ServerInfoData from '#src/database/arch-data/schema/server-info.ts';
+import * as ServerData from '#src/database/arch-data/schema/server.ts';
+import * as TransientData from '#src/database/arch-data/schema/transient.ts';
+import * as UserData from '#src/database/arch-data/schema/user.ts';
+import * as UserPlayerData from '#src/database/arch-data/schema/user-player.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Data, type ParseResult, pipe} from 'effect';
 
@@ -43,7 +43,7 @@ export const TagMap = {
   [Transient._tag]   : Transient,
 } as const;
 
-export * as Codec from '#src/database/data-arch/codec.ts';
+export * as Codec from '#src/database/arch-data/codec.ts';
 export type Codec = | typeof Alliance
                     | typeof DiscordEmbed
                     | typeof Invocation

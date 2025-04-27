@@ -1,9 +1,9 @@
-import {Database} from '#src/database/arch/Database.ts';
-import type {Codec} from '#src/database/data-arch/codec.ts';
+import {Database} from '#src/database/service/Database.ts';
+import type {Codec} from '#src/database/arch-data/codec.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {ParseError} from 'effect/ParseResult';
 
-export * from '#src/database/data-arch/codec.ts';
+export * from '#src/database/arch-data/codec.ts';
 export * as Db from '#src/database/db.ts';
 export type Db = never;
 

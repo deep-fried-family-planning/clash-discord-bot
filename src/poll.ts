@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {Database} from '#src/database/arch/Database.ts';
+import {Database} from '#src/database/service/Database.ts';
 import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/temp.ts';
 import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
