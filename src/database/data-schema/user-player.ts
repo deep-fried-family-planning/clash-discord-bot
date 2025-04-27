@@ -1,20 +1,22 @@
-import {asKey, asLatest, PlayerVerification, toLatest} from '#src/database/arch-schema/arch.ts';
-import {PkSk, DataTag} from '#src/database/arch-schema/index.ts';
-import {DiscordPlayer} from '#src/dynamo/schema/discord-player';
+import {DataTag} from '#src/database/data-const/index.ts';
+import {Id} from '#src/database/data-arch/id.ts';
+import {asKey, asLatest, PlayerVerification, toLatest} from '#src/database/data-arch/codec-standard.ts';
+import {DiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
 
 export const Key = asKey(
   DataTag.USER_PLAYER,
-  PkSk.UserId,
-  PkSk.PlayerTag,
+  Id.UserId,
+  Id.PlayerTag,
   0,
 );
 
 export const Latest = asLatest(Key, {
-  gsi_user_id   : PkSk.UserId,
-  gsi_player_tag: PkSk.PlayerTag,
-  embed_id      : S.optional(PkSk.EmbedId),
+  name          : S.String,
+  gsi_user_id   : Id.UserId,
+  gsi_player_tag: Id.PlayerTag,
+  embed_id      : S.optional(Id.EmbedId),
   verification  : PlayerVerification,
   account_type  : S.String,
 });
@@ -23,11 +25,12 @@ export const Versions = S.Union(
   Latest,
   toLatest(Latest, DiscordPlayer, (enc) => {
     return {
-      _tag          : Key.tag,
+      _tag          : Key._tag,
       version       : Key.latest,
       upgraded      : true,
       pk            : enc.pk,
       sk            : enc.sk,
+      name          : '',
       account_type  : enc.account_type,
       created       : DateTime.unsafeMake(enc.created),
       updated       : DateTime.unsafeMake(enc.updated),

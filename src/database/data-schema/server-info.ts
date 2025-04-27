@@ -1,19 +1,20 @@
-import {asKey, asLatest, SelectMetadata, toLatest} from '#src/database/arch-schema/arch.ts';
-import {PkSk, DataTag} from '#src/database/arch-schema/index.ts';
-import {DiscordInfo} from '#src/dynamo/schema/discord-info';
+import {asKey, asLatest, SelectMetadata, toLatest} from '#src/database/data-arch/codec-standard.ts';
+import {Id} from '#src/database/data-arch/id.ts';
+import {DataTag} from '#src/database/data-const/index.ts';
+import {DiscordInfo} from '#src/dynamo/schema/discord-info.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
 
 export const Key = asKey(
   DataTag.SERVER_INFO,
-  PkSk.ServerId,
-  PkSk.InfoId,
+  Id.ServerId,
+  Id.InfoId,
   0,
 );
 
 export const Latest = asLatest(Key, {
-  embed_id: PkSk.EmbedId,
-  select  : SelectMetadata(PkSk.EmbedId),
+  embed_id: Id.EmbedId,
+  select  : SelectMetadata(Id.EmbedId),
   kind    : S.Enums({
     omni : 'omni',
     about: 'about',
@@ -26,7 +27,7 @@ export const Versions = S.Union(
   Latest,
   toLatest(Latest, DiscordInfo, (enc) => {
     return {
-      _tag    : Key.tag,
+      _tag    : Key._tag,
       version : Key.latest,
       upgraded: true,
       pk      : enc.pk,

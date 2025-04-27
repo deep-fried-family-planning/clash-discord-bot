@@ -1,158 +1,121 @@
-import type {CacheKey, CompositeKey} from '#src/database/arch-schema/arch.ts';
-import {DbClient} from '#src/database/arch/DbClient.ts';
-import {DbMemory} from '#src/database/arch/DbMemory.ts';
+import {DataCache} from '#src/database/arch/DataCache.ts';
+import {DynamoClient} from '#src/database/arch/DynamoClient.ts';
+import type {KeyItem} from '#src/database/data-arch/codec-key-item.ts';
+import type {CacheKey, CompositeKey} from '#src/database/data-arch/codec-standard.ts';
+import {type Codec, decodeItem, encodeItem} from '#src/database/data-arch/codec.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import type {QueryCommandOutput} from '@aws-sdk/lib-dynamodb';
-import {identity, pipe} from 'effect';
+import {pipe} from 'effect';
 
 const cacheKey = (key: CompositeKey | Record<string, any>): CacheKey =>
   `${key.pk}/${key.sk}`;
 
-const compKey = (key: CacheKey): CompositeKey => {
-  const [pk, sk] = key.split('/');
-
-  return {
-    pk,
-    sk,
-  };
-};
+const WILL_UPGRADE = false;
+const DEFAULT_FRESH = false;
 
 export class Database extends E.Service<Database>()('deepfryer/Database', {
   effect: E.gen(function* () {
-    const {_, _tag, ...client} = yield* DbClient;
-    const {TableName} = client;
-    const memory = yield* DbMemory;
-    const {Items, Partitions, IndexScans} = memory;
+    const {_tag, ...client} = yield* DynamoClient;
+    const {Items, Partitions, IndexScans, ...cache} = yield* DataCache;
 
-    const createItemCached = (item: CompositeKey | Record<string, any>) =>
+    const createItemCached = (codec: Codec, decoded: any) =>
       pipe(
-        client.createItem(item),
-        E.tap(Items.set(cacheKey(item), item)),
-        E.tap(Partitions.invalidate(item.pk)),
+        encodeItem(codec, decoded),
+        E.tap((encoded) => client.createItem(encoded)),
+        E.tap((encoded) => cache.invalidateItem(encoded)),
+        E.tap((encoded) => cache.setItem(encoded)),
       );
 
-    const createItemsCached = (items: (CompositeKey | Record<string, any>)[]) =>
+    const createItemsCached = (codec: Codec, decoded: any[]) =>
       pipe(
-        client.createItems(items),
+        decoded.map((d) => encodeItem(codec, d)),
+        E.allWith({}),
+        E.tap((encoded) => client.createItems(encoded)),
         E.tap(
-          pipe(
-            E.forEach(items, (item) =>
-              E.all([
-                Items.set(cacheKey(item), item),
-                Partitions.invalidate(item.pk),
-              ]),
+          E.forEach((encoded) =>
+            pipe(
+              cache.invalidateItem(encoded),
+              E.tap(cache.setItem(encoded)),
             ),
-            E.fork,
           ),
         ),
       );
 
-    const readItemCached = (key: CompositeKey) =>
-      Items.get(cacheKey(key));
+    const upgradeItem = (codec: Codec, decoded: any, upgrade = WILL_UPGRADE) =>
+      !upgrade || !decoded.upgraded
+        ? E.void
+        : E.fork(createItemCached(codec, decoded));
 
-    const readItemsCached = (keys: CompositeKey[]) =>
+    const readItemCached = (codec: Codec, pk: any, sk: any, fresh = DEFAULT_FRESH) =>
       pipe(
-        client.readItems(keys),
-        E.map((res) => res.Responses![TableName]),
-        E.tap((items) =>
-          E.fork(
-            E.forEach(items, (item) => Items.set(cacheKey(item), item)),
-          ),
-        ),
+        fresh
+          ? client.readItem(codec.encodeKey(pk, sk))
+          : cache.getItem(codec.encodeKey(pk, sk)),
+        E.tap((encoded) => cache.setItem(encoded)),
+        E.flatMap((encoded) => decodeItem(codec, encoded)),
+        E.tap((decoded) => upgradeItem(codec, decoded)),
       );
 
-    const readPartitionCached = (pk: string) =>
+    const updateItemCached = (key: any) =>
       pipe(
-        Partitions.get(pk),
-        E.tap((items) =>
-          E.fork(
-            E.forEach(items, (item) => Items.set(cacheKey(item), item)),
-          ),
-        ),
+        client.update({} as any),
       );
 
-    const readIndexCached = (idx: string) =>
-      pipe(
-        IndexScans.get(idx),
-        E.tap((items) =>
-          E.fork(
-            E.forEach(items, (item) => Items.set(cacheKey(item), item)),
-          ),
-        ),
-      );
+    const deleteItemCached = (codec: Codec, decoded: KeyItem.ItemLike) => {
+      const key = codec.encodeKey(decoded.pk, decoded.sk);
 
-    const updateItemCached = (key: CompositeKey, update: Record<string, any>) =>
-      pipe(
-        client.update({
-          TableName,
-          Key                     : key,
-          UpdateExpression        : 'set #attr = :attr',
-          ExpressionAttributeNames: {
-            '#attr': 'attr',
-          },
-          ExpressionAttributeValues: {
-            ':attr': update.attr,
-          },
-        }),
-      );
-
-    const deleteItemCached = (key: CompositeKey) =>
-      pipe(
+      return pipe(
         client.deleteItem(key),
-        E.tap(Items.invalidate(cacheKey(key))),
-        E.tap(Partitions.invalidate(key.pk)),
+        E.tap(cache.invalidateItem(key)),
         E.tap(IndexScans.invalidateAll),
       );
+    };
 
-    const deleteItemsCached = (keys: CompositeKey[]) =>
-      pipe(
+    const deleteItemsCached = (codec: Codec, decoded: KeyItem.ItemLike[]) => {
+      const keys = decoded.map((d) => codec.encodeKey(d.pk, d.sk));
+
+      return pipe(
         client.deleteItems(keys),
         E.tap(
-          E.fork(
-            E.forEach(keys, (key) =>
-              E.all([
-                Items.invalidate(cacheKey(key)),
-                Partitions.invalidate(key.pk),
-              ]),
-            ),
-          ),
+          E.forEach(keys, (key) => cache.invalidateItem(key)),
         ),
         E.tap(IndexScans.invalidateAll),
       );
+    };
 
-    const queryIndexCached = (index: string, expression: string, values: any) =>
+    const scanPartitionEntirelyCached = (codec: Codec, pk: string, fresh = DEFAULT_FRESH) =>
       pipe(
-        E.loop({done: null as null | QueryCommandOutput}, {
-          step : identity,
-          while: (c) => !c.done || !c.done.LastEvaluatedKey,
-          body : (c) =>
-            pipe(
-              client.queryIndex(index, expression, values, c.done),
-              E.map((r) => {
-                c.done = r;
-                return r.Items ?? [];
-              }),
-            ),
-        }),
-        E.map((rs) => rs.flat()),
+        fresh
+          ? client.scanPartitionEntirely(codec.encodePk(pk))
+          : Partitions.get(codec.encodePk(pk)),
+        E.tap(
+          E.forEach((item) => cache.setItem(item)),
+        ),
+      );
+
+    const scanIndexEntirelyCached = (index: string, fresh = DEFAULT_FRESH) =>
+      pipe(
+        fresh
+          ? client.scanIndexEntirely(index)
+          : IndexScans.get(index),
+        E.tap(
+          E.forEach((item) => cache.setItem(item)),
+        ),
       );
 
     return {
-      memory,
+      memory: cache,
       ...client,
       createItemCached,
       createItemsCached,
       readItemCached,
-      readItemsCached,
-      readPartitionCached,
-      readIndexCached,
       updateItemCached,
       deleteItemCached,
       deleteItemsCached,
-      queryIndexCached,
+      scanPartitionEntirelyCached,
+      scanIndexEntirelyCached,
     };
   }),
-  dependencies: [DbClient.Default, DbMemory.Default],
+  dependencies: [DynamoClient.Default, DataCache.Default],
   accessors   : true,
 }) {}
 

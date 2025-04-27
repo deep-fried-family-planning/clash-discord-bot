@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {COLOR, nColor} from '#src/constants/colors.ts';
-import {Db} from '#src/database/schema-methods.ts';
+import {Db} from '#src/database/db.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';

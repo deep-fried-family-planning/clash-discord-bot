@@ -1,8 +1,8 @@
-import {E} from '#src/internal/pure/effect';
+import {E} from '#src/internal/pure/effect.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {Data, Duration, flow, Number, RateLimiter} from 'effect';
 
-export class DbLimiterDefect extends Data.TaggedError('deepfryer/DbLimiterDefect')<{}> {}
+export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{}> {}
 
 const estimateRecordWriteCapacity = (encoding: any) =>
   pipe(
@@ -14,7 +14,7 @@ const estimateRecordWriteCapacity = (encoding: any) =>
     Number.max(1),
   );
 
-export class DbLimiter extends E.Service<DbLimiter>()('deepfryer/DbLimiter', {
+export class DynamoLimiter extends E.Service<DynamoLimiter>()('deepfryer/DynamoLimiter', {
   scoped: E.gen(function* () {
     const maxRCU = 10;
     const maxWCU = 10;
@@ -50,7 +50,7 @@ export class DbLimiter extends E.Service<DbLimiter>()('deepfryer/DbLimiter', {
         const units = Math.ceil(estimate);
 
         return units > maxRCU
-          ? E.die(new DbLimiterDefect())
+          ? E.die(new CapacityDefect())
           : readLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -62,7 +62,7 @@ export class DbLimiter extends E.Service<DbLimiter>()('deepfryer/DbLimiter', {
         const units = Math.ceil(estimate);
 
         return units > maxWCU
-          ? E.die(new DbLimiterDefect())
+          ? E.die(new CapacityDefect())
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -71,7 +71,7 @@ export class DbLimiter extends E.Service<DbLimiter>()('deepfryer/DbLimiter', {
         const units = estimateRecordWriteCapacity(encoded);
 
         return units > maxWCU
-          ? E.die(new DbLimiterDefect())
+          ? E.die(new CapacityDefect())
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 

@@ -1,4 +1,4 @@
-import {Db} from '#src/database/schema-methods.ts';
+import {Db} from '#src/database/db.ts';
 import {encodeServerId} from '#src/dynamo/schema/common-encoding.ts';
 import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure';

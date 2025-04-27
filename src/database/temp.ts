@@ -1,14 +1,14 @@
 import {Database} from '#src/database/arch/Database.ts';
-import {GSI_ALL_CLANS, GSI_ALL_PLAYERS, GSI_ALL_SERVERS} from '#src/database/constants/gtag.ts';
-import {Db} from '#src/database/schema-methods.ts';
+import {GSI_ALL_CLANS, GSI_ALL_PLAYERS, GSI_ALL_SERVERS} from '#src/database/data-const/gsi-tag.ts';
+import {Db} from '#src/database/db.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 
 export const getClansForServer = (pk: string) =>
-  Db.readPartition(Db.ServerClan, pk);
+  Database.scanPartitionEntirelyCached(Db.ServerClan, pk);
 
 export const queryServerClans = (sk: string) =>
   pipe(
-    Database.queryIndexCached(
+    Database.queryIndexEntirely(
       'GSI_ALL_CLANS',
       'gsi_clan_tag = :gsi_clan_tag',
       {
@@ -20,7 +20,7 @@ export const queryServerClans = (sk: string) =>
 
 export const scanServerClans = () =>
   pipe(
-    Database.readIndexCached(GSI_ALL_CLANS),
+    Database.scanIndexEntirely(GSI_ALL_CLANS),
     E.flatMap((items) => Db.decodeUpgradeItems(Db.ServerClan, items)),
   );
 
@@ -29,7 +29,7 @@ export const getPlayersForServer = (pk: string) =>
 
 export const queryUserPlayers = (sk: string) =>
   pipe(
-    Database.queryIndexCached(
+    Database.queryIndexEntirely(
       GSI_ALL_PLAYERS,
       'gsi_player_tag = :gsi_player_tag',
       {
@@ -41,16 +41,16 @@ export const queryUserPlayers = (sk: string) =>
 
 export const scanUserPlayers = () =>
   pipe(
-    Database.readIndexCached(GSI_ALL_PLAYERS),
+    Database.scanIndexEntirelyCached(GSI_ALL_PLAYERS),
     E.flatMap((items) => Db.decodeUpgradeItems(Db.UserPlayer, items)),
     E.map((items) => {
       console.log(items);
-      return items.filter(Boolean) as typeof Db.UserPlayer.Type[];
+      return items.filter(Boolean) as Db.UserPlayer[];
     }),
   );
 
 export const scanServers = () =>
   pipe(
-    Database.readIndexCached(GSI_ALL_SERVERS),
+    Database.scanIndexEntirelyCached(GSI_ALL_SERVERS),
     E.flatMap((items) => Db.decodeUpgradeItems(Db.Server, items)),
   );
