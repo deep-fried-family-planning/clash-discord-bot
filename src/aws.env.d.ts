@@ -12,6 +12,9 @@ declare namespace NodeJS {
     DFFP_DISCORD_DEBUG_URL : string;
     DFFP_COC_KEY           : string;
 
+    DEEPFRYER_LAMBDA_ARN_INTERACTIONS_COMMAND: string;
+    DEEPFRYER_LAMBDA_ARN_INTERACTIONS_MENU   : string;
+
     APIGW_DEV_WS          : string;
     DDB_OPERATIONS        : string;
     SQS_URL_DISCORD_MENU  : string;
