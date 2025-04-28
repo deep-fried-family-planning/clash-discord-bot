@@ -13,7 +13,7 @@ const estimateRecordWriteCapacity = (encoding: any) =>
     Number.max(1),
   );
 
-export class DynamoLimiter extends E.Service<DynamoLimiter>()('deepfryer/DynamoLimiter', {
+export class CapacityLimiter extends E.Service<CapacityLimiter>()('deepfryer/DynamoLimiter', {
   scoped: E.gen(function* () {
     const maxRCU = 10;
     const maxWCU = 10;

@@ -1,4 +1,4 @@
-import {Db} from '#src/database/db.ts';
+import  {Server, ServerClan} from '#src/database/data/codec.ts';
 import {ThreadId} from '#src/internal/discord-old/dynamo/schema/common.ts';
 import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
@@ -18,8 +18,8 @@ export const TEMP_ROLES = {
 };
 
 export const WarThreadData = S.Struct({
-  server  : Db.Server.Schema,
-  clan    : Db.ServerClan.Schema,
+  server  : Server.Schema,
+  clan    : ServerClan.Schema,
   clanName: S.String,
   opponent: S.Struct({
     name: S.String,
@@ -55,8 +55,8 @@ export const makeTask = <
     send: (
       fromTime: Date,
       withDuration: DurationInput,
-      server: Db.Server,
-      clan: Db.ServerClan,
+      server: Server,
+      clan: ServerClan,
       war: ClanWar,
       thread: Channel,
       links: Record<str, str>,

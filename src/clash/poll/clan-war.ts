@@ -16,8 +16,9 @@ import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
+import {ServerClan, type Server, type UserPlayer} from '#src/database/data/codec';
 
-export const eachClan = (server: Db.Server, clan: Db.ServerClan, players: Db.UserPlayer[]) => E.gen(function* () {
+export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]) => E.gen(function* () {
   const discord = yield* DiscordREST;
 
   const wars = yield* pipe(
@@ -112,7 +113,7 @@ export const eachClan = (server: Db.Server, clan: Db.ServerClan, players: Db.Use
     auto_archive_duration: 1440,
   }).json;
 
-  yield* Db.saveItem(Db.ServerClan, {
+  yield* Db.saveItem(ServerClan, {
     ...clan,
     prep_opponent: prepWar.opponent.tag,
     thread_prep  : thread.id,

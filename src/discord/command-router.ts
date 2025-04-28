@@ -17,6 +17,7 @@ import {type IxD, type IxDs, IXSOT} from '#src/internal/discord-old/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
+import { ClanRegistry } from '#src/database';
 
 const IXS_LOOKUP = {
   [CLAN_FAM.name]  : clanfam,
@@ -73,3 +74,4 @@ export const commandRouter = (ix: IxD) => E.gen(function* () {
 
   return yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
 });
+ClanRegistry.get;

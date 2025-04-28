@@ -1,5 +1,5 @@
-import type {KeyItem} from '#src/database/arch-data/key-item.ts';
-import {DynamoLimiter} from '#src/database/service/DynamoLimiter.ts';
+import type {KeyItem} from '#src/database/data/key-item.ts';
+import {CapacityLimiter} from '#src/database/service/CapacityLimiter.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
 import type * as DynamoErrors from '@effect-aws/client-dynamodb/Errors';
@@ -24,10 +24,10 @@ export class UnprocessedItemsError extends Data.TaggedError('UnprocessedItemsErr
   items: unknown[];
 }> {}
 
-export class DynamoClient extends E.Service<DynamoClient>()('deepfryer/DynamoClient', {
+export class BaseClient extends E.Service<BaseClient>()('deepfryer/DynamoClient', {
   effect: E.gen(function* () {
     const {_, ...dynamo} = yield* DynamoDBDocument;
-    const limiter = yield* DynamoLimiter;
+    const limiter = yield* CapacityLimiter;
 
     const createItem = (encoded: any) =>
       pipe(
@@ -292,5 +292,4 @@ export class DynamoClient extends E.Service<DynamoClient>()('deepfryer/DynamoCli
       scanIndexEntirelyWith,
     };
   }),
-  dependencies: [DynamoDBDocument.defaultLayer, DynamoLimiter.Default],
 }) {}

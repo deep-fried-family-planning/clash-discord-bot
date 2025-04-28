@@ -1,16 +1,16 @@
-import {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Id} from '#src/database/arch-data/id.ts';
-import {asKey, asLatest} from '#src/database/arch-data/standard.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
+import {Id} from '#src/database/data/schema/id.ts';
+import {declareKey, declareLatest} from '#src/database/data/arch.ts';
 import {S} from '#src/internal/pure/effect.ts';
 
-export const Key = asKey(
+export const Key = declareKey(
   DataTag.DATA_STATE,
   Id.NowSk,
   Id.NowSk,
   0,
 );
 
-export const Latest = asLatest(Key, {
+export const Latest = declareLatest(Key, {
   servers: S.Int.pipe(S.positive()),
   clans  : S.Int.pipe(S.positive()),
   users  : S.Int.pipe(S.positive()),

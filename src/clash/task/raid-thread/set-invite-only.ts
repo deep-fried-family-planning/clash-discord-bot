@@ -1,3 +1,4 @@
+import {Server} from '#src/database/data/codec.ts';
 import {Db} from '#src/database/db.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {g, S} from '#src/internal/pure/effect.ts';
@@ -15,7 +16,7 @@ const message = () => ({
 export const SetInviteOnly = makeTask(
   S.Literal('SetInviteOnly'),
   S.Struct({
-    server: Db.Server.Schema,
+    server: Server.Schema,
   }),
   (data) => g(function* () {
     yield* DiscordApi.createMessage(data.server.raids!, message());

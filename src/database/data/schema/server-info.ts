@@ -1,19 +1,19 @@
-import {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Id} from '#src/database/arch-data/id.ts';
-import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
-import {SelectMetadata} from '#src/database/arch-data/util.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
+import {Id} from '#src/database/data/schema/id.ts';
+import {declareKey, declareLatest, transformLatest} from '#src/database/data/arch.ts';
+import {SelectMetadata} from '#src/database/data/schema/common.ts';
 import {DiscordInfo} from '#src/internal/discord-old/dynamo/schema/discord-info.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
 
-export const Key = asKey(
+export const Key = declareKey(
   DataTag.SERVER_INFO,
   Id.ServerId,
   Id.InfoId,
   0,
 );
 
-export const Latest = asLatest(Key, {
+export const Latest = declareLatest(Key, {
   embed_id: Id.EmbedId,
   select  : SelectMetadata(Id.EmbedId),
   kind    : S.Enums({
@@ -26,7 +26,7 @@ export const Latest = asLatest(Key, {
 
 export const Versions = S.Union(
   Latest,
-  toLatest(Latest, DiscordInfo, (enc) => {
+  transformLatest(Latest, DiscordInfo, (enc) => {
     return {
       _tag    : Key._tag,
       version : Key.latest,

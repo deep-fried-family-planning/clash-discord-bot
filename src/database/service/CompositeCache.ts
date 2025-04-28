@@ -1,6 +1,6 @@
-import {Codec} from '#src/database/arch-data/codec.ts';
-import type {KeyItem} from '#src/database/arch-data/key-item.ts';
-import {DynamoClient} from '#src/database/service/DynamoClient.ts';
+import {Codec} from '#src/database/data/codec.ts';
+import type {KeyItem} from '#src/database/data/key-item.ts';
+import {BaseClient} from '#src/database/service/BaseClient.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Cache, Duration, Exit} from 'effect';
 
@@ -11,9 +11,9 @@ const toCompositeKey = (key: string): KeyItem.CompositeKey => {
   return {pk, sk};
 };
 
-export class DataCache extends E.Service<DataCache>()('deepfryer/MemCache', {
+export class CompositeCache extends E.Service<CompositeCache>()('deepfryer/MemCache', {
   effect: E.gen(function* () {
-    const {_tag, ...client} = yield* DynamoClient;
+    const {_tag, ...client} = yield* BaseClient;
 
     const Items = yield* Cache.makeWith({
       capacity  : 10000,
@@ -65,5 +65,4 @@ export class DataCache extends E.Service<DataCache>()('deepfryer/MemCache', {
       IndexScans,
     };
   }),
-  dependencies: [DynamoClient.Default],
 }) {}

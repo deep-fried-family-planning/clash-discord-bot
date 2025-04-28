@@ -1,4 +1,4 @@
-import type {DataTag} from '#src/database/arch-data/constants/index.ts';
+import type {DataTag} from '#src/database/data/const/index.ts';
 
 export type PartitionKey = string;
 
@@ -13,7 +13,7 @@ export type Item = {
   sk  : any;
 };
 
-export * as KeyItem from '#src/database/arch-data/key-item.ts';
+export * as KeyItem from '#src/database/data/key-item.ts';
 export type KeyItem = | PartitionKey
                       | CompositeKey
                       | Item;

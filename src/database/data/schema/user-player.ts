@@ -1,6 +1,6 @@
-import {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Id} from '#src/database/arch-data/id.ts';
-import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
+import {Id} from '#src/database/data/schema/id.ts';
+import {declareKey, declareLatest, transformLatest} from '#src/database/data/arch.ts';
 import {DiscordPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
@@ -12,14 +12,14 @@ export const PlayerVerification = S.Enums({
   developer: 3,
 } as const);
 
-export const Key = asKey(
+export const Key = declareKey(
   DataTag.USER_PLAYER,
   Id.UserId,
   Id.PlayerTag,
   0,
 );
 
-export const Latest = asLatest(Key, {
+export const Latest = declareLatest(Key, {
   name          : S.String,
   gsi_user_id   : Id.UserId,
   gsi_player_tag: Id.PlayerTag,
@@ -30,7 +30,7 @@ export const Latest = asLatest(Key, {
 
 export const Versions = S.Union(
   Latest,
-  toLatest(Latest, DiscordPlayer, (enc) => {
+  transformLatest(Latest, DiscordPlayer, (enc) => {
     return {
       _tag          : Key._tag,
       version       : Key.latest,

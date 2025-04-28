@@ -1,9 +1,8 @@
-import type {Codec} from '#src/database/arch-data/codec.ts';
-import {Database} from '#src/database/service/Database.ts';
+import type {Codec} from '#src/database/data/codec.ts';
+import {DataDriver} from '#src/database/service/DataDriver.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {ParseError} from 'effect/ParseResult';
 
-export * from '#src/database/arch-data/codec.ts';
 export * as Db from '#src/database/db.ts';
 export type Db = never;
 
@@ -34,15 +33,15 @@ export const decodeUpgradeItems = <A extends Codec>(s: A, items: unknown[]) =>
 
 export const readItem = <A extends Codec>(s: A, pk: string, sk: string) =>
   pipe(
-    Database.readItemCached(s, pk, sk),
+    DataDriver.readItemCached(s, pk, sk),
     E.flatMap((item) => decodeUpgradeItem(s, item)),
   );
 
 export const readPartition = <A extends Codec>(s: A, pk: string) =>
   pipe(
-    Database.scanPartitionEntirelyCached(s, pk),
+    DataDriver.scanPartitionEntirelyCached(s, pk),
     E.flatMap((items) => decodeUpgradeItems(s, items)),
   );
 
 export const deleteItem = <A extends Codec>(s: A, pk: string, sk: string) =>
-  Database.deleteItemCached(s, {pk, sk});
+  DataDriver.deleteItemCached(s, {pk, sk});

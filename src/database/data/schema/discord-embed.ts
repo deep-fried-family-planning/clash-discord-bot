@@ -1,25 +1,25 @@
-import {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Id} from '#src/database/arch-data/id.ts';
-import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
+import {Id} from '#src/database/data/schema/id.ts';
+import {declareKey, declareLatest, transformLatest} from '#src/database/data/arch.ts';
 import {DiscordEmbed} from '#src/internal/discord-old/dynamo/schema/discord-embed.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
 
-export const Key = asKey(
+export const Key = declareKey(
   DataTag.DISCORD_EMBED,
   Id.EmbedId,
   Id.NowSk,
   0,
 );
 
-export const Latest = asLatest(Key, {
+export const Latest = declareLatest(Key, {
   gsi_embed_id: Id.EmbedId,
   data        : DiscordEmbed.fields.embed,
 });
 
 export const Versions = S.Union(
   Latest,
-  toLatest(Latest, DiscordEmbed, (enc) => {
+  transformLatest(Latest, DiscordEmbed, (enc) => {
     return {
       _tag        : Key._tag,
       version     : Key.latest,

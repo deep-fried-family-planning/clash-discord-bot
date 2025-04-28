@@ -1,16 +1,33 @@
-import type {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Created, Updated, Upgraded} from '#src/database/arch-data/util.ts';
-import {forbiddenTransform, S} from '#src/internal/pure/effect.ts';
+import type {DataTag} from '#src/database/data/const/index.ts';
+import {Created, Updated, Upgraded} from '#src/database/data/schema/common.ts';
+import type {E} from '#src/internal/pure/effect.ts';
+import { forbiddenTransform, S} from '#src/internal/pure/effect.ts';
+import type {Equivalence} from 'effect';
+import type { ParseResult} from 'effect';
+import type {ParseError} from 'effect/ParseResult';
 
 type PartitionKey = S.Schema<any, string, never> | S.Schema<any, 'now', never>;
 type SortKey = S.Schema<any, string, never> | S.Schema<any, 'now', never>;
 
-export const asKey = <
+export type KeyDeclaration<
   T extends DataTag,
   P extends PartitionKey,
   S extends SortKey,
-  V extends number,
->(tag: T, partitionKey: P, sortKey: S, latestVersion: V, KiB = 1) =>
+> = {
+  _tag  : T;
+  Pk    : P;
+  Sk    : S;
+  latest: number;
+  KiB   : number;
+  RCU   : number;
+  WCU   : number;
+};
+
+export const declareKey = <
+  T extends DataTag,
+  P extends PartitionKey,
+  S extends SortKey,
+>(tag: T, partitionKey: P, sortKey: S, latestVersion: number, KiB = 1): KeyDeclaration<T, P, S> =>
   ({
     _tag  : tag,
     Pk    : partitionKey,
@@ -19,15 +36,14 @@ export const asKey = <
     KiB   : KiB,
     RCU   : Math.ceil(KiB / 4),
     WCU   : Math.ceil(KiB),
-  } as const);
+  });
 
-export const asLatest = <
+export const declareLatest = <
   T extends DataTag,
   P extends PartitionKey,
   S extends SortKey,
-  V extends number,
   F extends S.Struct.Fields,
->(key: ReturnType<typeof asKey<T, P, S, V>>, fields: F) =>
+>(key: KeyDeclaration<T, P, S>, fields: F) =>
   S.Struct({
     _tag    : S.tag(key._tag),
     version : S.Literal(key.latest),
@@ -43,13 +59,11 @@ export const asVersion = <
   T extends DataTag,
   P extends PartitionKey,
   S extends SortKey,
-  LV extends number,
-  V extends number,
   F extends S.Struct.Fields,
->(key: ReturnType<typeof asKey<T, P, S, LV>>, version: V, fields: F) =>
+>(key: KeyDeclaration<T, P, S>, version: number, fields: F) =>
   S.Struct({
     _tag    : S.tag(key._tag),
-    version : S.Literal(key.latest),
+    version : S.Literal(version),
     upgraded: Upgraded,
     pk      : key.Pk,
     sk      : key.Sk,
@@ -58,7 +72,7 @@ export const asVersion = <
     ...fields,
   });
 
-export const toLatest = <Aa, Ia, Ra, Ab, Ib, Rb>(
+export const transformLatest = <Aa, Ia, Ra, Ab, Ib, Rb>(
   latest: S.Schema<Ab, Ib, Rb>,
   outdated: S.Schema<Aa, Ia, Ra>,
   decode: (enc: typeof outdated.Type) => typeof latest.Type,
@@ -83,20 +97,41 @@ type ImpliedStruct = {
   [K in ImpliedKeys]?: any
 };
 
-export const toStandard = <
+export type DeclareCodec<
+  T extends DataTag,
+  LA, LI, LR,
+  VA, VI, VR,
+> = {
+  _        : LA;
+  _i       : LI;
+  _tag     : T;
+  latest   : number;
+  KiB      : number;
+  RCU      : number;
+  WCU      : number;
+  encodePk : (pk: string | URL) => string;
+  encodeSk : (sk: string) => string;
+  encodeKey: (p: string, s: string) => {pk: string; sk: string};
+  decode   : (u: unknown) => E.Effect<LA, ParseResult.ParseError, LR | VR>;
+  encode   : (u: unknown) => E.Effect<LI, ParseResult.ParseError, LR>;
+  equals   : Equivalence.Equivalence<LA>;
+  Schema   : S.Schema<LA, VI, VR>;
+  make     : (u: Omit<LA, ImpliedKeys>) => LA;
+};
+
+export const declareCodec = <
   T extends DataTag,
   P extends PartitionKey,
   S extends SortKey,
-  V extends number,
   LA, LI, LR,
   VA, VI, VR,
 >(
   config: {
-    Key     : ReturnType<typeof asKey<T, P, S, V>>;
+    Key     : KeyDeclaration<T, P, S>;
     Latest  : S.Schema<LA, LI, LR>;
-    Versions: S.Schema<VA, VI, VR>;
+    Versions: S.Schema<LA, VI, VR>;
   },
-) => {
+): DeclareCodec<T, LA, LI, LR, VA, VI, VR> => {
   if (!('make' in config.Latest)) {
     throw new Error();
   }

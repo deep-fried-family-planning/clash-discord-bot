@@ -46,7 +46,7 @@ export const TransientUrl = S.String.pipe(S.length({min: 1, max: 2000}));
 export const ComputeName = S.String;
 export const DateTimeSk = S.DateTimeUtc;
 
-export * as Id from '#src/database/arch-data/id.ts';
+export * as Id from '#src/database/data/schema/id.ts';
 export type Id = | typeof ClanTag
                  | typeof PlayerTag
                  | typeof ServerId

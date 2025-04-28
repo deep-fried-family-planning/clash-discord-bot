@@ -1,18 +1,17 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {Database} from '#src/database/service/Database.ts';
 import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/temp.ts';
 import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
-import {Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {eachClan} from '#src/clash/poll/clan-war.ts';
 import {serverRaid} from '#src/clash/poll/server-raid.ts';
+import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {makePassServiceLayer, PassService} from 'dev/ws-bypass.ts';
 import {Cause} from 'effect';
 
@@ -88,16 +87,15 @@ export const h = () => E.gen(function* () {
 
 const layer = pipe(
   L.mergeAll(
-    Database.Default,
-    ClashKing.Live,
-    ClashOfClans.Live,
+    ClashLayer,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
-    DiscordLayerLive,
     makePassServiceLayer(),
   ),
-  L.provide(DynamoDBDocument.defaultLayer),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+  L.provideMerge(DiscordLayer),
+  L.provideMerge(DatabaseLayer),
+  L.provideMerge(NetworkLayer),
+  L.provideMerge(BasicLayer),
 );
 
 export const handler = makeLambda({

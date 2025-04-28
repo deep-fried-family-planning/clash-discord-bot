@@ -3,6 +3,7 @@ import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {g, S} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {makeTask, TEMP_TEMP_ROLES} from '#src/clash/task/util/make-task.ts';
+import { Server } from '#src/database/data/codec';
 
 const message = () => ({
   content: MD.content(
@@ -15,7 +16,7 @@ const message = () => ({
 export const SetOpen = makeTask(
   S.Literal('SetOpen'),
   S.Struct({
-    server: Db.Server.Schema,
+    server: Server.Schema,
   }),
   (data) => g(function* () {
     yield* DiscordApi.createMessage(data.server.raids!, message());

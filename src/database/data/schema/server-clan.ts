@@ -1,7 +1,7 @@
-import {DataTag} from '#src/database/arch-data/constants/index.ts';
-import {Id} from '#src/database/arch-data/id.ts';
-import {asKey, asLatest, toLatest} from '#src/database/arch-data/standard.ts';
-import {SelectMetadata} from '#src/database/arch-data/util.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
+import {Id} from '#src/database/data/schema/id.ts';
+import {declareKey, declareLatest, transformLatest} from '#src/database/data/arch.ts';
+import {SelectMetadata} from '#src/database/data/schema/common.ts';
 import {DiscordClan} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
@@ -14,14 +14,14 @@ export const ClanVerification = S.Enums({
   developer: 4,
 } as const);
 
-export const Key = asKey(
+export const Key = declareKey(
   DataTag.SERVER_CLAN,
   Id.ServerId,
   Id.ClanTag,
   0,
 );
 
-export const Latest = asLatest(Key, {
+export const Latest = declareLatest(Key, {
   gsi_server_id  : Id.ServerId,
   gsi_clan_tag   : Id.ClanTag,
   thread_prep    : Id.ThreadId,
@@ -35,7 +35,7 @@ export const Latest = asLatest(Key, {
 
 export const Versions = S.Union(
   Latest,
-  toLatest(Latest, DiscordClan, (enc) => {
+  transformLatest(Latest, DiscordClan, (enc) => {
     return {
       _tag           : Key._tag,
       version        : Key.latest,

@@ -1,29 +1,30 @@
-import {type Codec, decodeItem, encodeItem} from '#src/database/arch-data/codec.ts';
-import type {KeyItem} from '#src/database/arch-data/key-item.ts';
-import {DataCache} from '#src/database/service/DataCache.ts';
-import {DynamoClient} from '#src/database/service/DynamoClient.ts';
+import {decodeItem} from '#src/database/data/codec.ts';
+import type {KeyItem} from '#src/database/data/key-item.ts';
+import {CompositeCache} from '#src/database/service/CompositeCache.ts';
+import {BaseClient} from '#src/database/service/BaseClient.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {pipe} from 'effect';
+import {Codec} from '../data';
 
 const WILL_UPGRADE = false;
 const DEFAULT_FRESH = false;
 
-export class Database extends E.Service<Database>()('deepfryer/Database', {
+export class DataDriver extends E.Service<DataDriver>()('deepfryer/Database', {
   effect: E.gen(function* () {
-    const {_tag, ...client} = yield* DynamoClient;
-    const {Items, Partitions, IndexScans, ...cache} = yield* DataCache;
+    const {_tag, ...client} = yield* BaseClient;
+    const {Items, Partitions, IndexScans, ...cache} = yield* CompositeCache;
 
-    const createItemCached = (codec: Codec, decoded: any) =>
+    const createItemCached = <A extends Codec = Codec>(codec: A, decoded: any) =>
       pipe(
-        encodeItem(codec, decoded),
+        Codec.encodeItem(codec, decoded),
         E.tap((encoded) => client.createItem(encoded)),
         E.tap((encoded) => cache.invalidateItem(encoded)),
         E.tap((encoded) => cache.setItem(encoded)),
       );
 
-    const createItemsCached = (codec: Codec, decoded: any[]) =>
+    const createItemsCached = <A extends Codec = Codec>(codec: A, decoded: any[]) =>
       pipe(
-        decoded.map((d) => encodeItem(codec, d)),
+        decoded.map((d) => Codec.encodeItem(codec, d)),
         E.allWith({}),
         E.tap((encoded) => client.createItems(encoded)),
         E.tap(
@@ -36,12 +37,12 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const upgradeItem = (codec: Codec, decoded: any, upgrade = WILL_UPGRADE) =>
+    const upgradeItem = <A extends Codec = Codec>(codec: A, decoded: any, upgrade = WILL_UPGRADE) =>
       !upgrade || !decoded.upgraded
         ? E.void
         : E.fork(createItemCached(codec, decoded));
 
-    const readItemCached = (codec: Codec, pk: any, sk: any, fresh = DEFAULT_FRESH) =>
+    const readItemCached = <A extends Codec = Codec>(codec: A, pk: any, sk: any, fresh = DEFAULT_FRESH) =>
       pipe(
         fresh
           ? client.readItem(codec.encodeKey(pk, sk))
@@ -56,7 +57,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         client.update({} as any),
       );
 
-    const deleteItemCached = (codec: Codec, decoded: KeyItem.ItemLike) => {
+    const deleteItemCached = <A extends Codec = Codec>(codec: A, decoded: KeyItem.ItemLike) => {
       const key = codec.encodeKey(decoded.pk, decoded.sk);
 
       return pipe(
@@ -66,7 +67,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
       );
     };
 
-    const deleteItemsCached = (codec: Codec, decoded: KeyItem.ItemLike[]) => {
+    const deleteItemsCached = <A extends Codec = Codec>(codec: A, decoded: KeyItem.ItemLike[]) => {
       const keys = decoded.map((d) => codec.encodeKey(d.pk, d.sk));
 
       return pipe(
@@ -78,7 +79,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
       );
     };
 
-    const scanPartitionEntirelyCached = (codec: Codec, pk: string, fresh = DEFAULT_FRESH) =>
+    const scanPartitionEntirelyCached = <A extends Codec = Codec>(codec: A, pk: string, fresh = DEFAULT_FRESH) =>
       pipe(
         fresh
           ? client.scanPartitionEntirely(codec.encodePk(pk))
@@ -88,7 +89,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
         ),
       );
 
-    const scanIndexEntirelyCached = (index: string, fresh = DEFAULT_FRESH) =>
+    const scanIndexEntirelyCached = <A extends Codec = Codec>(codec: A, index: string, fresh = DEFAULT_FRESH) =>
       pipe(
         fresh
           ? client.scanIndexEntirely(index)
@@ -111,8 +112,7 @@ export class Database extends E.Service<Database>()('deepfryer/Database', {
       scanIndexEntirelyCached,
     };
   }),
-  dependencies: [DynamoClient.Default, DataCache.Default],
-  accessors   : true,
+  accessors: true,
 }) {}
 
 // const readIndex = (gsi: any, expression: any) => {

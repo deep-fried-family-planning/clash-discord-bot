@@ -6,6 +6,7 @@ import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx/DiscordREST';
+import { Server } from '#src/database/data/codec';
 
 const raidWeekendDone = Cron.make({
   days    : [],
@@ -15,7 +16,7 @@ const raidWeekendDone = Cron.make({
   weekdays: [1, 2, 3],
 });
 
-export const serverRaid = (server: Db.Server) => g(function* () {
+export const serverRaid = (server: Server) => g(function* () {
   const discord = yield* DiscordREST;
 
   if (server.raids) {
@@ -53,7 +54,7 @@ export const serverRaid = (server: Db.Server) => g(function* () {
     raids: thread.id,
   };
 
-  yield* Db.saveItem(Db.Server, updated);
+  yield* Db.saveItem(Server, updated);
 
   yield* SetInviteOnly.send({
     group: yield* encodeServerId(server.pk),
