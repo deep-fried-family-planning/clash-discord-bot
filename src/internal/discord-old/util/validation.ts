@@ -1,5 +1,5 @@
-import {getDiscordServer} from '#src/dynamo/schema/discord-server.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import {getDiscordServer} from '#src/internal/discord-old/dynamo/schema/discord-server.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 

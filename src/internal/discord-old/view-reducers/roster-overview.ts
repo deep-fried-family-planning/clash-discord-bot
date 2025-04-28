@@ -1,8 +1,8 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/constants/label.ts';
-import {RK_OPEN} from '#src/constants/route-kind.ts';
-import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
-import {rosterRead} from '#src/dynamo/operations/roster.ts';
+import {LABEL_OVERVIEW, LABEL_TITLE_ROSTER_OVERVIEW} from '#src/internal/discord-old/constants/label.ts';
+import {RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
+import {rosterSignupByRoster} from '#src/internal/discord-old/dynamo/operations/roster-signup.ts';
+import {rosterRead} from '#src/internal/discord-old/dynamo/operations/roster.ts';
 import {asViewer} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

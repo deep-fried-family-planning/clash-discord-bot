@@ -1,4 +1,4 @@
-import type {DPlayer} from '#src/dynamo/schema/discord-player.ts';
+import type {DPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import {ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import type {Player} from 'clashofclans.js';

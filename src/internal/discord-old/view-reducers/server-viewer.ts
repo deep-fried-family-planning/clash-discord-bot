@@ -1,4 +1,4 @@
-import {RK_OPEN} from '#src/constants/route-kind.ts';
+import {RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
 import {unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

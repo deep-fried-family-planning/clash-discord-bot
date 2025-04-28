@@ -1,4 +1,4 @@
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
+import type {DRoster} from '#src/internal/discord-old/dynamo/schema/discord-roster.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 

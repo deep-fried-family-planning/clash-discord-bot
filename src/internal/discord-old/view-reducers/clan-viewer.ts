@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {queryDiscordClanForServer} from '#src/dynamo/schema/discord-clan.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {queryDiscordClanForServer} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

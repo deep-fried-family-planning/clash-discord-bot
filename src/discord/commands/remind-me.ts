@@ -1,9 +1,9 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import {dtRel} from '#src/internal/discord-old/util/markdown.ts';
 
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import * as DateTime from 'effect/DateTime';

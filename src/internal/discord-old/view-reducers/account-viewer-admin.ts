@@ -1,8 +1,8 @@
-import {SELECT_ACCOUNT_TYPE} from '#src/constants/ix-constants.ts';
-import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/constants/label.ts';
-import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/constants/placeholder.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/dynamo/schema/discord-player.ts';
+import {SELECT_ACCOUNT_TYPE} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/internal/discord-old/constants/label.ts';
+import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import {asConfirm, asEditor, asSuccess} from '#src/internal/discord-old/components/component-utils.ts';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

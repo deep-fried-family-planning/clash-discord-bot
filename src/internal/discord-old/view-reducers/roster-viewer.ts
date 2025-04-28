@@ -1,10 +1,10 @@
-import {UNAVAILABLE} from '#src/constants/ix-constants.ts';
-import {LABEL_ROSTERS, LABEL_TITLE_ROSTERS} from '#src/constants/label.ts';
-import {PLACEHOLDER_ROSTER} from '#src/constants/placeholder.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {rosterSignupByRoster} from '#src/dynamo/operations/roster-signup.ts';
-import {rosterQueryByServer, rosterRead} from '#src/dynamo/operations/roster.ts';
-import type {DRoster} from '#src/dynamo/schema/discord-roster.ts';
+import {UNAVAILABLE} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {LABEL_ROSTERS, LABEL_TITLE_ROSTERS} from '#src/internal/discord-old/constants/label.ts';
+import {PLACEHOLDER_ROSTER} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {rosterSignupByRoster} from '#src/internal/discord-old/dynamo/operations/roster-signup.ts';
+import {rosterQueryByServer, rosterRead} from '#src/internal/discord-old/dynamo/operations/roster.ts';
+import type {DRoster} from '#src/internal/discord-old/dynamo/schema/discord-roster.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

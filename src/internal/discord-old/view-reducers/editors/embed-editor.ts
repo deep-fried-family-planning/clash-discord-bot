@@ -1,12 +1,12 @@
-import {nAnyColor} from '#src/constants/colors.ts';
-import {RK_OPEN} from '#src/constants/route-kind.ts';
+import {nAnyColor} from '#src/internal/discord-old/constants/colors.ts';
+import {RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
 import {asEditor} from '#src/internal/discord-old/components/component-utils.ts';
 import {ForwardB, PrimaryB} from '#src/internal/discord-old/components/global-components.ts';
 import {EDIT_EMBED_MODAL_OPEN, EDIT_EMBED_MODAL_SUBMIT, EditEmbedColorT, EditEmbedDescriptionT, EditEmbedTitleT} from '#src/internal/discord-old/modals/edit-embed-modal.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
-import {IXCBS} from '#src/internal/discord.ts';
+import {IXCBS} from '#src/internal/discord-old/discord.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
 
 export const EmbedEditorB = PrimaryB.as(makeId(RK_OPEN, 'EMBED'), {

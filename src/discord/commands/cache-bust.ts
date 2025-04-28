@@ -1,11 +1,11 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {nColor} from '#src/constants/colors';
-import {COLOR} from '#src/constants/colors.ts';
-import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {getDiscordClan, putDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
+import {nColor} from '#src/internal/discord-old/constants/colors';
+import {COLOR} from '#src/internal/discord-old/constants/colors.ts';
+import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {getDiscordClan, putDiscordClan} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
 

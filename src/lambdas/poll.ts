@@ -7,8 +7,8 @@ import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {eachClan} from '#src/poll/clan-war.ts';
-import {serverRaid} from '#src/poll/server-raid.ts';
+import {eachClan} from '#src/clash/poll/clan-war.ts';
+import {serverRaid} from '#src/clash/poll/server-raid.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';

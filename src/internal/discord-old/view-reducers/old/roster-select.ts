@@ -1,4 +1,4 @@
-import {RK_INIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {RK_INIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';

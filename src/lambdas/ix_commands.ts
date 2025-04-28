@@ -4,7 +4,7 @@ import {commandRouter} from '#src/discord/command-router.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import type {IxD, IxRE} from '#src/internal/discord.ts';
+import type {IxD, IxRE} from '#src/internal/discord-old/discord.ts';
 import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
