@@ -1,5 +1,5 @@
-import {AUTHOR_CONFIRM, AUTHOR_EDITING, AUTHOR_FAILURE, AUTHOR_OMNI_BOARD, AUTHOR_SUCCESS, AUTHOR_VIEWING} from '#src/constants/author.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {AUTHOR_CONFIRM, AUTHOR_EDITING, AUTHOR_FAILURE, AUTHOR_OMNI_BOARD, AUTHOR_SUCCESS, AUTHOR_VIEWING} from '#src/internal/discord-old/constants/author.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {Route} from '#src/internal/discord-old/store/id-routes.ts';
 import type {bool, str, und} from '#src/internal/pure/types-pure.ts';

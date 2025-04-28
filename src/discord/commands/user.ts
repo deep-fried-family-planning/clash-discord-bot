@@ -1,10 +1,10 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {OPTION_TZ} from '#src/constants/ix-constants.ts';
-import {decodeTimezone} from '#src/dynamo/schema/common-decoding.ts';
-import {getDiscordUser, putDiscordUser} from '#src/dynamo/schema/discord-user.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
+import {getDiscordUser, putDiscordUser} from '#src/internal/discord-old/dynamo/schema/discord-user.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {SlashError, SlashUserError} from '#src/internal/errors.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {omit} from 'effect/Struct';

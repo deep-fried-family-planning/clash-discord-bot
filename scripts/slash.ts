@@ -1,4 +1,4 @@
-import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/constants/secrets.ts';
+import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internal/discord-old/constants/secrets.ts';
 import {CACHE_BUST} from '#src/discord/commands/cache-bust.ts';
 import {CLAN_FAM} from '#src/discord/commands/clanfam.ts';
 import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';

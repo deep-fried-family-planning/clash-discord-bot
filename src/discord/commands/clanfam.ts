@@ -1,12 +1,12 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
-import {deleteDiscordClan, putDiscordClan, queryDiscordClan} from '#src/dynamo/schema/discord-clan.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {deleteDiscordClan, putDiscordClan, queryDiscordClan} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
+import {queryPlayersForUser} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';

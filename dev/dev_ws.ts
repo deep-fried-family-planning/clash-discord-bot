@@ -1,6 +1,6 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {g, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -10,7 +10,7 @@ import {WS_BYPASS_KEY} from './ws-bypass.ts';
 
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 
-const h = (event: APIGatewayProxyWebsocketEventV2) => g(function* () {
+const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
   const route = event.requestContext.routeKey;
 
   const [token, id] = process.env.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
@@ -86,4 +86,7 @@ const live = pipe(
   L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
 );
 
-export const handler = makeLambda(h, live);
+export const handler = makeLambda({
+  handler: dev_ws,
+  layer  : live,
+});

@@ -1,4 +1,4 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 
 export const jsonEmbed = (o: unknown) => ({

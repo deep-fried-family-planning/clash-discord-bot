@@ -1,4 +1,4 @@
-import {DFFP_CLANS_ALIAS} from '#src/constants/dffp-alias.ts';
+import {DFFP_CLANS_ALIAS} from '#src/internal/discord-old/constants/dffp-alias.ts';
 import type {CID} from '#src/internal/graph/types.ts';
 
 export const getAliasTag = (cid?: CID): CID => {

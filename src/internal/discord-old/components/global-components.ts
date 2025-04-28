@@ -1,12 +1,12 @@
-import {EMOJI_ADMIN, EMOJI_BACK, EMOJI_CLOSE, EMOJI_DELETE, EMOJI_DELETE_CONFIRM, EMOJI_NEW, EMOJI_NEXT, EMOJI_SUBMIT} from '#src/constants/emoji.ts';
-import {RK_BACK, RK_CLOSE, RK_DELETE, RK_FORWARD, RK_NAV, RK_NOOP, RK_SUBMIT} from '#src/constants/route-kind.ts';
-import {OPTION_UNAVAILABLE} from '#src/constants/select-options.ts';
+import {EMOJI_ADMIN, EMOJI_BACK, EMOJI_CLOSE, EMOJI_DELETE, EMOJI_DELETE_CONFIRM, EMOJI_NEW, EMOJI_NEXT, EMOJI_SUBMIT} from '#src/internal/discord-old/constants/emoji.ts';
+import {RK_BACK, RK_CLOSE, RK_DELETE, RK_FORWARD, RK_NAV, RK_NOOP, RK_SUBMIT} from '#src/internal/discord-old/constants/route-kind.ts';
+import {OPTION_UNAVAILABLE} from '#src/internal/discord-old/constants/select-options.ts';
 import {makeButton} from '#src/internal/discord-old/components/make-button.ts';
 import {makeSelectChannel} from '#src/internal/discord-old/components/make-select-channel.ts';
 import {makeSelectRole} from '#src/internal/discord-old/components/make-select-role.ts';
 import {makeSelectUser} from '#src/internal/discord-old/components/make-select-user.ts';
 import {makeSelect} from '#src/internal/discord-old/components/make-select.ts';
-import {IXCBS} from '#src/internal/discord.ts';
+import {IXCBS} from '#src/internal/discord-old/discord.ts';
 
 export const SuccessB = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.SUCCESS});
 export const DangerB = makeButton({kind: RK_NOOP, type: 'NOOP'}, {style: IXCBS.DANGER});

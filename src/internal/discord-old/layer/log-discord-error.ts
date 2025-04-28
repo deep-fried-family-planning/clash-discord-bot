@@ -1,9 +1,9 @@
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {RK_CLOSE, RK_OPEN} from '#src/constants/route-kind.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {RK_CLOSE, RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {buildCloudWatchLink} from '#src/internal/discord-old/util/validation.ts';
-import {IXCBS, IXCT} from '#src/internal/discord.ts';
+import {IXCBS, IXCT} from '#src/internal/discord-old/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {UI} from 'dfx';

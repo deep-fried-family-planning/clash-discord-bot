@@ -1,7 +1,7 @@
 import type {ComponentMapItem} from '#src/internal/discord-old/store/derive-state.ts';
 import {fromId} from '#src/internal/discord-old/store/id-parse.ts';
 import type {Route} from '#src/internal/discord-old/store/id-routes.ts';
-import type {IxD, IxDc, IxDm} from '#src/internal/discord.ts';
+import type {IxD, IxDc, IxDm} from '#src/internal/discord-old/discord.ts';
 import {pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';

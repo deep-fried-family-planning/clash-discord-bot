@@ -1,11 +1,11 @@
-import {RK_OPEN} from '#src/constants/route-kind.ts';
+import {RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
 import {asEditor} from '#src/internal/discord-old/components/component-utils.ts';
 import {ForwardB, PrimaryB} from '#src/internal/discord-old/components/global-components.ts';
 import {EDIT_DATE_TIME_MODAL_OPEN, EDIT_DATE_TIME_MODAL_SUBMIT, EditEpochT} from '#src/internal/discord-old/modals/edit-date-time-modal.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
-import {IXCBS} from '#src/internal/discord.ts';
+import {IXCBS} from '#src/internal/discord-old/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 export const DateTimeEditorB = PrimaryB.as(makeId(RK_OPEN, 'DTE'), {

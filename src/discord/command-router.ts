@@ -13,7 +13,7 @@ import {WA_MIRRORS, waMirrors} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT, waScout} from '#src/discord/commands/wa-scout.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {type IxD, type IxDs, IXSOT} from '#src/internal/discord.ts';
+import {type IxD, type IxDs, IXSOT} from '#src/internal/discord-old/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';

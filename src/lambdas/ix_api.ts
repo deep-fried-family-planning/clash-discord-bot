@@ -18,7 +18,7 @@ const fn = (event: APIGatewayProxyEventBase<unknown>) =>
         M.when(
           M.is(InteractionType.APPLICATION_COMMAND), () =>
             pipe(
-              PassService.routeTo('interactions_command', interaction),
+              PassService.routeTo('ix_slash', interaction),
               E.fork,
               E.as(makeResponse(200, DEFER_SOURCE)),
             ),
@@ -27,7 +27,7 @@ const fn = (event: APIGatewayProxyEventBase<unknown>) =>
           M.is(InteractionType.MESSAGE_COMPONENT),
           M.is(InteractionType.MODAL_SUBMIT), () =>
             pipe(
-              PassService.routeTo('interactions_command', interaction),
+              PassService.routeTo('ix_menu', interaction),
               E.fork,
               E.as(makeResponse(202)),
             ),

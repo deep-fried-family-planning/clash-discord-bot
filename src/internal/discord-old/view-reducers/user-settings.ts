@@ -1,8 +1,8 @@
-import {SELECT_TIMEZONES} from '#src/constants/ix-constants.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import {userCreate, userDelete} from '#src/dynamo/operations/user.ts';
-import {decodeTimezone} from '#src/dynamo/schema/common-decoding.ts';
+import {SELECT_TIMEZONES} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
+import {userCreate, userDelete} from '#src/internal/discord-old/dynamo/operations/user.ts';
+import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
 import {asSuccess, isClicked, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

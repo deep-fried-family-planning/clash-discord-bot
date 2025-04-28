@@ -1,10 +1,10 @@
-import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/constants/ix-constants.ts';
-import {LABEL_TITLE_NEW_INFO} from '#src/constants/label.ts';
-import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/constants/placeholder.ts';
-import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {discordEmbedCreate} from '#src/dynamo/operations/embed.ts';
-import {infoCreate} from '#src/dynamo/operations/info.ts';
-import type {DInfo} from '#src/dynamo/schema/discord-info.ts';
+import {SELECT_INFO_KIND, SELECT_POSITIONS} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {LABEL_TITLE_NEW_INFO} from '#src/internal/discord-old/constants/label.ts';
+import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {discordEmbedCreate} from '#src/internal/discord-old/dynamo/operations/embed.ts';
+import {infoCreate} from '#src/internal/discord-old/dynamo/operations/info.ts';
+import type {DInfo} from '#src/internal/discord-old/dynamo/schema/discord-info.ts';
 import {asEditor, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, NewB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import {decodePersist, encodePersist, extractPersist} from '#src/internal/discord-old/components/persistor.ts';

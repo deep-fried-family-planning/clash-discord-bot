@@ -1,11 +1,11 @@
-import {MenuCache} from '#src/dynamo/cache/menu-cache.ts';
-import type {DServer} from '#src/dynamo/schema/discord-server.ts';
-import type {DUser} from '#src/dynamo/schema/discord-user.ts';
+import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
+import type {DServer} from '#src/internal/discord-old/dynamo/schema/discord-server.ts';
+import type {DUser} from '#src/internal/discord-old/dynamo/schema/discord-user.ts';
 import {isEditor, isStatus, isSystem, isViewer} from '#src/internal/discord-old/components/component-utils.ts';
 import type {MadeButton} from '#src/internal/discord-old/components/make-button.ts';
 import type {MadeSelect} from '#src/internal/discord-old/components/make-select.ts';
 import {fromId} from '#src/internal/discord-old/store/id-parse.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';

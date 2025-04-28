@@ -1,5 +1,4 @@
-import {E, g, O, pipe} from '#src/internal/pure/effect.ts';
-import type {str} from '#src/internal/pure/types-pure.ts';
+import {E, O, pipe} from '#src/internal/pure/effect.ts';
 import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {Lambda} from '@effect-aws/client-lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -11,40 +10,11 @@ export const WS_BYPASS_KEY = {
   sk: 'now',
 };
 
-export const wsBypass = <A, E, R>(kind: str, data: any, nonbypass: E.Effect<A, E, R>) => g(function* () {
-  if (process.env.LAMBDA_ENV === 'prod' || process.env.LAMBDA_LOCAL === 'true') {
-    yield* nonbypass;
-    return false;
-  }
-
-  const bypass = yield* DynamoDBDocument.get({
-    TableName: process.env.DDB_OPERATIONS,
-    Key      : WS_BYPASS_KEY,
-  });
-
-  if (!bypass.Item) {
-    yield* nonbypass;
-    return false;
-  }
-
-  const wsctx = bypass.Item.context as WsCtx;
-
-  yield* ApiGatewayManagementApi.postToConnection({
-    ConnectionId: wsctx.connectionId,
-    Data        : JSON.stringify({
-      kind: kind,
-      data: data,
-    }),
-  });
-
-  return true;
-});
-
 const names = {
-  interactions_command: process.env.LAMBDA_ARN_IX_SLASH,
-  interactions_menu   : process.env.LAMBDA_ARN_DISCORD_MENU,
-  poll                : process.env.LAMBDA_ARN_IX_SLASH,
-  task                : process.env.LAMBDA_ARN_IX_SLASH,
+  ix_slash: process.env.LAMBDA_ARN_IX_SLASH,
+  ix_menu : process.env.LAMBDA_ARN_DISCORD_MENU,
+  poll    : process.env.LAMBDA_ARN_IX_SLASH,
+  task    : process.env.LAMBDA_ARN_IX_SLASH,
 };
 
 export class PassService extends E.Service<PassService>()('deepfryer/PassService', {

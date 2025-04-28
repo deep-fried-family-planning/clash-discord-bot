@@ -1,4 +1,4 @@
-import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/constants/delim.ts';
+import {DELIM_DATA, DELIM_PIPE, DELIM_SLASH} from '#src/internal/discord-old/constants/delim.ts';
 import {ID_ROUTES, type Route, type RouteParams} from '#src/internal/discord-old/store/id-routes.ts';
 import {idPredicate} from '#src/internal/discord-old/store/id.ts';
 import {pipe} from '#src/internal/pure/effect.ts';

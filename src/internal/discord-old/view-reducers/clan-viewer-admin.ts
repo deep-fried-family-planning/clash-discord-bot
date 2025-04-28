@@ -1,6 +1,6 @@
-import {LABEL_TITLE_ADMIN_CLAN} from '#src/constants/label.ts';
-import {PLACEHOLDER_CLAN_TYPE, PLACEHOLDER_WAR_COUNTDOWN} from '#src/constants/placeholder.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {LABEL_TITLE_ADMIN_CLAN} from '#src/internal/discord-old/constants/label.ts';
+import {PLACEHOLDER_CLAN_TYPE, PLACEHOLDER_WAR_COUNTDOWN} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleChannelS, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

@@ -1,8 +1,8 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {DESC_NO_ACCOUNT_SELECTED} from '#src/constants/description.ts';
-import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/constants/placeholder.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
-import {queryPlayersForUser} from '#src/dynamo/schema/discord-player.ts';
+import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/discord-old/constants/description.ts';
+import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {queryPlayersForUser} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import {asViewer} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS, SingleUserS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

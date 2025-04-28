@@ -1,5 +1,5 @@
-import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/constants/label.ts';
-import {RK_ENTRY, RK_OPEN} from '#src/constants/route-kind.ts';
+import {LABEL_LINK, LABEL_START, LABEL_TITLE_LINK} from '#src/internal/discord-old/constants/label.ts';
+import {RK_ENTRY, RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
 import {unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, SuccessB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

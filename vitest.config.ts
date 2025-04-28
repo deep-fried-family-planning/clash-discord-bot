@@ -22,8 +22,8 @@ export default defineConfig({
     benchmark: {
       include   : [],
       reporters : ['verbose'],
-      compare   : './vitest.bench.json',
-      outputJson: './vitest.bench.json',
+      compare   : './test/vitest.bench.json',
+      outputJson: './test/vitest.bench.json',
     },
 
     coverage: {

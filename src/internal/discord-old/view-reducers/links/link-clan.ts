@@ -1,6 +1,6 @@
-import {LABEL_CLAN_LINK, LABEL_CLAN_TAG} from '#src/constants/label.ts';
-import {PLACEHOLDER_WAR_COUNTDOWN} from '#src/constants/placeholder.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/constants/route-kind.ts';
+import {LABEL_CLAN_LINK, LABEL_CLAN_TAG} from '#src/internal/discord-old/constants/label.ts';
+import {PLACEHOLDER_WAR_COUNTDOWN} from '#src/internal/discord-old/constants/placeholder.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {clanfam} from '#src/discord/commands/clanfam.ts';
 import {asFailure, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, ForwardB, NewB, SingleChannelS, SuccessB} from '#src/internal/discord-old/components/global-components.ts';

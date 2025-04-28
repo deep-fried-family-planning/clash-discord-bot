@@ -1,4 +1,4 @@
-import {RK_MODAL_OPEN, RK_MODAL_SUBMIT} from '#src/constants/route-kind.ts';
+import {RK_MODAL_OPEN, RK_MODAL_SUBMIT} from '#src/internal/discord-old/constants/route-kind.ts';
 import {PlayerTagT} from '#src/internal/discord-old/modals/link-account-modal.ts';
 import {toId} from '#src/internal/discord-old/store/id-build.ts';
 import {UI} from 'dfx';

@@ -1,4 +1,4 @@
-import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord.ts';
+import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord-old/discord.ts';
 import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
 import {NodeHttpClient} from '@effect/platform-node';

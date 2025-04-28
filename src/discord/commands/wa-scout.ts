@@ -1,11 +1,11 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/constants/colors.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/constants/ix-constants.ts';
+import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/internal/discord-old/util/markdown.ts';
 import {dTable} from '#src/internal/discord-old/util/message-table.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeSamples} from '#src/internal/graph/model-descriptive/describe-samples.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
