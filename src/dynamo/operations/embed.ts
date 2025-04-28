@@ -15,8 +15,6 @@ export const discordEmbedCreate = (embed: DEmbed) => E.gen(function* () {
 });
 
 export const discordEmbedRead = (id: DEmbedKey['pk']) => E.gen(function* () {
-  console.log('discordEmbedRead', id);
-
   const embedId = yield* encodeEmbedId(id);
 
   const item = yield* DynamoDBDocument.get({

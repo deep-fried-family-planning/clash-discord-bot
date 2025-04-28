@@ -2,6 +2,7 @@ import {Order} from 'effect';
 
 export {
   Effect as E,
+  Fiber,
   Console as CSL,
   Data as D,
   DateTime as DT,

@@ -17,14 +17,12 @@ export default defineConfig({
   },
 
   entry: {
-    'dev_ws/index'       : {import: 'dev/dev_ws.ts'},
-    'ddb_stream/index'   : {import: 'src/ddb_stream.ts'},
-    'ix_api/index'       : {import: 'src/ix_api.ts'},
-    'ix_menu/index'      : {import: 'src/ix_menu.ts'},
-    'ix_menu_close/index': {import: 'src/ix_menu_close.ts'},
-    'ix_slash/index'     : {import: 'src/ix_slash.ts'},
-    'poll/index'         : {import: 'src/poll.ts'},
-    'task/index'         : {import: 'src/task.ts'},
+    'dev_ws/index'  : {import: 'dev/dev_ws.ts'},
+    'ix_api/index'  : {import: 'src/lambdas/ix_api.ts'},
+    'ix_menu/index' : {import: 'src/lambdas/ix_components.ts'},
+    'ix_slash/index': {import: 'src/lambdas/ix_commands.ts'},
+    'poll/index'    : {import: 'src/lambdas/poll.ts'},
+    'task/index'    : {import: 'src/lambdas/task.ts'},
   },
 
   output: {

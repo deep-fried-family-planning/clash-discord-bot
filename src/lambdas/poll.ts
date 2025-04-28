@@ -9,13 +9,12 @@ import {Cron, DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {eachClan} from '#src/poll/clan-war.ts';
 import {serverRaid} from '#src/poll/server-raid.ts';
-import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {makePassServiceLayer, PassService} from 'dev/ws-bypass.ts';
 import {Cause} from 'effect';
-import {wsBypass} from '../dev/ws-bypass.ts';
 
 const raidWeekend = Cron.make({
   days    : [],
@@ -30,7 +29,9 @@ export const h = () => E.gen(function* () {
   yield* invokeCount(E.succeed(''));
   yield* showMetric(invokeCount);
 
-  if (yield* wsBypass('poll', {}, E.void)) {
+  const bypass = yield* PassService.shouldRoute('poll');
+
+  if (bypass) {
     return;
   }
 
@@ -85,21 +86,21 @@ export const h = () => E.gen(function* () {
   }),
 );
 
+const layer = pipe(
+  L.mergeAll(
+    Database.Default,
+    ClashKing.Live,
+    ClashOfClans.Live,
+    Scheduler.defaultLayer,
+    SQS.defaultLayer,
+    DiscordLayerLive,
+    makePassServiceLayer(),
+  ),
+  L.provide(DynamoDBDocument.defaultLayer),
+  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+);
+
 export const handler = makeLambda({
   handler: h,
-  layer  : pipe(
-    L.mergeAll(
-      Database.Default,
-      ClashKing.Live,
-      ClashOfClans.Live,
-      Scheduler.defaultLayer,
-      SQS.defaultLayer,
-      ApiGatewayManagementApi.layer({
-        endpoint: process.env.APIGW_DEV_WS,
-      }),
-      DiscordLayerLive,
-    ),
-    L.provide(DynamoDBDocument.defaultLayer),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
-  ),
+  layer  : layer,
 });

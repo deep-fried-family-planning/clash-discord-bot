@@ -12,9 +12,8 @@ import {makeLambda} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 
-const slash = (ix: IxD) => E.gen(function* () {
-  yield* commandRouter(ix);
-}).pipe(
+const slash = (ix: IxD) => pipe(
+  commandRouter(ix),
   E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
     const userMessage = yield* logDiscordError([e]);
 
@@ -47,22 +46,27 @@ const slash = (ix: IxD) => E.gen(function* () {
   })),
 );
 
-const h = (event: IxD) => pipe(
-  slash(event),
+const layer = pipe(
+  L.mergeAll(
+    ComponentRouter,
+    DiscordLayerLive,
+    ClashOfClans.Live,
+    ClashKing.Live,
+    Scheduler.defaultLayer,
+    SQS.defaultLayer,
+  ),
+  L.provideMerge(
+    L.mergeAll(
+      L.setTracerTiming(true),
+      L.setTracerEnabled(true),
+      Logger.replace(Logger.defaultLogger, Logger.structuredLogger),
+      DT.layerCurrentZoneLocal,
+    ),
+  ),
+  L.provideMerge(DynamoDBDocument.defaultLayer),
 );
 
-export const handler = makeLambda(h, pipe(
-  L.empty,
-  L.provideMerge(ComponentRouter),
-  L.provideMerge(DiscordLayerLive),
-  L.provideMerge(ClashOfClans.Live),
-  L.provideMerge(ClashKing.Live),
-  L.provideMerge(Scheduler.defaultLayer),
-  L.provideMerge(SQS.defaultLayer),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-  L.provideMerge(L.setTracerTiming(true)),
-  L.provideMerge(L.setTracerEnabled(true)),
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.structuredLogger)),
-  L.provideMerge(DT.layerCurrentZoneLocal),
-  L.provideMerge(L.scope),
-));
+export const handler = makeLambda({
+  handler: slash,
+  layer  : layer,
+});
