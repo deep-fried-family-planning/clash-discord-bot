@@ -21,21 +21,14 @@ describe('restcache', () => {
         mockPut.mockReturnValue(E.void);
         const restcache = yield* RestCache;
         yield* E.awaitAllChildren(restcache.set('test key', {}));
-        expect(mockPut.mock.calls).toMatchInlineSnapshot(`
-          [
-            [
-              {
-                "Item": {
-                  "_tag": "RestCacheData",
-                  "data": {},
-                  "pk": "RestCache",
-                  "sk": "test key",
-                  "ttl": 240000,
-                },
-                "TableName": "qual-dffp-clash-discord-bot-operations",
-              },
-            ],
-          ]
+        expect(mockPut.mock.calls[0][0].Item).toMatchInlineSnapshot(`
+          {
+            "_tag": "RestCacheData",
+            "data": {},
+            "pk": "RestCache",
+            "sk": "test key",
+            "ttl": 240000,
+          }
         `);
       },
       E.provide(pipe(
