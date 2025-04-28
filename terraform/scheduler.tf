@@ -2,7 +2,6 @@ resource "aws_scheduler_schedule_group" "schedule_group" {
   name = "${local.prefix}-schedule-group"
 }
 
-
 resource "aws_scheduler_schedule" "clash_general" {
   name                = "${local.prefix}-clash-general"
   group_name          = aws_scheduler_schedule_group.schedule_group.name
@@ -15,7 +14,6 @@ resource "aws_scheduler_schedule" "clash_general" {
     role_arn = aws_iam_role.schedule_role.arn
   }
 }
-
 
 data "aws_iam_policy_document" "schedule_role" {
   statement {

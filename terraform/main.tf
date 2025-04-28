@@ -8,7 +8,6 @@ terraform {
   }
 }
 
-
 provider "aws" {
   region = "us-east-1"
   assume_role {
@@ -23,7 +22,6 @@ provider "aws" {
     }
   }
 }
-
 
 locals {
   prefix = "${local.env}-${local.org}-${local.service_name}"

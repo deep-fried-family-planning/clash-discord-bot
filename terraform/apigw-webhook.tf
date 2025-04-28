@@ -5,7 +5,6 @@ resource "aws_api_gateway_rest_api" "webhook" {
   }
 }
 
-
 resource "aws_api_gateway_deployment" "webhook" {
   rest_api_id = aws_api_gateway_rest_api.webhook.id
   triggers = {
@@ -27,7 +26,6 @@ resource "aws_api_gateway_deployment" "webhook" {
   }
 }
 
-
 resource "aws_api_gateway_stage" "webhook" {
   rest_api_id   = aws_api_gateway_rest_api.webhook.id
   deployment_id = aws_api_gateway_deployment.webhook.id
@@ -38,13 +36,11 @@ resource "aws_api_gateway_stage" "webhook" {
   # }
 }
 
-
 resource "aws_api_gateway_resource" "ix" {
   rest_api_id = aws_api_gateway_rest_api.webhook.id
   parent_id   = aws_api_gateway_rest_api.webhook.root_resource_id
   path_part   = "interactions"
 }
-
 
 # resource "aws_api_gateway_method_settings" "api_discord" {
 #   rest_api_id = aws_api_gateway_rest_api.api_discord.id
@@ -57,7 +53,6 @@ resource "aws_api_gateway_resource" "ix" {
 #   # }
 # }
 
-
 #
 # OPTIONS /interactions
 #
@@ -67,7 +62,6 @@ resource "aws_api_gateway_method" "ix_options" {
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
-
 
 resource "aws_api_gateway_method_response" "ix_options" {
   rest_api_id = aws_api_gateway_rest_api.webhook.id
@@ -81,7 +75,6 @@ resource "aws_api_gateway_method_response" "ix_options" {
   }
 }
 
-
 resource "aws_api_gateway_integration_response" "ix_options" {
   rest_api_id = aws_api_gateway_rest_api.webhook.id
   resource_id = aws_api_gateway_resource.ix.id
@@ -94,14 +87,12 @@ resource "aws_api_gateway_integration_response" "ix_options" {
   }
 }
 
-
 resource "aws_api_gateway_integration" "ix_options" {
   rest_api_id = aws_api_gateway_rest_api.webhook.id
   resource_id = aws_api_gateway_resource.ix.id
   http_method = aws_api_gateway_method.ix_options.http_method
   type        = "MOCK"
 }
-
 
 #
 # POST /interactions
@@ -116,7 +107,6 @@ resource "aws_api_gateway_method" "ix_post" {
     "method.request.header.X-Signature-Timestamp" = true
   }
 }
-
 
 resource "aws_api_gateway_integration" "ix_post" {
   rest_api_id             = aws_api_gateway_rest_api.webhook.id

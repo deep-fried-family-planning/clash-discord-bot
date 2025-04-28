@@ -5,21 +5,22 @@ resource "aws_dynamodb_table" "operations" {
   write_capacity = local.capacity[1]
 
   hash_key  = "pk"
-  range_key = "sk"
-
-  ttl {
-    #     attribute_name = "ttl"
-    enabled = false
-  }
-
   attribute {
     name = "pk"
     type = "S"
   }
+
+  range_key = "sk"
   attribute {
     name = "sk"
     type = "S"
   }
+
+  ttl {
+    attribute_name = "ttl"
+    enabled = false
+  }
+
   attribute {
     name = "gsi_all_server_id"
     type = "S"
@@ -40,7 +41,6 @@ resource "aws_dynamodb_table" "operations" {
     name = "gsi_player_tag"
     type = "S"
   }
-
   attribute {
     name = "gsi_roster_id"
     type = "S"
