@@ -1,4 +1,4 @@
-import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
+import {DocumentCapacity} from '#src/database/DocumentCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as Cache from 'effect/Cache';
@@ -6,7 +6,7 @@ import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import * as Exit from 'effect/Exit';
 import {pipe} from 'effect/Function';
-import {Codec} from '../data';
+import {Codec} from 'src/database/data/index.ts';
 
 type With<A> = A & {codec: Codec};
 

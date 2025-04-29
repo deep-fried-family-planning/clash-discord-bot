@@ -3,7 +3,8 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {CompositeCache} from '#src/database/service/CompositeCache.ts';
 import {BaseClient} from '#src/database/service/BaseClient.ts';
 import {DataDriver} from '#src/database/service/DataDriver.ts';
-import {CapacityLimiter} from '#src/database/service/CapacityLimiter.ts';
+import {DocumentCapacity} from '#src/database/DocumentCapacity.ts';
+import {DeepFryerDocument} from '#src/database/DeepFryerDocument.ts';
 import {DiscordLogger} from '#src/discord/DiscordLogger.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {DT, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
@@ -24,11 +25,8 @@ export const DiscordLayer = DiscordLogger.Default.pipe(
   })),
 );
 
-export const DatabaseLayer = DataDriver.Default.pipe(
-  L.provide(CompositeCache.Default),
-  L.provide(BaseClient.Default.pipe(
-    L.provide(CapacityLimiter.Default),
-  )),
+export const DatabaseLayer = DeepFryerDocument.Default.pipe(
+  L.provide(DocumentCapacity.Default),
 );
 
 export const NetworkLayer = L.mergeAll(

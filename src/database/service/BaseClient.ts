@@ -1,5 +1,5 @@
 import type {KeyItem} from '#src/database/data/key-item.ts';
-import {CapacityLimiter} from '#src/database/service/CapacityLimiter.ts';
+import {DocumentCapacity} from '#src/database/DocumentCapacity.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import type {QueryCommandOutput, ScanCommandOutput} from '@aws-sdk/lib-dynamodb';
 import type * as DynamoErrors from '@effect-aws/client-dynamodb/Errors';
@@ -27,7 +27,7 @@ export class UnprocessedItemsError extends Data.TaggedError('UnprocessedItemsErr
 export class BaseClient extends E.Service<BaseClient>()('deepfryer/DynamoClient', {
   effect: E.gen(function* () {
     const {_, ...dynamo} = yield* DynamoDBDocument;
-    const limiter = yield* CapacityLimiter;
+    const limiter = yield* DocumentCapacity;
 
     const createItem = (encoded: any) =>
       pipe(
@@ -142,7 +142,7 @@ export class BaseClient extends E.Service<BaseClient>()('deepfryer/DynamoClient'
           ExpressionAttributeValues: {':pk': pk},
           ExclusiveStartKey        : last?.LastEvaluatedKey,
         }),
-        limiter.partitionReadUnits,
+        limiter.partitionReadUnits(true),
         E.catchAll((e) => new DynamoClientError({cause: e})),
       );
 
@@ -172,7 +172,7 @@ export class BaseClient extends E.Service<BaseClient>()('deepfryer/DynamoClient'
           ExpressionAttributeValues: values,
           ExclusiveStartKey        : last?.LastEvaluatedKey,
         }),
-        limiter.partitionReadUnits,
+        limiter.partitionReadUnits(true),
         E.catchAll((e) => new DynamoClientError({cause: e})),
       );
 
@@ -203,7 +203,7 @@ export class BaseClient extends E.Service<BaseClient>()('deepfryer/DynamoClient'
           ExpressionAttributeValues: values,
           ExclusiveStartKey        : last?.LastEvaluatedKey,
         }),
-        limiter.partitionReadUnits,
+        limiter.partitionReadUnits(true),
         E.catchAll((e) => new DynamoClientError({cause: e})),
       );
 

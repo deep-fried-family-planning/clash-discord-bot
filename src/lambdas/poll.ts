@@ -1,6 +1,7 @@
 import {eachClan} from '#src/clash/poll/clan-war.ts';
 import {serverRaid} from '#src/clash/poll/server-raid.ts';
-import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/temp.ts';
+import {DeepFryerPage} from '#src/database/DeepFryerPage.ts';
+import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/db.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';
@@ -88,6 +89,7 @@ const layer = pipe(
     Scheduler.defaultLayer,
     SQS.defaultLayer,
     PassServiceLayer,
+    DeepFryerPage.Default,
   ),
   L.provideMerge(DiscordLayer),
   L.provideMerge(DatabaseLayer),

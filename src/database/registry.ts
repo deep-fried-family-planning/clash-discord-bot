@@ -1,8 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {UserPlayer} from '#src/database/data/codec.ts';
-import {deleteItem, saveItem} from '#src/database/db.ts';
-import {Db} from '#src/database/index.ts';
-import {queryUserPlayers} from '#src/database/temp.ts';
+import {deleteItem, queryUserPlayers, saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
