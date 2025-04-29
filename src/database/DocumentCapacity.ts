@@ -13,7 +13,7 @@ const estimateRecordWriteCapacity = (encoding: any) =>
     Number.max(1),
   );
 
-export class CapacityLimiter extends Effect.Service<CapacityLimiter>()('deepfryer/DynamoLimiter', {
+export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfryer/DynamoLimiter', {
   scoped: Effect.gen(function* () {
     const maxRCU = 10;
     const maxWCU = 10;
@@ -31,14 +31,20 @@ export class CapacityLimiter extends Effect.Service<CapacityLimiter>()('deepfrye
     });
 
     return {
-      partitionReadUnits: flow(
-        readLimiter,
-        RateLimiter.withCost(maxRCU / 4),
-      ),
+      partitionReadUnits: (consistent?: boolean) =>
+        consistent
+          ? flow(
+            readLimiter,
+            RateLimiter.withCost(maxRCU / 4),
+          )
+          : flow(
+            readLimiter,
+            RateLimiter.withCost(maxRCU / 8),
+          ),
 
       indexReadUnits: flow(
         readLimiter,
-        RateLimiter.withCost(maxRCU / 2),
+        RateLimiter.withCost(maxRCU / 4),
       ),
 
       estimateReadUnits: <A, E, R>(estimate?: number) => (effect: Effect.Effect<A, E, R>) => {

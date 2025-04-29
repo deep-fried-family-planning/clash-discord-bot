@@ -1,4 +1,4 @@
-import {CapacityLimiter} from '#src/database/service/CapacityLimiter.ts';
+import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as Cache from 'effect/Cache';
@@ -13,7 +13,7 @@ type With<A> = A & {codec: Codec};
 export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deepfryer/DeepFryerDocument', {
   effect: Effect.gen(function* () {
     const document = yield* DynamoDBDocument;
-    const capacity = yield* CapacityLimiter;
+    const capacity = yield* DocumentCapacity;
     const table = process.env.DDB_OPERATIONS;
 
     const records = yield* Cache.makeWith({
@@ -55,16 +55,16 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
         Effect.tap(() => set(cmd.TableName ?? table, cmd.Item!)),
       );
 
-    const get = ({codec, ...cmd}: With<GetCommandInput>) =>
+    const get = ({codec, ...cmd}: With<Partial<GetCommandInput>>) =>
       pipe(
         document.get({
-          ...cmd,
+          ...cmd as any,
           TableName: cmd.TableName ?? table,
         }),
         capacity.estimateReadUnits(codec.RCU),
       );
 
-    const getCached = ({codec, ...cmd}: With<GetCommandInput>) => {
+    const getCached = ({codec, ...cmd}: With<Partial<GetCommandInput>>) => {
       const {pk, sk} = cmd.Key!;
       const {_tag} = codec;
       return records.get(`${cmd.TableName ?? table}/${pk}/${sk}/${_tag}`);
@@ -83,10 +83,10 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
         }),
       );
 
-    const $delete = ({codec, ...cmd}: With<DeleteCommandInput>) =>
+    const $delete = ({codec, ...cmd}: With<Partial<DeleteCommandInput>>) =>
       pipe(
         document.delete({
-          ...cmd,
+          ...cmd as any,
           TableName: cmd.TableName ?? table,
         }),
         capacity.estimateWriteUnits(codec.WCU),
@@ -102,21 +102,21 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
           ...cmd,
           TableName: cmd.TableName ?? table,
         }),
-        capacity.partitionReadUnits,
+        capacity.partitionReadUnits(cmd.ConsistentRead),
         Effect.map((res) => res.Items ?? []),
       );
 
-    const query = (cmd: QueryCommandInput) =>
+    const query = (cmd: Partial<QueryCommandInput>) =>
       pipe(
         document.query({
           ...cmd,
           TableName: cmd.TableName ?? table,
         }),
-        capacity.partitionReadUnits,
+        capacity.partitionReadUnits(cmd.ConsistentRead),
         Effect.map((res) => res.Items),
       );
 
-    const scan = (cmd: ScanCommandInput) =>
+    const scan = (cmd: Partial<ScanCommandInput>) =>
       pipe(
         document.scan({
           ...cmd,

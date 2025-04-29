@@ -10,7 +10,7 @@ export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/De
   effect: Effect.gen(function* () {
     const document = yield* DeepFryerDocument;
 
-    const pageQuery = (cmd: QueryCommandInput) => Stream.paginateChunkEffect(
+    const paginateQuery = (cmd: Partial<QueryCommandInput>) => Stream.paginateChunkEffect(
       undefined as Record<string, any> | undefined,
       (key) =>
         pipe(
@@ -25,7 +25,7 @@ export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/De
         ),
     );
 
-    const pageScan = (cmd: ScanCommandInput) => Stream.paginateChunkEffect(
+    const paginateScan = (cmd: Partial<ScanCommandInput>) => Stream.paginateChunkEffect(
       undefined as Record<string, any> | undefined,
       (key) =>
         pipe(
@@ -41,8 +41,8 @@ export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/De
     );
 
     return {
-      pageQuery,
-      pageScan,
+      paginateQuery,
+      paginateScan,
     };
   }),
   accessors: true,
