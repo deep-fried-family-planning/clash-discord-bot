@@ -1,5 +1,5 @@
-import {User} from '#src/database/data/codec';
-import {readItem, saveItem} from '#src/database/db.ts';
+import {User} from '#src/database/arch/codec';
+import {readItem, saveItem} from '#src/database/DeepFryerDB.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';

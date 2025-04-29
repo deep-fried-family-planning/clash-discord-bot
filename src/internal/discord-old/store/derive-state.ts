@@ -1,5 +1,5 @@
-import {Server, User} from '#src/database/data/codec';
-import {readItem} from '#src/database/db.ts';
+import {Server, User} from '#src/database/arch/codec';
+import {readItem} from '#src/database/DeepFryerDB.ts';
 import {isEditor, isStatus, isSystem, isViewer} from '#src/internal/discord-old/components/component-utils.ts';
 import type {MadeButton} from '#src/internal/discord-old/components/make-button.ts';
 import type {MadeSelect} from '#src/internal/discord-old/components/make-select.ts';

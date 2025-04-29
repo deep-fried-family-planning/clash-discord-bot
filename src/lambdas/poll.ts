@@ -1,7 +1,7 @@
 import {eachClan} from '#src/clash/poll/clan-war.ts';
 import {serverRaid} from '#src/clash/poll/server-raid.ts';
-import {DeepFryerPage} from '#src/database/DeepFryerPage.ts';
-import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/db.ts';
+import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
+import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/DeepFryerDB.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';

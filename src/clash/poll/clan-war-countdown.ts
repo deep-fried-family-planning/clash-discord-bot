@@ -1,6 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {ServerClan} from '#src/database/data/codec.ts';
-import type {Db} from '#src/database/db.ts';
+import type {ServerClan} from '#src/database/arch/codec.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

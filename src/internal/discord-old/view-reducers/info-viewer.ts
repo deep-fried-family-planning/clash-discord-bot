@@ -1,12 +1,12 @@
+import {asViewer, isClicked, unset} from '#src/internal/discord-old/components/component-utils.ts';
+import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import {DELIM_DATA} from '#src/internal/discord-old/constants/delim.ts';
 import {SELECT_INFO_KIND, UNAVAILABLE} from '#src/internal/discord-old/constants/ix-constants.ts';
 import {LABEL_INFO, LABEL_TITLE_INFO} from '#src/internal/discord-old/constants/label.ts';
 import {PLACEHOLDER_INFO_EMBED, PLACEHOLDER_INFO_KIND} from '#src/internal/discord-old/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
 import {infoQueryByServer} from '#src/internal/discord-old/dynamo/operations/info.ts';
-import {asViewer, isClicked, unset} from '#src/internal/discord-old/components/component-utils.ts';
-import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
+import {MenuCache} from '#src/internal/discord-old/dynamo/operations/menu-cache.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';

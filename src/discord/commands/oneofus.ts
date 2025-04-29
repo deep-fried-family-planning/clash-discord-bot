@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {UserPlayer} from '#src/database/data/codec.ts';
-import {deleteItem, queryUserPlayers, saveItem} from '#src/database/db.ts';
+import {UserPlayer} from '#src/database/arch/codec.ts';
+import {deleteItem, queryUserPlayers, saveItem} from '#src/database/DeepFryerDB.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';

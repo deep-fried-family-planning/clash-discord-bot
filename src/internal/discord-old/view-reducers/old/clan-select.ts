@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ServerClan} from '#src/database/data/codec';
-import {readPartition} from '#src/database/db.ts';
+import {ServerClan} from '#src/database/arch/codec';
+import {readPartition} from '#src/database/DeepFryerDB.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';

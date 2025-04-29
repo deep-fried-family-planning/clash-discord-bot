@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {saveItem} from '#src/database/DeepFryerDB.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {Db} from '#src/database/db.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
@@ -16,7 +16,7 @@ import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
-import {ServerClan, type Server, type UserPlayer} from '#src/database/data/codec';
+import {ServerClan, type Server, type UserPlayer} from '#src/database/arch/codec';
 
 export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]) => E.gen(function* () {
   const discord = yield* DiscordREST;
@@ -113,7 +113,7 @@ export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]
     auto_archive_duration: 1440,
   }).json;
 
-  yield* Db.saveItem(ServerClan, {
+  yield* saveItem(ServerClan, {
     ...clan,
     prep_opponent: prepWar.opponent.tag,
     thread_prep  : thread.id,

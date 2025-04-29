@@ -1,6 +1,6 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DeepFryerPage} from '#src/database/DeepFryerPage.ts';
+import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {commandRouter} from '#src/discord/command-router.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';

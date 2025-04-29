@@ -1,10 +1,10 @@
+import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import {SELECT_ROSTER_TYPE} from '#src/internal/discord-old/constants/ix-constants.ts';
 import {LABEL_TITLE_ROSTER_ADMIN} from '#src/internal/discord-old/constants/label.ts';
 import {PLACEHOLDER_ROSTER_TYPE} from '#src/internal/discord-old/constants/placeholder.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {rosterDelete} from '#src/internal/discord-old/dynamo/operations/roster.ts';
-import {asConfirm, asEditor, asSuccess, unset} from '#src/internal/discord-old/components/component-utils.ts';
-import {AdminB, BackB, DeleteB, DeleteConfirmB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';

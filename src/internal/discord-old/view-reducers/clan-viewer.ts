@@ -1,10 +1,9 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ServerClan} from '#src/database/data/codec.ts';
-import {readPartition, readPartition2} from '#src/database/db.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {queryDiscordClanForServer} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
+import {ServerClan} from '#src/database/arch/codec.ts';
+import {readPartition2} from '#src/database/DeepFryerDB.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';

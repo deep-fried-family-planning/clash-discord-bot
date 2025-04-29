@@ -1,6 +1,6 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {ServerClan} from '#src/database/data/codec.ts';
-import {readItem, saveItem} from '#src/database/db.ts';
+import {ServerClan} from '#src/database/arch/codec.ts';
+import {readItem, saveItem} from '#src/database/DeepFryerDB.ts';
 import {nColor} from '#src/internal/discord-old/constants/colors';
 import {COLOR} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
