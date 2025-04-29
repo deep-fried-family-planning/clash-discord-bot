@@ -15,7 +15,7 @@ export default defineConfig({
   },
 
   entry: {
-    'dev_ws/index'  : {import: 'dev/dev_ws.ts'},
+    'dev_ws/index'  : {import: 'scripts/dev/dev_ws.ts'},
     'ix_api/index'  : {import: 'src/lambdas/ix_api.ts'},
     'ix_menu/index' : {import: 'src/lambdas/ix_components.ts'},
     'ix_slash/index': {import: 'src/lambdas/ix_commands.ts'},
