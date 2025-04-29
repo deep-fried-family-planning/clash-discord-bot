@@ -78,7 +78,7 @@ export const queryServerClans = (sk: string) =>
         },
       }),
     ),
-    E.flatMap((items) => Db.decodeUpgradeItems(ServerClan, items)),
+    E.flatMap((items) => decodeUpgradeItems(ServerClan, items)),
   );
 
 export const scanServerClans = () =>
@@ -88,7 +88,7 @@ export const scanServerClans = () =>
         IndexName: GSI_ALL_CLANS,
       }),
     ),
-    E.flatMap((items) => Db.decodeUpgradeItems(ServerClan, items)),
+    E.flatMap((items) => decodeUpgradeItems(ServerClan, items)),
   );
 
 export const getPlayersForServer = (pk: string) =>
@@ -105,7 +105,7 @@ export const queryUserPlayers = (sk: string) =>
         },
       }),
     ),
-    E.flatMap((items) => Db.decodeUpgradeItems(UserPlayer, items)),
+    E.flatMap((items) => decodeUpgradeItems(UserPlayer, items)),
   );
 
 export const scanUserPlayers = () =>
@@ -115,7 +115,7 @@ export const scanUserPlayers = () =>
         IndexName: GSI_ALL_PLAYERS,
       }),
     ),
-    E.flatMap((items) => Db.decodeUpgradeItems(UserPlayer, items)),
+    E.flatMap((items) => decodeUpgradeItems(UserPlayer, items)),
     E.map((items) => {
       console.log(items);
       return items.filter(Boolean) as UserPlayer[];
@@ -129,5 +129,5 @@ export const scanServers = () =>
         IndexName: GSI_ALL_SERVERS,
       }),
     ),
-    E.flatMap((items) => Db.decodeUpgradeItems(Server, items)),
+    E.flatMap((items) => decodeUpgradeItems(Server, items)),
   );
