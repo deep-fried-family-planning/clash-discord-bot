@@ -87,13 +87,15 @@ export const encodeItem = <A extends Codec>(codec: A, dec: unknown) =>
   pipe(
     codec.encode(dec) as E.Effect<Enc<A>, ParseResult.ParseError>,
     E.map((encoded) => {
-      const enc = encoded as any;
+      console.log('encoded', encoded);
+      const enc = {...encoded} as any;
       const acc = {} as any;
-      for (const k in Object.keys(encoded)) {
-        if (enc[k]) {
+      for (const k of Object.keys(encoded)) {
+        if (enc[k] !== undefined) {
           acc[k] = enc[k];
         }
       }
+      console.log('acc', acc);
       return acc as A['_i'];
     }),
     E.catchAll((e) =>
@@ -106,5 +108,3 @@ export const encodeItem = <A extends Codec>(codec: A, dec: unknown) =>
   );
 
 export const fromTag = <A extends Codec>(tag: A['_tag']) => TagMap[tag];
-
-const thing = fromTag('User');

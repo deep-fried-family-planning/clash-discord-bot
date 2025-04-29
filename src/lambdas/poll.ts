@@ -37,8 +37,6 @@ export const h = () => E.gen(function* () {
 
   const servers = yield* scanServers();
 
-  console.log(servers);
-
   if (isRaidWeekend) {
     yield* pipe(
       servers,

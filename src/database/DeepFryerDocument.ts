@@ -103,7 +103,6 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
           TableName: cmd.TableName ?? table,
         }),
         capacity.partitionReadUnits(cmd.ConsistentRead),
-        Effect.map((res) => res.Items ?? []),
       );
 
     const query = (cmd: Partial<QueryCommandInput>) =>
@@ -113,7 +112,6 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
           TableName: cmd.TableName ?? table,
         }),
         capacity.partitionReadUnits(cmd.ConsistentRead),
-        Effect.map((res) => res.Items),
       );
 
     const scan = (cmd: Partial<ScanCommandInput>) =>
@@ -123,7 +121,6 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
           TableName: cmd.TableName ?? table,
         }),
         capacity.indexReadUnits,
-        Effect.map((res) => res.Items),
       );
 
     return {

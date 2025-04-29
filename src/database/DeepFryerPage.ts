@@ -18,9 +18,9 @@ export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/De
             ...cmd,
             ExclusiveStartKey: key,
           }),
-          Effect.map((items) => [
-            Chunk.fromIterable(items!),
-            Option.fromNullable(items),
+          Effect.map((res) => [
+            Chunk.fromIterable(res.Items!),
+            Option.fromNullable(res.LastEvaluatedKey),
           ]),
         ),
     );
@@ -33,9 +33,9 @@ export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/De
             ...cmd,
             ExclusiveStartKey: key,
           }),
-          Effect.map((items) => [
-            Chunk.fromIterable(items!),
-            Option.fromNullable(items),
+          Effect.map((res) => [
+            Chunk.fromIterable(res.Items!),
+            Option.fromNullable(res.LastEvaluatedKey),
           ]),
         ),
     );
