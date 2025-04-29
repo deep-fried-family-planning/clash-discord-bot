@@ -1,11 +1,12 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
+import {UserPlayer} from '#src/database/data/codec';
+import {readPartition} from '#src/database/db.ts';
+import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
+import {BackB, NewB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/discord-old/constants/description.ts';
 import {LABEL_ACCOUNTS, LABEL_YOUR_ACCOUNTS} from '#src/internal/discord-old/constants/label.ts';
 import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/discord-old/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {queryPlayersForUser} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
-import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
-import {BackB, NewB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
@@ -23,7 +24,7 @@ export const AccountViewerAccountS = SingleS.as(makeId(RK_UPDATE, 'AVA'), {
 });
 
 export const getPlayers = (s: St) => E.gen(function* () {
-  const records = yield* queryPlayersForUser({pk: s.user_id});
+  const records = yield* readPartition(UserPlayer, s.user_id);
   const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
   return viewUserPlayerOptions(records, players);

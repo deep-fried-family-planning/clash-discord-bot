@@ -34,9 +34,7 @@ export const OmbiBoardB = SuccessB.as(axn.OPEN, {
 const start = (s: St, ax: Ax) => E.gen(function* () {
   return {
     ...s,
-    title:
-      (s.server?.alias ? s.server.alias : unset)
-      ?? 'Start',
+    title      : 'Start',
     description: dLinesS(
       `Hello <@${s.user_id}>`,
       `Admin View: ${s.user_roles.includes(s.server?.admin as snflk)}`,

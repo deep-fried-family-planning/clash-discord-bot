@@ -1,12 +1,12 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
+import {ServerClan, UserPlayer} from '#src/database/data/codec.ts';
+import {deleteItem, queryServerClans, readPartition, saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
-import {deleteDiscordClan, putDiscordClan, queryDiscordClan} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
-import {queryPlayersForUser} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
@@ -41,7 +41,7 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
   const clan = yield* ClashOfClans.getClan(clanTag).pipe(replyError('clan does not exist.'));
 
   const playerLinks = pipe(
-    yield* queryPlayersForUser({pk: user.user!.id}),
+    yield* readPartition(UserPlayer, user.user!.id),
     mapL((pL) => pL.sk),
   );
 
@@ -55,7 +55,7 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
       : playerLinks.some((sk) => elders.includes(sk)) ? 1
         : 0;
 
-  const [discordClan, ...rest] = yield* queryDiscordClan({sk: clanTag});
+  const [discordClan, ...rest] = yield* queryServerClans(clanTag);
 
   if (rest.length) {
     return yield* new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
@@ -66,11 +66,10 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
       return yield* new SlashUserError({issue: 'your linked player tags cannot override this clan link'});
     }
 
-    yield* deleteDiscordClan({pk: discordClan.pk, sk: discordClan.sk});
+    yield* deleteItem(ServerClan, discordClan.pk, discordClan.sk);
 
-    const newClan = yield* putDiscordClan({
+    const newClan = yield* saveItem(ServerClan, {
       ...discordClan,
-      updated     : new Date(Date.now()),
       pk          : server.pk,
       verification: verification,
     });
@@ -83,25 +82,27 @@ export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(func
     };
   }
 
-  const newClan = yield* putDiscordClan({
+  const newClan = yield* saveItem(ServerClan, {
+    _tag           : 'ServerClan',
     pk             : data.guild_id!,
     sk             : clan.tag,
-    type           : 'DiscordClan',
-    version        : '1.0.0',
-    created        : new Date(Date.now()),
-    updated        : new Date(Date.now()),
     gsi_server_id  : data.guild_id!,
     gsi_clan_tag   : clanTag,
-    alias          : '',
     name           : clan.name,
-    desc           : clan.description,
-    uses           : [],
+    description    : clan.description,
     thread_prep    : '',
     prep_opponent  : '',
     thread_battle  : '',
     battle_opponent: '',
     verification   : verification,
     countdown      : options.countdown,
+    version        : 0,
+    created        : undefined,
+    updated        : undefined,
+    select         : {
+      value: clanTag,
+      label: clan.name,
+    },
   });
 
   return {

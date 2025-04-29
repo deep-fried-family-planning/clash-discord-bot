@@ -1,10 +1,12 @@
+import {UserPlayer} from '#src/database/data/codec.ts';
+import {deleteItem, deleteItem2, readItem, saveItem} from '#src/database/db.ts';
+import {asConfirm, asEditor, asSuccess} from '#src/internal/discord-old/components/component-utils.ts';
+import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
 import {SELECT_ACCOUNT_TYPE} from '#src/internal/discord-old/constants/ix-constants.ts';
 import {LABEL_TITLE_EDIT_ACCOUNT} from '#src/internal/discord-old/constants/label.ts';
 import {PLACEHOLDER_ACCOUNT_TYPE} from '#src/internal/discord-old/constants/placeholder.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {deleteDiscordPlayer, getDiscordPlayer, putDiscordPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
-import {asConfirm, asEditor, asSuccess} from '#src/internal/discord-old/components/component-utils.ts';
-import {AdminB, BackB, DeleteB, DeleteConfirmB, ForwardB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
+import {deleteDiscordPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
@@ -13,15 +15,14 @@ import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 const submit = (s: St, playerTag: str, accountType: str) => E.gen(function* () {
-  const record = yield* getDiscordPlayer({pk: s.user_id, sk: playerTag});
-  yield* putDiscordPlayer({
+  const record = yield* readItem(UserPlayer, s.user_id, playerTag);
+  yield* saveItem(UserPlayer, {
     ...record,
-    updated     : new Date(Date.now()),
     account_type: accountType,
   });
 });
 const deletePlayer = (s: St, playerTag: str) => E.gen(function* () {
-  yield* deleteDiscordPlayer({pk: s.user_id, sk: playerTag});
+  yield* deleteItem2(UserPlayer, {pk: s.user_id, sk: playerTag});
 });
 
 export const AccountViewerAdminB = AdminB.as(makeId(RK_OPEN, 'AVA'));

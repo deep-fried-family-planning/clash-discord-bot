@@ -1,12 +1,12 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {UserPlayer} from '#src/database/data/codec.ts';
+import {deleteItem, queryUserPlayers, saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import type {DPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
-import {deleteDiscordPlayer, putDiscordPlayer, queryDiscordPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
@@ -71,14 +71,14 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
       return yield* new SlashUserError({issue: 'admin links must have discord_user'});
     }
 
-    const [player, ...rest] = yield* queryDiscordPlayer({sk: `p-${options.player_tag}`});
+    const [player, ...rest] = yield* queryUserPlayers(options.player_tag);
 
     if (rest.length) {
       return yield* new SlashUserError({issue: 'real bad, this should never happen. call support lol'});
     }
 
     if (!player) {
-      yield* putDiscordPlayer(makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_kind));
+      yield* saveItem(UserPlayer, makeDiscordPlayer(options.discord_user, coc_player.tag, 1, options.account_kind));
       return {
         embeds: [{
           color      : nColor(COLOR.SUCCESS),
@@ -90,12 +90,11 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
       };
     }
 
-    yield* deleteDiscordPlayer({pk: player.pk, sk: player.sk});
-    yield* putDiscordPlayer({
+    yield* deleteItem(UserPlayer, player.pk, player.sk);
+    yield* saveItem(UserPlayer, {
       ...player,
       pk          : user.user!.id,
       gsi_user_id : user.user!.id,
-      updated     : new Date(Date.now()),
       verification: 1,
     });
 
@@ -117,11 +116,11 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
     return yield* new SlashUserError({issue: 'invalid api_token'});
   }
 
-  const [player, ...rest] = yield* queryDiscordPlayer({sk: `p-${options.player_tag}`});
+  const [player, ...rest] = yield* queryUserPlayers(options.player_tag);
 
   // new player record
   if (!player) {
-    yield* putDiscordPlayer(makeDiscordPlayer(user.user!.id, coc_player.tag, 2, options.account_kind));
+    yield* saveItem(UserPlayer, makeDiscordPlayer(user.user!.id, coc_player.tag, 2, options.account_kind));
 
     return {
       embeds: [{
@@ -149,12 +148,11 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
   }
 
   // update player record
-  yield* deleteDiscordPlayer({pk: player.pk, sk: player.sk});
-  yield* putDiscordPlayer({
+  yield* deleteItem(UserPlayer, player.pk, player.sk);
+  yield* saveItem(UserPlayer, {
     ...player,
     pk          : user.user!.id,
     gsi_user_id : user.user!.id,
-    updated     : new Date(Date.now()),
     verification: 2,
   });
 
@@ -169,15 +167,14 @@ export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E
   };
 });
 
-const makeDiscordPlayer
-        = (userId: string, playerTag: string, verification: DPlayer['verification'], accountType?: string) => ({
+const makeDiscordPlayer = (userId: string, playerTag: string, verification: UserPlayer['verification'], name: string, accountType?: string): UserPlayer => ({
   pk            : userId,
   sk            : playerTag,
-  type          : 'DiscordPlayer',
-  version       : '1.0.0',
-  created       : new Date(Date.now()),
-  updated       : new Date(Date.now()),
-  alias         : '',
+  _tag          : 'UserPlayer',
+  version       : 0,
+  name,
+  created       : undefined,
+  updated       : undefined,
   gsi_user_id   : userId,
   gsi_player_tag: playerTag,
   verification  : verification,

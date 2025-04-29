@@ -1,4 +1,6 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
+import {UserPlayer} from '#src/database/data/codec.ts';
+import {readPartition2} from '#src/database/db.ts';
 import {UNAVAILABLE} from '#src/internal/discord-old/constants/ix-constants.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {rosterSignupCreate, rosterSignupRead} from '#src/internal/discord-old/dynamo/operations/roster-signup.ts';
@@ -17,7 +19,7 @@ import {filterL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 
 const getSignupsForUser = (userId: str, rosterId: str) => E.gen(function* () {
-  const records = yield* queryPlayersForUser({pk: userId});
+  const records = yield* readPartition2(UserPlayer, {pk: userId});
   const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 
   const signup = yield* rosterSignupRead({

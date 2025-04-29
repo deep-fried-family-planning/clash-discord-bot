@@ -1,9 +1,10 @@
+import type {UserPlayer} from '#src/database/data/codec.ts';
 import type {DPlayer} from '#src/internal/discord-old/dynamo/schema/discord-player.ts';
 import {ORD, ORDNR, ORDS, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 import type {Player} from 'clashofclans.js';
 
-export const viewUserPlayerOptions = (records: DPlayer[], players: Player[]) => pipe(
+export const viewUserPlayerOptions = (records: UserPlayer[], players: Player[]) => pipe(
   zipL(
     pipe(
       records,

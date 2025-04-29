@@ -1,7 +1,7 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {UserPlayer} from '#src/database/data/codec.ts';
+import {deleteItem, queryUserPlayers, saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {Db} from '#src/database/db.ts';
-import {queryUserPlayers} from '#src/database/temp.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {Embed} from 'dfx/types';
@@ -73,7 +73,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
     }
 
     if (!dbPlayer) {
-      const item = Db.UserPlayer.make({
+      const item = UserPlayer.make({
         pk            : ops.target,
         sk            : ops.tag,
         gsi_user_id   : ops.target,
@@ -83,7 +83,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
         account_type  : ops.kind,
       });
 
-      yield* Db.saveItem(Db.UserPlayer, item);
+      yield* saveItem(UserPlayer, item);
 
       return {
         color      : nColor(COLOR.SUCCESS),
@@ -94,13 +94,13 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
       } as Embed;
     }
 
-    yield* Db.deleteItem(
-      Db.UserPlayer,
+    yield* deleteItem(
+      UserPlayer,
       dbPlayer.pk,
       dbPlayer.sk,
     );
 
-    const item = Db.UserPlayer.make({
+    const item = UserPlayer.make({
       pk            : ops.target,
       sk            : ops.tag,
       gsi_user_id   : ops.target,
@@ -110,7 +110,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
       account_type  : ops.kind,
     });
 
-    yield* Db.saveItem(Db.UserPlayer, item);
+    yield* saveItem(UserPlayer, item);
 
     return {
       color      : nColor(COLOR.SUCCESS),
@@ -133,7 +133,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
   const [dbPlayer, ...rest] = yield* queryUserPlayers(ops.tag);
 
   if (!dbPlayer) {
-    const item = Db.UserPlayer.make({
+    const item = UserPlayer.make({
       pk            : ops.user,
       sk            : ops.tag,
       gsi_user_id   : ops.user,
@@ -143,7 +143,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
       account_type  : ops.kind,
     });
 
-    yield* Db.saveItem(Db.UserPlayer, item);
+    yield* saveItem(UserPlayer, item);
 
     return {
       color      : nColor(COLOR.SUCCESS),
@@ -168,13 +168,13 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
     });
   }
 
-  yield* Db.deleteItem(
-    Db.UserPlayer,
+  yield* deleteItem(
+    UserPlayer,
     dbPlayer.pk,
     dbPlayer.sk,
   );
 
-  const item = Db.UserPlayer.make({
+  const item = UserPlayer.make({
     pk            : ops.user,
     sk            : ops.tag,
     gsi_user_id   : ops.user,
@@ -184,7 +184,7 @@ export const registerUserPlayer = (ops: UserPlayerRegistrationOps) => E.gen(func
     account_type  : ops.kind,
   });
 
-  yield* Db.saveItem(Db.UserPlayer, item);
+  yield* saveItem(UserPlayer, item);
 
   return {
     color      : nColor(COLOR.SUCCESS),

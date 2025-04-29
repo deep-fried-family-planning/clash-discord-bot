@@ -1,11 +1,13 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {DeepFryerPage} from '#src/database/DeepFryerPage.ts';
 import {commandRouter} from '#src/discord/command-router.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import type {IxD, IxRE} from '#src/internal/discord-old/discord.ts';
 import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {DatabaseLayer} from '#src/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {makeLambda} from '@effect-aws/lambda';
@@ -54,9 +56,11 @@ const layer = pipe(
     ClashKing.Live,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
+    DeepFryerPage.Default,
   ),
   L.provideMerge(
     L.mergeAll(
+      DatabaseLayer,
       L.setTracerTiming(true),
       L.setTracerEnabled(true),
       Logger.replace(Logger.defaultLogger, Logger.structuredLogger),

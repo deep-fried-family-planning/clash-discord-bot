@@ -64,7 +64,7 @@ module "dev_ws" {
   prefix             = local.prefix
   fn_name            = "dev_ws"
   custom_policy_json = data.aws_iam_policy_document.dev_ws.json
-  memory             = 256
+  memory             = 512
   timeout            = 3
   fn_env             = merge(local.lambda_env, {})
 }

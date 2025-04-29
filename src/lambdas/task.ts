@@ -1,9 +1,4 @@
-import {BaseLambdaLayer} from '#src/lambdas/util.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import {CSL, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
 import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
@@ -11,13 +6,18 @@ import {WarBattle12hr} from '#src/clash/task/war-thread/war-battle-12hr.ts';
 import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
 import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
-import {makeLambda} from '@effect-aws/lambda';
+import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
+import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {mapL} from '#src/internal/pure/pure-list.ts';
+import {BaseLambdaLayer} from '#src/lambdas/util.ts';
+import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {SQSEvent} from 'aws-lambda';
-import {makePassServiceLayer, PassService} from 'dev/ws-bypass.ts';
 import {Cause} from 'effect';
 import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
+import {PassService, PassServiceLayer} from 'scripts/dev/ws-bypass.ts';
 
 const newLookup = {
   [SetInviteOnly.id]: SetInviteOnly.evaluator,
@@ -84,14 +84,14 @@ const h = (event: SQSEvent) => E.gen(function* () {
 const layer = pipe(
   L.mergeAll(
     DiscordLayerLive,
-    makePassServiceLayer(),
+    PassServiceLayer,
     ClashOfClans.Live,
   ),
   L.provideMerge(DynamoDBDocument.defaultLayer),
   L.provideMerge(BaseLambdaLayer),
 );
 
-export const handler = makeLambda({
+export const handler = LambdaHandler.make({
   handler: h,
   layer  : layer,
 });

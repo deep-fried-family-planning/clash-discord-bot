@@ -1,7 +1,8 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {queryDiscordClanForServer} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
+import {ServerClan} from '#src/database/data/codec';
+import {readPartition} from '#src/database/db.ts';
 import {ForwardB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
+import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
@@ -10,7 +11,7 @@ import {mapL, sortByL, sortWithL, zipL} from '#src/internal/pure/pure-list.ts';
 
 const getClans = (s: St) => E.gen(function* () {
   const records = pipe(
-    yield* queryDiscordClanForServer({pk: s.server_id}),
+    yield* readPartition(ServerClan, s.server_id),
     sortWithL((r) => r.sk, ORDS),
   );
 

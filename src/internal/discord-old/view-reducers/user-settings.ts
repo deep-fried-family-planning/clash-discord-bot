@@ -1,3 +1,5 @@
+import {User, UserPlayer} from '#src/database/data/codec.ts';
+import {deleteItem, saveItem} from '#src/database/db.ts';
 import {SELECT_TIMEZONES} from '#src/internal/discord-old/constants/ix-constants.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
@@ -12,15 +14,15 @@ import {LinkB} from '#src/internal/discord-old/view-reducers/omni-board.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 const saveUserRecord = (s: St, tz: string) => E.gen(function* () {
-  yield* userCreate({
-    type           : 'DiscordUser',
+  yield* saveItem(User, {
+    _tag           : 'User',
     pk             : s.user_id,
     sk             : 'now',
     gsi_all_user_id: s.user_id,
-    version        : '1.0.0',
-    created        : new Date(Date.now()),
+    version        : 0,
+    created        : undefined,
     ...s.user,
-    updated        : new Date(Date.now()),
+    updated        : undefined,
     timezone       : yield* decodeTimezone(tz),
   });
 });
@@ -65,7 +67,7 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
   }
 
   if (isClicked(DeleteConfirm, ax)) {
-    yield* userDelete(s.user_id);
+    yield* deleteItem(User, s.user_id, 'now');
     yield* MenuCache.userInvalidate(s.user_id);
   }
 
