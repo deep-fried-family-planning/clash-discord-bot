@@ -4,7 +4,7 @@ import {LABEL_TITLE_EDIT_INFO} from '#src/internal/discord-old/constants/label.t
 import {PLACEHOLDER_INFO_KIND, PLACEHOLDER_POSITION} from '#src/internal/discord-old/constants/placeholder.ts';
 import {REF_EMBED_ID, REF_INFO_ID, REF_INFO_KIND, REF_INFO_POSITION} from '#src/internal/discord-old/constants/reference.ts';
 import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
+import {MenuCache} from '#src/internal/discord-old/dynamo/operations/menu-cache.ts';
 import {discordEmbedCreate, discordEmbedDelete, discordEmbedRead} from '#src/internal/discord-old/dynamo/operations/embed.ts';
 import {infoCreate, infoDelete, infoRead} from '#src/internal/discord-old/dynamo/operations/info.ts';
 import type {DInfo} from '#src/internal/discord-old/dynamo/schema/discord-info.ts';

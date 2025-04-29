@@ -1,12 +1,12 @@
-import {Db} from '#src/database/db.ts';
+import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
+import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
+import {Server} from '#src/database/arch/codec';
+import {saveItem} from '#src/database/DeepFryerDB.ts';
 import {encodeServerId} from '#src/internal/discord-old/dynamo/schema/common-encoding.ts';
 import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
-import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
-import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx/DiscordREST';
-import { Server } from '#src/database/data/codec';
 
 const raidWeekendDone = Cron.make({
   days    : [],
@@ -54,7 +54,7 @@ export const serverRaid = (server: Server) => g(function* () {
     raids: thread.id,
   };
 
-  yield* Db.saveItem(Server, updated);
+  yield* saveItem(Server, updated);
 
   yield* SetInviteOnly.send({
     group: yield* encodeServerId(server.pk),

@@ -1,6 +1,6 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
-import {UserPlayer} from '#src/database/data/codec';
-import {readPartition} from '#src/database/db.ts';
+import {UserPlayer} from '#src/database/arch/codec';
+import {readPartition} from '#src/database/DeepFryerDB.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, NewB, PrimaryB, SingleS} from '#src/internal/discord-old/components/global-components.ts';
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/discord-old/constants/description.ts';

@@ -1,12 +1,10 @@
-import {User, UserPlayer} from '#src/database/data/codec.ts';
-import {deleteItem, saveItem} from '#src/database/db.ts';
-import {SELECT_TIMEZONES} from '#src/internal/discord-old/constants/ix-constants.ts';
-import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
-import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
-import {userCreate, userDelete} from '#src/internal/discord-old/dynamo/operations/user.ts';
-import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
+import {User} from '#src/database/arch/codec.ts';
+import {deleteItem, saveItem} from '#src/database/DeepFryerDB.ts';
 import {asSuccess, isClicked, unset} from '#src/internal/discord-old/components/component-utils.ts';
 import {BackB, DeleteB, DeleteConfirmB, ForwardB, PrimaryB, SingleS, SubmitB} from '#src/internal/discord-old/components/global-components.ts';
+import {SELECT_TIMEZONES} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {RK_DELETE, RK_DELETE_CONFIRM, RK_OPEN, RK_SUBMIT, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
+import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
 import type {Ax} from '#src/internal/discord-old/store/derive-action.ts';
 import type {St} from '#src/internal/discord-old/store/derive-state.ts';
 import {makeId} from '#src/internal/discord-old/store/type-rx.ts';
@@ -63,12 +61,10 @@ const view = (s: St, ax: Ax) => E.gen(function* () {
 
   if (isClicked(UserSubmitB, ax)) {
     yield* saveUserRecord(s, Timezone.values[0]);
-    yield* MenuCache.userInvalidate(s.user_id);
   }
 
   if (isClicked(DeleteConfirm, ax)) {
     yield* deleteItem(User, s.user_id, 'now');
-    yield* MenuCache.userInvalidate(s.user_id);
   }
 
   return {

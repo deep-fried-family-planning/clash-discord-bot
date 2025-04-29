@@ -1,5 +1,4 @@
-import {Server} from '#src/database/data/codec.ts';
-import {Db} from '#src/database/db.ts';
+import {Server} from '#src/database/arch/codec.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {g, S} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';

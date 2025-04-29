@@ -1,18 +1,5 @@
-import {CompositeCache} from '#src/database/service/CompositeCache.ts';
-import {BaseClient} from '#src/database/service/BaseClient.ts';
-import {DataDriver} from '#src/database/service/DataDriver.ts';
-import {DocumentCapacity} from '#src/database/DocumentCapacity.ts';
-import {L} from '#src/internal/pure/effect.ts';
-import * as Db from './db.ts';
-import * as ClanRegistry from './registry/clan-registry.ts';
-import * as PlayerRegistry from './registry/player-registry.ts';
-import * as ServerRegistry from './registry/server-registry.ts';
-import * as UserRegistry from './registry/user-registry.ts';
+export * as DeepFryerDB from './DeepFryerDB';
+export type DeepFryerDB = typeof DeepFryerDB;
 
-export {
-  Db,
-  ClanRegistry,
-  PlayerRegistry,
-  UserRegistry,
-  ServerRegistry,
-};
+export * as DeepFryerRegistry from './DeepFryerRegistry';
+export type DeepFryerRegistry = typeof DeepFryerRegistry;

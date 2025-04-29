@@ -1,7 +1,7 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {ServerClan, UserPlayer} from '#src/database/data/codec.ts';
-import {deleteItem, queryServerClans, readPartition, saveItem} from '#src/database/db.ts';
+import {ServerClan, UserPlayer} from '#src/database/arch/codec.ts';
+import {deleteItem, queryServerClans, readPartition, saveItem} from '#src/database/DeepFryerDB.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';

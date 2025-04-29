@@ -1,8 +1,8 @@
-import {readItem} from '#src/database/db.ts';
+import {readItem} from '#src/database/DeepFryerDB.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import { Server } from '#src/database/data/codec';
+import { Server } from '#src/database/arch/codec';
 
 export const validateServer = (data: IxD) => E.gen(function* () {
   if (!data.member) {
