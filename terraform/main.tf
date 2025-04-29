@@ -4,7 +4,7 @@ terraform {
     bucket               = "tfstate-dffp"
     workspace_key_prefix = ""
     key                  = "clash-discord-bot.tfstate"
-    dynamodb_table       = "tfstate-dffp"
+    # dynamodb_table       = "tfstate-dffp"
   }
 }
 

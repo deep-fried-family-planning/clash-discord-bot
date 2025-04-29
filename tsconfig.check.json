@@ -1,6 +1,6 @@
 {
   "extends"        : ["./tsconfig.json"],
-  "include"        : ["dev", "src"],
+  "include"        : ["scripts/dev", "src"],
   "compilerOptions": {
     "noEmit"             : true,
     "pretty"             : true,

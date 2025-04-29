@@ -1,19 +1,16 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {eachClan} from '#src/clash/poll/clan-war.ts';
+import {serverRaid} from '#src/clash/poll/server-raid.ts';
 import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/temp.ts';
-import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {eachClan} from '#src/clash/poll/clan-war.ts';
-import {serverRaid} from '#src/clash/poll/server-raid.ts';
 import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
-import {makeLambda} from '@effect-aws/lambda';
-import {makePassServiceLayer, PassService} from 'dev/ws-bypass.ts';
+import {LambdaHandler} from '@effect-aws/lambda';
 import {Cause} from 'effect';
+import {PassService, PassServiceLayer} from 'scripts/dev/ws-bypass.ts';
 
 const raidWeekend = Cron.make({
   days    : [],
@@ -90,7 +87,7 @@ const layer = pipe(
     ClashLayer,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
-    makePassServiceLayer(),
+    PassServiceLayer,
   ),
   L.provideMerge(DiscordLayer),
   L.provideMerge(DatabaseLayer),
@@ -98,7 +95,7 @@ const layer = pipe(
   L.provideMerge(BasicLayer),
 );
 
-export const handler = makeLambda({
+export const handler = LambdaHandler.make({
   handler: h,
   layer  : layer,
 });

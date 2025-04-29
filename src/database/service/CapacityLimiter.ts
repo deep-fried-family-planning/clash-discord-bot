@@ -1,5 +1,5 @@
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {Data, Duration, flow, Number, RateLimiter} from 'effect';
+import {Data, Duration, flow, Number, RateLimiter, Effect} from 'effect';
 
 export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{}> {}
 
@@ -13,8 +13,8 @@ const estimateRecordWriteCapacity = (encoding: any) =>
     Number.max(1),
   );
 
-export class CapacityLimiter extends E.Service<CapacityLimiter>()('deepfryer/DynamoLimiter', {
-  scoped: E.gen(function* () {
+export class CapacityLimiter extends Effect.Service<CapacityLimiter>()('deepfryer/DynamoLimiter', {
+  scoped: Effect.gen(function* () {
     const maxRCU = 10;
     const maxWCU = 10;
 
@@ -41,7 +41,7 @@ export class CapacityLimiter extends E.Service<CapacityLimiter>()('deepfryer/Dyn
         RateLimiter.withCost(maxRCU / 2),
       ),
 
-      estimateReadUnits: (estimate?: number) => <A, E, R>(effect: E.Effect<A, E, R>) => {
+      estimateReadUnits: <A, E, R>(estimate?: number) => (effect: Effect.Effect<A, E, R>) => {
         if (!estimate) {
           return readLimiter(effect);
         }
@@ -53,7 +53,7 @@ export class CapacityLimiter extends E.Service<CapacityLimiter>()('deepfryer/Dyn
           : readLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
-      estimateWriteUnits: (estimate?: number) => <A, E, R>(effect: E.Effect<A, E, R>) => {
+      estimateWriteUnits: <A, E, R>(estimate?: number) => (effect: Effect.Effect<A, E, R>) => {
         if (!estimate) {
           return writeLimiter(effect);
         }
@@ -61,16 +61,16 @@ export class CapacityLimiter extends E.Service<CapacityLimiter>()('deepfryer/Dyn
         const units = Math.ceil(estimate);
 
         return units > maxWCU
-          ? E.die(new CapacityDefect())
+          ? Effect.die(new CapacityDefect())
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
       // array overhead?
-      encodedWriteUnits: (encoded: any) => <A, E, R>(effect: E.Effect<A, E, R>) => {
+      encodedWriteUnits: <A, E, R>(encoded: any) => (effect: Effect.Effect<A, E, R>) => {
         const units = estimateRecordWriteCapacity(encoded);
 
         return units > maxWCU
-          ? E.die(new CapacityDefect())
+          ? Effect.die(new CapacityDefect())
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 

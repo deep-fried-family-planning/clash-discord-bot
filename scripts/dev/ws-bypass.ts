@@ -1,9 +1,9 @@
-import {E, O, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, O, pipe} from '#src/internal/pure/effect.ts';
 import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {Lambda} from '@effect-aws/client-lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Duration} from 'effect';
-import type {WsCtx} from './dev_ws.ts';
+import type {WsCtx} from 'scripts/dev/dev_ws.ts';
 
 export const WS_BYPASS_KEY = {
   pk: 'dev_ws',
@@ -31,8 +31,7 @@ export class PassService extends E.Service<PassService>()('deepfryer/PassService
         E.succeed(false),
     }),
   ),
-  dependencies: [Lambda.defaultLayer],
-  accessors   : true,
+  accessors: true,
 }) {}
 
 export class BypassService extends E.Service<PassService>()(PassService.key, {
@@ -51,8 +50,11 @@ export class BypassService extends E.Service<PassService>()(PassService.key, {
     );
 
     return {
-      routeTo: (name: keyof typeof names, data: any) =>
-        getBypass.pipe(
+      routeTo: (name: keyof typeof names, data: any) => {
+        if (process.env.LAMBDA_LOCAL === 'true') {
+          return E.void;
+        }
+        return getBypass.pipe(
           E.andThen(
             O.match({
               onSome: (ws) =>
@@ -68,10 +70,14 @@ export class BypassService extends E.Service<PassService>()(PassService.key, {
                 }),
             }),
           ),
-        ),
+        );
+      },
 
-      shouldRoute: (name: keyof typeof names, data: any = {}) =>
-        getBypass.pipe(E.andThen(
+      shouldRoute: (name: keyof typeof names, data: any = {}) => {
+        if (process.env.LAMBDA_LOCAL === 'true') {
+          return E.void;
+        }
+        return getBypass.pipe(E.andThen(
           O.match({
             onSome: (ws) =>
               pipe(
@@ -79,28 +85,28 @@ export class BypassService extends E.Service<PassService>()(PassService.key, {
                   ConnectionId: ws.connectionId,
                   Data        : JSON.stringify({kind: name, data}),
                 }),
-                E.fork,
                 E.as(true),
               ),
             onNone: () =>
               E.succeed(false),
           }),
-        )),
+        ));
+      },
     };
   }),
-  dependencies: [
-    DynamoDBDocument.defaultLayer,
-    Lambda.defaultLayer,
-    ApiGatewayManagementApi.layer({
-      endpoint: process.env.APIGW_DEV_WS,
-    }),
-  ],
   accessors: true,
 }) {}
 
-export const makePassServiceLayer = () => {
-  if (process.env.LAMBDA_ENV === 'prod' || process.env.LAMBDA_LOCAL === 'true') {
-    return PassService.Default;
-  }
-  return BypassService.Default;
-};
+export const PassServiceLayer = process.env.LAMBDA_ENV === 'prod'
+  ? PassService.Default.pipe(L.provide(Lambda.defaultLayer))
+  : BypassService.Default.pipe(
+    L.provide(
+      L.mergeAll(
+        Lambda.defaultLayer,
+        ApiGatewayManagementApi.layer({
+          endpoint: process.env.APIGW_DEV_WS,
+        }),
+        DynamoDBDocument.defaultLayer,
+      ),
+    ),
+  );

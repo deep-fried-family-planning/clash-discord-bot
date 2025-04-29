@@ -4,16 +4,14 @@ import tsconfig from './tsconfig.json' with {type: 'json'};
 
 export default defineConfig({
   mode  : 'production',
-  target: ['node22.11', 'es2022'],
+  target: 'node22.15',
 
   experiments: {
-    outputModule         : true,
-    topLevelAwait        : true,
-    futureDefaults       : true,
-    cache                : true,
-    layers               : true,
-    parallelCodeSplitting: true,
-    rspackFuture         : {bundlerInfo: {force: false}},
+    outputModule  : true,
+    topLevelAwait : true,
+    cache         : true,
+    layers        : true,
+    futureDefaults: true,
   },
 
   entry: {
@@ -27,12 +25,13 @@ export default defineConfig({
 
   output: {
     module                       : true,
-    environment                  : {module: true, nodePrefixForCoreModules: true},
+    environment                  : {module: true},
     library                      : {type: 'module'},
     strictModuleErrorHandling    : true,
     strictModuleExceptionHandling: true,
-    compareBeforeEmit            : true,
     iife                         : false,
+    asyncChunks                  : false,
+    clean                        : true,
   },
 
   externalsType   : 'module',
@@ -53,45 +52,36 @@ export default defineConfig({
     rules: [{
       test   : /\.js$/,
       exclude: /node_modules/,
-      use    : [{
-        loader : 'builtin:swc-loader',
-        options: {
-          target: 'es2022',
-          jsc   : {parser: {syntax: 'ecmascript'}},
-        },
-      }],
+      loader : 'builtin:swc-loader',
+      options: {
+        jsc: {parser: {syntax: 'ecmascript'}},
+      },
     }, {
       test   : /\.ts$/,
       exclude: /node_modules/,
-      use    : [{
-        loader : 'builtin:swc-loader',
-        options: {
-          target: 'es2022',
-          jsc   : {parser: {syntax: 'typescript'}},
-        },
-      }],
+      loader : 'builtin:swc-loader',
+      options: {
+        jsc: {parser: {syntax: 'typescript'}},
+      },
     }, {
       test   : /\.tsx$/,
       exclude: /node_modules/,
-      use    : [{
-        loader : 'builtin:swc-loader',
-        options: {
-          jsc: {
-            target   : 'es2022',
-            parser   : {syntax: 'typescript', tsx: true},
-            transform: {
-              react: {
-                runtime     : 'automatic',
-                importSource: tsconfig.compilerOptions.jsxImportSource,
-              },
+      loader : 'builtin:swc-loader',
+      options: {
+        jsc: {
+          parser   : {syntax: 'typescript', tsx: true},
+          transform: {
+            react: {
+              runtime     : 'automatic',
+              importSource: tsconfig.compilerOptions.jsxImportSource,
             },
           },
         },
-      }],
+      },
     }],
   },
 
-  devtool: 'source-map',
+  devtool: 'nosources-cheap-source-map',
 
   stats: {
     preset     : 'errors-only',

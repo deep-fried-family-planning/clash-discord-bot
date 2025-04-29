@@ -1,5 +1,5 @@
 import Nes from '@hapi/nes';
-import {wsBackendModel} from './ws-backend-model.ts';
+import {wsBackendModel} from 'scripts/dev/ws-backend-model.ts';
 
 const client = new Nes.Client('ws://localhost:3000');
 

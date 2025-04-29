@@ -1,0 +1,49 @@
+import {DeepFryerDocument} from '#src/database/service/DeepFryerDocument.ts';
+import type {QueryCommandInput, ScanCommandInput} from '@aws-sdk/lib-dynamodb';
+import * as Chunk from 'effect/Chunk';
+import * as Effect from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Stream from 'effect/Stream';
+
+export class DeepFryerPage extends Effect.Service<DeepFryerPage>()('deepfryer/DeepFryerPage', {
+  effect: Effect.gen(function* () {
+    const document = yield* DeepFryerDocument;
+
+    const pageQuery = (cmd: QueryCommandInput) => Stream.paginateChunkEffect(
+      undefined as Record<string, any> | undefined,
+      (key) =>
+        pipe(
+          document.query({
+            ...cmd,
+            ExclusiveStartKey: key,
+          }),
+          Effect.map((items) => [
+            Chunk.fromIterable(items!),
+            Option.fromNullable(items),
+          ]),
+        ),
+    );
+
+    const pageScan = (cmd: ScanCommandInput) => Stream.paginateChunkEffect(
+      undefined as Record<string, any> | undefined,
+      (key) =>
+        pipe(
+          document.scan({
+            ...cmd,
+            ExclusiveStartKey: key,
+          }),
+          Effect.map((items) => [
+            Chunk.fromIterable(items!),
+            Option.fromNullable(items),
+          ]),
+        ),
+    );
+
+    return {
+      pageQuery,
+      pageScan,
+    };
+  }),
+  accessors: true,
+}) {}
