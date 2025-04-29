@@ -1,4 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ServerClan} from '#src/database/data/codec.ts';
+import {readPartition, readPartition2} from '#src/database/db.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
 import {queryDiscordClanForServer} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
 import {asViewer, unset} from '#src/internal/discord-old/components/component-utils.ts';
@@ -16,7 +18,7 @@ import type {Embed} from 'dfx/types';
 
 const getClans = (s: St, ax: Ax) => E.gen(function* () {
   const records = pipe(
-    yield* queryDiscordClanForServer({pk: s.server_id}),
+    yield* readPartition2(ServerClan, {pk: s.server_id}),
     sortWithL((r) => r.sk, ORDS),
   );
 

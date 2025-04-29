@@ -1,13 +1,13 @@
+import {User} from '#src/database/data/codec';
+import {readItem, saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
-import {getDiscordUser, putDiscordUser} from '#src/internal/discord-old/dynamo/schema/discord-user.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {SlashError, SlashUserError} from '#src/internal/errors.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {omit} from 'effect/Struct';
+import {E} from '#src/internal/pure/effect.ts';
 
 export const USER = {
   type       : 1,
@@ -66,32 +66,21 @@ export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* (
     }
   }
 
-  const user = yield* getDiscordUser({pk: userId})
-    .pipe(
-      E.catchTag('DeepFryerDynamoError', () => E.succeed(undefined)),
-    );
+  const user = yield* readItem(User, userId, 'now').pipe(
+    E.catchTag('NoSuchElementException', () => E.succeed(undefined)),
+  );
 
   if (!user) {
-    yield* putDiscordUser(pipe(
-      {
-        type   : 'DiscordUser',
-        pk     : userId,
-        sk     : 'now',
-        version: '1.0.0',
-        created: new Date(Date.now()),
-        updated: new Date(Date.now()),
-
-        gsi_all_user_id: userId,
-
-        timezone: yield* decodeTimezone(options.tz),
-        quiet   : options.quiet_hours_start
-          ? `${options.quiet_hours_start}-${options.quiet_hours_end}`
-          : undefined,
-      } as const,
-      (r) => r.quiet
-        ? omit('quiet')(r)
-        : r,
-    ));
+    yield* saveItem(User, {
+      _tag           : 'User',
+      pk             : userId,
+      sk             : 'now',
+      version        : 0,
+      created        : undefined,
+      updated        : undefined,
+      gsi_all_user_id: userId,
+      timezone       : yield* decodeTimezone(options.tz),
+    });
 
     return {
       embeds: [{
@@ -101,9 +90,8 @@ export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* (
     };
   }
 
-  yield* putDiscordUser({
+  yield* saveItem(User, {
     ...user,
-    updated : new Date(Date.now()),
     timezone: yield* decodeTimezone(options.tz),
   });
 

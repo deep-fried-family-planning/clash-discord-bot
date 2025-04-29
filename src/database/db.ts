@@ -43,6 +43,17 @@ export const readItem = <A extends Codec>(s: A, pk: string, sk: string) =>
       codec: s,
       Key  : s.encodeKey(pk, sk),
     }),
+    E.flatMap((item) => E.fromNullable(item)),
+    E.flatMap((item) => decodeUpgradeItem(s, item.Item as any)),
+  );
+
+export const readItem2 = <A extends Codec>(s: A, {pk, sk}: {pk: string; sk: string}) =>
+  pipe(
+    DeepFryerDocument.get({
+      codec: s,
+      Key  : s.encodeKey(pk, sk),
+    }),
+    E.flatMap((item) => E.fromNullable(item)),
     E.flatMap((item) => decodeUpgradeItem(s, item.Item as any)),
   );
 
@@ -57,8 +68,24 @@ export const readPartition = <A extends Codec>(s: A, pk: string) =>
     E.flatMap((stream) => Stream.runCollect(stream)),
     E.flatMap((items) => decodeUpgradeItems(s, items as any)),
   );
+export const readPartition2 = <A extends Codec>(s: A, {pk}: {pk: string}) =>
+  pipe(
+    DeepFryerPage.pageQuery({
+      KeyConditionExpression   : 'pk = :pk',
+      ExpressionAttributeValues: {':pk': s.encodePk(pk)},
+      ConsistentRead           : true,
+      Limit                    : 25,
+    }),
+    E.flatMap((stream) => Stream.runCollect(stream)),
+    E.flatMap((items) => decodeUpgradeItems(s, items as any)),
+  );
 
 export const deleteItem = <A extends Codec>(s: A, pk: string, sk: string) =>
+  DeepFryerDocument.delete({
+    codec: s,
+    Key  : s.encodeKey(pk, sk),
+  });
+export const deleteItem2 = <A extends Codec>(s: A, {pk, sk}: {pk: string; sk: string}) =>
   DeepFryerDocument.delete({
     codec: s,
     Key  : s.encodeKey(pk, sk),

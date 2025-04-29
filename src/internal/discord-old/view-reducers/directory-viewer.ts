@@ -1,4 +1,6 @@
 import {ClashCache} from '#src/clash/layers/clash-cash.ts';
+import {UserPlayer} from '#src/database/data/codec.ts';
+import {readPartition, readPartition2} from '#src/database/db.ts';
 import {DESC_NO_ACCOUNT_SELECTED} from '#src/internal/discord-old/constants/description.ts';
 import {PLACEHOLDER_SELECT_ACCOUNT} from '#src/internal/discord-old/constants/placeholder.ts';
 import {RK_OPEN, RK_UPDATE} from '#src/internal/discord-old/constants/route-kind.ts';
@@ -24,7 +26,7 @@ export const DirectoryViewerUserS = SingleUserS.as(makeId(RK_UPDATE, 'DVU'), {
 });
 
 export const getPlayers = (user: str) => E.gen(function* () {
-  const records = yield* queryPlayersForUser({pk: user});
+  const records = yield* readPartition2(UserPlayer, {pk: user});
 
   const players = yield* ClashCache.getPlayers(records.map((r) => r.sk));
 

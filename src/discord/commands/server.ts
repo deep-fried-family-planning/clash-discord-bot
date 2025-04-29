@@ -1,10 +1,11 @@
+import {Server} from '#src/database/data/codec';
+import {saveItem} from '#src/database/db.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
-import {putDiscordServer} from '#src/internal/discord-old/dynamo/schema/discord-server.ts';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
@@ -42,11 +43,10 @@ export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(functio
       return yield* new SlashUserError({issue: `role required: <@&${server.admin}>`});
     }
 
-    yield* putDiscordServer({
+    yield* saveItem(Server, {
       ...server,
-      updated: new Date(Date.now()),
-      admin  : options.admin,
-      forum  : options.forum,
+      admin: options.admin,
+      forum: options.forum,
     });
 
     return {
@@ -59,20 +59,17 @@ export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(functio
     };
   }
 
-  yield* putDiscordServer({
+  yield* saveItem(Server, {
+    _tag             : 'Server',
     pk               : data.guild_id!,
     sk               : 'now',
-    type             : 'DiscordServer',
-    version          : '1.0.0',
+    version          : 0,
     admin            : options.admin,
     forum            : options.forum,
-    created          : new Date(Date.now()),
-    updated          : new Date(Date.now()),
+    created          : undefined,
+    updated          : undefined,
     gsi_all_server_id: data.guild_id!,
     polling          : true,
-    alias            : '',
-    name             : '',
-    desc             : '',
   });
 
   return {

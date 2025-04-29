@@ -1,11 +1,10 @@
-import {MenuCache} from '#src/internal/discord-old/dynamo/cache/menu-cache.ts';
-import type {DServer} from '#src/internal/discord-old/dynamo/schema/discord-server.ts';
-import type {DUser} from '#src/internal/discord-old/dynamo/schema/discord-user.ts';
+import {Server, User} from '#src/database/data/codec';
+import {readItem} from '#src/database/db.ts';
 import {isEditor, isStatus, isSystem, isViewer} from '#src/internal/discord-old/components/component-utils.ts';
 import type {MadeButton} from '#src/internal/discord-old/components/make-button.ts';
 import type {MadeSelect} from '#src/internal/discord-old/components/make-select.ts';
-import {fromId} from '#src/internal/discord-old/store/id-parse.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
+import {fromId} from '#src/internal/discord-old/store/id-parse.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
@@ -19,8 +18,8 @@ export type St = {
   server_id : Snowflake;
   user_id   : Snowflake;
   user_roles: Snowflake[];
-  server?   : DServer | undefined;
-  user?     : DUser | undefined;
+  server?   : Server | undefined;
+  user?     : User | undefined;
 
   reference: Record<str, str>;
 
@@ -58,11 +57,11 @@ export type St = {
 export const deriveState = (ix: IxD) => E.gen(function* () {
   const [server, user] = yield* pipe(
     [
-      MenuCache.serverRead(ix.guild_id!),
-      MenuCache.userRead(ix.member?.user?.id ?? ix.user!.id),
+      readItem(Server, ix.guild_id!, 'now'),
+      readItem(User, ix.member?.user?.id ?? ix.user!.id, 'now'),
     ] as const,
-    E.allWith(),
-    E.catchTag('DeepFryerDynamoError', () => E.succeed([undefined, undefined])),
+    E.allWith({concurrency: 'unbounded'}),
+    E.catchTag('NoSuchElementException', () => E.succeed([undefined, undefined])),
   );
 
   const componentMap = ('components' in (ix.message ?? {}))

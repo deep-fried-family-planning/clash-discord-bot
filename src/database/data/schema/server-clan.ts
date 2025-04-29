@@ -1,7 +1,7 @@
-import {DataTag} from '#src/database/data/const/index.ts';
-import {Id} from '#src/database/data/schema/id.ts';
 import {declareKey, declareLatest, transformLatest} from '#src/database/data/arch.ts';
+import {DataTag} from '#src/database/data/const/index.ts';
 import {SelectMetadata} from '#src/database/data/schema/common.ts';
+import {Id} from '#src/database/data/schema/id.ts';
 import {DiscordClan} from '#src/internal/discord-old/dynamo/schema/discord-clan.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
@@ -24,6 +24,8 @@ export const Key = declareKey(
 export const Latest = declareLatest(Key, {
   gsi_server_id  : Id.ServerId,
   gsi_clan_tag   : Id.ClanTag,
+  name           : S.String,
+  description    : S.String,
   thread_prep    : Id.ThreadId,
   prep_opponent  : Id.ClanTag,
   thread_battle  : Id.ThreadId,
@@ -40,6 +42,8 @@ export const Versions = S.Union(
       _tag           : Key._tag,
       version        : Key.latest,
       upgraded       : true,
+      name           : enc.name,
+      description    : enc.desc,
       pk             : enc.pk,
       sk             : enc.sk,
       gsi_server_id  : enc.gsi_server_id,
@@ -52,6 +56,10 @@ export const Versions = S.Union(
       verification   : enc.verification as any,
       created        : DateTime.unsafeMake(enc.created),
       updated        : DateTime.unsafeMake(enc.updated),
+      select         : {
+        value: enc.sk,
+        label: enc.name,
+      },
     } as const;
   }),
 );

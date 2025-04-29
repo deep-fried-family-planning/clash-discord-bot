@@ -11,13 +11,13 @@ import {declareCodec} from '#src/database/data/arch.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {Data, type ParseResult, pipe} from 'effect';
 
-export class DataDecodeError extends Data.TaggedError('deepfryer/DataDecodeError')<{
+export class DataDecodeError extends Data.TaggedError('DataDecodeError')<{
   codec   : Codec;
   original: unknown;
   cause   : ParseResult.ParseError;
 }> {}
 
-export class DataEncodeError extends Data.TaggedError('deepfryer/DataEncodeError')<{
+export class DataEncodeError extends Data.TaggedError('DataEncodeError')<{
   codec   : Codec;
   original: unknown;
   cause   : ParseResult.ParseError;
