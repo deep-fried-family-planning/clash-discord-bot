@@ -15,6 +15,7 @@ import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
 import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
+import type {SQSEvent} from 'aws-lambda';
 import {DiscordREST} from 'dfx';
 import {ServerClan, type Server, type UserPlayer} from '#src/database/arch/codec';
 

@@ -5,9 +5,11 @@ import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
+import type {SQSEvent} from 'aws-lambda';
 import type {ClanWar} from 'clashofclans.js';
 import type {Channel} from 'dfx/types';
 import type {DurationInput} from 'effect/Duration';
+import {TaskService} from 'scripts/dev/ws-bypass.ts';
 
 export const TEMP_ROLES = {
   warmanager : '1269057897577578577',
@@ -95,6 +97,23 @@ export const makeTask = <
         DT.formatIso,
         (iso) => iso.replace(/\..+Z/, ''),
       );
+
+      yield* TaskService.schedule({
+        GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
+        Name     : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
+
+        ScheduleExpression        : `at(${time})`,
+        FlexibleTimeWindow        : {Mode: 'OFF'},
+        ScheduleExpressionTimezone: 'Etc/Zulu',
+
+        Target: {
+          Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
+          RoleArn: process.env.LAMBDA_ROLE_ARN,
+          Input  : JSON.stringify(encoded),
+        },
+
+        ActionAfterCompletion: 'DELETE',
+      });
 
       yield* Scheduler.createSchedule({
         GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,

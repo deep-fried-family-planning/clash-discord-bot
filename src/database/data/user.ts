@@ -4,6 +4,8 @@ import {declareKey, declareLatest, transformLatest} from '#src/database/arch/arc
 import {DiscordUser} from '#src/database/data/deprecated.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
+import * as Arbitrary from 'effect/Arbitrary';
+import * as FastCheck from 'effect/FastCheck';
 
 export const Key = declareKey(
   DataTag.USER,
@@ -33,3 +35,8 @@ export const Versions = S.Union(
     } as const;
   }),
 );
+
+//
+// const arb = Arbitrary.make(Versions);
+//
+// console.log(FastCheck.sample(arb, 2));

@@ -3,7 +3,6 @@ import {GSI_ALL_CLANS, GSI_ALL_PLAYERS, GSI_ALL_SERVERS} from '#src/database/arc
 import {DeepFryerDocument} from '#src/database/service/DeepFryerDocument.ts';
 import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import * as Array from 'effect/Array';
 import * as Chunk from 'effect/Chunk';
 import * as Stream from 'effect/Stream';
 
@@ -19,8 +18,7 @@ export const decodeUpgradeItem = <A extends Codec>(s: A, item: Codec.Enc<A>) =>
 
 export const decodeUpgradeItems = <A extends Codec>(s: A, items: Chunk.Chunk<Codec.Enc<A>>) =>
   pipe(
-    Chunk.toArray(items),
-    Array.map((item) => decodeUpgradeItem(s, item)),
+    Chunk.map(items, (item) => decodeUpgradeItem(s, item)),
     E.allWith({concurrency: 'unbounded'}),
     E.map((items) => items.filter((item) => !!item)),
   );

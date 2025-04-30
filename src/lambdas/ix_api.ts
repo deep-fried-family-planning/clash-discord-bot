@@ -1,29 +1,21 @@
 import {DEFER_SOURCE, makeResponse, PONG, succeedResponse} from '#src/discord/interaction.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambdaRuntime} from '#src/lambdas/util.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {type Interaction, InteractionType} from 'dfx/types';
-import {PlatformAlgorithm, verify} from 'discord-verify';
 import {Console} from 'effect';
-import {subtle} from 'node:crypto';
-import {PassService, PassServiceLayer} from 'scripts/dev/ws-bypass.ts';
+import {PassService, PassServiceLayer, VerificationService, VerificationServiceLayer} from 'scripts/dev/ws-bypass.ts';
 
 const runtime = makeLambdaRuntime(
-  PassServiceLayer,
+  L.mergeAll(
+    PassServiceLayer,
+    VerificationServiceLayer,
+  ),
 );
 
 export const handler = async (req: APIGatewayProxyEventBase<any>) => await runtime(
   pipe(
-    E.promise(() =>
-      verify(
-        req.body,
-        req.headers['x-signature-ed25519'],
-        req.headers['x-signature-timestamp'],
-        process.env.DFFP_DISCORD_PUBLIC_KEY,
-        subtle,
-        PlatformAlgorithm.NewNode,
-      ),
-    ),
+    VerificationService.use((vs) => vs.verify(req)),
     E.flatMap((isVerified) => {
       if (!isVerified) {
         return succeedResponse(401);

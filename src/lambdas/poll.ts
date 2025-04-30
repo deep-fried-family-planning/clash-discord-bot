@@ -11,7 +11,7 @@ import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {Cause} from 'effect';
-import {PassService, PassServiceLayer} from 'scripts/dev/ws-bypass.ts';
+import {PassService, PassServiceLayer, TaskServiceLayer} from 'scripts/dev/ws-bypass.ts';
 
 const raidWeekend = Cron.make({
   days    : [],
@@ -88,6 +88,7 @@ const layer = pipe(
     SQS.defaultLayer,
     PassServiceLayer,
     DeepFryerPage.Default,
+    TaskServiceLayer,
   ),
   L.provideMerge(DiscordLayer),
   L.provideMerge(DatabaseLayer),

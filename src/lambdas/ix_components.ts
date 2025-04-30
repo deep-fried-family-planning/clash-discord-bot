@@ -28,6 +28,9 @@ const layer = pipe(
       ),
     ),
   ),
+  // L.provide(
+  //   process.env.FULL_STACK ? FullstackDynamoDBService : RealDynamoDBService,
+  // ),
   L.provideMerge(
     L.mergeAll(
       Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),

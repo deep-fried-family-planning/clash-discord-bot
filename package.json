@@ -65,6 +65,7 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-scheduler": "3.799.0",
     "@aws-sdk/lib-dynamodb": "3.798.0",
     "@changesets/cli": "2.29.2",
     "@commitlint/cli": "19.8.0",

@@ -1,5 +1,6 @@
 import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import {DynamoDB} from '@effect-aws/client-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as Cache from 'effect/Cache';
 import * as Duration from 'effect/Duration';
@@ -138,3 +139,7 @@ export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deep
   }),
   accessors: true,
 }) {}
+
+DynamoDB.layer({
+  endpoint: 'localhost:3000',
+});

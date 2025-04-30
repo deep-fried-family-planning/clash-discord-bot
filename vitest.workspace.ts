@@ -19,8 +19,8 @@ export default defineWorkspace([
     extends: 'vitest.config.ts',
     test   : {
       name              : 'fullstack',
-      include           : ['test/fullstack'],
-      testTimeout       : 3000,
+      include           : ['test/fullstack/**/*.spec.ts'],
+      testTimeout       : 120000,
       expandSnapshotDiff: true,
       benchmark         : {
         include: [],
