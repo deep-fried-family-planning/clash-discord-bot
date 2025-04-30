@@ -1,3 +1,4 @@
+import {OmniBoard} from '#src/discord/omni-board/omni-board.tsx';
 import {E} from '#src/internal/pure/effect.ts';
 import {InteractionCallbackType} from 'dfx/types';
 
@@ -27,3 +28,4 @@ export const makeResponse = (code: number, body?: any) => {
     body      : JSON.stringify(body),
   };
 };
+console.log(OmniBoard.toString());

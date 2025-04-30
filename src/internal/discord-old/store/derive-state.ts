@@ -11,6 +11,7 @@ import {flatMapL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import type {str, und} from '#src/internal/pure/types-pure.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ActionRow, Button, Embed, EmbedField, SelectMenu, Snowflake, TextInput} from 'dfx/types';
+import {Deferred} from 'effect';
 
 export type St = {
   original: IxD;
