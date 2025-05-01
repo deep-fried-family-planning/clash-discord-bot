@@ -1,20 +1,12 @@
 import {DEFER_SOURCE, makeResponse, PONG, succeedResponse} from '#src/discord/interaction.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {DiscordVerify, DiscordVerifyLive} from '#src/lambdas/service/DiscordVerify.ts';
-import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
-import {makeLambdaRuntime} from '#src/lambdas/util.ts';
+import {DiscordVerify} from '#src/service/DiscordVerify.ts';
+import {EventRouter} from '#src/service/EventRouter.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {type Interaction, InteractionType} from 'dfx/types';
-import {Console, Layer} from 'effect';
+import {Console} from 'effect';
 
-const runtime = makeLambdaRuntime(
-  Layer.mergeAll(
-    EventRouterLive,
-    DiscordVerifyLive,
-  ),
-);
-
-export const handler = async (req: APIGatewayProxyEventBase<any>) => await runtime(
+export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
   pipe(
     DiscordVerify.isVerified(req),
     E.flatMap((isVerified) => {
@@ -30,7 +22,7 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       if (ix.type === InteractionType.APPLICATION_COMMAND) {
         return pipe(
           succeedResponse(200, DEFER_SOURCE),
-          E.tap(EventRouter.invoke('ix_slash', ix)),
+          E.tap(EventRouter.invoke('ix_commands', ix)),
         );
       }
       if (
@@ -39,7 +31,7 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       ) {
         return pipe(
           succeedResponse(202),
-          E.tap(EventRouter.invoke('ix_menu', ix)),
+          E.tap(EventRouter.invoke('ix_components', ix)),
         );
       }
       return E.die('Not Implemented');
@@ -50,5 +42,4 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
         E.as(makeResponse(500)),
       ),
     ),
-  ),
-);
+  );

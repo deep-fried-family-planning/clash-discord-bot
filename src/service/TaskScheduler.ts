@@ -1,7 +1,7 @@
 import type {CreateScheduleCommandInput} from '@aws-sdk/client-scheduler';
 import {SchedulerService} from '@effect-aws/client-scheduler';
 import {Effect} from 'effect';
-import {devServer} from 'scripts/dev/dev-server.ts';
+import {devServer} from '#dev/dev-server.ts';
 
 export class TaskScheduler extends Effect.Service<TaskScheduler>()('deepfryer/TaskScheduler', {
   effect: Effect.gen(function* () {

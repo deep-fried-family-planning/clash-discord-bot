@@ -1,3 +1,5 @@
+import {LambdaProxyEnv} from '#config/aws.ts';
+import {AwsLambdaEnv, DiscordEnv} from '#config/external.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
@@ -6,20 +8,21 @@ import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {APIGatewayProxyWebsocketEventV2} from 'aws-lambda';
 import type {APIGatewayProxyResultV2} from 'aws-lambda/trigger/api-gateway-proxy';
-import {WS_BYPASS_KEY} from 'scripts/dev/proxy-config.ts';
+import {Config} from 'effect';
 
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 
 const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
+  const [discord, proxy, aws] = yield* Config.all([DiscordEnv, LambdaProxyEnv, AwsLambdaEnv]);
   const route = event.requestContext.routeKey;
-
-  const [token, id] = process.env.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
+  const [token, id] = discord.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
 
   if (route === '$connect') {
     yield* DynamoDBDocument.put({
-      TableName: process.env.DDB_OPERATIONS,
+      TableName: proxy.DFFP_DDB_OPERATIONS,
       Item     : {
-        ...WS_BYPASS_KEY,
+        pk     : proxy.DFFP_APIGW_DEV_WS_PK,
+        sk     : proxy.DFFP_APIGW_DEV_WS_SK,
         context: event.requestContext,
       },
     });
@@ -29,7 +32,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
         color      : nColor(COLOR.SUCCESS),
         title      : 'dev: connect',
         description: MD.content(
-          MD.h1(process.env.AWS_LAMBDA_FUNCTION_NAME),
+          MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
           JSON.stringify(event.requestContext, null, 2),
           JSON.stringify(event.body, null, 2),
         ),
@@ -41,8 +44,11 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
 
   if (route === '$disconnect') {
     yield* DynamoDBDocument.delete({
-      TableName: process.env.DDB_OPERATIONS,
-      Key      : WS_BYPASS_KEY,
+      TableName: proxy.DFFP_DDB_OPERATIONS,
+      Key      : {
+        pk: proxy.DFFP_APIGW_DEV_WS_PK,
+        sk: proxy.DFFP_APIGW_DEV_WS_SK,
+      },
     });
 
     yield* DiscordApi.executeWebhookJson(id, token, {
@@ -50,7 +56,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
         color      : nColor(COLOR.ERROR),
         title      : 'dev: disconnect',
         description: MD.content(
-          MD.h1(process.env.AWS_LAMBDA_FUNCTION_NAME),
+          MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
           JSON.stringify(event.requestContext, null, 2),
           JSON.stringify(event.body, null, 2),
         ),
@@ -65,7 +71,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
       color      : nColor(COLOR.INFO),
       title      : 'dev: received',
       description: MD.content(
-        MD.h1(process.env.AWS_LAMBDA_FUNCTION_NAME),
+        MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
         JSON.stringify(event.requestContext, null, 2),
         JSON.stringify(event.body, null, 2),
       ),

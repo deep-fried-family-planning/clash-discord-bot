@@ -1,25 +1,25 @@
-import {LambdasConfig} from '#src/lambdas/service/environment.ts';
+import {LambdaProxyEnv, LambdaRoutesEnv} from '#config/aws.ts';
+import {devServer} from '#dev/dev-server.ts';
+import type {WsCtx} from '#dev/dev_ws.ts';
 import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {Lambda} from '@effect-aws/client-lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Duration, Effect, pipe} from 'effect';
-import {devServer} from 'scripts/dev/dev-server.ts';
-import type {WsCtx} from 'scripts/dev/dev_ws.ts';
+import {Config, Duration, Effect, Layer, pipe} from 'effect';
 
 export class EventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRouter', {
   effect: Effect.gen(function* () {
     const lambda = yield* Lambda;
-    const lambdas = yield* LambdasConfig;
+    const routes = yield* LambdaRoutesEnv;
 
     return {
-      invoke: (name: keyof typeof lambdas, data: any) =>
+      invoke: (name: keyof typeof routes, data: any) =>
         Effect.asVoid(
           lambda.invokeAsync({
-            FunctionName: lambdas[name],
+            FunctionName: routes[name],
             InvokeArgs  : JSON.stringify(data),
           }),
         ),
-      isActive: (name: keyof typeof lambdas, data: any) =>
+      isActive: (name: keyof typeof routes, data: any) =>
         Effect.succeed(true),
     };
   }),
@@ -34,14 +34,14 @@ class QualEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRout
     const document = yield* DynamoDBDocument;
     const gateway = yield* ApiGatewayManagementApi;
     const lambda = yield* Lambda;
-    const lambdas = yield* LambdasConfig;
+    const [proxy, routes] = yield* Config.all([LambdaProxyEnv, LambdaRoutesEnv]);
 
     const cached = yield* pipe(
       document.get({
-        TableName: process.env.DDB_OPERATIONS,
+        TableName: proxy.DFFP_DDB_OPERATIONS,
         Key      : {
-          pk: 'dev_ws',
-          sk: 'now',
+          pk: proxy.DFFP_APIGW_DEV_WS_PK,
+          sk: proxy.DFFP_APIGW_DEV_WS_SK,
         },
       }),
       Effect.cachedWithTTL(Duration.seconds(10)),
@@ -60,7 +60,7 @@ class QualEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRout
           ),
           Effect.catchTag('NoSuchElementException', () =>
             lambda.invokeAsync({
-              FunctionName: lambdas[name],
+              FunctionName: routes[name],
               InvokeArgs  : JSON.stringify(data),
             }),
           ),
@@ -86,9 +86,13 @@ class QualEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRout
   dependencies: [
     DynamoDBDocument.defaultLayer,
     Lambda.defaultLayer,
-    ApiGatewayManagementApi.layer({
-      endpoint: process.env.APIGW_DEV_WS,
-    }),
+    Layer.unwrapEffect(LambdaProxyEnv.pipe(
+      Effect.map((proxy) =>
+        ApiGatewayManagementApi.layer({
+          endpoint: proxy.DFFP_APIGW_DEV_WS,
+        }),
+      ),
+    )),
   ],
   accessors: true,
 }) {}
@@ -102,8 +106,7 @@ class LocalEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRou
     isActive: () =>
       Effect.succeed(true),
   } as Omit<EventRouter, '_tag'>,
-  dependencies: [],
-  accessors   : true,
+  accessors: true,
 }) {}
 
 export const EventRouterLive =

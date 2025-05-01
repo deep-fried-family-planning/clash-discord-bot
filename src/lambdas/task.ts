@@ -10,7 +10,7 @@ import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/disc
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
+import {EventRouter, EventRouterLive} from '#src/service/EventRouter.ts';
 import {BaseLambdaLayer} from '#src/lambdas/util.ts';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -42,7 +42,7 @@ const lookup = pipe(
   fromEntries,
 );
 
-const taskHandler = E.fn(
+export const task = E.fn(
   function* (event: SQSEvent) {
     const isActive = yield* EventRouter.isActive('task', event);
 
@@ -72,18 +72,3 @@ const taskHandler = E.fn(
     yield* logDiscordError([error]);
   })),
 );
-
-const layer = pipe(
-  L.mergeAll(
-    DiscordLayerLive,
-    EventRouterLive,
-    ClashOfClans.Live,
-  ),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-  L.provideMerge(BaseLambdaLayer),
-);
-
-export const handler = LambdaHandler.make({
-  handler: taskHandler,
-  layer  : layer,
-});

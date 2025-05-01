@@ -2,11 +2,6 @@ import {SSMService} from '@effect-aws/client-ssm';
 import {ConfigProvider} from '@effect-aws/ssm';
 import {Config, Effect, Layer, pipe} from 'effect';
 
-export const WS_BYPASS_KEY = {
-  pk: 'dev_ws',
-  sk: 'now',
-};
-
 export const DevUrlConfig = pipe(
   Config.redacted('/dffp/qual/dev_ws'),
   Effect.provide(

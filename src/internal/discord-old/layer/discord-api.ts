@@ -1,3 +1,4 @@
+import {DiscordEnv} from '#config/external.ts';
 import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord-old/discord.ts';
 import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
@@ -47,5 +48,13 @@ export const DiscordLayerLive = pipe(
   DiscordApi.Live,
   L.provideMerge(DiscordRESTMemoryLive),
   L.provide(NodeHttpClient.layerUndici),
-  L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
+  L.provideMerge(
+    L.unwrapEffect(
+      E.map(DiscordEnv, (env) =>
+        DiscordConfig.layer({
+          token: env.DFFP_DISCORD_BOT_TOKEN,
+        }),
+      ),
+    ),
+  ),
 );

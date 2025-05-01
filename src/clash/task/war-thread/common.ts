@@ -4,7 +4,7 @@ import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
-import {TaskScheduler} from '#src/lambdas/service/TaskScheduler.ts';
+import {TaskScheduler} from '#src/service/TaskScheduler.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import type {ClanWar} from 'clashofclans.js';
 import type {Channel} from 'dfx/types';

@@ -1,7 +1,7 @@
 import {Socket, SocketServer} from '@effect/platform';
 import {NodeRuntime, NodeSocket, NodeSocketServer} from '@effect/platform-node';
 import {Effect, Layer, Logger, LogLevel, Mailbox, pipe, Redacted} from 'effect';
-import {DevUrlConfig, ProxyConfig} from 'scripts/dev/proxy-config.ts';
+import {DevUrlConfig, ProxyConfig} from 'dev/proxy-config.ts';
 
 const program = Effect.gen(function* () {
   const mailbox = yield* Mailbox.make<any>();
@@ -49,21 +49,21 @@ const program = Effect.gen(function* () {
   }));
 });
 
-NodeRuntime.runMain(
-  program.pipe(Effect.provide(pipe(
-    Layer.mergeAll(
-      NodeSocket.layerWebSocketConstructor,
-      Layer.scoped(
-        SocketServer.SocketServer,
-        ProxyConfig.pipe(Effect.flatMap((config) =>
-          NodeSocketServer.makeWebSocket({
-            host: config.host,
-            port: config.port,
-          }),
-        )),
-      ),
-      Layer.scope,
-      Logger.minimumLogLevel(LogLevel.All),
+const layer = pipe(
+  Layer.mergeAll(
+    NodeSocket.layerWebSocketConstructor,
+    Layer.scoped(
+      SocketServer.SocketServer,
+      ProxyConfig.pipe(Effect.flatMap((config) =>
+        NodeSocketServer.makeWebSocket({
+          host: config.host,
+          port: config.port,
+        }),
+      )),
     ),
-  ))),
+    Layer.scope,
+    Logger.minimumLogLevel(LogLevel.All),
+  ),
 );
+
+NodeRuntime.runMain(program.pipe(Effect.provide(layer)));

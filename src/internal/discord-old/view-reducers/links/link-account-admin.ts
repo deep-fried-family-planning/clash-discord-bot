@@ -71,7 +71,7 @@ const view2 = (s: St, ax: Ax) => E.gen(function* () {
         description: e.issue,
       }],
     })),
-    E.catchTag('DeepFryerClashError', (e) => E.succeed({
+    E.catchTag('ClashOfClansError', (e) => E.succeed({
       type  : 'ReturnableError',
       embeds: [{
         // @ts-expect-error clashperk lib types

@@ -15,12 +15,12 @@ export default defineConfig({
   },
 
   entry: {
-    'dev_ws/index'  : {import: 'scripts/dev/dev_ws.ts'},
-    'ix_api/index'  : {import: 'src/lambdas/ix_api.ts'},
-    'ix_menu/index' : {import: 'src/lambdas/ix_components.ts'},
-    'ix_slash/index': {import: 'src/lambdas/ix_commands.ts'},
-    'poll/index'    : {import: 'src/lambdas/poll.ts'},
-    'task/index'    : {import: 'src/lambdas/task.ts'},
+    'dev_ws/index'  : {import: './dev/dev_ws.ts'},
+    'ix_api/index'  : {import: './src/lambdas/ix_api-runtime.ts'},
+    'ix_menu/index' : {import: './src/lambdas/ix_components-runtime.ts'},
+    'ix_slash/index': {import: './src/lambdas/ix_commands-runtime.ts'},
+    'poll/index'    : {import: './src/lambdas/poll-runtime.ts'},
+    'task/index'    : {import: './src/lambdas/task-runtime.ts'},
   },
 
   output: {

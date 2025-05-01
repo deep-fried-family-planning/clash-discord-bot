@@ -7,8 +7,8 @@ import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/layers.ts';
-import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
-import {TaskSchedulerLive} from '#src/lambdas/service/TaskScheduler.ts';
+import {EventRouter, EventRouterLive} from '#src/service/EventRouter.ts';
+import {TaskSchedulerLive} from '#src/service/TaskScheduler.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
@@ -22,7 +22,7 @@ const raidWeekend = Cron.make({
   weekdays: [5, 6, 7, 0],
 });
 
-const pollHandler = E.fn(
+export const poll = E.fn(
   function* () {
     yield* invokeCount(E.succeed(''));
     yield* showMetric(invokeCount);
@@ -81,23 +81,3 @@ const pollHandler = E.fn(
     return E.die(d);
   }),
 );
-
-const layer = pipe(
-  L.mergeAll(
-    ClashLayer,
-    Scheduler.defaultLayer,
-    SQS.defaultLayer,
-    EventRouterLive,
-    TaskSchedulerLive,
-    DeepFryerPage.Default,
-  ),
-  L.provideMerge(DiscordLayer),
-  L.provideMerge(DatabaseLayer),
-  L.provideMerge(NetworkLayer),
-  L.provideMerge(BasicLayer),
-);
-
-export const handler = LambdaHandler.make({
-  handler: pollHandler,
-  layer  : layer,
-});

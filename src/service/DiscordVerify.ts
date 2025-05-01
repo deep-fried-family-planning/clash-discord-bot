@@ -1,12 +1,12 @@
-import {DiscordPublicKeyConfig} from '#src/lambdas/service/environment.ts';
+import {DiscordEnv} from '#config/external.ts';
 import {PlatformAlgorithm, verify} from 'discord-verify';
-import {Effect} from 'effect';
+import {Effect, Layer} from 'effect';
 import type { APIGatewayProxyEventBase } from 'aws-lambda';
 import {subtle} from 'node:crypto';
 
 export class DiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/DiscordVerify', {
   effect: Effect.gen(function* () {
-    const publicKey = yield* DiscordPublicKeyConfig;
+    const env = yield* DiscordEnv;
 
     return {
       isVerified: (req: APIGatewayProxyEventBase<any>) =>
@@ -15,7 +15,7 @@ export class DiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/Di
             req.body,
             req.headers['x-signature-ed25519'],
             req.headers['x-signature-timestamp'],
-            publicKey,
+            env.DFFP_DISCORD_PUBLIC_KEY,
             subtle,
             PlatformAlgorithm.NewNode,
           ),
@@ -25,13 +25,8 @@ export class DiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/Di
   accessors: true,
 }) {}
 
-class LocalDiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/DiscordVerify', {
-  succeed: {
-    isVerified: () => Effect.succeed(true),
-  } as Omit<DiscordVerify, '_tag'>,
-  accessors: true,
-}) {}
-
 export const DiscordVerifyLive
-  = process.env.LAMBDA_LOCAL === 'true' ? LocalDiscordVerify.Default
+  = process.env.LAMBDA_LOCAL === 'true' ? Layer.succeed(DiscordVerify, DiscordVerify.make({
+    isVerified: () => Effect.succeed(true),
+  }))
   : DiscordVerify.Default;

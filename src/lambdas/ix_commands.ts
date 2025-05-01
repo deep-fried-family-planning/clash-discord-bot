@@ -1,21 +1,14 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {commandRouter} from '#src/discord/command-router.ts';
-import {ComponentRouter} from '#src/discord/component-router.tsx';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+import {Interacting} from '#src/discord/Interacting.ts';
 import type {IxD, IxRE} from '#src/internal/discord-old/discord.ts';
-import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
-import {DatabaseLayer} from '#src/layers.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {SQS} from '@effect-aws/client-sqs';
-import {LambdaHandler} from '@effect-aws/lambda';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Cause} from 'effect';
 
-const commandHandler = (ix: IxD) => pipe(
-  commandRouter(ix),
+export const ix_commands = (ix: IxD) => pipe(
+  Interacting.init(ix),
+  E.flatMap(() => commandRouter(ix)),
   E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
     const userMessage = yield* logDiscordError([e]);
 
@@ -27,7 +20,7 @@ const commandHandler = (ix: IxD) => pipe(
       }],
     } as Partial<IxRE>);
   })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function* () {
+  E.catchTag('ClashKingError', (e) => E.gen(function* () {
     const userMessage = yield* logDiscordError([e]);
 
     yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
@@ -46,31 +39,5 @@ const commandHandler = (ix: IxD) => pipe(
 
     yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
   })),
+  E.provide(Interacting.Fresh),
 );
-
-const layer = pipe(
-  L.mergeAll(
-    ComponentRouter,
-    ClashOfClans.Live,
-    ClashKing.Live,
-    Scheduler.defaultLayer,
-    SQS.defaultLayer,
-    DeepFryerPage.Default,
-  ),
-  L.provideMerge(DiscordLayerLive),
-  L.provideMerge(
-    L.mergeAll(
-      DatabaseLayer,
-      L.setTracerTiming(true),
-      L.setTracerEnabled(true),
-      Logger.replace(Logger.defaultLogger, Logger.structuredLogger),
-      DT.layerCurrentZoneLocal,
-    ),
-  ),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-);
-
-export const handler = LambdaHandler.make({
-  handler: commandHandler,
-  layer  : layer,
-});

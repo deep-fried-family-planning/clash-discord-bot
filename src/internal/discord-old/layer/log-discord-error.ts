@@ -12,27 +12,24 @@ import {inspect} from 'node:util';
 export const logDiscordError = (e: unknown[]) => E.gen(function* () {
   yield* CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
-  const url = process.env.DFFP_DISCORD_ERROR_URL;
+  const url = process.env.DFFP_DISCORD_ERROR_URL!;
 
   const [token, id] = url.split('/').reverse();
 
   const log = yield* DiscordApi.executeWebhookJson(id, token, {
     embeds: [{
       color      : nColor(COLOR.ERROR),
-      title      : process.env.AWS_LAMBDA_FUNCTION_NAME,
+      title      : process.env.AWS_LAMBDA_FUNCTION_NAME!,
       description: dLinesS(
         dLinesS(...pipe(e, mapL((err) => dLinesS(
           // @ts-expect-error bad types...
-
           err.name,
           // @ts-expect-error bad types...
-
           err.e,
         )))),
         '',
-        process.env.AWS_LAMBDA_LOG_GROUP_NAME,
-        process.env.AWS_LAMBDA_LOG_STREAM_NAME,
-
+        process.env.AWS_LAMBDA_LOG_GROUP_NAME!,
+        process.env.AWS_LAMBDA_LOG_STREAM_NAME!,
         buildCloudWatchLink(),
       ),
     }],

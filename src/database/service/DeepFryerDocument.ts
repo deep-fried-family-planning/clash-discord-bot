@@ -1,3 +1,4 @@
+import {DynamoEnv} from '#config/aws.ts';
 import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -12,9 +13,10 @@ type With<A> = A & {codec: Codec};
 
 export class DeepFryerDocument extends Effect.Service<DeepFryerDocument>()('deepfryer/DeepFryerDocument', {
   effect: Effect.gen(function* () {
+    const env = yield* DynamoEnv;
     const document = yield* DynamoDBDocument;
     const capacity = yield* DocumentCapacity;
-    const table = process.env.DDB_OPERATIONS;
+    const table = env.DFFP_DDB_TABLE;
 
     const records = yield* Cache.makeWith({
       capacity  : 1000,
