@@ -8,7 +8,7 @@ import type {Interaction} from 'dfx/types';
 import console from 'node:console';
 import process from 'node:process';
 
-const menu = (ix: Interaction) =>
+const menuHandler = (ix: Interaction) =>
   pipe(
     DisReact.respond(ix),
     E.tapDefect((e) => {
@@ -22,7 +22,7 @@ const layer = pipe(
     ComponentRouter,
     DiscordRESTMemoryLive.pipe(
       L.provide(NodeHttpClient.layerUndici),
-      L.provide(DiscordConfig.layer({
+      L.provideMerge(DiscordConfig.layer({
           token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN),
         }),
       ),
@@ -39,6 +39,6 @@ const layer = pipe(
 );
 
 export const handler = makeLambda({
-  handler: menu,
+  handler: menuHandler,
   layer  : layer,
 });

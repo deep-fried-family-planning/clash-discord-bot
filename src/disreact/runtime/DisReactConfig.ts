@@ -1,7 +1,6 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {E, flow, L} from '#src/disreact/utils/re-exports.ts';
-import {Redacted} from 'effect';
+import {Effect, flow, Layer, Redacted} from 'effect';
 
 export namespace DisReactConfig {
   export type Input = {
@@ -12,7 +11,6 @@ export namespace DisReactConfig {
       | (Elem | FC)[];
     // | [string, Elem.Any | FC][]
     // | Record<string, Elem.Any | FC>;
-
     version?      : number | string;
     baseUrl?      : string;
     dokenCapacity?: number;
@@ -33,17 +31,18 @@ const makeDefaultOptions = (input: DisReactConfig.Input): DisReactConfig.Resolve
   }
 
   options.baseUrl ??= 'https://dffp.org';
-  options.dokenCapacity ??= 100;
+  options.dokenCapacity ??= 10;
 
   return options;
 };
 
-export class DisReactConfig extends E.Service<DisReactConfig>()('disreact/Config', {
-  succeed: makeDefaultOptions({token: '', sources: []}),
+export class DisReactConfig extends Effect.Service<DisReactConfig>()('disreact/Config', {
+  succeed  : makeDefaultOptions({token: '', sources: []}),
+  accessors: true,
 }) {
-  static readonly configLayer = flow(
-    makeDefaultOptions,
-    this.make,
-    L.succeed(this),
-  );
+  static readonly configLayer = (input: DisReactConfig.Input) =>
+    Layer.succeed(
+      DisReactConfig,
+      DisReactConfig.make(makeDefaultOptions(input)),
+    );
 }

@@ -1,8 +1,16 @@
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {E, L} from '#src/disreact/utils/re-exports.ts';
-import {Data, Deferred, Mailbox} from 'effect';
+import {Data, Deferred, Effect, Layer, Mailbox, pipe} from 'effect';
 
 export const Progress = Data.taggedEnum<Relay.Progress>();
+
+export type Progress = Data.TaggedEnum<{
+  Start: {};
+  Close: {};
+  Same : {};
+  Next : {id: string | null; props?: any};
+  Part : {type: 'modal' | 'message' | 'ephemeral'; isEphemeral?: boolean};
+  Done : {};
+}>;
 
 export declare namespace Relay {
   export type Progress = Data.TaggedEnum<{
@@ -15,22 +23,26 @@ export declare namespace Relay {
   }>;
 }
 
-export class Relay extends E.Service<Relay>()('disreact/Relay', {
-  effect: E.map(
-    E.all([
-      Mailbox.make<Relay.Progress>(),
-      Deferred.make<Rehydrant | null>(),
-    ]),
-    ([mailbox, current]) =>
-      ({
-        setOutput  : (root: Rehydrant | null) => Deferred.succeed(current, root),
-        awaitOutput: Deferred.await(current),
-        setComplete: () => mailbox.end,
-        awaitStatus: mailbox.take.pipe(E.catchTag('NoSuchElementException', () => E.succeed(Progress.Done()))),
-        sendStatus : (msg: Relay.Progress) => mailbox.offer(msg),
-        mailbox,
-      }),
-  ),
+const setup = Effect.all([
+  Mailbox.make<Relay.Progress>(),
+  Deferred.make<Rehydrant | null>(),
+]);
+
+export class Relay extends Effect.Service<Relay>()('disreact/Relay', {
+  effect: Effect.map(setup, ([mailbox, current]) => {
+    return {
+      setOutput  : (root: Rehydrant | null) => Deferred.succeed(current, root),
+      awaitOutput: Deferred.await(current),
+      setComplete: () => mailbox.end,
+      sendStatus : (msg: Progress) => mailbox.offer(msg),
+      awaitStatus: pipe(
+        mailbox.take,
+        Effect.catchTag('NoSuchElementException', () =>
+          Effect.succeed(Progress.Done()),
+        ),
+      ),
+    };
+  }),
 }) {
-  static readonly Fresh = L.fresh(Relay.Default);
+  static readonly Fresh = Layer.fresh(Relay.Default);
 }

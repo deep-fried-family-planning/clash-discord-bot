@@ -47,5 +47,5 @@ export const DiscordLayerLive = pipe(
   DiscordApi.Live,
   L.provideMerge(DiscordRESTMemoryLive),
   L.provide(NodeHttpClient.layerUndici),
-  L.provide(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
+  L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
 );
