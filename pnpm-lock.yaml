@@ -105,12 +105,6 @@ importers:
       '@eslint/js':
         specifier: 9.25.1
         version: 9.25.1
-      '@hapi/hapi':
-        specifier: 21.4.0
-        version: 21.4.0
-      '@hapi/nes':
-        specifier: 14.0.1
-        version: 14.0.1
       '@rsdoctor/cli':
         specifier: 1.0.2
         version: 1.0.2(@rspack/core@1.3.8)(webpack@5.99.7(esbuild@0.25.3))
@@ -141,9 +135,6 @@ importers:
       '@types/uuid':
         specifier: 10.0.0
         version: 10.0.0
-      '@types/ws':
-        specifier: 8.18.1
-        version: 8.18.1
       '@vitest/coverage-v8':
         specifier: 3.1.2
         version: 3.1.2(vitest@3.1.2(@types/node@22.15.3)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1))
@@ -186,9 +177,6 @@ importers:
       vitest:
         specifier: 3.1.2
         version: 3.1.2(@types/node@22.15.3)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.4)(yaml@2.7.1)
-      ws:
-        specifier: 8.18.1
-        version: 8.18.1
 
 packages:
 
@@ -913,10 +901,6 @@ packages:
 
   '@hapi/mimos@7.0.1':
     resolution: {integrity: sha512-b79V+BrG0gJ9zcRx1VGcCI6r6GEzzZUgiGEJVoq5gwzuB2Ig9Cax8dUuBauQCFKvl2YWSWyOc8mZ8HDaJOtkew==}
-
-  '@hapi/nes@14.0.1':
-    resolution: {integrity: sha512-nvFUyPCMae7ri2HrxPR2bEag524w8HnxBDuRrDsyLHeadcKR3RxLuY4iZDDwnf4naijD/cM7qPnOieI8BNoj3A==}
-    engines: {node: '>=18.0.0'}
 
   '@hapi/nigel@5.0.1':
     resolution: {integrity: sha512-uv3dtYuB4IsNaha+tigWmN8mQw/O9Qzl5U26Gm4ZcJVtDdB1AVJOwX3X5wOX+A07qzpEZnOMBAm8jjSqGsU6Nw==}
@@ -5754,22 +5738,6 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.7
       mime-db: 1.54.0
-
-  '@hapi/nes@14.0.1':
-    dependencies:
-      '@hapi/boom': 10.0.1
-      '@hapi/bounce': 3.0.2
-      '@hapi/call': 9.0.1
-      '@hapi/cryptiles': 6.0.1
-      '@hapi/hoek': 11.0.7
-      '@hapi/iron': 7.0.1
-      '@hapi/teamwork': 6.0.0
-      '@hapi/validate': 2.0.1
-      '@types/ws': 8.18.1
-      ws: 8.18.1
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
 
   '@hapi/nigel@5.0.1':
     dependencies:
