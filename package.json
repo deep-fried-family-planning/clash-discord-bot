@@ -16,7 +16,7 @@
     "lsp": "typescript-language-server --stdio",
     "merge": "pnpm i --merge-git-branch-lockfiles",
     "proxy": "tsx scripts/dev/proxy-server.ts",
-    "dev": "nodemon --exec tsx scripts/dev/dev-client.t",
+    "dev": "nodemon --exec tsx scripts/dev/dev-client.ts",
     "devrun": "tsx scripts/dev/run.ts",
     "types": "tsc --project tsconfig.check.json --noEmit",
     "build": "NODE_OPTIONS='--experimental-transform-types' rspack build",

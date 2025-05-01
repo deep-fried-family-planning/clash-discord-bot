@@ -34,9 +34,6 @@ class LocalTaskScheduler extends Effect.Service<TaskScheduler>()('deepfryer/Task
   accessors: true,
 }) {}
 
-export const TaskSchedulerLive = (() => {
-  if (process.env.LAMBDA_LOCAL === 'true') {
-    return LocalTaskScheduler.Default;
-  }
-  return TaskScheduler.Default;
-})();
+export const TaskSchedulerLive
+  = process.env.LAMBDA_LOCAL === 'true' ? LocalTaskScheduler.Default
+  : TaskScheduler.Default;
