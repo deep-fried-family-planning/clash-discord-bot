@@ -3,8 +3,8 @@ import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management
 import {Lambda} from '@effect-aws/client-lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Duration, Effect, pipe} from 'effect';
-import type {WsCtx} from 'scripts/dev/dev_ws.ts';
 import {devServer} from 'scripts/dev/dev-server.ts';
+import type {WsCtx} from 'scripts/dev/dev_ws.ts';
 
 export class EventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRouter', {
   effect: Effect.gen(function* () {
@@ -86,7 +86,9 @@ class QualEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRout
   dependencies: [
     DynamoDBDocument.defaultLayer,
     Lambda.defaultLayer,
-    ApiGatewayManagementApi.defaultLayer,
+    ApiGatewayManagementApi.layer({
+      endpoint: process.env.APIGW_DEV_WS,
+    }),
   ],
   accessors: true,
 }) {}
@@ -104,12 +106,7 @@ class LocalEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRou
   accessors   : true,
 }) {}
 
-export const EventRouterLive = (() => {
-  if (process.env.LAMBDA_LOCAL === 'true') {
-    return LocalEventRouter.Default;
-  }
-  if (process.env.LAMBDA_ENV === 'prod') {
-    return EventRouter.Default;
-  }
-  return QualEventRouter.Default;
-})();
+export const EventRouterLive =
+  process.env.LAMBDA_LOCAL === 'true' ? LocalEventRouter.Default
+  : process.env.LAMBDA_ENV === 'prod' ? EventRouter.Default
+  : QualEventRouter.Default;
