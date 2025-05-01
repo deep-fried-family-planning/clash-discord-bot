@@ -1,10 +1,9 @@
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
+import {TaskScheduler} from '#src/lambdas/service/TaskScheduler.ts';
 import type {DurationInput} from 'effect/Duration';
 
 export type TaskEffect = E.Effect<void, any, any>;
-export type TaskSchema = S.Schema<any, any>;
 
 export const TEMP_TEMP_ROLES = {
   warmanager : '1269057897577578577',
@@ -60,12 +59,13 @@ export const makeTask = <
         (iso) => iso.replace(/\..+Z/, ''),
       );
 
-      yield* Scheduler.createSchedule({
+      yield* TaskScheduler.createSchedule({
         GroupName                 : schedule.group,
         Name                      : schedule.name,
         ScheduleExpression        : `at(${time})`,
         FlexibleTimeWindow        : {Mode: 'OFF'},
         ScheduleExpressionTimezone: 'Etc/Zulu',
+        ActionAfterCompletion     : 'DELETE',
         Target                    : {
           Arn    : process.env.SQS_ARN_SCHEDULED_TASK,
           RoleArn: process.env.LAMBDA_ROLE_ARN,
@@ -75,7 +75,6 @@ export const makeTask = <
             data: encoded,
           }),
         },
-        ActionAfterCompletion: 'DELETE',
       });
     }),
 

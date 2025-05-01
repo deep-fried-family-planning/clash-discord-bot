@@ -10,11 +10,11 @@ import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {DatabaseLayer} from '#src/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
-import {makeLambda} from '@effect-aws/lambda';
+import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {Cause} from 'effect';
 
-const slash = (ix: IxD) => pipe(
+const commandHandler = (ix: IxD) => pipe(
   commandRouter(ix),
   E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
     const userMessage = yield* logDiscordError([e]);
@@ -51,13 +51,13 @@ const slash = (ix: IxD) => pipe(
 const layer = pipe(
   L.mergeAll(
     ComponentRouter,
-    DiscordLayerLive,
     ClashOfClans.Live,
     ClashKing.Live,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
     DeepFryerPage.Default,
   ),
+  L.provideMerge(DiscordLayerLive),
   L.provideMerge(
     L.mergeAll(
       DatabaseLayer,
@@ -70,7 +70,7 @@ const layer = pipe(
   L.provideMerge(DynamoDBDocument.defaultLayer),
 );
 
-export const handler = makeLambda({
-  handler: slash,
+export const handler = LambdaHandler.make({
+  handler: commandHandler,
   layer  : layer,
 });

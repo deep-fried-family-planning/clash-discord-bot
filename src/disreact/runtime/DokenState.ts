@@ -1,10 +1,12 @@
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Fiber} from 'effect';
+import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
+import {Effect, Fiber, Layer, pipe} from 'effect';
 
-export class DokenState extends E.Service<DokenState>()('disreact/DokenState', {
+export class DokenState extends Effect.Service<DokenState>()('disreact/DokenState', {
   effect: pipe(
-    E.all([]),
-    E.map(() => {
+    Effect.all([
+      DokenMemory,
+    ]),
+    Effect.map(([memory]) => {
       // eslint-disable-next-line prefer-const
       let fiber = Fiber.void as Fiber.RuntimeFiber<any> | Fiber.Fiber<any>;
 
@@ -12,4 +14,6 @@ export class DokenState extends E.Service<DokenState>()('disreact/DokenState', {
     }),
   ),
   accessors: true,
-}) {}
+}) {
+  static readonly Fresh = Layer.fresh(DokenState.Default);
+}

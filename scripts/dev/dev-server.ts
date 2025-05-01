@@ -9,32 +9,27 @@ export const makeStubLambdaContext = () =>
     awsRequestId                  : '',
     callbackWaitsForEmptyEventLoop: false,
     clientContext                 : undefined,
-    done(error: Error | undefined, result: any): void {
-    },
-    fail(error: string | Error): void {
-    },
-    functionName   : '',
-    functionVersion: '',
-    getRemainingTimeInMillis(): number {
-      return 0;
-    },
-    identity          : undefined,
-    invokedFunctionArn: '',
-    logGroupName      : '',
-    logStreamName     : '',
-    memoryLimitInMB   : '',
-    succeed(messageOrObject: any, object?: any): void {
-    },
+    done                          : (error: Error | undefined, result: any) => {},
+    fail                          : (error: string | Error) => {},
+    functionName                  : '',
+    functionVersion               : '',
+    getRemainingTimeInMillis      : () => 0,
+    identity                      : undefined,
+    invokedFunctionArn            : '',
+    logGroupName                  : '',
+    logStreamName                 : '',
+    memoryLimitInMB               : '',
+    succeed                       : () => (messageOrObject: any, object?: any) => {},
   });
 
 const lookup = {
   ix_menu : lambda_ix_menu,
   ix_slash: lambda_ix_slash,
-  poll    : lambda_poll,
+  // poll    : lambda_poll,
   // task         : lambda_task,
 };
 
-export const wsBackendModel = async (kind: str, data: any) => {
+export const devServer = async (kind: str, data: any) => {
   if (kind in lookup) {
     await lookup[kind as keyof typeof lookup](data, makeStubLambdaContext());
   }

@@ -1,102 +1,99 @@
 import type {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {C, DR, DT, E, L, OPT} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Cache, type Cause, Data, Exit, pipe} from 'effect';
+import {Cache, Data, DateTime, Duration, Effect, Exit, Option, pipe} from 'effect';
 
-export class DokenMemoryError extends Data.TaggedError('DisReact.DokenMemoryError')<{
+export class DokenMemoryError extends Data.TaggedError('DokenMemoryError')<{
   cause?: any;
 }> {}
 
-export type DokenError =
-  | DokenMemoryError
-  | Cause.UnknownException;
-
-const timeToLive = (exit: Exit.Exit<Doken.Active | undefined, DokenError>): DR.Duration =>
+const timeToLive = (exit: Exit.Exit<Doken.Active | undefined, DokenMemoryError>): Duration.Duration =>
   pipe(
     Exit.getOrElse(exit, () => undefined),
-    OPT.fromNullable,
-    OPT.flatMap((doken) =>
+    Option.fromNullable,
+    Option.flatMap((doken) =>
       pipe(
-        E.runSync(DT.now),
-        DT.distanceDurationEither(doken.ttl),
-        OPT.getRight,
+        Effect.runSync(DateTime.now),
+        DateTime.distanceDurationEither(doken.ttl),
+        Option.getRight,
       ),
     ),
-    OPT.getOrElse(() => DR.millis(0)),
+    Option.getOrElse(() => Duration.zero),
   );
 
-export class DokenMemory extends E.Service<DokenMemory>()('disreact/DokenMemory', {
-  effect: E.gen(function* () {
+export class DokenMemory extends Effect.Service<DokenMemory>()('disreact/DokenMemory', {
+  effect: Effect.gen(function* () {
     const config = yield* DisReactConfig;
+
     const cache = yield* Cache.makeWith({
       timeToLive,
       capacity: config.dokenCapacity,
-      lookup  : (_: string) => E.succeed(undefined as Doken.Active | undefined),
+      lookup  : (_: string): Effect.Effect<Doken.Active | undefined, DokenMemoryError> =>
+        Effect.succeed(undefined),
     });
 
     return {
-      save: (doken: Doken.Active) => cache.set(doken.id, doken) as E.Effect<void, DokenError>,
-      load: (id: string) => cache.get(id) as E.Effect<Doken.Active | undefined, DokenError>,
-      free: (id: string) => cache.invalidate(id) as E.Effect<void, DokenError>,
+      save: (doken: Doken.Active): Effect.Effect<void, DokenMemoryError> =>
+        cache.set(doken.id, doken),
+      load: (id: string): Effect.Effect<Doken.Active | undefined, DokenMemoryError> =>
+        cache.get(id),
+      free: (id: string): Effect.Effect<void, DokenMemoryError> =>
+        cache.invalidate(id),
     };
   }),
-}) {
-  static readonly Dynamo = pipe(
-    L.effect(this, E.suspend(() => makeDynamo)),
-    L.provide(DynamoDBDocument.defaultLayer),
-  );
-}
+  accessors: true,
+}) {}
 
-const makeDynamo = E.gen(function* () {
-  const dynamo = yield* DynamoDBDocument;
-  const config = yield* DisReactConfig;
+export class DokenMemoryDynamoDB extends Effect.Service<DokenMemory>()('disreact/DokenMemory', {
+  effect: Effect.gen(function* () {
+    const dynamo = yield* DynamoDBDocument;
+    const config = yield* DisReactConfig;
 
-  const cache = yield* C.makeWith({
-    timeToLive,
-    capacity: config.dokenCapacity,
-    lookup  : (id: string): E.Effect<Doken.Active | undefined, DokenError> =>
-      pipe(
-        dynamo.get({
-          TableName: process.env.DDB_OPERATIONS,
-          Key      : {
-            pk: `t-${id}`,
-            sk: `t-${id}`,
-          },
-        }),
-        E.catchAll((e) => new DokenMemoryError(e)),
-        E.map((resp) => resp.Item as Doken.Active | undefined),
-      ),
-  });
+    const cache = yield* Cache.makeWith({
+      timeToLive,
+      capacity: config.dokenCapacity,
+      lookup  : (id: string) =>
+        pipe(
+          dynamo.get({
+            TableName: process.env.DDB_OPERATIONS,
+            Key      : {pk: `t-${id}`, sk: `t-${id}`},
+          }),
+          Effect.catchAll((cause) => new DokenMemoryError({cause})),
+          Effect.map((resp) => resp.Item as Doken.Active | undefined),
+        ),
+    });
 
-  return DokenMemory.make({
-    load: (id: string): E.Effect<Doken.Active | undefined, DokenError> => cache.get(id),
-
-    save: (doken: Doken.Active): E.Effect<void, DokenError> =>
-      pipe(
-        dynamo.put({
-          TableName: process.env.DDB_OPERATIONS,
-          Item     : {
-            pk: `t-${doken.id}`,
-            sk: `t-${doken.id}`,
-            ...doken,
-          },
-        }),
-        E.catchAll((e) => new DokenMemoryError(e)),
-        E.tap(() => cache.set(doken.id, doken)),
-      ),
-
-    free: (id: string): E.Effect<void, DokenError> =>
-      pipe(
-        dynamo.delete({
-          TableName: process.env.DDB_OPERATIONS,
-          Key      : {
-            pk: `t-${id}`,
-            sk: `t-${id}`,
-          },
-        }),
-        E.catchAll((e) => new DokenMemoryError(e)),
-        E.tap(() => cache.invalidate(id)),
-      ),
-  });
-});
+    return {
+      load: (id) => cache.get(id),
+      save: (doken) =>
+        pipe(
+          dynamo.put({
+            TableName: process.env.DDB_OPERATIONS,
+            Item     : {
+              pk: `t-${doken.id}`,
+              sk: `t-${doken.id}`,
+              ...doken,
+            },
+          }),
+          Effect.catchAll((cause) => new DokenMemoryError({cause})),
+          Effect.tap(() => cache.set(doken.id, doken)),
+        ),
+      free: (id) =>
+        pipe(
+          dynamo.delete({
+            TableName: process.env.DDB_OPERATIONS,
+            Key      : {
+              pk: `t-${id}`,
+              sk: `t-${id}`,
+            },
+          }),
+          Effect.catchAll((cause) => new DokenMemoryError({cause})),
+          Effect.tap(() => cache.invalidate(id)),
+        ),
+    } as Omit<DokenMemory, '_tag'>;
+  }),
+  dependencies: [
+    DynamoDBDocument.defaultLayer,
+  ],
+  accessors: true,
+}) {}

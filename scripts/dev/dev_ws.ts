@@ -6,7 +6,7 @@ import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type {APIGatewayProxyWebsocketEventV2} from 'aws-lambda';
 import type {APIGatewayProxyResultV2} from 'aws-lambda/trigger/api-gateway-proxy';
-import {WS_BYPASS_KEY} from 'scripts/dev/ws-bypass.ts';
+import {WS_BYPASS_KEY} from 'scripts/dev/proxy-config.ts';
 
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 
@@ -78,7 +78,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
   } satisfies APIGatewayProxyResultV2;
 });
 
-const live = pipe(
+const layer = pipe(
   DiscordLayerLive,
   L.provideMerge(
     DynamoDBDocument.defaultLayer,
@@ -88,5 +88,5 @@ const live = pipe(
 
 export const handler = LambdaHandler.make({
   handler: dev_ws,
-  layer  : live,
+  layer  : layer,
 });

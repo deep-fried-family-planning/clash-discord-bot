@@ -2,13 +2,13 @@ import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import {Effect, pipe} from 'effect';
 import {Hooks} from './hooks';
 
-const mount = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
+const mount = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   pipe(
     mutex.take(1),
-    E.flatMap(() => {
+    Effect.flatMap(() => {
       root.fibrils[elem.id!] = elem.fibril;
       elem.fibril.elem = elem;
       elem.fibril.rehydrant = root;
@@ -18,28 +18,28 @@ const mount = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
 
       return FC.render(elem.type, elem.props);
     }),
-    E.flatMap((children) => {
+    Effect.flatMap((children) => {
       Hooks.setup(undefined);
       Fibril.commit(elem.fibril);
       return pipe(
         mutex.release(1),
-        E.as(Elem.connectChildren(elem, children)),
+        Effect.as(Elem.connectChildren(elem, children)),
       );
     }),
-    E.catchAllDefect((e) => {
+    Effect.catchAllDefect((e) => {
       Hooks.setup(undefined);
 
-      return E.zipRight(
+      return Effect.zipRight(
         mutex.release(1),
-        E.fail(e as Error),
+        Effect.fail(e as Error),
       );
     }),
   );
 
-const hydrate = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
+const hydrate = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   pipe(
     mutex.take(1),
-    E.flatMap(() => {
+    Effect.flatMap(() => {
       root.fibrils[elem.id!] = elem.fibril;
       elem.fibril.elem = elem;
       elem.fibril.rehydrant = root;
@@ -49,29 +49,29 @@ const hydrate = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
 
       return FC.render(elem.type, elem.props);
     }),
-    E.flatMap((children) => {
+    Effect.flatMap((children) => {
       Hooks.setup(undefined);
       Fibril.commit(elem.fibril);
 
       return pipe(
         mutex.release(1),
-        E.as(Elem.connectChildren(elem, children)),
+        Effect.as(Elem.connectChildren(elem, children)),
       );
     }),
-    E.catchAllDefect((e) => {
+    Effect.catchAllDefect((e) => {
       Hooks.setup(undefined);
 
       return pipe(
         mutex.release(1),
-        E.andThen(() => E.fail(e as Error)),
+        Effect.andThen(() => Effect.fail(e as Error)),
       );
     }),
   );
 
-const render = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
+const render = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   pipe(
     mutex.take(1),
-    E.flatMap(() => {
+    Effect.flatMap(() => {
       root.fibrils[elem.id!] = elem.fibril;
       elem.fibril.elem = elem;
       elem.fibril.rehydrant = root;
@@ -80,42 +80,33 @@ const render = (mutex: E.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
 
       return FC.render(elem.type, elem.props);
     }),
-    E.flatMap((children) => {
+    Effect.flatMap((children) => {
       Hooks.setup(undefined);
       Fibril.commit(elem.fibril);
 
-      return E.as(
+      return Effect.as(
         mutex.release(1),
         Elem.connectChildren(elem, children),
       );
     }),
-    E.catchAllDefect((e) => {
+    Effect.catchAllDefect((e) => {
       Hooks.setup(undefined);
 
       return pipe(
         mutex.release(1),
-        E.andThen(() => E.fail(e as Error)),
+        Effect.andThen(() => Effect.fail(e as Error)),
       );
     }),
   );
 
-export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
-
-  effect: E.map(E.makeSemaphore(1), (mutex) => ({
-    lock  : mutex.take(1),
-    unlock: mutex.release(1),
-
+export class Dispatcher extends Effect.Service<Dispatcher>()('disreact/Dispatcher', {
+  effect: Effect.map(Effect.makeSemaphore(1), (mutex) => ({
+    lock   : mutex.take(1),
+    unlock : mutex.release(1),
     render : render(mutex),
     hydrate: hydrate(mutex),
     mount  : mount(mutex),
-
     mutex,
-
-    doRender: () =>
-      pipe(
-        mutex.take(1),
-      ),
   })),
-
   accessors: true,
 }) {}

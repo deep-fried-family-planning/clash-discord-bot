@@ -13,12 +13,12 @@ export const makeLambdaRuntime =  <A, E>(layer: L.Layer<A, E, never>) => {
 
   const signalHandler: NodeJS.SignalsListener = (signal) => {
     E.runFork(
-      pipe(
-        Console.log(`[runtime] ${signal} received`),
-        E.andThen(managedRuntime.disposeEffect),
-        E.andThen(Console.log('[runtime] exiting')),
-        E.andThen(E.sync(() => process.exit(0))),
-      ),
+      E.gen(function* () {
+        yield* Console.log(`[runtime] ${signal} received`);
+        yield* managedRuntime.disposeEffect;
+        yield* Console.log('[runtime] exiting');
+        yield* E.sync(() => process.exit(0));
+      }),
     );
   };
 

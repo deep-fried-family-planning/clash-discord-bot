@@ -4,6 +4,7 @@ import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
+import {TaskScheduler} from '#src/lambdas/service/TaskScheduler.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import type {ClanWar} from 'clashofclans.js';
 import type {Channel} from 'dfx/types';
@@ -96,7 +97,7 @@ export const makeTask = <
         (iso) => iso.replace(/\..+Z/, ''),
       );
 
-      yield* Scheduler.createSchedule({
+      yield* TaskScheduler.createSchedule({
         GroupName: `${encoded.data.clan.pk}-${encoded.data.clan.sk.replace('#', '')}`,
         Name     : `${encoded.name}-${encoded.data.opponent.tag.replace('#', '')}`,
 

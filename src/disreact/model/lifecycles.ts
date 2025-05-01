@@ -34,7 +34,7 @@ const relaySame = (root: Rehydrant) =>
 
 const relayNext = (root: Rehydrant) => Relay.use((relay) =>
   pipe(
-    Sources.use((registry) => registry.checkout(root.next.id!, root.next.props)),
+    Sources.checkout(root.next.id!, root.next.props),
     E.tap((next) => relay.setOutput(next)),
     E.tap(() => relay.sendStatus(
       Progress.Next({

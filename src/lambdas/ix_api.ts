@@ -1,15 +1,15 @@
 import {DEFER_SOURCE, makeResponse, PONG, succeedResponse} from '#src/discord/interaction.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {makeLambdaRuntime} from '#src/lambdas/util.ts';
+import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {type Interaction, InteractionType} from 'dfx/types';
 import {PlatformAlgorithm, verify} from 'discord-verify';
 import {Console} from 'effect';
 import {subtle} from 'node:crypto';
-import {PassService, PassServiceLayer} from 'scripts/dev/ws-bypass.ts';
 
 const runtime = makeLambdaRuntime(
-  PassServiceLayer,
+  EventRouterLive,
 );
 
 export const handler = async (req: APIGatewayProxyEventBase<any>) => await runtime(
@@ -37,7 +37,7 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       if (ix.type === InteractionType.APPLICATION_COMMAND) {
         return pipe(
           succeedResponse(200, DEFER_SOURCE),
-          E.tap(PassService.routeTo('ix_slash', ix)),
+          E.tap(EventRouter.invoke('ix_slash', ix)),
         );
       }
       if (
@@ -46,7 +46,7 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       ) {
         return pipe(
           succeedResponse(202),
-          E.tap(PassService.routeTo('ix_menu', ix)),
+          E.tap(EventRouter.invoke('ix_menu', ix)),
         );
       }
       return E.die('Not Implemented');
