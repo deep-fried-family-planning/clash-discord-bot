@@ -3,7 +3,7 @@ import {L, pipe} from '#src/internal/pure/effect.ts';
 import {poll} from '#src/lambdas/poll.ts';
 import {EventRouterLive} from '#src/service/EventRouter.ts';
 import {TaskSchedulerLive} from '#src/service/TaskScheduler.ts';
-import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/layers.ts';
+import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/util/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';

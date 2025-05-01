@@ -4,7 +4,7 @@ import {Effect, Layer} from 'effect';
 import type { APIGatewayProxyEventBase } from 'aws-lambda';
 import {subtle} from 'node:crypto';
 
-export class DiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/DiscordVerify', {
+export class InteractionVerify extends Effect.Service<InteractionVerify>()('deepfryer/InteractionVerify', {
   effect: Effect.gen(function* () {
     const env = yield* DiscordEnv;
 
@@ -26,7 +26,7 @@ export class DiscordVerify extends Effect.Service<DiscordVerify>()('deepfryer/Di
 }) {}
 
 export const DiscordVerifyLive
-  = process.env.LAMBDA_LOCAL === 'true' ? Layer.succeed(DiscordVerify, DiscordVerify.make({
+  = process.env.LAMBDA_LOCAL === 'true' ? Layer.succeed(InteractionVerify, InteractionVerify.make({
     isVerified: () => Effect.succeed(true),
   }))
-  : DiscordVerify.Default;
+  : InteractionVerify.Default;

@@ -1,5 +1,6 @@
 import {commandRouter} from '#src/discord/command-router.ts';
-import {Interacting} from '#src/discord/Interacting.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {Interacting} from '#src/service/Interacting.ts';
 import type {IxD, IxRE} from '#src/internal/discord-old/discord.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
@@ -39,5 +40,7 @@ export const ix_commands = (ix: IxD) => pipe(
 
     yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
   })),
+  E.tapError((error) => DeepFryerLogger.logError(error)),
+  E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
   E.provide(Interacting.Fresh),
 );

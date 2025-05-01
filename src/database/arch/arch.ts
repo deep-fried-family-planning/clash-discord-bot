@@ -6,7 +6,9 @@ import type {Equivalence} from 'effect';
 import type { ParseResult} from 'effect';
 
 type PartitionKey = S.Schema<any, string, never> | S.Schema<any, 'now', never>;
-type SortKey = S.Schema<any, string, never> | S.Schema<any, 'now', never>;
+type SortKey = | S.Schema<any, string, never>
+               | S.Schema<any, 'now', never>
+               | S.Schema<any, 'config', never>;
 
 export type KeyDeclaration<
   T extends DataTag,

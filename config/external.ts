@@ -59,3 +59,9 @@ export const DiscordEnv = Config.all({
   DFFP_DISCORD_ERROR_URL : Config.string('DFFP_DISCORD_ERROR_URL'),
   DFFP_DISCORD_DEBUG_URL : Config.string('DFFP_DISCORD_DEBUG_URL'),
 });
+
+export const DiscordRESTEnv = DiscordEnv.pipe(Config.map((env) =>
+  ({
+    token: env.DFFP_DISCORD_BOT_TOKEN,
+  }),
+));

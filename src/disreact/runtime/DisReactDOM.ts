@@ -77,7 +77,7 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
     };
   }),
   dependencies: [
-    DiscordRESTMemoryLive.pipe(Layer.provide(NodeHttpClient.layerUndici)),
+    DiscordRESTMemoryLive.pipe(Layer.provide(NodeHttpClient.layer)),
   ],
   accessors: true,
 }) {}

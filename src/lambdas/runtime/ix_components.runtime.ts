@@ -2,6 +2,7 @@ import {DiscordEnv} from '#config/external.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {E, L, Logger, LogLevel, pipe} from '#src/internal/pure/effect.ts';
 import {ix_components} from '#src/lambdas/ix_components.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
@@ -9,8 +10,11 @@ import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 const layer = pipe(
   L.mergeAll(
     ComponentRouter,
+    DeepFryerLogger.Default,
+  ),
+  L.provideMerge(
     DiscordRESTMemoryLive.pipe(
-      L.provide(NodeHttpClient.layerUndici),
+      L.provide(NodeHttpClient.layer),
       L.provideMerge(
         L.unwrapEffect(E.map(DiscordEnv, (env) =>
           DiscordConfig.layer({

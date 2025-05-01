@@ -14,13 +14,15 @@ export default defineConfig({
     futureDefaults: true,
   },
 
+  plugins: [],
+
   entry: {
     'dev_ws/index'  : {import: './dev/dev_ws.ts'},
-    'ix_api/index'  : {import: './src/lambdas/ix_api-runtime.ts'},
-    'ix_menu/index' : {import: './src/lambdas/ix_components-runtime.ts'},
-    'ix_slash/index': {import: './src/lambdas/ix_commands-runtime.ts'},
-    'poll/index'    : {import: './src/lambdas/poll-runtime.ts'},
-    'task/index'    : {import: './src/lambdas/task-runtime.ts'},
+    'ix_api/index'  : {import: './src/lambdas/runtime/ix_api.runtime.ts'},
+    'ix_menu/index' : {import: './src/lambdas/runtime/ix_components.runtime.ts'},
+    'ix_slash/index': {import: './src/lambdas/runtime/ix_commands.runtime.ts'},
+    'poll/index'    : {import: './src/lambdas/runtime/poll.runtime.ts'},
+    'task/index'    : {import: './src/lambdas/runtime/task.runtime.ts'},
   },
 
   output: {

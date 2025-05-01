@@ -42,6 +42,7 @@ export const AllianceId = asPrependedId('a-');
 export const InfoId = asPrependedId('i-');
 export const EmbedId = asPrependedId('e-');
 export const NowSk = S.Literal('now');
+export const ConfigSk = S.Literal('config');
 export const TransientUrl = S.String.pipe(S.length({min: 1, max: 2000}));
 export const ComputeName = S.String;
 export const DateTimeSk = S.DateTimeUtc;

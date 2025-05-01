@@ -1,17 +1,12 @@
 import {eachClan} from '#src/clash/poll/clan-war.ts';
 import {serverRaid} from '#src/clash/poll/server-raid.ts';
 import {scanServerClans, scanServers, scanUserPlayers} from '#src/database/DeepFryerDB.ts';
-import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
-import {Cron, DT, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {Cron, DT, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {BasicLayer, ClashLayer, DatabaseLayer, DiscordLayer, NetworkLayer} from '#src/layers.ts';
-import {EventRouter, EventRouterLive} from '#src/service/EventRouter.ts';
-import {TaskSchedulerLive} from '#src/service/TaskScheduler.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {SQS} from '@effect-aws/client-sqs';
-import {LambdaHandler} from '@effect-aws/lambda';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {EventRouter} from '#src/service/EventRouter.ts';
 import {Cause} from 'effect';
 
 const raidWeekend = Cron.make({
@@ -80,4 +75,6 @@ export const poll = E.fn(
     console.log(d);
     return E.die(d);
   }),
+  E.tapError((error) => DeepFryerLogger.logError(error)),
+  E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );

@@ -1,4 +1,3 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
@@ -6,14 +5,12 @@ import {WarBattle12hr} from '#src/clash/task/war-thread/war-battle-12hr.ts';
 import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
 import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
+import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {EventRouter, EventRouterLive} from '#src/service/EventRouter.ts';
-import {BaseLambdaLayer} from '#src/lambdas/util.ts';
-import {LambdaHandler} from '@effect-aws/lambda';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {EventRouter} from '#src/service/EventRouter.ts';
 import type {SQSEvent} from 'aws-lambda';
 import {Cause} from 'effect';
 import {fromEntries} from 'effect/Record';
@@ -71,4 +68,6 @@ export const task = E.fn(
 
     yield* logDiscordError([error]);
   })),
+  E.tapError((error) => DeepFryerLogger.logError(error)),
+  E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );

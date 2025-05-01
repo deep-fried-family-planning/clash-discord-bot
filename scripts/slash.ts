@@ -110,7 +110,7 @@ const h = () => E.gen(function* () {
 const live = pipe(
   DiscordApi.Live,
   L.provideMerge(DiscordRESTMemoryLive),
-  L.provide(NodeHttpClient.layerUndici),
+  L.provide(NodeHttpClient.layer),
   L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
   L.provideMerge(L.setConfigProvider(fromParameterStore())),
   L.provideMerge(L.setTracerTiming(true)),
@@ -120,5 +120,3 @@ const live = pipe(
 );
 
 export const handler = makeLambda(h, live);
-
-await handler({}, {} as never);

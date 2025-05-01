@@ -47,7 +47,7 @@ export class DiscordApi extends E.Tag('DeepFryerDiscord')<
 export const DiscordLayerLive = pipe(
   DiscordApi.Live,
   L.provideMerge(DiscordRESTMemoryLive),
-  L.provide(NodeHttpClient.layerUndici),
+  L.provide(NodeHttpClient.layer),
   L.provideMerge(
     L.unwrapEffect(
       E.map(DiscordEnv, (env) =>

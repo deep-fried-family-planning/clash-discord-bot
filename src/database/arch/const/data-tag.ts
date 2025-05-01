@@ -8,6 +8,7 @@ export const RANGE_KEY = 'RangeKey' as const;
 export const ALLIANCE = 'Alliance' as const;
 export const DISCORD_EMBED = 'DiscordEmbed' as const;
 export const SERVER = 'Server' as const;
+export const SERVER_CONFIG = 'ServerLogs' as const;
 export const SERVER_CLAN = 'ServerClan' as const;
 export const SERVER_INFO = 'ServerInfo' as const;
 export const USER = 'User' as const;

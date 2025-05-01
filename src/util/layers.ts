@@ -3,7 +3,7 @@ import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {DeepFryerDocument} from '#src/database/service/DeepFryerDocument.ts';
 import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
-import {DiscordLogger} from '#src/discord/DiscordLogger.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {DT, L, Logger} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
@@ -16,7 +16,7 @@ export const ClashLayer = L.mergeAll(
   ClashKing.Default,
 );
 
-export const DiscordLayer = DiscordLogger.Default.pipe(
+export const DiscordLayer = DeepFryerLogger.Default.pipe(
   L.provideMerge(DiscordApi.Live),
   L.provideMerge(DiscordRESTMemoryLive),
   L.provide(L.unwrapEffect(
@@ -34,7 +34,7 @@ export const DatabaseLayer = DeepFryerDocument.Default.pipe(
 
 export const NetworkLayer = L.mergeAll(
   DynamoDBDocument.defaultLayer,
-  NodeHttpClient.layerUndici,
+  NodeHttpClient.layer,
 );
 
 export const BasicLayer = L.mergeAll(

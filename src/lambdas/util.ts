@@ -1,4 +1,5 @@
 import {E, L, Logger, LogLevel, pipe} from '#src/internal/pure/effect.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {Effect} from 'effect';
 import {Console, ManagedRuntime} from 'effect';
 
@@ -10,7 +11,18 @@ export const BaseLambdaLayer = L.mergeAll(
 );
 
 export const makeLambdaRuntime = <A, E>(layer: L.Layer<A, E, never>) => {
-  const managedRuntime = ManagedRuntime.make(layer);
+  const managedRuntime = ManagedRuntime.make(
+    layer.pipe(
+      L.provideMerge(
+        L.mergeAll(
+          Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
+          Logger.minimumLogLevel(LogLevel.All),
+          L.setTracerTiming(true),
+          L.setTracerEnabled(true),
+        ),
+      ),
+    ),
+  );
 
   const signalHandler: NodeJS.SignalsListener = (signal) => {
     E.runFork(
@@ -33,7 +45,6 @@ export const bindHandler = <AWS, A, E, R>(handler: (event: AWS) => Effect.Effect
   (event: AWS) =>
     pipe(
       handler(event),
-      Effect.catchAllDefect((defect) => {
-        return E.void;
-      }),
+      Effect.tapError((error) => DeepFryerLogger.logError(error)),
+      Effect.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
     );

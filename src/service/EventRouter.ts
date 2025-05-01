@@ -110,6 +110,6 @@ class LocalEventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRou
 }) {}
 
 export const EventRouterLive =
-  process.env.LAMBDA_LOCAL === 'true' ? LocalEventRouter.Default
-  : process.env.LAMBDA_ENV === 'prod' ? EventRouter.Default
-  : QualEventRouter.Default;
+  process.env.LAMBDA_LOCAL === 'true' ? LocalEventRouter.Default :
+  process.env.LAMBDA_ENV === 'prod' ? EventRouter.Default :
+  QualEventRouter.Default;

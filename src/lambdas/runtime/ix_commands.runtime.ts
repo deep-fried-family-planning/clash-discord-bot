@@ -5,7 +5,8 @@ import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {ix_commands} from '#src/lambdas/ix_commands.ts';
-import {DatabaseLayer} from '#src/layers.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {DatabaseLayer} from '#src/util/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
@@ -19,6 +20,7 @@ const layer = pipe(
     Scheduler.defaultLayer,
     SQS.defaultLayer,
     DeepFryerPage.Default,
+    DeepFryerLogger.Default,
   ),
   L.provideMerge(DiscordLayerLive),
   L.provideMerge(
