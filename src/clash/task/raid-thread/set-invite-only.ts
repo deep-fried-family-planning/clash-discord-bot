@@ -1,8 +1,9 @@
-import {Server} from '#src/database/arch/codec.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
-import {g, S} from '#src/internal/pure/effect.ts';
-import {MD} from '#src/internal/pure/pure.ts';
 import {makeTask, TEMP_TEMP_ROLES} from '#src/clash/task/util/make-task.ts';
+import {Server} from '#src/database/arch/codec.ts';
+import {S} from '#src/internal/pure/effect.ts';
+import {MD} from '#src/internal/pure/pure.ts';
+import {DiscordREST} from 'dfx';
+import {Effect} from 'effect';
 
 const message = () => ({
   content: MD.content(
@@ -17,7 +18,8 @@ export const SetInviteOnly = makeTask(
   S.Struct({
     server: Server.Schema,
   }),
-  (data) => g(function* () {
-    yield* DiscordApi.createMessage(data.server.raids!, message());
+  (data) => Effect.gen(function* () {
+    const discord = yield* DiscordREST;
+    yield* discord.createMessage(data.server.raids!, message());
   }),
 );

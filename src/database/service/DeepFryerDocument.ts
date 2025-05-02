@@ -1,4 +1,4 @@
-import {DynamoEnv} from '#config/aws.ts';
+import {DynamoEnv} from 'config/aws.ts';
 import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';

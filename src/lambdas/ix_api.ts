@@ -21,18 +21,6 @@ const succeedResponse = (code: number, body?: any) => {
   });
 };
 
-const makeResponse = (code: number, body?: any) => {
-  if (!body) {
-    return {
-      statusCode: code,
-    };
-  }
-  return {
-    statusCode: code,
-    body      : JSON.stringify(body),
-  };
-};
-
 export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
   pipe(
     InteractionVerify.isVerified(req),
@@ -63,12 +51,7 @@ export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
       }
       return E.die('Not Implemented');
     }),
-    E.catchAllDefect((defect) =>
-      pipe(
-        Console.error(defect),
-        E.as(makeResponse(500)),
-      ),
-    ),
     E.tapError((error) => DeepFryerLogger.logError(error)),
     E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
+    E.catchAllDefect(() => succeedResponse(500)),
   );

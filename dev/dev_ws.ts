@@ -1,18 +1,22 @@
-import {LambdaProxyEnv} from '#config/aws.ts';
-import {AwsLambdaEnv, DiscordEnv} from '#config/external.ts';
+import {LambdaProxyEnv} from 'config/aws.ts';
+import {AwsLambdaEnv, DiscordEnv, DiscordRESTEnv} from 'config/external.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import { DiscordLayer } from '#src/util/layers';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {NodeHttpClient} from '@effect/platform-node';
 import type {APIGatewayProxyWebsocketEventV2} from 'aws-lambda';
 import type {APIGatewayProxyResultV2} from 'aws-lambda/trigger/api-gateway-proxy';
+import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
 import {Config} from 'effect';
 
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 
 const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
+  const discordREST = yield* DiscordREST;
   const [discord, proxy, aws] = yield* Config.all([DiscordEnv, LambdaProxyEnv, AwsLambdaEnv]);
   const route = event.requestContext.routeKey;
   const [token, id] = discord.DFFP_DISCORD_DEBUG_URL.split('/').reverse();
@@ -27,7 +31,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
       },
     });
 
-    yield* DiscordApi.executeWebhookJson(id, token, {
+    yield* discordREST.executeWebhook(id, token, {
       embeds: [{
         color      : nColor(COLOR.SUCCESS),
         title      : 'dev: connect',
@@ -51,7 +55,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
       },
     });
 
-    yield* DiscordApi.executeWebhookJson(id, token, {
+    yield* discordREST.executeWebhook(id, token, {
       embeds: [{
         color      : nColor(COLOR.ERROR),
         title      : 'dev: disconnect',
@@ -66,7 +70,7 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
     return {statusCode: 200};
   }
 
-  yield* DiscordApi.executeWebhookJson(id, token, {
+  yield* discordREST.executeWebhook(id, token, {
     embeds: [{
       color      : nColor(COLOR.INFO),
       title      : 'dev: received',
@@ -85,7 +89,11 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
 });
 
 const layer = pipe(
-  DiscordLayerLive,
+  DeepFryerLogger.Default.pipe(
+    L.provideMerge(DiscordRESTMemoryLive),
+    L.provideMerge(NodeHttpClient.layerUndici),
+    L.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
+  ),
   L.provideMerge(
     DynamoDBDocument.defaultLayer,
   ),

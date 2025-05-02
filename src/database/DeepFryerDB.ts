@@ -20,7 +20,9 @@ export const decodeUpgradeItem = <A extends Codec>(s: A, item: Codec.Enc<A>) =>
 export const decodeUpgradeItems = <A extends Codec>(s: A, items: Chunk.Chunk<Codec.Enc<A>>) =>
   pipe(
     Chunk.toArray(items),
-    Array.map((item) => decodeUpgradeItem(s, item)),
+    Array.map((item) =>
+      decodeUpgradeItem(s, item).pipe(E.catchTag('DataDecodeError', () => E.succeed(undefined))),
+    ),
     E.allWith({concurrency: 'unbounded'}),
     E.map((items) => items.filter((item) => !!item)),
   );

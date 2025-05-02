@@ -11,12 +11,13 @@ import {user, USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS, waLinks} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS, waMirrors} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT, waScout} from '#src/discord/commands/wa-scout.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import type {IxD, IxDs} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {type IxD, type IxDs, IXSOT} from '#src/internal/discord-old/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
+import {DiscordREST} from 'dfx';
+import {ApplicationCommandOptionType} from 'dfx/types';
 
 const IXS_LOOKUP = {
   [CLAN_FAM.name]  : clanfam,
@@ -45,8 +46,8 @@ const overrideNames = <T extends {name: string; value?: unknown}>(options: T[]):
 
 const nameOptions = <T extends CommandSpec>(ix: IxD): IxDS<T> => {
   if ('options' in ix.data!) {
-    const subgroup = ix.data.options.find((o) => o.type === IXSOT.SUB_COMMAND_GROUP);
-    const cmd = ix.data.options.find((o) => o.type === IXSOT.SUB_COMMAND);
+    const subgroup = ix.data.options.find((o) => o.type === ApplicationCommandOptionType.SUB_COMMAND_GROUP);
+    const cmd = ix.data.options.find((o) => o.type === ApplicationCommandOptionType.SUB_COMMAND);
 
     if (subgroup) {
       return subgroup.options![0].options
@@ -67,9 +68,10 @@ const nameOptions = <T extends CommandSpec>(ix: IxD): IxDS<T> => {
 };
 
 export const commandRouter = (ix: IxD) => E.gen(function* () {
+  const discord = yield* DiscordREST;
   const root = (ix.data as IxDs).name as keyof typeof IXS_LOOKUP;
 
   const message = yield* IXS_LOOKUP[root](ix, nameOptions(ix));
 
-  return yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
+  yield* discord.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
 });

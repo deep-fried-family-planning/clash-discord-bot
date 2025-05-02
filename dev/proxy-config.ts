@@ -9,14 +9,10 @@ export const DevUrlConfig = pipe(
       Layer.provide(SSMService.defaultLayer),
     ),
   ),
-  Effect.catchAllDefect((e) => Effect.die(e)),
 );
 
-export const ProxyConfig = pipe(
-  Config.all({
-    protocol: Config.succeed('ws'),
-    host    : Config.succeed('localhost'),
-    port    : Config.succeed(3000),
-  }),
-  Effect.catchAllDefect((e) => Effect.die(e)),
-);
+export const ProxyConfig = Config.all({
+  protocol: Config.succeed('ws'),
+  host    : Config.succeed('localhost'),
+  port    : Config.succeed(3000),
+});

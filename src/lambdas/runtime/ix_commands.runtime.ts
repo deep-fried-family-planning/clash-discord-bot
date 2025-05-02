@@ -1,16 +1,18 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {DiscordRESTEnv} from 'config/external.ts';
 import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
-import {DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
 import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {ix_commands} from '#src/lambdas/ix_commands.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
-import {DatabaseLayer} from '#src/util/layers.ts';
+import {DatabaseLayer, DiscordLayer} from '#src/util/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {NodeHttpClient} from '@effect/platform-node';
+import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 
 const layer = pipe(
   L.mergeAll(
@@ -20,9 +22,12 @@ const layer = pipe(
     Scheduler.defaultLayer,
     SQS.defaultLayer,
     DeepFryerPage.Default,
-    DeepFryerLogger.Default,
+    DeepFryerLogger.Default.pipe(
+      L.provideMerge(DiscordRESTMemoryLive),
+      L.provideMerge(NodeHttpClient.layerUndici),
+      L.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
+    ),
   ),
-  L.provideMerge(DiscordLayerLive),
   L.provideMerge(
     L.mergeAll(
       DatabaseLayer,

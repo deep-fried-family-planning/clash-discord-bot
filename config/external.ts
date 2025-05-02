@@ -1,4 +1,5 @@
-import {Config, Redacted} from 'effect';
+import * as Config from 'effect/Config';
+import * as Redacted from 'effect/Redacted';
 
 /**
  * @link https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime

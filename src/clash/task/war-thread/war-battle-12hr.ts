@@ -1,14 +1,15 @@
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {makeTask, TEMP_ROLES} from '#src/clash/task/war-thread/common.ts';
 import type {snflk} from '#src/internal/discord-old/types.ts';
 import {dBold, dCrss, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {dedupeL, filterL, mapL, reduceL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
-import {makeTask, TEMP_ROLES} from '#src/clash/task/war-thread/common.ts';
 import type {ClanWarAttack, ClanWarMember} from 'clashofclans.js';
+import {DiscordREST} from 'dfx';
 import {join} from 'effect/Array';
 
 export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(function* () {
+  const discord = yield* DiscordREST;
   const maxHits = war.battle.attacksPerMember;
   const hits = pipe(
     war.battle.clan.attacks,
@@ -27,7 +28,7 @@ export const WarBattle12hr = makeTask('WarBattle12hr', (data, war) => E.gen(func
     sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition))),
     mapL((m) => [m, `${dmUser(data.links[m.tag])} (${m.name})`] as const),
   );
-  yield* DiscordApi.createMessage(data.thread, {
+  yield* discord.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Battle ends ${dtRel(war.battle.endTime.getTime())}`),

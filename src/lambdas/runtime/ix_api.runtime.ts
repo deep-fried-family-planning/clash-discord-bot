@@ -1,26 +1,25 @@
-import {DiscordRESTEnv} from '#config/external.ts';
+import {DiscordRESTEnv} from 'config/external.ts';
+import {L} from '#src/internal/pure/effect.ts';
 import {ix_api} from '#src/lambdas/ix_api.ts';
-import {makeLambdaRuntime} from '#src/lambdas/util.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
-import {DiscordVerifyLive} from '#src/service/InteractionVerify.ts';
 import {EventRouterLive} from '#src/service/EventRouter.ts';
+import {InteractionVerify} from '#src/service/InteractionVerify.ts';
+import {LambdaHandler} from '@effect-aws/lambda';
 import {NodeHttpClient} from '@effect/platform-node';
-import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import {Layer} from 'effect';
 
-const runtime = makeLambdaRuntime(
-  Layer.mergeAll(
-    EventRouterLive,
-    DiscordVerifyLive,
-    DeepFryerLogger.Default.pipe(
-      Layer.provide(DiscordRESTMemoryLive),
-      Layer.provide(NodeHttpClient.layer),
-      Layer.provide(DiscordConfig.layerConfig(DiscordRESTEnv)),
-    ),
+const layer = Layer.mergeAll(
+  EventRouterLive(),
+  InteractionVerify.Default,
+  DeepFryerLogger.Default.pipe(
+    L.provideMerge(DiscordRESTMemoryLive),
+    L.provideMerge(NodeHttpClient.layerUndici),
+    L.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
   ),
 );
 
-export const handler = async (req: APIGatewayProxyEventBase<any>) => await runtime(
-  ix_api(req),
-);
+export const handler = LambdaHandler.make({
+  handler: ix_api,
+  layer  : layer,
+});

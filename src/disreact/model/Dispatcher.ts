@@ -2,8 +2,14 @@ import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Effect, pipe} from 'effect';
+import * as Data from 'effect/Data';
+import * as Effect from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import {Hooks} from './hooks';
+
+export class RenderError extends Data.TaggedError('RenderError')<{
+  cause: any;
+}> {}
 
 const mount = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
   pipe(
@@ -26,12 +32,11 @@ const mount = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =>
         Effect.as(Elem.connectChildren(elem, children)),
       );
     }),
-    Effect.catchAllDefect((e) => {
+    Effect.catchAllDefect((cause) => {
       Hooks.setup(undefined);
-
       return Effect.zipRight(
         mutex.release(1),
-        Effect.fail(e as Error),
+        new RenderError({cause}),
       );
     }),
   );
@@ -58,12 +63,11 @@ const hydrate = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) 
         Effect.as(Elem.connectChildren(elem, children)),
       );
     }),
-    Effect.catchAllDefect((e) => {
+    Effect.catchAllDefect((cause) => {
       Hooks.setup(undefined);
-
-      return pipe(
+      return Effect.zipRight(
         mutex.release(1),
-        Effect.andThen(() => Effect.fail(e as Error)),
+        new RenderError({cause}),
       );
     }),
   );
@@ -89,12 +93,11 @@ const render = (mutex: Effect.Semaphore) => (root: Rehydrant, elem: Elem.Task) =
         Elem.connectChildren(elem, children),
       );
     }),
-    Effect.catchAllDefect((e) => {
+    Effect.catchAllDefect((cause) => {
       Hooks.setup(undefined);
-
-      return pipe(
+      return Effect.zipRight(
         mutex.release(1),
-        Effect.andThen(() => Effect.fail(e as Error)),
+        new RenderError({cause}),
       );
     }),
   );

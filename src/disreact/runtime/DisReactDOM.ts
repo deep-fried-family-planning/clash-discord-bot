@@ -1,8 +1,7 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {NodeHttpClient} from '@effect/platform-node';
-import {DiscordREST, DiscordRESTMemoryLive} from 'dfx';
+import {DiscordREST} from 'dfx';
 import {InteractionCallbackType} from 'dfx/types';
-import {Config, Effect, Layer, Redacted} from 'effect';
+import {Effect, Redacted} from 'effect';
 
 export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
   effect: Effect.gen(function* () {
@@ -76,17 +75,12 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
         ),
     };
   }),
-  dependencies: [
-    DiscordRESTMemoryLive.pipe(Layer.provide(NodeHttpClient.layer)),
-  ],
   accessors: true,
 }) {}
 
 export class DiscordJsDisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
   effect: Effect.sync(() => {
-    return {
-
-    } as DisReactDOM;
+    return {} as DisReactDOM;
   }),
   accessors: true,
 }) {}

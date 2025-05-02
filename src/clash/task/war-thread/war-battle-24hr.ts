@@ -1,18 +1,19 @@
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {makeTask} from '#src/clash/task/war-thread/common.ts';
 import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
-import {makeTask} from '#src/clash/task/war-thread/common.ts';
 import type {ClanWarMember} from 'clashofclans.js';
+import {DiscordREST} from 'dfx';
 import {join} from 'effect/Array';
 
 export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function* () {
-  yield* DiscordApi.modifyChannel(data.thread, {
+  const discord = yield* DiscordREST;
+  yield* discord.modifyChannel(data.thread, {
     name: `🗡│${data.clanName}`,
   });
 
-  yield* DiscordApi.createMessage(data.thread, {
+  yield* discord.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Battle ends ${dtRel(war.battle.endTime.getTime())}`),

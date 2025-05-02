@@ -59,9 +59,6 @@ export class Interacting extends Effect.Service<Interacting>()('deepfryer/Caller
             ], {concurrency: 'unbounded'}),
           ),
         ),
-
-      getUser,
-
     };
   }),
   accessors: true,

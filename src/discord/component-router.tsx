@@ -9,8 +9,8 @@ export const ComponentRouter = pipe(
   L.provideMerge(DisReactConfig.configLayer({
     token  : '',
     sources: [
-      <OmniBoard/>,
-      <StartMenu/>,
+      OmniBoard,
+      StartMenu,
     ],
   })),
 );

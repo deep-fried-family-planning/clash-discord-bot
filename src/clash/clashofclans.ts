@@ -1,4 +1,4 @@
-import {ClashEnv} from '#config/external.ts';
+import {ClashEnv} from 'config/external.ts';
 import {RestCache} from '#src/clash/layers/restcache.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
@@ -43,11 +43,12 @@ export class ClashOfClans extends E.Service<ClashClient>()('deepfryer/ClashOfCla
         const formatted = `#${tag.toUpperCase().replace(/O/g, '0').replace(/^#/g, '').replace(/\s/g, '')}`;
 
         if (/^#?[0289PYLQGRJCUV]$/.test(formatted)) {
-          return E.fail(new SlashUserError({issue: 'Invalid tag provided.'}));
+          return new SlashUserError({issue: 'Invalid tag provided.'});
         }
 
         return E.succeed(formatted);
       },
+
 
       verifyPlayerToken: (playerTag, options) =>
         E.promise(

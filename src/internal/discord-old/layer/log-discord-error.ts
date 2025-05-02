@@ -1,22 +1,23 @@
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {RK_CLOSE, RK_OPEN} from '#src/internal/discord-old/constants/route-kind.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {IXCBS, IXCT} from '#src/internal/discord-old/discord.ts';
 import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
 import {buildCloudWatchLink} from '#src/internal/discord-old/util/validation.ts';
-import {IXCBS, IXCT} from '#src/internal/discord-old/discord.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {UI} from 'dfx';
+import {DiscordREST, UI} from 'dfx';
 import {inspect} from 'node:util';
 
 export const logDiscordError = (e: unknown[]) => E.gen(function* () {
   yield* CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
 
+  const discord = yield* DiscordREST;
+
   const url = process.env.DFFP_DISCORD_ERROR_URL!;
 
   const [token, id] = url.split('/').reverse();
 
-  const log = yield* DiscordApi.executeWebhookJson(id, token, {
+  const log = yield* discord.executeWebhook(id, token, {
     embeds: [{
       color      : nColor(COLOR.ERROR),
       title      : process.env.AWS_LAMBDA_FUNCTION_NAME!,
@@ -33,7 +34,11 @@ export const logDiscordError = (e: unknown[]) => E.gen(function* () {
         buildCloudWatchLink(),
       ),
     }],
-  });
+  }, {
+    urlParams: {
+      wait: true,
+    },
+  }).json;
 
   return {
     embeds: [{

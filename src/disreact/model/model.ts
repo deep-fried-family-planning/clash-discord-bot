@@ -11,12 +11,6 @@ import {Pragma} from './pragma';
 export * as Model from '#src/disreact/model/model.ts';
 export type Model = never;
 
-export const defaultLayers = L.mergeAll(
-  Sources.Default,
-  Dispatcher.Default,
-  Relay.Default,
-);
-
 export const register = Sources.register;
 
 export const create = (key: Source.Key, props: any = {}) =>

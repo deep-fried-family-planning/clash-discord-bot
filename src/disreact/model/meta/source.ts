@@ -47,7 +47,7 @@ const fromElem = (elem: Elem, id?: string): Source => {
   }
 
   const clone = Elem.cloneTask(elem);
-  clone.id = id ?? FC.getName(elem.type);
+  clone.id = id ?? elem.idn!;
 
   return {
     id  : clone.id,
@@ -61,7 +61,7 @@ const fromFC = (src: FC, id?: string): Source => {
   }
 
   const elem = Elem.makeTask(src, {});
-  elem.id = id ?? FC.getName(src);
+  elem.id = id ?? elem.idn!;
 
   return {
     id: elem.id,

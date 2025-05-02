@@ -1,8 +1,10 @@
-import {DynamoEnv} from '#config/aws.ts';
+import {DynamoEnv} from 'config/aws.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Data, Duration, flow, Number, RateLimiter, Effect} from 'effect';
 
-export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{}> {}
+export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{
+  cause?: any;
+}> {}
 
 const estimateRecordWriteCapacity = (encoding: any) =>
   pipe(
@@ -55,7 +57,7 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
         const units = Math.ceil(estimate);
 
         return units > env.DFFP_DDB_RCUS
-          ? E.die(new CapacityDefect())
+          ? E.dieSync(() => new CapacityDefect({cause: 'RCU Exceeded'}))
           : readLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -63,11 +65,10 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
         if (!estimate) {
           return writeLimiter(effect);
         }
-
         const units = Math.ceil(estimate);
 
         return units > env.DFFP_DDB_WCUS
-          ? Effect.die(new CapacityDefect())
+          ? Effect.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -76,7 +77,7 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
         const units = estimateRecordWriteCapacity(encoded);
 
         return units > env.DFFP_DDB_WCUS
-          ? Effect.die(new CapacityDefect())
+          ? Effect.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 

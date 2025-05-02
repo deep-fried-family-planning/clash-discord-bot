@@ -1,4 +1,3 @@
-import {REDACTED_DISCORD_APP_ID, REDACTED_DISCORD_BOT_TOKEN} from '#src/internal/discord-old/constants/secrets.ts';
 import {CACHE_BUST} from '#src/discord/commands/cache-bust.ts';
 import {CLAN_FAM} from '#src/discord/commands/clanfam.ts';
 import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';
@@ -12,7 +11,7 @@ import {USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
+import {REDACTED_DISCORD_APP_ID} from '#src/internal/discord-old/constants/secrets.ts';
 import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import type {CommandSpec} from '#src/internal/discord-old/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
@@ -20,10 +19,10 @@ import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
+import {DiscordLayer} from '#src/util/layers';
 import {makeLambda} from '@effect-aws/lambda';
 import {fromParameterStore} from '@effect-aws/ssm';
-import {NodeHttpClient} from '@effect/platform-node';
-import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
+import {DiscordREST} from 'dfx';
 import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {map} from 'effect/Array';
 import {mapEntries, toEntries} from 'effect/Record';
@@ -108,10 +107,7 @@ const h = () => E.gen(function* () {
 );
 
 const live = pipe(
-  DiscordApi.Live,
-  L.provideMerge(DiscordRESTMemoryLive),
-  L.provide(NodeHttpClient.layer),
-  L.provide(DiscordConfig.layerConfig({token: CFG.redacted(REDACTED_DISCORD_BOT_TOKEN)})),
+  DiscordLayer,
   L.provideMerge(L.setConfigProvider(fromParameterStore())),
   L.provideMerge(L.setTracerTiming(true)),
   L.provideMerge(L.setTracerEnabled(true)),

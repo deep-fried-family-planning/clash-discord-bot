@@ -1,4 +1,5 @@
 import {defineConfig} from '@rspack/cli';
+import {EnvironmentPlugin, SwcJsMinimizerRspackPlugin} from '@rspack/core';
 import {resolve} from 'node:path';
 import tsconfig from './tsconfig.json' with {type: 'json'};
 
@@ -14,7 +15,9 @@ export default defineConfig({
     futureDefaults: true,
   },
 
-  plugins: [],
+  // plugins: [
+  //   new EnvironmentPlugin({}),
+  // ],
 
   entry: {
     'dev_ws/index'  : {import: './dev/dev_ws.ts'},
@@ -48,6 +51,18 @@ export default defineConfig({
   optimization: {
     splitChunks   : false,
     avoidEntryIife: true,
+    minimizer     : [
+      new SwcJsMinimizerRspackPlugin({
+        minimizerOptions: {
+          minify: true,
+          mangle: {
+            keep_fnames: true,
+          },
+          module  : true,
+          compress: true,
+        },
+      }),
+    ],
   },
 
   module: {

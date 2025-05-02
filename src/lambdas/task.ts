@@ -5,14 +5,12 @@ import {WarBattle12hr} from '#src/clash/task/war-thread/war-battle-12hr.ts';
 import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
 import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
 import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {EventRouter} from '#src/service/EventRouter.ts';
 import type {SQSEvent} from 'aws-lambda';
-import {Cause} from 'effect';
+import {DiscordREST} from 'dfx/DiscordREST';
 import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
 
@@ -41,6 +39,7 @@ const lookup = pipe(
 
 export const task = E.fn(
   function* (event: SQSEvent) {
+    const discord = yield* DiscordREST;
     const isActive = yield* EventRouter.isActive('task', event);
 
     if (!isActive) {
@@ -51,7 +50,7 @@ export const task = E.fn(
     yield* CSL.debug('ScheduledTask', inspect(json, true, null));
 
     if (json.type === 'remind me') {
-      return yield* DiscordApi.createMessage(json.channel_id, {
+      return yield* discord.createMessage(json.channel_id, {
         content: `<@${json.user_id}> reminder - ${json.message_url}`,
       });
     }
@@ -62,12 +61,6 @@ export const task = E.fn(
 
     return yield* lookup[json.name as keyof typeof lookup](json);
   },
-  E.catchAll((err) => logDiscordError([err])),
-  E.catchAllCause((e) => E.gen(function* () {
-    const error = Cause.prettyErrors(e);
-
-    yield* logDiscordError([error]);
-  })),
   E.tapError((error) => DeepFryerLogger.logError(error)),
   E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );

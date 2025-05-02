@@ -1,4 +1,4 @@
-import {Config} from 'effect';
+import * as Config from 'effect/Config';
 
 export const DynamoEnv = Config.all({
   DFFP_DDB_TABLE: Config.string('DDB_OPERATIONS').pipe(Config.withDefault('')),
