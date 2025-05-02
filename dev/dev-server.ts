@@ -1,6 +1,6 @@
-import {handler as lambda_ix_slash} from '#src/lambdas/ix_commands.ts';
-import {handler as lambda_ix_menu} from '#src/lambdas/ix_components.ts';
-import {handler as lambda_poll} from '#src/lambdas/poll.ts';
+import {handler as lambda_ix_slash} from '#src/lambdas/runtime/ix_commands.runtime.ts';
+import {handler as lambda_ix_menu} from '#src/lambdas/runtime/ix_components.runtime.ts';
+import {handler as lambda_poll} from '#src/lambdas/runtime/poll.runtime.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 // import {handler as lambda_task} from '#src/task.ts';
 

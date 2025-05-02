@@ -1,25 +1,23 @@
+import {DiscordRESTEnv} from 'config/external.ts';
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
 import {DeepFryerDocument} from '#src/database/service/DeepFryerDocument.ts';
-import {DiscordLogger} from '#src/discord/DiscordLogger.ts';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
-import {DT, L, Logger, RDT} from '#src/internal/pure/effect.ts';
+import {DocumentCapacity} from '#src/database/service/DocumentCapacity.ts';
+import {DT, L, Logger} from '#src/internal/pure/effect.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 
 export const ClashLayer = L.mergeAll(
-  ClashOfClans.Live,
-  ClashKing.Live,
+  ClashOfClans.Default,
+  ClashKing.Default,
 );
 
-export const DiscordLayer = DiscordLogger.Default.pipe(
-  L.provideMerge(DiscordApi.Live),
+export const DiscordLayer = DeepFryerLogger.Default.pipe(
   L.provideMerge(DiscordRESTMemoryLive),
-  L.provide(DiscordConfig.layer({
-    token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN),
-  })),
+  L.provideMerge(NodeHttpClient.layerUndici),
+  L.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
 );
 
 export const DatabaseLayer = DeepFryerDocument.Default.pipe(
@@ -28,7 +26,6 @@ export const DatabaseLayer = DeepFryerDocument.Default.pipe(
 
 export const NetworkLayer = L.mergeAll(
   DynamoDBDocument.defaultLayer,
-  NodeHttpClient.layerUndici,
 );
 
 export const BasicLayer = L.mergeAll(

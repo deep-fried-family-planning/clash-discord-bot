@@ -1,6 +1,6 @@
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {TaskScheduler} from '#src/lambdas/service/TaskScheduler.ts';
+import {TaskScheduler} from '#src/service/TaskScheduler.ts';
 import type {DurationInput} from 'effect/Duration';
 
 export type TaskEffect = E.Effect<void, any, any>;

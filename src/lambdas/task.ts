@@ -1,4 +1,3 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
@@ -6,16 +5,12 @@ import {WarBattle12hr} from '#src/clash/task/war-thread/war-battle-12hr.ts';
 import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
 import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
 import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import {CSL, E, L, pipe} from '#src/internal/pure/effect.ts';
+import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
-import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
-import {BaseLambdaLayer} from '#src/lambdas/util.ts';
-import {LambdaHandler} from '@effect-aws/lambda';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {EventRouter} from '#src/service/EventRouter.ts';
 import type {SQSEvent} from 'aws-lambda';
-import {Cause} from 'effect';
+import {DiscordREST} from 'dfx/DiscordREST';
 import {fromEntries} from 'effect/Record';
 import {inspect} from 'node:util';
 
@@ -42,8 +37,9 @@ const lookup = pipe(
   fromEntries,
 );
 
-const taskHandler = E.fn(
+export const task = E.fn(
   function* (event: SQSEvent) {
+    const discord = yield* DiscordREST;
     const isActive = yield* EventRouter.isActive('task', event);
 
     if (!isActive) {
@@ -54,7 +50,7 @@ const taskHandler = E.fn(
     yield* CSL.debug('ScheduledTask', inspect(json, true, null));
 
     if (json.type === 'remind me') {
-      return yield* DiscordApi.createMessage(json.channel_id, {
+      return yield* discord.createMessage(json.channel_id, {
         content: `<@${json.user_id}> reminder - ${json.message_url}`,
       });
     }
@@ -65,25 +61,6 @@ const taskHandler = E.fn(
 
     return yield* lookup[json.name as keyof typeof lookup](json);
   },
-  E.catchAll((err) => logDiscordError([err])),
-  E.catchAllCause((e) => E.gen(function* () {
-    const error = Cause.prettyErrors(e);
-
-    yield* logDiscordError([error]);
-  })),
+  E.tapError((error) => DeepFryerLogger.logError(error)),
+  E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );
-
-const layer = pipe(
-  L.mergeAll(
-    DiscordLayerLive,
-    EventRouterLive,
-    ClashOfClans.Live,
-  ),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-  L.provideMerge(BaseLambdaLayer),
-);
-
-export const handler = LambdaHandler.make({
-  handler: taskHandler,
-  layer  : layer,
-});

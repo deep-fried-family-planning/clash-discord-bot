@@ -1,8 +1,9 @@
 import {makeTask, TEMP_TEMP_ROLES} from '#src/clash/task/util/make-task.ts';
 import {Server} from '#src/database/arch/codec';
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
-import {g, S} from '#src/internal/pure/effect.ts';
+import {S} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
+import {DiscordREST} from '#src/util/re-exports';
+import {Effect} from 'effect';
 
 const message = () => ({
   content: MD.content(
@@ -17,7 +18,8 @@ export const SetOpen = makeTask(
   S.Struct({
     server: Server.Schema,
   }),
-  (data) => g(function* () {
-    yield* DiscordApi.createMessage(data.server.raids!, message());
+  (data) => Effect.gen(function* () {
+    const discord = yield* DiscordREST;
+    yield* discord.createMessage(data.server.raids!, message());
   }),
 );

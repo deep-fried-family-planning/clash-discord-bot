@@ -1,76 +1,14 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {commandRouter} from '#src/discord/command-router.ts';
-import {ComponentRouter} from '#src/discord/component-router.tsx';
-import {DiscordApi, DiscordLayerLive} from '#src/internal/discord-old/layer/discord-api.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import type {IxD, IxRE} from '#src/internal/discord-old/discord.ts';
-import {DT, E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
-import {DatabaseLayer} from '#src/layers.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
-import {SQS} from '@effect-aws/client-sqs';
-import {LambdaHandler} from '@effect-aws/lambda';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Cause} from 'effect';
+import type {IxD} from '#src/internal/discord-old/discord.ts';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {Interacting} from '#src/service/Interacting.ts';
 
-const commandHandler = (ix: IxD) => pipe(
-  commandRouter(ix),
-  E.catchTag('DeepFryerSlashUserError', (e) => E.gen(function* () {
-    const userMessage = yield* logDiscordError([e]);
-
-    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
-      ...userMessage,
-      embeds: [{
-        ...userMessage.embeds[0],
-        title: e.issue,
-      }],
-    } as Partial<IxRE>);
-  })),
-  E.catchTag('DeepFryerClashError', (e) => E.gen(function* () {
-    const userMessage = yield* logDiscordError([e]);
-
-    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, {
-      ...userMessage,
-      embeds: [{
-        ...userMessage.embeds[0],
-        // @ts-expect-error temporary
-        title: `${e.original.cause.reason}: ${decodeURIComponent(e.original.cause.path as string)}`,
-      }],
-    } as Partial<IxRE>);
-  })),
-  E.catchAllCause((error) => E.gen(function* () {
-    const e = Cause.prettyErrors(error);
-
-    const userMessage = yield* logDiscordError(e);
-
-    yield* DiscordApi.editOriginalInteractionResponse(ix.application_id, ix.token, userMessage);
-  })),
-);
-
-const layer = pipe(
-  L.mergeAll(
-    ComponentRouter,
-    ClashOfClans.Live,
-    ClashKing.Live,
-    Scheduler.defaultLayer,
-    SQS.defaultLayer,
-    DeepFryerPage.Default,
-  ),
-  L.provideMerge(DiscordLayerLive),
-  L.provideMerge(
-    L.mergeAll(
-      DatabaseLayer,
-      L.setTracerTiming(true),
-      L.setTracerEnabled(true),
-      Logger.replace(Logger.defaultLogger, Logger.structuredLogger),
-      DT.layerCurrentZoneLocal,
-    ),
-  ),
-  L.provideMerge(DynamoDBDocument.defaultLayer),
-);
-
-export const handler = LambdaHandler.make({
-  handler: commandHandler,
-  layer  : layer,
-});
+export const ix_commands = (ix: IxD) =>
+  pipe(
+    E.fork(Interacting.init(ix)),
+    E.flatMap(() => commandRouter(ix)),
+    E.tapError((error) => DeepFryerLogger.logError(error)),
+    E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
+    E.provide(Interacting.Fresh),
+  );

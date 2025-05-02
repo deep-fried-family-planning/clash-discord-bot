@@ -1,10 +1,8 @@
 import {type IxD, type IxR, type IxRE, MGF} from '#src/internal/discord-old/discord.ts';
-import {E, L, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {E} from '#src/internal/pure/effect.ts';
 import type {EA} from '#src/internal/types.ts';
-import {NodeHttpClient} from '@effect/platform-node';
-import {Discord, DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
 import type {DiscordRESTError} from 'dfx/DiscordREST';
-import {DiscordREST} from 'dfx/DiscordREST';
+import {Discord, DiscordREST} from 'dfx';
 import type {Message} from 'dfx/types';
 
 type Orig<T extends keyof typeof DiscordREST.Service> = Parameters<typeof DiscordREST.Service[T]>;
@@ -39,13 +37,4 @@ const api = E.gen(function* () {
 export class DiscordApi extends E.Tag('DeepFryerDiscord')<
   DiscordApi,
   EA<typeof api>
->() {
-  static Live = L.effect(this, api);
-}
-
-export const DiscordLayerLive = pipe(
-  DiscordApi.Live,
-  L.provideMerge(DiscordRESTMemoryLive),
-  L.provide(NodeHttpClient.layerUndici),
-  L.provideMerge(DiscordConfig.layer({token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN)})),
-);
+>() {}

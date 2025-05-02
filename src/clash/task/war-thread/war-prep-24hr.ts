@@ -1,10 +1,11 @@
-import {DiscordApi} from '#src/internal/discord-old/layer/discord-api.ts';
 import {dHdr1, dHdr3, dLinesS, dmRole, dtRel} from '#src/internal/discord-old/util/markdown.ts';
 import {g} from '#src/internal/pure/effect.ts';
 import {makeTask, TEMP_ROLES} from '#src/clash/task/war-thread/common.ts';
+import {DiscordREST} from 'dfx';
+import {Effect} from 'effect';
 
 export const WarPrep24hr = makeTask('WarPrep24hr', (data, war) => g(function* () {
-  yield* DiscordApi.createMessage(data.thread, {
+  yield* Effect.flatMap(DiscordREST, (discord) => discord.createMessage(data.thread, {
     content: dLinesS(
       dHdr1(data.clanName),
       dHdr3(`Prep ends ${dtRel(war.prep.startTime.getTime())}`),
@@ -14,5 +15,5 @@ export const WarPrep24hr = makeTask('WarPrep24hr', (data, war) => g(function* ()
       '* Please check the army camps/spells/siege of enemy ranks #1-10.',
       '* Report troop/spell comps or send screenshots.',
     ),
-  });
+  }));
 }));

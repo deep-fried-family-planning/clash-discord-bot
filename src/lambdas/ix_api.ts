@@ -1,22 +1,29 @@
-import {DEFER_SOURCE, makeResponse, PONG, succeedResponse} from '#src/discord/interaction.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
-import {DiscordVerify, DiscordVerifyLive} from '#src/lambdas/service/DiscordVerify.ts';
-import {EventRouter, EventRouterLive} from '#src/lambdas/service/EventRouter.ts';
-import {makeLambdaRuntime} from '#src/lambdas/util.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {EventRouter} from '#src/service/EventRouter.ts';
+import {InteractionVerify} from '#src/service/InteractionVerify.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
-import {type Interaction, InteractionType} from 'dfx/types';
-import {Console, Layer} from 'effect';
+import {type Interaction, InteractionCallbackType, InteractionType} from 'dfx/types';
+import {Console} from 'effect';
 
-const runtime = makeLambdaRuntime(
-  Layer.mergeAll(
-    EventRouterLive,
-    DiscordVerifyLive,
-  ),
-);
+const PONG = {type: InteractionCallbackType.PONG};
+const DEFER_SOURCE = {type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE};
 
-export const handler = async (req: APIGatewayProxyEventBase<any>) => await runtime(
+const succeedResponse = (code: number, body?: any) => {
+  if (!body) {
+    return E.succeed({
+      statusCode: code,
+    });
+  }
+  return E.succeed({
+    statusCode: code,
+    body      : JSON.stringify(body),
+  });
+};
+
+export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
   pipe(
-    DiscordVerify.isVerified(req),
+    InteractionVerify.isVerified(req),
     E.flatMap((isVerified) => {
       if (!isVerified) {
         return succeedResponse(401);
@@ -30,7 +37,7 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       if (ix.type === InteractionType.APPLICATION_COMMAND) {
         return pipe(
           succeedResponse(200, DEFER_SOURCE),
-          E.tap(EventRouter.invoke('ix_slash', ix)),
+          E.tap(EventRouter.invoke('ix_commands', ix)),
         );
       }
       if (
@@ -39,16 +46,12 @@ export const handler = async (req: APIGatewayProxyEventBase<any>) => await runti
       ) {
         return pipe(
           succeedResponse(202),
-          E.tap(EventRouter.invoke('ix_menu', ix)),
+          E.tap(EventRouter.invoke('ix_components', ix)),
         );
       }
       return E.die('Not Implemented');
     }),
-    E.catchAllDefect((defect) =>
-      pipe(
-        Console.error(defect),
-        E.as(makeResponse(500)),
-      ),
-    ),
-  ),
-);
+    E.tapError((error) => DeepFryerLogger.logError(error)),
+    E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
+    E.catchAllDefect(() => succeedResponse(500)),
+  );

@@ -1,4 +1,5 @@
 import {defineConfig} from '@rspack/cli';
+import {EnvironmentPlugin, SwcJsMinimizerRspackPlugin} from '@rspack/core';
 import {resolve} from 'node:path';
 import tsconfig from './tsconfig.json' with {type: 'json'};
 
@@ -14,13 +15,17 @@ export default defineConfig({
     futureDefaults: true,
   },
 
+  // plugins: [
+  //   new EnvironmentPlugin({}),
+  // ],
+
   entry: {
-    'dev_ws/index'  : {import: 'scripts/dev/dev_ws.ts'},
-    'ix_api/index'  : {import: 'src/lambdas/ix_api.ts'},
-    'ix_menu/index' : {import: 'src/lambdas/ix_components.ts'},
-    'ix_slash/index': {import: 'src/lambdas/ix_commands.ts'},
-    'poll/index'    : {import: 'src/lambdas/poll.ts'},
-    'task/index'    : {import: 'src/lambdas/task.ts'},
+    'dev_ws/index'  : {import: './dev/dev_ws.ts'},
+    'ix_api/index'  : {import: './src/lambdas/runtime/ix_api.runtime.ts'},
+    'ix_menu/index' : {import: './src/lambdas/runtime/ix_components.runtime.ts'},
+    'ix_slash/index': {import: './src/lambdas/runtime/ix_commands.runtime.ts'},
+    'poll/index'    : {import: './src/lambdas/runtime/poll.runtime.ts'},
+    'task/index'    : {import: './src/lambdas/runtime/task.runtime.ts'},
   },
 
   output: {
@@ -46,6 +51,18 @@ export default defineConfig({
   optimization: {
     splitChunks   : false,
     avoidEntryIife: true,
+    minimizer     : [
+      new SwcJsMinimizerRspackPlugin({
+        minimizerOptions: {
+          minify: true,
+          mangle: {
+            keep_fnames: true,
+          },
+          module  : true,
+          compress: true,
+        },
+      }),
+    ],
   },
 
   module: {

@@ -1,9 +1,10 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import {E} from '#src/disreact/utils/re-exports.ts';
+import type {Effect} from 'effect';
 import {Predicate} from 'effect';
 
-export const TypeId = Symbol('disreact/fc'),
-             NameId = Symbol('disreact/fc/name');
+const TypeId = Symbol.for('disreact/fc'),
+      NameId = Symbol.for('disreact/fc/name');
 
 export * as FC from '#src/disreact/model/elem/fc.ts';
 export type FC<P = any> = Input<P>;
@@ -20,7 +21,6 @@ interface Input<P = any> {
   (p: P): Elem.Children | Promise<Elem.Children> | E.Effect<Elem.Children, any, any>;
   _tag?       : Sync | Async | Effect;
   displayName?: string;
-  sourceName? : string;
   [TypeId]?   : number;
   [NameId]?   : string;
 }
@@ -69,7 +69,7 @@ export const make = (input: FC): Input => {
 
 export const isAnonymous = (fc: Input) => fc[NameId] === 'Anonymous';
 
-export const getName = (fc: Input) => fc[NameId]!;
+export const getName = (fc: Input) => fc[NameId] ?? fc.displayName ?? fc.name;
 
 export const render = (fc: FC, p?: any) => {
   if (isSync(fc)) {

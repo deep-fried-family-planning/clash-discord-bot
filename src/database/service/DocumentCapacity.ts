@@ -1,7 +1,10 @@
+import {DynamoEnv} from 'config/aws.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Data, Duration, flow, Number, RateLimiter, Effect} from 'effect';
 
-export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{}> {}
+export class CapacityDefect extends Data.TaggedError('deepfryer/CapacityDefect')<{
+  cause?: any;
+}> {}
 
 const estimateRecordWriteCapacity = (encoding: any) =>
   pipe(
@@ -15,19 +18,18 @@ const estimateRecordWriteCapacity = (encoding: any) =>
 
 export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfryer/DynamoLimiter', {
   scoped: Effect.gen(function* () {
-    const maxRCU = 10;
-    const maxWCU = 10;
+    const env = yield* DynamoEnv;
 
     const readLimiter = yield* RateLimiter.make({
       algorithm: 'fixed-window',
       interval : Duration.seconds(1),
-      limit    : maxRCU,
+      limit    : env.DFFP_DDB_RCUS,
     });
 
     const writeLimiter = yield* RateLimiter.make({
       algorithm: 'fixed-window',
       interval : Duration.seconds(1),
-      limit    : maxWCU,
+      limit    : env.DFFP_DDB_WCUS,
     });
 
     return {
@@ -35,16 +37,16 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
         consistent
           ? flow(
             readLimiter,
-            RateLimiter.withCost(maxRCU / 4),
+            RateLimiter.withCost(env.DFFP_DDB_RCUS / 4),
           )
           : flow(
             readLimiter,
-            RateLimiter.withCost(maxRCU / 8),
+            RateLimiter.withCost(env.DFFP_DDB_RCUS / 8),
           ),
 
       indexReadUnits: flow(
         readLimiter,
-        RateLimiter.withCost(maxRCU / 4),
+        RateLimiter.withCost(env.DFFP_DDB_RCUS / 4),
       ),
 
       estimateReadUnits: <A, E, R>(estimate?: number) => (effect: Effect.Effect<A, E, R>) => {
@@ -54,8 +56,8 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
 
         const units = Math.ceil(estimate);
 
-        return units > maxRCU
-          ? E.die(new CapacityDefect())
+        return units > env.DFFP_DDB_RCUS
+          ? E.dieSync(() => new CapacityDefect({cause: 'RCU Exceeded'}))
           : readLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -63,11 +65,10 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
         if (!estimate) {
           return writeLimiter(effect);
         }
-
         const units = Math.ceil(estimate);
 
-        return units > maxWCU
-          ? Effect.die(new CapacityDefect())
+        return units > env.DFFP_DDB_WCUS
+          ? Effect.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
@@ -75,15 +76,13 @@ export class DocumentCapacity extends Effect.Service<DocumentCapacity>()('deepfr
       encodedWriteUnits: <A, E, R>(encoded: any) => (effect: Effect.Effect<A, E, R>) => {
         const units = estimateRecordWriteCapacity(encoded);
 
-        return units > maxWCU
-          ? Effect.die(new CapacityDefect())
+        return units > env.DFFP_DDB_WCUS
+          ? Effect.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
           : writeLimiter(effect).pipe(RateLimiter.withCost(units));
       },
 
       readLimiter,
       writeLimiter,
-      maxRCU,
-      maxWCU,
     };
   }),
 }) {}

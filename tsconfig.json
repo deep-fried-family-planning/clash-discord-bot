@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target"                      : "esnext",
-    "lib"                         : ["esnext"],
+    "lib"                         : ["esnext", "es2023"],
     "jsx"                         : "react-jsx",
     "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",
@@ -22,9 +22,13 @@
     "plugins"                     : [{"name": "@effect/language-service"}],
     "baseUrl"                     : "./",
     "paths"                       : {
-      "#src"        : ["src"],
-      "#src/*"      : ["src/*"],
-      "#test/unit/*": ["test/unit/*"]
+      "#config/*"   : ["./config/*"],
+      "#dev/*"      : ["./dev/*"],
+      "#scripts/*"  : ["./scripts/*"],
+      "#src/*"      : ["./src/*"],
+      "#fullstack/*": ["./test/fullstack/*"],
+      "#unit/*"     : ["./test/unit/*"],
+      "#test/unit/*": ["./test/unit/*"]
     }
   }
 }

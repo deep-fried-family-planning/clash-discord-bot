@@ -1,44 +1,14 @@
-import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
-import {E, L, Logger, LogLevel, pipe, RDT} from '#src/internal/pure/effect.ts';
-import {makeLambda} from '@effect-aws/lambda';
-import {NodeHttpClient} from '@effect/platform-node';
-import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {E, pipe} from '#src/internal/pure/effect.ts';
+import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
+import {Interacting} from '#src/service/Interacting.ts';
 import type {Interaction} from 'dfx/types';
-import console from 'node:console';
-import process from 'node:process';
 
-const menuHandler = (ix: Interaction) =>
+export const ix_components = (ix: Interaction) =>
   pipe(
-    DisReact.respond(ix),
-    E.tapDefect((e) => {
-      console.error(e);
-      return E.void;
-    }),
+    E.fork(Interacting.init(ix)),
+    E.flatMap(() => DisReact.respond(ix)),
+    E.tapError((error) => DeepFryerLogger.logError(error)),
+    E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
+    E.provide(Interacting.Fresh),
   );
-
-const layer = pipe(
-  L.mergeAll(
-    ComponentRouter,
-    DiscordRESTMemoryLive.pipe(
-      L.provide(NodeHttpClient.layerUndici),
-      L.provideMerge(DiscordConfig.layer({
-          token: RDT.make(process.env.DFFP_DISCORD_BOT_TOKEN),
-        }),
-      ),
-    ),
-  ),
-  L.provideMerge(
-    L.mergeAll(
-      Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
-      Logger.minimumLogLevel(LogLevel.All),
-      L.setTracerTiming(true),
-      L.setTracerEnabled(true),
-    ),
-  ),
-);
-
-export const handler = makeLambda({
-  handler: menuHandler,
-  layer  : layer,
-});

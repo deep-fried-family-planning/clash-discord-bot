@@ -1,8 +1,8 @@
 import {Socket} from '@effect/platform';
 import {NodeRuntime, NodeSocket} from '@effect/platform-node';
 import {Effect, Layer, Logger, LogLevel, pipe} from 'effect';
-import {ProxyConfig} from 'scripts/dev/proxy-config.ts';
-import {devServer} from 'scripts/dev/dev-server.ts';
+import {ProxyConfig} from 'dev/proxy-config.ts';
+import {devServer} from 'dev/dev-server.ts';
 
 const program = Effect.gen(function* () {
   const config = yield* ProxyConfig;
@@ -26,11 +26,11 @@ const program = Effect.gen(function* () {
   });
 });
 
-NodeRuntime.runMain(
-  program.pipe(Effect.provide(
-    Layer.mergeAll(
-      NodeSocket.layerWebSocketConstructor,
-      Logger.minimumLogLevel(LogLevel.All),
-    ),
-  )),
+const layer = pipe(
+  Layer.mergeAll(
+    NodeSocket.layerWebSocketConstructor,
+    Logger.minimumLogLevel(LogLevel.All),
+  ),
 );
+
+NodeRuntime.runMain(program.pipe(Effect.provide(layer)));
