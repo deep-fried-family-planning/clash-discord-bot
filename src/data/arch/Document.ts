@@ -1,12 +1,12 @@
+import {DeepFryerDB} from '#src/data/arch/DeepFryerDB.ts';
+import {DOCUMENT_RESERVED} from '#src/data/constants/document-reserved.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {decode, encode} from '@msgpack/msgpack';
 import {DateTime, type Duration} from 'effect';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
 import {deflate, inflate} from 'pako';
-import {isDocumentReserved} from './DocumentReserved';
 
 export const Created = S.transformOrFail(
   S.DateTimeUtc,
@@ -80,6 +80,10 @@ export const CompressedBinary = <A, I, R>(schema: S.Schema<A, I, R>) =>
     },
   });
 
+const isDocumentReserved = (key: string) => {
+  return DOCUMENT_RESERVED[key.toUpperCase()] === 0;
+};
+
 export const Item = <F extends S.Struct.Fields>(fields: F) => {
   if (process.env.NODE_ENV !== 'production') {
     for (const k of Object.keys(fields)) {
@@ -98,7 +102,7 @@ export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
     pipe(
       encodeItem(input.Item),
       E.flatMap((item) =>
-        DynamoDBDocument.put({
+        DeepFryerDB.put({
           ...input,
           Item: item as any,
         }),
@@ -114,7 +118,7 @@ export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DynamoDBDocument.get({
+        DeepFryerDB.get({
           ...input,
           Key: a as any,
         }),
@@ -151,7 +155,7 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DynamoDBDocument.get({
+        DeepFryerDB.get({
           ...input,
           Key: a as any,
         }),
@@ -170,7 +174,7 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
           return E.void;
         }
         return encodeOut(res.Item!).pipe(E.flatMap((encoded) =>
-          DynamoDBDocument.put({
+          DeepFryerDB.put({
             TableName: input.TableName,
             Item     : noUndefinedAtEncode(encoded) as any,
           }),
@@ -186,7 +190,7 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DynamoDBDocument.update({
+        DeepFryerDB.update({
           ...input,
           Key: a as any,
         }),
@@ -201,7 +205,7 @@ export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DynamoDBDocument.delete({
+        DeepFryerDB.delete({
           ...input,
           Key: a as any,
         }),
@@ -223,7 +227,7 @@ export const Query = <
     pipe(
       encodeCondition(input as any),
       E.flatMap((a) =>
-        DynamoDBDocument.query({...input, ...a} as any),
+        DeepFryerDB.query({...input, ...a} as any),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
@@ -256,7 +260,7 @@ export const QueryUpgrade = <
             .filter((item) => (item as any).upgraded)
             .map((item) =>
               encodeOutput(item as any).pipe(E.flatMap((out) =>
-                DynamoDBDocument.put({
+                DeepFryerDB.put({
                   TableName: input.TableName,
                   Item     : noUndefinedAtEncode(out) as any,
                 }),
@@ -281,7 +285,7 @@ export const Scan = <
     pipe(
       encodeCondition(input as any),
       E.flatMap((a) =>
-        DynamoDBDocument.query({...input, ...a}),
+        DeepFryerDB.query({...input, ...a}),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
@@ -311,7 +315,7 @@ export const ScanUpgrade = <
         .filter((item) => (item as any).upgraded)
         .map((item) =>
           encodeOutput(item as any).pipe(E.flatMap((out) =>
-            DynamoDBDocument.put({
+            DeepFryerDB.put({
               TableName: input.TableName,
               Item     : noUndefinedAtEncode(out) as any,
             }),

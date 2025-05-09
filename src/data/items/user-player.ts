@@ -68,7 +68,7 @@ export const Versions = S.Union(
 );
 
 export const put = Document.Put(Latest);
-export const get = Document.Get(Key, Versions);
+export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);
 
 export type Type = typeof Latest.Type;
