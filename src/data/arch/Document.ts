@@ -210,7 +210,7 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
 export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
   const encodeKey = S.encode(key);
 
-  return (input: Omit<DeleteCommandInput, 'Key'> & {Key: A}) =>
+  return (input: Omit<Partial<DeleteCommandInput>, 'Key'> & {Key: A}) =>
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>

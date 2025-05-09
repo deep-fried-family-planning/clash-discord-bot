@@ -7,14 +7,15 @@ import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as UserPartition from '#src/data/user.partition.ts';
 import * as Array from 'effect/Array';
+import * as Order from 'effect/Order';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as Record from 'effect/Record';
 
 type RegisterParams = {
-  guild_id    : string;
   caller_id   : string;
   caller_roles: string[];
+  guild_id    : string;
   clan_tag    : string;
   payload: {
     countdown: string;
@@ -61,12 +62,14 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
   const verifications = pipe(
     clan.members,
     Array.filter((m) => m.role !== 'member'),
-    Array.filter((m) => m.tag in userPlayers && userPlayers[m.tag].verification >= PlayerVerification.token),
+    Array.filter((m) => m.tag in userPlayers),
+    Array.filter((m) => userPlayers[m.tag].verification >= PlayerVerification.token),
     Array.map((m) =>
       m.role === 'leader' ? ClanVerification.leader :
-        m.role === 'coLeader' ? ClanVerification.coleader :
-          ClanVerification.elder,
+      m.role === 'coLeader' ? ClanVerification.coleader :
+      ClanVerification.elder,
     ),
+    Array.sort(Order.number),
   );
 
   if (!verifications.length) {
@@ -87,6 +90,10 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     }
 
     if (current.pk !== p.guild_id) {
+      yield* ServerClan.del({
+        Key: {pk: current.pk, sk: current.sk},
+      });
+
       yield* ServerClan.put({
         Item: ServerClan.make({
           pk           : p.guild_id,
