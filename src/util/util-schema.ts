@@ -62,8 +62,8 @@ export const decodeOnly = <A, I, R, A2, I2, R2>(
   );
 
 export const encodeOnly = <A, I, R, A2, I2, R2>(
-  from: S.Schema<A, I, R>,
   to: S.Schema<A2, I2, R2>,
+  from: S.Schema<A, I, R>,
   encode: (toI: I2, toA: A2) => A,
 ) =>
   S.transform(

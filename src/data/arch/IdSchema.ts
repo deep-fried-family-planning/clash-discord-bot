@@ -1,37 +1,23 @@
-import {S} from '#src/internal/pure/effect.ts';
+import * as S from 'effect/Schema';
 
- const KeyCodec = (start: string) =>
-  ({
-    Forward: S.transform(
-      S.String.pipe(S.startsWith(start)),
-      S.String,
-      {
-        decode: (s) => s.slice(start.length),
-        encode: (s) => start.concat(s),
-      },
-    ),
-    Reverse: S.transform(
-      S.String,
-      S.String.pipe(S.startsWith(start)),
-      {
-        decode: (s) => s.slice(start.length),
-        encode: (s) => start.concat(s),
-      },
-    ),
-  });
+const PrependedId = (start: string) =>
+  S.transform(
+    S.String.pipe(S.startsWith(start)),
+    S.String,
+    {
+      decode: (s) => s.slice(start.length),
+      encode: (s) => start.concat(s),
+    },
+  );
 
-export const ClanTag = KeyCodec('c-');
-export const PlayerTag = KeyCodec('p-');
-export const ServerId = KeyCodec('s-');
-export const UserId = KeyCodec('u-');
+export const ClanTag = PrependedId('c-');
+export const PlayerTag = PrependedId('p-');
+export const ServerId = PrependedId('s-');
+export const UserId = PrependedId('u-');
 export const ThreadId = S.String;
 export const RoleId = S.String;
+export const MessageId = S.String;
 export const ChannelId = S.String;
-export const AllianceId = KeyCodec('a-');
-export const InfoId = KeyCodec('i-');
-export const EmbedId = KeyCodec('e-');
+export const InfoId = PrependedId('i-');
+export const EmbedId = PrependedId('e-');
 export const NowSk = S.Literal('now');
-export const ConfigSk = S.Literal('config');
-export const TransientUrl = S.String.pipe(S.length({min: 1, max: 2000}));
-export const ComputeName = S.String;
-export const DateTimeSk = S.DateTimeUtc;
