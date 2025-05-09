@@ -1,8 +1,9 @@
-import {DeepFryerDB} from '#src/data/arch/DeepFryerDB.ts';
+import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
 import {DOCUMENT_RESERVED} from '#src/data/constants/document-reserved.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {decode, encode} from '@msgpack/msgpack';
-import {DateTime, type Duration} from 'effect';
+import * as DateTime from 'effect/DateTime';
+import type * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
@@ -80,25 +81,33 @@ export const CompressedBinary = <A, I, R>(schema: S.Schema<A, I, R>) =>
     },
   });
 
-const isDocumentReserved = (key: string) => {
-  return DOCUMENT_RESERVED[key.toUpperCase()] === 0;
-};
+const isDocumentReserved = (key: string) =>
+  DOCUMENT_RESERVED[key.toUpperCase()] === 0;
 
-export const Item = <F extends S.Struct.Fields>(fields: F) => {
+const checkDocumentReserved = (obj: object) => {
   if (process.env.NODE_ENV !== 'production') {
-    for (const k of Object.keys(fields)) {
+    for (const k of Object.keys(obj)) {
       if (isDocumentReserved(k)) {
         throw new Error(`Reserved field ${k}`);
       }
     }
   }
+};
+
+export const CompositeKey = <F extends S.Struct.Fields>(fields: F) => {
+  checkDocumentReserved(fields);
+  return S.Struct(fields);
+};
+
+export const Item = <F extends S.Struct.Fields>(fields: F) => {
+  checkDocumentReserved(fields);
   return S.Struct(fields);
 };
 
 export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
   const encodeItem = S.encode(item);
 
-  return (input: Omit<PutCommandInput, 'Item'> & {Item: A}) =>
+  return (input: Omit<Partial<PutCommandInput>, 'Item'> & {Item: A}) =>
     pipe(
       encodeItem(input.Item),
       E.flatMap((item) =>
@@ -151,7 +160,7 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
   const decodeOut = S.decode(out);
   const encodeOut = S.encode(out);
 
-  return (input: Omit<GetCommandInput, 'Key'> & {Key: A}) =>
+  return (input: Omit<Partial<GetCommandInput>, 'Key'> & {Key: A}) =>
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
@@ -223,7 +232,7 @@ export const Query = <
   const encodeCondition = S.encode(condition);
   const decodeOutput = S.decode(output);
 
-  return (input: Omit<QueryCommandInput, keyof A> & { [K in keyof A]: A[K] }) =>
+  return (input: Omit<Partial<QueryCommandInput>, keyof A> & { [K in keyof A]: A[K] }) =>
     pipe(
       encodeCondition(input as any),
       E.flatMap((a) =>
@@ -248,7 +257,7 @@ export const QueryUpgrade = <
   const query = Query(condition, output);
   const encodeOutput = S.encode(output);
 
-  return (input: Omit<QueryCommandInput, keyof A> & { [K in keyof A]: A[K] }) =>
+  return (input: Omit<Partial<QueryCommandInput>, keyof A> & { [K in keyof A]: A[K] }) =>
     pipe(
       query(input),
       E.tap((res) => {

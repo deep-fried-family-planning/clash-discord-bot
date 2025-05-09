@@ -1,4 +1,4 @@
-import {DynamoEnv} from 'config/aws.ts';
+import {DynamoEnv} from '#config/aws.ts';
 import * as E from 'effect/Effect';
 import * as Data from 'effect/Data';
 import * as Duration from 'effect/Duration';

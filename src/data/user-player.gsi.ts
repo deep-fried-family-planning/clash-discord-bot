@@ -1,5 +1,5 @@
-import {Document, IdSchema} from '#src/data/arch/index.ts';
-import * as UserPlayer from '#src/data/items/user-player.ts';
+import {Document, Id} from '#src/data/arch/index.ts';
+import * as UserPlayer from '#src/data/user-player.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 
@@ -27,9 +27,9 @@ export const scan = Document.ScanUpgrade(
 export const query = Document.Query(
   encodeOnly(
     S.Struct({
-      IndexName             : S.optionalWith(S.String, {default: () => Index}),
+      IndexName             : S.String.pipe(S.optionalWith({default: () => Index})),
       KeyConditionExpression: S.Struct({
-        gsi_player_tag: IdSchema.PlayerTag,
+        gsi_player_tag: Id.PlayerTag,
       }),
     }),
     S.Struct({

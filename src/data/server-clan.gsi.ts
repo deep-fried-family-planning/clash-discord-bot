@@ -1,5 +1,5 @@
-import {Document, IdSchema} from '#src/data/arch/index.ts';
-import * as ServerClan from '#src/data/items/server-clan.ts';
+import {Document, Id} from '#src/data/arch/index.ts';
+import * as ServerClan from '#src/data/server-clan.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 
@@ -29,8 +29,7 @@ export const query = Document.Query(
     S.Struct({
       IndexName             : S.optionalWith(S.String, {default: () => Index}),
       KeyConditionExpression: S.Struct({
-        pk: IdSchema.UserId,
-        sk: IdSchema.PlayerTag,
+        gsi_clan_tag: Id.ClanTag,
       }),
     }),
     S.Struct({
@@ -40,10 +39,9 @@ export const query = Document.Query(
     }),
     (input) => ({
       IndexName                : input.IndexName!,
-      KeyConditionExpression   : 'pk = :pk AND sk = :sk',
+      KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
       ExpressionAttributeValues: {
-        ':pk': input.KeyConditionExpression.pk,
-        ':sk': input.KeyConditionExpression.sk,
+        ':gsi_clan_tag': input.KeyConditionExpression.gsi_clan_tag,
       },
     }),
   ),

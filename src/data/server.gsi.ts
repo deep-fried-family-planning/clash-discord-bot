@@ -1,7 +1,7 @@
 import {Document} from '#src/data/arch/index.ts';
+import * as Server from '#src/data/server.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
-import * as Server from './server.ts';
 
 export const Index = 'GSI_ALL_SERVERS';
 

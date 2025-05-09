@@ -21,3 +21,4 @@ export const ChannelId = S.String;
 export const InfoId = PrependedId('i-');
 export const EmbedId = PrependedId('e-');
 export const NowSk = S.Literal('now');
+export const NowTag = S.tag('now');

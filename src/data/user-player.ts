@@ -1,4 +1,4 @@
-import {Document, IdSchema} from '#src/data/arch/index.ts';
+import {Document, Id} from '#src/data/arch/index.ts';
 import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
@@ -12,8 +12,8 @@ export const PlayerVerification = S.Enums({
 } as const);
 
 export const Key = Document.Item({
-  pk: IdSchema.UserId,
-  sk: IdSchema.PlayerTag,
+  pk: Id.UserId,
+  sk: Id.PlayerTag,
 });
 
 export const Latest = Document.Item({
@@ -21,9 +21,9 @@ export const Latest = Document.Item({
   _tag          : S.tag(DataTag.USER_PLAYER),
   version       : S.tag(0),
   name          : S.String,
-  gsi_user_id   : IdSchema.UserId,
-  gsi_player_tag: IdSchema.PlayerTag,
-  embed_id      : S.optional(IdSchema.EmbedId),
+  gsi_user_id   : Id.UserId,
+  gsi_player_tag: Id.PlayerTag,
+  embed_id      : S.optional(Id.EmbedId),
   verification  : PlayerVerification,
   account_type  : S.String,
   created       : Document.Created,
@@ -32,15 +32,15 @@ export const Latest = Document.Item({
 });
 
 const Legacy = S.Struct({
-  pk            : IdSchema.UserId,
-  sk            : IdSchema.PlayerTag,
+  pk            : Id.UserId,
+  sk            : Id.PlayerTag,
   type          : S.Literal('DiscordPlayer'),
   version       : S.Literal('1.0.0'),
   created       : S.Date,
   updated       : S.Date,
-  gsi_user_id   : IdSchema.UserId,
-  gsi_player_tag: IdSchema.PlayerTag,
-  embed_id      : S.optional(IdSchema.EmbedId),
+  gsi_user_id   : Id.UserId,
+  gsi_player_tag: Id.PlayerTag,
+  embed_id      : S.optional(Id.EmbedId),
   alias         : S.optional(S.String),
   verification  : S.Enums({none: 0, admin: 1, token: 2, developer: 3}),
   account_type  : S.String,
@@ -67,8 +67,10 @@ export const Versions = S.Union(
   }),
 );
 
+export const is = S.is(Latest);
+export const make = Latest.make;
+export const equal = S.equivalence(Latest);
+export type Type = typeof Latest.Type;
 export const put = Document.Put(Latest);
 export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);
-
-export type Type = typeof Latest.Type;

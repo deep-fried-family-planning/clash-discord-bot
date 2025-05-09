@@ -1,5 +1,5 @@
 import {DynamoEnv} from '#config/aws.ts';
-import {DeepFryerDBCapacity} from '#src/data/arch/DeepFryerDBCapacity.ts';
+import {DeepFryerDBCapacity} from '#src/service/DeepFryerDBCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as E from 'effect/Effect';
