@@ -51,7 +51,7 @@ exports[`when re-registering a user 2`] = `
 exports[`when re-registering a user 3`] = `
 {
   "_tag": "User",
-  "created": "1970-01-01T06:00:00.000Z",
+  "created": "1970-01-01T00:00:00.000Z",
   "gsi_all_user_id": "u-user",
   "pk": "u-user",
   "sk": "now",

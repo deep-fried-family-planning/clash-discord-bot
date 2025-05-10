@@ -7,8 +7,8 @@ export const TestDataUser = {
   pk             : 'u-user',
   sk             : 'now',
   version        : 0,
-  created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-  updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
+  created        : '1970-01-01T00:00:00.000Z',
+  updated        : '1970-01-01T00:00:00.000Z',
   gsi_all_user_id: 'u-user',
   timezone       : 'America/New_York',
 } as const satisfies User.Encoded;
@@ -18,8 +18,8 @@ export const TestDataUser1 = {
   pk             : 'u-user1',
   sk             : 'now',
   version        : 0,
-  created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-  updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
+  created        : '1970-01-01T00:00:00.000Z',
+  updated        : '1970-01-01T00:00:00.000Z',
   gsi_all_user_id: 'u-user1',
   timezone       : 'America/New_York',
 } satisfies User.Encoded;
@@ -29,8 +29,8 @@ export const TestDataUser2 = {
   pk             : 'u-user2',
   sk             : 'now',
   version        : 0,
-  created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-  updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
+  created        : '1970-01-01T00:00:00.000Z',
+  updated        : '1970-01-01T00:00:00.000Z',
   gsi_all_user_id: 'u-user2',
   timezone       : 'America/New_York',
 } satisfies User.Encoded;
