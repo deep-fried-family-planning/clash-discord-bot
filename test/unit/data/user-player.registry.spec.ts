@@ -1,9 +1,8 @@
-import {DataTag} from '#src/data/constants/index.ts';
-import {UserPlayerRegistry, UserRegistry} from '#src/data/index.ts';
+import {UserPlayerRegistry} from '#src/data/index.ts';
 import {mockCoc, mockCocLayer} from '#unit/data/mock-coc.ts';
+import {TestDataServer, TestDataUser, TestDataUserPlayer, TestDataUserPlayer2} from '#unit/data/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
-import {it, describe} from '@effect/vitest';
-import * as DateTime from 'effect/DateTime';
+import {describe, it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
@@ -39,18 +38,7 @@ describe('given caller user is not registered', () => {
 describe('given new user player registration', () => {
   it.effect('when registering user player', E.fn(function* () {
     mockDb.get
-      .mockReturnValueOnce(E.succeed({
-        Item: {
-          _tag           : DataTag.USER,
-          pk             : 'u-user',
-          sk             : 'now',
-          version        : 0,
-          created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          gsi_all_user_id: 'u-user',
-          timezone       : 'America/New_York',
-        },
-      }));
+      .mockReturnValueOnce(E.succeed({Item: TestDataUser}));
 
     mockDb.query
       .mockReturnValueOnce(E.succeed({Items: []}));
@@ -59,9 +47,7 @@ describe('given new user player registration', () => {
       .mockReturnValueOnce(E.succeed(true));
 
     mockCoc.getPlayer
-      .mockReturnValueOnce(E.succeed({
-        name: 'PlayerName',
-      }));
+      .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
       UserPlayerRegistry.register({
@@ -97,23 +83,13 @@ describe('given new user player registration', () => {
   describe('given invalid api_token', () => {
     it.effect('when caller user is not registered', E.fn(function* () {
       mockDb.get
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag           : DataTag.USER,
-            pk             : 'u-user',
-            sk             : 'now',
-            version        : 0,
-            created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            gsi_all_user_id: 'u-user',
-            timezone       : 'America/New_York',
-          },
-        }));
+        .mockReturnValueOnce(E.succeed({Item: TestDataUser}));
 
       mockDb.query
         .mockReturnValueOnce(E.succeed({Items: []}));
 
-      mockCoc.verifyPlayerToken.mockReturnValueOnce(E.succeed(false));
+      mockCoc.verifyPlayerToken
+        .mockReturnValueOnce(E.succeed(false));
 
       const actual = yield* pipe(
         UserPlayerRegistry.register({
@@ -145,41 +121,16 @@ describe('given new user player registration', () => {
 describe('given user player is already registered', () => {
   it.effect('when registering user player', E.fn(function* () {
     mockDb.get
-      .mockReturnValueOnce(E.succeed({
-        Item: {
-          _tag           : DataTag.USER,
-          pk             : 'u-user',
-          sk             : 'now',
-          version        : 0,
-          created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          gsi_all_user_id: 'u-user',
-          timezone       : 'America/New_York',
-        },
-      }));
+      .mockReturnValueOnce(E.succeed({Item: TestDataUser}));
 
     mockDb.query
-      .mockReturnValueOnce(E.succeed({Items: [{
-          _tag          : 'UserPlayer',
-          account_type  : 'main',
-          created       : '1970-01-01T00:00:00.000Z',
-          gsi_player_tag: 'p-player',
-          gsi_user_id   : 'u-user2',
-          name          : 'PlayerName',
-          pk            : 'u-user2',
-          sk            : 'p-player',
-          updated       : '1970-01-01T00:00:00.000Z',
-          verification  : 2,
-          version       : 0,
-        }]}));
+      .mockReturnValueOnce(E.succeed({Items: [TestDataUserPlayer]}));
 
     mockCoc.verifyPlayerToken
       .mockReturnValueOnce(E.succeed(true));
 
     mockCoc.getPlayer
-      .mockReturnValueOnce(E.succeed({
-        name: 'PlayerName',
-      }));
+      .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
       UserPlayerRegistry.register({
@@ -217,53 +168,17 @@ describe('given user player is already registered', () => {
 describe('given caller is attempting admin registration', () => {
   it.effect('when admin registering user player', E.fn(function* () {
     mockDb.get
-      .mockReturnValueOnce(E.succeed({
-        Item: {
-          _tag           : DataTag.USER,
-          pk             : 'u-user',
-          sk             : 'now',
-          version        : 0,
-          created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-          gsi_all_user_id: 'u-user',
-          timezone       : 'America/New_York',
-        },
-      }))
-      .mockReturnValueOnce(E.succeed({
-        Item: {
-          _tag             : 'Server',
-          admin            : 'admin',
-          created          : '1970-01-01T00:00:00.000Z',
-          gsi_all_server_id: 's-guild',
-          pk               : 's-guild',
-          sk               : 'now',
-          updated          : '1970-01-01T00:00:00.000Z',
-          version          : 0,
-        },
-      }));
+      .mockReturnValueOnce(E.succeed({Item: TestDataUser}))
+      .mockReturnValueOnce(E.succeed({Item: TestDataServer}));
 
     mockDb.query
-      .mockReturnValueOnce(E.succeed({Items: [{
-          _tag          : 'UserPlayer',
-          account_type  : 'main',
-          created       : '1970-01-01T00:00:00.000Z',
-          gsi_player_tag: 'p-player',
-          gsi_user_id   : 'u-user2',
-          name          : 'PlayerName',
-          pk            : 'u-user2',
-          sk            : 'p-player',
-          updated       : '1970-01-01T00:00:00.000Z',
-          verification  : 1,
-          version       : 0,
-        }]}));
+      .mockReturnValueOnce(E.succeed({Items: [TestDataUserPlayer2]}));
 
     mockCoc.verifyPlayerToken
       .mockReturnValueOnce(E.succeed(true));
 
     mockCoc.getPlayer
-      .mockReturnValueOnce(E.succeed({
-        name: 'PlayerName',
-      }));
+      .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
       UserPlayerRegistry.register({
@@ -302,53 +217,17 @@ describe('given caller is attempting admin registration', () => {
   describe('given player is already registered at higher verification level', () => {
     it.effect('when admin registering user player', E.fn(function* () {
       mockDb.get
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag           : DataTag.USER,
-            pk             : 'u-user',
-            sk             : 'now',
-            version        : 0,
-            created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            gsi_all_user_id: 'u-user',
-            timezone       : 'America/New_York',
-          },
-        }))
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag             : 'Server',
-            admin            : 'admin',
-            created          : '1970-01-01T00:00:00.000Z',
-            gsi_all_server_id: 's-guild',
-            pk               : 's-guild',
-            sk               : 'now',
-            updated          : '1970-01-01T00:00:00.000Z',
-            version          : 0,
-          },
-        }));
+        .mockReturnValueOnce(E.succeed({Item: TestDataUser}))
+        .mockReturnValueOnce(E.succeed({Item: TestDataServer}));
 
       mockDb.query
-        .mockReturnValueOnce(E.succeed({Items: [{
-            _tag          : 'UserPlayer',
-            account_type  : 'main',
-            created       : '1970-01-01T00:00:00.000Z',
-            gsi_player_tag: 'p-player',
-            gsi_user_id   : 'u-user2',
-            name          : 'PlayerName',
-            pk            : 'u-user2',
-            sk            : 'p-player',
-            updated       : '1970-01-01T00:00:00.000Z',
-            verification  : 2,
-            version       : 0,
-          }]}));
+        .mockReturnValueOnce(E.succeed({Items: [TestDataUserPlayer]}));
 
       mockCoc.verifyPlayerToken
         .mockReturnValueOnce(E.succeed(true));
 
       mockCoc.getPlayer
-        .mockReturnValueOnce(E.succeed({
-          name: 'PlayerName',
-        }));
+        .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
       const actual = yield* pipe(
         UserPlayerRegistry.register({
@@ -383,21 +262,8 @@ describe('given caller is attempting admin registration', () => {
   describe('given caller server is not registered', () => {
     it.effect('when admin registering user player', E.fn(function* () {
       mockDb.get
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag           : DataTag.USER,
-            pk             : 'u-user',
-            sk             : 'now',
-            version        : 0,
-            created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            gsi_all_user_id: 'u-user',
-            timezone       : 'America/New_York',
-          },
-        }))
-        .mockReturnValueOnce(E.succeed({
-          Item: undefined,
-        }));
+        .mockReturnValueOnce(E.succeed({Item: TestDataUser}))
+        .mockReturnValueOnce(E.succeed({Item: undefined}));
 
       const actual = yield* pipe(
         UserPlayerRegistry.register({
@@ -428,30 +294,8 @@ describe('given caller is attempting admin registration', () => {
   describe('given caller is not a server admin', () => {
     it.effect('when admin registering user player', E.fn(function* () {
       mockDb.get
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag           : DataTag.USER,
-            pk             : 'u-user',
-            sk             : 'now',
-            version        : 0,
-            created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-            gsi_all_user_id: 'u-user',
-            timezone       : 'America/New_York',
-          },
-        }))
-        .mockReturnValueOnce(E.succeed({
-          Item: {
-            _tag             : 'Server',
-            admin            : 'admin',
-            created          : '1970-01-01T00:00:00.000Z',
-            gsi_all_server_id: 's-guild',
-            pk               : 's-guild',
-            sk               : 'now',
-            updated          : '1970-01-01T00:00:00.000Z',
-            version          : 0,
-          },
-        }));
+        .mockReturnValueOnce(E.succeed({Item: TestDataUser}))
+        .mockReturnValueOnce(E.succeed({Item: TestDataServer}));
 
       const actual = yield* pipe(
         UserPlayerRegistry.register({

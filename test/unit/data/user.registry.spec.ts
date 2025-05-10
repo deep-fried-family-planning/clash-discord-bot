@@ -1,5 +1,5 @@
-import {DataTag} from '#src/data/constants/index.ts';
 import {UserRegistry} from '#src/data/index.ts';
+import {TestDataUser, TestDataUser1, TestDataUser2} from '#unit/data/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as DateTime from 'effect/DateTime';
@@ -25,18 +25,7 @@ it.effect('when registering a new user', E.fn(function* () {
 }));
 
 it.effect('when re-registering a user', E.fn(function* () {
-  mockDb.get.mockReturnValueOnce(E.succeed({
-    Item: {
-      _tag           : DataTag.USER,
-      pk             : 'u-user',
-      sk             : 'now',
-      version        : 0,
-      created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-      updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-      gsi_all_user_id: 'u-user',
-      timezone       : 'America/New_York',
-    },
-  }));
+  mockDb.get.mockReturnValueOnce(E.succeed({Item: TestDataUser}));
 
   const actual = yield* pipe(
     UserRegistry.register({
@@ -55,18 +44,7 @@ it.effect('when re-registering a user', E.fn(function* () {
 
 it.effect('when admin registering a new user', E.fn(function* () {
   mockDb.get
-    .mockReturnValueOnce(E.succeed({
-      Item: {
-        _tag           : DataTag.USER,
-        pk             : 'u-user1',
-        sk             : 'now',
-        version        : 0,
-        created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        gsi_all_user_id: 'u-user1',
-        timezone       : 'America/New_York',
-      },
-    }))
+    .mockReturnValueOnce(E.succeed({Item: TestDataUser1}))
     .mockReturnValueOnce(E.succeed({Item: undefined}));
 
   const actual = yield* pipe(
@@ -87,30 +65,8 @@ it.effect('when admin registering a new user', E.fn(function* () {
 
 it.effect('when admin registering a current user', E.fn(function* () {
   mockDb.get
-    .mockReturnValueOnce(E.succeed({
-      Item: {
-        _tag           : DataTag.USER,
-        pk             : 'u-user1',
-        sk             : 'now',
-        version        : 0,
-        created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        gsi_all_user_id: 'u-user1',
-        timezone       : 'America/New_York',
-      },
-    }))
-    .mockReturnValueOnce(E.succeed({
-      Item: {
-        _tag           : DataTag.USER,
-        pk             : 'u-user2',
-        sk             : 'now',
-        version        : 0,
-        created        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
-        gsi_all_user_id: 'u-user2',
-        timezone       : 'America/New_York',
-      },
-    }));
+    .mockReturnValueOnce(E.succeed({Item: TestDataUser1}))
+    .mockReturnValueOnce(E.succeed({Item: TestDataUser2}));
 
   const actual = yield* pipe(
     UserRegistry.register({

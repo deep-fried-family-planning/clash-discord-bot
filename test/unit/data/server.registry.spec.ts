@@ -1,4 +1,5 @@
 import {ServerRegistry} from '#src/data/index.ts';
+import {TestDataServer} from '#unit/data/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
@@ -25,18 +26,7 @@ it.effect('when registering a new server', E.fn(function* () {
 }));
 
 it.effect('when re-registering a server', E.fn(function* () {
-  mockDb.get.mockReturnValueOnce(E.succeed({
-    Item: {
-      _tag             : 'Server',
-      admin            : 'admin',
-      created          : '1970-01-01T00:00:00.000Z',
-      gsi_all_server_id: 's-guild',
-      pk               : 's-guild',
-      sk               : 'now',
-      updated          : '1970-01-01T00:00:00.000Z',
-      version          : 0,
-    },
-  }));
+  mockDb.get.mockReturnValueOnce(E.succeed({Item: TestDataServer}));
 
   const actual = yield* pipe(
     ServerRegistry.register({

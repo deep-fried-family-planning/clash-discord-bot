@@ -1,9 +1,7 @@
-import {DataTag} from '#src/data/constants/index.ts';
-import {ServerClanRegistry, UserPlayerRegistry, UserRegistry} from '#src/data/index.ts';
+import {ServerClanRegistry} from '#src/data/index.ts';
 import {mockCoc, mockCocLayer} from '#unit/data/mock-coc.ts';
 import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
-import {it, describe} from '@effect/vitest';
-import * as DateTime from 'effect/DateTime';
+import {describe, it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
