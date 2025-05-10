@@ -6,10 +6,11 @@ import * as ServerClan from '#src/data/server-clan.ts';
 import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as UserPartition from '#src/data/user.partition.ts';
+import * as User from '#src/data/user.ts';
 import * as Array from 'effect/Array';
-import * as Order from 'effect/Order';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
+import * as Order from 'effect/Order';
 import * as Record from 'effect/Record';
 
 type RegisterParams = {
@@ -31,13 +32,21 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     });
   }
 
-  const user = yield* UserPartition.getAll({
+  const userPartition = yield* UserPartition.getAll({
     KeyConditionExpression: {pk: p.caller_id},
     ConsistentRead        : true,
   });
 
+  const user = userPartition.find((u) => User.is(u));
+
+  if (!user) {
+    return yield* new RegistryAdminError({
+      message: 'Your Discord user account is not registered.',
+    });
+  }
+
   const userPlayers = pipe(
-    user,
+    userPartition,
     Array.filter((u) => UserPlayer.is(u)),
     Record.fromIterableWith((up) => [up.sk, up]),
   );
@@ -65,8 +74,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     Array.filter((m) => userPlayers[m.tag].verification >= PlayerVerification.token),
     Array.map((m) =>
       m.role === 'leader' ? ClanVerification.leader :
-      m.role === 'coLeader' ? ClanVerification.coleader :
-      ClanVerification.elder,
+        m.role === 'coLeader' ? ClanVerification.coleader :
+          ClanVerification.elder,
     ),
     Array.sort(Order.number),
   );
@@ -105,6 +114,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
             value: p.clan_tag,
             label: clan.name,
           },
+          verification,
           ...p.payload,
         }),
       });
@@ -138,6 +148,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
         value: p.clan_tag,
         label: clan.name,
       },
+      verification,
       ...p.payload,
     }),
   });

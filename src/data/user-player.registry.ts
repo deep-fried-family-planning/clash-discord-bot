@@ -207,21 +207,3 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     description: 'Success',
   };
 });
-
-type UpdateParams = {
-  caller_id : string;
-  player_tag: string;
-  payload: {
-    account_type: string;
-  };
-};
-
-export const update = E.fn('UserPlayerRegistry.update')(function* (p: UpdateParams) {
-  const userPlayer = yield* getAssert(p.caller_id, p.player_tag);
-
-  if (userPlayer.verification < PlayerVerification.token) {
-    return yield* new RegistryUserError({
-      message: 'You are not authorized to update this player account.',
-    });
-  }
-});
