@@ -11,14 +11,12 @@ export const Items = S.Array(S.Union(
 
 export const scan = Document.ScanUpgrade(
   encodeOnly(
-    S.Struct({
-      IndexName: S.optionalWith(S.String, {default: () => Index}),
-    }),
+    S.Struct({}),
     S.Struct({
       IndexName: S.String,
     }),
     (input) => ({
-      IndexName: input.IndexName!,
+      IndexName: Index,
     }),
   ),
   Items,

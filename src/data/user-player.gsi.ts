@@ -11,14 +11,12 @@ export const Items = S.Array(S.Union(
 
 export const scan = Document.ScanUpgrade(
   encodeOnly(
-    S.Struct({
-      IndexName: S.optionalWith(S.String, {default: () => Index}),
-    }),
+    S.Struct({}),
     S.Struct({
       IndexName: S.String,
     }),
     (input) => ({
-      IndexName: input.IndexName!,
+      IndexName: Index,
     }),
   ),
   Items,
@@ -27,7 +25,6 @@ export const scan = Document.ScanUpgrade(
 export const query = Document.Query(
   encodeOnly(
     S.Struct({
-      IndexName             : S.String.pipe(S.optionalWith({default: () => Index})),
       KeyConditionExpression: S.Struct({
         gsi_player_tag: Id.PlayerTag,
       }),
@@ -38,7 +35,7 @@ export const query = Document.Query(
       ExpressionAttributeValues: S.Any,
     }),
     (input) => ({
-      IndexName                : input.IndexName!,
+      IndexName                : Index,
       KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',
       ExpressionAttributeValues: {
         ':gsi_player_tag': input.KeyConditionExpression.gsi_player_tag,

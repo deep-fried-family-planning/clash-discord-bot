@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`given caller user is not registered > when registering user player 1`] = `[NoSuchElementException]`;
+
+exports[`given caller user is not registered > when registering user player 2`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given new user player registration > given invalid api_token > when caller user is not registered 1`] = `[RegistryUserError: Invalid player token.]`;
+
+exports[`given new user player registration > given invalid api_token > when caller user is not registered 2`] = `
+[
+  "player",
+  "api_token",
+]
+`;
+
+exports[`given new user player registration > given invalid api_token > when caller user is not registered 3`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given new user player registration > when registering user player 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`given new user player registration > when registering user player 2`] = `
+[
+  "player",
+  "api_token",
+]
+`;
+
+exports[`given new user player registration > when registering user player 3`] = `
+[
+  "player",
+]
+`;
+
+exports[`given new user player registration > when registering user player 4`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given new user player registration > when registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given new user player registration > when registering user player 6`] = `
+{
+  "_tag": "UserPlayer",
+  "account_type": "main",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_player_tag": "p-player",
+  "gsi_user_id": "u-user",
+  "name": "PlayerName",
+  "pk": "u-user",
+  "sk": "p-player",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "verification": 2,
+  "version": 0,
+}
+`;

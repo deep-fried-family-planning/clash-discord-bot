@@ -11,14 +11,12 @@ export const Items = S.Array(S.Union(
 
 export const scan = Document.ScanUpgrade(
   encodeOnly(
-    S.Struct({
-      IndexName: S.optionalWith(S.String, {default: () => Index}),
-    }),
+    S.Struct({}),
     S.Struct({
       IndexName: S.String,
     }),
     (input) => ({
-      IndexName: input.IndexName!,
+      IndexName: Index,
     }),
   ),
   Items,
@@ -27,7 +25,6 @@ export const scan = Document.ScanUpgrade(
 export const query = Document.Query(
   encodeOnly(
     S.Struct({
-      IndexName             : S.optionalWith(S.String, {default: () => Index}),
       KeyConditionExpression: S.Struct({
         gsi_clan_tag: Id.ClanTag,
       }),
@@ -38,7 +35,7 @@ export const query = Document.Query(
       ExpressionAttributeValues: S.Any,
     }),
     (input) => ({
-      IndexName                : input.IndexName!,
+      IndexName                : Index,
       KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',
       ExpressionAttributeValues: {
         ':gsi_clan_tag': input.KeyConditionExpression.gsi_clan_tag,

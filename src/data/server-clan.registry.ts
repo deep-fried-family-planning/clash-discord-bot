@@ -49,7 +49,6 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
   }
 
   const gsi = yield* ServerClanGsi.query({
-    IndexName             : ServerClanGsi.Index,
     KeyConditionExpression: {gsi_clan_tag: p.clan_tag},
   });
 
