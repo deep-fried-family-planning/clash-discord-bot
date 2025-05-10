@@ -72,13 +72,56 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       return yield* new RegistryDefect({});
     }
 
+    const player = yield* ClashOfClans.getPlayer(p.player_tag);
+
     if (gsi.Items.length === 1) {
       const current = gsi.Items[0];
+
+      if (current.verification >= PlayerVerification.token) {
+        return yield* new RegistryAdminError({
+          message: 'You are not authorized to update the registration of this player account.',
+        });
+      }
+
+      yield* UserPlayer.del({
+        Key: {
+          pk: current.pk,
+          sk: current.sk,
+        },
+      });
+
+      yield* UserPlayer.put({
+        Item: UserPlayer.make({
+          pk            : p.target_id,
+          sk            : p.player_tag,
+          gsi_user_id   : p.target_id,
+          gsi_player_tag: p.player_tag,
+          name          : player.name,
+          created       : undefined,
+          updated       : undefined,
+          ...p.payload,
+          verification  : PlayerVerification.admin,
+        }),
+      });
 
       return {
         description: 'Success',
       };
     }
+
+    yield* UserPlayer.put({
+      Item: UserPlayer.make({
+        pk            : p.target_id,
+        sk            : p.player_tag,
+        gsi_user_id   : p.target_id,
+        gsi_player_tag: p.player_tag,
+        name          : player.name,
+        created       : undefined,
+        updated       : undefined,
+        ...p.payload,
+        verification  : PlayerVerification.admin,
+      }),
+    });
 
     return {
       description: 'Success',
@@ -103,7 +146,6 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
 
   const player = yield* ClashOfClans.getPlayer(p.player_tag);
 
-  // todo
   if (gsi.Items.length === 1) {
     const current = gsi.Items[0];
 
@@ -161,8 +203,25 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     }),
   });
 
-  // todo
   return {
     description: 'Success',
   };
+});
+
+type UpdateParams = {
+  caller_id : string;
+  player_tag: string;
+  payload: {
+    account_type: string;
+  };
+};
+
+export const update = E.fn('UserPlayerRegistry.update')(function* (p: UpdateParams) {
+  const userPlayer = yield* getAssert(p.caller_id, p.player_tag);
+
+  if (userPlayer.verification < PlayerVerification.token) {
+    return yield* new RegistryUserError({
+      message: 'You are not authorized to update this player account.',
+    });
+  }
 });

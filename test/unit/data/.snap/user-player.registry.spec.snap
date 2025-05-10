@@ -1,5 +1,128 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`given caller is attempting admin registration > given caller is not a server admin > when admin registering user player 1`] = `[RegistryAdminError: You are not authorized to update the registration of this player account.]`;
+
+exports[`given caller is attempting admin registration > given caller is not a server admin > when admin registering user player 2`] = `
+[
+  "player",
+]
+`;
+
+exports[`given caller is attempting admin registration > given caller is not a server admin > when admin registering user player 3`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given caller is not a server admin > when admin registering user player 4`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given caller is not a server admin > when admin registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given caller is attempting admin registration > given caller server is not registered > when admin registering user player 1`] = `[RegistryAdminError: You are not authorized to update the registration of this player account.]`;
+
+exports[`given caller is attempting admin registration > given caller server is not registered > when admin registering user player 2`] = `
+[
+  "player",
+]
+`;
+
+exports[`given caller is attempting admin registration > given caller server is not registered > when admin registering user player 3`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given caller server is not registered > when admin registering user player 4`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given caller server is not registered > when admin registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given caller is attempting admin registration > given player is already registered at higher verification level > when admin registering user player 1`] = `[RegistryAdminError: You are not authorized to update the registration of this player account.]`;
+
+exports[`given caller is attempting admin registration > given player is already registered at higher verification level > when admin registering user player 2`] = `
+[
+  "player",
+]
+`;
+
+exports[`given caller is attempting admin registration > given player is already registered at higher verification level > when admin registering user player 3`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given player is already registered at higher verification level > when admin registering user player 4`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > given player is already registered at higher verification level > when admin registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 2`] = `
+[
+  "player",
+]
+`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 3`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 4`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 6`] = `
+{
+  "_tag": "UserPlayer",
+  "account_type": "main",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_player_tag": "p-player",
+  "gsi_user_id": "u-user2",
+  "name": "PlayerName",
+  "pk": "u-user2",
+  "sk": "p-player",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "verification": 1,
+  "version": 0,
+}
+`;
+
+exports[`given caller is attempting admin registration > when admin registering user player 7`] = `
+{
+  "pk": "u-user2",
+  "sk": "p-player",
+}
+`;
+
 exports[`given caller user is not registered > when registering user player 1`] = `[NoSuchElementException]`;
 
 exports[`given caller user is not registered > when registering user player 2`] = `
@@ -66,5 +189,56 @@ exports[`given new user player registration > when registering user player 6`] =
   "updated": "1970-01-01T00:00:00.000Z",
   "verification": 2,
   "version": 0,
+}
+`;
+
+exports[`given user player is already registered > when registering user player 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`given user player is already registered > when registering user player 2`] = `
+[
+  "player",
+  "api_token",
+]
+`;
+
+exports[`given user player is already registered > when registering user player 3`] = `
+[
+  "player",
+]
+`;
+
+exports[`given user player is already registered > when registering user player 4`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`given user player is already registered > when registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+
+exports[`given user player is already registered > when registering user player 6`] = `
+{
+  "_tag": "UserPlayer",
+  "account_type": "main",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_player_tag": "p-player",
+  "gsi_user_id": "u-user",
+  "name": "PlayerName",
+  "pk": "u-user",
+  "sk": "p-player",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "verification": 2,
+  "version": 0,
+}
+`;
+
+exports[`given user player is already registered > when registering user player 7`] = `
+{
+  "pk": "u-user2",
+  "sk": "p-player",
 }
 `;
