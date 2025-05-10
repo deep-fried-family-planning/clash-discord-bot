@@ -1,0 +1,10 @@
+export * as AllianceRegistry from '#src/data/registry/alliance-registry.ts';
+export type AllianceRegistry = typeof AllianceRegistry;
+export * as ServerRegistry from '#src/data/registry/server-registry.ts';
+export type ServerRegistry = typeof ServerRegistry;
+export * as ServerClanRegistry from '#src/data/registry/server-clan-registry.ts';
+export type ServerClanRegistry = typeof ServerClanRegistry;
+export * as UserRegistry from '#src/data/registry/user-registry.ts';
+export type UserRegistry = typeof UserRegistry;
+export * as UserPlayerRegistry from '#src/data/registry/user-player-registry.ts';
+export type UserPlayerRegistry = typeof UserPlayerRegistry;

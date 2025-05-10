@@ -1,0 +1,12 @@
+export * as GsiLinkAlliance from '#src/data/gsi/gsi-link.alliance.ts';
+export type GsiLinkAlliance = typeof GsiLinkAlliance;
+export * as GsiLinkServer from '#src/data/gsi/gsi-link.server.ts';
+export type GsiLinkServer = typeof GsiLinkServer;
+export * as GsiPoll from '#src/data/gsi/gsi-poll.ts';
+export type GsiPoll = typeof GsiPoll;
+export * as ServerGsi from '#src/data/gsi/server.gsi.ts';
+export type ServerGsi = typeof ServerGsi;
+export * as ServerClanGsi from '#src/data/gsi/server-clan.gsi.ts';
+export type ServerClanGsi = typeof ServerClanGsi;
+export * as UserPlayerGsi from '#src/data/gsi/user-player.gsi.ts';
+export type UserPlayerGsi = typeof UserPlayerGsi;

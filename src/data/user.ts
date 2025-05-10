@@ -1,7 +1,7 @@
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
-import {Document, Id} from 'src/data/arch/index.ts';
-import {DataTag} from 'src/data/constants/index.ts';
+import {Document, Id} from '#src/data/arch/index.ts';
+import {DataTag} from '#src/data/constants/index.ts';
 
 export const Key = Document.Key({
   pk: Id.UserId,

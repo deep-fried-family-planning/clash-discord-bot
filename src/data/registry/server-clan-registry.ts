@@ -5,7 +5,7 @@ import * as ServerClanGsi from '#src/data/gsi/server-clan.gsi.ts';
 import * as ServerClan from '#src/data/server-clan.ts';
 import * as ServerRegistry from '#src/data/registry/server-registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
-import * as UserPartition from '#src/data/partition/user.partition.ts';
+import * as UserPartition from '#src/data/partition/user-partition.ts';
 import * as User from '#src/data/user.ts';
 import * as Array from 'effect/Array';
 import * as E from 'effect/Effect';
