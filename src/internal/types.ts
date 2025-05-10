@@ -1,5 +1,6 @@
-import type {E, L} from '#src/internal/pure/effect.ts';
-import type {Context} from 'effect';
+import type * as C from 'effect/Context';
+import type * as E from 'effect/Effect';
+import type * as L from 'effect/Layer';
 
 export type EA<T> = T extends E.Effect<infer A, infer _, infer __>
   ? A
@@ -9,7 +10,7 @@ export type EAR<T extends (...args: any[]) => any> = ReturnType<T> extends E.Eff
   ? A
   : never;
 
-export type CA<T> = T extends Context.Tag<infer _, infer A>
+export type CA<T> = T extends C.Tag<infer _, infer A>
   ? A
   : never;
 

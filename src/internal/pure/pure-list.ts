@@ -9,11 +9,4 @@ export {
   zip as zipL,
   of as ofL,
   dedupe as dedupeL,
-  dedupeWith as dedupeWithL,
-  contains as containsL,
-  partition as partitionL,
-  head as headL,
-  tail as tailL,
-  sortWith as sortWithL,
-  sortBy as sortByL,
 } from 'effect/Array';

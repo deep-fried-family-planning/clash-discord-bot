@@ -1,6 +1,5 @@
-import {pipe} from '#src/internal/pure/effect.ts';
-import {concatL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
-import {range} from 'effect/Array';
+import {map as mapL, range, reduce as reduceL} from 'effect/Array';
+import {pipe} from 'effect/Function';
 
 export const dTable = (tss: string[][]) => {
   const longest = pipe(
@@ -32,9 +31,3 @@ export const dTable = (tss: string[][]) => {
     mapL(reduceL('', (ts0, t) => ts0 + t + ' ')),
   );
 };
-
-export const dTableFull = (header: string[][], rows: string[][]) => pipe(
-  header,
-  concatL(rows),
-  dTable,
-);

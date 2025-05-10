@@ -2,7 +2,7 @@ import {Server} from '#src/database/arch/codec.ts';
 import {readItem} from '#src/database/DeepFryerDB.ts';
 import type {IxD} from '#src/internal/discord.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
 
 export const validateServer = (data: IxD) => E.gen(function* () {
   if (!data.member) {

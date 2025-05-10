@@ -1,3 +1,4 @@
+import {COLOR, nColor} from '#src/constants/colors.ts';
 import {CACHE_BUST} from '#src/discord/commands/cache-bust.ts';
 import {CLAN_FAM} from '#src/discord/commands/clanfam.ts';
 import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';
@@ -11,13 +12,14 @@ import {USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
-import {logDiscordError} from '#src/internal/log-discord-error.ts';
 import type {CommandSpec} from '#src/discord/types.ts';
+import {dLinesS} from '#src/internal/markdown.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
-import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
+import {CFG, CSL, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
+import {buildCloudWatchLink} from '#src/internal/validation.ts';
 import {DiscordLayer} from '#src/util/layers';
 import {makeLambda} from '@effect-aws/lambda';
 import {fromParameterStore} from '@effect-aws/ssm';
@@ -25,6 +27,54 @@ import {DiscordREST} from 'dfx';
 import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {map} from 'effect/Array';
 import {mapEntries, toEntries} from 'effect/Record';
+import {inspect} from 'node:util';
+
+const logDiscordError = (e: unknown[]) => E.gen(function* () {
+  yield* CSL.error('[CAUSE]:', ...e.map((e) => inspect(e, true, null)));
+
+  const discord = yield* DiscordREST;
+
+  const url = process.env.DFFP_DISCORD_ERROR_URL!;
+
+  const [token, id] = url.split('/').reverse();
+
+  const log = yield* discord.executeWebhook(id, token, {
+    embeds: [{
+      color      : nColor(COLOR.ERROR),
+      title      : process.env.AWS_LAMBDA_FUNCTION_NAME!,
+      description: dLinesS(
+        dLinesS(...pipe(e, mapL((err) => dLinesS(
+          // @ts-expect-error bad types...
+          err.name,
+          // @ts-expect-error bad types...
+          err.e,
+        )))),
+        '',
+        process.env.AWS_LAMBDA_LOG_GROUP_NAME!,
+        process.env.AWS_LAMBDA_LOG_STREAM_NAME!,
+        buildCloudWatchLink(),
+      ),
+    }],
+  }, {
+    urlParams: {
+      wait: true,
+    },
+  }).json;
+
+  return {
+    embeds: [{
+      color      : nColor(COLOR.ERROR),
+      title      : 'Unknown Error',
+      description: dLinesS(
+        `If you don't think your input caused this error, send this link to the support server:`,
+        `-# <https://discord.com/channels/1283847240061947964/${log.channel_id}/${log.id}>`,
+      ),
+      footer: {
+        text: 'Made with ❤️ by NotStr8DontH8 and DFFP.',
+      },
+    }],
+  };
+});
 
 const specs = {
   CLAN_FAM,

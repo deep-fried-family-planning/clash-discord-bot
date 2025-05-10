@@ -1,12 +1,7 @@
-import {D, E} from '#src/internal/pure/effect.ts';
+import * as Data from 'effect/Data';
+import * as E from 'effect/Effect';
 
-export class SlashError extends D.TaggedError('DeepFryerSlashError')<{
-  issue?  : string;
-  original: unknown;
-}> {
-}
-
-export class SlashUserError extends D.TaggedError('DeepFryerSlashUserError')<{
+export class SlashUserError extends Data.TaggedError('DeepFryerSlashUserError')<{
   issue    : string;
   original?: unknown;
   cause?   : any;
