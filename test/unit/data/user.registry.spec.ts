@@ -5,6 +5,7 @@ import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandI
 import {it, vi} from '@effect/vitest';
 import * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
 
 const mock = {
@@ -20,17 +21,20 @@ const mockDb = L.succeed(DeepFryerDB, DeepFryerDB.make(mock as any));
 it.effect('when registering a new user', E.fn(function* () {
   mock.get.mockReturnValueOnce(E.succeed({Item: undefined}));
 
-  const actual = yield* UserRegistry.register({
-    caller_id: 'user',
-    payload  : {
-      timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
-    },
-  });
+  const actual = yield* pipe(
+    UserRegistry.register({
+      caller_id: 'user',
+      payload  : {
+        timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
+      },
+    }),
+    E.provide(mockDb),
+  );
 
   expect(actual).toMatchSnapshot();
   expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
   expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
-}, E.provide(mockDb)));
+}));
 
 it.effect('when re-registering a user', E.fn(function* () {
   mock.get.mockReturnValueOnce(E.succeed({
@@ -43,20 +47,23 @@ it.effect('when re-registering a user', E.fn(function* () {
       updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
       gsi_all_user_id: 'u-user',
       timezone       : 'America/New_York',
-    } as const,
+    },
   }));
 
-  const actual = yield* UserRegistry.register({
-    caller_id: 'user',
-    payload  : {
-      timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
-    },
-  });
+  const actual = yield* pipe(
+    UserRegistry.register({
+      caller_id: 'user',
+      payload  : {
+        timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
+      },
+    }),
+    E.provide(mockDb),
+  );
 
   expect(actual).toMatchSnapshot();
   expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
   expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
-}, E.provide(mockDb)));
+}));
 
 it.effect('when admin registering a new user', E.fn(function* () {
   mock.get
@@ -70,22 +77,25 @@ it.effect('when admin registering a new user', E.fn(function* () {
         updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
         gsi_all_user_id: 'u-user1',
         timezone       : 'America/New_York',
-      } as const,
+      },
     }))
     .mockReturnValueOnce(E.succeed({Item: undefined}));
 
-  const actual = yield* UserRegistry.register({
-    caller_id: 'user1',
-    target_id: 'user2',
-    payload  : {
-      timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
-    },
-  });
+  const actual = yield* pipe(
+    UserRegistry.register({
+      caller_id: 'user1',
+      target_id: 'user2',
+      payload  : {
+        timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
+      },
+    }),
+    E.provide(mockDb),
+  );
 
   expect(actual).toMatchSnapshot();
   expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
   expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
-}, E.provide(mockDb)));
+}));
 
 it.effect('when admin registering a current user', E.fn(function* () {
   mock.get
@@ -99,7 +109,7 @@ it.effect('when admin registering a current user', E.fn(function* () {
         updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
         gsi_all_user_id: 'u-user1',
         timezone       : 'America/New_York',
-      } as const,
+      },
     }))
     .mockReturnValueOnce(E.succeed({
       Item: {
@@ -111,18 +121,22 @@ it.effect('when admin registering a current user', E.fn(function* () {
         updated        : DateTime.unsafeMake(0).pipe(DateTime.format()),
         gsi_all_user_id: 'u-user2',
         timezone       : 'America/New_York',
-      } as const,
+      },
     }));
 
-  const actual = yield* UserRegistry.register({
-    caller_id: 'user1',
-    target_id: 'user2',
-    payload  : {
-      timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
-    },
-  }).pipe(E.catchAll((cause) => E.succeed(cause)));
+  const actual = yield* pipe(
+    UserRegistry.register({
+      caller_id: 'user1',
+      target_id: 'user2',
+      payload  : {
+        timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
+      },
+    }),
+    E.provide(mockDb),
+    E.catchAll((cause) => E.succeed(cause)),
+  );
 
   expect(actual).toMatchSnapshot();
   expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
   expect(mock.put).toBeCalledTimes(0);
-}, E.provide(mockDb)));
+}));
