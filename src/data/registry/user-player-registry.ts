@@ -1,10 +1,10 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/arch/util.ts';
 import {PlayerVerification} from '#src/data/constants/index.ts';
-import * as ServerRegistry from '#src/data/server.registry.ts';
-import * as UserPlayerGsi from '#src/data/user-player.gsi.ts';
+import * as ServerRegistry from '#src/data/registry/server-registry.ts';
+import * as UserPlayerGsi from '#src/data/gsi/user-player.gsi.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
-import * as UserRegistry from '#src/data/user.registry.ts';
+import * as UserRegistry from '#src/data/registry/user-registry.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
@@ -91,7 +91,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       });
 
       yield* UserPlayer.putItem({
-        Item: UserPlayer.item({
+        Item: UserPlayer.make({
           pk            : p.target_id,
           sk            : p.player_tag,
           gsi_user_id   : p.target_id,
@@ -108,7 +108,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     }
 
     yield* UserPlayer.putItem({
-      Item: UserPlayer.item({
+      Item: UserPlayer.make({
         pk            : p.target_id,
         sk            : p.player_tag,
         gsi_user_id   : p.target_id,
@@ -154,7 +154,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       });
 
       yield* UserPlayer.putItem({
-        Item: UserPlayer.item({
+        Item: UserPlayer.make({
           ...current,
           pk            : p.caller_id,
           sk            : p.player_tag,
@@ -172,7 +172,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     }
 
     yield* UserPlayer.putItem({
-      Item: UserPlayer.item({
+      Item: UserPlayer.make({
         ...current,
         name        : player.name,
         ...p.payload,
@@ -186,7 +186,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
   }
 
   yield* UserPlayer.putItem({
-    Item: UserPlayer.item({
+    Item: UserPlayer.make({
       pk            : p.caller_id,
       sk            : p.player_tag,
       gsi_user_id   : p.caller_id,

@@ -1,11 +1,11 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
-import * as ServerClanGsi from '#src/data/server-clan.gsi.ts';
+import * as ServerClanGsi from '#src/data/gsi/server-clan.gsi.ts';
 import * as ServerClan from '#src/data/server-clan.ts';
-import * as ServerRegistry from '#src/data/server.registry.ts';
+import * as ServerRegistry from '#src/data/registry/server-registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
-import * as UserPartition from '#src/data/user.partition.ts';
+import * as UserPartition from '#src/data/partition/user.partition.ts';
 import * as User from '#src/data/user.ts';
 import * as Array from 'effect/Array';
 import * as E from 'effect/Effect';
@@ -98,9 +98,9 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     }
 
     if (current.pk !== p.guild_id) {
-      yield* ServerClan.deleteItem({Key: ServerClan.key(current)});
+      yield* ServerClan.deleteItem({Key: ServerClan.makeKey(current)});
 
-      const updated = ServerClan.item({
+      const updated = ServerClan.make({
         pk           : p.guild_id,
         sk           : p.clan_tag,
         gsi_server_id: p.guild_id,
@@ -115,7 +115,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
       yield* ServerClan.putItem({Item: updated});
     }
     else {
-      const updated = ServerClan.item({
+      const updated = ServerClan.make({
         ...current,
         name       : clan.name,
         description: clan.description,
@@ -131,7 +131,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     };
   }
 
-  const created = ServerClan.item({
+  const created = ServerClan.make({
     pk           : p.guild_id,
     sk           : p.clan_tag,
     gsi_server_id: p.guild_id,

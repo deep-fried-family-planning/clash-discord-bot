@@ -1,25 +1,20 @@
 import {Document, Id} from '#src/data/arch/index.ts';
-import {GsiName} from '#src/data/constants/index.ts';
-import * as User from '#src/data/user.ts';
-import * as Server from '#src/data/server.ts';
+import * as UserPlayer from '#src/data/user-player.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 
 export const Index = 'GSI_ALL_PLAYERS';
 
 export const Items = S.Array(S.Union(
-  Server.Versions,
-  User.Versions,
+  UserPlayer.Versions,
 ));
 
 export const scan = Document.ScanUpgrade(
   encodeOnly(
     S.Struct({}),
-    S.Struct({
-      IndexName: S.String,
-    }),
+    Document.ScanInput,
     () => ({
-      IndexName: GsiName.GSI_POLL,
+      IndexName: Index,
     }),
   ),
   Items,
@@ -32,11 +27,7 @@ export const query = Document.Query(
         gsi_player_tag: Id.PlayerTag,
       }),
     }),
-    S.Struct({
-      IndexName                : S.String,
-      KeyConditionExpression   : S.String,
-      ExpressionAttributeValues: S.Any,
-    }),
+    Document.QueryInput,
     (input) => ({
       IndexName                : Index,
       KeyConditionExpression   : 'gsi_player_tag = :gsi_player_tag',

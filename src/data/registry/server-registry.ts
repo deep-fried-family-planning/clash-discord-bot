@@ -1,7 +1,7 @@
-import {RegistryAdminError, RegistryFailure, RegistryUserError} from '#src/data/arch/util.ts';
+import {RegistryAdminError, RegistryUserError} from '#src/data/arch/util.ts';
 import * as Server from '#src/data/server.ts';
-import {pipe} from 'effect/Function';
 import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const get = (guild_id: string) =>
   pipe(
@@ -41,7 +41,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
 
   if (!server) {
     yield* Server.putItem({
-      Item: Server.item({
+      Item: Server.make({
         pk               : params.guild_id,
         sk               : 'now',
         gsi_all_server_id: params.guild_id,
@@ -61,7 +61,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
   }
 
   yield* Server.putItem({
-    Item: Server.item({
+    Item: Server.make({
       ...server,
       pk: params.guild_id,
       sk: 'now',

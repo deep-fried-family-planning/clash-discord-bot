@@ -1,8 +1,8 @@
-import {RegistryAdminError, RegistryFailure} from '#src/data/arch/util.ts';
+import {RegistryAdminError} from '#src/data/arch/util.ts';
 import * as User from '#src/data/user.ts';
-import {pipe} from 'effect/Function';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const get = (user_id: string) =>
   pipe(
@@ -55,7 +55,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
     }
 
     yield* User.putItem({
-      Item: User.item({
+      Item: User.make({
         pk             : params.target_id,
         sk             : 'now',
         gsi_all_user_id: params.target_id,
@@ -69,7 +69,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   }
 
   if (!caller) {
-    const created = User.item({
+    const created = User.make({
       pk             : params.caller_id,
       sk             : 'now',
       gsi_all_user_id: params.caller_id,
@@ -83,7 +83,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
     };
   }
 
-  const updated = User.item({
+  const updated = User.make({
     ...caller,
     ...params.payload,
   });
