@@ -1,0 +1,88 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`when admin registering a current user 1`] = `[RegistryAdminError: User already registered.]`;
+
+exports[`when admin registering a current user 2`] = `
+{
+  "pk": "u-user1",
+  "sk": "now",
+}
+`;
+
+exports[`when admin registering a new user 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`when admin registering a new user 2`] = `
+{
+  "pk": "u-user1",
+  "sk": "now",
+}
+`;
+
+exports[`when admin registering a new user 3`] = `
+{
+  "_tag": "User",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_all_user_id": "u-user2",
+  "pk": "u-user2",
+  "sk": "now",
+  "timezone": "America/Chicago",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "version": 0,
+}
+`;
+
+exports[`when re-registering a user 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`when re-registering a user 2`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`when re-registering a user 3`] = `
+{
+  "_tag": "User",
+  "created": "1970-01-01T06:00:00.000Z",
+  "gsi_all_user_id": "u-user",
+  "pk": "u-user",
+  "sk": "now",
+  "timezone": "America/Chicago",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "version": 0,
+}
+`;
+
+exports[`when registering a new user 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`when registering a new user 2`] = `
+{
+  "pk": "u-user",
+  "sk": "now",
+}
+`;
+
+exports[`when registering a new user 3`] = `
+{
+  "_tag": "User",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_all_user_id": "u-user",
+  "pk": "u-user",
+  "sk": "now",
+  "timezone": "America/Chicago",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "version": 0,
+}
+`;
