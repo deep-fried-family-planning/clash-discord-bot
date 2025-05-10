@@ -1,11 +1,10 @@
 import {ServerClanRegistry} from '#src/data/index.ts';
 import {mockCoc, mockCocLayer} from '#unit/data/mock-coc.ts';
-import {TestDataServer, TestDataServerClan, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/data/mock-db.testdata.ts';
+import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/data/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import {describe} from 'vitest';
 
 it.effect('when registering a new server clan', E.fn(function* () {
   mockDb.get
