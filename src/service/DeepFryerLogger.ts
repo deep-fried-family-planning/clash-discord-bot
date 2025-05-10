@@ -1,5 +1,5 @@
 import {AwsLambdaEnv, DiscordEnv} from 'config/external.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DiscordREST, type DiscordRESTError} from 'dfx/DiscordREST';
 import type {Embed} from 'dfx/types';

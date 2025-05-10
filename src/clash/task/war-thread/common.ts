@@ -1,5 +1,5 @@
 import  {Server, ServerClan} from '#src/database/arch/codec.ts';
-import {ThreadId} from '#src/internal/discord-old/dynamo/schema/common.ts';
+import {ThreadId} from '#src/internal/common.ts';
 import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';

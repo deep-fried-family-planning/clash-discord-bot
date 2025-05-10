@@ -1,13 +1,13 @@
 import {User} from '#src/database/arch/codec';
 import {readItem, saveItem} from '#src/database/DeepFryerDB.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import {decodeTimezone} from '#src/internal/discord-old/dynamo/schema/common-decoding.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
-import {SlashError, SlashUserError} from '#src/internal/errors.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import {OPTION_TZ} from '#src/constants/ix-constants.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
+import {validateServer} from '#src/internal/validation.ts';
+import {SlashUserError} from '#src/internal/errors.ts';
+import {DateTime} from 'effect';
+import * as E from 'effect/Effect';
 
 export const USER = {
   type       : 1,
@@ -79,7 +79,7 @@ export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* (
       created        : undefined,
       updated        : undefined,
       gsi_all_user_id: userId,
-      timezone       : yield* decodeTimezone(options.tz),
+      timezone       : DateTime.zoneUnsafeMakeNamed(options.tz),
     });
 
     return {
@@ -92,7 +92,7 @@ export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* (
 
   yield* saveItem(User, {
     ...user,
-    timezone: yield* decodeTimezone(options.tz),
+    timezone: DateTime.zoneUnsafeMakeNamed(options.tz),
   });
 
   return {
@@ -101,6 +101,4 @@ export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* (
       description: `<@${userId}> user registration updated (${options.tz})`,
     }],
   };
-}).pipe(
-  E.catchTag('ParseError', (e) => new SlashError({original: e})),
-);
+});

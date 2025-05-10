@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {SharedOptions} from '#src/internal/discord-old/types.ts';
+import type {SharedOptions} from '#src/discord/types.ts';
 import {E, g} from '#src/internal/pure/effect.ts';
 import type {WarThreadData} from '#src/clash/task/war-thread/common.ts';
 import type {Clan, ClanWar, ClanWarLeagueGroup, Player} from 'clashofclans.js';

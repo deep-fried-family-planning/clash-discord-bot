@@ -1,6 +1,6 @@
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import type {CommandSpec} from '#src/internal/discord-old/types.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import type {CommandSpec} from '#src/discord/types.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 export const OMNI_BOARD = {

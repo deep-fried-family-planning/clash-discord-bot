@@ -1,7 +1,7 @@
 import {DataTag} from '#src/database/arch/const/index.ts';
 import {Id} from '#src/database/arch/id.ts';
 import {declareKey, declareLatest, transformLatest} from '#src/database/arch/arch.ts';
-import {DiscordEmbed} from '#src/internal/discord-old/dynamo/schema/discord-embed.ts';
+import {DiscordEmbed} from '#src/database/data/deprecated.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import {DateTime} from 'effect';
 

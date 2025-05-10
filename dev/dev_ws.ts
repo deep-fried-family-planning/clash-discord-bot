@@ -1,6 +1,6 @@
 import {LambdaProxyEnv} from 'config/aws.ts';
 import {AwsLambdaEnv, DiscordEnv, DiscordRESTEnv} from 'config/external.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
 import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';

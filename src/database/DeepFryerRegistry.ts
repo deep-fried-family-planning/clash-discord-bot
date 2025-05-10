@@ -1,8 +1,8 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {UserPlayer} from '#src/database/arch/codec.ts';
 import {deleteItem, queryUserPlayers, saveItem} from '#src/database/DeepFryerDB.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
+import {dLinesS} from '#src/internal/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {Embed} from 'dfx/types';
 import {Data} from 'effect';

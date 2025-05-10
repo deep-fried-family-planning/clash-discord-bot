@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {saveItem} from '#src/database/DeepFryerDB.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {COLOR, nColor} from '#src/constants/colors.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';

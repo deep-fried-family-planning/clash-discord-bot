@@ -1,8 +1,8 @@
-import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
+import type {CommandSpec, IxDS} from '#src/discord/types.ts';
+import type {IxD} from '#src/internal/discord.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
 export const SMOKE = {

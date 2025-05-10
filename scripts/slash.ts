@@ -11,9 +11,8 @@ import {USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
-import {REDACTED_DISCORD_APP_ID} from '#src/internal/discord-old/constants/secrets.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
-import type {CommandSpec} from '#src/internal/discord-old/types.ts';
+import {logDiscordError} from '#src/internal/log-discord-error.ts';
+import type {CommandSpec} from '#src/discord/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
@@ -73,7 +72,7 @@ const h = () => E.gen(function* () {
   yield* invokeCount(showMetric(invokeCount));
 
   const discord = yield* DiscordREST;
-  const APP_ID = yield* CFG.redacted(REDACTED_DISCORD_APP_ID);
+  const APP_ID = yield* CFG.redacted(`/DFFP/${process.env.LAMBDA_ENV_UPPER}/DISCORD_APP_ID`);
 
   const globalCommands = yield* discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
 

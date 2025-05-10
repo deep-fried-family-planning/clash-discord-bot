@@ -2,11 +2,13 @@ import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {Server} from '#src/database/arch/codec';
 import {saveItem} from '#src/database/DeepFryerDB.ts';
-import {encodeServerId} from '#src/internal/discord-old/dynamo/schema/common-encoding.ts';
-import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
+import {ServerId} from '#src/internal/common.ts';
+import {Cron, E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx/DiscordREST';
+
+const encodeServerId = S.encodeUnknown(ServerId);
 
 const raidWeekendDone = Cron.make({
   days    : [],

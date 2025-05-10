@@ -1,12 +1,12 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {ServerClan} from '#src/database/arch/codec.ts';
 import {readItem, saveItem} from '#src/database/DeepFryerDB.ts';
-import {nColor} from '#src/internal/discord-old/constants/colors';
-import {COLOR} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {nColor} from '#src/constants/colors';
+import {COLOR} from '#src/constants/colors.ts';
+import {OPTION_CLAN} from '#src/constants/ix-constants.ts';
+import type {IxD} from '#src/internal/discord.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/discord/types.ts';
+import {validateServer} from '#src/internal/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {CSL, E} from '#src/internal/pure/effect.ts';
 

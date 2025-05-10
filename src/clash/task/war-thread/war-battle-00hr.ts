@@ -1,5 +1,5 @@
 import {makeTask} from '#src/clash/task/war-thread/common.ts';
-import {dHdr1, dLinesS, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dHdr1, dLinesS, dtRel} from '#src/internal/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DiscordREST} from 'dfx';
 

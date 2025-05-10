@@ -1,5 +1,5 @@
 import {makeTask} from '#src/clash/task/war-thread/common.ts';
-import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';

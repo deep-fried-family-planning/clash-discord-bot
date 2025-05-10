@@ -1,4 +1,4 @@
-import {dHdr1, dHdr3, dLinesS, dmRole, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dHdr1, dHdr3, dLinesS, dmRole, dtRel} from '#src/internal/markdown.ts';
 import {g} from '#src/internal/pure/effect.ts';
 import {makeTask, TEMP_ROLES} from '#src/clash/task/war-thread/common.ts';
 import {DiscordREST} from 'dfx';
