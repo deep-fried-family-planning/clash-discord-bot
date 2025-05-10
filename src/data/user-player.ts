@@ -1,6 +1,8 @@
+import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {Document, Id} from '#src/data/arch/index.ts';
 import {DataTag} from '#src/data/constants/index.ts';
-import {decodeOnly} from '#src/util/util-schema.ts';
+import {decodeOrFail} from '#src/util/util-schema.ts';
+import * as E from 'effect/Effect';
 import * as S from 'effect/Schema';
 
 export const PlayerVerification = S.Enums({
@@ -44,20 +46,22 @@ const Legacy = S.Struct({
 
 export const Versions = S.Union(
   Latest,
-  decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
+  decodeOrFail(Legacy, S.typeSchema(Latest), (enc) => E.gen(function* () {
+    const player = yield* ClashOfClans.getPlayer(enc.gsi_player_tag);
+
     return Document.upgrade({
       _tag          : DataTag.USER_PLAYER,
       _ver          : 0,
       pk            : enc.pk,
       sk            : enc.sk,
-      name          : '',
+      name          : player.name,
       account_type  : enc.account_type,
       gsi_user_id   : enc.gsi_user_id,
       gsi_player_tag: enc.gsi_player_tag,
       embed_id      : enc.embed_id,
       verification  : enc.verification as any,
     });
-  }),
+  })),
 );
 
 export const key = Key.make;
