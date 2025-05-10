@@ -100,7 +100,7 @@ export const CompositeKey = <F extends S.Struct.Fields>(fields: F) => {
 };
 
 export const Item = <F extends S.Struct.Fields>(fields: F) => {
-  checkDocumentReserved(fields);
+  // checkDocumentReserved(fields);
   return S.Struct(fields);
 };
 

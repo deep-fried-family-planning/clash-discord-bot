@@ -61,7 +61,7 @@ export const Latest = Document.Item({
   _tag        : S.tag(DataTag.DISCORD_EMBED),
   version     : S.tag(0),
   gsi_embed_id: Id.EmbedId,
-  data        : ApiEmbed,
+  embed       : ApiEmbed,
   created     : Document.Created,
   updated     : Document.Updated,
   upgraded    : Document.Upgraded,
@@ -95,7 +95,7 @@ export const Versions = S.Union(
       gsi_embed_id: enc.gsi_embed_id,
       created     : DateTime.unsafeMake(enc.created),
       updated     : DateTime.unsafeMake(enc.updated),
-      data        : enc.embed,
+      embed       : enc.embed,
     } as const;
   }),
 );
