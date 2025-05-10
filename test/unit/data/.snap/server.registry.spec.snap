@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`when re-registering a server 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`when re-registering a server 2`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`when re-registering a server 3`] = `
+{
+  "_tag": "Server",
+  "admin": "admin2",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_all_server_id": "s-guild",
+  "pk": "s-guild",
+  "sk": "now",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "version": 0,
+}
+`;
+
+exports[`when registering a new server 1`] = `
+{
+  "description": "Success",
+}
+`;
+
+exports[`when registering a new server 2`] = `
+{
+  "pk": "s-guild",
+  "sk": "now",
+}
+`;
+
+exports[`when registering a new server 3`] = `
+{
+  "_tag": "Server",
+  "admin": "admin",
+  "created": "1970-01-01T00:00:00.000Z",
+  "gsi_all_server_id": "s-guild",
+  "pk": "s-guild",
+  "sk": "now",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "version": 0,
+}
+`;
