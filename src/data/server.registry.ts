@@ -49,7 +49,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
         gsi_all_server_id: params.guild_id,
         ...params.payload,
       }),
-    }).pipe(E.catchAll((cause) => new RegistryFailure({cause})));
+    });
 
     return {
       description: 'Success',
@@ -70,7 +70,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
       updated: undefined,
       ...params.payload,
     }),
-  }).pipe(E.catchAll((cause) => new RegistryFailure({cause})));
+  });
 
   return {
     description: 'Success',

@@ -1,25 +1,13 @@
 import {DataTag} from '#src/data/constants/index.ts';
-import {type User, UserRegistry} from '#src/data/index.ts';
-import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
-import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput} from '@aws-sdk/lib-dynamodb';
-import {it, vi} from '@effect/vitest';
+import {UserRegistry} from '#src/data/index.ts';
+import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
+import {it} from '@effect/vitest';
 import * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import * as L from 'effect/Layer';
-
-const mock = {
-  get   : vi.fn((cmd: GetCommandInput) => E.succeed({Item: {} as User.Encoded | undefined})),
-  put   : vi.fn((cmd: PutCommandInput) => E.void),
-  delete: vi.fn((cmd: DeleteCommandInput) => E.void),
-  query : vi.fn((cmd: QueryCommandInput) => E.void),
-  scan  : vi.fn((cmd: ScanCommandInput) => E.void),
-};
-
-const mockDb = L.succeed(DeepFryerDB, DeepFryerDB.make(mock as any));
 
 it.effect('when registering a new user', E.fn(function* () {
-  mock.get.mockReturnValueOnce(E.succeed({Item: undefined}));
+  mockDb.get.mockReturnValueOnce(E.succeed({Item: undefined}));
 
   const actual = yield* pipe(
     UserRegistry.register({
@@ -28,16 +16,16 @@ it.effect('when registering a new user', E.fn(function* () {
         timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
       },
     }),
-    E.provide(mockDb),
+    E.provide(mockDbLayer),
   );
 
   expect(actual).toMatchSnapshot();
-  expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
-  expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
+  expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
+  expect(mockDb.put.mock.calls[0][0].Item).toMatchSnapshot();
 }));
 
 it.effect('when re-registering a user', E.fn(function* () {
-  mock.get.mockReturnValueOnce(E.succeed({
+  mockDb.get.mockReturnValueOnce(E.succeed({
     Item: {
       _tag           : DataTag.USER,
       pk             : 'u-user',
@@ -57,16 +45,16 @@ it.effect('when re-registering a user', E.fn(function* () {
         timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
       },
     }),
-    E.provide(mockDb),
+    E.provide(mockDbLayer),
   );
 
   expect(actual).toMatchSnapshot();
-  expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
-  expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
+  expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
+  expect(mockDb.put.mock.calls[0][0].Item).toMatchSnapshot();
 }));
 
 it.effect('when admin registering a new user', E.fn(function* () {
-  mock.get
+  mockDb.get
     .mockReturnValueOnce(E.succeed({
       Item: {
         _tag           : DataTag.USER,
@@ -89,16 +77,16 @@ it.effect('when admin registering a new user', E.fn(function* () {
         timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
       },
     }),
-    E.provide(mockDb),
+    E.provide(mockDbLayer),
   );
 
   expect(actual).toMatchSnapshot();
-  expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
-  expect(mock.put.mock.calls[0][0].Item).toMatchSnapshot();
+  expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
+  expect(mockDb.put.mock.calls[0][0].Item).toMatchSnapshot();
 }));
 
 it.effect('when admin registering a current user', E.fn(function* () {
-  mock.get
+  mockDb.get
     .mockReturnValueOnce(E.succeed({
       Item: {
         _tag           : DataTag.USER,
@@ -132,11 +120,11 @@ it.effect('when admin registering a current user', E.fn(function* () {
         timezone: DateTime.zoneUnsafeMakeNamed('America/Chicago'),
       },
     }),
-    E.provide(mockDb),
+    E.provide(mockDbLayer),
     E.catchAll((cause) => E.succeed(cause)),
   );
 
   expect(actual).toMatchSnapshot();
-  expect(mock.get.mock.calls[0][0].Key).toMatchSnapshot();
-  expect(mock.put).toBeCalledTimes(0);
+  expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
+  expect(mockDb.put).toBeCalledTimes(0);
 }));
