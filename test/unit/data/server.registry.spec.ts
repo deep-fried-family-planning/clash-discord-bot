@@ -1,6 +1,6 @@
 import {ServerRegistry} from '#src/data/index.ts';
-import {TestDataServer} from '#unit/data/mock-db.testdata.ts';
-import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
+import {TestDataServer} from '#unit/.mock/mock-db.testdata.ts';
+import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

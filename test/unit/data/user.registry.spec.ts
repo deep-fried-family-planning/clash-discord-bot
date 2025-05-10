@@ -1,6 +1,6 @@
 import {UserRegistry} from '#src/data/index.ts';
-import {TestDataUser, TestDataUser1, TestDataUser2} from '#unit/data/mock-db.testdata.ts';
-import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
+import {TestDataUser, TestDataUser1, TestDataUser2} from '#unit/.mock/mock-db.testdata.ts';
+import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';

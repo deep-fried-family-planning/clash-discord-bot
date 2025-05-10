@@ -1,7 +1,7 @@
 import {ServerClanRegistry} from '#src/data/index.ts';
-import {mockCoc, mockCocLayer} from '#unit/data/mock-coc.ts';
-import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/data/mock-db.testdata.ts';
-import {mockDb, mockDbLayer} from '#unit/data/mock-db.ts';
+import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
+import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/.mock/mock-db.testdata.ts';
+import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
