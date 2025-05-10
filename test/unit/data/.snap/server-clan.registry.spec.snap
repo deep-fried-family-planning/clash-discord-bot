@@ -13,13 +13,6 @@ exports[`given caller has no verified accounts in clan > when registering 4`] = 
 
 exports[`given caller has no verified accounts in clan > when registering 5`] = `"gsi_clan_tag = :gsi_clan_tag"`;
 
-exports[`given caller has no verified accoutns in clan > when registering 2`] = `
-{
-  "pk": "s-guild",
-  "sk": "now",
-}
-`;
-
 exports[`given caller is not admin > when registering 2`] = `
 {
   "pk": "s-guild",
@@ -48,64 +41,6 @@ exports[`given server clan is already leader verified > when registering 3`] = `
 exports[`given server clan is already leader verified > when registering 4`] = `"pk = :pk"`;
 
 exports[`given server clan is already leader verified > when registering 5`] = `"gsi_clan_tag = :gsi_clan_tag"`;
-
-exports[`given server clan is already leader verified > when registering 6`] = `
-{
-  "_tag": "ServerClan",
-  "countdown": "countdown",
-  "description": "ClanDescription",
-  "gsi_clan_tag": "c-clan",
-  "gsi_server_id": "s-guild",
-  "name": "ClanName",
-  "pk": "s-guild",
-  "select": {
-    "label": "ClanName",
-    "value": "c-clan",
-  },
-  "sk": "c-clan",
-  "verification": 3,
-  "version": 0,
-}
-`;
-
-exports[`given server clan is already leader verified > when registering 7`] = `
-{
-  "pk": "s-guild2",
-  "sk": "c-clan",
-}
-`;
-
-exports[`given server clan is already registered with elder verification > when registering 2`] = `"clan"`;
-
-exports[`given server clan is already registered with elder verification > when registering 3`] = `
-{
-  "pk": "s-guild",
-  "sk": "now",
-}
-`;
-
-exports[`given server clan is already registered with elder verification > when registering 4`] = `"pk = :pk"`;
-
-exports[`given server clan is already registered with elder verification > when registering 5`] = `"gsi_clan_tag = :gsi_clan_tag"`;
-
-exports[`given server clan is already registered with elder verification > when registering 6`] = `
-{
-  "_tag": "ServerClan",
-  "countdown": "countdown",
-  "description": "ClanDescription",
-  "gsi_clan_tag": "c-clan",
-  "gsi_server_id": "s-guild",
-  "name": "ClanName",
-  "pk": "s-guild",
-  "select": {
-    "label": "ClanName",
-    "value": "c-clan",
-  },
-  "sk": "c-clan",
-  "verification": 3,
-  "version": 0,
-}
-`;
 
 exports[`given server clan is already registered with elder verification to a different server > when registering 2`] = `"clan"`;
 
