@@ -1,6 +1,6 @@
 import {DynamoEnv} from '#config/aws.ts';
 import {DeepFryerDBCapacity} from '#src/service/DeepFryerDBCapacity.ts';
-import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import type {BatchWriteCommandInput, DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as E from 'effect/Effect';
 
@@ -69,6 +69,20 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
           } as any,
         ).pipe(
           capacity.readLimiter,
+        ),
+
+      batchPut: (cmd: Omit<Partial<BatchWriteCommandInput>, 'RequestItems'> & {TableName?: string | undefined; Items: any[]}) =>
+        document.batchWrite({
+          ...cmd,
+          RequestItems: {
+            [cmd.TableName ?? env.DFFP_DDB_TABLE]: cmd.Items.map((item) => ({
+              PutRequest: {
+                Item: item,
+              },
+            })),
+          },
+        }).pipe(
+          capacity.estimateWriteUnits(cmd.Items.length),
         ),
     };
   }),

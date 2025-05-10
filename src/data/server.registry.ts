@@ -5,7 +5,7 @@ import * as E from 'effect/Effect';
 
 export const get = (guild_id: string) =>
   pipe(
-    Server.get({
+    Server.getItem({
       Key           : {pk: guild_id, sk: 'now'},
       ConsistentRead: true,
     }),
@@ -14,7 +14,7 @@ export const get = (guild_id: string) =>
 
 export const getAssert = (guild_id: string) =>
   pipe(
-    Server.get({
+    Server.getItem({
       Key           : {pk: guild_id, sk: 'now'},
       ConsistentRead: true,
     }),
@@ -40,12 +40,10 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
   const server = yield* get(params.guild_id);
 
   if (!server) {
-    yield* Server.put({
-      Item: Server.make({
+    yield* Server.putItem({
+      Item: Server.item({
         pk               : params.guild_id,
         sk               : 'now',
-        created          : undefined,
-        updated          : undefined,
         gsi_all_server_id: params.guild_id,
         ...params.payload,
       }),
@@ -62,12 +60,11 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
     });
   }
 
-  yield* Server.put({
-    Item: Server.make({
+  yield* Server.putItem({
+    Item: Server.item({
       ...server,
-      pk     : params.guild_id,
-      sk     : 'now',
-      updated: undefined,
+      pk: params.guild_id,
+      sk: 'now',
       ...params.payload,
     }),
   });

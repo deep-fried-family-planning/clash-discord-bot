@@ -3,7 +3,7 @@ import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 
-export const Key = Document.Item({
+export const Key = Document.Key({
   pk: Id.ServerId,
   sk: Id.InfoId,
 });
@@ -11,11 +11,10 @@ export const Key = Document.Item({
 export const Latest = Document.Item({
   ...Key.fields,
   _tag    : S.tag(DataTag.SERVER_INFO),
-  version : S.tag(0),
+  _ver    : S.tag(0),
   embed_id: Id.EmbedId,
   select  : Document.SelectData(Id.EmbedId),
   kind    : S.Enums({omni: 'omni', about: 'about', guide: 'guide', rule: 'rule'} as const),
-  created : Document.Created,
   updated : Document.Updated,
   upgraded: Document.Upgraded,
 });
@@ -44,7 +43,7 @@ export const Versions = S.Union(
   decodeOnly(Legacy, Latest, (fromA) => {
     return {
       _tag    : DataTag.SERVER_INFO,
-      version : 0,
+      _ver    : 0,
       upgraded: true,
       pk      : fromA.pk,
       sk      : fromA.sk,
@@ -60,10 +59,13 @@ export const Versions = S.Union(
     } as const;
   }),
 );
+
+export const key = Key.make;
 export const is = S.is(Latest);
-export const make = Latest.make;
+export const item = Latest.make;
 export const equal = S.equivalence(Latest);
 export type Type = typeof Latest.Type;
-export const put = Document.Put(Latest);
-export const get = Document.GetUpgrade(Key, Versions);
-export const del = Document.Delete(Key);
+export type Encoded = typeof Latest.Encoded;
+export const putItem = Document.Put(Latest);
+export const getItem = Document.GetUpgrade(Key, Versions);
+export const deleteItem = Document.Delete(Key);

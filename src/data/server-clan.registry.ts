@@ -98,37 +98,32 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     }
 
     if (current.pk !== p.guild_id) {
-      yield* ServerClan.del({
-        Key: {pk: current.pk, sk: current.sk},
+      yield* ServerClan.deleteItem({Key: ServerClan.key(current)});
+
+      const updated = ServerClan.item({
+        pk           : p.guild_id,
+        sk           : p.clan_tag,
+        gsi_server_id: p.guild_id,
+        gsi_clan_tag : p.clan_tag,
+        name         : clan.name,
+        description  : clan.description,
+        select       : {value: p.clan_tag, label: clan.name},
+        verification,
+        ...p.payload,
       });
 
-      yield* ServerClan.put({
-        Item: ServerClan.make({
-          pk           : p.guild_id,
-          sk           : p.clan_tag,
-          gsi_server_id: p.guild_id,
-          gsi_clan_tag : p.clan_tag,
-          name         : clan.name,
-          description  : clan.description,
-          select       : {
-            value: p.clan_tag,
-            label: clan.name,
-          },
-          verification,
-          ...p.payload,
-        }),
-      });
+      yield* ServerClan.putItem({Item: updated});
     }
     else {
-      yield* ServerClan.put({
-        Item: ServerClan.make({
-          ...current,
-          name       : clan.name,
-          description: clan.description,
-          verification,
-          ...p.payload,
-        }),
+      const updated = ServerClan.item({
+        ...current,
+        name       : clan.name,
+        description: clan.description,
+        verification,
+        ...p.payload,
       });
+
+      yield* ServerClan.putItem({Item: updated});
     }
 
     return {
@@ -136,22 +131,22 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     };
   }
 
-  yield* ServerClan.put({
-    Item: ServerClan.make({
-      pk           : p.guild_id,
-      sk           : p.clan_tag,
-      gsi_server_id: p.guild_id,
-      gsi_clan_tag : p.clan_tag,
-      name         : clan.name,
-      description  : clan.description,
-      select       : {
-        value: p.clan_tag,
-        label: clan.name,
-      },
-      verification,
-      ...p.payload,
-    }),
+  const created = ServerClan.item({
+    pk           : p.guild_id,
+    sk           : p.clan_tag,
+    gsi_server_id: p.guild_id,
+    gsi_clan_tag : p.clan_tag,
+    name         : clan.name,
+    description  : clan.description,
+    select       : {
+      value: p.clan_tag,
+      label: clan.name,
+    },
+    verification,
+    ...p.payload,
   });
+
+  yield* ServerClan.putItem({Item: created});
 
   return {
     description: 'Success',

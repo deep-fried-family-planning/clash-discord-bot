@@ -1,3 +1,11 @@
+export * as Alliance from '#src/data/alliance.ts';
+export type Alliance = Alliance.Type;
+export * as GsiLinkAlliance from '#src/data/gsi-link.alliance.ts';
+export type GsiLinkAlliance = typeof GsiLinkAlliance;
+export * as GsiLinkServer from '#src/data/gsi-link.server.ts';
+export type GsiLinkServer = typeof GsiLinkServer;
+export * as GsiPoll from '#src/data/gsi-poll.ts';
+export type GsiPoll = typeof GsiPoll;
 export * as InfoEmbed from '#src/data/info-embed.ts';
 export type InfoEmbed = InfoEmbed.Type;
 export * as ServerGsi from '#src/data/server.gsi.ts';
@@ -28,3 +36,5 @@ export * as UserPlayerRegistry from '#src/data/user-player.registry.ts';
 export type UserPlayerRegistry = typeof UserPlayerRegistry;
 export * as UserPlayer from '#src/data/user-player.ts';
 export type UserPlayer = UserPlayer.Type;
+export * as UserServerLink from '#src/data/user-server-link.ts';
+export type UserServerLink = UserServerLink.Type;

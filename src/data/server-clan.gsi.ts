@@ -12,9 +12,7 @@ export const Items = S.Array(S.Union(
 export const scan = Document.ScanUpgrade(
   encodeOnly(
     S.Struct({}),
-    S.Struct({
-      IndexName: S.String,
-    }),
+    Document.ScanInput,
     (input) => ({
       IndexName: Index,
     }),
@@ -29,11 +27,7 @@ export const query = Document.Query(
         gsi_clan_tag: Id.ClanTag,
       }),
     }),
-    S.Struct({
-      IndexName                : S.String,
-      KeyConditionExpression   : S.String,
-      ExpressionAttributeValues: S.Any,
-    }),
+    Document.QueryInput,
     (input) => ({
       IndexName                : Index,
       KeyConditionExpression   : 'gsi_clan_tag = :gsi_clan_tag',

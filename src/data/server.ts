@@ -1,25 +1,18 @@
 import {Document, Id} from '#src/data/arch/index.ts';
 import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
-import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
 
-export const Key = Document.Item({
+export const Key = Document.Key({
   pk: Id.ServerId,
-  sk: Id.NowSk,
+  sk: Id.NowTag,
 });
 
-export const Latest = Document.Item({
-  ...Key.fields,
-  _tag             : S.tag(DataTag.SERVER),
-  version          : S.tag(0),
-  gsi_all_server_id: Id.ServerId,
+export const Latest = Document.Version(DataTag.SERVER, 0, Key, {
   forum            : S.optional(Id.ChannelId),
   raids            : S.optional(Id.ThreadId),
   admin            : Id.RoleId,
-  created          : Document.Created,
-  updated          : Document.Updated,
-  upgraded         : Document.Upgraded,
+  gsi_all_server_id: Id.ServerId,
 });
 
 const Legacy = S.Struct({
@@ -54,27 +47,25 @@ const Legacy = S.Struct({
 export const Versions = S.Union(
   Latest,
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
-    return {
+    return Document.upgrade({
       _tag             : DataTag.SERVER,
-      version          : 0,
-      upgraded         : true,
+      _ver             : 0,
       pk               : fromA.pk,
       sk               : fromA.sk,
-      gsi_all_server_id: fromA.pk,
-      created          : DateTime.unsafeMake(fromA.created),
-      updated          : DateTime.unsafeMake(fromA.updated),
       forum            : fromA.forum,
       raids            : fromA.raids,
       admin            : fromA.admin,
-    } as const;
+      gsi_all_server_id: fromA.gsi_all_server_id,
+    });
   }),
 );
 
+export const key = Key.make;
 export const is = S.is(Latest);
-export const make = Latest.make;
+export const item = Latest.make;
 export const equal = S.equivalence(Latest);
 export type Type = typeof Latest.Type;
 export type Encoded = typeof Latest.Encoded;
-export const put = Document.Put(Latest);
-export const get = Document.GetUpgrade(Key, Versions);
-export const del = Document.Delete(Key);
+export const putItem = Document.Put(Latest);
+export const getItem = Document.GetUpgrade(Key, Versions);
+export const deleteItem = Document.Delete(Key);

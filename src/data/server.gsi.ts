@@ -12,10 +12,8 @@ export const Items = S.Array(S.Union(
 export const scan = Document.ScanUpgrade(
   encodeOnly(
     S.Struct({}),
-    S.Struct({
-      IndexName: S.String,
-    }),
-    (input) => ({
+    Document.ScanInput,
+    () => ({
       IndexName: Index,
     }),
   ),

@@ -6,7 +6,7 @@ import * as E from 'effect/Effect';
 
 export const get = (user_id: string) =>
   pipe(
-    User.get({
+    User.getItem({
       Key           : {pk: user_id, sk: 'now'},
       ConsistentRead: true,
     }),
@@ -15,7 +15,7 @@ export const get = (user_id: string) =>
 
 export const getAssert = (user_id: string) =>
   pipe(
-    User.get({
+    User.getItem({
       Key           : {pk: user_id, sk: 'now'},
       ConsistentRead: true,
     }),
@@ -54,13 +54,11 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
       });
     }
 
-    yield* User.put({
-      Item: User.make({
+    yield* User.putItem({
+      Item: User.item({
         pk             : params.target_id,
         sk             : 'now',
         gsi_all_user_id: params.target_id,
-        created        : undefined,
-        updated        : undefined,
         ...params.payload,
       }),
     });
@@ -71,31 +69,27 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   }
 
   if (!caller) {
-    yield* User.put({
-      Item: User.make({
-        pk             : params.caller_id,
-        sk             : 'now',
-        gsi_all_user_id: params.caller_id,
-        created        : undefined,
-        updated        : undefined,
-        ...params.payload,
-      }),
+    const created = User.item({
+      pk             : params.caller_id,
+      sk             : 'now',
+      gsi_all_user_id: params.caller_id,
+      ...params.payload,
     });
+
+    yield* User.putItem({Item: created});
 
     return {
       description: 'Success',
     };
   }
 
-  const updated = User.make({
+  const updated = User.item({
     ...caller,
     ...params.payload,
   });
 
-  if (!User.equal(updated, caller)) {
-    yield* User.put({
-      Item: updated,
-    });
+  if (!User.isEqual(updated, caller)) {
+    yield* User.putItem({Item: updated});
   }
 
   return {

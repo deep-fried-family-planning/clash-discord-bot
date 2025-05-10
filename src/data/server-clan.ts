@@ -12,7 +12,7 @@ export const ClanVerification = S.Enums({
   developer: 4,
 } as const);
 
-export const Key = Document.Item({
+export const Key = Document.Key({
   pk: Id.ServerId,
   sk: Id.ClanTag,
 });
@@ -59,10 +59,9 @@ const Legacy = S.Struct({
 export const Versions = S.Union(
   Latest,
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
-    return {
+    return Document.upgrade({
       _tag           : DataTag.SERVER_CLAN,
       version        : 0,
-      upgraded       : true,
       name           : enc.name,
       description    : enc.desc,
       pk             : enc.pk,
@@ -75,21 +74,17 @@ export const Versions = S.Union(
       battle_opponent: enc.battle_opponent,
       countdown      : enc.countdown,
       verification   : enc.verification as any,
-      created        : DateTime.unsafeMake(enc.created),
-      updated        : DateTime.unsafeMake(enc.updated),
-      select         : {
-        value: enc.sk,
-        label: enc.name,
-      },
-    } as const;
+      select         : {value: enc.sk, label: enc.name},
+    });
   }),
 );
 
+export const key = Key.make;
 export const is = S.is(Latest);
-export const make = Latest.make;
+export const item = Latest.make;
 export const equal = S.equivalence(Latest);
 export type Type = typeof Latest.Type;
 export type Encoded = typeof Latest.Encoded;
-export const put = Document.Put(Latest);
-export const get = Document.GetUpgrade(Key, Versions);
-export const del = Document.Delete(Key);
+export const putItem = Document.Put(Latest);
+export const getItem = Document.GetUpgrade(Key, Versions);
+export const deleteItem = Document.Delete(Key);

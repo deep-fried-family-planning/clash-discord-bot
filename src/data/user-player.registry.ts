@@ -10,7 +10,7 @@ import {pipe} from 'effect/Function';
 
 export const get = (user_id: string, player_tag: string) =>
   pipe(
-    UserPlayer.get({
+    UserPlayer.getItem({
       Key           : {pk: user_id, sk: player_tag},
       ConsistentRead: true,
     }),
@@ -19,7 +19,7 @@ export const get = (user_id: string, player_tag: string) =>
 
 export const getAssert = (user_id: string, player_tag: string) =>
   pipe(
-    UserPlayer.get({
+    UserPlayer.getItem({
       Key           : {pk: user_id, sk: player_tag},
       ConsistentRead: true,
     }),
@@ -83,22 +83,20 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         });
       }
 
-      yield* UserPlayer.del({
+      yield* UserPlayer.deleteItem({
         Key: {
           pk: current.pk,
           sk: current.sk,
         },
       });
 
-      yield* UserPlayer.put({
-        Item: UserPlayer.make({
+      yield* UserPlayer.putItem({
+        Item: UserPlayer.item({
           pk            : p.target_id,
           sk            : p.player_tag,
           gsi_user_id   : p.target_id,
           gsi_player_tag: p.player_tag,
           name          : player.name,
-          created       : undefined,
-          updated       : undefined,
           ...p.payload,
           verification  : PlayerVerification.admin,
         }),
@@ -109,15 +107,13 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       };
     }
 
-    yield* UserPlayer.put({
-      Item: UserPlayer.make({
+    yield* UserPlayer.putItem({
+      Item: UserPlayer.item({
         pk            : p.target_id,
         sk            : p.player_tag,
         gsi_user_id   : p.target_id,
         gsi_player_tag: p.player_tag,
         name          : player.name,
-        created       : undefined,
-        updated       : undefined,
         ...p.payload,
         verification  : PlayerVerification.admin,
       }),
@@ -150,15 +146,15 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     const current = gsi.Items[0];
 
     if (current.pk !== p.caller_id) {
-      yield* UserPlayer.del({
+      yield* UserPlayer.deleteItem({
         Key: {
           pk: current.pk,
           sk: current.sk,
         },
       });
 
-      yield* UserPlayer.put({
-        Item: UserPlayer.make({
+      yield* UserPlayer.putItem({
+        Item: UserPlayer.item({
           ...current,
           pk            : p.caller_id,
           sk            : p.player_tag,
@@ -175,8 +171,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       };
     }
 
-    yield* UserPlayer.put({
-      Item: UserPlayer.make({
+    yield* UserPlayer.putItem({
+      Item: UserPlayer.item({
         ...current,
         name        : player.name,
         ...p.payload,
@@ -189,8 +185,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     };
   }
 
-  yield* UserPlayer.put({
-    Item: UserPlayer.make({
+  yield* UserPlayer.putItem({
+    Item: UserPlayer.item({
       pk            : p.caller_id,
       sk            : p.player_tag,
       gsi_user_id   : p.caller_id,
@@ -198,8 +194,6 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       name          : player.name,
       ...p.payload,
       verification  : PlayerVerification.token,
-      created       : undefined,
-      updated       : undefined,
     }),
   });
 
