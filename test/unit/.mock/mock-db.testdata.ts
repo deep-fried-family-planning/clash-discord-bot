@@ -48,10 +48,10 @@ export const TestDataUserPlayer = {
   account_type: 'main',
   created     : '1970-01-01T00:00:00.000Z',
   name        : 'PlayerName',
-  pk          : 'u-user',
+  pk          : 'u-user2',
   pkl         : 'p-player',
   sk          : 'p-player',
-  skl         : 'u-user',
+  skl         : 'u-user2',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 2,
 } as const satisfies UserPlayer.Encoded;
