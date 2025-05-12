@@ -3,6 +3,10 @@ import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
+import * as Table from './arch/Table.ts';
+
+export const TAG = DataTag.USER_PLAYER;
+export const LATEST = 1;
 
 export const PlayerVerification = S.Enums({
   none     : 0,
@@ -11,24 +15,34 @@ export const PlayerVerification = S.Enums({
   developer: 3,
 } as const);
 
-export const Key = Document.Item({
+export const Key = Table.Key({
   pk: Id.UserId,
   sk: Id.PlayerTag,
 });
 
-export const Latest = Document.Item({
+export const GsiLinkKey = Table.Key({
+  pkl: Id.PlayerTag,
+  skl: Id.UserId,
+});
+
+export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  _tag          : S.tag(DataTag.USER_PLAYER),
-  version       : S.tag(0),
-  name          : S.String,
-  gsi_user_id   : Id.UserId,
-  gsi_player_tag: Id.PlayerTag,
-  embed_id      : S.optional(Id.EmbedId),
-  verification  : PlayerVerification,
-  account_type  : S.String,
-  created       : Document.Created,
-  updated       : Document.Updated,
-  upgraded      : Document.Upgraded,
+  ...GsiLinkKey.fields,
+  name        : S.String,
+  verification: PlayerVerification,
+  account_type: S.String,
+});
+
+const V0 = S.Struct({
+  ...Key.fields,
+  _tag        : S.tag(DataTag.USER_PLAYER),
+  version     : S.tag(0),
+  created     : Table.Created,
+  updated     : Table.Updated,
+  upgraded    : Table.Upgraded,
+  name        : S.String,
+  verification: PlayerVerification,
+  account_type: S.String,
 });
 
 const Legacy = S.Struct({
@@ -48,21 +62,32 @@ const Legacy = S.Struct({
 
 export const Versions = S.Union(
   Latest,
+  decodeOnly(V0, S.typeSchema(Latest), (enc) => {
+    return {
+      ...enc,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pkl     : enc.sk,
+      skl     : enc.pk,
+    } as const;
+  }),
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
     return {
-      _tag          : DataTag.USER_PLAYER,
-      version       : 0,
-      upgraded      : true,
-      pk            : enc.pk,
-      sk            : enc.sk,
-      name          : '',
-      account_type  : enc.account_type,
-      created       : DateTime.unsafeMake(enc.created),
-      updated       : DateTime.unsafeMake(enc.updated),
-      gsi_user_id   : enc.gsi_user_id,
-      gsi_player_tag: enc.gsi_player_tag,
-      embed_id      : enc.embed_id,
-      verification  : enc.verification as any,
+      ...enc,
+      _tag        : DataTag.USER_PLAYER,
+      _v          : LATEST,
+      _v7         : '',
+      upgraded    : true,
+      pk          : enc.pk,
+      sk          : enc.sk,
+      pkl         : enc.sk,
+      skl         : enc.pk,
+      name        : '',
+      account_type: enc.account_type,
+      created     : DateTime.unsafeMake(enc.created),
+      updated     : DateTime.unsafeMake(enc.updated),
+      verification: enc.verification as any,
     } as const;
   }),
 );

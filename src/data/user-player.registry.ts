@@ -3,6 +3,7 @@ import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/a
 import {PlayerVerification} from '#src/data/constants/index.ts';
 import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as UserPlayerGsi from '#src/data/user-player.gsi.ts';
+import * as GsiLink from '#src/data/gsi-link.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as UserRegistry from '#src/data/user.registry.ts';
 import * as E from 'effect/Effect';
@@ -62,9 +63,9 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       });
     }
 
-    const gsi = yield* UserPlayerGsi.query({
+    const gsi = yield* GsiLink.queryUserPlayer({
       KeyConditionExpression: {
-        gsi_player_tag: p.player_tag,
+        pkl: p.player_tag,
       },
     });
 
@@ -92,15 +93,13 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
 
       yield* UserPlayer.put({
         Item: UserPlayer.make({
-          pk            : p.target_id,
-          sk            : p.player_tag,
-          gsi_user_id   : p.target_id,
-          gsi_player_tag: p.player_tag,
-          name          : player.name,
-          created       : undefined,
-          updated       : undefined,
+          pk          : p.target_id,
+          sk          : p.player_tag,
+          pkl         : p.player_tag,
+          skl         : p.target_id,
+          name        : player.name,
           ...p.payload,
-          verification  : PlayerVerification.admin,
+          verification: PlayerVerification.admin,
         }),
       });
 
@@ -111,15 +110,13 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
 
     yield* UserPlayer.put({
       Item: UserPlayer.make({
-        pk            : p.target_id,
-        sk            : p.player_tag,
-        gsi_user_id   : p.target_id,
-        gsi_player_tag: p.player_tag,
-        name          : player.name,
-        created       : undefined,
-        updated       : undefined,
+        pk          : p.target_id,
+        sk          : p.player_tag,
+        pkl         : p.player_tag,
+        skl         : p.target_id,
+        name        : player.name,
         ...p.payload,
-        verification  : PlayerVerification.admin,
+        verification: PlayerVerification.admin,
       }),
     });
 
@@ -160,13 +157,13 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       yield* UserPlayer.put({
         Item: UserPlayer.make({
           ...current,
-          pk            : p.caller_id,
-          sk            : p.player_tag,
-          gsi_user_id   : p.caller_id,
-          gsi_player_tag: p.player_tag,
-          name          : player.name,
+          pk          : p.caller_id,
+          sk          : p.player_tag,
+          pkl         : p.player_tag,
+          skl         : p.caller_id,
+          name        : player.name,
           ...p.payload,
-          verification  : PlayerVerification.token,
+          verification: PlayerVerification.token,
         }),
       });
 
@@ -191,15 +188,13 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
 
   yield* UserPlayer.put({
     Item: UserPlayer.make({
-      pk            : p.caller_id,
-      sk            : p.player_tag,
-      gsi_user_id   : p.caller_id,
-      gsi_player_tag: p.player_tag,
-      name          : player.name,
+      pk          : p.caller_id,
+      sk          : p.player_tag,
+      pkl         : p.player_tag,
+      skl         : p.caller_id,
+      name        : player.name,
       ...p.payload,
-      verification  : PlayerVerification.token,
-      created       : undefined,
-      updated       : undefined,
+      verification: PlayerVerification.token,
     }),
   });
 

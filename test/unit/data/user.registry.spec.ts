@@ -2,6 +2,7 @@ import {UserRegistry} from '#src/data/index.ts';
 import {TestDataUser, TestDataUser1, TestDataUser2} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
+import {DateTimes, GetRandomValues} from '@typed/id';
 import * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -17,6 +18,7 @@ it.effect('when registering a new user', E.fn(function* () {
       },
     }),
     E.provide(mockDbLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();
@@ -35,11 +37,12 @@ it.effect('when re-registering a user', E.fn(function* () {
       },
     }),
     E.provide(mockDbLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();
   expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
-  expect(mockDb.put.mock.calls[0][0].Item).toMatchSnapshot();
+  expect(mockDb.put).not.toBeCalled();
 }));
 
 it.effect('when admin registering a new user', E.fn(function* () {
@@ -56,6 +59,7 @@ it.effect('when admin registering a new user', E.fn(function* () {
       },
     }),
     E.provide(mockDbLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();
@@ -78,6 +82,7 @@ it.effect('when admin registering a current user', E.fn(function* () {
     }),
     E.provide(mockDbLayer),
     E.catchAll((cause) => E.succeed(cause)),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();

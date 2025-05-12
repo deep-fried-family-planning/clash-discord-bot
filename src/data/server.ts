@@ -3,23 +3,40 @@ import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
+import * as Table from './arch/Table.ts';
 
-export const Key = Document.Item({
+export const TAG = DataTag.SERVER;
+export const LATEST = 1;
+
+export const Key = Table.Key({
   pk: Id.ServerId,
   sk: Id.NowSk,
 });
 
-export const Latest = Document.Item({
+export const GsiPollKey = Table.Key({
+  pkp: Id.ServerId,
+  skp: Id.PartitionRoot,
+});
+
+export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  _tag             : S.tag(DataTag.SERVER),
-  version          : S.tag(0),
-  gsi_all_server_id: Id.ServerId,
-  forum            : S.optional(Id.ChannelId),
-  raids            : S.optional(Id.ThreadId),
-  admin            : Id.RoleId,
-  created          : Document.Created,
-  updated          : Document.Updated,
-  upgraded         : Document.Upgraded,
+  ...GsiPollKey.fields,
+  forum: S.optional(Id.ChannelId),
+  raids: S.optional(Id.ThreadId),
+  admin: Id.RoleId,
+});
+
+const V0 = Document.Item({
+  ...Key.fields,
+  ...GsiPollKey.fields,
+  _tag    : S.tag(DataTag.SERVER),
+  version : S.tag(0),
+  forum   : S.optional(Id.ChannelId),
+  raids   : S.optional(Id.ThreadId),
+  admin   : Id.RoleId,
+  created : Document.Created,
+  updated : Document.Updated,
+  upgraded: Document.Upgraded,
 });
 
 const Legacy = S.Struct({
@@ -53,28 +70,40 @@ const Legacy = S.Struct({
 
 export const Versions = S.Union(
   Latest,
+  decodeOnly(V0, S.typeSchema(Latest), (fromA) => {
+    return {
+      ...fromA,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pkp     : fromA.pk,
+      skp     : '.',
+    } as const;
+  }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
     return {
-      _tag             : DataTag.SERVER,
-      version          : 0,
-      upgraded         : true,
-      pk               : fromA.pk,
-      sk               : fromA.sk,
-      gsi_all_server_id: fromA.pk,
-      created          : DateTime.unsafeMake(fromA.created),
-      updated          : DateTime.unsafeMake(fromA.updated),
-      forum            : fromA.forum,
-      raids            : fromA.raids,
-      admin            : fromA.admin,
+      _tag    : TAG,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pk      : fromA.pk,
+      sk      : fromA.sk,
+      pkp     : fromA.pk,
+      skp     : '.',
+      created : DateTime.unsafeMake(fromA.created),
+      updated : DateTime.unsafeMake(fromA.updated),
+      forum   : fromA.forum,
+      raids   : fromA.raids,
+      admin   : fromA.admin,
     } as const;
   }),
 );
 
+export type Type = typeof Latest.Type;
+export type Encoded = typeof Latest.Encoded;
 export const is = S.is(Latest);
 export const make = Latest.make;
 export const equal = S.equivalence(Latest);
-export type Type = typeof Latest.Type;
-export type Encoded = typeof Latest.Encoded;
 export const put = Document.Put(Latest);
 export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);

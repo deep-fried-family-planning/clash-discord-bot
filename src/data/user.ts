@@ -3,13 +3,28 @@ import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
 import {Document, Id} from 'src/data/arch/index.ts';
 import {DataTag} from 'src/data/constants/index.ts';
+import * as Table from './arch/Table.ts';
 
-export const Key = Document.Item({
+export const TAG = DataTag.USER;
+export const LATEST = 1;
+
+export const Key = Table.Key({
   pk: Id.UserId,
   sk: Id.NowTag,
 });
 
-export const Latest = Document.Item({
+export const GsiPollKey = Table.Key({
+  pkp: Id.UserId,
+  skp: Id.PartitionRoot,
+});
+
+export const Latest = Table.Item(TAG, LATEST, {
+  ...Key.fields,
+  ...GsiPollKey.fields,
+  timezone: S.TimeZone,
+});
+
+const V0 = S.Struct({
   ...Key.fields,
   _tag           : S.tag(DataTag.USER),
   version        : S.tag(0),
@@ -35,17 +50,29 @@ const Legacy = S.Struct({
 
 export const Versions = S.Union(
   Latest,
+  decodeOnly(V0, S.typeSchema(Latest), (fromA) => {
+    return {
+      ...fromA,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pkp     : fromA.pk,
+      skp     : '.',
+    } as const;
+  }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
     return {
-      _tag           : DataTag.USER,
-      version        : 0,
-      upgraded       : true,
-      pk             : fromA.pk,
-      sk             : fromA.sk,
-      gsi_all_user_id: fromA.pk,
-      created        : DateTime.unsafeMake(fromA.created),
-      updated        : DateTime.unsafeMake(fromA.updated),
-      timezone       : fromA.timezone,
+      _tag    : TAG,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pk      : fromA.pk,
+      sk      : fromA.sk,
+      pkp     : fromA.pk,
+      skp     : '.',
+      created : DateTime.unsafeMake(fromA.created),
+      updated : DateTime.unsafeMake(fromA.updated),
+      timezone: fromA.timezone,
     } as const;
   }),
 );

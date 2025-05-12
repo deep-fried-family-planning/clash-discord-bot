@@ -10,6 +10,8 @@ const PrependedId = (start: string) =>
     },
   );
 
+export const PartitionRoot = S.tag('.');
+
 export const ClanTag = PrependedId('c-');
 export const PlayerTag = PrependedId('p-');
 export const ServerId = PrependedId('s-');
