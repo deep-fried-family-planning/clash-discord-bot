@@ -1,7 +1,7 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
-import * as ServerClanGsi from '#src/data/server-clan.gsi.ts';
+import * as GsiLink from '#src/data/gsi-link.ts';
 import * as ServerClan from '#src/data/server-clan.ts';
 import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
@@ -57,8 +57,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     });
   }
 
-  const gsi = yield* ServerClanGsi.query({
-    KeyConditionExpression: {gsi_clan_tag: p.clan_tag},
+  const gsi = yield* GsiLink.queryServerClan({
+    KeyConditionExpression: {pkl: p.clan_tag},
   });
 
   if (gsi.Items.length > 1) {
@@ -104,13 +104,13 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
 
       yield* ServerClan.put({
         Item: ServerClan.make({
-          pk           : p.guild_id,
-          sk           : p.clan_tag,
-          gsi_server_id: p.guild_id,
-          gsi_clan_tag : p.clan_tag,
-          name         : clan.name,
-          description  : clan.description,
-          select       : {
+          pk         : p.guild_id,
+          sk         : p.clan_tag,
+          pkl        : p.clan_tag,
+          skl        : p.guild_id,
+          name       : clan.name,
+          description: clan.description,
+          select     : {
             value: p.clan_tag,
             label: clan.name,
           },
@@ -138,13 +138,13 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
 
   yield* ServerClan.put({
     Item: ServerClan.make({
-      pk           : p.guild_id,
-      sk           : p.clan_tag,
-      gsi_server_id: p.guild_id,
-      gsi_clan_tag : p.clan_tag,
-      name         : clan.name,
-      description  : clan.description,
-      select       : {
+      pk         : p.guild_id,
+      sk         : p.clan_tag,
+      pkl        : p.clan_tag,
+      skl        : p.guild_id,
+      name       : clan.name,
+      description: clan.description,
+      select     : {
         value: p.clan_tag,
         label: clan.name,
       },

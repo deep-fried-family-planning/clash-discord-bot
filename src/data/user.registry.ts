@@ -56,11 +56,9 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
 
     yield* User.put({
       Item: User.make({
-        pk             : params.target_id,
-        sk             : 'now',
-        gsi_all_user_id: params.target_id,
-        created        : undefined,
-        updated        : undefined,
+        pk : params.target_id,
+        sk : 'now',
+        pkp: params.target_id,
         ...params.payload,
       }),
     });
@@ -73,11 +71,9 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   if (!caller) {
     yield* User.put({
       Item: User.make({
-        pk             : params.caller_id,
-        sk             : 'now',
-        gsi_all_user_id: params.caller_id,
-        created        : undefined,
-        updated        : undefined,
+        pk : params.caller_id,
+        sk : 'now',
+        pkp: params.caller_id,
         ...params.payload,
       }),
     });

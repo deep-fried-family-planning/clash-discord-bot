@@ -1,3 +1,7 @@
+export * as GsiLink from '#src/data/gsi-link.ts';
+export type GsiLink = typeof GsiLink;
+export * as GsiPoll from '#src/data/gsi-poll.ts';
+export type GsiPoll = typeof GsiPoll;
 export * as InfoEmbed from '#src/data/info-embed.ts';
 export type InfoEmbed = InfoEmbed.Type;
 export * as ServerGsi from '#src/data/server.gsi.ts';
