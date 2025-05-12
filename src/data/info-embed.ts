@@ -1,4 +1,5 @@
 import {Document, Id} from '#src/data/arch/index.ts';
+import * as Table from '#src/data/arch/Table.ts';
 import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import {DateTime} from 'effect';
@@ -62,9 +63,9 @@ export const Latest = Document.Item({
   version     : S.tag(0),
   gsi_embed_id: Id.EmbedId,
   embed       : ApiEmbed,
-  created     : Document.Created,
-  updated     : Document.Updated,
-  upgraded    : Document.Upgraded,
+  created     : Table.Created,
+  updated     : Table.Updated,
+  upgraded    : Table.Upgraded,
 });
 
 const Legacy = S.Struct({

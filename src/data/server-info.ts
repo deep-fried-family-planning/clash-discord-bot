@@ -2,6 +2,7 @@ import {Document, Id} from '#src/data/arch/index.ts';
 import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
+import * as Table from './arch/Table.ts';
 
 export const Key = Document.Item({
   pk: Id.ServerId,
@@ -13,11 +14,11 @@ export const Latest = Document.Item({
   _tag    : S.tag(DataTag.SERVER_INFO),
   version : S.tag(0),
   embed_id: Id.EmbedId,
-  select  : Document.SelectData(Id.EmbedId),
+  select  : Table.SelectMenuOption(Id.EmbedId),
   kind    : S.Enums({omni: 'omni', about: 'about', guide: 'guide', rule: 'rule'} as const),
-  created : Document.Created,
-  updated : Document.Updated,
-  upgraded: Document.Upgraded,
+  created : Table.Created,
+  updated : Table.Updated,
+  upgraded: Table.Upgraded,
 });
 
 const Legacy = S.Struct({

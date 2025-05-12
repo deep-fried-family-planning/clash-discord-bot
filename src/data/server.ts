@@ -34,9 +34,9 @@ const V0 = Document.Item({
   forum   : S.optional(Id.ChannelId),
   raids   : S.optional(Id.ThreadId),
   admin   : Id.RoleId,
-  created : Document.Created,
-  updated : Document.Updated,
-  upgraded: Document.Upgraded,
+  created : Table.Created,
+  updated : Table.Updated,
+  upgraded: Table.Upgraded,
 });
 
 const Legacy = S.Struct({
