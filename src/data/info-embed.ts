@@ -5,7 +5,10 @@ import {decodeOnly} from '#src/util/util-schema.ts';
 import {DateTime} from 'effect';
 import * as S from 'effect/Schema';
 
-export const Key = Document.Item({
+export const TAG = DataTag.DISCORD_EMBED;
+export const LATEST = 0;
+
+export const Key = Table.Key({
   pk: Id.EmbedId,
   sk: Id.NowSk,
 });
@@ -57,15 +60,9 @@ const ApiEmbed = S.Struct({
   timestamp: S.optional(S.String),
 });
 
-export const Latest = Document.Item({
+export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  _tag        : S.tag(DataTag.DISCORD_EMBED),
-  version     : S.tag(0),
-  gsi_embed_id: Id.EmbedId,
-  embed       : ApiEmbed,
-  created     : Table.Created,
-  updated     : Table.Updated,
-  upgraded    : Table.Upgraded,
+  embed: ApiEmbed,
 });
 
 const Legacy = S.Struct({
@@ -88,15 +85,15 @@ export const Versions = S.Union(
   Latest,
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
     return {
-      _tag        : DataTag.DISCORD_EMBED,
-      version     : 0,
-      upgraded    : true,
-      pk          : enc.pk,
-      sk          : enc.sk,
-      gsi_embed_id: enc.gsi_embed_id,
-      created     : DateTime.unsafeMake(enc.created),
-      updated     : DateTime.unsafeMake(enc.updated),
-      embed       : enc.embed,
+      _tag    : TAG,
+      _v      : LATEST,
+      _v7     : '',
+      upgraded: true,
+      pk      : enc.pk,
+      sk      : enc.sk,
+      created : DateTime.unsafeMake(enc.created),
+      updated : DateTime.unsafeMake(enc.updated),
+      embed   : enc.embed,
     } as const;
   }),
 );

@@ -1,4 +1,5 @@
 import {Document, Id} from '#src/data/arch/index.ts';
+import * as Table from '#src/data/arch/Table.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as User from '#src/data/user.ts';
 import {Arr} from '#src/disreact/utils/re-exports.ts';
@@ -8,7 +9,7 @@ import * as Record from 'effect/Record';
 import * as Array from 'effect/Array';
 import * as S from 'effect/Schema';
 
-export const Key = Document.Item({
+export const Key = Table.Key({
   pk: Id.UserId,
 });
 

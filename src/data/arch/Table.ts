@@ -52,6 +52,14 @@ export const UUIDv7 = S.transformOrFail(
   },
 ).pipe(S.optionalWith({default: () => ''}));
 
+export const Struct = <F extends S.Struct.Fields>(fields: F) => {
+  const item = {
+    ...fields,
+  };
+  failReservedDEV(item);
+  return S.Struct(item);
+};
+
 export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, version: number, fields: F) => {
   const item = {
     ...fields,

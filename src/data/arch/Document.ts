@@ -1,4 +1,3 @@
-import {failReservedDEV} from '#src/data/constants/document-reserved.ts';
 import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
@@ -14,11 +13,6 @@ const noUndefinedAtEncode = <I>(encoded: I) => {
     }
   }
   return acc as I;
-};
-
-export const Item = <F extends S.Struct.Fields>(fields: F) => {
-  failReservedDEV(fields);
-  return S.Struct(fields);
 };
 
 export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {

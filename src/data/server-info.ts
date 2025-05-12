@@ -4,21 +4,19 @@ import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 import * as Table from './arch/Table.ts';
 
-export const Key = Document.Item({
+export const TAG = DataTag.DISCORD_EMBED;
+export const LATEST = 0;
+
+export const Key = Table.Key({
   pk: Id.ServerId,
   sk: Id.InfoId,
 });
 
-export const Latest = Document.Item({
+export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  _tag    : S.tag(DataTag.SERVER_INFO),
-  version : S.tag(0),
   embed_id: Id.EmbedId,
   select  : Table.SelectMenuOption(Id.EmbedId),
   kind    : S.Enums({omni: 'omni', about: 'about', guide: 'guide', rule: 'rule'} as const),
-  created : Table.Created,
-  updated : Table.Updated,
-  upgraded: Table.Upgraded,
 });
 
 const Legacy = S.Struct({
@@ -44,8 +42,9 @@ export const Versions = S.Union(
   Latest,
   decodeOnly(Legacy, Latest, (fromA) => {
     return {
-      _tag    : DataTag.SERVER_INFO,
-      version : 0,
+      _tag    : TAG,
+      _v      : LATEST,
+      _v7     : '',
       upgraded: true,
       pk      : fromA.pk,
       sk      : fromA.sk,
