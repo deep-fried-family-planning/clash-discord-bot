@@ -3,6 +3,7 @@ import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
+import {DateTimes, GetRandomValues} from '@typed/id';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
@@ -37,6 +38,7 @@ it.effect('when registering a new server clan', E.fn(function* () {
     }),
     E.provide(mockDbLayer),
     E.provide(mockCocLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchInlineSnapshot(`
@@ -89,6 +91,7 @@ describe('given caller user is not registered', () => {
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
       E.catchAll((cause) => E.succeed(cause)),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
     expect(actual).toMatchInlineSnapshot(`[RegistryAdminError: Your Discord user account is not registered.]`);
@@ -117,6 +120,7 @@ describe('given caller server is not registered', () => {
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
       E.catchAll((cause) => E.succeed(cause)),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
   }));
 });
@@ -154,6 +158,7 @@ describe('given caller is not admin', () => {
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
       E.catchAll((cause) => E.succeed(cause)),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
     expect(actual).toMatchInlineSnapshot(`[RegistryAdminError: You are not authorized to register a clan for this server.]`);
@@ -196,6 +201,7 @@ describe('given caller has no verified accounts in clan', () => {
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
       E.catchAll((cause) => E.succeed(cause)),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
     expect(actual).toMatchInlineSnapshot(`[RegistryAdminError: Your Discord account has no verified player links (elder or above) in this clan.]`);
@@ -243,6 +249,7 @@ describe('given server clan is already registered with elder verification to a d
       }),
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
     expect(actual).toMatchInlineSnapshot(`
@@ -297,6 +304,7 @@ describe('given server clan is already leader verified', () => {
       E.provide(mockDbLayer),
       E.provide(mockCocLayer),
       E.catchAll((cause) => E.succeed(cause)),
+      E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
     expect(actual).toMatchInlineSnapshot(`[RegistryAdminError: Your member player links cannot override the current verification level of this clan.]`);
