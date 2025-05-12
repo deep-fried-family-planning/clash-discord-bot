@@ -41,7 +41,6 @@ export const Upgraded = S.transform(
 
 const generateUUIDv7 = makeUuid7.pipe(
   E.provide(Uuid7State.Default),
-  E.provide([GetRandomValues.CryptoRandom, DateTimes.Default]),
 );
 
 export const UUIDv7 = S.transformOrFail(

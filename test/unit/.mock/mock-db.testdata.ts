@@ -3,36 +3,42 @@ import type {Server, ServerClan, User, UserPlayer} from '#src/data/index.ts';
 import * as DateTime from 'effect/DateTime';
 
 export const TestDataUser = {
-  _tag           : DataTag.USER,
-  pk             : 'u-user',
-  sk             : 'now',
-  version        : 0,
-  created        : '1970-01-01T00:00:00.000Z',
-  updated        : '1970-01-01T00:00:00.000Z',
-  gsi_all_user_id: 'u-user',
-  timezone       : 'America/New_York',
+  _tag    : 'User',
+  _v      : 1,
+  _v7     : '00000000-0000-7000-8000-000000000000',
+  created : '1970-01-01T00:00:00.000Z',
+  pk      : 'u-user',
+  pkp     : 'u-user',
+  sk      : 'now',
+  skp     : '.',
+  timezone: 'America/Chicago',
+  updated : '1970-01-01T00:00:00.000Z',
 } as const satisfies User.Encoded;
 
 export const TestDataUser1 = {
-  _tag           : DataTag.USER,
-  pk             : 'u-user1',
-  sk             : 'now',
-  version        : 0,
-  created        : '1970-01-01T00:00:00.000Z',
-  updated        : '1970-01-01T00:00:00.000Z',
-  gsi_all_user_id: 'u-user1',
-  timezone       : 'America/New_York',
+  _tag    : 'User',
+  _v      : 1,
+  _v7     : '00000000-0000-7000-8000-000000000000',
+  created : '1970-01-01T00:00:00.000Z',
+  pk      : 'u-user1',
+  pkp     : 'u-user1',
+  sk      : 'now',
+  skp     : '.',
+  timezone: 'America/Chicago',
+  updated : '1970-01-01T00:00:00.000Z',
 } satisfies User.Encoded;
 
 export const TestDataUser2 = {
-  _tag           : DataTag.USER,
-  pk             : 'u-user2',
-  sk             : 'now',
-  version        : 0,
-  created        : '1970-01-01T00:00:00.000Z',
-  updated        : '1970-01-01T00:00:00.000Z',
-  gsi_all_user_id: 'u-user2',
-  timezone       : 'America/New_York',
+  _tag    : 'User',
+  _v      : 1,
+  _v7     : '00000000-0000-7000-8000-000000000000',
+  created : '1970-01-01T00:00:00.000Z',
+  pk      : 'u-user2',
+  pkp     : 'u-user2',
+  sk      : 'now',
+  skp     : '.',
+  timezone: 'America/Chicago',
+  updated : '1970-01-01T00:00:00.000Z',
 } satisfies User.Encoded;
 
 export const TestDataUserPlayer = {
@@ -64,14 +70,16 @@ export const TestDataUserPlayer2 = {
 } as const satisfies UserPlayer.Encoded;
 
 export const TestDataServer = {
-  _tag             : 'Server',
-  admin            : 'admin',
-  created          : '1970-01-01T00:00:00.000Z',
-  gsi_all_server_id: 's-guild',
-  pk               : 's-guild',
-  sk               : 'now',
-  updated          : '1970-01-01T00:00:00.000Z',
-  version          : 0,
+  _tag   : 'Server',
+  _v     : 1,
+  _v7    : '00000000-0000-7000-8000-000000000000',
+  admin  : 'admin',
+  created: '1970-01-01T00:00:00.000Z',
+  pk     : 's-guild',
+  pkp    : 's-guild',
+  sk     : 'now',
+  skp    : '.',
+  updated: '1970-01-01T00:00:00.000Z',
 } as const satisfies Server.Encoded;
 
 export const TestDataServerClan = {

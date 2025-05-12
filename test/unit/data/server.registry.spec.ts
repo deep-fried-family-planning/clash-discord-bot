@@ -2,6 +2,7 @@ import {ServerRegistry} from '#src/data/index.ts';
 import {TestDataServer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';
+import {DateTimes, GetRandomValues} from '@typed/id';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
@@ -18,6 +19,7 @@ it.effect('when registering a new server', E.fn(function* () {
       },
     }),
     E.provide(mockDbLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();
@@ -38,6 +40,7 @@ it.effect('when re-registering a server', E.fn(function* () {
       },
     }),
     E.provide(mockDbLayer),
+    E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
   );
 
   expect(actual).toMatchSnapshot();
