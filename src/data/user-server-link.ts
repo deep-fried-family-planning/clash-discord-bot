@@ -1,4 +1,3 @@
-import {Latest} from '#src/data/user-player.ts';
 import * as Table from './arch/Table.ts';
 import * as Id from './arch/Id.ts';
 import * as DataTag from './constants/data-tag.ts';
@@ -31,11 +30,11 @@ export const Versions = S.Union(
   Item,
 );
 
-export const is = S.is(Latest);
-export const make = Latest.make;
-export const equal = S.equivalence(Latest);
-export type Type = typeof Latest.Type;
-export type Encoded = typeof Latest.Encoded;
-export const put = Document.Put(Latest);
+export const is = S.is(Item);
+export const make = Item.make;
+export const equal = S.equivalence(Item);
+export type Type = typeof Item.Type;
+export type Encoded = typeof Item.Encoded;
+export const put = Document.Put(Item);
 export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);

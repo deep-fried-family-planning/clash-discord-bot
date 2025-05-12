@@ -22,6 +22,7 @@ export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
   ...GsiPollKey.fields,
   timezone: S.TimeZone,
+  servers : S.Set(Id.ServerId),
 });
 
 const V0 = S.Struct({
@@ -58,6 +59,7 @@ export const Versions = S.Union(
       upgraded: true,
       pkp     : fromA.pk,
       skp     : '.',
+      servers : new Set([]),
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
@@ -73,6 +75,7 @@ export const Versions = S.Union(
       created : DateTime.unsafeMake(fromA.created),
       updated : DateTime.unsafeMake(fromA.updated),
       timezone: fromA.timezone,
+      servers : new Set([]),
     } as const;
   }),
 );

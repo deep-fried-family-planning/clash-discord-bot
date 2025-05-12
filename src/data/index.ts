@@ -26,3 +26,5 @@ export * as UserPlayerRegistry from '#src/data/user-player.registry.ts';
 export type UserPlayerRegistry = typeof UserPlayerRegistry;
 export * as UserPlayer from '#src/data/user-player.ts';
 export type UserPlayer = UserPlayer.Type;
+export * as UserServerLink from '#src/data/user-server-link.ts';
+export type UserServerLink = UserServerLink.Type;

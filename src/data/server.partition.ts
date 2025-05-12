@@ -34,3 +34,5 @@ export const scan = Document.QueryUpgrade(
   ),
   Items,
 );
+
+export type Type = typeof Items.Type;

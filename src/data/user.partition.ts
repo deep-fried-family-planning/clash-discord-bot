@@ -1,11 +1,11 @@
 import {Document, Id} from '#src/data/arch/index.ts';
 import * as Table from '#src/data/arch/Table.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
+import * as UserServerLink from '#src/data/user-server-link.ts';
 import * as User from '#src/data/user.ts';
-import {decodeOnly, encodeOnly} from '#src/util/util-schema.ts';
+import {encodeOnly} from '#src/util/util-schema.ts';
 import * as E from 'effect/Effect';
 import * as Record from 'effect/Record';
-import * as Arr from 'effect/Array';
 import * as S from 'effect/Schema';
 
 export const Key = Table.Key({
@@ -15,6 +15,7 @@ export const Key = Table.Key({
 export const Items = S.Array(S.Union(
   User.Versions,
   UserPlayer.Versions,
+  UserServerLink.Versions,
 ));
 
 export const get = Document.QueryUpgrade(
@@ -50,3 +51,5 @@ export const getAll = (input: Parameters<typeof get>[0]) => E.gen(function* () {
 
   return items;
 });
+
+export type Type = typeof Items.Type;

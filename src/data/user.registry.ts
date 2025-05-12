@@ -26,7 +26,8 @@ type RegisterParams = {
   caller_id : string;
   target_id?: string;
   payload: {
-    timezone: DateTime.TimeZone;
+    timezone : DateTime.TimeZone;
+    guild_id?: string;
   };
 };
 
@@ -56,9 +57,10 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
 
     yield* User.put({
       Item: User.make({
-        pk : params.target_id,
-        sk : 'now',
-        pkp: params.target_id,
+        pk     : params.target_id,
+        sk     : 'now',
+        pkp    : params.target_id,
+        servers: new Set(params.payload.guild_id ? [params.payload.guild_id] : []),
         ...params.payload,
       }),
     });
@@ -71,9 +73,10 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   if (!caller) {
     yield* User.put({
       Item: User.make({
-        pk : params.caller_id,
-        sk : 'now',
-        pkp: params.caller_id,
+        pk     : params.caller_id,
+        sk     : 'now',
+        pkp    : params.caller_id,
+        servers: new Set(params.payload.guild_id ? [params.payload.guild_id] : []),
         ...params.payload,
       }),
     });
@@ -86,6 +89,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   const updated = User.make({
     ...caller,
     ...params.payload,
+    servers: new Set(params.payload.guild_id ? [...caller.servers, params.payload.guild_id] : caller.servers),
   });
 
   if (!User.equal(updated, caller)) {
