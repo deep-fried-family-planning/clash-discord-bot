@@ -2,7 +2,6 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/arch/util.ts';
 import {PlayerVerification} from '#src/data/constants/index.ts';
 import * as ServerRegistry from '#src/data/server.registry.ts';
-import * as UserPlayerGsi from '#src/data/user-player.gsi.ts';
 import * as GsiLink from '#src/data/gsi-link.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as UserRegistry from '#src/data/user.registry.ts';
@@ -133,8 +132,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     });
   }
 
-  const gsi = yield* UserPlayerGsi.query({
-    KeyConditionExpression: {gsi_player_tag: p.player_tag},
+  const gsi = yield* GsiLink.queryUserPlayer({
+    KeyConditionExpression: {pkl: p.player_tag},
   });
 
   if (gsi.Items.length > 1) {

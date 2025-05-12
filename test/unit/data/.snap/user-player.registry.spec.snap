@@ -109,7 +109,7 @@ exports[`given new user player registration > when registering user player 4`] =
 }
 `;
 
-exports[`given new user player registration > when registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+exports[`given new user player registration > when registering user player 5`] = `"pkl = :pkl"`;
 
 exports[`given new user player registration > when registering user player 6`] = `
 {
@@ -148,7 +148,7 @@ exports[`given user player is already registered > when registering user player 
 }
 `;
 
-exports[`given user player is already registered > when registering user player 5`] = `"gsi_player_tag = :gsi_player_tag"`;
+exports[`given user player is already registered > when registering user player 5`] = `"pkl = :pkl"`;
 
 exports[`given user player is already registered > when registering user player 6`] = `
 {
