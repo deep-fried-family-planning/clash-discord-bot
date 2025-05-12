@@ -15,6 +15,15 @@ const noUndefinedAtEncode = <I>(encoded: I) => {
   return acc as I;
 };
 
+export const PutBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Item     : S.Any,
+});
+
+export const PutBaseOutput = S.Struct({
+  ConsumedCapacity: S.optional(S.Any),
+});
+
 export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
   const encodeItem = S.encode(item);
 
@@ -29,6 +38,15 @@ export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
       ),
     );
 };
+
+export const GetBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Key      : S.Any,
+});
+
+export const GetBaseOutput = S.Struct({
+  Item: S.optional(S.Any),
+});
 
 export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<A2, I2, R2>) => {
   const encodeKey = S.encode(key);
@@ -92,6 +110,17 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
     );
 };
 
+export const UpdateBaseInput = S.Struct({
+  TableName       : S.optional(S.String),
+  Key             : S.Any,
+  UpdateExpression: S.Any,
+});
+
+export const UpdateBaseOutput = S.Struct({
+  Attributes      : S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
+
 export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
   const encodeKey = S.encode(key);
 
@@ -107,6 +136,16 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
     );
 };
 
+export const DeleteBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Key      : S.Any,
+});
+
+export const DeleteBaseOutput = S.Struct({
+  Attributes      : S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
+
 export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
   const encodeKey = S.encode(key);
 
@@ -121,6 +160,17 @@ export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
       ),
     );
 };
+
+export const QueryBaseInput = S.Struct({
+  TableName             : S.optional(S.String),
+  KeyConditionExpression: S.Any,
+});
+
+export const QueryBaseOutput = S.Struct({
+  Items           : S.optional(S.Array(S.Any)),
+  LastEvaluatedKey: S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
 
 export const Query = <
   A extends { [K in keyof QueryCommandInput]?: any }, I extends Partial<QueryCommandInput>, R,
@@ -179,6 +229,17 @@ export const QueryUpgrade = <
       }),
     );
 };
+
+export const ScanBaseInput = S.Struct({
+  TableName        : S.optional(S.String),
+  ExclusiveStartKey: S.optional(S.Any),
+});
+
+export const ScanBaseOutput = S.Struct({
+  Items           : S.optional(S.Array(S.Any)),
+  LastEvaluatedKey: S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
 
 export const Scan = <
   A extends { [K in keyof ScanCommandInput]?: any }, I extends Partial<ScanCommandInput>, R,
