@@ -1,108 +1,28 @@
 import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
-import {DOCUMENT_RESERVED} from '#src/data/constants/document-reserved.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
-import {decode, encode} from '@msgpack/msgpack';
-import * as DateTime from 'effect/DateTime';
-import type * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
-import {deflate, inflate} from 'pako';
 
-export const Created = S.transformOrFail(
-  S.DateTimeUtc,
-  S.UndefinedOr(S.DateTimeUtcFromSelf),
-  {
-    decode: (dt) => E.succeed(dt),
-    encode: (dt) => dt ? E.succeed(dt) : DateTime.now,
-  },
-);
-
-export const Updated = S.transformOrFail(
-  S.DateTimeUtc,
-  S.UndefinedOr(S.DateTimeUtcFromSelf),
-  {
-    decode: (dt) => E.succeed(dt),
-    encode: () => DateTime.now,
-  },
-);
-
-export const Upgraded = pipe(
-  S.Union(S.Undefined, S.Boolean),
-  S.transform(
-    S.Union(S.Undefined, S.Boolean),
-    {
-      decode: (enc) => enc,
-      encode: () => undefined,
-    },
-  ),
-  S.optional,
-);
-
-export const TimeToLive = (duration: Duration.Duration) =>
-  S.transformOrFail(
-    S.DateTimeUtcFromNumber,
-    S.UndefinedOr(S.DateTimeUtcFromSelf),
-    {
-      decode: (dt) => E.succeed(dt),
-      encode: (dt) => dt
-        ? E.succeed(dt)
-        : pipe(
-          DateTime.now,
-          E.map(
-            DateTime.addDuration(duration),
-          ),
-        ),
-    },
-  );
-
-export const SelectData = <A, I, R>(value: S.Schema<A, I, R>) =>
-  S.Struct({
-    value      : value,
-    label      : S.String,
-    description: S.optional(S.String),
-    default    : S.optional(S.Boolean),
-    emoji      : S.optional(S.Struct({
-      name: S.String,
-    })),
-  });
-
-export const CompressedBinary = <A, I, R>(schema: S.Schema<A, I, R>) =>
-  S.transform(S.String, schema, {
-    decode: (enc) => {
-      const buff = Buffer.from(enc, 'base64');
-      const pako = inflate(buff);
-      return decode(pako) as any;
-    },
-    encode: (dec) => {
-      const pack = encode(dec);
-      const pako = deflate(pack);
-      return Buffer.from(pako).toString('base64');
-    },
-  });
-
-const isDocumentReserved = (key: string) =>
-  DOCUMENT_RESERVED[key.toUpperCase()] === 0;
-
-const checkDocumentReserved = (obj: object) => {
-  if (process.env.NODE_ENV !== 'production') {
-    for (const k of Object.keys(obj)) {
-      if (isDocumentReserved(k)) {
-        throw new Error(`Reserved field ${k}`);
-      }
+const noUndefinedAtEncode = <I>(encoded: I) => {
+  const enc = {...encoded} as any;
+  const acc = {} as any;
+  for (const k of Object.keys(encoded as any)) {
+    if (enc[k] !== undefined) {
+      acc[k] = enc[k];
     }
   }
+  return acc as I;
 };
 
-export const CompositeKey = <F extends S.Struct.Fields>(fields: F) => {
-  checkDocumentReserved(fields);
-  return S.Struct(fields);
-};
+export const PutBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Item     : S.Any,
+});
 
-export const Item = <F extends S.Struct.Fields>(fields: F) => {
-  // checkDocumentReserved(fields);
-  return S.Struct(fields);
-};
+export const PutBaseOutput = S.Struct({
+  ConsumedCapacity: S.optional(S.Any),
+});
 
 export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
   const encodeItem = S.encode(item);
@@ -118,6 +38,15 @@ export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
       ),
     );
 };
+
+export const GetBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Key      : S.Any,
+});
+
+export const GetBaseOutput = S.Struct({
+  Item: S.optional(S.Any),
+});
 
 export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<A2, I2, R2>) => {
   const encodeKey = S.encode(key);
@@ -142,17 +71,6 @@ export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<
         );
       }),
     );
-};
-
-const noUndefinedAtEncode = <I>(encoded: I) => {
-  const enc = {...encoded} as any;
-  const acc = {} as any;
-  for (const k of Object.keys(encoded as any)) {
-    if (enc[k] !== undefined) {
-      acc[k] = enc[k];
-    }
-  }
-  return acc as I;
 };
 
 export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.Schema<A2, I2, R2>) => {
@@ -192,6 +110,17 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
     );
 };
 
+export const UpdateBaseInput = S.Struct({
+  TableName       : S.optional(S.String),
+  Key             : S.Any,
+  UpdateExpression: S.Any,
+});
+
+export const UpdateBaseOutput = S.Struct({
+  Attributes      : S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
+
 export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
   const encodeKey = S.encode(key);
 
@@ -207,6 +136,16 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
     );
 };
 
+export const DeleteBaseInput = S.Struct({
+  TableName: S.optional(S.String),
+  Key      : S.Any,
+});
+
+export const DeleteBaseOutput = S.Struct({
+  Attributes      : S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
+
 export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
   const encodeKey = S.encode(key);
 
@@ -221,6 +160,17 @@ export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
       ),
     );
 };
+
+export const QueryBaseInput = S.Struct({
+  TableName             : S.optional(S.String),
+  KeyConditionExpression: S.Any,
+});
+
+export const QueryBaseOutput = S.Struct({
+  Items           : S.optional(S.Array(S.Any)),
+  LastEvaluatedKey: S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
 
 export const Query = <
   A extends { [K in keyof QueryCommandInput]?: any }, I extends Partial<QueryCommandInput>, R,
@@ -279,6 +229,17 @@ export const QueryUpgrade = <
       }),
     );
 };
+
+export const ScanBaseInput = S.Struct({
+  TableName        : S.optional(S.String),
+  ExclusiveStartKey: S.optional(S.Any),
+});
+
+export const ScanBaseOutput = S.Struct({
+  Items           : S.optional(S.Array(S.Any)),
+  LastEvaluatedKey: S.optional(S.Any),
+  ConsumedCapacity: S.optional(S.Any),
+});
 
 export const Scan = <
   A extends { [K in keyof ScanCommandInput]?: any }, I extends Partial<ScanCommandInput>, R,

@@ -1,6 +1,6 @@
 import {failReservedDEV} from '#src/data/constants/document-reserved.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import {DateTimes, GetRandomValues, makeUuid7, Uuid7State} from '@typed/id';
+import {makeUuid7, Uuid7State} from '@typed/id';
 import * as DateTime from 'effect/DateTime';
 import type * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
@@ -51,6 +51,14 @@ export const UUIDv7 = S.transformOrFail(
     encode: (id) => id === '' ? generateUUIDv7 : E.succeed(id),
   },
 ).pipe(S.optionalWith({default: () => ''}));
+
+export const Struct = <F extends S.Struct.Fields>(fields: F) => {
+  const item = {
+    ...fields,
+  };
+  failReservedDEV(item);
+  return S.Struct(item);
+};
 
 export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, version: number, fields: F) => {
   const item = {

@@ -3,6 +3,7 @@ import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
+import {Struct} from './arch/Table.ts';
 import * as Table from './arch/Table.ts';
 
 export const TAG = DataTag.SERVER;
@@ -26,7 +27,7 @@ export const Latest = Table.Item(TAG, LATEST, {
   admin: Id.RoleId,
 });
 
-const V0 = Document.Item({
+const V0 = Table.Struct({
   ...Key.fields,
   ...GsiPollKey.fields,
   _tag    : S.tag(DataTag.SERVER),
@@ -34,9 +35,9 @@ const V0 = Document.Item({
   forum   : S.optional(Id.ChannelId),
   raids   : S.optional(Id.ThreadId),
   admin   : Id.RoleId,
-  created : Document.Created,
-  updated : Document.Updated,
-  upgraded: Document.Upgraded,
+  created : Table.Created,
+  updated : Table.Updated,
+  upgraded: Table.Upgraded,
 });
 
 const Legacy = S.Struct({

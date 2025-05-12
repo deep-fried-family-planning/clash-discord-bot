@@ -28,9 +28,9 @@ const V0 = S.Struct({
   ...Key.fields,
   _tag           : S.tag(DataTag.USER),
   version        : S.tag(0),
-  created        : Document.Created,
-  updated        : Document.Updated,
-  upgraded       : Document.Upgraded,
+  created        : Table.Created,
+  updated        : Table.Updated,
+  upgraded       : Table.Upgraded,
   gsi_all_user_id: Id.UserId,
   timezone       : S.TimeZone,
 });

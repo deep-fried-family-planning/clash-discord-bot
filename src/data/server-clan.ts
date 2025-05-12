@@ -37,7 +37,7 @@ export const Latest = Table.Item(TAG, LATEST, {
   battle_opponent: S.optional(Id.ClanTag),
   countdown      : S.optional(Id.ChannelId),
   verification   : S.optionalWith(ClanVerification, {default: () => 0}),
-  select         : S.optional(Document.SelectData(Id.ClanTag)),
+  select         : S.optional(Table.SelectMenuOption(Id.ClanTag)),
 });
 
 const V0 = S.Struct({
@@ -52,7 +52,7 @@ const V0 = S.Struct({
   battle_opponent: S.optional(Id.ClanTag),
   countdown      : S.optional(Id.ChannelId),
   verification   : S.optionalWith(ClanVerification, {default: () => 0}),
-  select         : S.optional(Document.SelectData(Id.ClanTag)),
+  select         : S.optional(Table.SelectMenuOption(Id.ClanTag)),
   created        : Table.Created,
   updated        : Table.Updated,
   upgraded       : Table.Upgraded,
