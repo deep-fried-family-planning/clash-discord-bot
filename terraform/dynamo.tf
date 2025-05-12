@@ -1,16 +1,13 @@
 resource "aws_dynamodb_table" "operations" {
-  name = "${local.prefix}-operations"
-
+  name           = "${local.prefix}-operations"
   read_capacity  = local.capacity[0]
   write_capacity = local.capacity[1]
-
-  hash_key  = "pk"
+  hash_key       = "pk"
+  range_key      = "sk"
   attribute {
     name = "pk"
     type = "S"
   }
-
-  range_key = "sk"
   attribute {
     name = "sk"
     type = "S"
@@ -18,7 +15,41 @@ resource "aws_dynamodb_table" "operations" {
 
   ttl {
     attribute_name = "ttl"
-    enabled = false
+    enabled        = false
+  }
+
+  global_secondary_index {
+    name            = "Poll"
+    hash_key        = "pkp"
+    range_key       = "skp"
+    projection_type = "ALL"
+    read_capacity   = 1
+    write_capacity  = 1
+  }
+  attribute {
+    name = "pkp"
+    type = "S"
+  }
+  attribute {
+    name = "skp"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "Link"
+    hash_key        = "pkl"
+    range_key       = "skl"
+    projection_type = "ALL"
+    read_capacity   = 1
+    write_capacity  = 1
+  }
+  attribute {
+    name = "pkl"
+    type = "S"
+  }
+  attribute {
+    name = "skl"
+    type = "S"
   }
 
   attribute {
@@ -77,14 +108,6 @@ resource "aws_dynamodb_table" "operations" {
     read_capacity   = 1
     write_capacity  = 1
   }
-  #   global_secondary_index {
-  #     name            = "GSI_PLAYER_ROSTER_SIGNUPS"
-  #     hash_key        = "gsi_player_tag"
-  #     range_key       = "gsi_roster_id"
-  #     projection_type = "ALL"
-  #     read_capacity   = 1
-  #     write_capacity  = 1
-  #   }
 }
 
 data "aws_iam_policy_document" "operations" {
