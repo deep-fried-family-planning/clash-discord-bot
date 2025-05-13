@@ -1,8 +1,8 @@
 import {Document, Id} from '#src/data/arch/index.ts';
+import * as Table from '#src/data/arch/Table.ts';
 import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
-import * as Table from './arch/Table.ts';
 
 export const TAG = DataTag.DISCORD_EMBED;
 export const LATEST = 0;

@@ -1,8 +1,8 @@
-import * as Table from './arch/Table.ts';
-import * as Id from './arch/Id.ts';
-import * as DataTag from './constants/data-tag.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import * as S from 'effect/Schema';
-import * as Document from './arch/Document.ts';
 
 export const TAG = DataTag.USER_SERVER_LINK;
 export const LATEST = 0;

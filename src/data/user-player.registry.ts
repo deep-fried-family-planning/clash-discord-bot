@@ -1,8 +1,8 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/arch/util.ts';
 import {PlayerVerification} from '#src/data/constants/index.ts';
-import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as GsiLink from '#src/data/gsi-link.ts';
+import * as ServerRegistry from '#src/data/server.registry.ts';
 import * as UserPlayer from '#src/data/user-player.ts';
 import * as UserRegistry from '#src/data/user.registry.ts';
 import * as E from 'effect/Effect';

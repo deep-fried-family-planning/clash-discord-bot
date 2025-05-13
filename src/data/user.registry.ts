@@ -1,8 +1,8 @@
-import {RegistryAdminError, RegistryFailure} from '#src/data/arch/util.ts';
+import {RegistryAdminError} from '#src/data/arch/util.ts';
 import * as User from '#src/data/user.ts';
-import {pipe} from 'effect/Function';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const get = (user_id: string) =>
   pipe(

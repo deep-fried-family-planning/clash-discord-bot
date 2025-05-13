@@ -1,9 +1,9 @@
+import * as Document from '#src/data/arch/Document.ts';
+import * as Gsi from '#src/data/constants/gsi.ts';
+import * as Server from '#src/data/server.ts';
+import * as User from '#src/data/user.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
-import * as Server from './server.ts';
-import * as User from './user.ts';
 import * as S from 'effect/Schema';
-import * as Document from './arch/Document.ts';
-import * as Gsi from './constants/gsi.ts';
 
 export const Items = S.Array(
   S.Union(
