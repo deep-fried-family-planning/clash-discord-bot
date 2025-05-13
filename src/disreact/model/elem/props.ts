@@ -1,6 +1,7 @@
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Data, Equal} from 'effect';
+import * as Data from 'effect/Data';
+import * as Equal from 'effect/Equal';
 
 export * as Props from '#src/disreact/model/elem/props.ts';
 export type Props = any;

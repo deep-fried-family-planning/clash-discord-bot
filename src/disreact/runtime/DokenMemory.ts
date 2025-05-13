@@ -1,7 +1,14 @@
 import type {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Cache, Data, DateTime, Duration, Effect, Exit, Option, pipe} from 'effect';
+import * as Cache from 'effect/Cache';
+import * as Data from 'effect/Data';
+import * as DateTime from 'effect/DateTime';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Exit from 'effect/Exit';
+import {pipe} from 'effect/Function';
+import * as Option from 'effect/Option';
 
 export class DokenMemoryError extends Data.TaggedError('DokenMemoryError')<{
   cause?: any;

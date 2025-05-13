@@ -5,9 +5,10 @@ import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
 import {handleClose, handleSame, handleSource, handleUpdate} from '#src/disreact/runtime/utils.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {DateTime, Fiber} from 'effect';
-import console from 'node:console';
+import * as DateTime from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
+import {pipe} from 'effect/Function';
 import type {Source} from '../model/meta/source';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';

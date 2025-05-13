@@ -1,5 +1,8 @@
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {Effect, Fiber, Layer, pipe} from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
+import * as Layer from 'effect/Layer';
+import {pipe} from 'effect/Function';
 
 export class DokenState extends Effect.Service<DokenState>()('disreact/DokenState', {
   effect: pipe(

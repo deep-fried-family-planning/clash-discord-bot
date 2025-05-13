@@ -1,8 +1,8 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
+import * as S from 'effect/Schema';
 
 export type Monomer =
   | Null

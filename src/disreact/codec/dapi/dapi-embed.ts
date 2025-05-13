@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/utils/re-exports.ts';
+import * as S from 'effect/Schema';
 
 export * as DAPIEmbed from './dapi-embed.ts';
 export type DAPIEmbed = never;

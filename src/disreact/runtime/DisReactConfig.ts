@@ -1,6 +1,9 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {Effect, flow, Layer, Redacted} from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
+import * as Redacted from 'effect/Redacted';
+import {pipe} from 'effect/Function';
 
 export namespace DisReactConfig {
   export type Input = {

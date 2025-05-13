@@ -7,8 +7,10 @@ import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {E, ML, pipe} from '#src/disreact/utils/re-exports.ts';
-import {MutableList} from 'effect';
+import * as MutableList from 'effect/MutableList';
+import * as ML from 'effect/MutableList';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
 export type Lifecycles = never;

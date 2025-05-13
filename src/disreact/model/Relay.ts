@@ -1,5 +1,10 @@
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Data, Deferred, Effect, Layer, Mailbox, pipe} from 'effect';
+import * as Data from 'effect/Data';
+import * as Deferred from 'effect/Deferred';
+import * as Layer from 'effect/Layer';
+import * as Mailbox from 'effect/Mailbox';
+import * as Effect from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const Progress = Data.taggedEnum<Relay.Progress>();
 

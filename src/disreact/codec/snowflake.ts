@@ -1,5 +1,7 @@
-import type {DR} from 'src/disreact/utils/re-exports.ts';
-import {DT, hole, S} from 'src/disreact/utils/re-exports.ts';
+import * as DT from 'effect/DateTime';
+import type * as DR from 'effect/Duration';
+import {hole} from 'effect/Function';
+import * as S from 'effect/Schema';
 
 export * as Snowflake from '#src/disreact/codec/snowflake.ts';
 export type Snowflake = string;

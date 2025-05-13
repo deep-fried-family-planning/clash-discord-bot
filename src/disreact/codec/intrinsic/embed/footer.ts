@@ -1,7 +1,7 @@
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
+import * as S from 'effect/Schema';
 
 export * as Footer from '#src/disreact/codec/intrinsic/embed/footer.ts';
 export type Footer = never;

@@ -1,6 +1,6 @@
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
-import type {E} from '#src/internal/pure/effect.ts';
+import type * as E from 'effect/Effect';
+import * as S from 'effect/Schema';
 
 export * as Util from '#src/disreact/codec/intrinsic/util.ts';
 export type Util = never;

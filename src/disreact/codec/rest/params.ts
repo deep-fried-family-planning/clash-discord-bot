@@ -1,6 +1,6 @@
 import {Template} from '#src/disreact/codec/rest/template.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
+import * as S from 'effect/Schema';
 
 export * as Params from '#src/disreact/codec/rest/params.ts';
 export type Params = never;

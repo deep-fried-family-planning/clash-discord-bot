@@ -1,5 +1,7 @@
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Predicate, Data} from 'effect';
+import * as Predicate from 'effect/Predicate';
+import * as Data from 'effect/Data';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export * as Side from '#src/disreact/model/meta/side.ts';
 export type Side = () => void | Promise<void> | E.Effect<void>;

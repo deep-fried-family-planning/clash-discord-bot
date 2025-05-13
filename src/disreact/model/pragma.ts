@@ -1,9 +1,9 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {ML} from '#src/disreact/utils/re-exports.ts';
-import {MutableList} from 'effect';
 import type {Declare} from 'src/disreact/model/declare.ts';
 import {Rehydrant} from 'src/disreact/model/meta/rehydrant.ts';
 import {Elem} from './elem/elem';
+import * as ML from 'effect/MutableList';
+import * as MutableList from 'effect/MutableList';
 
 export * as Pragma from '#src/disreact/model/pragma.ts';
 export type Pragma = never;

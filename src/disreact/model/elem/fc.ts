@@ -1,7 +1,6 @@
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {E} from '#src/disreact/utils/re-exports.ts';
-import type {Effect} from 'effect';
-import {Predicate} from 'effect';
+import * as E from 'effect/Effect';
+import * as Predicate from 'effect/Predicate';
 
 const TypeId = Symbol.for('disreact/fc'),
       NameId = Symbol.for('disreact/fc/name');
@@ -19,7 +18,7 @@ export const SYNC           = 1,
 
 interface Input<P = any> {
   (p: P): Elem.Children | Promise<Elem.Children> | E.Effect<Elem.Children, any, any>;
-  _tag?       : Sync | Async | Effect;
+  _tag?       : typeof SYNC | typeof ASYNC | typeof EFFECT;
   displayName?: string;
   [TypeId]?   : number;
   [NameId]?   : string;
