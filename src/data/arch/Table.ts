@@ -1,6 +1,6 @@
 import {failReservedDEV} from '#src/data/constants/document-reserved.ts';
 import {decode, encode} from '@msgpack/msgpack';
-import {makeUuid7, Uuid7State} from '@typed/id';
+import {makeUuid7, Uuid7State, Uuid7} from '@typed/id';
 import * as DateTime from 'effect/DateTime';
 import type * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
@@ -39,16 +39,25 @@ export const Upgraded = S.transform(
   },
 ).pipe(S.optional);
 
+export const Migrated = S.transform(
+  S.UndefinedOr(S.Boolean),
+  S.UndefinedOr(S.Boolean),
+  {
+    decode: (enc) => enc,
+    encode: () => undefined,
+  },
+).pipe(S.optional);
+
 const generateUUIDv7 = makeUuid7.pipe(
   E.provide(Uuid7State.Default),
 );
 
 export const UUIDv7 = S.transformOrFail(
-  S.UUID,
+  Uuid7,
   S.String,
   {
     decode: (id) => E.succeed(id),
-    encode: (id) => id === '' ? generateUUIDv7 : E.succeed(id),
+    encode: (id) => id === '' ? generateUUIDv7 : E.succeed(id as typeof Uuid7.Type),
   },
 ).pipe(S.optionalWith({default: () => ''}));
 

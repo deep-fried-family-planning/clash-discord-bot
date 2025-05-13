@@ -1,15 +1,15 @@
+import * as Document from '#src/data/arch/Document.ts';
+import * as Gsi from '#src/data/constants/gsi.ts';
+import * as ServerClan from '#src/data/server-clan.ts';
+import * as UserPlayer from '#src/data/user-player.ts';
+import * as UserServerLink from '#src/data/user-server-link.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
-import * as Document from './arch/Document.ts';
-import * as Id from './arch/Id.ts';
-import * as ServerClan from './server-clan.ts';
-import * as UserPlayer from './user-player.ts';
-import * as Gsi from './constants/gsi.ts';
 
 export const queryServerClan = Document.Query(
   encodeOnly(
     S.Struct({
-      KeyConditionExpression: ServerClan.GsiLinkKey.pick('pkl'),
+      KeyConditionExpression: ServerClan.LinkKey.pick('pkl'),
     }),
     S.Any,
     (input) => ({
@@ -38,4 +38,21 @@ export const queryUserPlayer = Document.Query(
     }),
   ),
   S.Array(UserPlayer.Versions),
+);
+
+export const scanServerLinks = Document.Query(
+  encodeOnly(
+    S.Struct({
+      KeyConditionExpression: UserServerLink.LinkKey.pick('pkl'),
+    }),
+    S.Any,
+    (input) => ({
+      IndexName                : Gsi.LINK,
+      KeyConditionExpression   : 'pkl = :pkl',
+      ExpressionAttributeValues: {
+        ':pkl': input.KeyConditionExpression.pkl,
+      },
+    }),
+  ),
+  S.Array(UserServerLink.Versions),
 );

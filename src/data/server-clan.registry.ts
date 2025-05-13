@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
+import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util-registry.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
 import * as GsiLink from '#src/data/gsi-link.ts';
 import * as ServerClan from '#src/data/server-clan.ts';
