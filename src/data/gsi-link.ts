@@ -9,7 +9,7 @@ import * as S from 'effect/Schema';
 export const queryServerClan = Document.Query(
   encodeOnly(
     S.Struct({
-      KeyConditionExpression: ServerClan.GsiLinkKey.pick('pkl'),
+      KeyConditionExpression: ServerClan.LinkKey.pick('pkl'),
     }),
     S.Any,
     (input) => ({

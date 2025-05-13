@@ -16,19 +16,19 @@ export const ClanVerification = S.Enums({
   developer: 4,
 } as const);
 
-export const Key = Table.Key({
+export const TableKey = Table.Key({
   pk: Id.ServerId,
   sk: Id.ClanTag,
 });
 
-export const GsiLinkKey = Table.Key({
+export const LinkKey = Table.Key({
   pkl: Id.ClanTag,
   skl: Id.ServerId,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GsiLinkKey.fields,
+  ...TableKey.fields,
+  ...LinkKey.fields,
   name           : S.String,
   description    : S.String,
   thread_prep    : S.optional(Id.ThreadId),
@@ -41,7 +41,7 @@ export const Latest = Table.Item(TAG, LATEST, {
 });
 
 const V0 = S.Struct({
-  ...Key.fields,
+  ...TableKey.fields,
   _tag           : S.tag(DataTag.SERVER_CLAN),
   version        : S.tag(0),
   name           : S.String,
@@ -126,5 +126,5 @@ export const equal = S.equivalence(Latest);
 export type Type = typeof Latest.Type;
 export type Encoded = typeof Latest.Encoded;
 export const put = Document.Put(Latest);
-export const get = Document.GetUpgrade(Key, Versions);
-export const del = Document.Delete(Key);
+export const get = Document.GetUpgrade(TableKey, Versions);
+export const del = Document.Delete(TableKey);
