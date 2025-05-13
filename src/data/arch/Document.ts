@@ -1,19 +1,9 @@
+import {DocumentDecodeItemError, DocumentEncodeInputError, DocumentEncodeItemError, isUpgraded, noUndefinedEncoded} from '#src/data/arch/util-document.ts';
 import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
-
-const noUndefinedAtEncode = <I>(encoded: I) => {
-  const enc = {...encoded} as any;
-  const acc = {} as any;
-  for (const k of Object.keys(encoded as any)) {
-    if (enc[k] !== undefined) {
-      acc[k] = enc[k];
-    }
-  }
-  return acc as I;
-};
 
 export const PutBaseInput = S.Struct({
   TableName: S.optional(S.String),
@@ -30,10 +20,11 @@ export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
   return (input: Omit<Partial<PutCommandInput>, 'Item'> & {Item: A}) =>
     pipe(
       encodeItem(input.Item),
+      E.catchAll((cause) => new DocumentEncodeItemError({cause})),
       E.flatMap((item) =>
         DeepFryerDB.put({
           ...input,
-          Item: item as any,
+          Item: noUndefinedEncoded(item) as any,
         }),
       ),
     );
@@ -55,6 +46,7 @@ export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<
   return (input: Omit<GetCommandInput, 'Key'> & {Key: A}) =>
     pipe(
       encodeKey(input.Key),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
       E.flatMap((a) =>
         DeepFryerDB.get({
           ...input,
@@ -65,47 +57,36 @@ export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<
         if (!res.Item) {
           return E.succeed(res as Omit<GetCommandOutput, 'Item'> & {Item: undefined | A2});
         }
-        return E.map(
+        return pipe(
           decodeItem(res.Item as any),
-          (item) => ({...res, Item: item} as Omit<GetCommandOutput, 'Item'> & {Item: undefined | A2}),
+          E.catchAll((cause) => new DocumentDecodeItemError({cause})),
+          E.map((item) => ({...res, Item: item} as Omit<GetCommandOutput, 'Item'> & {Item: undefined | A2})),
         );
       }),
     );
 };
 
-export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.Schema<A2, I2, R2>) => {
-  const encodeKey = S.encode(key);
-  const decodeOut = S.decode(out);
-  const encodeOut = S.encode(out);
+export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<A2, I2, R2>) => {
+  const get = Get(key, item);
+  const encodeItem = S.encode(item);
 
   return (input: Omit<Partial<GetCommandInput>, 'Key'> & {Key: A}) =>
     pipe(
-      encodeKey(input.Key),
-      E.flatMap((a) =>
-        DeepFryerDB.get({
-          ...input,
-          Key: a as any,
-        }),
-      ),
-      E.flatMap((res) => {
-        if (!res.Item) {
-          return E.succeed(res as Omit<GetCommandOutput, 'Item'> & {Item: undefined | A2});
-        }
-        return E.map(
-          decodeOut(res.Item as any),
-          (item) => ({...res, Item: item} as Omit<GetCommandOutput, 'Item'> & {Item: undefined | A2}),
-        );
-      }),
+      get(input as any),
       E.tap((res) => {
-        if (!(res.Item as any)?.upgraded) {
+        if (!isUpgraded(res.Item)) {
           return E.void;
         }
-        return encodeOut(res.Item!).pipe(E.flatMap((encoded) =>
-          DeepFryerDB.put({
-            TableName: input.TableName,
-            Item     : noUndefinedAtEncode(encoded) as any,
-          }),
-        ));
+        return pipe(
+          encodeItem(res.Item!),
+          E.catchAll((cause) => new DocumentEncodeItemError({cause})),
+          E.flatMap((encoded) =>
+            DeepFryerDB.put({
+              TableName: input.TableName,
+              Item     : noUndefinedEncoded(encoded) as any,
+            }),
+          ),
+        );
       }),
     );
 };
@@ -127,6 +108,23 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
   return (input: Omit<UpdateCommandInput, 'Key'> & {Key: A}) =>
     pipe(
       encodeKey(input.Key),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
+      E.flatMap((a) =>
+        DeepFryerDB.update({
+          ...input,
+          Key: a as any,
+        }),
+      ),
+    );
+};
+
+export const UpdateSet = <A, I, R>(key: S.Schema<A, I, R>) => {
+  const encodeKey = S.encode(key);
+
+  return (input: Omit<UpdateCommandInput, 'Key'> & {Key: A}) =>
+    pipe(
+      encodeKey(input.Key),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
       E.flatMap((a) =>
         DeepFryerDB.update({
           ...input,
@@ -152,6 +150,7 @@ export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
   return (input: Omit<Partial<DeleteCommandInput>, 'Key'> & {Key: A}) =>
     pipe(
       encodeKey(input.Key),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
       E.flatMap((a) =>
         DeepFryerDB.delete({
           ...input,
@@ -185,14 +184,28 @@ export const Query = <
   return (input: Omit<Partial<QueryCommandInput>, keyof A> & { [K in keyof A]: A[K] }) =>
     pipe(
       encodeCondition(input as any),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
       E.flatMap((a) =>
-        DeepFryerDB.query({...input, ...a} as any),
+        DeepFryerDB.query({
+          ...input,
+          ...a,
+        } as any),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
-          return E.succeed({...res, Items: [] as unknown as A2} as Omit<QueryCommandOutput, 'Items'> & {Items: A2});
+          return E.succeed({
+            ...res,
+            Items: [] as unknown as A2,
+          } as Omit<QueryCommandOutput, 'Items'> & {Items: A2});
         }
-        return decodeOutput(res.Items as any).pipe(E.map((items) => ({...res, Items: items} as Omit<QueryCommandOutput, 'Items'> & {Items: A2})));
+        return pipe(
+          decodeOutput(res.Items as any),
+          E.catchAll((cause) => new DocumentDecodeItemError({cause})),
+          E.map((items) => ({
+            ...res,
+            Items: items,
+          } as Omit<QueryCommandOutput, 'Items'> & {Items: A2})),
+        );
       }),
     );
 };
@@ -216,14 +229,18 @@ export const QueryUpgrade = <
         }
         return E.fork(E.all(
           res.Items
-            .filter((item) => (item as any).upgraded)
+            .filter((item) => isUpgraded(item))
             .map((item) =>
-              encodeOutput(item as any).pipe(E.flatMap((out) =>
-                DeepFryerDB.put({
-                  TableName: input.TableName,
-                  Item     : noUndefinedAtEncode(out) as any,
-                }),
-              )),
+              pipe(
+                encodeOutput(item as any),
+                E.catchAll((cause) => new DocumentEncodeItemError({cause})),
+                E.flatMap((out) =>
+                  DeepFryerDB.put({
+                    TableName: input.TableName,
+                    Item     : noUndefinedEncoded(out) as any,
+                  }),
+                ),
+              ),
             ),
         ));
       }),
@@ -254,14 +271,25 @@ export const Scan = <
   return (input: ScanCommandInput) =>
     pipe(
       encodeCondition(input as any),
+      E.catchAll((cause) => new DocumentEncodeInputError({cause})),
       E.flatMap((a) =>
         DeepFryerDB.query({...input, ...a}),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
-          return E.succeed({...res, Items: [] as unknown as A2} as Omit<ScanCommandOutput, 'Items'> & {Items: A2});
+          return E.succeed({
+            ...res,
+            Items: [] as unknown as A2,
+          } as Omit<ScanCommandOutput, 'Items'> & {Items: A2});
         }
-        return decodeOutput(res.Items as any).pipe(E.map((items) => ({...res, Items: items} as Omit<ScanCommandOutput, 'Items'> & {Items: A2})));
+        return pipe(
+          decodeOutput(res.Items as any),
+          E.catchAll((cause) => new DocumentDecodeItemError({cause})),
+          E.map((items) => ({
+            ...res,
+            Items: items,
+          } as Omit<ScanCommandOutput, 'Items'> & {Items: A2})),
+        );
       }),
     );
 };
@@ -282,14 +310,18 @@ export const ScanUpgrade = <
     }
     return E.fork(E.all(
       res.Items
-        .filter((item) => (item as any).upgraded)
+        .filter((item) => isUpgraded(item))
         .map((item) =>
-          encodeOutput(item as any).pipe(E.flatMap((out) =>
-            DeepFryerDB.put({
-              TableName: input.TableName,
-              Item     : noUndefinedAtEncode(out) as any,
-            }),
-          )),
+          pipe(
+            encodeOutput(item as any),
+            E.catchAll((cause) => new DocumentEncodeItemError({cause})),
+            E.flatMap((out) =>
+              DeepFryerDB.put({
+                TableName: input.TableName,
+                Item     : noUndefinedEncoded(out) as any,
+              }),
+            ),
+          ),
         ),
     ));
   }));

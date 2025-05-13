@@ -39,6 +39,15 @@ export const Upgraded = S.transform(
   },
 ).pipe(S.optional);
 
+export const Migrated = S.transform(
+  S.UndefinedOr(S.Boolean),
+  S.UndefinedOr(S.Boolean),
+  {
+    decode: (enc) => enc,
+    encode: () => undefined,
+  },
+).pipe(S.optional);
+
 const generateUUIDv7 = makeUuid7.pipe(
   E.provide(Uuid7State.Default),
 );
