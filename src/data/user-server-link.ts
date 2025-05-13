@@ -7,19 +7,19 @@ import * as S from 'effect/Schema';
 export const TAG = DataTag.USER_SERVER_LINK;
 export const LATEST = 0;
 
-export const Key = Table.Key({
+export const TableKey = Table.Key({
   pk: Id.UserId,
   sk: Id.ServerId,
 });
 
-export const GsiLinkKey = Table.Key({
+export const LinkKey = Table.Key({
   pkl: Id.ServerId,
   skl: Id.UserId,
 });
 
 export const Item = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GsiLinkKey.fields,
+  ...TableKey.fields,
+  ...LinkKey.fields,
   tags: S.Record({
     key  : S.String,
     value: S.String,
@@ -36,5 +36,5 @@ export const equal = S.equivalence(Item);
 export type Type = typeof Item.Type;
 export type Encoded = typeof Item.Encoded;
 export const put = Document.Put(Item);
-export const get = Document.GetUpgrade(Key, Versions);
-export const del = Document.Delete(Key);
+export const get = Document.GetUpgrade(TableKey, Versions);
+export const del = Document.Delete(TableKey);

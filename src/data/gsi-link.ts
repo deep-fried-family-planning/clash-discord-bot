@@ -43,7 +43,7 @@ export const queryUserPlayer = Document.Query(
 export const scanServerLinks = Document.Query(
   encodeOnly(
     S.Struct({
-      KeyConditionExpression: UserServerLink.GsiLinkKey.pick('pkl'),
+      KeyConditionExpression: UserServerLink.LinkKey.pick('pkl'),
     }),
     S.Any,
     (input) => ({

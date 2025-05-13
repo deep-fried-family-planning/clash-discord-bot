@@ -27,7 +27,7 @@ export const pollUser = E.fn('pollUser')(function* (user_id: string) {
 
   for (const server_id of user.servers.values()) {
     if (!(server_id in serverLinks)) {
-      const newLink = UserServerLink.make({
+      const newLink = UserServerLink.Item.make({
         pk  : user_id,
         sk  : server_id,
         pkl : server_id,
@@ -35,9 +35,7 @@ export const pollUser = E.fn('pollUser')(function* (user_id: string) {
         tags: currentTags,
       });
 
-      yield* UserServerLink.put({
-        Item: newLink,
-      });
+      yield* UserServerLink.put({Item: newLink});
       continue;
     }
 
@@ -53,21 +51,18 @@ export const pollUser = E.fn('pollUser')(function* (user_id: string) {
         tags: currentTags,
       });
 
-      yield* UserServerLink.put({
-        Item: updatedLink,
-      });
+      yield* UserServerLink.put({Item: updatedLink});
     }
   }
 
   for (const server_id of Record.keys(serverLinks)) {
-    if (user.servers.has(server_id)) {
-      continue;
+    if (!user.servers.has(server_id)) {
+      yield* UserServerLink.del({
+        Key: {
+          pk: user_id,
+          sk: server_id,
+        },
+      });
     }
-    yield* UserServerLink.del({
-      Key: {
-        pk: user_id,
-        sk: server_id,
-      },
-    });
   }
 });
