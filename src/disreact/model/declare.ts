@@ -1,9 +1,9 @@
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import type {E} from '#src/disreact/utils/re-exports.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import {deflate, inflate} from 'pako';
+import * as S from 'effect/Schema';
+import type * as E from 'effect/Effect';
 
 export * as Declare from '#src/disreact/model/declare.ts';
 export type Declare = never;

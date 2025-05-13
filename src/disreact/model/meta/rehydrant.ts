@@ -2,8 +2,9 @@ import type {Declare} from '#src/disreact/model/declare.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import type {Source} from '#src/disreact/model/meta/source.ts';
-import {MutableList, Record} from 'effect';
 import {Pragma} from 'src/disreact/model/pragma.ts';
+import * as MutableList from 'effect/MutableList';
+import * as Record from 'effect/Record';
 
 export * as Rehydrant from '#src/disreact/model/meta/rehydrant.ts';
 export type Rehydrant = {

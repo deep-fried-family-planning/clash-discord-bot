@@ -2,7 +2,7 @@ import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Props} from '#src/disreact/model/elem/props.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import {E} from '#src/disreact/utils/re-exports.ts';
+import * as E from 'effect/Effect';
 
 export * as Elem from '#src/disreact/model/elem/elem.ts';
 export type Elem =

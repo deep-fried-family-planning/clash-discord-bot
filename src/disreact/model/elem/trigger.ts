@@ -1,6 +1,7 @@
 import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Predicate} from 'effect';
+import * as Predicate from 'effect/Predicate';
+import {pipe} from 'effect/Function';
+import * as E from 'effect/Effect';
 
 export * as Trigger from '#src/disreact/model/elem/trigger.ts';
 export type Trigger<A = any> = {

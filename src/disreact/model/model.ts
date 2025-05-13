@@ -1,10 +1,10 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {E, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import {pipe} from 'effect/Function';
+import * as E from 'effect/Effect';
 import type {Source} from './meta/source';
 import {Pragma} from './pragma';
 

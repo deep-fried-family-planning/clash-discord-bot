@@ -1,6 +1,8 @@
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
 import {it} from '@effect/vitest';
-import {Fiber, TestClock} from 'effect';
+import * as E from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
+import {pipe} from 'effect/Function';
+import * as TestClock from 'effect/TestClock';
 import {TestMessage} from 'test/unit/components/test-message.tsx';
 import {SNAP} from 'test/unit/snapkey.ts';
 import {makeTestRuntime, Snap} from 'test/unit/util.ts';

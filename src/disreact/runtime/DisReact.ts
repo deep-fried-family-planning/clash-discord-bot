@@ -5,8 +5,10 @@ import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {Effect, Layer, pipe} from 'effect';
 import {Methods} from './methods';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
+import {pipe} from 'effect/Function';
 
 export class DisReact extends Effect.Service<DisReact>()('disreact/DisReact', {
   sync: () => {

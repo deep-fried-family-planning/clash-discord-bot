@@ -1,5 +1,6 @@
 import {usePage} from '#src/disreact/index.ts';
-import {E} from '#src/disreact/utils/re-exports.ts';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import {SimpleMessage} from '#test/unit/components/simple-message.tsx';
 
 export const SimpleModalServiceLogger = vi.fn((event: any) => E.void);

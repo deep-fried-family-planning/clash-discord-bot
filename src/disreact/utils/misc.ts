@@ -1,5 +1,11 @@
-import {DF, E, O, pipe} from '#src/disreact/utils/re-exports.ts';
-import {Exit, Fiber, Metric, Record} from 'effect';
+import * as DF from 'effect/Deferred';
+import * as E from 'effect/Effect';
+import * as Exit from 'effect/Exit';
+import * as Fiber from 'effect/Fiber';
+import {pipe} from 'effect/Function';
+import * as Metric from 'effect/Metric';
+import * as O from 'effect/Option';
+import * as Record from 'effect/Record';
 
 export * as Misc from './misc.ts';
 export type Misc = never;

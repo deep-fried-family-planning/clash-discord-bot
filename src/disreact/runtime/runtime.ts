@@ -5,7 +5,9 @@ import {Sources} from '#src/disreact/model/Sources.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {E, flow, L, pipe} from '#src/disreact/utils/re-exports.ts';
+import * as E from 'effect/Effect';
+import {flow, pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
 import {Methods} from './methods';
 
 export * as Runtime from '#src/disreact/runtime/runtime.ts';

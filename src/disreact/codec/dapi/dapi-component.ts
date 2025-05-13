@@ -1,4 +1,5 @@
-import {pipe, S} from '#src/disreact/utils/re-exports.ts';
+import {pipe} from 'effect/Function';
+import * as S from 'effect/Schema';
 
 export * as DAPIComponent from '#src/disreact/codec/dapi/dapi-component.ts';
 export type DAPIComponent = never;

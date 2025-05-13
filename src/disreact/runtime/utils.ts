@@ -1,8 +1,12 @@
 import {Doken, DokenDefect} from '#src/disreact/codec/rest/doken.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
-import {DateTime, Either, Fiber, SynchronizedRef} from 'effect';
+import * as DateTime from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import * as Either from 'effect/Either';
+import * as Fiber from 'effect/Fiber';
+import {pipe} from 'effect/Function';
+import * as SynchronizedRef from 'effect/SynchronizedRef';
 import {Misc} from '../utils/misc';
 
 export const handleSame = (ds: Dokens) =>

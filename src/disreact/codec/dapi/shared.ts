@@ -1,5 +1,7 @@
-import {E} from '#src/internal/pure/effect.ts';
-import {DateTime, ParseResult, pipe} from 'effect';
+import * as DateTime from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as ParseResult from 'effect/ParseResult';
 import {annotations, DateTimeUtcFromSelf, Never, Redacted, RedactedFromSelf, String, transformOrFail, Union} from 'effect/Schema';
 
 export const UtcNow = transformOrFail(

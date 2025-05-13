@@ -1,6 +1,6 @@
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import type {E} from '#src/internal/pure/effect.ts';
+import type * as E from 'effect/Effect';
 
 export * as Hooks from '#src/disreact/model/hooks.ts';
 export type Hooks = never;

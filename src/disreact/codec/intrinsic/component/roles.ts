@@ -2,7 +2,7 @@ import {Default} from '#src/disreact/codec/intrinsic/component/default.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
+import * as S from 'effect/Schema';
 import {DAPI} from '../../dapi/dapi';
 
 export * as Roles from '#src/disreact/codec/intrinsic/component/roles.ts';

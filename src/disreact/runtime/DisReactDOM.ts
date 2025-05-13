@@ -1,7 +1,10 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {DiscordREST} from 'dfx';
 import {InteractionCallbackType} from 'dfx/types';
-import {Effect, Redacted} from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
+import * as Redacted from 'effect/Redacted';
+import {pipe} from 'effect/Function';
 
 export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
   effect: Effect.gen(function* () {

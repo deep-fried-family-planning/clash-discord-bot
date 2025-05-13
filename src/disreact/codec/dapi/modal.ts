@@ -1,4 +1,4 @@
-import {S} from '#src/disreact/utils/re-exports.ts';
+import * as S from 'effect/Schema';
 import {DAPIComponent} from './dapi-component.ts';
 
 export * as DAPIModal from 'src/disreact/codec/dapi/modal.ts';

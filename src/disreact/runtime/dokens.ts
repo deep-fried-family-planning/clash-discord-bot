@@ -1,8 +1,13 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import type {DokenMemoryError} from '#src/disreact/runtime/DokenMemory.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
-import {E, flow, pipe} from '#src/disreact/utils/re-exports.ts';
-import {DateTime, Deferred, Duration, Fiber, SynchronizedRef} from 'effect';
+import * as DateTime from 'effect/DateTime';
+import * as Deferred from 'effect/Deferred';
+import * as Duration from 'effect/Duration';
+import * as E from 'effect/Effect';
+import * as Fiber from 'effect/Fiber';
+import {flow, pipe} from 'effect/Function';
+import * as SynchronizedRef from 'effect/SynchronizedRef';
 
 const resolveActive = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
   if (!serial || Doken.isSingle(serial)) {

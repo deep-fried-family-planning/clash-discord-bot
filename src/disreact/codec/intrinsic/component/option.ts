@@ -2,7 +2,7 @@ import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Emoji} from '#src/disreact/codec/intrinsic/markdown/emoji.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {S} from '#src/disreact/utils/re-exports.ts';
+import * as S from 'effect/Schema';
 
 export * as Option from '#src/disreact/codec/intrinsic/component/option.ts';
 export type Option = never;
