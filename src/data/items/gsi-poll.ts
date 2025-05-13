@@ -28,16 +28,4 @@ export const scan = Document.Query(
   Items,
 );
 
-export const scanStream = Stream.paginateChunkEffect(
-  undefined as any,
-  (last) =>
-    pipe(
-      scan({
-        Limit            : 25,
-        ExclusiveStartKey: last,
-      }),
-      E.map((res) => [Chunk.fromIterable(res.Items), Option.fromNullable(res.LastEvaluatedKey)]),
-    ),
-);
-
 export type Type = typeof Items.Type;

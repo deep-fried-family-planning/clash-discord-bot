@@ -29,6 +29,7 @@ export const GsiLinkKey = Table.Key({
 export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
   ...GsiLinkKey.fields,
+  alias          : S.optional(S.String),
   name           : S.String,
   description    : S.String,
   thread_prep    : S.optional(Id.ThreadId),

@@ -1,5 +1,6 @@
 import type {ServerPartition, UserPartition} from '#src/data/items/index.ts';
 import  { User, UserPlayer, UserServerLink, Server} from '#src/data/items/index.ts';
+import {serverMemberStream} from '#src/data/streams.ts';
 import {DiscordREST} from 'dfx';
 import * as E from 'effect/Effect';
 import * as Data from 'effect/Data';
@@ -94,10 +95,10 @@ export const syncServerUsers = E.fn('syncServerUsers')(function* (partition: Ser
     Record.fromIterableWith((usl) => [usl.pk, usl]),
   );
 
-  const discord = yield* DiscordREST;
-  const members = yield* discord.listGuildMembers(server.pk).json;
-
-  const [unlinked, linked] = Array.partition(members, (m) => m.user!.id in links);
+  const members = pipe(
+    serverMemberStream(server.pk),
+    Stream.filter((member) => !!member.user!.id!),
+  );
 
   return [];
 });
