@@ -5,14 +5,15 @@ import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Pragma} from '#src/disreact/model/pragma';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {flow, S} from '#src/disreact/utils/re-exports.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
+import * as S from 'effect/Schema';
+import * as Record from 'effect/Record';
+import {pipe, flow} from 'effect/Function';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
 import {MessageEffect} from '#test/unit/components/message-effect.tsx';
 import {MessageSync} from '#test/unit/components/message-sync.tsx';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {it} from '#test/unit/components/TestRegistry.tsx';
-import {Record} from 'effect';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant) => json(root);

@@ -1,4 +1,5 @@
-import {E} from '#src/disreact/utils/re-exports';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import {ButtonAsync} from '#test/unit/components/button-async.tsx';
 import {ButtonEffect} from '#test/unit/components/button-effect.tsx';
 import {ButtonSync} from '#test/unit/components/button-sync.tsx';

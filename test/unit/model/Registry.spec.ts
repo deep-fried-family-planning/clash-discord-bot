@@ -1,5 +1,8 @@
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {E} from '#src/disreact/utils/re-exports.ts';
+import * as E from 'effect/Effect';
+import * as S from 'effect/Schema';
+import * as Record from 'effect/Record';
+import {pipe, flow} from 'effect/Function';
 import {it} from '#test/unit/components/TestRegistry.tsx';
 
 it.effect('when hashing version', E.fn(function* () {

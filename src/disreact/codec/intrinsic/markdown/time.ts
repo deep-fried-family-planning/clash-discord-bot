@@ -1,6 +1,7 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {BI, S} from '#src/disreact/utils/re-exports.ts';
+import * as BI from 'effect/BigInt';
+import * as S from 'effect/Schema';
 
 export * as Time from '#src/disreact/codec/intrinsic/markdown/time.ts';
 export type Time = typeof Time;

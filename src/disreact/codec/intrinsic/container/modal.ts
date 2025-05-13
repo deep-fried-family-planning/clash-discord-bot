@@ -2,7 +2,7 @@ import {TextInput} from '#src/disreact/codec/intrinsic/component/textinput.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
 import {Declare} from '#src/disreact/model/declare.ts';
-import {S} from '#src/disreact/utils/re-exports';
+import * as S from 'effect/Schema';
 import {DAPI} from '../../dapi/dapi';
 
 export * as Modal from '#src/disreact/codec/intrinsic/container/modal.ts';

@@ -1,4 +1,5 @@
-import {E, pipe} from '#src/disreact/utils/re-exports.ts';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const ButtonEffect = () =>
   pipe(
