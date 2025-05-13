@@ -1,5 +1,5 @@
 import {DocumentDecodeItemError, DocumentEncodeInputError, DocumentEncodeItemError, isUpgraded, noUndefinedEncoded} from '#src/data/arch/util-document.ts';
-import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
+import {DeepFryerDB} from '#src/data/service/DeepFryerDB.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

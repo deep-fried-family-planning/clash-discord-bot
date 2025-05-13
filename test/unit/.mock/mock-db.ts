@@ -1,4 +1,4 @@
-import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
+import {DeepFryerDB} from '#src/data/service/DeepFryerDB.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput} from '@aws-sdk/lib-dynamodb';
 import {vi} from '@effect/vitest';
 import * as E from 'effect/Effect';

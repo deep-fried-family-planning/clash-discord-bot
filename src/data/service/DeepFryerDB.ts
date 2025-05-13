@@ -1,8 +1,13 @@
 import {DynamoEnv} from '#config/aws.ts';
-import {DeepFryerDBCapacity} from '#src/service/DeepFryerDBCapacity.ts';
+import {DeepFryerDBCapacity} from '#src/data/service/DeepFryerDBCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as E from 'effect/Effect';
+import * as Data from 'effect/Data';
+
+export class DeepFryerDBError extends Data.TaggedError('DeepFryerDBError')<{
+  cause: any;
+}> {}
 
 export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
   effect: E.gen(function* () {
@@ -18,6 +23,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.encodedWriteUnits(cmd.Item),
         ),
 
@@ -28,6 +34,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.readLimiter,
         ),
 
@@ -38,6 +45,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.writeLimiter,
         ),
 
@@ -48,6 +56,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.writeLimiter,
         ),
 
@@ -58,6 +67,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.readLimiter,
         ),
 
@@ -68,6 +78,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
             TableName: cmd.TableName ?? env.DFFP_DDB_TABLE,
           } as any,
         ).pipe(
+          E.catchAll((cause) => new DeepFryerDBError({cause})),
           capacity.readLimiter,
         ),
     };
