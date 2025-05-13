@@ -1,5 +1,5 @@
 import {DataTag} from '#src/data/constants/index.ts';
-import type {Server, ServerClan, User, UserPlayer} from '#src/data/index.ts';
+import type {Server, ServerClan, User, UserPlayer} from '#src/data/items/index.ts';
 import * as DateTime from 'effect/DateTime';
 
 export const TestDataUser = {
@@ -13,6 +13,7 @@ export const TestDataUser = {
   skp     : '.',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
+  servers : [],
 } as const satisfies User.Encoded;
 
 export const TestDataUser1 = {
@@ -26,6 +27,7 @@ export const TestDataUser1 = {
   skp     : '.',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
+  servers : [],
 } satisfies User.Encoded;
 
 export const TestDataUser2 = {
@@ -39,6 +41,7 @@ export const TestDataUser2 = {
   skp     : '.',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
+  servers : [],
 } satisfies User.Encoded;
 
 export const TestDataUserPlayer = {

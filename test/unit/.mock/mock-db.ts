@@ -1,4 +1,4 @@
-import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
+import {DataClient} from '#src/data/service/DataClient.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput} from '@aws-sdk/lib-dynamodb';
 import {vi} from '@effect/vitest';
 import * as E from 'effect/Effect';
@@ -12,4 +12,4 @@ export const mockDb = {
   scan  : vi.fn((cmd: ScanCommandInput) => E.void),
 };
 
-export const mockDbLayer = L.succeed(DeepFryerDB, DeepFryerDB.make(mockDb as any));
+export const mockDbLayer = L.succeed(DataClient, DataClient.make(mockDb as any));

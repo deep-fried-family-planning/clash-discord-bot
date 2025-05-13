@@ -74,6 +74,21 @@ export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, versio
   return S.Struct(item);
 };
 
+export const TemporalItem = <T extends string, F extends S.Struct.Fields>(tag: T, version: number, fields: F) => {
+  const item = {
+    ...fields,
+    sk      : UUIDv7,
+    _tag    : S.tag(tag),
+    _v      : S.tag(version),
+    _v7     : UUIDv7,
+    created : S.optionalWith(Created, {default: () => undefined}),
+    updated : S.optionalWith(Updated, {default: () => undefined}),
+    upgraded: Upgraded,
+  };
+  failReservedDEV(item);
+  return S.Struct(item);
+};
+
 export const TimeToLive = (duration: Duration.Duration) =>
   S.transformOrFail(
     S.DateTimeUtcFromNumber,

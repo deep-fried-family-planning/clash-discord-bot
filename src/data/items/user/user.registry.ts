@@ -1,5 +1,5 @@
 import {RegistryAdminError, RegistryFailure} from '#src/data/arch/util.ts';
-import * as User from '#src/data/user.ts';
+import * as User from '#src/data/items/user/user.ts';
 import {pipe} from 'effect/Function';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
@@ -56,9 +56,10 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
 
     yield* User.put({
       Item: User.make({
-        pk : params.target_id,
-        sk : 'now',
-        pkp: params.target_id,
+        pk     : params.target_id,
+        sk     : 'now',
+        pkp    : params.target_id,
+        servers: new Set([]),
         ...params.payload,
       }),
     });
@@ -71,9 +72,10 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   if (!caller) {
     yield* User.put({
       Item: User.make({
-        pk : params.caller_id,
-        sk : 'now',
-        pkp: params.caller_id,
+        pk     : params.caller_id,
+        sk     : 'now',
+        pkp    : params.caller_id,
+        servers: new Set([]),
         ...params.payload,
       }),
     });

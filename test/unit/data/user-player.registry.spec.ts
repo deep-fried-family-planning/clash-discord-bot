@@ -1,4 +1,4 @@
-import {UserPlayerRegistry} from '#src/data/index.ts';
+import {UserPlayerRegistry} from '#src/data/items/index.ts';
 import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataUser, TestDataUserPlayer, TestDataUserPlayer2} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';

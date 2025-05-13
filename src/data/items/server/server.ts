@@ -3,8 +3,8 @@ import {DataTag} from '#src/data/constants/index.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import {Struct} from './arch/Table.ts';
-import * as Table from './arch/Table.ts';
+import {Struct} from '#src/data/arch/Table.ts';
+import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.SERVER;
 export const LATEST = 1;

@@ -20,7 +20,7 @@ const estimateRecordWriteCapacity = (encoding: any) =>
     Number.max(1),
   );
 
-export class DeepFryerDBCapacity extends E.Service<DeepFryerDBCapacity>()('deepfryer/DBCapacity', {
+export class DataCapacity extends E.Service<DataCapacity>()('deepfryer/DataCapacity', {
   scoped: E.gen(function* () {
     const env = yield* DynamoEnv;
 

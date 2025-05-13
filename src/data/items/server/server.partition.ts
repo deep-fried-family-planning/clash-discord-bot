@@ -1,9 +1,10 @@
 import * as Document from '#src/data/arch/Document.ts';
 import * as IdSchema from '#src/data/arch/Id.ts';
 import * as Table from '#src/data/arch/Table.ts';
-import * as ServerClan from '#src/data/server-clan.ts';
-import * as ServerInfo from '#src/data/server-info.ts';
-import * as Server from '#src/data/server.ts';
+import * as ServerClan from '#src/data/items/server/server-clan.ts';
+import * as ServerInfo from '#src/data/items/server/server-info.ts';
+import * as Server from '#src/data/items/server/server.ts';
+import * as UserServerLink from '#src/data/items/user/user-server-link.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as Record from 'effect/Record';
 import * as S from 'effect/Schema';
@@ -16,6 +17,7 @@ export const Items = S.Array(S.Union(
   Server.Versions,
   ServerClan.Versions,
   ServerInfo.Versions,
+  UserServerLink.Versions,
 ));
 
 export const scan = Document.QueryUpgrade(
@@ -34,3 +36,5 @@ export const scan = Document.QueryUpgrade(
   ),
   Items,
 );
+
+export type Type = typeof Items.Type;

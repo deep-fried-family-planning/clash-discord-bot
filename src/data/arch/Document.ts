@@ -1,4 +1,4 @@
-import {DeepFryerDB} from '#src/service/DeepFryerDB.ts';
+import {DataClient} from '#src/data/service/DataClient.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -31,7 +31,7 @@ export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
     pipe(
       encodeItem(input.Item),
       E.flatMap((item) =>
-        DeepFryerDB.put({
+        DataClient.put({
           ...input,
           Item: item as any,
         }),
@@ -56,7 +56,7 @@ export const Get = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DeepFryerDB.get({
+        DataClient.get({
           ...input,
           Key: a as any,
         }),
@@ -82,7 +82,7 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DeepFryerDB.get({
+        DataClient.get({
           ...input,
           Key: a as any,
         }),
@@ -101,7 +101,7 @@ export const GetUpgrade = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, out: S.S
           return E.void;
         }
         return encodeOut(res.Item!).pipe(E.flatMap((encoded) =>
-          DeepFryerDB.put({
+          DataClient.put({
             TableName: input.TableName,
             Item     : noUndefinedAtEncode(encoded) as any,
           }),
@@ -128,7 +128,7 @@ export const Update = <A, I, R>(key: S.Schema<A, I, R>) => {
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DeepFryerDB.update({
+        DataClient.update({
           ...input,
           Key: a as any,
         }),
@@ -153,7 +153,7 @@ export const Delete = <A, I, R>(key: S.Schema<A, I, R>) => {
     pipe(
       encodeKey(input.Key),
       E.flatMap((a) =>
-        DeepFryerDB.delete({
+        DataClient.delete({
           ...input,
           Key: a as any,
         }),
@@ -186,7 +186,7 @@ export const Query = <
     pipe(
       encodeCondition(input as any),
       E.flatMap((a) =>
-        DeepFryerDB.query({...input, ...a} as any),
+        DataClient.query({...input, ...a} as any),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
@@ -219,7 +219,7 @@ export const QueryUpgrade = <
             .filter((item) => (item as any).upgraded)
             .map((item) =>
               encodeOutput(item as any).pipe(E.flatMap((out) =>
-                DeepFryerDB.put({
+                DataClient.put({
                   TableName: input.TableName,
                   Item     : noUndefinedAtEncode(out) as any,
                 }),
@@ -255,7 +255,7 @@ export const Scan = <
     pipe(
       encodeCondition(input as any),
       E.flatMap((a) =>
-        DeepFryerDB.query({...input, ...a}),
+        DataClient.query({...input, ...a}),
       ),
       E.flatMap((res) => {
         if (!res.Items) {
@@ -285,7 +285,7 @@ export const ScanUpgrade = <
         .filter((item) => (item as any).upgraded)
         .map((item) =>
           encodeOutput(item as any).pipe(E.flatMap((out) =>
-            DeepFryerDB.put({
+            DataClient.put({
               TableName: input.TableName,
               Item     : noUndefinedAtEncode(out) as any,
             }),

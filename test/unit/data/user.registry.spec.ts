@@ -1,4 +1,4 @@
-import {UserRegistry} from '#src/data/index.ts';
+import {UserRegistry} from '#src/data/items/index.ts';
 import {TestDataUser, TestDataUser1, TestDataUser2} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';

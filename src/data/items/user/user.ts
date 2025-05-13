@@ -1,9 +1,9 @@
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import {Document, Id} from 'src/data/arch/index.ts';
-import {DataTag} from 'src/data/constants/index.ts';
-import * as Table from './arch/Table.ts';
+import {Document, Id} from '#src/data/arch/index.ts';
+import {DataTag} from '#src/data/constants/index.ts';
+import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.USER;
 export const LATEST = 1;
@@ -22,6 +22,7 @@ export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
   ...GsiPollKey.fields,
   timezone: S.TimeZone,
+  servers : S.Set(Id.ServerId),
 });
 
 const V0 = S.Struct({
@@ -58,6 +59,7 @@ export const Versions = S.Union(
       upgraded: true,
       pkp     : fromA.pk,
       skp     : '.',
+      servers : new Set([]),
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
@@ -73,6 +75,7 @@ export const Versions = S.Union(
       created : DateTime.unsafeMake(fromA.created),
       updated : DateTime.unsafeMake(fromA.updated),
       timezone: fromA.timezone,
+      servers : new Set([]),
     } as const;
   }),
 );
