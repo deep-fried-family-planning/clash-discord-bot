@@ -2,8 +2,8 @@ import {encodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 import * as Document from 'src/data/arch/Document.ts';
 import * as Id from 'src/data/arch/Id.ts';
-import * as ServerClan from '#src/data/items/server/server-clan.ts';
-import * as UserPlayer from '#src/data/items/user/user-player.ts';
+import * as ServerClan from '#src/data/items/s-server/server-clan.ts';
+import * as UserPlayer from '#src/data/items/u-user/u-user-p-player.ts';
 import * as Gsi from 'src/data/constants/gsi.ts';
 
 export const queryServerClan = Document.Query(
