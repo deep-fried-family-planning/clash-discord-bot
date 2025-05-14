@@ -19,49 +19,36 @@ resource "aws_dynamodb_table" "operations" {
   }
 
   global_secondary_index {
-    name               = "_v7"
-    hash_key           = "_v7"
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["_tag", "_v", "migrated"]
-    read_capacity      = 1
-    write_capacity     = 1
-  }
-  attribute {
-    name = "_v7"
-    type = "S"
-  }
-
-  global_secondary_index {
-    name            = "poll"
-    hash_key        = "pkp"
-    range_key       = "skp"
+    name            = "gsi1"
+    hash_key        = "pk1"
+    range_key       = "sk1"
     projection_type = "ALL"
     read_capacity   = 1
     write_capacity  = 1
   }
   attribute {
-    name = "pkp"
+    name = "pk1"
     type = "S"
   }
   attribute {
-    name = "skp"
+    name = "sk1"
     type = "S"
   }
 
   global_secondary_index {
-    name            = "link"
-    hash_key        = "pkl"
-    range_key       = "skl"
+    name            = "gsi2"
+    hash_key        = "pk2"
+    range_key       = "sk2"
     projection_type = "ALL"
     read_capacity   = 1
     write_capacity  = 1
   }
   attribute {
-    name = "pkl"
+    name = "pk2"
     type = "S"
   }
   attribute {
-    name = "skl"
+    name = "sk2"
     type = "S"
   }
 
