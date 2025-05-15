@@ -92,6 +92,8 @@ export const Versions = S.Union(
   }),
 );
 
+export const encode = S.encode(Latest);
+export const decode = S.decode(Versions);
 export const is = S.is(Latest);
 export const make = Latest.make;
 export const equal = S.equivalence(Latest);

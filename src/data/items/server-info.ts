@@ -60,10 +60,13 @@ export const Versions = S.Union(
     } as const;
   }),
 );
+export const encode = S.encode(Latest);
+export const decode = S.decode(Versions);
 export const is = S.is(Latest);
 export const make = Latest.make;
 export const equal = S.equivalence(Latest);
 export type Type = typeof Latest.Type;
+export type Encoded = typeof Latest.Encoded;
 export const put = Document.Put(Latest);
 export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);

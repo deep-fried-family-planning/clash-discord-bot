@@ -1,8 +1,8 @@
 import {Document, Id} from '#src/data/arch/index.ts';
 import * as Table from '#src/data/arch/Table.ts';
-import * as UserPlayer from '#src/data/items/u-user/user-player.ts';
-import * as UserServerLink from '#src/data/items/u-user/user-server-link.ts';
-import * as User from '#src/data/items/u-user/user.ts';
+import * as UserPlayer from '#src/data/items/user-player.ts';
+import * as UserServerLink from '#src/data/items/user-link.ts';
+import * as User from '#src/data/items/user.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as E from 'effect/Effect';
 import * as Record from 'effect/Record';

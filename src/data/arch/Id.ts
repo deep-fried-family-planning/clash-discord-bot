@@ -1,21 +1,32 @@
 import * as S from 'effect/Schema';
 
-const PrependedId = (start: string) =>
+export const PrependedId = (start: string) =>
   S.transform(
     S.String.pipe(S.startsWith(start)),
     S.String,
     {
       decode: (s) => s.slice(start.length),
-      encode: (s) => start.concat(s),
+      encode: (s) => `${start}${s}`,
+    },
+  );
+
+export const AppendedId = (end: string) =>
+  S.transform(
+    S.String.pipe(S.endsWith(end)),
+    S.String,
+    {
+      decode: (s) => s.slice(0, -end.length),
+      encode: (s) => `${s}${end}`,
     },
   );
 
 export const PartitionRoot = S.tag('.');
 
-export const ClanTag = PrependedId('c-');
-export const PlayerTag = PrependedId('p-');
-export const ServerId = PrependedId('s-');
-export const UserId = PrependedId('u-');
+export const ClanTag = AppendedId('.c');
+export const PlayerTag = AppendedId('.p');
+export const ServerId = S.String;
+export const ServerInfoId = AppendedId('.i');
+export const UserId = S.String;
 export const ThreadId = S.String;
 export const RoleId = S.String;
 export const MessageId = S.String;
