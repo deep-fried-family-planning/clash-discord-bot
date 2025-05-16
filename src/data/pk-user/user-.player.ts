@@ -1,9 +1,10 @@
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import * as Table from './arch/Table.ts';
 
 export const TAG = DataTag.USER_PLAYER;
 export const LATEST = 1;
@@ -20,14 +21,11 @@ export const Key = Table.Key({
   sk: Id.PlayerTag,
 });
 
-export const GsiLinkKey = Table.Key({
-  pkl: Id.PlayerTag,
-  skl: Id.UserId,
-});
-
 export const Latest = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GsiLinkKey.fields,
+  pk          : Id.UserId,
+  sk          : Id.PlayerTag,
+  pk2         : Id.PlayerTag,
+  sk2         : Id.UserId,
   name        : S.String,
   verification: PlayerVerification,
   account_type: S.String,
@@ -68,8 +66,8 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
-      pkl     : enc.sk,
-      skl     : enc.pk,
+      pk2     : enc.sk,
+      sk2     : enc.pk,
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
@@ -81,8 +79,8 @@ export const Versions = S.Union(
       upgraded    : true,
       pk          : enc.pk,
       sk          : enc.sk,
-      pkl         : enc.sk,
-      skl         : enc.pk,
+      pk2         : enc.sk,
+      sk2         : enc.pk,
       name        : '',
       account_type: enc.account_type,
       created     : DateTime.unsafeMake(enc.created),
@@ -92,6 +90,8 @@ export const Versions = S.Union(
   }),
 );
 
+export const encode = S.encode(Latest);
+export const decode = S.decode(Versions);
 export const is = S.is(Latest);
 export const make = Latest.make;
 export const equal = S.equivalence(Latest);

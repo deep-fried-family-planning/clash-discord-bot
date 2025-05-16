@@ -1,27 +1,27 @@
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import {Struct} from './arch/Table.ts';
-import * as Table from './arch/Table.ts';
 
 export const TAG = DataTag.SERVER;
 export const LATEST = 1;
 
 export const Key = Table.Key({
   pk: Id.ServerId,
-  sk: Id.NowSk,
+  sk: Id.PartitionRoot,
 });
 
-export const GsiPollKey = Table.Key({
-  pkp: Id.ServerId,
-  skp: Id.PartitionRoot,
+export const GSI1Key = Table.Key({
+  pk1: Id.ServerId,
+  sk1: Id.PartitionRoot,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  ...GsiPollKey.fields,
+  ...GSI1Key.fields,
   forum: S.optional(Id.ChannelId),
   raids: S.optional(Id.ThreadId),
   admin: Id.RoleId,
@@ -29,7 +29,7 @@ export const Latest = Table.Item(TAG, LATEST, {
 
 const V0 = Table.Struct({
   ...Key.fields,
-  ...GsiPollKey.fields,
+  ...GSI1Key.fields,
   _tag    : S.tag(DataTag.SERVER),
   version : S.tag(0),
   forum   : S.optional(Id.ChannelId),
@@ -77,8 +77,8 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
-      pkp     : fromA.pk,
-      skp     : '.',
+      pk1     : fromA.pk,
+      sk1     : '@',
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
@@ -88,9 +88,9 @@ export const Versions = S.Union(
       _v7     : '',
       upgraded: true,
       pk      : fromA.pk,
-      sk      : fromA.sk,
-      pkp     : fromA.pk,
-      skp     : '.',
+      sk      : '@',
+      pk1     : fromA.pk,
+      sk1     : '@',
       created : DateTime.unsafeMake(fromA.created),
       updated : DateTime.unsafeMake(fromA.updated),
       forum   : fromA.forum,
@@ -100,11 +100,13 @@ export const Versions = S.Union(
   }),
 );
 
-export type Type = typeof Latest.Type;
-export type Encoded = typeof Latest.Encoded;
+export const encode = S.encode(Latest);
+export const decode = S.decode(Versions);
 export const is = S.is(Latest);
 export const make = Latest.make;
 export const equal = S.equivalence(Latest);
+export type Type = typeof Latest.Type;
+export type Encoded = typeof Latest.Encoded;
 export const put = Document.Put(Latest);
 export const get = Document.GetUpgrade(Key, Versions);
 export const del = Document.Delete(Key);

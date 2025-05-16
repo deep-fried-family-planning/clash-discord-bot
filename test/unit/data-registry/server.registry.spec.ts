@@ -1,4 +1,4 @@
-import {ServerRegistry} from '#src/data/index.ts';
+import * as ServerRegistry from '#src/data-registry/server.registry.ts';
 import {TestDataServer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
 import {it} from '@effect/vitest';

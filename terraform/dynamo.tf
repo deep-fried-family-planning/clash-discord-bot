@@ -15,65 +15,40 @@ resource "aws_dynamodb_table" "operations" {
 
   ttl {
     attribute_name = "ttl"
-    enabled        = false
+    enabled        = true
   }
 
   global_secondary_index {
-    name            = "Poll"
-    hash_key        = "pkp"
-    range_key       = "skp"
+    name            = "gsi1"
+    hash_key        = "pk1"
+    range_key       = "sk1"
     projection_type = "ALL"
     read_capacity   = 1
     write_capacity  = 1
   }
   attribute {
-    name = "pkp"
+    name = "pk1"
     type = "S"
   }
   attribute {
-    name = "skp"
+    name = "sk1"
     type = "S"
   }
 
   global_secondary_index {
-    name            = "Link"
-    hash_key        = "pkl"
-    range_key       = "skl"
+    name            = "gsi2"
+    hash_key        = "pk2"
+    range_key       = "sk2"
     projection_type = "ALL"
     read_capacity   = 1
     write_capacity  = 1
   }
   attribute {
-    name = "pkl"
+    name = "pk2"
     type = "S"
   }
   attribute {
-    name = "skl"
-    type = "S"
-  }
-
-  attribute {
-    name = "gsi_all_server_id"
-    type = "S"
-  }
-  attribute {
-    name = "gsi_server_id"
-    type = "S"
-  }
-  attribute {
-    name = "gsi_clan_tag"
-    type = "S"
-  }
-  attribute {
-    name = "gsi_user_id"
-    type = "S"
-  }
-  attribute {
-    name = "gsi_player_tag"
-    type = "S"
-  }
-  attribute {
-    name = "gsi_roster_id"
+    name = "sk2"
     type = "S"
   }
 
@@ -107,6 +82,30 @@ resource "aws_dynamodb_table" "operations" {
     projection_type = "ALL"
     read_capacity   = 1
     write_capacity  = 1
+  }
+  attribute {
+    name = "gsi_all_server_id"
+    type = "S"
+  }
+  attribute {
+    name = "gsi_server_id"
+    type = "S"
+  }
+  attribute {
+    name = "gsi_clan_tag"
+    type = "S"
+  }
+  attribute {
+    name = "gsi_user_id"
+    type = "S"
+  }
+  attribute {
+    name = "gsi_player_tag"
+    type = "S"
+  }
+  attribute {
+    name = "gsi_roster_id"
+    type = "S"
   }
 }
 

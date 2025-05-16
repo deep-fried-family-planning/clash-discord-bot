@@ -1,4 +1,4 @@
-import {ServerClanRegistry} from '#src/data/index.ts';
+import * as ServerClanRegistry from '#src/data-registry/server-clan.registry.ts';
 import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
@@ -17,11 +17,11 @@ it.effect('when registering a new server clan', E.fn(function* () {
 
   mockCoc.getClan
     .mockReturnValueOnce(E.succeed({
-      tag        : 'clan',
+      tag        : '#clan',
       name       : 'ClanName',
       description: 'ClanDescription',
       members    : [{
-        tag : 'player',
+        tag : '#player',
         role: 'leader',
       }],
     }));
@@ -31,7 +31,7 @@ it.effect('when registering a new server clan', E.fn(function* () {
       caller_id   : 'user',
       caller_roles: ['admin'],
       guild_id    : 'guild',
-      clan_tag    : 'clan',
+      clan_tag    : '#clan',
       payload     : {
         countdown: 'countdown',
       },
@@ -69,11 +69,11 @@ describe('given caller user is not registered', () => {
 
     mockCoc.getClan
       .mockReturnValueOnce(E.succeed({
-        tag        : 'clan',
+        tag        : '#clan',
         name       : 'ClanName',
         description: 'ClanDescription',
         members    : [{
-          tag : 'player',
+          tag : '#player',
           role: 'leader',
         }],
       }));
@@ -83,7 +83,7 @@ describe('given caller user is not registered', () => {
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
-        clan_tag    : 'clan',
+        clan_tag    : '#clan',
         payload     : {
           countdown: 'countdown',
         },
@@ -112,7 +112,7 @@ describe('given caller server is not registered', () => {
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
-        clan_tag    : 'clan',
+        clan_tag    : '#clan',
         payload     : {
           countdown: 'countdown',
         },
@@ -136,11 +136,11 @@ describe('given caller is not admin', () => {
 
     mockCoc.getClan
       .mockReturnValueOnce(E.succeed({
-        tag        : 'clan',
+        tag        : '#clan',
         name       : 'ClanName',
         description: 'ClanDescription',
         members    : [{
-          tag : 'player',
+          tag : '#player',
           role: 'leader',
         }],
       }));
@@ -182,7 +182,7 @@ describe('given caller has no verified accounts in clan', () => {
 
     mockCoc.getClan
       .mockReturnValueOnce(E.succeed({
-        tag        : 'clan',
+        tag        : '#clan',
         name       : 'ClanName',
         description: 'ClanDescription',
         members    : [],
@@ -193,7 +193,7 @@ describe('given caller has no verified accounts in clan', () => {
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
-        clan_tag    : 'clan',
+        clan_tag    : '#clan',
         payload     : {
           countdown: 'countdown',
         },
@@ -228,11 +228,11 @@ describe('given server clan is already registered with elder verification to a d
 
     mockCoc.getClan
       .mockReturnValueOnce(E.succeed({
-        tag        : 'clan',
+        tag        : '#clan',
         name       : 'ClanName',
         description: 'ClanDescription',
         members    : [{
-          tag : 'player',
+          tag : '#player',
           role: 'leader',
         }],
       }));
@@ -242,7 +242,7 @@ describe('given server clan is already registered with elder verification to a d
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
-        clan_tag    : 'clan',
+        clan_tag    : '#clan',
         payload     : {
           countdown: 'countdown',
         },
@@ -282,11 +282,11 @@ describe('given server clan is already leader verified', () => {
 
     mockCoc.getClan
       .mockReturnValueOnce(E.succeed({
-        tag        : 'clan',
+        tag        : '#clan',
         name       : 'ClanName',
         description: 'ClanDescription',
         members    : [{
-          tag : 'player',
+          tag : '#player',
           role: 'elder',
         }],
       }));
@@ -296,7 +296,7 @@ describe('given server clan is already leader verified', () => {
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
-        clan_tag    : 'clan',
+        clan_tag    : '#clan',
         payload     : {
           countdown: 'countdown',
         },

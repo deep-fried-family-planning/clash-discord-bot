@@ -1,0 +1,120 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`given caller has no verified accounts in clan > when registering 2`] = `"#clan"`;
+
+exports[`given caller has no verified accounts in clan > when registering 3`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`given caller has no verified accounts in clan > when registering 4`] = `"pk = :pk AND sk >= :sk"`;
+
+exports[`given caller has no verified accounts in clan > when registering 5`] = `"pk2 = :pk2"`;
+
+exports[`given caller is not admin > when registering 2`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`given caller user is not registered > when registering 2`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`given caller user is not registered > when registering 3`] = `"pk = :pk AND sk >= :sk"`;
+
+exports[`given server clan is already leader verified > when registering 2`] = `"#clan"`;
+
+exports[`given server clan is already leader verified > when registering 3`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`given server clan is already leader verified > when registering 4`] = `"pk = :pk AND sk >= :sk"`;
+
+exports[`given server clan is already leader verified > when registering 5`] = `"pk2 = :pk2"`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 2`] = `"#clan"`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 3`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 4`] = `"pk = :pk AND sk >= :sk"`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 5`] = `"pk2 = :pk2"`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 6`] = `
+{
+  "_tag": "ServerClan",
+  "_v": 1,
+  "_v7": "00000000-0000-7000-8000-000000000000",
+  "countdown": "countdown",
+  "created": "1970-01-01T00:00:00.000Z",
+  "description": "ClanDescription",
+  "name": "ClanName",
+  "pk": "guild",
+  "pk2": "#clan#c",
+  "select": {
+    "label": "ClanName",
+    "value": "#clan",
+  },
+  "sk": "#clan",
+  "sk2": "guild",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "verification": 3,
+}
+`;
+
+exports[`given server clan is already registered with elder verification to a different server > when registering 7`] = `
+{
+  "pk": "guild2",
+  "sk": "#c#clan",
+}
+`;
+
+exports[`when registering a new server clan 2`] = `"#clan"`;
+
+exports[`when registering a new server clan 3`] = `
+{
+  "pk": "guild",
+  "sk": "@",
+}
+`;
+
+exports[`when registering a new server clan 4`] = `"pk = :pk AND sk >= :sk"`;
+
+exports[`when registering a new server clan 5`] = `"pk2 = :pk2"`;
+
+exports[`when registering a new server clan 6`] = `
+{
+  "_tag": "ServerClan",
+  "_v": 1,
+  "_v7": "00000000-0000-7000-8000-000000000000",
+  "countdown": "countdown",
+  "created": "1970-01-01T00:00:00.000Z",
+  "description": "ClanDescription",
+  "name": "ClanName",
+  "pk": "guild",
+  "pk2": "#clan#c",
+  "select": {
+    "label": "ClanName",
+    "value": "#clan",
+  },
+  "sk": "#clan",
+  "sk2": "guild",
+  "updated": "1970-01-01T00:00:00.000Z",
+  "verification": 3,
+}
+`;

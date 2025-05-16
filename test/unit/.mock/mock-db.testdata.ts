@@ -1,45 +1,46 @@
-import {DataTag} from '#src/data/constants/index.ts';
 import type {Server, ServerClan, User, UserPlayer} from '#src/data/index.ts';
-import * as DateTime from 'effect/DateTime';
 
 export const TestDataUser = {
   _tag    : 'User',
   _v      : 1,
   _v7     : '00000000-0000-7000-8000-000000000000',
   created : '1970-01-01T00:00:00.000Z',
-  pk      : 'u-user',
-  pkp     : 'u-user',
-  sk      : 'now',
-  skp     : '.',
+  pk      : 'user',
+  sk      : '@',
+  pk1     : 'user',
+  sk1     : '@',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
-} as const satisfies User.Encoded;
+  servers : [],
+} as const satisfies typeof User.Latest.Encoded;
 
 export const TestDataUser1 = {
   _tag    : 'User',
   _v      : 1,
   _v7     : '00000000-0000-7000-8000-000000000000',
   created : '1970-01-01T00:00:00.000Z',
-  pk      : 'u-user1',
-  pkp     : 'u-user1',
-  sk      : 'now',
-  skp     : '.',
+  pk      : 'user1',
+  sk      : '@',
+  pk1     : 'user1',
+  sk1     : '@',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
-} satisfies User.Encoded;
+  servers : [],
+} satisfies typeof User.Latest.Encoded;
 
 export const TestDataUser2 = {
   _tag    : 'User',
   _v      : 1,
   _v7     : '00000000-0000-7000-8000-000000000000',
   created : '1970-01-01T00:00:00.000Z',
-  pk      : 'u-user2',
-  pkp     : 'u-user2',
-  sk      : 'now',
-  skp     : '.',
+  pk      : 'user2',
+  sk      : '@',
+  pk1     : 'user2',
+  sk1     : '@',
   timezone: 'America/Chicago',
   updated : '1970-01-01T00:00:00.000Z',
-} satisfies User.Encoded;
+  servers : [],
+} satisfies typeof User.Latest.Encoded;
 
 export const TestDataUserPlayer = {
   _tag        : 'UserPlayer',
@@ -48,10 +49,10 @@ export const TestDataUserPlayer = {
   account_type: 'main',
   created     : '1970-01-01T00:00:00.000Z',
   name        : 'PlayerName',
-  pk          : 'u-user2',
-  pkl         : 'p-player',
-  sk          : 'p-player',
-  skl         : 'u-user2',
+  pk          : 'user2',
+  pk2         : '#player',
+  sk          : '#player',
+  sk2         : 'user2',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 2,
 } as const satisfies UserPlayer.Encoded;
@@ -63,10 +64,10 @@ export const TestDataUserPlayer2 = {
   account_type: 'main',
   created     : '1970-01-01T00:00:00.000Z',
   name        : 'PlayerName',
-  pk          : 'u-user2',
-  pkl         : 'p-player',
-  sk          : 'p-player',
-  skl         : 'u-user2',
+  pk          : 'user2',
+  pk2         : '#player',
+  sk          : '#player',
+  sk2         : 'user2',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 1,
 } as const satisfies UserPlayer.Encoded;
@@ -77,29 +78,12 @@ export const TestDataServer = {
   _v7    : '00000000-0000-7000-8000-000000000000',
   admin  : 'admin',
   created: '1970-01-01T00:00:00.000Z',
-  pk     : 's-guild',
-  pkp    : 's-guild',
-  sk     : 'now',
-  skp    : '.',
+  pk     : 'guild',
+  pk1    : 'guild',
+  sk     : '@',
+  sk1    : '@',
   updated: '1970-01-01T00:00:00.000Z',
 } as const satisfies Server.Encoded;
-
-export const TestDataServerClan = {
-  _tag         : 'ServerClan',
-  countdown    : 'countdown',
-  description  : 'ClanDescription',
-  gsi_clan_tag : 'c-clan',
-  gsi_server_id: 's-guild',
-  name         : 'ClanName',
-  pk           : 's-guild',
-  select       : {
-    label: 'ClanName',
-    value: 'c-clan',
-  },
-  sk          : 'c-clan',
-  verification: 0,
-  version     : 0,
-} as const satisfies ServerClan.Encoded;
 
 export const TestDataServerClanElderVerified = {
   _tag       : 'ServerClan',
@@ -109,34 +93,34 @@ export const TestDataServerClanElderVerified = {
   created    : '1970-01-01T00:00:00.000Z',
   description: 'ClanDescription',
   name       : 'ClanName',
-  pk         : 's-guild2',
-  pkl        : 'c-clan',
+  pk         : 'guild2',
+  sk         : '#c#clan',
+  pk2        : '#clan#c',
+  sk2        : 'guild2',
   select     : {
     label: 'ClanName',
-    value: 'c-clan',
+    value: '#clan',
   },
-  sk          : 'c-clan',
-  skl         : 's-guild',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 1,
 } as const satisfies ServerClan.Encoded;
 
 export const TestDataServerClanLeaderVerified = {
-  _tag       : 'ServerClan',
-  _v         : 1,
-  _v7        : '00000000-0000-7000-8000-000000000000',
-  countdown  : 'countdown',
-  created    : '1970-01-01T00:00:00.000Z',
-  description: 'ClanDescription',
-  name       : 'ClanName',
-  pk         : 's-guild2',
-  pkl        : 'c-clan',
-  select     : {
-    label: 'ClanName',
-    value: 'c-clan',
-  },
-  sk          : 'c-clan',
-  skl         : 's-guild',
+  _tag        : 'ServerClan',
+  _v          : 1,
+  _v7         : '00000000-0000-7000-8000-000000000000',
+  countdown   : 'countdown',
+  created     : '1970-01-01T00:00:00.000Z',
+  description : 'ClanDescription',
+  name        : 'ClanName',
+  pk          : 'guild2',
+  sk          : '#c#clan',
+  pk2         : '#clan#c',
+  sk2         : 'guild2',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 3,
+  select      : {
+    label: 'ClanName',
+    value: '#clan',
+  },
 } as const satisfies ServerClan.Encoded;

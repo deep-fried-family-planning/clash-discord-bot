@@ -1,14 +1,14 @@
 import {DynamoEnv} from '#config/aws.ts';
-import {DeepFryerDBCapacity} from '#src/service/DeepFryerDBCapacity.ts';
+import {DataCapacity} from '#src/service/DataCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as E from 'effect/Effect';
 
-export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
+export class DataClient extends E.Service<DataClient>()('deepfryer/DataClient', {
   effect: E.gen(function* () {
     const env = yield* DynamoEnv;
     const document = yield* DynamoDBDocument;
-    const capacity = yield* DeepFryerDBCapacity;
+    const capacity = yield* DataCapacity;
 
     return {
       put: (cmd: Partial<PutCommandInput>) =>
@@ -74,7 +74,7 @@ export class DeepFryerDB extends E.Service<DeepFryerDB>()('deepfryer/DB', {
   }),
   dependencies: [
     DynamoDBDocument.defaultLayer,
-    DeepFryerDBCapacity.Default,
+    DataCapacity.Default,
   ],
   accessors: true,
 }) {}
