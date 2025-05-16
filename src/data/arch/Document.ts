@@ -1,4 +1,4 @@
-import {DataClient} from '#src/service/DataClient.ts';
+import {DataClient} from '#src/data/service/DataClient.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

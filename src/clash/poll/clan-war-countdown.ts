@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {ServerClan} from '#src/database/arch/codec.ts';
+import type {ServerClan} from '#src/data/index.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {ClanWar} from 'clashofclans.js';
@@ -25,6 +25,10 @@ export const updateWarCountdown = (clan: ServerClan, apiWars: ClanWar[]) => E.ge
   const cname = apiClan.name in nicknames
     ? nicknames[apiClan.name as keyof typeof nicknames]
     : apiClan.name;
+
+  if (!clan.countdown) {
+    return;
+  }
 
   if (apiWars.length === 0) {
     yield* discord.updateChannel(clan.countdown, {

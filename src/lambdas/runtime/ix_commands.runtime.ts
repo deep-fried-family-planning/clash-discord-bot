@@ -1,12 +1,11 @@
 import {ClashKing} from '#src/clash/clashking.ts';
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {DataClient} from '#src/data/service/DataClient.ts';
 import {DiscordRESTEnv} from 'config/external.ts';
-import {DeepFryerPage} from '#src/database/service/DeepFryerPage.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
 import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {ix_commands} from '#src/lambdas/ix_commands.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
-import {DatabaseLayer, DiscordLayer} from '#src/util/layers.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
@@ -21,7 +20,7 @@ const layer = pipe(
     ClashKing.Default,
     Scheduler.defaultLayer,
     SQS.defaultLayer,
-    DeepFryerPage.Default,
+    DataClient.Default,
     DeepFryerLogger.Default.pipe(
       L.provideMerge(DiscordRESTMemoryLive),
       L.provideMerge(NodeHttpClient.layerUndici),
@@ -30,7 +29,6 @@ const layer = pipe(
   ),
   L.provideMerge(
     L.mergeAll(
-      DatabaseLayer,
       L.setTracerTiming(true),
       L.setTracerEnabled(true),
       Logger.replace(Logger.defaultLogger, Logger.structuredLogger),

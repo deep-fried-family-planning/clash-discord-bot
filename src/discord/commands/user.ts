@@ -1,11 +1,8 @@
-import {User} from '#src/database/arch/codec';
-import {readItem, saveItem} from '#src/database/DeepFryerDB.ts';
+import {UserRegistry} from '#src/data';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
-import {SlashError, SlashUserError} from '#src/internal/errors.ts';
+import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
 import {E, S} from '#src/internal/pure/effect.ts';
 
 export const USER = {
@@ -47,59 +44,20 @@ export const USER = {
  * @desc [SLASH /user]
  */
 export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* () {
-  if (!data.member) {
-    return yield* new SlashUserError({issue: 'Contextual authentication failed.'});
-  }
+  const timezone = yield* S.decodeUnknown(S.TimeZone)(options.tz);
 
-  if (Boolean(options.quiet_hours_start) !== Boolean(options.quiet_hours_end)) {
-    return yield* new SlashUserError({issue: 'must have both quiet hours start/end defined'});
-  }
-
-  const userId = options.discord_user ?? data.member.user!.id;
-
-  if (options.discord_user) {
-    const [server] = yield* validateServer(data);
-
-    if (!data.member.roles.includes(server.admin as snflk)) {
-      return yield* new SlashUserError({issue: 'admin role required'});
-    }
-  }
-
-  const user = yield* readItem(User, userId, 'now').pipe(
-    E.catchTag('NoSuchElementException', () => E.succeed(undefined)),
-  );
-
-  if (!user) {
-    yield* saveItem(User, {
-      _tag           : 'User',
-      pk             : userId,
-      sk             : 'now',
-      version        : 0,
-      created        : undefined,
-      updated        : undefined,
-      gsi_all_user_id: userId,
-      timezone       : yield* S.decodeUnknown(S.TimeZone)(options.tz),
-    });
-
-    return {
-      embeds: [{
-        color      : nColor(COLOR.SUCCESS),
-        description: `<@${userId}> new user registration successful (${options.tz})`,
-      }],
-    };
-  }
-
-  yield* saveItem(User, {
-    ...user,
-    timezone: yield* S.decodeUnknown(S.TimeZone)(options.tz),
+  const registration = yield* UserRegistry.register({
+    caller_id: data.member!.user.id,
+    target_id: options.discord_user,
+    payload  : {
+      timezone,
+    },
   });
 
   return {
     embeds: [{
       color      : nColor(COLOR.SUCCESS),
-      description: `<@${userId}> user registration updated (${options.tz})`,
+      description: registration.description,
     }],
   };
-}).pipe(
-  E.catchTag('ParseError', (e) => new SlashError({original: e})),
-);
+});

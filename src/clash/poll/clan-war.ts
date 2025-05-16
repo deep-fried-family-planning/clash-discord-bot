@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {saveItem} from '#src/database/DeepFryerDB.ts';
+import {ServerClan, type Server, type UserPlayer} from '#src/data/index.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
@@ -10,13 +10,12 @@ import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import {updateWarCountdown} from '#src/clash/poll/clan-war-countdown.ts';
-import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
-import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
-import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
-import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
+// import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
+// import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
+// import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
+// import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
-import {ServerClan, type Server, type UserPlayer} from '#src/database/arch/codec';
 
 export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]) => E.gen(function* () {
   const discord = yield* DiscordREST;
@@ -112,10 +111,12 @@ export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]
     auto_archive_duration: 1440,
   });
 
-  yield* saveItem(ServerClan, {
-    ...clan,
-    prep_opponent: prepWar.opponent.tag,
-    thread_prep  : thread.id,
+  yield* ServerClan.put({
+    Item: {
+      ...clan,
+      prep_opponent: prepWar.opponent.tag,
+      thread_prep  : thread.id,
+    },
   });
 
   const links = pipe(
@@ -127,17 +128,17 @@ export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]
   );
 
   yield* E.all([
-    WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
-    WarPrep12hr.send(prepWar.preparationStartTime, '12 hour', server, clan, prepWar, thread, links),
+    // WarPrep24hr.send(prepWar.preparationStartTime, '0 hour', server, clan, prepWar, thread, links),
+    // WarPrep12hr.send(prepWar.preparationStartTime, '12 hour', server, clan, prepWar, thread, links),
     // WarPrep06hr.send(prepWar.preparationStartTime, '18 hour', server, clan, prepWar, thread, links),
     // WarPrep02hr.send(prepWar.preparationStartTime, '22 hour', server, clan, prepWar, thread, links),
 
-    WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread, links),
+    // WarBattle24Hr.send(prepWar.startTime, '0 hour', server, clan, prepWar, thread, links),
     // WarBattle12hr.send(prepWar.startTime, '12 hour', server, clan, prepWar, thread, links),
     // WarBattle06hr.send(prepWar.startTime, '18 hour', server, clan, prepWar, thread, links),
     // WarBattle02hr.send(prepWar.startTime, '22 hour', server, clan, prepWar, thread, links),
     // WarBattle01hr.send(prepWar.startTime, '23 hour', server, clan, prepWar, thread, links),
 
-    WarBattle00hr.send(prepWar.endTime, '1 hour', server, clan, prepWar, thread, links),
+    // WarBattle00hr.send(prepWar.endTime, '1 hour', server, clan, prepWar, thread, links),
   ]);
 });

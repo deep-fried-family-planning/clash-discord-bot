@@ -1,6 +1,6 @@
 import * as Document from '#src/data/arch/Document.ts';
-import * as ServerClan from '#src/data/pk-server/server-.clan.ts';
-import * as UserPlayer from '#src/data/pk-user/user-.player.ts';
+import * as ServerClan from '#src/data/pk-server/server-clan.ts';
+import * as UserPlayer from '#src/data/pk-user/user-player.ts';
 import * as UserLink from '#src/data/pk-user/user-link.ts';
 
 const IndexName = 'gsi2';

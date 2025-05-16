@@ -1,7 +1,7 @@
 import * as Document from '#src/data/arch/Document.ts';
 import * as Id from '#src/data/arch/Id.ts';
-import * as UserPlayer from '#src/data/pk-user/user-.player.ts';
-import * as User from '#src/data/pk-user/user-@.ts';
+import * as UserPlayer from '#src/data/pk-user/user-player.ts';
+import * as User from '#src/data/pk-user/user.ts';
 import * as UserLink from '#src/data/pk-user/user-link.ts';
 import * as S from 'effect/Schema';
 
