@@ -66,9 +66,8 @@ export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]
   });
   const scout = describeScout(graph);
 
-  const thread = yield* discord.startThreadInForumOrMediaChannel(server.forum!, {
+  const thread = yield* discord.createThread(server.forum!, {
     name   : `🛠️│${prepWar.clan.name}`,
-    // @ts-expect-error dfx types need to be fixed
     message: {
       content: `${prepWar.clan.name} vs. ${prepWar.opponent.name}`,
       embeds : [{
@@ -111,7 +110,7 @@ export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]
       }],
     },
     auto_archive_duration: 1440,
-  }).json;
+  });
 
   yield* saveItem(ServerClan, {
     ...clan,

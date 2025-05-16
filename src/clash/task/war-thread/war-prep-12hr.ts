@@ -1,5 +1,5 @@
 import {makeTask, TEMP_ROLES} from '#src/clash/task/war-thread/common.ts';
-import {dHdr1, dHdr3, dLinesS, dmRole, dSpoi, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dHdr1, dHdr3, dLinesS, dmRole, dSpoi, dtRel} from '#src/internal/discord-old/markdown.ts';
 import {DiscordREST} from 'dfx';
 import {Effect} from 'effect';
 

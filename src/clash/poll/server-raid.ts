@@ -2,7 +2,6 @@ import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
 import {Server} from '#src/database/arch/codec';
 import {saveItem} from '#src/database/DeepFryerDB.ts';
-import {encodeServerId} from '#src/internal/discord-old/dynamo/schema/common-encoding.ts';
 import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
@@ -23,29 +22,26 @@ export const serverRaid = (server: Server) => g(function* () {
     return;
   }
 
-  const server_id = yield* encodeServerId(server.pk);
-
   const group = yield* pipe(
-    Scheduler.getScheduleGroup({Name: server_id}),
+    Scheduler.getScheduleGroup({Name: server.pk}),
     E.catchTag('ResourceNotFoundException', () => E.succeed({Name: undefined})),
   );
 
   if (!group.Name) {
     yield* Scheduler.createScheduleGroup({
-      Name: server_id,
+      Name: server.pk,
     });
   }
 
-  const thread = yield* discord.startThreadInForumOrMediaChannel(server.forum!, {
+  const thread = yield* discord.createThread(server.forum!, {
     name   : `🏛️│Clan Capital`,
-    // @ts-expect-error dfx types need to be fixed
     message: {
       content: MD.content(
         MD.h1(`Raid Weekend`),
       ),
     },
     auto_archive_duration: 1440,
-  }).json;
+  });
 
   const now = new Date(Date.now());
 
@@ -57,7 +53,7 @@ export const serverRaid = (server: Server) => g(function* () {
   yield* saveItem(Server, updated);
 
   yield* SetInviteOnly.send({
-    group: yield* encodeServerId(server.pk),
+    group: server.pk,
     name : 'SetInviteOnly',
     start: now,
     after: '0 hour',
@@ -69,7 +65,7 @@ export const serverRaid = (server: Server) => g(function* () {
   const doneTime = Cron.next(raidWeekendDone);
 
   yield* SetOpen.send({
-    group: yield* encodeServerId(server.pk),
+    group: server.pk,
     name : 'SetOpen',
     start: doneTime,
     after: '0 hour',

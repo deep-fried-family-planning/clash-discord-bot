@@ -32,15 +32,17 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
     });
 
     yield* discordREST.executeWebhook(id, token, {
-      embeds: [{
-        color      : nColor(COLOR.SUCCESS),
-        title      : 'dev: connect',
-        description: MD.content(
-          MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
-          JSON.stringify(event.requestContext, null, 2),
-          JSON.stringify(event.body, null, 2),
-        ),
-      }],
+      payload: {
+        embeds: [{
+          color      : nColor(COLOR.SUCCESS),
+          title      : 'dev: connect',
+          description: MD.content(
+            MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
+            JSON.stringify(event.requestContext, null, 2),
+            JSON.stringify(event.body, null, 2),
+          ),
+        }],
+      },
     });
 
     return {statusCode: 200};
@@ -56,30 +58,34 @@ const dev_ws = (event: APIGatewayProxyWebsocketEventV2) => E.gen(function* () {
     });
 
     yield* discordREST.executeWebhook(id, token, {
-      embeds: [{
-        color      : nColor(COLOR.ERROR),
-        title      : 'dev: disconnect',
-        description: MD.content(
-          MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
-          JSON.stringify(event.requestContext, null, 2),
-          JSON.stringify(event.body, null, 2),
-        ),
-      }],
+      payload: {
+        embeds: [{
+          color      : nColor(COLOR.ERROR),
+          title      : 'dev: disconnect',
+          description: MD.content(
+            MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
+            JSON.stringify(event.requestContext, null, 2),
+            JSON.stringify(event.body, null, 2),
+          ),
+        }],
+      },
     });
 
     return {statusCode: 200};
   }
 
   yield* discordREST.executeWebhook(id, token, {
-    embeds: [{
-      color      : nColor(COLOR.INFO),
-      title      : 'dev: received',
-      description: MD.content(
-        MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
-        JSON.stringify(event.requestContext, null, 2),
-        JSON.stringify(event.body, null, 2),
-      ),
-    }],
+    payload: {
+      embeds: [{
+        color      : nColor(COLOR.INFO),
+        title      : 'dev: received',
+        description: MD.content(
+          MD.h1(aws.AWS_LAMBDA_FUNCTION_NAME),
+          JSON.stringify(event.requestContext, null, 2),
+          JSON.stringify(event.body, null, 2),
+        ),
+      }],
+    },
   });
 
   return {

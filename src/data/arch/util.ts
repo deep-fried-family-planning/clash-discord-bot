@@ -2,9 +2,9 @@ import type {Discord} from 'dfx';
 import * as Data from 'effect/Data';
 
 export type RegistryCaller = {
-  guild? : Discord.Guild;
-  user?  : Discord.User;
-  member?: Discord.GuildMember;
+  guild? : Discord.GuildResponse;
+  user?  : Discord.UserResponse;
+  member?: Discord.GuildMemberResponse;
 };
 
 export type RegistrySuccess = {

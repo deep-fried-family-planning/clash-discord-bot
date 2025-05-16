@@ -1,4 +1,4 @@
-import {ChannelId, ClanTag, EmbedId, MessageId, NowId, PlayerTag, RoleId, ServerId, ThreadId, UserId} from '#src/internal/discord-old/dynamo/schema/common.ts';
+import {ChannelId, ClanTag, EmbedId, MessageId, NowId, PlayerTag, RoleId, ServerId, ThreadId, UserId} from '#src/internal/discord-old/common.ts';
 import {S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 

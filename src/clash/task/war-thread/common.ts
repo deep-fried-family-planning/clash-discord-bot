@@ -1,13 +1,12 @@
-import  {Server, ServerClan} from '#src/database/arch/codec.ts';
-import {ThreadId} from '#src/internal/discord-old/dynamo/schema/common.ts';
+import {Server, ServerClan} from '#src/database/arch/codec.ts';
+import {ThreadId} from '#src/internal/discord-old/common.ts';
 import {getTaskWars} from '#src/internal/graph/fetch-war-entities.ts';
 import {DT, type E, g, pipe, S} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EAR} from '#src/internal/types.ts';
 import {TaskScheduler} from '#src/service/TaskScheduler.ts';
-import {Scheduler} from '@effect-aws/client-scheduler';
 import type {ClanWar} from 'clashofclans.js';
-import type {Channel} from 'dfx/types';
+import type {Discord} from 'dfx';
 import type {DurationInput} from 'effect/Duration';
 
 export const TEMP_ROLES = {
@@ -59,7 +58,7 @@ export const makeTask = <
       server: Server,
       clan: ServerClan,
       war: ClanWar,
-      thread: Channel,
+      thread: Discord.ThreadResponse,
       links: Record<str, str>,
     ) => g(function* () {
       const encoded = yield* encode({
