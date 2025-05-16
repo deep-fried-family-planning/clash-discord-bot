@@ -22,5 +22,6 @@ const Items = S.Union(
 
 export const scan = Document.ScanV2(Items, S.Any, (last) => ({
   IndexName        : NAME,
+  Limit            : 25,
   ExclusiveStartKey: last,
 }));
