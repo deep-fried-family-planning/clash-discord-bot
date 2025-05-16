@@ -3,7 +3,7 @@ import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/a
 import {PlayerVerification} from '#src/data/constants/index.ts';
 import * as ServerRegistry from '#src/data/registry/server.registry.ts';
 import * as GsiLink from '#src/data/items/gsi-link.ts';
-import * as UserPlayer from '#src/data/items/user-player.ts';
+import * as UserPlayer from '#src/data/partition-user/user-player.ts';
 import * as UserRegistry from '#src/data/registry/user.registry.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

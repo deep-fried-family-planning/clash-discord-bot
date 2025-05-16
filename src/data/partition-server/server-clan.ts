@@ -22,8 +22,8 @@ export const Key = Table.Key({
 });
 
 export const GsiLinkKey = Table.Key({
-  pkl: Id.ClanTag,
-  skl: Id.ServerId,
+  pk2: Id.ClanTag,
+  sk2: Id.ServerId,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
@@ -89,8 +89,8 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
-      pkl     : enc.sk,
-      skl     : enc.pk,
+      pk2     : enc.sk,
+      sk2     : enc.pk,
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
@@ -103,8 +103,8 @@ export const Versions = S.Union(
       description    : enc.desc,
       pk             : enc.pk,
       sk             : enc.sk,
-      pkl            : enc.sk,
-      skl            : enc.pk,
+      pk2            : enc.sk,
+      sk2            : enc.pk,
       thread_prep    : enc.thread_prep,
       prep_opponent  : enc.prep_opponent,
       thread_battle  : enc.thread_battle,

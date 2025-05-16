@@ -21,8 +21,8 @@ export const Key = Table.Key({
 });
 
 export const GsiLinkKey = Table.Key({
-  pkl: Id.PlayerTag,
-  skl: Id.UserId,
+  pk2: Id.PlayerTag,
+  sk2: Id.UserId,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
@@ -68,8 +68,8 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
-      pkl     : enc.sk,
-      skl     : enc.pk,
+      pk2     : enc.sk,
+      sk2     : enc.pk,
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
@@ -81,8 +81,8 @@ export const Versions = S.Union(
       upgraded    : true,
       pk          : enc.pk,
       sk          : enc.sk,
-      pkl         : enc.sk,
-      skl         : enc.pk,
+      pk2         : enc.sk,
+      sk2         : enc.pk,
       name        : '',
       account_type: enc.account_type,
       created     : DateTime.unsafeMake(enc.created),

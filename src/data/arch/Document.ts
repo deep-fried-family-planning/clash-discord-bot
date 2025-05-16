@@ -1,4 +1,4 @@
-import {DataClient} from '#src/data/service/DataClient.ts';
+import {DataClient} from '#src/service/DataClient.ts';
 import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -14,6 +14,8 @@ const noUndefinedAtEncode = <I>(encoded: I) => {
   }
   return acc as I;
 };
+
+export const Create = ()
 
 export const PutBaseInput = S.Struct({
   TableName: S.optional(S.String),

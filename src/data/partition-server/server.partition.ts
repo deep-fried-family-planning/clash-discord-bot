@@ -1,13 +1,14 @@
 import * as Document from '#src/data/arch/Document.ts';
 import * as IdSchema from '#src/data/arch/Id.ts';
 import * as Table from '#src/data/arch/Table.ts';
-import * as ServerClan from '#src/data/items/server-clan.ts';
-import * as ServerInfo from '#src/data/items/server-info.ts';
-import * as Server from '#src/data/items/server.ts';
-import * as UserServerLink from '#src/data/items/user-link.ts';
+import * as ServerClan from '#src/data/partition-server/server-clan.ts';
+import * as ServerInfo from '#src/data/partition-server/server-info.ts';
+import * as Server from '#src/data/partition-server/server.ts';
+import * as UserServerLink from '#src/data/partition-user/user-link.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as Record from 'effect/Record';
 import * as S from 'effect/Schema';
+import * as E from 'effect/Effect';
 
 export const Key = Table.Key({
   pk: IdSchema.ServerId,
@@ -25,10 +26,7 @@ export const scan = Document.QueryUpgrade(
     S.Struct({
       KeyConditionExpression: Key,
     }),
-    S.Struct({
-      KeyConditionExpression   : S.String,
-      ExpressionAttributeValues: S.Any,
-    }),
+    Document.QueryBaseInput,
     (input) => ({
       KeyConditionExpression   : 'pk = :pk',
       ExpressionAttributeValues: Record.mapKeys(input.KeyConditionExpression, (k) => `:${k}`),
@@ -37,4 +35,10 @@ export const scan = Document.QueryUpgrade(
   Items,
 );
 
-export type Type = typeof Items.Type;
+export const scanUp = E.fn('ServerPartition.scanUp')(function* (serverId: string) {
+
+});
+
+export const scanDown = E.fn('ServerPartition.scanDown')(function* (serverId: string) {
+
+});

@@ -1,7 +1,7 @@
 import * as Document from '#src/data/arch/Document.ts';
 import * as Gsi from '#src/data/constants/gsi.ts';
-import * as Server from '#src/data/items/server.ts';
-import * as User from '#src/data/items/user/u-user-now.ts';
+import * as Server from '#src/data/partition-server/server.ts';
+import * as User from '#src/data/partition-user/user.ts';
 import {encodeOnly} from '#src/util/util-schema.ts';
 import * as Chunk from 'effect/Chunk';
 import * as E from 'effect/Effect';
@@ -17,6 +17,8 @@ export const Items = S.Array(
   ),
 );
 
+export const scanStream = () => {};
+
 export const scan = Document.Query(
   encodeOnly(
     S.Struct({}),
@@ -27,5 +29,3 @@ export const scan = Document.Query(
   ),
   Items,
 );
-
-export type Type = typeof Items.Type;

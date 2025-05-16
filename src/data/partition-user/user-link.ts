@@ -1,7 +1,7 @@
 import * as Table from '#src/data/arch/Table.ts';
 import * as Id from '#src/data/arch/Id.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
-import {Latest} from '#src/data/items/user-player.ts';
+import {Latest} from '#src/data/partition-user/user-player.ts';
 import * as S from 'effect/Schema';
 import * as Document from '#src/data/arch/Document.ts';
 
@@ -14,8 +14,8 @@ export const Key = Table.Key({
 });
 
 export const GsiLinkKey = Table.Key({
-  pkl: Id.ServerId,
-  skl: Id.UserId,
+  pk2: Id.ServerId,
+  sk2: Id.UserId,
 });
 
 export const Item = Table.Item(TAG, LATEST, {

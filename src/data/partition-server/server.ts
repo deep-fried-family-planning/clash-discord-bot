@@ -15,8 +15,8 @@ export const Key = Table.Key({
 });
 
 export const GsiPollKey = Table.Key({
-  pkp: Id.ServerId,
-  skp: Id.PartitionRoot,
+  pk1: Id.ServerId,
+  sk1: Id.PartitionRoot,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
@@ -77,8 +77,8 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
-      pkp     : fromA.pk,
-      skp     : '.',
+      pk1     : fromA.pk,
+      sk1     : '@',
     } as const;
   }),
   decodeOnly(Legacy, S.typeSchema(Latest), (fromA) => {
@@ -89,8 +89,8 @@ export const Versions = S.Union(
       upgraded: true,
       pk      : fromA.pk,
       sk      : fromA.sk,
-      pkp     : fromA.pk,
-      skp     : '.',
+      pk1     : fromA.pk,
+      sk1     : '@',
       created : DateTime.unsafeMake(fromA.created),
       updated : DateTime.unsafeMake(fromA.updated),
       forum   : fromA.forum,

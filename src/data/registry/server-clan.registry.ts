@@ -2,7 +2,7 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
 import * as GsiLink from '#src/data/items/gsi-link.ts';
-import * as ServerClan from '#src/data/items/server-clan.ts';
+import * as ServerClan from '#src/data/partition-server/server-clan.ts';
 import * as ServerRegistry from '#src/data/registry/server.registry.ts';
 import * as UserPlayer from '#src/data/items/user/u-user-p-player.ts';
 import * as UserPartition from '#src/data/items/user/u-user.partition.ts';

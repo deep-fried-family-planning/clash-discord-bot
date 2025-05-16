@@ -1,5 +1,5 @@
 import {RegistryAdminError, RegistryUserError} from '#src/data/arch/util.ts';
-import * as Server from '#src/data/items/server.ts';
+import * as Server from '#src/data/partition-server/server.ts';
 import {pipe} from 'effect/Function';
 import * as E from 'effect/Effect';
 

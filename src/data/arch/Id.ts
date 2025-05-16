@@ -20,7 +20,7 @@ export const AppendedId = (end: string) =>
     },
   );
 
-export const PartitionRoot = S.tag('.');
+export const PartitionRoot = S.tag('@');
 
 export const ClanTag = AppendedId('.c');
 export const PlayerTag = AppendedId('.p');

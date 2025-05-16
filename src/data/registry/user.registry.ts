@@ -1,5 +1,5 @@
 import {RegistryAdminError, RegistryFailure} from '#src/data/arch/util.ts';
-import * as User from '#src/data/items/user.ts';
+import * as User from '#src/data/partition-user/user.ts';
 import {pipe} from 'effect/Function';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
