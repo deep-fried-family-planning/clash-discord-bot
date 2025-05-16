@@ -3,7 +3,7 @@ import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
 import * as GSI2 from '#src/data/gsi2.ts';
 import * as ServerClan from '#src/data/pk-server/server-#clan.ts';
-import * as ServerRegistry from '#src/data/registry/server.registry.ts';
+import * as ServerRegistry from '#src/data-registry/server.registry.ts';
 import * as UserPlayer from '#src/data/pk-user/user-#player.ts';
 import * as UserPartition from '#src/data/pk-user/user.partition.ts';
 import * as User from '#src/data/pk-user/user-@.ts';
