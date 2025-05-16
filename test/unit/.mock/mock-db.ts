@@ -1,4 +1,4 @@
-import {DataClient} from '#src/service/DataClient.ts';
+import {DataClient} from '#src/data/service/DataClient.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, ScanCommandInput} from '@aws-sdk/lib-dynamodb';
 import {vi} from '@effect/vitest';
 import * as E from 'effect/Effect';

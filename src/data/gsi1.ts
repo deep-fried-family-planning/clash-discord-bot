@@ -1,6 +1,6 @@
 import * as Document from '#src/data/arch/Document.ts';
-import * as Server from '#src/data/pk-server/server-@.ts';
-import * as User from '#src/data/pk-user/user-@.ts';
+import * as Server from '#src/data/pk-server/server.ts';
+import * as User from '#src/data/pk-user/user.ts';
 import * as S from 'effect/Schema';
 
 const NAME = 'gsi1';

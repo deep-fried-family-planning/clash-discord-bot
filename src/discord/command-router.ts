@@ -71,7 +71,7 @@ export const commandRouter = (ix: IxD) => E.gen(function* () {
   const discord = yield* DiscordREST;
   const root = (ix.data as IxDs<any>).name as keyof typeof IXS_LOOKUP;
 
-  const message = yield* IXS_LOOKUP[root](ix, nameOptions(ix));
+  const message = yield* IXS_LOOKUP[root](ix, nameOptions(ix)) as E.Effect<any>;
 
   yield* discord.updateOriginalWebhookMessage(ix.application_id, ix.token, {
     payload: message as never,

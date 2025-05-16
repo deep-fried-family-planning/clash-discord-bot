@@ -1,5 +1,5 @@
 import {RegistryAdminError} from '#src/data/arch/util.ts';
-import * as User from '#src/data/pk-user/user-@.ts';
+import * as User from '#src/data/pk-user/user.ts';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -24,7 +24,7 @@ export const getAssert = (user_id: string) =>
 
 type RegisterParams = {
   caller_id : string;
-  target_id?: string;
+  target_id?: string | undefined;
   payload: {
     timezone: DateTime.TimeZone;
   };
