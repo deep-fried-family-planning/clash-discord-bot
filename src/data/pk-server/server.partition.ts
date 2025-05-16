@@ -1,6 +1,6 @@
 import * as Document from '#src/data/arch/Document.ts';
 import * as Id from '#src/data/arch/Id.ts';
-import * as ServerClan from '#src/data/pk-server/server-#clan.ts';
+import * as ServerClan from '#src/data/pk-server/server-.clan.ts';
 import * as Server from '#src/data/pk-server/server-@.ts';
 import * as ServerInfo from '#src/data/pk-server/server-info.ts';
 import * as S from 'effect/Schema';

@@ -5,7 +5,7 @@ export type GSI2 = typeof GSI2;
 
 export * as ServerPartition from '#src/data/pk-server/server.partition.ts';
 export type ServerPartition = typeof ServerPartition;
-export * as ServerClan from '#src/data/pk-server/server-#clan.ts';
+export * as ServerClan from '#src/data/pk-server/server-.clan.ts';
 export type ServerClan = typeof ServerClan.Latest.Type;
 export * as Server from '#src/data/pk-server/server-@.ts';
 export type Server = typeof Server.Latest.Type;
@@ -14,7 +14,7 @@ export type ServerInfo = typeof ServerInfo.Latest.Type;
 
 export * as UserPartition from '#src/data/pk-user/user.partition.ts';
 export type UserPartition = typeof UserPartition;
-export * as UserPlayer from '#src/data/pk-user/user-#player.ts';
+export * as UserPlayer from '#src/data/pk-user/user-.player.ts';
 export type UserPlayer = typeof UserPlayer.Latest.Type;
 export * as User from '#src/data/pk-user/user-@.ts';
 export type User = typeof User.Latest.Type;

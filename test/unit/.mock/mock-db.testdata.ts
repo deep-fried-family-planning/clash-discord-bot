@@ -94,8 +94,8 @@ export const TestDataServerClanElderVerified = {
   description: 'ClanDescription',
   name       : 'ClanName',
   pk         : 'guild2',
-  sk         : '#clan',
-  pk2        : '#clan',
+  sk         : '#c#clan',
+  pk2        : '#clan#c',
   sk2        : 'guild2',
   select     : {
     label: 'ClanName',
@@ -114,13 +114,13 @@ export const TestDataServerClanLeaderVerified = {
   description : 'ClanDescription',
   name        : 'ClanName',
   pk          : 'guild2',
-  sk          : '#clan',
-  pk2         : '#clan',
+  sk          : '#c#clan',
+  pk2         : '#clan#c',
   sk2         : 'guild2',
   updated     : '1970-01-01T00:00:00.000Z',
   verification: 3,
   select      : {
     label: 'ClanName',
-    value: 'c-clan',
+    value: '#clan',
   },
 } as const satisfies ServerClan.Encoded;

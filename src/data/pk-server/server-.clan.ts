@@ -1,4 +1,5 @@
 import * as Document from '#src/data/arch/Document.ts';
+import {ClanTagSk} from '#src/data/arch/Id.ts';
 import * as Id from '#src/data/arch/Id.ts';
 import * as Table from '#src/data/arch/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';

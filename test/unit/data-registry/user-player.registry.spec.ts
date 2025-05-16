@@ -15,7 +15,7 @@ describe('given caller user is not registered', () => {
     const actual = yield* pipe(
       UserPlayerRegistry.register({
         caller_id : 'user',
-        player_tag: 'player',
+        player_tag: '#player',
         api_token : 'api_token',
         payload   : {
           account_type: 'main',
@@ -54,7 +54,7 @@ describe('given new user player registration', () => {
     const actual = yield* pipe(
       UserPlayerRegistry.register({
         caller_id : 'user',
-        player_tag: 'player',
+        player_tag: '#player',
         api_token : 'api_token',
         payload   : {
           account_type: 'main',
@@ -97,7 +97,7 @@ describe('given new user player registration', () => {
       const actual = yield* pipe(
         UserPlayerRegistry.register({
           caller_id : 'user',
-          player_tag: 'player',
+          player_tag: '#player',
           api_token : 'api_token',
           payload   : {
             account_type: 'main',
@@ -139,7 +139,7 @@ describe('given user player is already registered', () => {
     const actual = yield* pipe(
       UserPlayerRegistry.register({
         caller_id : 'user',
-        player_tag: 'player',
+        player_tag: '#player',
         api_token : 'api_token',
         payload   : {
           account_type: 'main',
@@ -189,7 +189,7 @@ describe('given caller is attempting admin registration', () => {
       UserPlayerRegistry.register({
         guild_id    : 'guild',
         caller_id   : 'user',
-        player_tag  : 'player',
+        player_tag  : '#player',
         caller_roles: ['admin'],
         target_id   : 'user2',
         payload     : {
@@ -239,7 +239,7 @@ describe('given caller is attempting admin registration', () => {
         UserPlayerRegistry.register({
           guild_id    : 'guild',
           caller_id   : 'user',
-          player_tag  : 'player',
+          player_tag  : '#player',
           caller_roles: ['admin'],
           target_id   : 'user2',
           payload     : {
@@ -276,7 +276,7 @@ describe('given caller is attempting admin registration', () => {
         UserPlayerRegistry.register({
           guild_id    : 'guild',
           caller_id   : 'user',
-          player_tag  : 'player',
+          player_tag  : '#player',
           caller_roles: ['admin'],
           target_id   : 'user2',
           payload     : {
@@ -309,7 +309,7 @@ describe('given caller is attempting admin registration', () => {
         UserPlayerRegistry.register({
           guild_id    : 'guild',
           caller_id   : 'user',
-          player_tag  : 'player',
+          player_tag  : '#player',
           caller_roles: [],
           target_id   : 'user2',
           payload     : {

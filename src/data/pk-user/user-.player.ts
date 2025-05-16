@@ -21,14 +21,11 @@ export const Key = Table.Key({
   sk: Id.PlayerTag,
 });
 
-export const GSI2Key = Table.Key({
-  pk2: Id.PlayerTag,
-  sk2: Id.UserId,
-});
-
 export const Latest = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GSI2Key.fields,
+  pk          : Id.UserId,
+  sk          : Id.PlayerTag,
+  pk2         : Id.PlayerTag,
+  sk2         : Id.UserId,
   name        : S.String,
   verification: PlayerVerification,
   account_type: S.String,

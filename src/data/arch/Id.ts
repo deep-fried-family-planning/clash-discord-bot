@@ -46,11 +46,11 @@ export const ClashTag = S.String.pipe(S.startsWith('#'));
 
 export const ClanTag = ClashTag;
 export const ClanTagPk = AppendedId('#c');
-export const ClanTagSk = PrependedId('c#');
+export const ClanTagSk = PrependedId('#c');
 
 export const PlayerTag = ClashTag;
 export const PlayerTagPk = AppendedId('#p');
-export const PlayerTagSk = PrependedId('p#');
+export const PlayerTagSk = PrependedId('#p');
 
 export const ServerId = S.String;
 export const ServerIdPk = ServerId;
