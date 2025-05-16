@@ -20,13 +20,47 @@ export const AppendedId = (end: string) =>
     },
   );
 
+export const Prepended = <A, R>(start: string, id: S.Schema<A, string, R>) =>
+  S.transform(
+    S.String.pipe(S.startsWith(start)),
+    id,
+    {
+      decode: (s) => s.slice(start.length),
+      encode: (s) => `${start}${s}`,
+    },
+  );
+
+export const Appended = <A, R>(id: S.Schema<A, string, R>, end: string) =>
+  S.transform(
+    S.String.pipe(S.endsWith(end)),
+    id,
+    {
+      decode: (s) => s.slice(0, -end.length),
+      encode: (s) => `${s}${end}`,
+    },
+  );
+
 export const PartitionRoot = S.tag('@');
 
-export const ClanTag = AppendedId('.c');
-export const PlayerTag = AppendedId('.p');
+export const ClashTag = S.String.pipe(S.startsWith('#'));
+
+export const ClanTag = ClashTag;
+export const ClanTagPk = AppendedId('#c');
+export const ClanTagSk = PrependedId('c#');
+
+export const PlayerTag = ClashTag;
+export const PlayerTagPk = AppendedId('#p');
+export const PlayerTagSk = PrependedId('p#');
+
 export const ServerId = S.String;
-export const ServerInfoId = AppendedId('.i');
+export const ServerIdPk = ServerId;
+export const ServerIdSk = PrependedId('s#');
+
 export const UserId = S.String;
+export const UserIdPk = UserId;
+export const UserIdSk = PrependedId('u#');
+
+
 export const ThreadId = S.String;
 export const RoleId = S.String;
 export const MessageId = S.String;

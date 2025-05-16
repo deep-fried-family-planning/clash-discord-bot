@@ -39,6 +39,15 @@ export const Upgraded = S.transform(
   },
 ).pipe(S.optional);
 
+export const Migrated = S.transform(
+  S.UndefinedOr(S.Boolean),
+  S.UndefinedOr(S.Boolean),
+  {
+    decode: (enc) => enc,
+    encode: () => undefined,
+  },
+).pipe(S.optional);
+
 const generateUUIDv7 = makeUuid7.pipe(
   E.provide(Uuid7State.Default),
 );
@@ -53,11 +62,8 @@ export const UUIDv7 = S.transformOrFail(
 ).pipe(S.optionalWith({default: () => ''}));
 
 export const Struct = <F extends S.Struct.Fields>(fields: F) => {
-  const item = {
-    ...fields,
-  };
-  failReservedDEV(item);
-  return S.Struct(item);
+  failReservedDEV(fields);
+  return S.Struct(fields);
 };
 
 export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, version: number, fields: F) => {
@@ -69,6 +75,7 @@ export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, versio
     created : S.optionalWith(Created, {default: () => undefined}),
     updated : S.optionalWith(Updated, {default: () => undefined}),
     upgraded: Upgraded,
+    migrated: Migrated,
   };
   failReservedDEV(item);
   return S.Struct(item);

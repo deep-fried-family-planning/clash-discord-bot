@@ -1,9 +1,10 @@
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.USER_PLAYER;
 export const LATEST = 1;
@@ -20,14 +21,14 @@ export const Key = Table.Key({
   sk: Id.PlayerTag,
 });
 
-export const GsiLinkKey = Table.Key({
+export const GSI2Key = Table.Key({
   pk2: Id.PlayerTag,
   sk2: Id.UserId,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  ...GsiLinkKey.fields,
+  ...GSI2Key.fields,
   name        : S.String,
   verification: PlayerVerification,
   account_type: S.String,

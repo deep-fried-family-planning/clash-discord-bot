@@ -1,12 +1,12 @@
 import {RegistryAdminError, RegistryUserError} from '#src/data/arch/util.ts';
-import * as Server from '#src/data/partition-server/server.ts';
+import * as Server from '#src/data/pk-server/server-@.ts';
 import {pipe} from 'effect/Function';
 import * as E from 'effect/Effect';
 
 export const get = (guild_id: string) =>
   pipe(
     Server.get({
-      Key           : {pk: guild_id, sk: 'now'},
+      Key           : {pk: guild_id, sk: '@'},
       ConsistentRead: true,
     }),
     E.map((res) => res.Item),
@@ -15,7 +15,7 @@ export const get = (guild_id: string) =>
 export const getAssert = (guild_id: string) =>
   pipe(
     Server.get({
-      Key           : {pk: guild_id, sk: 'now'},
+      Key           : {pk: guild_id, sk: '@'},
       ConsistentRead: true,
     }),
     E.flatMap((res) => E.fromNullable(res.Item)),
@@ -43,8 +43,8 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
     yield* Server.put({
       Item: Server.make({
         pk : params.guild_id,
-        sk : 'now',
-        pkp: params.guild_id,
+        sk : '@',
+        pk1: params.guild_id,
         ...params.payload,
       }),
     });
@@ -64,7 +64,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
     Item: Server.make({
       ...server,
       pk: params.guild_id,
-      sk: 'now',
+      sk: '@',
       ...params.payload,
     }),
   });

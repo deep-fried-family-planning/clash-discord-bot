@@ -2,8 +2,8 @@ import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect, RegistryUserError} from '#src/data/arch/util.ts';
 import {PlayerVerification} from '#src/data/constants/index.ts';
 import * as ServerRegistry from '#src/data/registry/server.registry.ts';
-import * as GsiLink from '#src/data/items/gsi-link.ts';
-import * as UserPlayer from '#src/data/partition-user/user-player.ts';
+import * as GSI2 from '#src/data/gsi2.ts';
+import * as UserPlayer from '#src/data/pk-user/user-#player.ts';
 import * as UserRegistry from '#src/data/registry/user.registry.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -62,11 +62,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       });
     }
 
-    const gsi = yield* GsiLink.queryUserPlayer({
-      KeyConditionExpression: {
-        pkl: p.player_tag,
-      },
-    });
+    const gsi = yield* GSI2.queryPlayer(p.player_tag);
 
     if (gsi.Items.length > 1) {
       return yield* new RegistryDefect({});
@@ -94,8 +90,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         Item: UserPlayer.make({
           pk          : p.target_id,
           sk          : p.player_tag,
-          pkl         : p.player_tag,
-          skl         : p.target_id,
+          pk2         : p.player_tag,
+          sk2         : p.target_id,
           name        : player.name,
           ...p.payload,
           verification: PlayerVerification.admin,
@@ -111,8 +107,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       Item: UserPlayer.make({
         pk          : p.target_id,
         sk          : p.player_tag,
-        pkl         : p.player_tag,
-        skl         : p.target_id,
+        pk2         : p.player_tag,
+        sk2         : p.target_id,
         name        : player.name,
         ...p.payload,
         verification: PlayerVerification.admin,
@@ -132,9 +128,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     });
   }
 
-  const gsi = yield* GsiLink.queryUserPlayer({
-    KeyConditionExpression: {pkl: p.player_tag},
-  });
+  const gsi = yield* GSI2.queryPlayer(p.player_tag);
 
   if (gsi.Items.length > 1) {
     return yield* new RegistryDefect({});
@@ -158,8 +152,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
           ...current,
           pk          : p.caller_id,
           sk          : p.player_tag,
-          pkl         : p.player_tag,
-          skl         : p.caller_id,
+          pk2         : p.player_tag,
+          sk2         : p.caller_id,
           name        : player.name,
           ...p.payload,
           verification: PlayerVerification.token,
@@ -189,8 +183,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     Item: UserPlayer.make({
       pk          : p.caller_id,
       sk          : p.player_tag,
-      pkl         : p.player_tag,
-      skl         : p.caller_id,
+      pk2         : p.player_tag,
+      sk2         : p.caller_id,
       name        : player.name,
       ...p.payload,
       verification: PlayerVerification.token,

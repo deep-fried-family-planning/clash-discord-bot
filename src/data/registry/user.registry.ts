@@ -1,13 +1,13 @@
-import {RegistryAdminError, RegistryFailure} from '#src/data/arch/util.ts';
-import * as User from '#src/data/partition-user/user.ts';
-import {pipe} from 'effect/Function';
+import {RegistryAdminError} from '#src/data/arch/util.ts';
+import * as User from '#src/data/pk-user/user-@.ts';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const get = (user_id: string) =>
   pipe(
     User.get({
-      Key           : {pk: user_id, sk: 'now'},
+      Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
     E.map((res) => res.Item),
@@ -16,7 +16,7 @@ export const get = (user_id: string) =>
 export const getAssert = (user_id: string) =>
   pipe(
     User.get({
-      Key           : {pk: user_id, sk: 'now'},
+      Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
     E.flatMap((res) => E.fromNullable(res.Item)),
@@ -57,8 +57,8 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
     yield* User.put({
       Item: User.make({
         pk     : params.target_id,
-        sk     : 'now',
-        pkp    : params.target_id,
+        sk     : '@',
+        pk1    : params.target_id,
         servers: new Set([]),
         ...params.payload,
       }),
@@ -73,8 +73,8 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
     yield* User.put({
       Item: User.make({
         pk     : params.caller_id,
-        sk     : 'now',
-        pkp    : params.caller_id,
+        sk     : '@',
+        pk1    : params.caller_id,
         servers: new Set([]),
         ...params.payload,
       }),

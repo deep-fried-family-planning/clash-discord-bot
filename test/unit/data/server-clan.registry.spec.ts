@@ -1,4 +1,4 @@
-import {ServerClanRegistry} from '#src/data/items/index.ts';
+import * as ServerClanRegistry from '#src/data/registry/server-clan.registry.ts';
 import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';

@@ -1,12 +1,12 @@
 import {ClashOfClans} from '#src/clash/clashofclans.ts';
 import {RegistryAdminError, RegistryDefect} from '#src/data/arch/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
-import * as GsiLink from '#src/data/items/gsi-link.ts';
-import * as ServerClan from '#src/data/partition-server/server-clan.ts';
+import * as GSI2 from '#src/data/gsi2.ts';
+import * as ServerClan from '#src/data/pk-server/server-#clan.ts';
 import * as ServerRegistry from '#src/data/registry/server.registry.ts';
-import * as UserPlayer from '#src/data/items/user/u-user-p-player.ts';
-import * as UserPartition from '#src/data/items/user/u-user.partition.ts';
-import * as User from '#src/data/items/user/u-user-now.ts';
+import * as UserPlayer from '#src/data/pk-user/user-#player.ts';
+import * as UserPartition from '#src/data/pk-user/user.partition.ts';
+import * as User from '#src/data/pk-user/user-@.ts';
 import * as Array from 'effect/Array';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -32,12 +32,9 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     });
   }
 
-  const userPartition = yield* UserPartition.getAll({
-    KeyConditionExpression: {pk: p.caller_id},
-    ConsistentRead        : true,
-  });
+  const userPartition = yield* UserPartition.scanUp(p.caller_id);
 
-  const user = userPartition.find((u) => User.is(u));
+  const user = userPartition.Items.find((u) => User.is(u));
 
   if (!user) {
     return yield* new RegistryAdminError({
@@ -46,7 +43,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
   }
 
   const userPlayers = pipe(
-    userPartition,
+    userPartition.Items,
     Array.filter((u) => UserPlayer.is(u)),
     Record.fromIterableWith((up) => [up.sk, up]),
   );
@@ -57,9 +54,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     });
   }
 
-  const gsi = yield* GsiLink.queryServerClan({
-    KeyConditionExpression: {pkl: p.clan_tag},
-  });
+  const gsi = yield* GSI2.queryClan(p.clan_tag);
 
   if (gsi.Items.length > 1) {
     return yield* new RegistryDefect({});
@@ -106,8 +101,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
         Item: ServerClan.make({
           pk         : p.guild_id,
           sk         : p.clan_tag,
-          pkl        : p.clan_tag,
-          skl        : p.guild_id,
+          pk2        : p.clan_tag,
+          sk2        : p.guild_id,
           name       : clan.name,
           description: clan.description,
           select     : {
@@ -140,8 +135,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     Item: ServerClan.make({
       pk         : p.guild_id,
       sk         : p.clan_tag,
-      pkl        : p.clan_tag,
-      skl        : p.guild_id,
+      pk2        : p.clan_tag,
+      sk2        : p.guild_id,
       name       : clan.name,
       description: clan.description,
       select     : {

@@ -1,27 +1,27 @@
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import {Struct} from '#src/data/arch/Table.ts';
-import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.SERVER;
 export const LATEST = 1;
 
 export const Key = Table.Key({
   pk: Id.ServerId,
-  sk: Id.NowSk,
+  sk: Id.PartitionRoot,
 });
 
-export const GsiPollKey = Table.Key({
+export const GSI1Key = Table.Key({
   pk1: Id.ServerId,
   sk1: Id.PartitionRoot,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
   ...Key.fields,
-  ...GsiPollKey.fields,
+  ...GSI1Key.fields,
   forum: S.optional(Id.ChannelId),
   raids: S.optional(Id.ThreadId),
   admin: Id.RoleId,
@@ -29,7 +29,7 @@ export const Latest = Table.Item(TAG, LATEST, {
 
 const V0 = Table.Struct({
   ...Key.fields,
-  ...GsiPollKey.fields,
+  ...GSI1Key.fields,
   _tag    : S.tag(DataTag.SERVER),
   version : S.tag(0),
   forum   : S.optional(Id.ChannelId),
@@ -88,7 +88,7 @@ export const Versions = S.Union(
       _v7     : '',
       upgraded: true,
       pk      : fromA.pk,
-      sk      : fromA.sk,
+      sk      : '@',
       pk1     : fromA.pk,
       sk1     : '@',
       created : DateTime.unsafeMake(fromA.created),

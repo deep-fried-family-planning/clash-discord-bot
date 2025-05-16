@@ -1,26 +1,24 @@
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
-import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.USER;
 export const LATEST = 1;
 
 export const Key = Table.Key({
   pk: Id.UserId,
-  sk: Id.NowTag,
-});
-
-export const GsiPollKey = Table.Key({
-  pk1: Id.UserId,
-  sk1: Id.PartitionRoot,
+  sk: Id.PartitionRoot,
 });
 
 export const Latest = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GsiPollKey.fields,
+  pk      : Id.UserId,
+  sk      : Id.PartitionRoot,
+  pk1     : Id.UserId,
+  sk1     : Id.PartitionRoot,
   timezone: S.TimeZone,
   servers : S.Set(Id.ServerId),
 });
@@ -69,7 +67,7 @@ export const Versions = S.Union(
       _v7     : '',
       upgraded: true,
       pk      : fromA.pk,
-      sk      : fromA.sk,
+      sk      : '@',
       pk1     : fromA.pk,
       sk1     : '@',
       created : DateTime.unsafeMake(fromA.created),

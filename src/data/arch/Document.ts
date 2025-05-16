@@ -15,8 +15,6 @@ const noUndefinedAtEncode = <I>(encoded: I) => {
   return acc as I;
 };
 
-export const Create = ()
-
 export const PutBaseInput = S.Struct({
   TableName: S.optional(S.String),
   Item     : S.Any,
@@ -197,6 +195,48 @@ export const Query = <
         return decodeOutput(res.Items as any).pipe(E.map((items) => ({...res, Items: items} as Omit<QueryCommandOutput, 'Items'> & {Items: A2})));
       }),
     );
+};
+
+export const QueryV2 = <A, I, R, A2, R2>(
+  o: S.Schema<A2, any, R2>,
+  i: S.Schema<A, I, R>,
+  c: (e: I) => Partial<QueryCommandInput>,
+) => {
+  const encode = S.encode(i);
+  const decode = S.decode(S.Array(o));
+
+  return (input: A) => encode(input).pipe(
+    E.flatMap((query) => DataClient.query(c(query))),
+    E.flatMap((res) =>
+      decode(res.Items ?? []).pipe(
+        E.map((Items) => ({
+          ...res,
+          Items,
+        })),
+      ),
+    ),
+  );
+};
+
+export const ScanV2 = <A, I, R, A2, R2>(
+  o: S.Schema<A2, any, R2>,
+  i: S.Schema<A, I, R>,
+  c: (e: I) => Partial<ScanCommandInput>,
+) => {
+  const encode = S.encode(i);
+  const decode = S.decode(S.Array(o));
+
+  return (input: A) => encode(input).pipe(
+    E.flatMap((scan) => DataClient.scan(c(scan))),
+    E.flatMap((res) =>
+      decode(res.Items ?? []).pipe(
+        E.map((Items) => ({
+          ...res,
+          Items,
+        })),
+      ),
+    ),
+  );
 };
 
 export const QueryUpgrade = <

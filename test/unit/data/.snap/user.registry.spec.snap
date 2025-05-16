@@ -4,8 +4,8 @@ exports[`when admin registering a current user 1`] = `[RegistryAdminError: User 
 
 exports[`when admin registering a current user 2`] = `
 {
-  "pk": "u-user1",
-  "sk": "now",
+  "pk": "user1",
+  "sk": "@",
 }
 `;
 
@@ -17,8 +17,8 @@ exports[`when admin registering a new user 1`] = `
 
 exports[`when admin registering a new user 2`] = `
 {
-  "pk": "u-user1",
-  "sk": "now",
+  "pk": "user1",
+  "sk": "@",
 }
 `;
 
@@ -28,11 +28,11 @@ exports[`when admin registering a new user 3`] = `
   "_v": 1,
   "_v7": "00000000-0000-7000-8000-000000000000",
   "created": "1970-01-01T00:00:00.000Z",
-  "pk": "u-user2",
-  "pkp": "u-user2",
+  "pk": "user2",
+  "pk1": "user2",
   "servers": [],
-  "sk": "now",
-  "skp": ".",
+  "sk": "@",
+  "sk1": "@",
   "timezone": "America/Chicago",
   "updated": "1970-01-01T00:00:00.000Z",
 }
@@ -46,8 +46,8 @@ exports[`when re-registering a user 1`] = `
 
 exports[`when re-registering a user 2`] = `
 {
-  "pk": "u-user",
-  "sk": "now",
+  "pk": "user",
+  "sk": "@",
 }
 `;
 
@@ -59,8 +59,8 @@ exports[`when registering a new user 1`] = `
 
 exports[`when registering a new user 2`] = `
 {
-  "pk": "u-user",
-  "sk": "now",
+  "pk": "user",
+  "sk": "@",
 }
 `;
 
@@ -70,11 +70,11 @@ exports[`when registering a new user 3`] = `
   "_v": 1,
   "_v7": "00000000-0000-7000-8000-000000000000",
   "created": "1970-01-01T00:00:00.000Z",
-  "pk": "u-user",
-  "pkp": "u-user",
+  "pk": "user",
+  "pk1": "user",
   "servers": [],
-  "sk": "now",
-  "skp": ".",
+  "sk": "@",
+  "sk1": "@",
   "timezone": "America/Chicago",
   "updated": "1970-01-01T00:00:00.000Z",
 }

@@ -1,9 +1,10 @@
-import {Document, Id} from '#src/data/arch/index.ts';
-import {DataTag} from '#src/data/constants/index.ts';
+import * as Document from '#src/data/arch/Document.ts';
+import * as Id from '#src/data/arch/Id.ts';
+import * as Table from '#src/data/arch/Table.ts';
+import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
-import * as Table from '#src/data/arch/Table.ts';
 
 export const TAG = DataTag.SERVER_CLAN;
 export const LATEST = 1;
@@ -21,14 +22,11 @@ export const Key = Table.Key({
   sk: Id.ClanTag,
 });
 
-export const GsiLinkKey = Table.Key({
-  pk2: Id.ClanTag,
-  sk2: Id.ServerId,
-});
-
 export const Latest = Table.Item(TAG, LATEST, {
-  ...Key.fields,
-  ...GsiLinkKey.fields,
+  pk             : Id.ServerId,
+  sk             : Id.ClanTag,
+  pk2            : Id.ClanTagPk,
+  sk2            : Id.ServerId,
   alias          : S.optional(S.String),
   name           : S.String,
   description    : S.String,
