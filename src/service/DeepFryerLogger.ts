@@ -1,9 +1,9 @@
-import {AwsLambdaEnv, DiscordEnv} from 'config/external.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {E} from '#src/internal/pure/effect.ts';
-import {DiscordREST, type DiscordRESTError} from 'dfx/DiscordREST';
-import type {Embed} from 'dfx/types';
-import {type Config, Layer, Logger, LogLevel} from 'effect';
+import {AwsLambdaEnv, DiscordEnv} from 'config/external.ts';
+import type {Discord} from 'dfx';
+import {DiscordREST} from 'dfx/DiscordREST';
+import type {Config} from 'effect';
 import {inspect} from 'node:util';
 
 const showString = (e: any) =>
@@ -16,7 +16,7 @@ const show = (e: any) => {
   return structuredClone(output);
 };
 
-const asMessage = (embed: Embed) => ({
+const asMessage = (embed: Discord.RichEmbed) => ({
   embeds: [embed],
 });
 
@@ -30,14 +30,6 @@ const buildCloudWatchAuthorLink = (aws: Config.Config.Success<typeof AwsLambdaEn
       + '/log-events/'
       + encodeURIComponent(aws.AWS_LAMBDA_LOG_STREAM_NAME),
   });
-
-type ExecuteWebhook = E.Effect<
-  {
-    id        : string;
-    channel_id: string;
-  },
-  DiscordRESTError
->;
 
 export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Logger', {
   effect: E.gen(function* () {
@@ -54,17 +46,17 @@ export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Log
         discord.executeWebhook(
           debugId,
           debugToken,
-          asMessage({
-            color      : nColor(COLOR.DEBUG),
-            author     : buildCloudWatchAuthorLink(aws),
-            description: showString(str),
-          }),
           {
-            urlParams: {
+            params: {
               wait: true,
             },
+            payload: asMessage({
+              color      : nColor(COLOR.DEBUG),
+              author     : buildCloudWatchAuthorLink(aws),
+              description: showString(str),
+            }),
           },
-        ).json as ExecuteWebhook,
+        ),
       ));
     };
 
@@ -74,17 +66,17 @@ export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Log
         discord.executeWebhook(
           errorId,
           errorToken,
-          asMessage({
-            color      : nColor(COLOR.ERROR),
-            author     : buildCloudWatchAuthorLink(aws),
-            description: showString(str),
-          }),
           {
-            urlParams: {
+            params: {
               wait: true,
             },
+            payload: asMessage({
+              color      : nColor(COLOR.ERROR),
+              author     : buildCloudWatchAuthorLink(aws),
+              description: showString(str),
+            }),
           },
-        ).json as ExecuteWebhook,
+        ),
       ));
     };
 
@@ -94,17 +86,17 @@ export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Log
         discord.executeWebhook(
           errorId,
           errorToken,
-          asMessage({
-            color      : nColor(COLOR.ERROR),
-            author     : buildCloudWatchAuthorLink(aws),
-            description: showString(str),
-          }),
           {
-            urlParams: {
+            params: {
               wait: true,
             },
+            payload: asMessage({
+              color      : nColor(COLOR.ERROR),
+              author     : buildCloudWatchAuthorLink(aws),
+              description: showString(str),
+            }),
           },
-        ).json as ExecuteWebhook,
+        ),
       ));
     };
 
@@ -114,17 +106,17 @@ export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Log
         discord.executeWebhook(
           debugId,
           debugToken,
-          asMessage({
-            color      : nColor(COLOR.INFO),
-            author     : buildCloudWatchAuthorLink(aws),
-            description: showString(str),
-          }),
           {
-            urlParams: {
+            params: {
               wait: true,
             },
+            payload: asMessage({
+              color      : nColor(COLOR.INFO),
+              author     : buildCloudWatchAuthorLink(aws),
+              description: showString(str),
+            }),
           },
-        ).json as ExecuteWebhook,
+        ),
       ));
     };
 
@@ -134,17 +126,17 @@ export class DeepFryerLogger extends E.Service<DeepFryerLogger>()('deepfryer/Log
         discord.executeWebhook(
           debugToken,
           debugId,
-          asMessage({
-            color      : nColor(COLOR.DEBUG),
-            author     : buildCloudWatchAuthorLink(aws),
-            description: showString(str),
-          }),
           {
-            urlParams: {
+            params: {
               wait: true,
             },
+            payload: asMessage({
+              color      : nColor(COLOR.DEBUG),
+              author     : buildCloudWatchAuthorLink(aws),
+              description: showString(str),
+            }),
           },
-        ).json as ExecuteWebhook,
+        ),
       ));
     };
 

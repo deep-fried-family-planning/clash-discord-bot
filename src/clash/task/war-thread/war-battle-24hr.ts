@@ -1,5 +1,5 @@
 import {makeTask} from '#src/clash/task/war-thread/common.ts';
-import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dBold, dHdr1, dHdr2, dHdr3, dLinesS, dmUser, dSpoi, dSubH, dtRel} from '#src/internal/discord-old/markdown.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
@@ -9,7 +9,7 @@ import {join} from 'effect/Array';
 
 export const WarBattle24Hr = makeTask('WarBattle24Hr', (data, war) => E.gen(function* () {
   const discord = yield* DiscordREST;
-  yield* discord.modifyChannel(data.thread, {
+  yield* discord.updateChannel(data.thread, {
     name: `🗡│${data.clanName}`,
   });
 

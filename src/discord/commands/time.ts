@@ -1,9 +1,9 @@
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {dCodes, dLines} from '#src/internal/discord-old/util/markdown.ts';
-import {dTable} from '#src/internal/discord-old/util/message-table.ts';
+import {dCodes, dLines} from '#src/internal/discord-old/markdown.ts';
+import {dTable} from '#src/internal/discord-old/message-table.ts';
 
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {validateServer} from '#src/internal/discord-old/validation.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import dayjs from 'dayjs';

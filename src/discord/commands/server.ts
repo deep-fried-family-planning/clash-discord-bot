@@ -4,8 +4,8 @@ import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {dLinesS} from '#src/internal/discord-old/markdown.ts';
+import {validateServer} from '#src/internal/discord-old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 

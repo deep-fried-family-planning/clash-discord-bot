@@ -1,5 +1,5 @@
 import {makeTask} from '#src/clash/task/war-thread/common.ts';
-import {dHdr1, dLinesS, dtRel} from '#src/internal/discord-old/util/markdown.ts';
+import {dHdr1, dLinesS, dtRel} from '#src/internal/discord-old/markdown.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DiscordREST} from 'dfx';
 
@@ -13,7 +13,7 @@ export const WarBattle00hr = makeTask('WarBattle00hr', (data, war) => E.gen(func
     ),
   });
 
-  yield* discord.modifyChannel(data.thread, {
+  yield* discord.updateChannel(data.thread, {
     name    : `🗂️│${data.clanName}│${war.finished.endTime.toDateString()}│${war.finished.status}`,
     archived: true,
     locked  : true,

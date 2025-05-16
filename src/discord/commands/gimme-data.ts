@@ -1,7 +1,7 @@
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {jsonEmbed} from '#src/internal/discord-old/util/embed.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {jsonEmbed} from '#src/internal/discord-old/embed.ts';
+import {validateServer} from '#src/internal/discord-old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';

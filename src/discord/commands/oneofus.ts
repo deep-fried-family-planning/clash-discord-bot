@@ -3,10 +3,9 @@ import {UserPlayer} from '#src/database/arch/codec.ts';
 import {deleteItem, queryUserPlayers, saveItem} from '#src/database/DeepFryerDB.ts';
 import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {St} from '#src/internal/discord-old/store/derive-state.ts';
+import {dLinesS} from '#src/internal/discord-old/markdown.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {dLinesS} from '#src/internal/discord-old/util/markdown.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {validateServer} from '#src/internal/discord-old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {E} from '#src/internal/pure/effect.ts';
 
@@ -53,10 +52,8 @@ export const ONE_OF_US = {
 /**
  * @desc [SLASH /oneofus]
  */
-export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>, s?: St) => E.gen(function* () {
-  const [server, user] = s
-    ? [s.server!, s.original.member!]
-    : yield* validateServer(data);
+export const oneofus = (data: IxD, options: IxDS<typeof ONE_OF_US>) => E.gen(function* () {
+  const [server, user] = yield* validateServer(data);
 
   const tag = yield* ClashOfClans.validateTag(options.player_tag);
 

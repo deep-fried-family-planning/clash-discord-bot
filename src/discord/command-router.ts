@@ -51,16 +51,16 @@ const nameOptions = <T extends CommandSpec>(ix: IxD): IxDS<T> => {
 
     if (subgroup) {
       return subgroup.options![0].options
-        ? overrideNames(subgroup.options![0].options) as IxDS<T>
+        ? overrideNames(subgroup.options![0].options as any) as IxDS<T>
         : {} as IxDS<T>;
     }
     else if (cmd) {
       return cmd.options
-        ? overrideNames(cmd.options) as IxDS<T>
+        ? overrideNames(cmd.options as any) as IxDS<T>
         : {} as IxDS<T>;
     }
     else {
-      return overrideNames(ix.data.options) as IxDS<T>;
+      return overrideNames(ix.data.options as any) as IxDS<T>;
     }
   }
 
@@ -69,9 +69,11 @@ const nameOptions = <T extends CommandSpec>(ix: IxD): IxDS<T> => {
 
 export const commandRouter = (ix: IxD) => E.gen(function* () {
   const discord = yield* DiscordREST;
-  const root = (ix.data as IxDs).name as keyof typeof IXS_LOOKUP;
+  const root = (ix.data as IxDs<any>).name as keyof typeof IXS_LOOKUP;
 
   const message = yield* IXS_LOOKUP[root](ix, nameOptions(ix));
 
-  yield* discord.editOriginalInteractionResponse(ix.application_id, ix.token, message as never);
+  yield* discord.updateOriginalWebhookMessage(ix.application_id, ix.token, {
+    payload: message as never,
+  });
 });

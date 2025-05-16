@@ -1,6 +1,6 @@
 import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/dapi/common.ts';
 import * as S from 'effect/Schema';
-import {PremiumType} from 'dfx/types';
+import {PremiumTypes} from 'dfx/types';
 import {DAPIMessage} from './dapi-message';
 
 export * as Ix from '#src/disreact/codec/dapi/ix.ts';
@@ -21,7 +21,7 @@ const InteractionMetadataUser = S.Struct({
   verified              : S.optional(EmailVerified),
   email                 : S.optional(EmailAddress),
   flags                 : S.optional(S.Int),
-  premium_type          : S.optional(S.Enums(PremiumType)),
+  premium_type          : S.optional(S.Enums(PremiumTypes)),
   public_flags          : S.optional(S.Int),
   avatar_decoration_data: S.optional(S.Struct({
     asset : AssetHash,

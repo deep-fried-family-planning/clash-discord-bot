@@ -11,8 +11,7 @@ import {USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
-import {REDACTED_DISCORD_APP_ID} from '#src/internal/discord-old/constants/secrets.ts';
-import {logDiscordError} from '#src/internal/discord-old/layer/log-discord-error.ts';
+import {logDiscordError} from '#src/internal/discord-old/log-discord-error.ts';
 import type {CommandSpec} from '#src/internal/discord-old/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
@@ -22,8 +21,8 @@ import {OrdB} from '#src/internal/pure/pure.ts';
 import {DiscordLayer} from '#src/util/layers';
 import {makeLambda} from '@effect-aws/lambda';
 import {fromParameterStore} from '@effect-aws/ssm';
+import type {Discord} from 'dfx';
 import {DiscordREST} from 'dfx';
-import type {CreateGlobalApplicationCommandParams} from 'dfx/types';
 import {map} from 'effect/Array';
 import {mapEntries, toEntries} from 'effect/Record';
 
@@ -67,15 +66,15 @@ const specToREST = (spec: CommandSpec) => ({
       : v,
     ),
   ),
-} as unknown as CreateGlobalApplicationCommandParams);
+} as unknown as Discord.ApplicationCommandCreateRequest);
 
 const h = () => E.gen(function* () {
   yield* invokeCount(showMetric(invokeCount));
-
+  const ENV = process.env.LAMBDA_ENV_UPPER;
   const discord = yield* DiscordREST;
-  const APP_ID = yield* CFG.redacted(REDACTED_DISCORD_APP_ID);
+  const APP_ID = yield* CFG.redacted(`/DFFP/${ENV}/DISCORD_APP_ID`);
 
-  const globalCommands = yield* discord.getGlobalApplicationCommands(RDT.value(APP_ID)).json;
+  const globalCommands = yield* discord.listApplicationCommands(RDT.value(APP_ID));
 
   const commands = pipe(
     specs satisfies { [k in string]: CommandSpec },
@@ -88,12 +87,12 @@ const h = () => E.gen(function* () {
   const deletes = pipe(
     globalCommands,
     filterL((gc) => !names.includes(gc.name)),
-    mapL((gc) => discord.deleteGlobalApplicationCommand(RDT.value(APP_ID), gc.id)),
+    mapL((gc) => discord.deleteApplicationCommand(RDT.value(APP_ID), gc.id)),
   );
 
   const updates = pipe(
     commands,
-    mapL(([, cmd]) => discord.createGlobalApplicationCommand(RDT.value(APP_ID), cmd)),
+    mapL(([, cmd]) => discord.createApplicationCommand(RDT.value(APP_ID), cmd)),
   );
 
   yield* pipe(

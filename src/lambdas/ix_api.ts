@@ -3,11 +3,11 @@ import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {EventRouter} from '#src/service/EventRouter.ts';
 import {InteractionVerify} from '#src/service/InteractionVerify.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
-import {type Interaction, InteractionCallbackType, InteractionType} from 'dfx/types';
-import {Console} from 'effect';
+import type {Discord} from 'dfx';
+import {InteractionCallbackTypes, InteractionTypes} from 'dfx/types';
 
-const PONG = {type: InteractionCallbackType.PONG};
-const DEFER_SOURCE = {type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE};
+const PONG = {type: InteractionCallbackTypes.PONG};
+const DEFER_SOURCE = {type: InteractionCallbackTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE};
 
 const succeedResponse = (code: number, body?: any) => {
   if (!body) {
@@ -29,20 +29,20 @@ export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
         return succeedResponse(401);
       }
 
-      const ix = JSON.parse(req.body!) as Interaction;
+      const ix = JSON.parse(req.body!) as Discord.APIInteraction;
 
-      if (ix.type === InteractionType.PING) {
+      if (ix.type === InteractionTypes.PING) {
         return succeedResponse(200, PONG);
       }
-      if (ix.type === InteractionType.APPLICATION_COMMAND) {
+      if (ix.type === InteractionTypes.APPLICATION_COMMAND) {
         return pipe(
           succeedResponse(200, DEFER_SOURCE),
           E.tap(EventRouter.invoke('ix_commands', ix)),
         );
       }
       if (
-        ix.type === InteractionType.MESSAGE_COMPONENT ||
-        ix.type === InteractionType.MODAL_SUBMIT
+        ix.type === InteractionTypes.MESSAGE_COMPONENT ||
+        ix.type === InteractionTypes.MODAL_SUBMIT
       ) {
         return pipe(
           succeedResponse(202),

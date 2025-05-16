@@ -1,10 +1,8 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {DiscordREST} from 'dfx';
-import {InteractionCallbackType} from 'dfx/types';
+import {InteractionCallbackTypes} from 'dfx/types';
 import * as Effect from 'effect/Effect';
-import * as Layer from 'effect/Layer';
 import * as Redacted from 'effect/Redacted';
-import {pipe} from 'effect/Function';
 
 export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
   effect: Effect.gen(function* () {
@@ -16,8 +14,10 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.MODAL,
-            data: data,
+            payload: {
+              type: InteractionCallbackTypes.MODAL,
+              data: data,
+            },
           },
         ),
       createSource: (doken: Doken, data: any) =>
@@ -25,8 +25,10 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: data,
+            payload: {
+              type: InteractionCallbackTypes.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: data,
+            },
           },
         ),
       createUpdate: (doken: Doken, data: any) =>
@@ -34,8 +36,10 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.UPDATE_MESSAGE,
-            data: data,
+            payload: {
+              type: InteractionCallbackTypes.UPDATE_MESSAGE,
+              data: data,
+            },
           },
         ),
       deferSource: (doken: Doken, isEphemeral?: boolean) =>
@@ -43,9 +47,11 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-              flags: isEphemeral ? 64 : 0,
+            payload: {
+              type: InteractionCallbackTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                flags: isEphemeral ? 64 : 0,
+              },
             },
           },
         ),
@@ -54,25 +60,31 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.DEFERRED_UPDATE_MESSAGE,
+            payload: {
+              type: InteractionCallbackTypes.DEFERRED_UPDATE_MESSAGE,
+            },
           },
         ),
       deferEdit: (doken: Doken, body: any) =>
-        api.editOriginalInteractionResponse(
+        api.updateOriginalWebhookMessage(
           doken.app,
           Redacted.value(doken.val),
-          body,
+          {
+            payload: body,
+          },
         ),
       discard: (doken: Doken) =>
         api.createInteractionResponse(
           doken.id,
           Redacted.value(doken.val),
           {
-            type: InteractionCallbackType.UPDATE_MESSAGE,
+            payload: {
+              type: InteractionCallbackTypes.UPDATE_MESSAGE,
+            },
           },
         ),
       dismount: (doken: Doken) =>
-        api.deleteOriginalInteractionResponse(
+        api.deleteOriginalWebhookMessage(
           doken.app,
           Doken.value(doken),
         ),

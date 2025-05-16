@@ -27,7 +27,7 @@ export const updateWarCountdown = (clan: ServerClan, apiWars: ClanWar[]) => E.ge
     : apiClan.name;
 
   if (apiWars.length === 0) {
-    yield* discord.modifyChannel(clan.countdown, {
+    yield* discord.updateChannel(clan.countdown, {
       name: `💤│${cname}`,
     });
   }
@@ -39,16 +39,16 @@ export const updateWarCountdown = (clan: ServerClan, apiWars: ClanWar[]) => E.ge
       const time = new Date(apiWar.startTime.getTime() - Date.now());
       const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-      yield* discord.modifyChannel(clan.countdown, channel_names.prep(cname, timeleft));
+      yield* discord.updateChannel(clan.countdown, channel_names.prep(cname, timeleft));
     }
     else if (apiWar.isBattleDay) {
       const time = new Date(apiWar.endTime.getTime() - Date.now());
       const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-      yield* discord.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
+      yield* discord.updateChannel(clan.countdown, channel_names.batt(cname, timeleft));
     }
     else {
-      yield* discord.modifyChannel(clan.countdown, channel_names.none(cname));
+      yield* discord.updateChannel(clan.countdown, channel_names.none(cname));
     }
   }
   else if (apiWars.length === 2) {
@@ -57,7 +57,7 @@ export const updateWarCountdown = (clan: ServerClan, apiWars: ClanWar[]) => E.ge
     const time = new Date(apiWar.endTime.getTime() - Date.now());
     const timeleft = `${time.getUTCHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
 
-    yield* discord.modifyChannel(clan.countdown, channel_names.batt(cname, timeleft));
+    yield* discord.updateChannel(clan.countdown, channel_names.batt(cname, timeleft));
   }
 
   return cname;

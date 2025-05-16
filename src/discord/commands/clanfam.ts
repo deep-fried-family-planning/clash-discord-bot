@@ -6,7 +6,7 @@ import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
 import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
 import type {IxD} from '#src/internal/discord-old/discord.ts';
 import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/util/validation.ts';
+import {validateServer} from '#src/internal/discord-old/validation.ts';
 import {replyError, SlashUserError} from '#src/internal/errors.ts';
 import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';

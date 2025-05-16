@@ -32,9 +32,3 @@ export const dTable = (tss: string[][]) => {
     mapL(reduceL('', (ts0, t) => ts0 + t + ' ')),
   );
 };
-
-export const dTableFull = (header: string[][], rows: string[][]) => pipe(
-  header,
-  concatL(rows),
-  dTable,
-);
