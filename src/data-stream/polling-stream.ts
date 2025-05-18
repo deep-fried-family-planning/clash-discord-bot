@@ -21,9 +21,9 @@ export const gsiPollStream = pipe(
   ),
   Stream.flatMap((item) => {
     if (item._tag === 'Server') {
-      return syncServerStream(item.sk);
+      return syncServerStream(item.pk);
     }
-    return syncUser(item.sk).pipe(
+    return syncUser(item.pk).pipe(
       Stream.fromEffect,
       Stream.drain,
     );
