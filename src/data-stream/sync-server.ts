@@ -186,6 +186,7 @@ const syncMemberLinksStream = (serverId: string) =>
       ),
     ),
     Stream.tap((member) =>
+      // todo create a user registration if needed -> guess timezone from member.locale?
       DataClient.update({
         Key                      : User.Key.make({pk: member.user!.id}),
         ConditionExpression      : 'attribute_exists(pk)',
