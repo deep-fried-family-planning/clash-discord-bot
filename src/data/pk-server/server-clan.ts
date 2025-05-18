@@ -31,6 +31,7 @@ export const Latest = Table.Item(TAG, LATEST, {
   alias          : S.optional(S.String),
   name           : S.String,
   description    : S.String,
+  polling        : S.optionalWith(S.Boolean, {default: () => true}),
   thread_prep    : S.optional(Id.ThreadId),
   prep_opponent  : S.optional(Id.ClanTag),
   thread_battle  : S.optional(Id.ThreadId),
@@ -88,6 +89,7 @@ export const Versions = S.Union(
       _v      : LATEST,
       _v7     : '',
       upgraded: true,
+      polling : true,
       pk2     : enc.sk,
       sk2     : enc.pk,
     } as const;
@@ -100,6 +102,7 @@ export const Versions = S.Union(
       upgraded       : true,
       name           : enc.name,
       description    : enc.desc,
+      polling        : true,
       pk             : enc.pk,
       sk             : enc.sk,
       pk2            : enc.sk,

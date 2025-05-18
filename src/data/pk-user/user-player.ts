@@ -5,6 +5,7 @@ import * as DataTag from '#src/data/constants/data-tag.ts';
 import {decodeOnly} from '#src/util/util-schema.ts';
 import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
+import * as Channel from 'effect/Channel';
 
 export const TAG = DataTag.USER_PLAYER;
 export const LATEST = 1;

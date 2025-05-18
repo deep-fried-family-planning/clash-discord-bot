@@ -4,6 +4,7 @@ import * as UserPlayer from '#src/data/pk-user/user-player.ts';
 import * as User from '#src/data/pk-user/user.ts';
 import * as UserLink from '#src/data/pk-user/user-link.ts';
 import * as S from 'effect/Schema';
+import * as Stream from 'effect/Stream';
 
 const Key = Id.UserId;
 
@@ -23,12 +24,19 @@ const ItemsDown = S.Union(
   UserLink.Versions,
 );
 
-export const scan = Document.QueryV2(All, Key, (key) => ({
-  KeyConditionExpression   : 'pk = :pk',
-  ExpressionAttributeValues: {
-    ':pk': key,
-  },
-}));
+export const scan = Document.QueryV2(
+  All,
+  S.Struct({
+    user: Key,
+    last: S.Any,
+  }),
+  (key) => ({
+    KeyConditionExpression   : 'pk = :pk',
+    ExpressionAttributeValues: {
+      ':pk': key,
+    },
+  }),
+);
 
 export const scanUp = Document.QueryV2(ItemsUp, Key, (key) => ({
   KeyConditionExpression   : 'pk = :pk AND sk >= :sk',
