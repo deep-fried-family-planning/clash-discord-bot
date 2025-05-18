@@ -23,26 +23,43 @@ const ItemsDown = S.Union(
   ServerInfo.Versions,
 );
 
-export const scan = Document.QueryV2(Items, Key, (key) => ({
-  KeyConditionExpression   : 'pk = :pk',
-  ExpressionAttributeValues: {
-    ':pk': key,
-  },
-}));
+export const scan = Document.QueryV2(
+  Items,
+  Key,
+  (key) => ({
+    KeyConditionExpression   : 'pk = :pk',
+    ExpressionAttributeValues: {
+      ':pk': key,
+    },
+  }),
+);
 
-export const scanUp = Document.QueryV2(ItemsUp, Key, (key) => ({
-  KeyConditionExpression   : 'pk = :pk AND sk >= :sk',
-  ExpressionAttributeValues: {
-    ':pk': key,
-    ':sk': '@',
-  },
-  ScanIndexForward: false,
-}));
+export const scanUp = Document.QueryV2(
+  ItemsUp,
+  S.Struct({
+    server: Key,
+    last  : S.Any,
+  }),
+  (input) => ({
+    Limit                    : 25,
+    ExclusiveStartKey        : input.last,
+    ScanIndexForward         : false,
+    KeyConditionExpression   : 'pk = :pk AND sk >= :sk',
+    ExpressionAttributeValues: {
+      ':pk': input.server,
+      ':sk': '@',
+    },
+  }),
+);
 
-export const scanDown = Document.QueryV2(ItemsDown, Key, (key) => ({
-  KeyConditionExpression   : 'pk = :pk AND sk <= :sk',
-  ExpressionAttributeValues: {
-    ':pk': key,
-    ':sk': '@',
-  },
-}));
+export const scanDown = Document.QueryV2(
+  ItemsDown,
+  Key,
+  (key) => ({
+    KeyConditionExpression   : 'pk = :pk AND sk <= :sk',
+    ExpressionAttributeValues: {
+      ':pk': key,
+      ':sk': '@',
+    },
+  }),
+);

@@ -4,7 +4,7 @@ import * as Table from '#src/data/arch/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
 import * as S from 'effect/Schema';
 
-export const TAG = DataTag.USER_SERVER_LINK;
+export const TAG = DataTag.USER_LINK;
 export const LATEST = 0;
 
 export const Key = Table.Key({
