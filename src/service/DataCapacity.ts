@@ -62,7 +62,7 @@ export class DataCapacity extends E.Service<DataCapacity>()('deepfryer/DataCapac
 
         return units > env.DFFP_DDB_RCUS
           ? E.dieSync(() => new CapacityDefect({cause: 'RCU Exceeded'}))
-          : readLimiter(effect).pipe(RateLimiter.withCost(units));
+          : readLimiter(effect).pipe(RateLimiter.withCost(units), E.tap(E.logTrace('RCU', units)));
       },
 
       estimateWriteUnits: <A, E, R>(estimate?: number) => (effect: E.Effect<A, E, R>) => {
@@ -73,7 +73,7 @@ export class DataCapacity extends E.Service<DataCapacity>()('deepfryer/DataCapac
 
         return units > env.DFFP_DDB_WCUS
           ? E.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
-          : writeLimiter(effect).pipe(RateLimiter.withCost(units));
+          : writeLimiter(effect).pipe(RateLimiter.withCost(units), E.tap(E.logTrace('WCU', units)));
       },
 
       // array overhead?
@@ -82,7 +82,7 @@ export class DataCapacity extends E.Service<DataCapacity>()('deepfryer/DataCapac
 
         return units > env.DFFP_DDB_WCUS
           ? E.dieSync(() => new CapacityDefect({cause: 'WCU Exceeded'}))
-          : writeLimiter(effect).pipe(RateLimiter.withCost(units));
+          : writeLimiter(effect).pipe(RateLimiter.withCost(units), E.tap(E.logTrace('WCU', units)));
       },
 
       readLimiter,
