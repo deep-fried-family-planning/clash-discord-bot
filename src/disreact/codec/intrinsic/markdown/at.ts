@@ -27,8 +27,8 @@ export const Element = declareElem(
 export const encode = (self: Elem.Rest, acc: any) => {
   if (self.props.here) return '@here';
   if (self.props.everyone) return '@everyone';
-  if (self.props.user) return `@${self.props.user}`;
-  if (self.props.role) return `@&${self.props.role}`;
-  if (self.props.channel) return `#${self.props.channel}`;
+  if (self.props.user) return `<@${self.props.user}>`;
+  if (self.props.role) return `<@&${self.props.role}>`;
+  if (self.props.channel) return `<#${self.props.channel}>`;
   return '';
 };

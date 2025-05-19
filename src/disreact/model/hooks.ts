@@ -1,5 +1,6 @@
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
+import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 
 export * as Hooks from '#src/disreact/model/hooks.ts';
@@ -125,7 +126,7 @@ export const $useIx = () => {
 
   node.pc++;
 
-  return node.rehydrant.data;
+  return node.rehydrant.data as Discord.APIInteraction;
 };
 
 export const $usePage = (_: FC[]) => {

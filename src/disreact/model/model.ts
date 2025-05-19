@@ -27,12 +27,12 @@ export const rehydrate = (hydrator: Rehydrant.Decoded) =>
     E.flatMap((root) => Pragma.encode(root)),
   );
 
-export const invoke = (hydrator: Rehydrant.Decoded, event: Trigger) =>
+export const invoke = (hydrator: Rehydrant.Decoded, event: Trigger, data?: any) =>
   pipe(
     Sources.rehydrate(hydrator),
     E.flatMap((original) =>
       pipe(
-        Lifecycles.rehydrate(original),
+        Lifecycles.rehydrate(original, data),
         E.andThen(() => Lifecycles.invoke(original, event)),
         E.andThen(() => Lifecycles.rerender(original)),
         E.andThen(() =>
@@ -52,7 +52,7 @@ export const invoke = (hydrator: Rehydrant.Decoded, event: Trigger) =>
                   return Pragma.encode(output);
                 }
                 return pipe(
-                  Lifecycles.initialize(output),
+                  Lifecycles.initialize(output, data),
                   E.flatMap(() => Pragma.encode(output)),
                 );
               }),

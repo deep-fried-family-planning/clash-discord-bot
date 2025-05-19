@@ -38,7 +38,7 @@ export const respond = (body: any) => E.gen(function* () {
 
   const ds = yield* Dokens.make(req.fresh, req.doken);
 
-  const model = yield* E.fork(Model.invoke(req.hydrator!, req.event));
+  const model = yield* E.fork(Model.invoke(req.hydrator!, req.event, body));
 
   let isSame = false;
 
