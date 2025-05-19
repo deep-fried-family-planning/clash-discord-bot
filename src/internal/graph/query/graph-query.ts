@@ -1,6 +1,6 @@
 import type {GClans, GHits, GPlayers, GraphModel, GWars, OptimizedClan, OptimizedHit, OptimizedPlayer, OptimizedWar} from '#src/internal/graph/pipeline/optimize-types.ts';
 import type {CID, PID} from '#src/internal/graph/types.ts';
-import {flow} from '#src/internal/pure/effect.ts';
+import {flow} from 'effect/Function';
 import {filterKV, toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {flattenL, mapL} from '#src/internal/pure/pure-list.ts';
 

@@ -1,10 +1,11 @@
 import {commandRouter} from '#src/discord/command-router.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {Interacting} from '#src/service/Interacting.ts';
+import type {Discord} from 'dfx';
 
-export const ix_commands = (ix: IxD) =>
+export const ix_commands = (ix: Discord.APIInteraction) =>
   pipe(
     E.fork(Interacting.init(ix)),
     E.flatMap(() => commandRouter(ix)),

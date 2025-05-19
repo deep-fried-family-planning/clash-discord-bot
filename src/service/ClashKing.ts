@@ -1,10 +1,12 @@
-import {ClashKingEnv} from 'config/external.ts';
+import {ClashKingEnv} from '#config/external.ts';
 import {bindApiCall} from '#src/clash/api-call.ts';
 import type {CK_War} from '#src/clash/api-ck-get-previous-wars.ts';
 import type {CK_Player_PreviousHits} from '#src/clash/api-ck-get-warhits.ts';
-import {E} from '#src/internal/pure/effect.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
-import {Data, Duration, RateLimiter} from 'effect';
+import * as Data from 'effect/Data';
+import * as Duration from 'effect/Duration';
+import * as E from 'effect/Effect';
+import * as RateLimiter from 'effect/RateLimiter';
 
 type ClashKingClient = {
   previousHits: (pid: string, limit: num) => E.Effect<CK_Player_PreviousHits[], ClashKingError>;

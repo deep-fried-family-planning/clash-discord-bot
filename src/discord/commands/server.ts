@@ -1,9 +1,9 @@
 import {ServerRegistry} from '#src/data';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_TZ} from '#src/discord/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
 
 export const SERVER = {
   type       : 1,
@@ -31,7 +31,7 @@ export const SERVER = {
 /**
  * @desc [SLASH /server]
  */
-export const server = (data: IxD, options: IxDS<typeof SERVER>) => E.gen(function* () {
+export const server = (data: Discord.APIInteraction, options: IxDS<typeof SERVER>) => E.gen(function* () {
   const registration = yield* ServerRegistry.register({
     caller_id   : data.member!.user.id,
     caller_roles: data.member!.roles,

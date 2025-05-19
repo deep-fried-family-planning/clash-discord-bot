@@ -1,16 +1,17 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import type {SharedOptions} from '#src/internal/discord-old/types.ts';
+import type {SharedOptions} from '#src/discord/old/types.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import {fetchWarEntities} from '#src/internal/graph/fetch-war-entities.ts';
 import {deriveModel} from '#src/internal/graph/pipeline/derive.ts';
 import {ingestCkToModel} from '#src/internal/graph/pipeline/ingest-ck.ts';
 import {accumulateWarData, optimizeGraphModel} from '#src/internal/graph/pipeline/optimize-graph-model.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {filterL, flattenL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
+import {ClashKing} from '#src/service/ClashKing.ts';
 import type {ClanWarMember} from 'clashofclans.js';
-import {Option} from 'effect';
 import {findFirst} from 'effect/Array';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as Option from 'effect/Option';
 
 const sortMapPosition = sortL(fromCompare<ClanWarMember>((a, b) => OrdN(a.mapPosition, b.mapPosition)));
 

@@ -2,7 +2,6 @@ import * as Document from '#src/data/arch/Document.ts';
 import * as Id from '#src/data/arch/Id.ts';
 import * as Table from '#src/data/arch/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
-import {decodeOnly} from '#src/util/util-schema.ts';
 import * as S from 'effect/Schema';
 
 export const TAG = DataTag.DISCORD_EMBED;
@@ -20,47 +19,10 @@ export const Latest = Table.Item(TAG, LATEST, {
   kind    : S.Enums({omni: 'omni', about: 'about', guide: 'guide', rule: 'rule'} as const),
 });
 
-const Legacy = S.Struct({
-  type          : S.Literal('DiscordInfo'),
-  pk            : Id.ServerId,
-  sk            : Id.InfoId,
-  version       : S.Literal('1.0.0'),
-  created       : S.String,
-  updated       : S.String,
-  embed_id      : S.optional(Id.EmbedId),
-  selector_label: S.optional(S.String),
-  selector_desc : S.optional(S.String),
-  selector_order: S.optional(S.Number),
-  kind          : S.Enums({omni: 'omni', about: 'about', guide: 'guide', rule: 'rule'} as const),
-  after         : S.optional(S.String),
-  name          : S.optional(S.String),
-  desc          : S.optional(S.String),
-  color         : S.optional(S.Number),
-  image         : S.optional(S.String),
-});
-
 export const Versions = S.Union(
   Latest,
-  decodeOnly(Legacy, Latest, (fromA) => {
-    return {
-      _tag    : TAG,
-      _v      : LATEST,
-      _v7     : '',
-      upgraded: true,
-      pk      : fromA.pk,
-      sk      : fromA.sk,
-      created : fromA.created,
-      updated : fromA.updated,
-      embed_id: fromA.embed_id ?? '',
-      kind    : fromA.kind,
-      select  : {
-        value      : fromA.embed_id ?? '',
-        label      : fromA.selector_label ?? fromA.embed_id ?? '',
-        description: fromA.selector_desc ?? fromA.desc ?? '',
-      },
-    } as const;
-  }),
 );
+
 export const encode = S.encode(Latest);
 export const decode = S.decode(Versions);
 export const is = S.is(Latest);

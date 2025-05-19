@@ -1,12 +1,15 @@
-import {DataClient} from '#src/data/service/DataClient.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
-import {L, Logger, LogLevel, pipe} from '#src/internal/pure/effect.ts';
 import {ix_components} from '#src/lambdas/ix_components.ts';
+import {DataClient} from '#src/service/DataClient.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as Logger from 'effect/Logger';
+import * as LogLevel from 'effect/LogLevel';
 
 const layer = pipe(
   L.mergeAll(

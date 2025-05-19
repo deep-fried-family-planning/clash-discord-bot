@@ -1,17 +1,19 @@
-import {LambdaProxyEnv} from 'config/aws.ts';
-import {AwsLambdaEnv, DiscordEnv, DiscordRESTEnv} from 'config/external.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {E, L, Logger, pipe} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
-import { DiscordLayer } from '#src/util/layers';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
 import type {APIGatewayProxyWebsocketEventV2} from 'aws-lambda';
 import type {APIGatewayProxyResultV2} from 'aws-lambda/trigger/api-gateway-proxy';
+import {LambdaProxyEnv} from 'config/aws.ts';
+import {AwsLambdaEnv, DiscordEnv, DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
-import {Config} from 'effect';
+import * as Config from 'effect/Config';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as Logger from 'effect/Logger';
 
 export type WsCtx = APIGatewayProxyWebsocketEventV2['requestContext'];
 

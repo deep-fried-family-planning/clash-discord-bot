@@ -1,8 +1,7 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DataClient} from '#src/data/service/DataClient.ts';
-import {L, pipe} from '#src/internal/pure/effect.ts';
 import {poll} from '#src/lambdas/poll.ts';
+import {ClashKing} from '#src/service/ClashKing.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
+import {DataClient} from '#src/service/DataClient.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {EventRouterLive} from '#src/service/EventRouter.ts';
 import {TaskSchedulerLive} from '#src/service/TaskScheduler.ts';
@@ -13,6 +12,8 @@ import {LambdaHandler} from '@effect-aws/lambda';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
 
 const layer = pipe(
   L.mergeAll(

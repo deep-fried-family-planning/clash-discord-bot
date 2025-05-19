@@ -1,10 +1,11 @@
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {EventRouter} from '#src/service/EventRouter.ts';
 import {InteractionVerify} from '#src/service/InteractionVerify.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import type {Discord} from 'dfx';
 import {InteractionCallbackTypes, InteractionTypes} from 'dfx/types';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 const PONG = {type: InteractionCallbackTypes.PONG};
 const DEFER_SOURCE = {type: InteractionCallbackTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE};

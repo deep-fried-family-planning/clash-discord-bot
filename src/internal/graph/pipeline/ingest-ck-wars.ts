@@ -1,8 +1,8 @@
 import type {CK_War, CK_War_Clan} from '#src/clash/api-ck-get-previous-wars.ts';
 import type {DispatchedClan, DispatchedHit, DispatchedPlayer, DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import {attachModelId} from '#src/internal/graph/types.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
 import {flatMapL, mapL} from '#src/internal/pure/pure-list.ts';
+import {pipe} from 'effect/Function';
 
 const ingestCkWarPlayers = (clan: CK_War_Clan): DispatchedPlayer[] => pipe(
   clan.members,

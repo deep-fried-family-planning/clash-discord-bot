@@ -1,5 +1,7 @@
-import {E, flow, Metric, pipe} from '#src/internal/pure/effect.ts';
-import {Console} from 'effect';
+import * as Console from 'effect/Console';
+import * as E from 'effect/Effect';
+import {flow, pipe} from 'effect/Function';
+import * as Metric from 'effect/Metric';
 
 export const invokeCount = Metric
   .counter('invoke_count', {

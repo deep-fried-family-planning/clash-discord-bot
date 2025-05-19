@@ -1,10 +1,15 @@
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {jsonEmbed} from '#src/internal/discord-old/embed.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/discord/old/types.ts';
+import {validateServer} from '#src/discord/old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
+import type {Discord} from 'dfx';
+
+export const jsonEmbed = (o: unknown) => ({
+  color      : nColor(COLOR.SUCCESS),
+  description: JSON.stringify(o, null, 2),
+} as const);
 
 export const GIMME_DATA = {
   type       : 1,
@@ -45,7 +50,7 @@ export const GIMME_DATA = {
 /**
  * @desc [SLASH /gimme]
  */
-export const gimmeData = (data: IxD, options: IxDS<typeof GIMME_DATA>) => E.gen(function* () {
+export const gimmeData = (data: Discord.APIInteraction, options: IxDS<typeof GIMME_DATA>) => E.gen(function* () {
   const [server, user] = yield* validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {

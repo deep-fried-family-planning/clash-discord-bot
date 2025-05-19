@@ -1,9 +1,9 @@
-import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
+import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
 import {OmniBoard} from '#src/discord/omni-board/omni-board.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
 
 export const SMOKE = {
   type       : 1,
@@ -17,7 +17,7 @@ export const SMOKE = {
 /**
  * @desc [SLASH /smoke]
  */
-export const smoke = (data: IxD, options: IxDS<typeof SMOKE>) => E.gen(function* () {
+export const smoke = (data: Discord.APIInteraction, options: IxDS<typeof SMOKE>) => E.gen(function* () {
   // const [server, user] = yield * validateServer(data);
   //
   // if (!user.roles.includes(server.admin as snflk)) {

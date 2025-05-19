@@ -1,4 +1,5 @@
-import {D, E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
+import * as D from 'effect/Data';
 
 export class SlashError extends D.TaggedError('DeepFryerSlashError')<{
   issue?  : string;

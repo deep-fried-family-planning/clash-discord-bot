@@ -1,5 +1,6 @@
-import {Ar, f, p} from '#src/internal/pure/effect';
 import type {num, str, url} from '#src/internal/pure/types-pure.ts';
+import * as Ar from 'effect/Array';
+import {flow as f, pipe as p} from 'effect/Function';
 
 export const m_user = (s: str) => `<@${s}>`;
 export const m_role = (s: str) => `<@&${s}>`;

@@ -1,6 +1,6 @@
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {S} from '#src/internal/pure/effect';
+import * as S from 'effect/Schema';
 import {Keys} from '../keys';
 
 export * as Ephemeral from '#src/disreact/codec/intrinsic/container/ephemeral.ts';

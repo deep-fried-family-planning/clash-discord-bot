@@ -1,8 +1,9 @@
 import {RestCache} from '#src/clash/layers/restcache.ts';
-import {E, L} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {it} from '@effect/vitest';
-import {pipe} from 'effect';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
 import {describe} from 'vitest';
 
 describe('restcache', () => {

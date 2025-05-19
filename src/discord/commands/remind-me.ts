@@ -1,12 +1,12 @@
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {dtRel} from '#src/internal/discord-old/markdown.ts';
-
-import {validateServer} from '#src/internal/discord-old/validation.ts';
-import {DT, E, pipe} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {dtRel} from '#src/discord/old/markdown.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import {validateServer} from '#src/discord/old/validation.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
+import type {Discord} from 'dfx';
 import * as DateTime from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const REMINDME = {
   type       : 1,
@@ -32,16 +32,17 @@ export const REMINDME = {
 /**
  * @desc [SLASH /remind-me]
  */
-export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function* () {
+export const remind_me = (ix: Discord.APIInteraction, ops: IxDS<typeof REMINDME>) => E.gen(function* () {
   yield* validateServer(ix);
 
   const time = pipe(
     new Date(Date.now()),
-    DT.unsafeMake,
-    DT.addDuration(`${ops.hours_ahead as number} hour`),
-    DT.formatIso,
+    DateTime.unsafeMake,
+    DateTime.addDuration(`${ops.hours_ahead as number} hour`),
+    DateTime.formatIso,
     (iso) => iso.replace(/\..+Z/, ''),
   );
+
   yield* Scheduler.createSchedule({
     Name: `remind-me-user${ix.member!.user!.id}-${Date.now()}`,
 
@@ -59,9 +60,9 @@ export const remind_me = (ix: IxD, ops: IxDS<typeof REMINDME>) => E.gen(function
         channel_id : ix.channel_id,
       }),
     },
-
     ActionAfterCompletion: 'DELETE',
   });
+
   const user_time = pipe(
     yield* DateTime.nowInCurrentZone,
     DateTime.addDuration(`${ops.hours_ahead as number} hour`),

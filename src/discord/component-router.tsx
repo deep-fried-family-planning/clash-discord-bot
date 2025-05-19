@@ -1,6 +1,7 @@
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {L, pipe} from '#src/internal/pure/effect.ts';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
 import {OmniBoard} from './omni-board/omni-board';
 import {StartMenu} from './omni-board/start-menu';
 

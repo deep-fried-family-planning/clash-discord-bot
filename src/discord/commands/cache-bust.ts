@@ -1,13 +1,13 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import { ServerClan } from '#src/data';
-import {nColor} from '#src/internal/discord-old/constants/colors';
-import {COLOR} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
+import {ServerClan} from '#src/data';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/discord/old/types.ts';
+import {validateServer} from '#src/discord/old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {CSL, E} from '#src/internal/pure/effect.ts';
+import * as E from 'effect/Effect';
+import * as CSL from 'effect/Console';
+import type {Discord} from 'dfx';
 
 export const CACHE_BUST
                = {
@@ -22,7 +22,7 @@ export const CACHE_BUST
 /**
  * @desc [SLASH /bust]
  */
-export const cacheBust = (data: IxD, options: IxDS<typeof CACHE_BUST>) => E.gen(function* () {
+export const cacheBust = (data: Discord.APIInteraction, options: IxDS<typeof CACHE_BUST>) => E.gen(function* () {
   const [server, user] = yield* validateServer(data);
 
   if (!user.roles.includes(server.admin as snflk)) {

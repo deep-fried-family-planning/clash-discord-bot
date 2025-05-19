@@ -5,7 +5,7 @@ import {Users} from '#src/disreact/codec/intrinsic/component/users.ts';
 import {Actions} from '#src/disreact/codec/intrinsic/container/actions.ts';
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import {S} from '#src/internal/pure/effect';
+import * as S from 'effect/Schema';
 import {Keys} from '../keys';
 
 export * as Message from '#src/disreact/codec/intrinsic/container/message.ts';

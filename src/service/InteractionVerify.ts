@@ -1,22 +1,22 @@
 import {DiscordEnv} from 'config/external.ts';
 import type {APIGatewayProxyEventBase} from 'aws-lambda';
 import {PlatformAlgorithm, verify} from 'discord-verify';
-import {Effect} from 'effect';
+import * as E from 'effect/Effect';
 import {subtle} from 'node:crypto';
 
-export class InteractionVerify extends Effect.Service<InteractionVerify>()('deepfryer/InteractionVerify', {
-  effect: Effect.gen(function* () {
+export class InteractionVerify extends E.Service<InteractionVerify>()('deepfryer/InteractionVerify', {
+  effect: E.gen(function* () {
     const env = yield* DiscordEnv;
 
     if (process.env.LAMBDA_LOCAL === 'true') {
       return {
-        isVerified: (req: APIGatewayProxyEventBase<any>) => Effect.succeed(true),
+        isVerified: (req: APIGatewayProxyEventBase<any>) => E.succeed(true),
       };
     }
 
     return {
       isVerified: (req: APIGatewayProxyEventBase<any>) =>
-        Effect.promise(() =>
+        E.promise(() =>
           verify(
             req.body,
             req.headers['x-signature-ed25519'],

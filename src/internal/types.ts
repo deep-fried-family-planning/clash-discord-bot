@@ -1,5 +1,6 @@
-import type {E, L} from '#src/internal/pure/effect.ts';
-import type {Context} from 'effect';
+import type * as E from 'effect/Effect';
+import type * as L from 'effect/Layer';
+import type * as Context from 'effect/Context';
 
 export type EA<T> = T extends E.Effect<infer A, infer _, infer __>
   ? A

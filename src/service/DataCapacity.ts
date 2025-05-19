@@ -1,10 +1,10 @@
 import {DynamoEnv} from '#config/aws.ts';
-import * as E from 'effect/Effect';
 import * as Data from 'effect/Data';
 import * as Duration from 'effect/Duration';
-import * as RateLimiter from 'effect/RateLimiter';
+import * as E from 'effect/Effect';
+import {flow, pipe} from 'effect/Function';
 import * as Number from 'effect/Number';
-import {pipe, flow} from 'effect/Function';
+import * as RateLimiter from 'effect/RateLimiter';
 
 export class CapacityDefect extends Data.TaggedError('CapacityDefect')<{
   cause?: any;

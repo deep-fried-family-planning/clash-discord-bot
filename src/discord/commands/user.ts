@@ -1,9 +1,10 @@
 import {UserRegistry} from '#src/data';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_TZ} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {E, S} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_TZ} from '#src/discord/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
+import * as S from 'effect/Schema';
 
 export const USER = {
   type       : 1,
@@ -43,7 +44,7 @@ export const USER = {
 /**
  * @desc [SLASH /user]
  */
-export const user = (data: IxD, options: IxDS<typeof USER>) => E.gen(function* () {
+export const user = (data: Discord.APIInteraction, options: IxDS<typeof USER>) => E.gen(function* () {
   const timezone = yield* S.decodeUnknown(S.TimeZone)(options.tz);
 
   const registration = yield* UserRegistry.register({

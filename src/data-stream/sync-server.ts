@@ -1,7 +1,7 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import type {Server, UserLink} from '#src/data/index.ts';
 import {GSI2, ServerClan, ServerPartition, User} from '#src/data/index.ts';
-import {DataClient} from '#src/data/service/DataClient.ts';
+import {DataClient} from '#src/service/DataClient.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ClanWar} from 'clashofclans.js';
 import type {Discord} from 'dfx';

@@ -1,8 +1,9 @@
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {Interacting} from '#src/service/Interacting.ts';
 import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const ix_components = (ix: Discord.APIInteraction) =>
   pipe(
