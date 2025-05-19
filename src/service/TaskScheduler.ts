@@ -1,15 +1,15 @@
 import type {CreateScheduleCommandInput} from '@aws-sdk/client-scheduler';
 import {SchedulerService} from '@effect-aws/client-scheduler';
-import {Effect} from 'effect';
 import {devServer} from '#dev/dev-server.ts';
+import * as E from 'effect/Effect';
 
-export class TaskScheduler extends Effect.Service<TaskScheduler>()('deepfryer/TaskScheduler', {
-  effect: Effect.gen(function* () {
+export class TaskScheduler extends E.Service<TaskScheduler>()('deepfryer/TaskScheduler', {
+  effect: E.gen(function* () {
     const scheduler = yield* SchedulerService;
 
     return {
       createSchedule: (data: CreateScheduleCommandInput) =>
-        Effect.asVoid(
+        E.asVoid(
           scheduler.createSchedule(data),
         ),
     };
@@ -20,11 +20,11 @@ export class TaskScheduler extends Effect.Service<TaskScheduler>()('deepfryer/Ta
   accessors: true,
 }) {}
 
-class LocalTaskScheduler extends Effect.Service<TaskScheduler>()('deepfryer/TaskScheduler', {
+class LocalTaskScheduler extends E.Service<TaskScheduler>()('deepfryer/TaskScheduler', {
   succeed: {
     createSchedule: (data) =>
-      Effect.asVoid(
-        Effect.promise(async () => await devServer('task', {
+      E.asVoid(
+        E.promise(async () => await devServer('task', {
           Records: [{
             body: data.Target?.Input,
           }],

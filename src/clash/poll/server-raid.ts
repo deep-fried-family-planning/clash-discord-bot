@@ -1,11 +1,10 @@
-// import {SetInviteOnly} from '#src/clash/task/raid-thread/set-invite-only.ts';
 import type {Server} from '#src/data/index.ts';
-// import {SetOpen} from '#src/clash/task/raid-thread/set-open.ts';
-// import {saveItem} from '#src/database/DeepFryerDB.ts';
-import {Cron, E, g, pipe} from '#src/internal/pure/effect.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx/DiscordREST';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as Cron from 'effect/Cron';
 
 const raidWeekendDone = Cron.make({
   days    : [],
@@ -15,7 +14,7 @@ const raidWeekendDone = Cron.make({
   weekdays: [1, 2, 3],
 });
 
-export const serverRaid = (server: Server) => g(function* () {
+export const serverRaid = (server: Server) => E.gen(function* () {
   const discord = yield* DiscordREST;
 
   if (server.raids) {

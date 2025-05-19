@@ -1,9 +1,9 @@
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {AwsLambdaEnv, DiscordEnv} from 'config/external.ts';
 import type {Discord} from 'dfx';
 import {DiscordREST} from 'dfx/DiscordREST';
-import type {Config} from 'effect';
+import type * as Config from 'effect/Config';
+import * as E from 'effect/Effect';
 import {inspect} from 'node:util';
 
 const showString = (e: any) =>

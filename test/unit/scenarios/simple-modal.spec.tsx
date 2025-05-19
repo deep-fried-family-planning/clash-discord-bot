@@ -1,11 +1,8 @@
-import * as E from 'effect/Effect';
-import * as S from 'effect/Schema';
-import * as L from 'effect/Layer';
-import * as Record from 'effect/Record';
 import {SimpleMessage} from '#test/unit/components/simple-message.tsx';
 import {SimpleModal, SimpleModalService, SimpleModalServiceLogger} from '#test/unit/components/simple-modal.tsx';
 import {makeTestRuntime} from '#test/unit/util.ts';
 import {it} from '@effect/vitest';
+import * as E from 'effect/Effect';
 
 const runtime = makeTestRuntime([SimpleModal, SimpleMessage], false);
 

@@ -1,9 +1,9 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import type {ServerClan} from '#src/data/index.ts';
-import {E} from '#src/internal/pure/effect.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {ClanWar} from 'clashofclans.js';
 import {DiscordREST} from 'dfx/DiscordREST';
+import * as E from 'effect/Effect';
 
 export const nicknames = {
   'ClashTest Dummy': 'CTD',

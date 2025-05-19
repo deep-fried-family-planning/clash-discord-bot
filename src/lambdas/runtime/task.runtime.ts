@@ -1,7 +1,6 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {L, pipe} from '#src/internal/pure/effect.ts';
 import {task} from '#src/lambdas/task.ts';
 import {BaseLambdaLayer} from '#src/lambdas/util.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {EventRouterLive} from '#src/service/EventRouter.ts';
 import {LambdaHandler} from '@effect-aws/lambda';
@@ -9,6 +8,8 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
 
 const layer = pipe(
   L.mergeAll(

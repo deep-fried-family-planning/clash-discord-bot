@@ -1,7 +1,7 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import type {SharedOptions} from '#src/internal/discord-old/types.ts';
-import {E, g} from '#src/internal/pure/effect.ts';
+import type {SharedOptions} from '#src/discord/old/types.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import type {Clan, ClanWar, ClanWarLeagueGroup, Player} from 'clashofclans.js';
+import * as E from 'effect/Effect';
 
 type Kinda = {options: SharedOptions; currentWar: ClanWar[]; current: {clans: Clan[]; cwl: ClanWarLeagueGroup; players: Player[]; wars: ClanWar[]}};
 

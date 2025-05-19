@@ -2,8 +2,8 @@ import type {CK_War} from '#src/clash/api-ck-get-previous-wars.ts';
 import type {CK_Player_PreviousHits} from '#src/clash/api-ck-get-warhits.ts';
 import {ingestCkWar} from '#src/internal/graph/pipeline/ingest-ck-wars.ts';
 import type {DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
+import {pipe} from 'effect/Function';
 
 export const ingestCkPlayerPreviousWars = (playerPreviousHits: CK_Player_PreviousHits[]): DispatchedWar[] => pipe(
   playerPreviousHits,

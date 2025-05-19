@@ -1,8 +1,9 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {E, L} from '#src/internal/pure/effect.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {EA} from '#src/internal/types.ts';
-import {Cache} from 'effect';
+import * as Cache from 'effect/Cache';
+import * as E from 'effect/Effect';
+import * as L from 'effect/Layer';
 
 const cache = Cache.make({
   capacity  : 100,

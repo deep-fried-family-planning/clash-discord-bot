@@ -11,10 +11,8 @@ import {USER} from '#src/discord/commands/user.ts';
 import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
-import {logDiscordError} from '#src/internal/discord-old/log-discord-error.ts';
-import type {CommandSpec} from '#src/internal/discord-old/types.ts';
+import type {CommandSpec} from '#src/discord/old/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
-import {CFG, DT, E, L, Logger, pipe, RDT} from '#src/internal/pure/effect.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
@@ -24,7 +22,14 @@ import {fromParameterStore} from '@effect-aws/ssm';
 import type {Discord} from 'dfx';
 import {DiscordREST} from 'dfx';
 import {map} from 'effect/Array';
+import * as CFG from 'effect/Config';
+import * as DT from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as Logger from 'effect/Logger';
 import {mapEntries, toEntries} from 'effect/Record';
+import * as RDT from 'effect/Redacted';
 
 const specs = {
   CLAN_FAM,
@@ -100,10 +105,7 @@ const h = () => E.gen(function* () {
     concatL(updates),
     E.allWith({concurrency: 'unbounded'}),
   );
-}).pipe(
-  E.catchAll((e) => logDiscordError([e])),
-  E.catchAllDefect((e) => logDiscordError([e])),
-);
+});
 
 const live = pipe(
   DiscordLayer,

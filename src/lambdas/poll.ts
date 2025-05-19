@@ -1,9 +1,6 @@
-import {eachClan} from '#src/clash/poll/clan-war.ts';
-import {serverRaid} from '#src/clash/poll/server-raid.ts';
-import {Cron, DT, E, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
-import {EventRouter} from '#src/service/EventRouter.ts';
+import * as Cron from 'effect/Cron';
+import * as E from 'effect/Effect';
 
 const raidWeekend = Cron.make({
   days    : [],
@@ -14,41 +11,7 @@ const raidWeekend = Cron.make({
 });
 
 export const poll = () => E.gen(function* () {
-  // const isActive = yield* EventRouter.isActive('poll', {});
-  //
-  // if (!isActive) {
-  //   return;
-  // }
-  //
-  // const now = yield* DT.now;
-  // const isRaidWeekend = Cron.match(raidWeekend, now);
-  //
-  // const servers = yield* scanServers();
-  //
-  // if (isRaidWeekend) {
-  //   yield* pipe(
-  //     servers,
-  //     mapL((server) => pipe(
-  //       serverRaid(server),
-  //     )),
-  //     E.allWith({concurrency: 5}),
-  //   );
-  // }
-  //
-  // const players = yield* scanUserPlayers();
-  // const clans = yield* scanServerClans();
-  //
-  // yield* pipe(
-  //   clans,
-  //   mapL((clan) => pipe(
-  //     E.gen(function* () {
-  //       const server = servers.find((s) => s.pk === clan.pk)!;
-  //
-  //       yield* eachClan(server, clan, players);
-  //     }),
-  //   )),
-  //   E.allWith({concurrency: 5}),
-  // );
+
 }).pipe(
   E.tapError((error) => DeepFryerLogger.logError(error)),
   E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),

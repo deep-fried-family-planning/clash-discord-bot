@@ -1,10 +1,10 @@
 import type {GraphModel, OptimizedHit} from '#src/internal/graph/pipeline/optimize-types.ts';
 import type {IDKV} from '#src/internal/graph/types.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
 import {filterKV, reduceKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import {tryOrDefault} from '#src/internal/pure/types-pure.ts';
 import type {ClanWarMember} from 'clashofclans.js';
+import {pipe} from 'effect/Function';
 
 export const descriptiveHitRates = (cid: string, pids: ClanWarMember[], graph: GraphModel) => {
   const [attacks, defenses] = pipe(

@@ -1,21 +1,19 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {ServerClan, type Server, type UserPlayer} from '#src/data/index.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
+import {updateWarCountdown} from '#src/clash/poll/clan-war-countdown.ts';
+import {type Server, ServerClan, type UserPlayer} from '#src/data/index.ts';
 import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
-import {CSL, E, pipe} from '#src/internal/pure/effect.ts';
-import {MD} from '#src/internal/pure/pure.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
+import {MD} from '#src/internal/pure/pure.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
-import {updateWarCountdown} from '#src/clash/poll/clan-war-countdown.ts';
-// import {WarBattle00hr} from '#src/clash/task/war-thread/war-battle-00hr.ts';
-// import {WarBattle24Hr} from '#src/clash/task/war-thread/war-battle-24hr.ts';
-// import {WarPrep12hr} from '#src/clash/task/war-thread/war-prep-12hr.ts';
-// import {WarPrep24hr} from '#src/clash/task/war-thread/war-prep-24hr.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {DiscordREST} from 'dfx';
+import * as CSL from 'effect/Console';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]) => E.gen(function* () {
   const discord = yield* DiscordREST;

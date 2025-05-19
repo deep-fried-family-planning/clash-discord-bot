@@ -1,5 +1,5 @@
 import {DynamoEnv} from '#config/aws.ts';
-import {DataCapacity} from '#src/data/service/DataCapacity.ts';
+import {DataCapacity} from '#src/service/DataCapacity.ts';
 import type {DeleteCommandInput, GetCommandInput, PutCommandInput, QueryCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import * as E from 'effect/Effect';

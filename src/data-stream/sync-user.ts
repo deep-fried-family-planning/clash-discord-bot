@@ -1,4 +1,4 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {type User, UserLink, UserPartition, UserPlayer} from '#src/data/index.ts';
 import {user} from '#src/discord/commands/user.ts';
 import * as Chunk from 'effect/Chunk';

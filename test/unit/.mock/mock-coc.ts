@@ -1,4 +1,4 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {vi} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import * as L from 'effect/Layer';

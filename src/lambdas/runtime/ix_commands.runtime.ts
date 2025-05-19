@@ -1,17 +1,20 @@
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DataClient} from '#src/data/service/DataClient.ts';
-import {DiscordRESTEnv} from 'config/external.ts';
 import {ComponentRouter} from '#src/discord/component-router.tsx';
-import {DT, L, Logger, pipe} from '#src/internal/pure/effect.ts';
 import {ix_commands} from '#src/lambdas/ix_commands.ts';
+import {ClashKing} from '#src/service/ClashKing.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
+import {DataClient} from '#src/service/DataClient.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {Scheduler} from '@effect-aws/client-scheduler';
 import {SQS} from '@effect-aws/client-sqs';
 import {LambdaHandler} from '@effect-aws/lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
+import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import * as DT from 'effect/DateTime';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as Logger from 'effect/Logger';
 
 const layer = pipe(
   L.mergeAll(

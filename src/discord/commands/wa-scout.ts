@@ -1,16 +1,17 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/internal/discord-old/markdown.ts';
-import {dTable} from '#src/internal/discord-old/message-table.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/discord/old/ix-constants.ts';
+import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/discord/old/markdown.ts';
+import {dTable} from '#src/discord/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import {validateServer} from '#src/discord/old/validation.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeSamples} from '#src/internal/graph/model-descriptive/describe-samples.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {mapL} from '#src/internal/pure/pure-list.ts';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import {toEntries} from 'effect/Record';
 
 export const WA_SCOUT = {
@@ -24,7 +25,7 @@ export const WA_SCOUT = {
   },
 } as const satisfies CommandSpec;
 
-export const waScout = (ix: IxD, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* () {
+export const waScout = (ix: Discord.APIInteraction, ops: IxDS<typeof WA_SCOUT>) => E.gen(function* () {
   yield* validateServer(ix);
 
   const clan = getAliasTag(ops.clan);

@@ -1,6 +1,11 @@
-import {C, E, L, S} from '#src/internal/pure/effect.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {DateTime, Exit, pipe} from 'effect';
+import * as C from 'effect/Cache';
+import * as DateTime from 'effect/DateTime';
+import * as E from 'effect/Effect';
+import * as Exit from 'effect/Exit';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as S from 'effect/Schema';
 
 const RestCacheKey = S.Struct(
   {

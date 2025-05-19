@@ -1,14 +1,9 @@
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import { ServerClanRegistry } from '#src/data';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_CLAN} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/internal/discord-old/types.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
-import {replyError, SlashUserError} from '#src/internal/errors.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
-import {mapL} from '#src/internal/pure/pure-list.ts';
+import {ServerClanRegistry} from '#src/data';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import * as E from 'effect/Effect';
+import type {Discord} from 'dfx';
 
 export const CLAN_FAM = {
   type       : 1,
@@ -25,7 +20,7 @@ export const CLAN_FAM = {
   },
 } as const satisfies CommandSpec;
 
-export const clanfam = (data: IxD, options: IxDS<typeof CLAN_FAM>) => E.gen(function* () {
+export const clanfam = (data: Discord.APIInteraction, options: IxDS<typeof CLAN_FAM>) => E.gen(function* () {
   const registration = yield* ServerClanRegistry.register({
     guild_id    : data.guild_id!,
     caller_roles: data.member!.roles,

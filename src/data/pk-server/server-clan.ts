@@ -1,10 +1,7 @@
 import * as Document from '#src/data/arch/Document.ts';
-import {ClanTagSk} from '#src/data/arch/Id.ts';
 import * as Id from '#src/data/arch/Id.ts';
 import * as Table from '#src/data/arch/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
-import {decodeOnly} from '#src/util/util-schema.ts';
-import * as DateTime from 'effect/DateTime';
 import * as S from 'effect/Schema';
 
 export const TAG = DataTag.SERVER_CLAN;
@@ -41,86 +38,8 @@ export const Latest = Table.Item(TAG, LATEST, {
   select         : S.optional(Table.SelectMenuOption(Id.ClanTag)),
 });
 
-const V0 = S.Struct({
-  ...Key.fields,
-  _tag           : S.tag(DataTag.SERVER_CLAN),
-  version        : S.tag(0),
-  name           : S.String,
-  description    : S.String,
-  thread_prep    : S.optional(Id.ThreadId),
-  prep_opponent  : S.optional(Id.ClanTag),
-  thread_battle  : S.optional(Id.ThreadId),
-  battle_opponent: S.optional(Id.ClanTag),
-  countdown      : S.optional(Id.ChannelId),
-  verification   : S.optionalWith(ClanVerification, {default: () => 0}),
-  select         : S.optional(Table.SelectMenuOption(Id.ClanTag)),
-  created        : Table.Created,
-  updated        : Table.Updated,
-  upgraded       : Table.Upgraded,
-});
-
-const Legacy = S.Struct({
-  type           : S.Literal('DiscordClan'),
-  pk             : Id.ServerId,
-  sk             : Id.ClanTag,
-  gsi_server_id  : Id.ServerId,
-  gsi_clan_tag   : Id.ClanTag,
-  version        : S.Literal('1.0.0'),
-  created        : S.Date,
-  updated        : S.Date,
-  embed_id       : S.optional(Id.EmbedId),
-  verification   : S.Enums({admin: 0, elder: 1, coleader: 2, leader: 3, developer: 4}).pipe(S.optionalWith({default: () => 0})),
-  name           : S.String.pipe(S.optionalWith({default: () => ''})),
-  alias          : S.String.pipe(S.optionalWith({default: () => ''})),
-  desc           : S.String.pipe(S.optionalWith({default: () => ''})),
-  uses           : S.Array(S.String).pipe(S.optionalWith({default: () => [] as string[]})),
-  thread_prep    : Id.ThreadId,
-  prep_opponent  : Id.ClanTag,
-  thread_battle  : Id.ThreadId,
-  battle_opponent: Id.ClanTag,
-  countdown      : Id.ThreadId,
-});
-
 export const Versions = S.Union(
   Latest,
-  decodeOnly(V0, S.typeSchema(Latest), (enc) => {
-    return {
-      ...enc,
-      _v      : LATEST,
-      _v7     : '',
-      upgraded: true,
-      polling : true,
-      pk2     : enc.sk,
-      sk2     : enc.pk,
-    } as const;
-  }),
-  decodeOnly(Legacy, S.typeSchema(Latest), (enc) => {
-    return {
-      _tag           : DataTag.SERVER_CLAN,
-      _v             : LATEST,
-      _v7            : '',
-      upgraded       : true,
-      name           : enc.name,
-      description    : enc.desc,
-      polling        : true,
-      pk             : enc.pk,
-      sk             : enc.sk,
-      pk2            : enc.sk,
-      sk2            : enc.pk,
-      thread_prep    : enc.thread_prep,
-      prep_opponent  : enc.prep_opponent,
-      thread_battle  : enc.thread_battle,
-      battle_opponent: enc.battle_opponent,
-      countdown      : enc.countdown,
-      verification   : enc.verification as any,
-      created        : DateTime.unsafeMake(enc.created),
-      updated        : DateTime.unsafeMake(enc.updated),
-      select         : {
-        value: enc.sk,
-        label: enc.name,
-      },
-    } as const;
-  }),
 );
 
 export const encode = S.encode(Latest);

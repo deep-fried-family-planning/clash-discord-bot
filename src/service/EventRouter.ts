@@ -1,25 +1,29 @@
-import {LambdaProxyEnv, LambdaRoutesEnv} from 'config/aws.ts';
 import type {WsCtx} from '#dev/dev_ws.ts';
 import {ApiGatewayManagementApi} from '@effect-aws/client-api-gateway-management-api';
 import {Lambda} from '@effect-aws/client-lambda';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
-import {Config, Duration, Effect, Layer, pipe} from 'effect';
+import {LambdaProxyEnv, LambdaRoutesEnv} from 'config/aws.ts';
+import * as Config from 'effect/Config';
+import * as Duration from 'effect/Duration';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as Layer from 'effect/Layer';
 
-export class EventRouter extends Effect.Service<EventRouter>()('deepfryer/EventRouter', {
-  effect: Effect.gen(function* () {
+export class EventRouter extends E.Service<EventRouter>()('deepfryer/EventRouter', {
+  effect: E.gen(function* () {
     const lambda = yield* Lambda;
     const routes = yield* LambdaRoutesEnv;
 
     return {
       invoke: (name: keyof typeof routes, data: any) =>
-        Effect.asVoid(
+        E.asVoid(
           lambda.invokeAsync({
             FunctionName: routes[name],
             InvokeArgs  : JSON.stringify(data),
           }),
         ),
       isActive: (name: keyof typeof routes, data: any) =>
-        Effect.succeed(true),
+        E.succeed(true),
     };
   }),
   dependencies: [
@@ -28,7 +32,7 @@ export class EventRouter extends Effect.Service<EventRouter>()('deepfryer/EventR
   accessors: true,
 }) {}
 
-const makeQualEventRouter = () => Layer.effect(EventRouter, Effect.gen(function* () {
+const makeQualEventRouter = () => Layer.effect(EventRouter, E.gen(function* () {
   const document = yield* DynamoDBDocument;
   const gateway = yield* ApiGatewayManagementApi;
   const lambda = yield* Lambda;
@@ -42,54 +46,54 @@ const makeQualEventRouter = () => Layer.effect(EventRouter, Effect.gen(function*
         sk: proxy.DFFP_APIGW_DEV_WS_SK,
       },
     }),
-    Effect.catchAllCause(() => Effect.succeed(undefined)),
-    Effect.flatMap((res) => Effect.fromNullable(res?.Item?.context as WsCtx)),
-    Effect.cachedWithTTL(Duration.seconds(10)),
+    E.catchAllCause(() => E.succeed(undefined)),
+    E.flatMap((res) => E.fromNullable(res?.Item?.context as WsCtx)),
+    E.cachedWithTTL(Duration.seconds(10)),
   );
 
   return EventRouter.make({
     invoke: (name, data) =>
       pipe(
         cached,
-        Effect.tap((ctx) =>
-          Effect.ignoreLogged(
+        E.tap((ctx) =>
+          E.ignoreLogged(
             gateway.postToConnection({
               ConnectionId: ctx.connectionId,
               Data        : JSON.stringify({kind: name, data}),
             }),
           ),
         ),
-        Effect.catchTag('NoSuchElementException', () =>
+        E.catchTag('NoSuchElementException', () =>
           lambda.invokeAsync({
             FunctionName: routes[name],
             InvokeArgs  : JSON.stringify(data),
           }),
         ),
-        Effect.asVoid,
+        E.asVoid,
       ),
     isActive: (name, data) =>
       pipe(
         cached,
-        Effect.tap((ctx) =>
-          Effect.ignoreLogged(
+        E.tap((ctx) =>
+          E.ignoreLogged(
             gateway.postToConnection({
               ConnectionId: ctx.connectionId,
               Data        : JSON.stringify({kind: name, data}),
             }),
           ),
         ),
-        Effect.as(true),
-        Effect.catchTags({
-          NoSuchElementException: () => Effect.succeed(false),
+        E.as(true),
+        E.catchTags({
+          NoSuchElementException: () => E.succeed(false),
         }),
       ),
   });
 }).pipe(
-  Effect.provide(Layer.mergeAll(
+  E.provide(Layer.mergeAll(
     DynamoDBDocument.defaultLayer,
     Lambda.defaultLayer,
     Layer.unwrapEffect(LambdaProxyEnv.pipe(
-      Effect.map((proxy) =>
+      E.map((proxy) =>
         ApiGatewayManagementApi.layer({
           endpoint: proxy.DFFP_APIGW_DEV_WS,
         }),
@@ -100,4 +104,4 @@ const makeQualEventRouter = () => Layer.effect(EventRouter, Effect.gen(function*
 
 export const EventRouterLive = () =>
   process.env.LAMBDA_ENV === 'prod' ? EventRouter.Default :
-  makeQualEventRouter();
+    makeQualEventRouter();

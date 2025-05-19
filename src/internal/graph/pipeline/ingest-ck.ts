@@ -5,9 +5,9 @@ import {ingestCkWar} from '#src/internal/graph/pipeline/ingest-ck-wars.ts';
 import type {DispatchedWar} from '#src/internal/graph/pipeline/ingest-types.ts';
 import type {IDKV} from '#src/internal/graph/types.ts';
 import {attachModelId} from '#src/internal/graph/types.ts';
-import {pipe} from '#src/internal/pure/effect.ts';
 import {concatL, mapL, reduceL} from '#src/internal/pure/pure-list.ts';
 import type {Player} from 'clashofclans.js';
+import {pipe} from 'effect/Function';
 import {toEntries} from 'effect/Record';
 
 export const ingestCkToModel = (prevWars: CK_War[], players?: Player[], playerPrevious?: CK_Player_PreviousHits[]) => {

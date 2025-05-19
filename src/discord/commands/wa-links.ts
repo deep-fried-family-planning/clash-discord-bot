@@ -1,17 +1,18 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/internal/discord-old/constants/ix-constants.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/internal/discord-old/markdown.ts';
-import {dTable} from '#src/internal/discord-old/message-table.ts';
-import {validateServer} from '#src/internal/discord-old/validation.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/discord/old/ix-constants.ts';
+import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/old/markdown.ts';
+import {dTable} from '#src/discord/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import {validateServer} from '#src/discord/old/validation.ts';
 import {fetchWarEntities} from '#src/internal/graph/fetch-war-entities.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {concatL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';
 import type {num} from '#src/internal/pure/types-pure.ts';
 import type {ClanWar, ClanWarMember} from 'clashofclans.js';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const WA_LINKS = {
   type       : 1,
@@ -24,7 +25,7 @@ export const WA_LINKS = {
   },
 } as const satisfies CommandSpec;
 
-export const waLinks = (ix: IxD, ops: IxDS<typeof WA_LINKS>) => E.gen(function* () {
+export const waLinks = (ix: Discord.APIInteraction, ops: IxDS<typeof WA_LINKS>) => E.gen(function* () {
   yield* validateServer(ix);
 
   const clan = getAliasTag(ops.clan);

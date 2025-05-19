@@ -1,9 +1,11 @@
-import {ClashEnv} from 'config/external.ts';
+import {ClashEnv} from '#config/external.ts';
 import {RestCache} from '#src/clash/layers/restcache.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
 import {Client, type Player} from 'clashofclans.js';
-import {Data, Redacted} from 'effect';
+import * as Data from 'effect/Data';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as Redacted from 'effect/Redacted';
 
 type Keys = | 'verifyPlayerToken'
             | 'getClan'
@@ -48,7 +50,6 @@ export class ClashOfClans extends E.Service<ClashClient>()('deepfryer/ClashOfCla
 
         return E.succeed(formatted);
       },
-
 
       verifyPlayerToken: (playerTag, options) =>
         E.promise(

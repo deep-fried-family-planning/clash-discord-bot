@@ -1,12 +1,13 @@
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import {dCodes, dLines} from '#src/internal/discord-old/markdown.ts';
-import {dTable} from '#src/internal/discord-old/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/internal/discord-old/types.ts';
-import {E, pipe} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {dCodes, dLines} from '#src/discord/old/markdown.ts';
+import {dTable} from '#src/discord/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
 import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
+import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
 
 export const TIME = {
   type       : 1,
@@ -33,7 +34,7 @@ export const TIME = {
 /**
  * @desc [SLASH /time]
  */
-export const time = (ix: IxD, ops: IxDS<typeof TIME>) => E.gen(function* () {
+export const time = (ix: Discord.APIInteraction, ops: IxDS<typeof TIME>) => E.gen(function* () {
   dayjs.extend(dayutc);
   dayjs.extend(daytimezone);
 

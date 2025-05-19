@@ -1,7 +1,7 @@
-import {COLOR, nColor} from '#src/internal/discord-old/constants/colors.ts';
-import type {CommandSpec} from '#src/internal/discord-old/types.ts';
-import type {IxD} from '#src/internal/discord-old/discord.ts';
-import {E} from '#src/internal/pure/effect.ts';
+import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import type {CommandSpec} from '#src/discord/old/types.ts';
+import * as E from 'effect/Effect';
+import type {Discord} from 'dfx';
 
 export const OMNI_BOARD = {
   type       : 1,
@@ -13,7 +13,7 @@ export const OMNI_BOARD = {
 /**
  * @desc [SLASH /omni-board]
  */
-export const omniBoard = (data: IxD) => E.gen(function* () {
+export const omniBoard = (data: Discord.APIInteraction) => E.gen(function* () {
   // return yield * DisReactDOM.synthesize(OmniPublic);
 
   return {

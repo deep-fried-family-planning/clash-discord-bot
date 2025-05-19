@@ -1,11 +1,13 @@
-import {DiscordRESTEnv} from 'config/external.ts';
-import {ClashKing} from '#src/clash/clashking.ts';
-import {ClashOfClans} from '#src/clash/clashofclans.ts';
-import {DT, L, Logger} from '#src/internal/pure/effect.ts';
+import {ClashKing} from '#src/service/ClashKing.ts';
+import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
+import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import * as DT from 'effect/DateTime';
+import * as L from 'effect/Layer';
+import * as Logger from 'effect/Logger';
 
 export const ClashLayer = L.mergeAll(
   ClashOfClans.Default,

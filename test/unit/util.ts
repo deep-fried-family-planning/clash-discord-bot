@@ -8,9 +8,11 @@ import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
-import {E, L, pipe} from '#src/internal/pure/effect.ts';
 import {type Mock, vi} from '@effect/vitest';
-import {Redacted} from 'effect';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+import * as L from 'effect/Layer';
+import * as Redacted from 'effect/Redacted';
 
 const makeStub = (random = true) =>
   vi.fn(() => random
