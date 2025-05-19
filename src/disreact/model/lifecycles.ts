@@ -7,10 +7,10 @@ import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {Side} from '#src/disreact/model/meta/side.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import * as MutableList from 'effect/MutableList';
-import * as ML from 'effect/MutableList';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
+import * as MutableList from 'effect/MutableList';
+import * as ML from 'effect/MutableList';
 
 export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
 export type Lifecycles = never;
@@ -176,9 +176,9 @@ const renderMount = (root: Rehydrant, elem: Elem.Task) =>
 /**
  * @desc mount
  */
-const mount = (root: Rehydrant, elem: Elem.Node) => {
+const mount = (root: Rehydrant, elem: Elem.Node, data?: any) => {
   MutableList.append(root.mount, elem);
-
+  root.data = data;
   let sent = false;
 
   return E.whileLoop({
@@ -218,7 +218,7 @@ const mount = (root: Rehydrant, elem: Elem.Node) => {
 /**
  * @desc mount
  */
-export const initialize = (root: Rehydrant) => mount(root, root.elem);
+export const initialize = (root: Rehydrant, data?: any) => mount(root, root.elem, data);
 
 /**
  * @desc rehydrate
@@ -246,8 +246,9 @@ const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
 /**
  * @desc rehydrate
  */
-export const rehydrate = (root: Rehydrant) => {
+export const rehydrate = (root: Rehydrant, data?: any) => {
   MutableList.append(root.mount, root.elem);
+  root.data = data;
 
   return E.iterate(undefined as any, {
     while: () => !!MutableList.tail(root.mount),
@@ -257,9 +258,9 @@ export const rehydrate = (root: Rehydrant) => {
       if (Elem.isTask(next)) {
         if (root.fibrils[next.id!]) {
           next.fibril = root.fibrils[next.id!];
-          next.fibril.rehydrant = root;
           next.fibril.rc = 1;
         }
+        next.fibril.rehydrant = root;
         return rehydrateRender(root, next);
       }
 

@@ -23,8 +23,8 @@ export const makeStubLambdaContext = () =>
   });
 
 const lookup = {
-  ix_menu : lambda_ix_menu,
-  ix_slash: lambda_ix_slash,
+  ix_components: lambda_ix_menu,
+  ix_commands  : lambda_ix_slash,
   // poll    : lambda_poll,
   // task         : lambda_task,
 };

@@ -11,6 +11,7 @@ import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import {NodeHttpClient} from '@effect/platform-node';
 import {DiscordRESTEnv} from 'config/external.ts';
 import {DiscordConfig, DiscordRESTMemoryLive} from 'dfx';
+import {LogLevel} from 'effect';
 import * as DT from 'effect/DateTime';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
@@ -35,6 +36,7 @@ const layer = pipe(
       L.setTracerTiming(true),
       L.setTracerEnabled(true),
       Logger.replace(Logger.defaultLogger, Logger.structuredLogger),
+      Logger.minimumLogLevel(LogLevel.All),
       DT.layerCurrentZoneLocal,
     ),
   ),
