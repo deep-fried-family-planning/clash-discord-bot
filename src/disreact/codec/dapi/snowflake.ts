@@ -1,13 +1,13 @@
-import * as DT from 'effect/DateTime';
-import type * as DR from 'effect/Duration';
+import * as DateTime from 'effect/DateTime';
+import type * as Duration from 'effect/Duration';
 import {hole} from 'effect/Function';
 import * as S from 'effect/Schema';
 
-export * as Snowflake from '#src/disreact/codec/snowflake.ts';
+export * as Snowflake from '#src/disreact/codec/dapi/snowflake.ts';
 export type Snowflake = string;
 
 export const toDateTime = (id: string) =>
-  DT.unsafeMake(
+  DateTime.unsafeMake(
     Number(BigInt(id) >> 22n) + 1420070400000,
   );
 
@@ -23,12 +23,12 @@ export const Epoch = S.transform(
   },
 );
 
-export const TimeToLive = (duration: DR.Duration) =>
+export const TimeToLive = (duration: Duration.Duration) =>
   S.transform(
     Id,
     S.typeSchema(S.DateTimeUtcFromSelf),
     {
       encode: () => '',
-      decode: (id) => DT.addDuration(toDateTime(id), duration),
+      decode: (id) => DateTime.addDuration(toDateTime(id), duration),
     },
   );

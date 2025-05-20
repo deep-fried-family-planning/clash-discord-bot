@@ -1,10 +1,10 @@
-import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
+import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
 
-export * as TextInput from '#src/disreact/codec/intrinsic/component/textinput.ts';
+export * as TextInput from '#src/disreact/codec/intrinsic/container/textinput.ts';
 export type TextInput = never;
 
 export const TAG  = 'textinput',
@@ -43,7 +43,7 @@ export const encode = (self: Elem.Rest, acc: any) => {
       min_length : self.props.min_length,
       max_length : self.props.max_length,
       required   : self.props.required,
-      value      : self.props.value ?? acc[Keys.primitive],
+      value      : self.props.value ?? acc[Keys.primitive]?.[0],
       placeholder: self.props.placeholder,
     }],
   };

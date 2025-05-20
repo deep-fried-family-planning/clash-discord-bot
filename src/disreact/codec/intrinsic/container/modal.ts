@@ -1,4 +1,4 @@
-import {TextInput} from '#src/disreact/codec/intrinsic/component/textinput.ts';
+import {TextInput} from '#src/disreact/codec/intrinsic/container/textinput.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
 import {Declare} from '#src/disreact/model/declare.ts';

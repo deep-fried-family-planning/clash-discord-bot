@@ -6,10 +6,10 @@ import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
 import {DAPI} from '../../dapi/dapi';
 
-export * as Secondary from '#src/disreact/codec/intrinsic/component/secondary.ts';
-export type Secondary = never;
+export * as Success from '#src/disreact/codec/intrinsic/button/success.ts';
+export type Success = never;
 
-export const TAG  = 'secondary',
+export const TAG  = 'success',
              NORM = Keys.buttons;
 
 export const EventData = S.Struct({
@@ -25,11 +25,12 @@ export const Children = S.Union(
 
 export const Attributes = declareProps(
   S.Struct({
-    custom_id     : S.optional(S.String),
-    label         : S.optional(S.String),
-    emoji         : S.optional(Emoji.Attributes),
-    disabled      : S.optional(S.Boolean),
-    [Keys.onclick]: Handler,
+    custom_id      : S.optional(S.String),
+    label          : S.optional(S.String),
+    emoji          : S.optional(Emoji.Attributes),
+    disabled       : S.optional(S.Boolean),
+    [Keys.onclick] : Handler,
+    [Keys.children]: S.optional(S.Any),
   }),
 );
 
@@ -41,10 +42,10 @@ export const Element = declareHandlerElem(
 
 export const encode = (self: Elem.Rest, acc: any) => {
   return {
-    label    : self.props.label ?? acc[Keys.primitive]?.[0],
-    style    : DAPI.Component.SECONDARY,
     type     : DAPI.Component.BUTTON,
     custom_id: self.props.custom_id ?? self.ids,
+    style    : DAPI.Component.SUCCESS,
+    label    : self.props.label ?? acc[Keys.primitive]?.[0],
     emoji    : self.props.emoji ?? acc[Keys.emoji]?.[0],
     disabled : self.props.disabled,
   };

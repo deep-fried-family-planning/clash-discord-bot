@@ -1,16 +1,16 @@
-import {Button} from '#src/disreact/codec/intrinsic/component/button.ts';
-import {Danger} from '#src/disreact/codec/intrinsic/component/danger.ts';
-import {Link} from '#src/disreact/codec/intrinsic/component/link.ts';
-import {Premium} from '#src/disreact/codec/intrinsic/component/premium.ts';
-import {Primary} from '#src/disreact/codec/intrinsic/component/primary.ts';
-import {Secondary} from '#src/disreact/codec/intrinsic/component/secondary.ts';
-import {Success} from '#src/disreact/codec/intrinsic/component/success.ts';
+import {Button} from '#src/disreact/codec/intrinsic/button/button.ts';
+import {Danger} from '#src/disreact/codec/intrinsic/button/danger.ts';
+import {Link} from '#src/disreact/codec/intrinsic/button/link.ts';
+import {Premium} from '#src/disreact/codec/intrinsic/button/premium.ts';
+import {Primary} from '#src/disreact/codec/intrinsic/button/primary.ts';
+import {Secondary} from '#src/disreact/codec/intrinsic/button/secondary.ts';
+import {Success} from '#src/disreact/codec/intrinsic/button/success.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
-import {Util} from '../util';
+import {Util} from 'src/disreact/codec/intrinsic/util.ts';
 
-export * as Actions from '#src/disreact/codec/intrinsic/container/actions.ts';
+export * as Actions from '#src/disreact/codec/intrinsic/button/actions.ts';
 export type Actions = never;
 
 export const TAG  = 'actions',

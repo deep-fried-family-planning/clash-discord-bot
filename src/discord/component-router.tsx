@@ -1,4 +1,6 @@
+import {AccountLinker} from '#src/discord/omni-board/accounts/account-linker.tsx';
 import {OmniUser} from '#src/discord/omni-board/accounts/omni-user.tsx';
+import {TagTokenModal} from '#src/discord/omni-board/accounts/tag-token-modal.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {pipe} from 'effect/Function';
@@ -14,7 +16,8 @@ export const ComponentRouter = pipe(
       OmniBoard,
       StartMenu,
       OmniUser,
-
+      AccountLinker,
+      TagTokenModal,
     ],
   })),
 );

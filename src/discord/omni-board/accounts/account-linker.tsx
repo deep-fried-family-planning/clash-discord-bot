@@ -21,27 +21,27 @@ export const AccountLinker = (props: Props) => {
         {'Select the type of COC account to link.'}
         {'Then use the Tag/Token button to submit your in-game player tag and API token'}
       </embed>
-      {success === false && (
-        <embed title={'Link Failed'}>
-          {'Please try again.'}
-        </embed>
-      )}
-      <select
-        placeholder={'Select Account Type'}
-        onselect={(event) => {
-          setType(event.values[0]);
-          setSuccess(undefined);
-        }}
-      >
-        {SELECT_ACCOUNT_TYPE.map((aT) =>
-          <option
-            label={aT.label}
-            value={aT.value}
-            description={aT.description}
-            default={aT.value === type}
-          />,
-        )}
-      </select>
+      {/* {success === false && ( */}
+      {/*  <embed title={'Link Failed'}> */}
+      {/*    {'Please try again.'} */}
+      {/*  </embed> */}
+      {/* )} */}
+      {/* <select */}
+      {/*  placeholder={'Select Account Type'} */}
+      {/*  onselect={(event) => { */}
+      {/*    setType(event.values[0]); */}
+      {/*    setSuccess(undefined); */}
+      {/*  }} */}
+      {/* > */}
+      {/*  {SELECT_ACCOUNT_TYPE.map((aT) => */}
+      {/*    <option */}
+      {/*      label={aT.label} */}
+      {/*      value={aT.value} */}
+      {/*      description={aT.description} */}
+      {/*      default={aT.value === type} */}
+      {/*    />, */}
+      {/*  )} */}
+      {/* </select> */}
       <actions>
         <success
           label={'Tag/Token'}

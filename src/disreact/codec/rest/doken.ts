@@ -10,7 +10,7 @@ import {hole, pipe} from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Redacted from 'effect/Redacted';
 import * as S from 'effect/Schema';
-import {Snowflake} from 'src/disreact/codec/snowflake.ts';
+import {Snowflake} from '#src/disreact/codec/dapi/snowflake.ts';
 
 export * as Doken from '#src/disreact/codec/rest/doken.ts';
 export type Doken =
@@ -284,73 +284,6 @@ export const convertSerial = (doken: Doken): Serial => {
   }
 };
 
-export const convertCached = (doken: Serial): Serial => {
-  switch (doken._tag) {
-    case ACTIVE:
-      return cache(doken);
-    default:
-      return doken;
-  }
-};
-
 export class DokenDefect extends D.TaggedError('disreact/DokenDefect')<{
   msg?: string;
 }> {}
-
-export const ttlEither = (self: Doken | undefined, now: DateTime.Utc) =>
-  pipe(
-    self,
-    Either.fromNullable(() => undefined),
-    Either.flatMap((doken) =>
-      DateTime.distanceDurationEither(now, doken.ttl),
-    ),
-    Either.map((delay) => [delay, self!] as const),
-    Either.mapLeft(() => undefined),
-  );
-
-export const reduce = (state: Doken, action: Doken) => {
-  if (action._tag === NEVER) {
-    return action;
-  }
-  if (
-    state._tag === NEVER ||
-    state._tag === ACTIVE ||
-    state._tag === MODAL
-  ) {
-    return state;
-  }
-  if (
-    state._tag === FRESH
-  ) {
-    return action;
-  }
-};
-
-export const resolveSerial = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
-  if (!serial || Doken.isSingle(serial)) {
-    return E.succeed(undefined);
-  }
-  if (Doken.isActive(serial)) {
-    return pipe(
-      DateTime.isFuture(serial.ttl),
-      E.map((isFuture) => isFuture ? serial : undefined),
-    );
-  }
-  return pipe(
-    DokenMemory.use((memory) => memory.load(serial.id)),
-    E.orElseSucceed(() => undefined),
-    E.timeoutTo({
-      duration : Duration.seconds(1),
-      onTimeout: () => undefined,
-      onSuccess: (cached) => {
-        if (!cached) {
-          return cached;
-        }
-        cached.app = fresh.app;
-        return cached;
-      },
-    }),
-    E.whenEffect(DateTime.isFuture(serial.ttl)),
-    E.map(Option.getOrUndefined),
-  );
-};

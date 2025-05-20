@@ -4,7 +4,7 @@ import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
 
-export * as Option from '#src/disreact/codec/intrinsic/component/option.ts';
+export * as Option from '#src/disreact/codec/intrinsic/select/option.ts';
 export type Option = never;
 
 export const TAG  = 'option',

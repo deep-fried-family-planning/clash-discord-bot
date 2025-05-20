@@ -3,7 +3,7 @@ import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
 
-export * as Default from '#src/disreact/codec/intrinsic/component/default.ts';
+export * as Default from '#src/disreact/codec/intrinsic/select/default.ts';
 export type Default = never;
 
 export const TAG  = 'default',

@@ -1,12 +1,12 @@
-import {Default} from '#src/disreact/codec/intrinsic/component/default.ts';
+import {Default} from '#src/disreact/codec/intrinsic/select/default.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import {Declare} from '#src/disreact/model/declare.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
-import {DAPI} from '../../dapi/dapi';
+import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
 
-export * as Mentions from '#src/disreact/codec/intrinsic/component/mentions.ts';
+export * as Mentions from '#src/disreact/codec/intrinsic/select/mentions.ts';
 export type Mentions = never;
 
 export const TAG  = 'mentions',

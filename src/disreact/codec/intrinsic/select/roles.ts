@@ -1,22 +1,21 @@
-import {Default} from '#src/disreact/codec/intrinsic/component/default.ts';
+import {Default} from '#src/disreact/codec/intrinsic/select/default.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
-import {declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {Declare} from '#src/disreact/model/declare.ts';
+import {declareHandler, declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
-import {DAPI} from '../../dapi/dapi';
+import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
 
-export * as Channels from '#src/disreact/codec/intrinsic/component/channels.ts';
-export type Channels = never;
+export * as Roles from '#src/disreact/codec/intrinsic/select/roles.ts';
+export type Roles = never;
 
-export const TAG  = 'channels',
+export const TAG  = 'roles',
              NORM = Keys.components;
 
 export const EventData = S.Struct({
-  data: DAPI.Component.ChannelSelectData,
+  data: DAPI.Component.RoleSelectData,
 });
 
-export const Handler = Declare.handler(EventData);
+export const Handler = declareHandler(EventData);
 
 export const Children = S.Union(
   Default.Element,
@@ -28,7 +27,6 @@ export const Attributes = declareProps(
     placeholder    : S.optional(S.String),
     min_values     : S.optional(S.Number),
     max_values     : S.optional(S.Number),
-    channel_types  : S.optional(S.Array(S.Int)),
     disabled       : S.optional(S.Boolean),
     [Keys.onselect]: Handler,
   }),
@@ -44,12 +42,11 @@ export const encode = (self: Elem.Rest, acc: any) => {
   return {
     type      : DAPI.Component.ACTION_ROW,
     components: [{
-      type          : DAPI.Component.CHANNEL_SELECT,
+      type          : DAPI.Component.ROLE_SELECT,
       custom_id     : self.props.custom_id ?? self.ids,
-      placeholder   : self.props.placeholder ?? acc[Keys.primitive]?.[0],
+      placeholder   : self.props.label ?? acc[Keys.primitive]?.[0],
       min_values    : self.props.min_values,
       max_values    : self.props.max_values,
-      channel_types : self.props.channel_types,
       default_values: self.props.default_values ?? acc[Keys.default_values],
       disabled      : self.props.disabled,
     }],
