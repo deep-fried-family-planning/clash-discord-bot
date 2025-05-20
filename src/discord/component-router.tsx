@@ -1,3 +1,4 @@
+import {OmniUser} from '#src/discord/omni-board/accounts/omni-user.tsx';
 import {DisReact} from '#src/disreact/runtime/DisReact.ts';
 import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
 import {pipe} from 'effect/Function';
@@ -12,6 +13,8 @@ export const ComponentRouter = pipe(
     sources: [
       OmniBoard,
       StartMenu,
+      OmniUser,
+
     ],
   })),
 );

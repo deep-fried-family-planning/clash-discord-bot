@@ -1,4 +1,5 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
+import {OmniUser} from '#src/discord/omni-board/accounts/omni-user.tsx';
 import {useIx, usePage} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import type { Effect } from 'effect/Effect';
@@ -22,7 +23,7 @@ export const StartMenu: FC = () => {
         <success
           label={'Link'}
           onclick={() => {
-
+            page.next(OmniUser);
           }}
         />
         <primary
