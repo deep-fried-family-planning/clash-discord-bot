@@ -1,4 +1,5 @@
-import type * as Elem from '#src/disreact/mode/entity/elem.ts';
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import type * as El from '#src/disreact/mode/entity/el.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
 
@@ -9,9 +10,9 @@ export const PROMISE = 1;
 export const EFFECT = 2;
 
 export declare namespace FC {
-  export type Output = Elem.Elem.Any | Elem.Elem.Any[];
-  export type OutEffect = E.Effect<Elem.Elem.Any | Elem.Elem.Any[]>;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  export type Output = El.Children;
+  export type OutEffect = E.Effect<El.Children>;
+
   export interface Any<P, O> extends Function {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
     [TypeId]?   : number;

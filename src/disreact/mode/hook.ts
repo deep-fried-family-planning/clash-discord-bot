@@ -1,34 +1,84 @@
-import type * as Elem from '#src/disreact/mode/entity/elem.ts';
-import * as Deps from '#src/disreact/mode/state/deps.ts';
-import * as Fibril from '#src/disreact/mode/state/fibril.ts';
-import type * as Rehydrant from '#src/disreact/mode/state/rehydrant.ts';
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import type * as El from '#src/disreact/mode/entity/el.ts';
+import type {FC} from '#src/disreact/mode/entity/fc.ts';
+import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
+import type * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
+import {globalValue} from 'effect/GlobalValue';
+import * as Hash from 'effect/Hash';
 
 const context = {
-  rehydrant: undefined as undefined | Rehydrant.Rehydrant,
-  elem     : undefined as undefined | Elem.Fn,
-  fibril   : undefined as undefined | Fibril.Fibril,
+  root: undefined as undefined | Rehydrant.Rehydrant,
+  elem: undefined as undefined | El.Fn,
+  poly: undefined as undefined | Polymer.Polymer,
 };
 
-export const setContext = (rehydrant: Rehydrant.Rehydrant, elem: Elem.Fn, fibril: Fibril.Fibril) => {
-  context.rehydrant = rehydrant;
+export const setContext = (root: Rehydrant.Rehydrant, elem: El.Fn, fibril: Polymer.Polymer) => {
+  context.root = root;
   context.elem = elem;
-  context.fibril = fibril;
+  context.poly = fibril;
 };
 
 export const resetContext = () => {
-  context.rehydrant = undefined;
+  context.root = undefined;
   context.elem = undefined;
-  context.fibril = undefined;
+  context.poly = undefined;
+};
+
+const getRehydrant = () => {
+  if (!context.root) {
+    throw new Error('Hooks must be called within a component.');
+  }
+  return context.root;
 };
 
 const getFibril = () => {
-  if (!context.fibril) {
+  if (!context.poly) {
     throw new Error('Hooks must be called within a component.');
   }
-  return context.fibril;
+  return context.poly;
+};
+
+export const TypeId = Symbol.for('disreact/Deps/TypeId');
+
+const fns = globalValue(Symbol.for('disreact/deps'), () => new WeakMap<any, El.Fn>());
+
+export declare namespace Deps {
+  export interface Fn<P extends any[] = any[], O = any> extends Function {
+    (...p: P): O;
+    [TypeId]: string;
+    [Equal.symbol](that: Equal.Equal): boolean;
+    [Hash.symbol](): number;
+  }
+}
+export type Fn<P extends any[] = any[], O = any> = Deps.Fn<P, O>;
+
+export const isFn = (fn: any): fn is Deps.Fn =>
+  typeof fn === 'function' &&
+  fn[TypeId];
+
+export const fn = <P extends any[], O>(hook: string, link: El.Fn, input: (...p: P) => O): Deps.Fn<P, O> => {
+  const fn = input as Deps.Fn<P, O>;
+
+  fn[TypeId] = hook;
+
+  fn[Equal.symbol] = (that: Equal.Equal & Deps.Fn): boolean => {
+    if (!isFn(that)) return false;
+    return (
+      isFn(that)
+      && Equal.equals(fn.name, that.name)
+      && Equal.equals(fns.get(fn), fns.get(that))
+    );
+  };
+
+  fn[Hash.symbol] = (): number => {
+    return Hash.hash(hook);
+  };
+
+  fns.set(fn, link);
+  return fn;
 };
 
 export declare namespace Hook {
@@ -42,13 +92,13 @@ export declare namespace Hook {
 
 export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
   const fibril = getFibril();
-  const curr = Fibril.next(
+  const curr = Polymer.next(
     fibril,
-    Fibril.isState,
+    Polymer.isState,
     () => ({s: initial}),
   );
 
-  const set: Hook.SetState<A> = Deps.fn('useState', context.elem!, (next) => {
+  const set: Hook.SetState<A> = fn('useState', context.elem!, (next) => {
     if (typeof next === 'function') {
       curr.s = (next as (prev: A) => A)(curr.s);
     }
@@ -72,13 +122,9 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
   }
 
   const fibril = getFibril();
-  const curr = Fibril.next(
-    fibril,
-    Fibril.isDependency,
-    () => ({d: deps ?? []}),
-  );
+  const curr = Polymer.next(fibril, Polymer.isDep, () => ({d: deps ?? []}));
 
-  const depEffect = Deps.fn('useEffect', context.elem!, effect);
+  const depEffect = fn('useEffect', context.elem!, effect);
 
   if (fibril.rc === 0) {
     fibril.queue.push(depEffect);
@@ -104,23 +150,25 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
 };
 
 export const $useIx = () => {
+  const rehydrant = getRehydrant();
   const node = getFibril();
-  Fibril.next(
+  Polymer.next(
     node,
-    Fibril.isNull,
+    Polymer.isNull,
     () => null,
   );
-  return node.rehydrant.data as Discord.APIInteraction;
+  return rehydrant.data as Discord.APIInteraction;
 };
 
 export const $usePage = () => {
+  const rehydrant = getRehydrant();
   const node = getFibril();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;
   }
 
-  if (!Fibril.isNull(node.stack[node.pc])) {
+  if (!Polymer.isNull(node.stack[node.pc])) {
     throw new Error('Hooks must be called in the same order');
   }
 
@@ -128,12 +176,12 @@ export const $usePage = () => {
 
   return {
     next: (next: FC, props: any = {}) => {
-      node.rehydrant.next.id = next.name;
-      node.rehydrant.next.props = props;
+      rehydrant.next.id = next.name;
+      rehydrant.next.props = props;
     },
 
     close: () => {
-      node.rehydrant.next.id = null;
+      rehydrant.next.id = null;
     },
   };
 };

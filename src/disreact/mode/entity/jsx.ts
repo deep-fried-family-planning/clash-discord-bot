@@ -1,4 +1,5 @@
-import * as Elem from '#src/disreact/mode/entity/elem.ts';
+import * as Elem from '#src/disreact/mode/entity/el.ts';
+import * as Array from 'effect/Array';
 
 export const Fragment = undefined;
 

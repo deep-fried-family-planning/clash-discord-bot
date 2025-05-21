@@ -1,8 +1,8 @@
-import * as Elem from '#src/disreact/mode/entity/elem.ts';
+import * as El from '#src/disreact/mode/entity/el.ts';
 import * as FC from '#src/disreact/mode/entity/fc.ts';
-import * as Fibril from '#src/disreact/mode/state/fibril.ts';
+import * as Fibril from '#src/disreact/mode/entity/polymer.ts';
 import * as Hook from '#src/disreact/mode/hook.ts';
-import type {Rehydrant} from '#src/disreact/mode/state/rehydrant.ts';
+import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
 import * as Side from '#src/disreact/mode/state/side.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
@@ -16,7 +16,7 @@ export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
   effect: E.gen(function* () {
     const mutex = yield* E.makeSemaphore(1);
 
-    const render = (root: Rehydrant.Rehydrant, fn: Elem.Fn) => {
+    const render = (root: Rehydrant.Rehydrant, fn: El.Fn) => {
       const fibril = Fibril.get(fn);
 
       return pipe(
@@ -34,7 +34,7 @@ export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
               Fibril.commit(fibril);
             }),
             E.flatMap(() => mutex.release(1)),
-            E.as(Elem.ensureChildren(rendered)),
+            E.as(El.normalize(fn, rendered)),
           ),
         ),
         E.catchAllDefect((d) =>
@@ -46,9 +46,6 @@ export class Dispatcher extends E.Service<Dispatcher>()('disreact/Dispatcher', {
             E.flatMap(() => mutex.release(1)),
             E.flatMap(() => new DispatcherError({cause: d as Error})),
           ),
-        ),
-        E.tap(() =>
-          E.forEach(fibril.queue, (side) => Side.flush(side)),
         ),
       );
     };

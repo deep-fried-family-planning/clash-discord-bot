@@ -1,10 +1,7 @@
 import * as Keys from '#src/disreact/codec/intrinsic/keys.ts';
-import type {Elem} from '#src/disreact/mode/entity/elem.ts';
-import type * as Event from '#src/disreact/mode/entity/event.ts';
+import type * as Elem from '#src/disreact/mode/entity/el.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
-import * as Hash from 'effect/Hash';
-import console from 'node:console';
 
 export declare namespace Props {
   export type Props = Record<string, any>;
@@ -47,20 +44,30 @@ export const cloneKnownProps = (props: Props): Props => {
 };
 
 export const make = (p: any): Props.Props => {
-  if (!p) return p;
-  if (typeof p !== 'object') return p;
-  if (Equal.symbol in p) return p;
+  if (!p) {
+    return p;
+  }
+  if (typeof p !== 'object') {
+    return p;
+  }
+  if (Equal.symbol in p) {
+    return p;
+  }
   if (Array.isArray(p)) {
     const acc = [] as any[];
-    for (const item of p) acc.push(make(item));
+    for (const item of p) {
+      acc.push(make(item));
+    }
     return Data.array(acc);
   }
   const acc = {} as any;
-  for (const key of Object.keys(p)) acc[key] = make(p[key]);
+  for (const key of Object.keys(p)) {
+    acc[key] = make(p[key]);
+  }
   return Data.struct(acc);
 };
 
-export const extractHandler = (props: any): Event.Handler | undefined => {
+export const extractHandler = (props: any): Elem.Handler | undefined => {
   for (let i = 0; i < HANDLER_KEYS.length; i++) {
     const key = HANDLER_KEYS[i];
     const handler = props[key];

@@ -43,7 +43,6 @@ import * as Option from '#src/disreact/codec/intrinsic/select/option.ts';
 import * as Roles from '#src/disreact/codec/intrinsic/select/roles.ts';
 import * as Select from '#src/disreact/codec/intrinsic/select/select.ts';
 import * as Users from '#src/disreact/codec/intrinsic/select/users.ts';
-import * as E from 'effect/Effect';
 
 const defaultDefinitions = [Actions, Button, Danger, Link, Premium, Primary, Secondary, Success, Ephemeral, Message, Modal, TextInput, Author, Embed, Field, Footer, Img, Anchor, AtMention, Bold, BlockQuote, Break, Code, Emoji, H1, H2, H3, Italic, ListItem, MaskAnchor, OrderedList, Paragraph, Pre, Strikethrough, Small, Time, Underline, UnorderedList, Channels, Default, Mentions, Option, Roles, Select, Users];
 
