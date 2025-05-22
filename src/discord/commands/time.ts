@@ -69,6 +69,7 @@ export const time = (ix: Discord.APIInteraction, ops: IxDS<typeof TIME>) => E.ge
           ['ME - UAE     ', utc.tz('Asia/Dubai').utc(true).format('hh:mm A')],
           ['South Africa ', utc.tz('Africa/Johannesburg').utc(true).format('hh:mm A')],
           ['Tokyo        ', utc.tz('Asia/Tokyo').utc(true).format('hh:mm A')],
+          ['Sydney       ', utc.tz('Australia/Sydney').utc(true).format('hh:mm A')],
         ]),
         dCodes,
         dLines,
