@@ -41,6 +41,9 @@ export namespace Diff {
                    | Insert
                    | Remove;
 }
+export type Diff = Diff.Diff;
+export type Nd = Diff.Nd;
+export type Cd = Diff.Cd;
 
 const skip = (): Diff.Skip => ({_tag: 'Skip'});
 const replace = (node: El.El, after?: Diff.Insert[]): Diff.Replace => ({_tag: 'Replace', node, after});
@@ -55,12 +58,6 @@ const diffs = globalValue(
 );
 
 export const get = (el: El.El): Diff.Diff => diffs.get(el)!;
-
-export const root = (a: El.El) => {
-  if (!El.isComp(a)) {
-    return skip();
-  }
-};
 
 export const node = (a: El.El, b: El.El) => {
   if (Equal.equals(a, b)) {
@@ -79,6 +76,9 @@ export const node = (a: El.El, b: El.El) => {
     return render();
   }
   const polymer = Polymer.get(a);
+  if (polymer.rc === 0) {
+    return render();
+  }
   if (!Equal.equals(polymer.stack, polymer.saved)) {
     return render();
   }

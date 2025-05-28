@@ -1,6 +1,6 @@
-import * as Jsx from 'src/disreact/mode/schema/jsx.ts';
+import * as Pragma from 'src/disreact/mode/jsx-pragma.ts';
 
-export const Fragment = Jsx.Fragment;
-export const jsx = Jsx.jsx;
-export const jsxs = Jsx.jsxs;
-export const jsxDEV = Jsx.jsxDEV;
+export const Fragment = Pragma.Fragment;
+export const jsx = Pragma.jsx;
+export const jsxs = Pragma.jsxs;
+export const jsxDEV = Pragma.jsxDEV;

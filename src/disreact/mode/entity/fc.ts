@@ -60,9 +60,15 @@ export const isFC = (fc: unknown): fc is FC => typeof fc === 'function';
 export const name = (input: FC.FC) => input[NameId]!;
 
 export const render = (fc: FC.FC, props: any = {}) => {
-  if (fc[TypeId] === SYNC) return E.sync(() => fc(props)) as FC.OutEffect;
-  if (fc[TypeId] === PROMISE) return E.promise(async () => await fc(props)) as FC.OutEffect;
-  if (fc[TypeId] === EFFECT) return fc(props) as FC.OutEffect;
+  if (fc[TypeId] === SYNC) {
+    return E.sync(() => fc(props)) as FC.OutEffect;
+  }
+  if (fc[TypeId] === PROMISE) {
+    return E.promise(async () => await fc(props)) as FC.OutEffect;
+  }
+  if (fc[TypeId] === EFFECT) {
+    return fc(props) as FC.OutEffect;
+  }
   return E.suspend(() => {
     const out = fc(props);
     if (P.isPromise(out)) {

@@ -3,21 +3,39 @@ import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Props from '#src/disreact/mode/entity/props.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
-import * as E from 'effect/Effect';
-import * as Equal from 'effect/Equal';
-import {globalValue} from 'effect/GlobalValue';
+import type * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
-import * as P from 'effect/Predicate';
 
-const ps = globalValue(Symbol.for('disreact/el/parents'), () => new WeakMap<El.Node, El.Node>());
+export declare namespace Event {
+  export type Event = {
+    id  : string;
+    data: any;
+  };
+  export interface Handler extends Function {
+    (event: Event.Event): void | Promise<void> | E.Effect<void, any, any>;
+  }
+}
+export type Event = Event.Event;
+export type Handler = Event.Handler;
+
+export const event = (id: string, data: any): Event.Event =>
+  Data.struct({
+    id,
+    data,
+  });
 
 export declare namespace El {
-  export type Prim = | string
-                     | number
-                     | boolean
-                     | null
-                     | undefined
-                     | bigint;
+  export type Pr = | string
+                   | number
+                   | boolean
+                   | null
+                   | undefined
+                   | bigint;
+  export interface Text {
+    _tag : 'Text';
+    pos  : number;
+    value: Pr;
+  }
   type Meta = {
     key? : string;
     idn? : string;
@@ -25,85 +43,79 @@ export declare namespace El {
     idx? : number;
     pos? : number;
     props: Props.Props;
-    nds  : El[];
+    nodes: El[];
   };
-  export type Text = {
-    _tag : 'text';
-    value: | string
-           | number
-           | boolean
-           | null
-           | undefined
-           | bigint;
-  };
-  export type Rest = Meta & {
-    _tag    : 'rest';
+  export interface Rest extends Meta {
+    _tag    : 'Rest';
     type    : string;
     handler?: Event.Handler | undefined;
-  };
-  export type Comp = Meta & {
-    _tag: 'comp';
+  }
+  export interface Component extends Meta {
+    _tag: 'Component';
     type: FC.Any;
-  };
-  export type Ve = {pr: Prim};
-  export type Node = | Rest
-                     | Comp;
+  }
+  export type Nd = | Rest
+                   | Component;
   export type El = | Text
-                   | Node;
-  export type Cs = | El
-                   | El[];
-  export type St = MutableList.MutableList<Node>;
-  export type Kv = Record<string, Node>;
+                   | Nd;
+  export type Cs = | Pr
+                   | El
+                   | (El | Pr)[];
 }
-export type Text = El.Prim;
-export type Node = El.Node;
+export type Text = El.Pr;
 export type Rest = El.Rest;
-export type Comp = El.Comp;
+export type Comp = El.Component;
+export type Nd = El.Nd;
 export type El = El.El;
 export type Cs = El.Cs;
-export type St = El.St;
-export type Kv = El.Kv;
 
-export const isText = (e: El.Cs): e is El.Text => !!e && typeof e === 'object' && !Array.isArray(e) && e._tag === 'text';
-export const isNode = (e: El.Cs): e is El.Node => !!e && typeof e === 'object' && !Array.isArray(e);
-export const isRest = (e: El.Cs): e is El.Rest => isNode(e) && e._tag === 'rest';
-export const isComp = (e: El.Cs): e is El.Comp => isNode(e) && e._tag === 'comp';
+export const isEl = (e: unknown): e is El.El => !!e && typeof e === 'object' && '_tag' in e;
+export const isText = (e: El.Cs): e is El.Text => !!e && typeof e === 'object' && !Array.isArray(e) && e._tag === 'Text';
+export const isNode = (e: El.Cs): e is El.Nd => !!e && typeof e === 'object' && !Array.isArray(e);
+export const isRest = (e: El.Cs): e is El.Rest => isNode(e) && e._tag === 'Rest';
+export const isComponent = (e: El.Cs): e is El.Component => isNode(e) && e._tag === 'Component';
 
 const emptyNodes = () => Data.array(Array.empty()) as El.El[];
 
-export const text = (tag: any): El.Text =>
-  Data.struct({
-    _tag : 'text',
-    value: tag,
+export const text = (type: any, pos: number): El.Text => {
+  return Data.struct({
+    _tag : 'Text',
+    pos  : pos,
+    value: type,
   });
+};
 
-export const rest = (tag: string, props: Props.Props): El.Rest => {
+export const rest = (type: string, props: Props.Props): El.Rest => {
   const handler = Props.extractHandler(props);
   const key = Props.extractKey(props);
+  const children = props.children;
+  if (children) {
+    delete props.children;
+  }
   return Data.struct({
-    _tag   : 'rest',
+    _tag   : 'Rest',
     key    : key,
-    type   : tag,
+    type   : type,
     props  : Props.make(props),
-    nds    : ensureChildren(props.children),
+    nodes  : Data.array(children ? Array.ensure(children) : Array.empty()) as El.El[],
     handler: handler,
   });
 };
 
-export const comp = (tag: FC.FC, props: Props.Props): El.Comp => {
+export const component = (type: FC.FC, props: Props.Props): El.Component => {
   const key = Props.extractKey(props);
   return Data.struct({
-    _tag : 'comp',
+    _tag : 'Component',
     key  : key,
-    type : FC.make(tag),
+    type : FC.make(type),
     props: Props.make(props),
-    nds  : emptyNodes(),
+    nodes: emptyNodes(),
   });
 };
 
-export const name = (nd: El.Node) => isRest(nd) ? nd.type : nd.type[FC.NameId]!;
+export const name = (nd: El.Nd) => isRest(nd) ? nd.type : nd.type[FC.NameId]!;
 
-export const normalize = (nd: El.Node, rs: El.Cs = nd.nds): El.El[] => {
+export const normalize = (nd: El.Nd, rs: El.Cs = nd.nodes): El.El[] => {
   const pn = name(nd);
   const cs = Array.ensure(rs).flat();
   const is = {} as Record<string, number>;
@@ -111,10 +123,13 @@ export const normalize = (nd: El.Node, rs: El.Cs = nd.nds): El.El[] => {
 
   for (let i = 0; i < cs.length; i++) {
     const c = cs[i];
+    if (!isEl(c)) {
+      cs[i] = text(c, i);
+      continue;
+    }
     if (isText(c)) {
       continue;
     }
-    ps.set(c, nd);
     c.pos = i;
     if (isRest(c)) {
       const idx = is[c.type] ??= 0;
@@ -135,114 +150,66 @@ export const normalize = (nd: El.Node, rs: El.Cs = nd.nds): El.El[] => {
   return Data.array(cs) as El.El[];
 };
 
-export const connect = (node: El.Node, next: El.Node, idx: number) => {
+export const connect = (node: El.El, next: El.El, idx: number) => {
+  if (node._tag === 'Text' || next._tag === 'Text') {
+    return;
+  }
   const pn = name(node);
   const cn = name(next);
   next.idn = `${node.idn}:${cn}:${idx}`;
   next.ids = `${pn}:${node.idx}:${cn}:${idx}`;
   next.idx = idx;
-  ps.set(next, node);
-  return next;
 };
 
-export const ensureChildren = (cs?: El.El | El.El[]): El.El[] => {
-  if (!cs) {
-    return emptyNodes();
-  }
-  if (Array.isArray(cs)) {
-    return Data.array(cs.flat()) as El.El[];
-  }
-  return Data.array([cs]) as El.El[];
-};
+export const stack = (el?: El.El): MutableList.MutableList<El.El> => el ? MutableList.make(el) : MutableList.empty<El.Nd>();
 
-export const stack = (el?: El.Node): El.St => el ? MutableList.make(el) : MutableList.empty<El.Node>();
+export const check = (stack: MutableList.MutableList<El.El>) => !!MutableList.tail(stack);
 
-export const check = (stack: El.St) => !!MutableList.tail(stack);
+export const pop = (stack: MutableList.MutableList<El.El>) => MutableList.pop(stack)!;
 
-export const pop = (stack: El.St) => MutableList.pop(stack)!;
-
-export const push = (stack: El.St, next: El.Node) => {
-  for (let i = 0; i < next.nds.length; i++) {
-    const node = next.nds[i];
+export const push = (stack: MutableList.MutableList<El.El>, next: El.Nd) => {
+  for (let i = 0; i < next.nodes.length; i++) {
+    const node = next.nodes[i];
     if (isText(node)) continue;
     MutableList.append(stack, node);
   }
 };
 
-export const pushConnect = (stack: El.St, next: El.Node) => {
-  for (let i = 0; i < next.nds.length; i++) {
-    const node = next.nds[i];
+export const pushConnect = (stack: MutableList.MutableList<El.El>, next: El.Nd) => {
+  for (let i = 0; i < next.nodes.length; i++) {
+    const node = next.nodes[i];
     if (isText(node)) continue;
     connect(next, node, i);
     MutableList.append(stack, node);
   }
 };
 
-export const regenNodes = (el: El.Node) => {
-  const regen = stack(el);
+export const regenNodes = (el: El.El) => {
+  const regen = MutableList.make(el);
   while (check(regen)) {
     const next = pop(regen);
-    pushConnect(regen, next);
+    if (!isText(next)) {
+      pushConnect(regen, next);
+    }
   }
 };
 
-export const insertNode = (el: El.Node, nd: El.El, idx: number) => {
-  if (isNode(nd)) {
-    ps.set(nd, el);
-  }
-  el.nds.splice(idx, 0, nd);
+export const insertNode = (el: El.Nd, nd: El.El, idx: number) => {
+  el.nodes.splice(idx, 0, nd);
   regenNodes(el);
 };
 
-export const removeNode = (el: El.Node, idx: number) => {
-  const c = el.nds[idx];
-  if (isNode(c)) {
-    ps.delete(c);
-  }
-  el.nds.slice(idx, 1);
+export const removeNode = (el: El.Nd, idx: number) => {
+  const c = el.nodes[idx];
+  el.nodes.slice(idx, 1);
   regenNodes(el);
 };
 
-export const prependNode = (el: El.Node, nd: El.Node) => {
-  ps.set(nd, el);
-  el.nds.splice(0, 0, nd);
+export const prependNode = (el: El.Nd, nd: El.Nd) => {
+  el.nodes.splice(0, 0, nd);
   regenNodes(el);
 };
 
-export const appendNode = (el: El.Node, nd: El.Node) => {
-  ps.set(nd, el);
-  el.nds.push(nd);
+export const appendNode = (el: El.Nd, nd: El.Nd) => {
+  el.nodes.push(nd);
 };
-
-export declare namespace Event {
-  export type Event = {
-    id  : string;
-    data: any;
-  };
-  export interface Handler extends Function {
-    (event: Event.Event): void | Promise<void> | E.Effect<void, any, any>;
-  }
-}
-export type Event = Event.Event;
-export type Handler = Event.Handler;
-
-export const event = (id: string, data: any): Event.Event =>
-  ({
-    id,
-    data,
-  });
-
-export const invoke = (el: El.Rest, event: Event.Event) => E.suspend(() => {
-  const out = el.handler!(event);
-  if (P.isPromise(out)) {
-    return E.promise(async () => await out);
-  }
-  if (E.isEffect(out)) {
-    return out as E.Effect<void>;
-  }
-  return E.void;
-});
-
-export const equalType = (a: El.Node, b: El.Node) => Equal.equals(a.type, b.type);
-export const equalProps = (a: El.Node, b: El.Node) => Equal.equals(a.props, b.props);
-export const parentOf = (el: El.Node) => ps.get(el);

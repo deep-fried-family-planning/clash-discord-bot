@@ -3,6 +3,7 @@ import type * as El from '#src/disreact/mode/entity/el.ts';
 import {key} from '#unit/util.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
+import * as Array from 'effect/Array';
 
 export declare namespace Props {
   export type Props = Record<string, any>;
@@ -86,6 +87,10 @@ export const extractKey = (props: any) => {
     delete props.key;
     return key;
   }
+};
+
+export const extractChildren = (props: any) => {
+
 };
 
 // export class Props implements Equal.Equal {

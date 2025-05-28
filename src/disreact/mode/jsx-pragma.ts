@@ -1,7 +1,7 @@
 import * as Elem from '#src/disreact/mode/entity/el.ts';
 import * as Array from 'effect/Array';
 
-export const Fragment = undefined;
+export const Fragment = Symbol.for('disreact/Fragment');
 
 export const jsx = (type: any, props: any) => {
   if (type === Fragment) {
@@ -10,15 +10,14 @@ export const jsx = (type: any, props: any) => {
 
   switch (typeof type) {
     case 'string': {
-      return Elem.rest(type, props);
+      const node = Elem.rest(type, props);
+      return node;
     }
     case 'function': {
       return Elem.component(type, props);
     }
-    default: {
-      throw new Error(`Invalid JSX type: ${type}`);
-    }
   }
+  throw new Error(`Invalid JSX type: ${type}`);
 };
 
 export const jsxs = (type: any, props: any) => {

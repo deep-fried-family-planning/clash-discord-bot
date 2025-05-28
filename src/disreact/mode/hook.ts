@@ -2,7 +2,7 @@
 import type * as El from '#src/disreact/mode/entity/el.ts';
 import type {FC} from '#src/disreact/mode/entity/fc.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
-import type * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
+import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -15,24 +15,16 @@ const context = {
   poly: undefined as undefined | Polymer.Polymer,
 };
 
-const getContext = () => {
-  if (!context.root || !context.comp || !context.poly) {
-    throw new Error('Hooks must be called within a component.');
-  }
-  return {
-    root: context.root,
-    comp: context.comp,
-    poly: context.poly,
-  };
-};
-
-export const setContext = (root: Rehydrant.Rehydrant, elem: El.Comp, fibril: Polymer.Polymer) => {
+export const set = (root: Rehydrant.Rehydrant, elem: El.Comp) => {
   context.root = root;
   context.comp = elem;
-  context.poly = fibril;
+  context.poly = Polymer.get(elem);
 };
 
-export const resetContext = () => {
+export const reset = () => {
+  if (context.poly) {
+    Polymer.commit(context.poly);
+  }
   context.root = undefined;
   context.comp = undefined;
   context.poly = undefined;
@@ -43,6 +35,13 @@ const getRehydrant = () => {
     throw new Error('Hooks must be called within a component.');
   }
   return context.root;
+};
+
+const getComponent = () => {
+  if (!context.comp) {
+    throw new Error('Hooks must be called within a component.');
+  }
+  return context.comp;
 };
 
 const getPolymer = () => {
@@ -94,14 +93,17 @@ export declare namespace Hook {
     (): void | Promise<void> | E.Effect<void>;
   }
 }
+export type Effect = Hook.Effect;
 
 export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
-  const context = getContext();
+  const polymer = getPolymer();
   const curr = Polymer.next(
-    context.poly,
+    polymer,
     Polymer.isState,
     () => ({s: initial}),
   );
+  const root = getRehydrant();
+  const node = getComponent();
 
   const set: Hook.SetState<A> = fn('useState', context.comp!, (next) => {
     if (typeof next === 'function') {
@@ -110,6 +112,7 @@ export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
     else {
       curr.s = next;
     }
+    Rehydrant.addNode(root, node);
   });
 
   return [curr.s, set];

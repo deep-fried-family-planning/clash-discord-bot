@@ -1,292 +1,249 @@
-import {Dispatcher} from '#src/disreact/mode/Dispatcher.ts';
+import type * as Diff from '#src/disreact/mode/diff.ts';
 import * as El from '#src/disreact/mode/entity/el.ts';
+import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
-import * as Fibril from '#src/disreact/mode/entity/polymer.ts';
 import type * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
-import type {Hook} from '#src/disreact/mode/hook.ts';
+import * as Hook from '#src/disreact/mode/hook.ts';
 import {Progress, RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
-import {RehydrantEncoder} from '#src/disreact/mode/RehydrantEncoder.ts';
-import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
-import * as Equal from 'effect/Equal';
 import {pipe} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import * as Stack from 'effect/MutableList';
-import * as Option from 'effect/Option';
 import * as P from 'effect/Predicate';
 
 export class EffectHookError extends Data.TaggedError('EffectHookError')<{
+  root : Rehydrant.Rehydrant;
+  node : El.Comp;
   cause: Error;
 }> {}
 
-const renderEffectHook = (effect: Hook.Effect) =>
+const renderEffect = (root: Rehydrant.Rehydrant, node: El.Comp) =>
   pipe(
-    E.suspend(() => {
-      if (effect.constructor.name === 'AsyncFunction') {
-        return E.promise(async () => await effect()) as E.Effect<void>;
-      }
-      const out = effect();
-      if (P.isPromise(out)) {
-        return E.promise(async () => await out) as E.Effect<void>;
-      }
-      if (E.isEffect(out)) {
-        return out as E.Effect<void>;
-      }
-      return E.void;
-    }),
-    E.catchAllDefect((cause) => new EffectHookError({cause: cause as Error})),
+    E.sync(() => Polymer.get(node)),
+    E.flatMap((polymer) =>
+      E.forEach(polymer.queue, (effect) => {
+        if (effect.constructor.name === 'AsyncFunction') {
+          return E.promise(async () => await effect()) as E.Effect<void>;
+        }
+        const out = effect();
+        if (P.isPromise(out)) {
+          return E.promise(async () => await out) as E.Effect<void>;
+        }
+        if (E.isEffect(out)) {
+          return out as E.Effect<void>;
+        }
+        return E.void;
+      }),
+    ),
+    E.catchAllDefect((cause) =>
+      new EffectHookError({
+        root : root,
+        node : node,
+        cause: cause as Error,
+      }),
+    ),
   );
 
-export const rendering = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatcher) => {
-  return E.succeed(root);
-});
+const LOCK = E.unsafeMakeSemaphore(1);
 
-export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
-  const stack = Stack.empty<[El.Node, El.El[]]>();
-  const hasSentPartial = false;
+export class RenderError extends Data.TaggedError('RenderError')<{
+  root : Rehydrant.Rehydrant;
+  node : El.Comp;
+  cause: Error;
+}> {}
 
-  const initial = yield* Dispatcher.render(root, root.elem);
-  Stack.append(stack, [root.elem, initial]);
+const renderNode = (root: Rehydrant.Rehydrant, node: El.Comp) =>
+  pipe(
+    LOCK.take(1),
+    E.flatMap(() =>
+      pipe(
+        E.sync(() => Hook.set(root, node)),
+        E.flatMap(() => FC.render(node.type)),
+        E.map((rendered) => El.normalize(node, rendered)),
+      ),
+    ),
+    E.tap(() =>
+      pipe(
+        E.sync(() => Hook.reset()),
+        E.flatMap(() => LOCK.release(1)),
+      ),
+    ),
+    E.catchAllDefect((cause) =>
+      pipe(
+        E.sync(() => Hook.reset()),
+        E.flatMap(() => LOCK.release(1)),
+        E.flatMap(() => new RenderError({
+          root : root,
+          node : node,
+          cause: cause as Error,
+        })),
+      ),
+    ),
+    E.tap(() => renderEffect(root, node)),
+  );
 
-  while (Stack.tail(stack)) {
-    const [parent, rs] = Stack.pop(stack)!;
-    const maxlen = Math.max(parent.nds.length, rs.length);
+export const initialize = (root: Rehydrant.Rehydrant) => E.suspend(() => {
+  const stack = Stack.make<El.Nd>(root.elem);
 
-    for (let i = 0; i < maxlen; i++) {
-      const current = parent.nds[i];
-      const rendered = rs[i];
-
-      if (!current) {
-        if (El.isText(rendered)) {
-          parent.nds[i] = rendered;
-        }
-        else {
-          parent.nds[i] = yield* mount(root, rendered);
-        }
-      }
-      else if (!rendered) {
-        if (El.isText(current)) {
-          parent.nds.splice(i, 1);
-        }
-        else {
-          yield* dismount(root, current);
-          parent.nds.splice(i, 1);
-        }
-      }
-
-      else if (El.isText(current)) {
-        if (El.isText(rendered)) {
-          if (!Equal.equals(current, rendered)) {
-            parent.nds[i] = rendered;
-          }
-        }
-        else {
-          parent.nds[i] = yield* mount(root, rendered);
-        }
-      }
-      else if (El.isRest(current)) {
-        if (!hasSentPartial) {
-          // hasSentPartial = yield* relayPartial(curr);
-        }
-        if (El.isText(rendered)) {
-          yield* dismount(root, current);
-          parent.nds[i] = rendered;
-        }
-        else if (El.isRest(rendered)) {
-          if (!Equal.equals(current.type, rendered.type)) {
-            yield* dismount(root, current);
-            parent.nds[i] = yield* mount(root, rendered);
-            yield* sendPartial(root, rendered);
-          }
-          if (!Equal.equals(current.props, rendered.props)) {
-            current.props = rendered.props;
-          }
-          Stack.append(stack, [current, rendered.nds]);
-        }
-        else {
-          yield* dismount(root, current);
-          parent.nds[i] = yield* mount(root, rendered);
-        }
-      }
-      else {
-        const fibril = Fibril.get(current);
-        if (El.isText(rendered)) { // Task => Primitive
-          yield* dismount(root, current);
-          parent.nds[i] = rendered;
-        }
-        else if (El.isRest(rendered) || !Equal.equals(current.idn, rendered.idn)) { // Task => Rest or Task => Task
-          yield* dismount(root, current);
-          parent.nds[i] = yield* mount(root, rendered);
-        }
-        else if (
-          Equal.equals(current.props, rendered.props) && // Task Changed
-          Equal.equals(fibril.stack, fibril.saved)
-        ) {
-          // Stack.append(stack, [curr, rend.nodes]);
-        }
-        else {
-          const rerendered = yield* Dispatcher.render(root, current);
-          Stack.append(stack, [current, rerendered]);
-        }
-      }
-    }
-  }
-
-  return root;
-});
-
-export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(() => {
-  const stack = Stack.make<El.Node>(root.elem);
-
-  while (Stack.tail(stack)) {
+  const body = () => {
     const next = Stack.pop(stack)!;
 
-    if (El.isText(next)) {
-      continue;
-    }
-
-    if (El.isRest(next)) {
-      if (next.props.custom_id === event.id || next.ids === event.id) {
-        return pipe(
-          El.invoke(next, event),
-          E.flatMap(() => {
-            if (root.next.id === null) {
-              return RehydrantDOM.send(Progress.Close());
-            }
-            if (root.next.id !== root.id) {
-              return RehydrantDOM.send(Progress.Next({id: root.next.id}));
-            }
-            return RehydrantDOM.send(Progress.Same());
-          }),
-        );
+    if (!El.isComponent(next)) {
+      for (let i = 0; i < next.nodes.length; i++) {
+        const c = next.nodes[i];
+        El.connect(next, c, i);
+        Stack.append(stack, c);
       }
+      return E.void;
     }
 
-    for (let i = 0; i < next.nds.length; i++) {
-      const node = next.nds[i];
-
-      if (!El.isText(node)) {
-        Stack.append(stack, next.nds[i]);
-      }
-    }
-  }
-
-  return E.fail(new Error('Event not handled'));
-}).pipe(E.as(root));
-
-export const rehydrate = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatcher) => {
-  const stack = Stack.make<El.Node>(root.elem);
-
-  return E.whileLoop({
-    while: () => !!Stack.tail(stack),
-    step : () => {},
-    body : () => {
-      const next = Stack.pop(stack)!;
-
-      if (El.isComp(next)) {
-        const fibril = root.poly[next.idn!];
-
-        if (fibril) {
-          Fibril.set(next, fibril);
+    return pipe(
+      renderNode(root, next),
+      E.map((rendered) => {
+        for (let i = 0; i < rendered.length; i++) {
+          const r = rendered[i];
+          El.connect(next, r, i);
+          Stack.append(stack, r);
         }
+        next.nodes = rendered;
+      }),
+    );
+  };
 
-        return pipe(
-          dispatcher.render(root, next),
-          E.map((rendered) => {
-            next.nds = rendered;
+  return pipe(
+    E.whileLoop({
+      while: () => !!Stack.tail(stack),
+      step : () => {},
+      body,
+    }),
+    E.as(root),
+  );
+});
 
-            for (let i = 0; i < next.nds.length; i++) {
-              const child = next.nds[i];
+export const rehydrate = (root: Rehydrant.Rehydrant) => E.suspend(() => {
+  const stack = Stack.make<El.Nd>(root.elem);
 
-              if (!El.isText(child)) {
-                El.connect(next, child, i);
-                Stack.append(stack, child);
-              }
-            }
-          }),
-        );
+  const body = () => {
+    const next = Stack.pop(stack)!;
+
+    if (El.isComponent(next)) {
+      const polymer = root.poly[next.idn!];
+
+      if (polymer) {
+        Polymer.set(next, polymer);
       }
 
-      for (let i = 0; i < next.nds.length; i++) {
-        const child = next.nds[i];
+      return pipe(
+        renderNode(root, next),
+        E.map((rendered) => {
+          next.nodes = rendered;
 
+          for (let i = 0; i < next.nodes.length; i++) {
+            const child = next.nodes[i];
+
+            if (!El.isText(child)) {
+              El.connect(next, child, i);
+              Stack.append(stack, child);
+            }
+          }
+        }),
+      );
+    }
+
+    for (let i = 0; i < next.nodes.length; i++) {
+      const child = next.nodes[i];
+
+      if (!El.isText(child)) {
+        El.connect(next, child, i);
+        Stack.append(stack, child);
+      }
+    }
+
+    return E.void;
+  };
+
+  return pipe(
+    E.whileLoop({
+      while: () => !!Stack.tail(stack),
+      step : () => {},
+      body : body,
+    }),
+    E.as(root),
+  );
+});
+
+export class EventInvokeError extends Data.TaggedError('EventInvokeError')<{
+  root : Rehydrant.Rehydrant;
+  node?: El.Rest;
+  event: El.Event;
+  cause: Error;
+}> {}
+
+export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(() => {
+  const stack = Stack.make<El.Nd>(root.elem);
+
+  while (Stack.tail(stack)) {
+    const node = Stack.pop(stack)!;
+
+    if (!El.isRest(node) || (node.props.custom_id !== event.id && node.ids !== event.id)) {
+      for (let i = 0; i < node.nodes.length; i++) {
+        const child = node.nodes[i];
         if (!El.isText(child)) {
-          El.connect(next, child, i);
           Stack.append(stack, child);
         }
       }
-
-      return E.void;
-    },
-  }).pipe(E.as(root));
-});
-
-export const initialize = (root: Rehydrant.Rehydrant) =>
-  pipe(
-    mount(root, root.elem),
-    E.as(root),
-  );
-
-const mount = (root: Rehydrant.Rehydrant, nd: El.Node) => Dispatcher.use((dispatcher) => {
-  const stack = El.stack(nd);
-
-  return E.whileLoop({
-    while: () => El.check(stack),
-    step : () => {},
-    body : () => E.suspend(() => {
-      const next = El.pop(stack)!;
-
-      if (El.isComp(next)) {
-        return pipe(
-          dispatcher.render(root, next),
-          E.map((rendered) => {
-            next.nds = rendered;
-            El.pushConnect(stack, next);
-          }),
-        );
-      }
-      El.pushConnect(stack, next);
-      return sendPartial(root, next);
-    }),
-  }).pipe(E.as(nd));
-});
-
-const dismount = (root: Rehydrant.Rehydrant, nd: El.Node) => {
-  const stack = El.stack(nd);
-
-  return E.whileLoop({
-    while: () => El.check(stack),
-    step : () => {},
-    body : () => E.suspend(() => {
-      const next = El.pop(stack)!;
-
-      if (El.isComp(next)) {
-        Fibril.dismount(next);
-      }
-      El.push(stack, next);
-      return E.void;
-    }),
-  });
-};
-
-const flush = (effect: Hook.Effect) => E.suspend(() => {
-  const out = effect();
-
-  if (P.isPromise(out)) {
-    return E.promise(async () => await out) as E.Effect<void>;
-  }
-  if (E.isEffect(out)) {
-    return out as E.Effect<void>;
-  }
-  return E.void as E.Effect<void>;
-});
-
-const sendPartial = (root: Rehydrant.Rehydrant, node: El.Rest) =>
-  RehydrantEncoder.use((codec) => {
-    if (node.type in codec.partials) {
-      return RehydrantDOM.send(
-        codec.partials[node.type](root.id, node.type, node.props),
-      );
+      continue;
     }
-    return E.void;
+
+    return pipe(
+      E.suspend(() => {
+        const handler = node.handler;
+        if (!handler) {
+          return E.die(new Error('Target element has no handler'));
+        }
+        if (handler.constructor.name === 'AsyncFunction') {
+          return E.promise(async () => await handler(event)) as E.Effect<void>;
+        }
+        const output = handler(event);
+        if (P.isPromise(output)) {
+          return E.promise(async () => await output);
+        }
+        if (E.isEffect(output)) {
+          return output as E.Effect<void>;
+        }
+        return E.void;
+      }),
+      E.catchAllDefect((cause) =>
+        new EventInvokeError({
+          root : root,
+          node : node,
+          event: event,
+          cause: cause as Error,
+        }),
+      ),
+      E.flatMap(() => {
+        if (root.next.id === null) {
+          return RehydrantDOM.send(Progress.Close());
+        }
+        if (root.next.id !== root.id) {
+          return RehydrantDOM.send(Progress.Next({id: root.next.id}));
+        }
+        return RehydrantDOM.send(Progress.Same());
+      }),
+      E.as(root),
+    );
+  }
+
+  return new EventInvokeError({
+    root : root,
+    event: event,
+    cause: new Error('Event target does not exist'),
   });
+});
+
+const diffs = globalValue(Symbol.for('disreact/diffs'), () => new WeakMap<any, Diff.Diff>());
+
+export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
+  const stack = Stack.make<El.Nd>(root.elem);
+});

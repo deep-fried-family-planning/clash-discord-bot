@@ -1,6 +1,4 @@
-import {Dispatcher} from '#src/disreact/mode/Dispatcher.ts';
 import {RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
-import {RehydrantEncoder, type RehydrantEncoderConfig} from '#src/disreact/mode/RehydrantEncoder.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/mode/Rehydrator.ts';
 import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
 import * as E from 'effect/Effect';
@@ -26,7 +24,7 @@ export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) 
 
 export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
   pipe(
-    Rehydrator.rehydrate(hydrator, data),
+    Rehydrator.decode(hydrator, data),
     E.flatMap((root) => Lifecycle.rehydrate(root)),
     E.flatMap((root) => Lifecycle.invoke(root, event)),
     E.flatMap((root) => Lifecycle.rerender(root)),
@@ -44,17 +42,4 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
       return Lifecycle.initialize(output);
     }),
     E.flatMap((root) => RehydrantEncoder.encode(root)),
-  );
-
-export const layer = (
-  config: {
-    register?: RehydratorConfig;
-    encoding?: RehydrantEncoderConfig;
-  },
-) =>
-  pipe(
-    Dispatcher.Default,
-    L.provideMerge(Rehydrator.config(config.register)),
-    L.provideMerge(RehydrantDOM.Fresh),
-    L.provideMerge(RehydrantEncoder.config(config.encoding ?? {})),
   );
