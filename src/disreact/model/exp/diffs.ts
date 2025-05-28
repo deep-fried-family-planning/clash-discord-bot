@@ -85,10 +85,10 @@ const diff = (a: Elem, b: Elem) => {
         return Replace();
       }
       if (!Props.isEqual(a.props, b.props)) {
-        return Render({elem: a});
+        return Render({comp: a});
       }
       if (!Fibril.isSame(a.fibril)) {
-        return Render({elem: a});
+        return Render({comp: a});
       }
       return Skip();
     }

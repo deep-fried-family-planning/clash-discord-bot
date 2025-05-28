@@ -11,19 +11,30 @@ import * as Hash from 'effect/Hash';
 
 const context = {
   root: undefined as undefined | Rehydrant.Rehydrant,
-  elem: undefined as undefined | El.Fn,
+  comp: undefined as undefined | El.Comp,
   poly: undefined as undefined | Polymer.Polymer,
 };
 
-export const setContext = (root: Rehydrant.Rehydrant, elem: El.Fn, fibril: Polymer.Polymer) => {
+const getContext = () => {
+  if (!context.root || !context.comp || !context.poly) {
+    throw new Error('Hooks must be called within a component.');
+  }
+  return {
+    root: context.root,
+    comp: context.comp,
+    poly: context.poly,
+  };
+};
+
+export const setContext = (root: Rehydrant.Rehydrant, elem: El.Comp, fibril: Polymer.Polymer) => {
   context.root = root;
-  context.elem = elem;
+  context.comp = elem;
   context.poly = fibril;
 };
 
 export const resetContext = () => {
   context.root = undefined;
-  context.elem = undefined;
+  context.comp = undefined;
   context.poly = undefined;
 };
 
@@ -34,7 +45,7 @@ const getRehydrant = () => {
   return context.root;
 };
 
-const getFibril = () => {
+const getPolymer = () => {
   if (!context.poly) {
     throw new Error('Hooks must be called within a component.');
   }
@@ -43,7 +54,7 @@ const getFibril = () => {
 
 export const TypeId = Symbol.for('disreact/Deps/TypeId');
 
-const fns = globalValue(Symbol.for('disreact/deps'), () => new WeakMap<any, El.Fn>());
+const fns = globalValue(Symbol.for('disreact/deps'), () => new WeakMap<any, El.Comp>());
 
 export declare namespace Deps {
   export interface Fn<P extends any[] = any[], O = any> extends Function {
@@ -59,11 +70,9 @@ export const isFn = (fn: any): fn is Deps.Fn =>
   typeof fn === 'function' &&
   fn[TypeId];
 
-export const fn = <P extends any[], O>(hook: string, link: El.Fn, input: (...p: P) => O): Deps.Fn<P, O> => {
+export const fn = <P extends any[], O>(hook: string, link: El.Comp, input: (...p: P) => O): Deps.Fn<P, O> => {
   const fn = input as Deps.Fn<P, O>;
-
   fn[TypeId] = hook;
-
   fn[Equal.symbol] = (that: Equal.Equal & Deps.Fn): boolean => {
     if (!isFn(that)) return false;
     return (
@@ -72,11 +81,7 @@ export const fn = <P extends any[], O>(hook: string, link: El.Fn, input: (...p: 
       && Equal.equals(fns.get(fn), fns.get(that))
     );
   };
-
-  fn[Hash.symbol] = (): number => {
-    return Hash.hash(hook);
-  };
-
+  fn[Hash.symbol] = (): number => Hash.hash(hook);
   fns.set(fn, link);
   return fn;
 };
@@ -85,20 +90,20 @@ export declare namespace Hook {
   export interface SetState<A> {
     (next: A | ((prev: A) => A)): void;
   }
-  export interface Effect {
+  export interface Effect extends Function {
     (): void | Promise<void> | E.Effect<void>;
   }
 }
 
 export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
-  const fibril = getFibril();
+  const context = getContext();
   const curr = Polymer.next(
-    fibril,
+    context.poly,
     Polymer.isState,
     () => ({s: initial}),
   );
 
-  const set: Hook.SetState<A> = fn('useState', context.elem!, (next) => {
+  const set: Hook.SetState<A> = fn('useState', context.comp!, (next) => {
     if (typeof next === 'function') {
       curr.s = (next as (prev: A) => A)(curr.s);
     }
@@ -121,10 +126,10 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
     }
   }
 
-  const fibril = getFibril();
+  const fibril = getPolymer();
   const curr = Polymer.next(fibril, Polymer.isDep, () => ({d: deps ?? []}));
 
-  const depEffect = fn('useEffect', context.elem!, effect);
+  const depEffect = fn('useEffect', context.comp!, effect);
 
   if (fibril.rc === 0) {
     fibril.queue.push(depEffect);
@@ -151,7 +156,7 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
 
 export const $useIx = () => {
   const rehydrant = getRehydrant();
-  const node = getFibril();
+  const node = getPolymer();
   Polymer.next(
     node,
     Polymer.isNull,
@@ -162,7 +167,7 @@ export const $useIx = () => {
 
 export const $usePage = () => {
   const rehydrant = getRehydrant();
-  const node = getFibril();
+  const node = getPolymer();
 
   if (!node.stack[node.pc]) {
     node.stack[node.pc] = null;

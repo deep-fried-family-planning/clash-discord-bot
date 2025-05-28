@@ -1,19 +1,48 @@
 import {Dispatcher} from '#src/disreact/mode/Dispatcher.ts';
 import * as El from '#src/disreact/mode/entity/el.ts';
-import type {Hook} from '#src/disreact/mode/hook.ts';
-import {RehydrantEncoder} from '#src/disreact/mode/RehydrantEncoder.ts';
-import {Progress, RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
-import {Rehydrator} from '#src/disreact/mode/Rehydrator.ts';
+import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
 import * as Fibril from '#src/disreact/mode/entity/polymer.ts';
 import type * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
+import type {Hook} from '#src/disreact/mode/hook.ts';
+import {Progress, RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
+import {RehydrantEncoder} from '#src/disreact/mode/RehydrantEncoder.ts';
+import * as Array from 'effect/Array';
+import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import {pipe} from 'effect/Function';
 import * as Stack from 'effect/MutableList';
+import * as Option from 'effect/Option';
 import * as P from 'effect/Predicate';
 
+export class EffectHookError extends Data.TaggedError('EffectHookError')<{
+  cause: Error;
+}> {}
+
+const renderEffectHook = (effect: Hook.Effect) =>
+  pipe(
+    E.suspend(() => {
+      if (effect.constructor.name === 'AsyncFunction') {
+        return E.promise(async () => await effect()) as E.Effect<void>;
+      }
+      const out = effect();
+      if (P.isPromise(out)) {
+        return E.promise(async () => await out) as E.Effect<void>;
+      }
+      if (E.isEffect(out)) {
+        return out as E.Effect<void>;
+      }
+      return E.void;
+    }),
+    E.catchAllDefect((cause) => new EffectHookError({cause: cause as Error})),
+  );
+
+export const rendering = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatcher) => {
+  return E.succeed(root);
+});
+
 export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
-  const stack = Stack.empty<[El.Nd, El.El[]]>();
+  const stack = Stack.empty<[El.Node, El.El[]]>();
   const hasSentPartial = false;
 
   const initial = yield* Dispatcher.render(root, root.elem);
@@ -21,73 +50,73 @@ export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
 
   while (Stack.tail(stack)) {
     const [parent, rs] = Stack.pop(stack)!;
-    const maxlen = Math.max(parent.nodes.length, rs.length);
+    const maxlen = Math.max(parent.nds.length, rs.length);
 
     for (let i = 0; i < maxlen; i++) {
-      const current = parent.nodes[i];
+      const current = parent.nds[i];
       const rendered = rs[i];
 
       if (!current) {
-        if (El.isVal(rendered)) {
-          parent.nodes[i] = rendered;
+        if (El.isText(rendered)) {
+          parent.nds[i] = rendered;
         }
         else {
-          parent.nodes[i] = yield* mount(root, rendered);
+          parent.nds[i] = yield* mount(root, rendered);
         }
       }
       else if (!rendered) {
-        if (El.isVal(current)) {
-          parent.nodes.splice(i, 1);
+        if (El.isText(current)) {
+          parent.nds.splice(i, 1);
         }
         else {
           yield* dismount(root, current);
-          parent.nodes.splice(i, 1);
+          parent.nds.splice(i, 1);
         }
       }
 
-      else if (El.isVal(current)) {
-        if (El.isVal(rendered)) {
+      else if (El.isText(current)) {
+        if (El.isText(rendered)) {
           if (!Equal.equals(current, rendered)) {
-            parent.nodes[i] = rendered;
+            parent.nds[i] = rendered;
           }
         }
         else {
-          parent.nodes[i] = yield* mount(root, rendered);
+          parent.nds[i] = yield* mount(root, rendered);
         }
       }
-      else if (El.isApi(current)) {
+      else if (El.isRest(current)) {
         if (!hasSentPartial) {
           // hasSentPartial = yield* relayPartial(curr);
         }
-        if (El.isVal(rendered)) {
+        if (El.isText(rendered)) {
           yield* dismount(root, current);
-          parent.nodes[i] = rendered;
+          parent.nds[i] = rendered;
         }
-        else if (El.isApi(rendered)) {
+        else if (El.isRest(rendered)) {
           if (!Equal.equals(current.type, rendered.type)) {
             yield* dismount(root, current);
-            parent.nodes[i] = yield* mount(root, rendered);
+            parent.nds[i] = yield* mount(root, rendered);
             yield* sendPartial(root, rendered);
           }
           if (!Equal.equals(current.props, rendered.props)) {
             current.props = rendered.props;
           }
-          Stack.append(stack, [current, rendered.nodes]);
+          Stack.append(stack, [current, rendered.nds]);
         }
         else {
           yield* dismount(root, current);
-          parent.nodes[i] = yield* mount(root, rendered);
+          parent.nds[i] = yield* mount(root, rendered);
         }
       }
       else {
         const fibril = Fibril.get(current);
-        if (El.isVal(rendered)) { // Task => Primitive
+        if (El.isText(rendered)) { // Task => Primitive
           yield* dismount(root, current);
-          parent.nodes[i] = rendered;
+          parent.nds[i] = rendered;
         }
-        else if (El.isApi(rendered) || !Equal.equals(current.idn, rendered.idn)) { // Task => Rest or Task => Task
+        else if (El.isRest(rendered) || !Equal.equals(current.idn, rendered.idn)) { // Task => Rest or Task => Task
           yield* dismount(root, current);
-          parent.nodes[i] = yield* mount(root, rendered);
+          parent.nds[i] = yield* mount(root, rendered);
         }
         else if (
           Equal.equals(current.props, rendered.props) && // Task Changed
@@ -107,16 +136,16 @@ export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
 });
 
 export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(() => {
-  const stack = Stack.make<El.Nd>(root.elem);
+  const stack = Stack.make<El.Node>(root.elem);
 
   while (Stack.tail(stack)) {
     const next = Stack.pop(stack)!;
 
-    if (El.isVal(next)) {
+    if (El.isText(next)) {
       continue;
     }
 
-    if (El.isApi(next)) {
+    if (El.isRest(next)) {
       if (next.props.custom_id === event.id || next.ids === event.id) {
         return pipe(
           El.invoke(next, event),
@@ -133,11 +162,11 @@ export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(
       }
     }
 
-    for (let i = 0; i < next.nodes.length; i++) {
-      const node = next.nodes[i];
+    for (let i = 0; i < next.nds.length; i++) {
+      const node = next.nds[i];
 
-      if (!El.isVal(node)) {
-        Stack.append(stack, next.nodes[i]);
+      if (!El.isText(node)) {
+        Stack.append(stack, next.nds[i]);
       }
     }
   }
@@ -146,7 +175,7 @@ export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(
 }).pipe(E.as(root));
 
 export const rehydrate = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatcher) => {
-  const stack = Stack.make<El.Nd>(root.elem);
+  const stack = Stack.make<El.Node>(root.elem);
 
   return E.whileLoop({
     while: () => !!Stack.tail(stack),
@@ -154,7 +183,7 @@ export const rehydrate = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatch
     body : () => {
       const next = Stack.pop(stack)!;
 
-      if (El.isFn(next)) {
+      if (El.isComp(next)) {
         const fibril = root.poly[next.idn!];
 
         if (fibril) {
@@ -164,13 +193,13 @@ export const rehydrate = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatch
         return pipe(
           dispatcher.render(root, next),
           E.map((rendered) => {
-            next.nodes = rendered;
+            next.nds = rendered;
 
-            for (let i = 0; i < next.nodes.length; i++) {
-              const child = next.nodes[i];
+            for (let i = 0; i < next.nds.length; i++) {
+              const child = next.nds[i];
 
-              if (!El.isVal(child)) {
-                El.connectChild(next, child, i);
+              if (!El.isText(child)) {
+                El.connect(next, child, i);
                 Stack.append(stack, child);
               }
             }
@@ -178,11 +207,11 @@ export const rehydrate = (root: Rehydrant.Rehydrant) => Dispatcher.use((dispatch
         );
       }
 
-      for (let i = 0; i < next.nodes.length; i++) {
-        const child = next.nodes[i];
+      for (let i = 0; i < next.nds.length; i++) {
+        const child = next.nds[i];
 
-        if (!El.isVal(child)) {
-          El.connectChild(next, child, i);
+        if (!El.isText(child)) {
+          El.connect(next, child, i);
           Stack.append(stack, child);
         }
       }
@@ -198,7 +227,7 @@ export const initialize = (root: Rehydrant.Rehydrant) =>
     E.as(root),
   );
 
-const mount = (root: Rehydrant.Rehydrant, nd: El.Nd) => Dispatcher.use((dispatcher) => {
+const mount = (root: Rehydrant.Rehydrant, nd: El.Node) => Dispatcher.use((dispatcher) => {
   const stack = El.stack(nd);
 
   return E.whileLoop({
@@ -207,11 +236,11 @@ const mount = (root: Rehydrant.Rehydrant, nd: El.Nd) => Dispatcher.use((dispatch
     body : () => E.suspend(() => {
       const next = El.pop(stack)!;
 
-      if (El.isFn(next)) {
+      if (El.isComp(next)) {
         return pipe(
           dispatcher.render(root, next),
           E.map((rendered) => {
-            next.nodes = rendered;
+            next.nds = rendered;
             El.pushConnect(stack, next);
           }),
         );
@@ -222,7 +251,7 @@ const mount = (root: Rehydrant.Rehydrant, nd: El.Nd) => Dispatcher.use((dispatch
   }).pipe(E.as(nd));
 });
 
-const dismount = (root: Rehydrant.Rehydrant, nd: El.Nd) => {
+const dismount = (root: Rehydrant.Rehydrant, nd: El.Node) => {
   const stack = El.stack(nd);
 
   return E.whileLoop({
@@ -231,7 +260,7 @@ const dismount = (root: Rehydrant.Rehydrant, nd: El.Nd) => {
     body : () => E.suspend(() => {
       const next = El.pop(stack)!;
 
-      if (El.isFn(next)) {
+      if (El.isComp(next)) {
         Fibril.dismount(next);
       }
       El.push(stack, next);
@@ -252,7 +281,7 @@ const flush = (effect: Hook.Effect) => E.suspend(() => {
   return E.void as E.Effect<void>;
 });
 
-const sendPartial = (root: Rehydrant.Rehydrant, node: El.Api) =>
+const sendPartial = (root: Rehydrant.Rehydrant, node: El.Rest) =>
   RehydrantEncoder.use((codec) => {
     if (node.type in codec.partials) {
       return RehydrantDOM.send(

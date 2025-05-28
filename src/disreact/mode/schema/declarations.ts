@@ -1,4 +1,3 @@
-import {Any} from '#src/disreact/mode/entity/schema/hydrator.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import * as S from 'effect/Schema';
 import {deflate, inflate} from 'pako';

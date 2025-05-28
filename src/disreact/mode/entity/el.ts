@@ -4,146 +4,144 @@ import * as Props from '#src/disreact/mode/entity/props.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
-import {pipe} from 'effect/Function';
-import * as GlobalValue from 'effect/GlobalValue';
+import * as Equal from 'effect/Equal';
+import {globalValue} from 'effect/GlobalValue';
 import * as MutableList from 'effect/MutableList';
 import * as P from 'effect/Predicate';
 
+const ps = globalValue(Symbol.for('disreact/el/parents'), () => new WeakMap<El.Node, El.Node>());
+
 export declare namespace El {
-  export type Val = {
-    type : false;
-    props: any;
-    nodes: El[];
-  };
-  export type Api = {
-    idn?    : string;
-    ids?    : string;
-    idx?    : number;
-    type    : string;
-    props   : Props.Props;
-    nodes   : El[];
-    handler?: Event.Handler | undefined;
-  };
-  export type Fn = {
+  export type Prim = | string
+                     | number
+                     | boolean
+                     | null
+                     | undefined
+                     | bigint;
+  type Meta = {
+    key? : string;
     idn? : string;
     ids? : string;
     idx? : number;
-    type : FC.Any<any, any>;
+    pos? : number;
     props: Props.Props;
-    nodes: El[];
+    nds  : El[];
   };
-
-  export type Any = Val | Nd;
-
-  export type El = Any;
-
-  export type Primitive = | string
-                          | number
-                          | boolean
-                          | null
-                          | undefined
-                          | bigint;
-
-  export type Nd = | Api
-                   | Fn;
-
-  export type Child = | Primitive
-                      | Val
-                      | Nd;
-
-  export type Children = | Child
-                         | Child[];
-
-  export type Stack = MutableList.MutableList<Nd>;
+  export type Text = {
+    _tag : 'text';
+    value: | string
+           | number
+           | boolean
+           | null
+           | undefined
+           | bigint;
+  };
+  export type Rest = Meta & {
+    _tag    : 'rest';
+    type    : string;
+    handler?: Event.Handler | undefined;
+  };
+  export type Comp = Meta & {
+    _tag: 'comp';
+    type: FC.Any;
+  };
+  export type Ve = {pr: Prim};
+  export type Node = | Rest
+                     | Comp;
+  export type El = | Text
+                   | Node;
+  export type Cs = | El
+                   | El[];
+  export type St = MutableList.MutableList<Node>;
+  export type Kv = Record<string, Node>;
 }
+export type Text = El.Prim;
+export type Node = El.Node;
+export type Rest = El.Rest;
+export type Comp = El.Comp;
 export type El = El.El;
-export type Val = El.Val;
-export type Api = El.Api;
-export type Fn = El.Fn;
-export type Nd = El.Nd;
-export type Any = El.Any;
-export type Children = El.Children;
-export type Stack = MutableList.MutableList<El.Nd>;
+export type Cs = El.Cs;
+export type St = El.St;
+export type Kv = El.Kv;
 
-export const isChilds = (e: El.Children): e is El.Child[] => Array.isArray(e);
-export const isPrimitive = (e: El.Children): e is El.Primitive => !e || typeof e !== 'object';
-export const isNode = (e: El.Children): e is El.Nd => !!e && typeof e === 'object' && !Array.isArray(e);
-export const isVal = (e: El.Children): e is El.Val => isNode(e) && !e.type;
-export const isApi = (e: El.Children): e is El.Api => isNode(e) && typeof e.type === 'string';
-export const isFn = (e: El.Children): e is El.Fn => isNode(e) && typeof e.type === 'function';
+export const isText = (e: El.Cs): e is El.Text => !!e && typeof e === 'object' && !Array.isArray(e) && e._tag === 'text';
+export const isNode = (e: El.Cs): e is El.Node => !!e && typeof e === 'object' && !Array.isArray(e);
+export const isRest = (e: El.Cs): e is El.Rest => isNode(e) && e._tag === 'rest';
+export const isComp = (e: El.Cs): e is El.Comp => isNode(e) && e._tag === 'comp';
 
-const emptyNodes = () => Data.array([] as El.El[]) as El.El[];
+const emptyNodes = () => Data.array(Array.empty()) as El.El[];
 
-export const val = (value: any): El.Val => {
-  return Data.struct({
-    type : false,
-    props: value,
-    nodes: emptyNodes(),
+export const text = (tag: any): El.Text =>
+  Data.struct({
+    _tag : 'text',
+    value: tag,
   });
-};
 
-export const api = (tag: string, props: Props.Props): El.Api => {
+export const rest = (tag: string, props: Props.Props): El.Rest => {
   const handler = Props.extractHandler(props);
+  const key = Props.extractKey(props);
   return Data.struct({
-    type : tag,
-    props: Props.make(props),
-    nodes: ensureChildren(props.children),
-    handler,
+    _tag   : 'rest',
+    key    : key,
+    type   : tag,
+    props  : Props.make(props),
+    nds    : ensureChildren(props.children),
+    handler: handler,
   });
 };
 
-export const fn = (tag: any, props: Props.Props): El.Fn => {
+export const comp = (tag: FC.FC, props: Props.Props): El.Comp => {
+  const key = Props.extractKey(props);
   return Data.struct({
+    _tag : 'comp',
+    key  : key,
     type : FC.make(tag),
     props: Props.make(props),
-    nodes: emptyNodes(),
+    nds  : emptyNodes(),
   });
 };
 
-const getName = (el: El.Nd) => isApi(el) ? el.type : el.type[FC.NameId]!;
+export const name = (nd: El.Node) => isRest(nd) ? nd.type : nd.type[FC.NameId]!;
 
-const parents = GlobalValue.globalValue(
-  Symbol.for('disreact/el/parents'),
-  () => new WeakMap<El.El, El.Nd>(),
-);
-
-export const normalize = (node: El.Nd, children: El.Children): El.El[] => {
-  const pname = getName(node);
-  const cs = Array.ensure(children).flat().filter((c) => !!c);
-  const acc = [] as El.El[];
+export const normalize = (nd: El.Node, rs: El.Cs = nd.nds): El.El[] => {
+  const pn = name(nd);
+  const cs = Array.ensure(rs).flat();
+  const is = {} as Record<string, number>;
+  const fs = new WeakMap<FC.FC, number>();
 
   for (let i = 0; i < cs.length; i++) {
     const c = cs[i];
-    if (!c) {
+    if (isText(c)) {
       continue;
     }
-    let next: El.El;
-    if (isPrimitive(c)) {
-      next = val(c);
-    }
-    else if (isVal(c)) {
-      next = c;
+    ps.set(c, nd);
+    c.pos = i;
+    if (isRest(c)) {
+      const idx = is[c.type] ??= 0;
+      c.idn = `${nd.idn}:${c.type}:${idx}`;
+      c.ids = `${pn}:${nd.idx}:${c.type}:${idx}`;
+      c.idx = idx;
+      is[c.type]++;
     }
     else {
-      next = c;
-      const cname = getName(next);
-      next.idn = `${node.idn}:${cname}:${i}`;
-      next.ids = `${pname}:${node.idx}:${cname}:${i}`;
-      next.idx = i;
+      const cname = FC.name(c.type);
+      const idx = fs.get(c.type) ?? 0;
+      c.idn = `${nd.idn}:${cname}:${idx}`;
+      c.ids = `${pn}:${nd.idx}:${cname}:${idx}`;
+      c.idx = idx;
+      fs.set(c.type, idx + 1);
     }
-    parents.set(next, node);
-    acc.push(next);
   }
-  return Data.array(acc) as El.El[];
+  return Data.array(cs) as El.El[];
 };
 
-export const connect = (node: El.Nd, next: El.Nd, idx: number) => {
-  const pname = getName(node);
-  const cname = getName(next);
-  next.idn = `${node.idn}:${cname}:${idx}`;
-  next.ids = `${pname}:${node.idx}:${cname}:${idx}`;
+export const connect = (node: El.Node, next: El.Node, idx: number) => {
+  const pn = name(node);
+  const cn = name(next);
+  next.idn = `${node.idn}:${cn}:${idx}`;
+  next.ids = `${pn}:${node.idx}:${cn}:${idx}`;
   next.idx = idx;
-  parents.set(next, node);
+  ps.set(next, node);
   return next;
 };
 
@@ -157,30 +155,30 @@ export const ensureChildren = (cs?: El.El | El.El[]): El.El[] => {
   return Data.array([cs]) as El.El[];
 };
 
-export const stack = (el?: El.Nd): El.Stack => el ? MutableList.make(el) : MutableList.empty<El.Nd>();
+export const stack = (el?: El.Node): El.St => el ? MutableList.make(el) : MutableList.empty<El.Node>();
 
-export const check = (stack: El.Stack) => !!MutableList.tail(stack);
+export const check = (stack: El.St) => !!MutableList.tail(stack);
 
-export const pop = (stack: El.Stack) => MutableList.pop(stack)!;
+export const pop = (stack: El.St) => MutableList.pop(stack)!;
 
-export const push = (stack: El.Stack, next: El.Nd) => {
-  for (let i = 0; i < next.nodes.length; i++) {
-    const node = next.nodes[i];
-    if (isVal(node)) continue;
+export const push = (stack: El.St, next: El.Node) => {
+  for (let i = 0; i < next.nds.length; i++) {
+    const node = next.nds[i];
+    if (isText(node)) continue;
     MutableList.append(stack, node);
   }
 };
 
-export const pushConnect = (stack: El.Stack, next: El.Nd) => {
-  for (let i = 0; i < next.nodes.length; i++) {
-    const node = next.nodes[i];
-    if (isVal(node)) continue;
+export const pushConnect = (stack: El.St, next: El.Node) => {
+  for (let i = 0; i < next.nds.length; i++) {
+    const node = next.nds[i];
+    if (isText(node)) continue;
     connect(next, node, i);
     MutableList.append(stack, node);
   }
 };
 
-export const regenNodes = (el: El.Nd) => {
+export const regenNodes = (el: El.Node) => {
   const regen = stack(el);
   while (check(regen)) {
     const next = pop(regen);
@@ -188,28 +186,32 @@ export const regenNodes = (el: El.Nd) => {
   }
 };
 
-export const insertNode = (el: El.Nd, nd: El.Nd, idx: number) => {
-  parents.set(nd, el);
-  el.nodes.splice(idx, 0, nd);
+export const insertNode = (el: El.Node, nd: El.El, idx: number) => {
+  if (isNode(nd)) {
+    ps.set(nd, el);
+  }
+  el.nds.splice(idx, 0, nd);
   regenNodes(el);
 };
 
-export const removeNode = (el: El.Nd, idx: number) => {
-  const c = el.nodes[idx];
-  parents.delete(c);
-  el.nodes.slice(idx, 1);
+export const removeNode = (el: El.Node, idx: number) => {
+  const c = el.nds[idx];
+  if (isNode(c)) {
+    ps.delete(c);
+  }
+  el.nds.slice(idx, 1);
   regenNodes(el);
 };
 
-export const prependNode = (el: El.Nd, nd: El.Nd) => {
-  parents.set(nd, el);
-  el.nodes.splice(0, 0, nd);
+export const prependNode = (el: El.Node, nd: El.Node) => {
+  ps.set(nd, el);
+  el.nds.splice(0, 0, nd);
   regenNodes(el);
 };
 
-export const appendNode = (el: El.Nd, nd: El.Nd) => {
-  parents.set(nd, el);
-  el.nodes.push(nd);
+export const appendNode = (el: El.Node, nd: El.Node) => {
+  ps.set(nd, el);
+  el.nds.push(nd);
 };
 
 export declare namespace Event {
@@ -230,7 +232,7 @@ export const event = (id: string, data: any): Event.Event =>
     data,
   });
 
-export const invoke = (el: El.Api, event: Event.Event) => E.suspend(() => {
+export const invoke = (el: El.Rest, event: Event.Event) => E.suspend(() => {
   const out = el.handler!(event);
   if (P.isPromise(out)) {
     return E.promise(async () => await out);
@@ -240,3 +242,7 @@ export const invoke = (el: El.Api, event: Event.Event) => E.suspend(() => {
   }
   return E.void;
 });
+
+export const equalType = (a: El.Node, b: El.Node) => Equal.equals(a.type, b.type);
+export const equalProps = (a: El.Node, b: El.Node) => Equal.equals(a.props, b.props);
+export const parentOf = (el: El.Node) => ps.get(el);

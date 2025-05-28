@@ -13,7 +13,7 @@ export type RehydratorConfig = | Rehydrant.Registrant[]
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
   if (FC.isFC(input)) return input[FC.NameId]!;
-  if (Elem.isFn(input)) return input.type[FC.NameId]!;
+  if (Elem.isComp(input)) return input.type[FC.NameId]!;
 };
 
 const make = (config?: RehydratorConfig) => {

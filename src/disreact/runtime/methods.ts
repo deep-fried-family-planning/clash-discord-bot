@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {Model} from '#src/disreact/model/model.ts';
+import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
 import {Progress, Relay} from '#src/disreact/model/Relay.ts';
 import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
 import {Dokens} from '#src/disreact/runtime/dokens.ts';
@@ -10,15 +10,16 @@ import * as E from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import {pipe} from 'effect/Function';
 import type {Source} from '../model/meta/source';
+import * as Model from '../mode/Model.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
 
-export const registerRoot = Model.register;
+export const registerRoot = Model.registerRoot;
 
-export const createRoot = (id: Source.Key, props?: any) =>
+export const createRoot = (id: Rehydrant.SourceId, props?: any, data?: any) =>
   pipe(
-    Model.create(id, props),
+    Model.createRoot(id, props, data),
     E.flatMap((root) => {
       if (!root) {
         return E.succeed(null);
@@ -38,7 +39,7 @@ export const respond = (body: any) => E.gen(function* () {
 
   const ds = yield* Dokens.make(req.fresh, req.doken);
 
-  const model = yield* E.fork(Model.invoke(req.hydrator!, req.event, body));
+  const model = yield* E.fork(Model.invokeRoot(req.hydrator!, req.event, body));
 
   let isSame = false;
 

@@ -3,7 +3,6 @@ import {RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
 import {RehydrantEncoder, type RehydrantEncoderConfig} from '#src/disreact/mode/RehydrantEncoder.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/mode/Rehydrator.ts';
 import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
 import * as E from 'effect/Effect';
 import * as L from 'effect/Layer';
 import {pipe} from 'effect/Function';

@@ -1,7 +1,6 @@
-import {Hooks} from './model/hooks';
+import * as Hook from './mode/hook.ts';
 
-export const useState = Hooks.$useState;
-export const useReducer = Hooks.$useReducer;
-export const useEffect = Hooks.$useEffect;
-export const useIx = Hooks.$useIx;
-export const usePage = Hooks.$usePage;
+export const useState = Hook.$useState;
+export const useEffect = Hook.$useEffect;
+export const useIx = Hook.$useIx;
+export const usePage = Hook.$usePage;

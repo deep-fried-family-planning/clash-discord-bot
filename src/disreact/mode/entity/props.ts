@@ -1,13 +1,14 @@
 import * as Keys from '#src/disreact/codec/intrinsic/keys.ts';
-import type * as Elem from '#src/disreact/mode/entity/el.ts';
+import type * as El from '#src/disreact/mode/entity/el.ts';
+import {key} from '#unit/util.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 
 export declare namespace Props {
   export type Props = Record<string, any>;
   export type NoChild = Props & {children?: never};
-  export type AndChild = Props & {children: Elem.Any};
-  export type AndChildren = Props & {children: Elem.Any[]};
+  export type AndChild = Props & {children: El.El};
+  export type AndChildren = Props & {children: El.El[]};
 }
 export type Props = Props.Props;
 
@@ -67,7 +68,7 @@ export const make = (p: any): Props.Props => {
   return Data.struct(acc);
 };
 
-export const extractHandler = (props: any): Elem.Handler | undefined => {
+export const extractHandler = (props: any): El.Handler | undefined => {
   for (let i = 0; i < HANDLER_KEYS.length; i++) {
     const key = HANDLER_KEYS[i];
     const handler = props[key];
@@ -76,6 +77,14 @@ export const extractHandler = (props: any): Elem.Handler | undefined => {
       delete props[key];
       return handler;
     }
+  }
+};
+
+export const extractKey = (props: any) => {
+  if (props.key) {
+    const key = props.key;
+    delete props.key;
+    return key;
   }
 };
 

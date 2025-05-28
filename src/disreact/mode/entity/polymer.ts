@@ -1,12 +1,13 @@
 import type {El} from '#src/disreact/mode/entity/el.ts';
 import type {Hook} from '#src/disreact/mode/hook.ts';
+import * as Equal from 'effect/Equal';
 import * as Data from 'effect/Data';
 import * as GlobalValue from 'effect/GlobalValue';
-import type * as Declarations from './declarations.ts';
+import type * as Declarations from '#src/disreact/mode/schema/declarations.ts';
 
 const elements = GlobalValue.globalValue(
   Symbol.for('disreact/Polymer/El'),
-  () => new WeakMap<El.Fn, Polymer.Polymer>(),
+  () => new WeakMap<El.Comp, Polymer.Polymer>(),
 );
 
 export declare namespace Monomer {
@@ -19,16 +20,16 @@ export declare namespace Monomer {
 }
 export type Monomer = Monomer.Monomer;
 
-export const isNull = (self: Monomer.Monomer): self is Monomer.Null => self === null;
-export const isState = (self: Monomer.Monomer): self is Monomer.State => !!self && 's' in self;
-export const isDep = (self: Monomer.Monomer): self is Monomer.Dep => !!self && 'd' in self;
+export const isNull = (self: Monomer): self is Monomer.Null => self === null;
+export const isState = (self: Monomer): self is Monomer.State => !!self && 's' in self;
+export const isDep = (self: Monomer): self is Monomer.Dep => !!self && 'd' in self;
 
 export declare namespace Polymer {
   export type Polymer = {
     pc   : number;
     rc   : number;
-    stack: Monomer.Monomer[];
-    saved: Monomer.Monomer[];
+    stack: Monomer[];
+    saved: Monomer[];
     queue: Hook.Effect[];
   };
   export type Encoded = Monomer.Monomer[];
@@ -36,41 +37,41 @@ export declare namespace Polymer {
 export type Polymer = Polymer.Polymer;
 export type Encoded = Polymer.Encoded;
 
-export const make = (stack?: Monomer.Monomer[]): Polymer.Polymer => {
+export const make = (stack?: Monomer[]): Polymer.Polymer => {
   if (stack) {
     return {
       pc   : 0,
       rc   : 1,
-      stack: Data.array(stack) as Monomer.Monomer[],
-      saved: Data.array(structuredClone(stack)) as Monomer.Monomer[],
+      stack: Data.array(stack) as Monomer[],
+      saved: Data.array(structuredClone(stack)) as Monomer[],
       queue: [],
     };
   }
   return {
     pc   : 0,
     rc   : 0,
-    stack: Data.array([] as Monomer.Monomer[]) as Monomer.Monomer[],
-    saved: Data.array([] as Monomer.Monomer[]) as Monomer.Monomer[],
+    stack: Data.array([] as Monomer[]) as Monomer[],
+    saved: Data.array([] as Monomer[]) as Monomer[],
     queue: [],
   };
 };
 
-export const get = (elem: El.Fn): Polymer.Polymer => {
+export const get = (elem: El.Comp): Polymer.Polymer => {
   if (elements.has(elem)) return elements.get(elem)!;
   const fibril = {
     pc   : 0,
     rc   : 0,
-    stack: Data.array([] as Monomer.Monomer[]) as Monomer.Monomer[],
-    saved: Data.array([] as Monomer.Monomer[]) as Monomer.Monomer[],
+    stack: Data.array([] as Monomer[]) as Monomer[],
+    saved: Data.array([] as Monomer[]) as Monomer[],
     queue: [],
   } satisfies Polymer.Polymer;
   elements.set(elem, fibril);
   return fibril;
 };
 
-export const set = (elem: El.Fn, fiber: Polymer.Polymer) => elements.set(elem, fiber);
+export const set = (elem: El.Comp, fiber: Polymer.Polymer) => elements.set(elem, fiber);
 
-export const dismount = (elem: El.Fn) => elements.delete(elem);
+export const dismount = (elem: El.Comp) => elements.delete(elem);
 
 export const next = <A extends Monomer.Monomer>(self: Polymer.Polymer, check: (item: any) => item is A, build: () => A): A => {
   if (self.rc > 0) {
@@ -104,3 +105,8 @@ export const decode = (self: readonly Monomer.Monomer[]): Polymer.Polymer => {
 };
 
 export const encode = (self: Polymer.Polymer): Polymer.Encoded => self.saved;
+
+export const changed = (nd: El.Comp) => {
+  const polymer = get(nd);
+  return Equal.equals(polymer.stack, polymer.saved);
+};

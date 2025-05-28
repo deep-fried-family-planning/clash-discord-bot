@@ -10,10 +10,10 @@ export const jsx = (type: any, props: any) => {
 
   switch (typeof type) {
     case 'string': {
-      return Elem.api(type, props);
+      return Elem.rest(type, props);
     }
     case 'function': {
-      return Elem.fn(type, props);
+      return Elem.comp(type, props);
     }
     default: {
       throw new Error(`Invalid JSX type: ${type}`);

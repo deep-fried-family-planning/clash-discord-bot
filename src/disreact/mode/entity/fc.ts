@@ -10,8 +10,8 @@ export const PROMISE = 1;
 export const EFFECT = 2;
 
 export declare namespace FC {
-  export type Output = El.Children;
-  export type OutEffect = E.Effect<El.Children>;
+  export type Output = El.Cs;
+  export type OutEffect = E.Effect<El.Cs>;
 
   export interface Any<P, O> extends Function {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
