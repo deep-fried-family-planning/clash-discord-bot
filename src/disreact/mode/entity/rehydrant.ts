@@ -3,7 +3,7 @@ import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
 import * as MutableList from 'effect/MutableList';
 import * as Record from 'effect/Record';
-import type * as Declarations from '#src/disreact/mode/entity/declarations.ts';
+import type * as Declarations from '#src/disreact/mode/schema/declarations.ts';
 
 export declare namespace Rehydrant {
   export type Registrant = FC.FC | El.El;
@@ -19,7 +19,7 @@ export declare namespace Rehydrant {
     data : any;
     poly : Record<string, Polymer.Polymer>;
     next : {id: string | null; props?: any};
-    nodes: MutableList.MutableList<El.Nd>;
+    stack: MutableList.MutableList<El.Nd>;
   };
   export type Hydrator = typeof Declarations.Hydrator.Type;
   export type Encoded = typeof Declarations.Hydrator.Encoded;
@@ -63,7 +63,20 @@ export const fromSource = (source: Rehydrant.Source, props: any, data: any): Reh
     data : data,
     poly : {},
     next : {id: source.id},
-    nodes: MutableList.empty(),
+    stack: MutableList.empty(),
+  };
+};
+
+export const fromFC = (fc: FC.Any, props: any, data: any): Rehydrant.Rehydrant => {
+  const elem = El.comp(fc, props);
+  return {
+    id   : elem.type[FC.NameId]!,
+    props: props,
+    elem : elem,
+    data : data,
+    poly : {},
+    next : {id: elem.type[FC.NameId]!},
+    stack: MutableList.empty(),
   };
 };
 
@@ -76,14 +89,14 @@ export const fromHydrator = (source: Rehydrant.Source, hydrator: Rehydrant.Hydra
     data : data,
     poly : Record.map(hydrator.stacks, (s) => Polymer.decode(s)),
     next : {id: source.id},
-    nodes: MutableList.empty(),
+    stack: MutableList.empty(),
   };
 };
 
 export const hydrator = (rehydrant: Rehydrant.Rehydrant): Rehydrant.Hydrator => {
   const stack = El.stack(rehydrant.elem);
   const acc = {} as any;
-  while (El.check(stack)) {
+  while (El.tail(stack)) {
     const next = El.pop(stack);
     if (El.isComp(next)) {
       acc[next.idn!] = Polymer.get(next).stack;
@@ -98,7 +111,7 @@ export const hydrator = (rehydrant: Rehydrant.Rehydrant): Rehydrant.Hydrator => 
 };
 
 export const addNode = (rehydrant: Rehydrant.Rehydrant, node: El.Nd) => {
-  MutableList.append(rehydrant.nodes, node);
+  MutableList.append(rehydrant.stack, node);
 };
 
 export const getNode = (rehydrant: Rehydrant.Rehydrant) => {

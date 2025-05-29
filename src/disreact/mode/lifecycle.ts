@@ -220,7 +220,10 @@ export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(
       ),
       E.flatMap(() => {
         if (root.next.id === null) {
-          return RehydrantDOM.send(Progress.exit());
+          return pipe(
+            RehydrantDOM.send(Progress.exit()),
+            E.tap(() => RehydrantDOM.finalize(null)),
+          );
         }
         if (root.next.id !== root.id) {
           return RehydrantDOM.send(Progress.next(root.next.id));

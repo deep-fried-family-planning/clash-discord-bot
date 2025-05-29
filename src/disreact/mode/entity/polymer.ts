@@ -1,4 +1,4 @@
-import type * as Declarations from '#src/disreact/mode/entity/declarations.ts';
+import type * as Declarations from '#src/disreact/mode/schema/declarations.ts';
 import type {El} from '#src/disreact/mode/entity/el.ts';
 import type {Hook} from '#src/disreact/mode/hook.ts';
 import * as Data from 'effect/Data';

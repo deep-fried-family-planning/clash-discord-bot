@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/mode/entity/el.ts';
 import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
-import * as JsxSchema from '#src/disreact/mode/entity/jsx-schema.ts';
+import * as JsxSchema from '#src/disreact/mode/schema/declarations-jsx.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Stack from 'effect/MutableList';

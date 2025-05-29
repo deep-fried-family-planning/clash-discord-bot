@@ -131,7 +131,39 @@ export const getParent = (child: El.El) => parents.get(child);
 
 export const setParent = (child: El.El, parent: El.Nd) => parents.set(child, parent);
 
-export const children = (node: El.Nd) => {
+export const pragmaCs = (node: El.Nd) => {
+  const rests = {} as Record<string, number>;
+  const comps = new WeakMap<FC.FC, number>();
+  const pn = name(node);
+  for (let i = 0; i < node.nodes.length; i++) {
+    if (!isElem(node.nodes[i])) {
+      const child = text(node.nodes[i]);
+      node.nodes[i] = child;
+    }
+    const child = node.nodes[i];
+    setParent(child, node);
+    if (isText(child)) {
+      child.pos = i;
+    }
+    else if (isRest(child)) {
+      const idx = rests[child.type] ??= 0;
+      child.idn = `${node.idn}:${child.type}:${idx}`;
+      child.ids = `${node.name}:${node.idx}:${child.type}:${idx}`;
+      child.idx = idx;
+      rests[child.type]++;
+    }
+    else {
+      const cname = FC.name(child.type);
+      const idx = comps.get(child.type) ?? 0;
+      child.idn = `${node.idn}:${cname}:${idx}`;
+      child.ids = `${pn}:${node.idx}:${cname}:${idx}`;
+      child.idx = idx;
+      comps.set(child.type, idx + 1);
+    }
+  }
+};
+
+export const renderCs = (node: El.Nd) => {
   const rests = {} as Record<string, number>;
   const comps = new WeakMap<FC.FC, number>();
   const pn = name(node);
@@ -220,7 +252,7 @@ export type Stack = Stack.Stack;
 
 export const stack = (el?: El.El): Stack.Stack => el ? MutableList.make(el) : MutableList.empty();
 
-export const check = (stack: Stack.Stack) => !!MutableList.tail(stack);
+export const tail = (stack: Stack.Stack) => !!MutableList.tail(stack);
 
 export const pop = (stack: Stack.Stack) => MutableList.pop(stack)!;
 
@@ -250,7 +282,7 @@ export const pushConnect = (stack: Stack.Stack, next: El.Nd) => {
 
 export const regenNodes = (el: El.El) => {
   const regen = stack(el);
-  while (check(regen)) {
+  while (tail(regen)) {
     const next = pop(regen);
     if (!isText(next)) {
       pushConnect(regen, next);

@@ -15,7 +15,7 @@ export const jsx = (type: any, props: any) => {
   switch (typeof type) {
     case 'string': {
       const node = El.rest(type, props);
-      El.children(node);
+      El.pragmaCs(node);
       return node;
     }
     case 'function': {

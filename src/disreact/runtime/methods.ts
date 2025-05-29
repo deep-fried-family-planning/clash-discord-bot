@@ -10,7 +10,7 @@ import * as E from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import {pipe} from 'effect/Function';
 import type {Source} from '../model/meta/source';
-import * as Model from '../mode/Model.ts';
+import * as Model from 'src/disreact/mode/model.ts';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
 export type Methods = never;
