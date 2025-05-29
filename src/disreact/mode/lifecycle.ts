@@ -1,14 +1,14 @@
-import type * as Diff from '#src/disreact/mode/diff.ts';
+import * as Diff from '#src/disreact/mode/diff.ts';
 import * as El from '#src/disreact/mode/entity/el.ts';
 import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
 import type * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
 import * as Hook from '#src/disreact/mode/hook.ts';
-import {Progress, RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
+import * as Progress from '#src/disreact/mode/progress.ts';
+import {RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import {globalValue} from 'effect/GlobalValue';
 import * as Stack from 'effect/MutableList';
 import * as P from 'effect/Predicate';
 
@@ -56,30 +56,26 @@ export class RenderError extends Data.TaggedError('RenderError')<{
 const renderNode = (root: Rehydrant.Rehydrant, node: El.Comp) =>
   pipe(
     LOCK.take(1),
-    E.flatMap(() =>
-      pipe(
-        E.sync(() => Hook.set(root, node)),
-        E.flatMap(() => FC.render(node.type)),
-        E.map((rendered) => El.normalize(node, rendered)),
-      ),
-    ),
-    E.tap(() =>
-      pipe(
-        E.sync(() => Hook.reset()),
-        E.flatMap(() => LOCK.release(1)),
-      ),
-    ),
-    E.catchAllDefect((cause) =>
-      pipe(
-        E.sync(() => Hook.reset()),
-        E.flatMap(() => LOCK.release(1)),
-        E.flatMap(() => new RenderError({
+    E.tap(() => {
+      Hook.set(root, node);
+      return E.void;
+    }),
+    E.flatMap(() => FC.render(node.type)),
+    E.map((rendered) => El.normalize(node, rendered)),
+    E.tap(() => {
+      Hook.reset();
+      return LOCK.release(1);
+    }),
+    E.catchAllDefect((cause) => {
+      Hook.reset();
+      return LOCK.release(1).pipe(E.flatMap(() =>
+        new RenderError({
           root : root,
           node : node,
           cause: cause as Error,
-        })),
-      ),
-    ),
+        }),
+      ));
+    }),
     E.tap(() => renderEffect(root, node)),
   );
 
@@ -89,7 +85,7 @@ export const initialize = (root: Rehydrant.Rehydrant) => E.suspend(() => {
   const body = () => {
     const next = Stack.pop(stack)!;
 
-    if (!El.isComponent(next)) {
+    if (!El.isComp(next)) {
       for (let i = 0; i < next.nodes.length; i++) {
         const c = next.nodes[i];
         El.connect(next, c, i);
@@ -127,7 +123,7 @@ export const rehydrate = (root: Rehydrant.Rehydrant) => E.suspend(() => {
   const body = () => {
     const next = Stack.pop(stack)!;
 
-    if (El.isComponent(next)) {
+    if (El.isComp(next)) {
       const polymer = root.poly[next.idn!];
 
       if (polymer) {
@@ -224,12 +220,12 @@ export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(
       ),
       E.flatMap(() => {
         if (root.next.id === null) {
-          return RehydrantDOM.send(Progress.Close());
+          return RehydrantDOM.send(Progress.exit());
         }
         if (root.next.id !== root.id) {
-          return RehydrantDOM.send(Progress.Next({id: root.next.id}));
+          return RehydrantDOM.send(Progress.next(root.next.id));
         }
-        return RehydrantDOM.send(Progress.Same());
+        return RehydrantDOM.send(Progress.same());
       }),
       E.as(root),
     );
@@ -242,8 +238,10 @@ export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) => E.suspend(
   });
 });
 
-const diffs = globalValue(Symbol.for('disreact/diffs'), () => new WeakMap<any, Diff.Diff>());
-
 export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
-  const stack = Stack.make<El.Nd>(root.elem);
+  const stack = El.stack(root.elem);
+
+  const initialRs = yield* renderNode(root, root.elem);
+
+  Diff.children(root.elem, initialRs);
 });

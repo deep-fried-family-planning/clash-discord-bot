@@ -1,5 +1,9 @@
-import * as Elem from '#src/disreact/mode/entity/el.ts';
+import * as El from '#src/disreact/mode/entity/el.ts';
 import * as Array from 'effect/Array';
+
+export namespace Pragma {
+
+}
 
 export const Fragment = Symbol.for('disreact/Fragment');
 
@@ -10,20 +14,17 @@ export const jsx = (type: any, props: any) => {
 
   switch (typeof type) {
     case 'string': {
-      const node = Elem.rest(type, props);
+      const node = El.rest(type, props);
+      El.children(node);
       return node;
     }
     case 'function': {
-      return Elem.component(type, props);
+      return El.comp(type, props);
     }
   }
   throw new Error(`Invalid JSX type: ${type}`);
 };
 
-export const jsxs = (type: any, props: any) => {
-  return jsx(type, props);
-};
+export const jsxs = (type: any, props: any) => jsx(type, props);
 
-export const jsxDEV = (type: any, props: any) => {
-  return jsx(type, props);
-};
+export const jsxDEV = (type: any, props: any) => jsx(type, props);

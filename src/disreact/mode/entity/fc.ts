@@ -9,7 +9,7 @@ export const SYNC = 0;
 export const PROMISE = 1;
 export const EFFECT = 2;
 
-export declare namespace FC {
+export namespace FC {
   export type Output = El.Cs;
   export type OutEffect = E.Effect<El.Cs>;
 

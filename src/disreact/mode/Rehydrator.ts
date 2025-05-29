@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/mode/entity/el.ts';
 import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
-import * as JsxSchema from '#src/disreact/mode/jsx-schema.ts';
+import * as JsxSchema from '#src/disreact/mode/entity/jsx-schema.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Stack from 'effect/MutableList';
@@ -9,7 +9,7 @@ import * as Stack from 'effect/MutableList';
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
   if (FC.isFC(input)) return input[FC.NameId]!;
-  if (El.isComponent(input)) return input.type[FC.NameId]!;
+  if (El.isComp(input)) return input.type[FC.NameId]!;
 };
 
 export class RehydratorError extends Data.TaggedError('RehydratorError')<{}> {}

@@ -9,46 +9,46 @@ import * as Equal from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
 
-const context = {
-  root: undefined as undefined | Rehydrant.Rehydrant,
-  comp: undefined as undefined | El.Comp,
-  poly: undefined as undefined | Polymer.Polymer,
+const __ctx = {
+  root   : undefined as undefined | Rehydrant.Rehydrant,
+  comp   : undefined as undefined | El.Comp,
+  polymer: undefined as undefined | Polymer.Polymer,
 };
 
 export const set = (root: Rehydrant.Rehydrant, elem: El.Comp) => {
-  context.root = root;
-  context.comp = elem;
-  context.poly = Polymer.get(elem);
+  __ctx.root = root;
+  __ctx.comp = elem;
+  __ctx.polymer = Polymer.get(elem);
 };
 
 export const reset = () => {
-  if (context.poly) {
-    Polymer.commit(context.poly);
+  if (__ctx.polymer) {
+    Polymer.commit(__ctx.polymer);
   }
-  context.root = undefined;
-  context.comp = undefined;
-  context.poly = undefined;
+  __ctx.root = undefined;
+  __ctx.comp = undefined;
+  __ctx.polymer = undefined;
 };
 
-const getRehydrant = () => {
-  if (!context.root) {
+const getRoot = () => {
+  if (!__ctx.root) {
     throw new Error('Hooks must be called within a component.');
   }
-  return context.root;
+  return __ctx.root;
 };
 
-const getComponent = () => {
-  if (!context.comp) {
+const getComp = () => {
+  if (!__ctx.comp) {
     throw new Error('Hooks must be called within a component.');
   }
-  return context.comp;
+  return __ctx.comp;
 };
 
 const getPolymer = () => {
-  if (!context.poly) {
+  if (!__ctx.polymer) {
     throw new Error('Hooks must be called within a component.');
   }
-  return context.poly;
+  return __ctx.polymer;
 };
 
 export const TypeId = Symbol.for('disreact/Deps/TypeId');
@@ -102,10 +102,10 @@ export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
     Polymer.isState,
     () => ({s: initial}),
   );
-  const root = getRehydrant();
-  const node = getComponent();
+  const root = getRoot();
+  const node = getComp();
 
-  const set: Hook.SetState<A> = fn('useState', context.comp!, (next) => {
+  const set: Hook.SetState<A> = fn('useState', __ctx.comp!, (next) => {
     if (typeof next === 'function') {
       curr.s = (next as (prev: A) => A)(curr.s);
     }
@@ -132,7 +132,7 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
   const fibril = getPolymer();
   const curr = Polymer.next(fibril, Polymer.isDep, () => ({d: deps ?? []}));
 
-  const depEffect = fn('useEffect', context.comp!, effect);
+  const depEffect = fn('useEffect', __ctx.comp!, effect);
 
   if (fibril.rc === 0) {
     fibril.queue.push(depEffect);
@@ -158,7 +158,7 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
 };
 
 export const $useIx = () => {
-  const rehydrant = getRehydrant();
+  const rehydrant = getRoot();
   const node = getPolymer();
   Polymer.next(
     node,
@@ -169,7 +169,7 @@ export const $useIx = () => {
 };
 
 export const $usePage = () => {
-  const rehydrant = getRehydrant();
+  const rehydrant = getRoot();
   const node = getPolymer();
 
   if (!node.stack[node.pc]) {

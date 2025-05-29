@@ -1,16 +1,11 @@
+import type * as Declarations from '#src/disreact/mode/entity/declarations.ts';
 import type {El} from '#src/disreact/mode/entity/el.ts';
 import type {Hook} from '#src/disreact/mode/hook.ts';
-import * as Equal from 'effect/Equal';
 import * as Data from 'effect/Data';
-import * as GlobalValue from 'effect/GlobalValue';
-import type * as Declarations from '#src/disreact/mode/entity/declarations.ts';
+import * as Equal from 'effect/Equal';
+import {globalValue} from 'effect/GlobalValue';
 
-const elements = GlobalValue.globalValue(
-  Symbol.for('disreact/Polymer/El'),
-  () => new WeakMap<El.Component, Polymer.Polymer>(),
-);
-
-export declare namespace Monomer {
+export namespace Monomer {
   export type Null = typeof Declarations.Null.Type;
   export type State = typeof Declarations.State.Type;
   export type Dep = typeof Declarations.Dep.Type;
@@ -24,7 +19,7 @@ export const isNull = (self: Monomer): self is Monomer.Null => self === null;
 export const isState = (self: Monomer): self is Monomer.State => !!self && 's' in self;
 export const isDep = (self: Monomer): self is Monomer.Dep => !!self && 'd' in self;
 
-export declare namespace Polymer {
+export namespace Polymer {
   export type Polymer = {
     pc   : number;
     rc   : number;
@@ -56,8 +51,10 @@ export const make = (stack?: Monomer[]): Polymer.Polymer => {
   };
 };
 
-export const get = (elem: El.Component): Polymer.Polymer => {
-  if (elements.has(elem)) return elements.get(elem)!;
+const polymers = globalValue(Symbol.for('disreact/polymers'), () => new WeakMap<El.Comp, Polymer.Polymer>());
+
+export const get = (elem: El.Comp): Polymer.Polymer => {
+  if (polymers.has(elem)) return polymers.get(elem)!;
   const fibril = {
     pc   : 0,
     rc   : 0,
@@ -65,13 +62,13 @@ export const get = (elem: El.Component): Polymer.Polymer => {
     saved: Data.array([] as Monomer[]) as Monomer[],
     queue: [],
   } satisfies Polymer.Polymer;
-  elements.set(elem, fibril);
+  polymers.set(elem, fibril);
   return fibril;
 };
 
-export const set = (elem: El.Component, fiber: Polymer.Polymer) => elements.set(elem, fiber);
+export const set = (elem: El.Comp, polymer: Polymer.Polymer) => polymers.set(elem, polymer);
 
-export const dismount = (elem: El.Component) => elements.delete(elem);
+export const dismount = (elem: El.Comp) => polymers.delete(elem);
 
 export const next = <A extends Monomer.Monomer>(self: Polymer.Polymer, check: (item: any) => item is A, build: () => A): A => {
   if (self.rc > 0) {
@@ -106,7 +103,7 @@ export const decode = (self: readonly Monomer.Monomer[]): Polymer.Polymer => {
 
 export const encode = (self: Polymer.Polymer): Polymer.Encoded => self.saved;
 
-export const changed = (nd: El.Component) => {
+export const changed = (nd: El.Comp) => {
   const polymer = get(nd);
   return Equal.equals(polymer.stack, polymer.saved);
 };

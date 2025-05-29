@@ -1,7 +1,7 @@
 import type {IntrinsicTuplesMapped} from '#src/disreact/codec/intrinsic/index.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from './model/elem/fc';
-import * as Pragma from 'src/disreact/mode/jsx-pragma.ts';
+import * as Pragma from '#src/disreact/mode/pragma.ts';
 
 export const Fragment = Pragma.Fragment;
 export const jsx = Pragma.jsx;
