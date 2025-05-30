@@ -1,5 +1,5 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 import {Keys} from '../keys';
 
@@ -22,6 +22,6 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return `__${acc[Keys.primitive]?.[0]}__`;
 };

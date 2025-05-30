@@ -1,4 +1,3 @@
-import {Relay} from '#src/disreact/model/Relay.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods';
 import {Runtime} from '#src/disreact/runtime/runtime';
@@ -19,8 +18,7 @@ const layer = pipe(
   L.effectContext(E.succeed(TestServices.liveServices)),
   L.provideMerge(
     Runtime.makeGlobalRuntimeLayer({
-      config: {
-        token  : '',
+      rehydrator: {
         sources: [
           TestMessage,
         ],
@@ -71,7 +69,7 @@ describe('respond', () => {
           custom_id     : 'actions:2:button:0',
           component_type: 2,
         },
-      }).pipe(E.provide(Relay.Fresh), E.scoped),
+      }),
       E.provide(layer),
       E.runPromise,
     );

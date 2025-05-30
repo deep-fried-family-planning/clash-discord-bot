@@ -2,7 +2,7 @@ import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {Params} from '#src/disreact/codec/rest/params.ts';
-import {Declare} from '#src/disreact/mode/schema/declare.ts';
+import * as Declarations from '#src/disreact/model/util/declarations.ts';
 import {hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
 
@@ -14,7 +14,7 @@ const Modal = S.transform(
   S.Struct({
     base    : S.String,
     doken   : S.typeSchema(Doken.Serial),
-    encoding: Declare.encoded(Keys.modal, DAPI.Modal.Open),
+    encoding: Declarations.encoded(Keys.modal, DAPI.Modal.Open),
   }),
   {
     encode: (tx) =>
@@ -35,9 +35,8 @@ const Message = S.transform(
     base    : S.String,
     doken   : S.typeSchema(Doken.Serial),
     encoding: S.Union(
-      Declare.encoded(Keys.ephemeral, DAPI.Message.Base),
-      Declare.encoded(Keys.message, DAPI.Message.Base),
-      Declare.encoded(Keys.entry, DAPI.Message.Base),
+      Declarations.encoded(Keys.ephemeral, DAPI.Message.Base),
+      Declarations.encoded(Keys.message, DAPI.Message.Base),
     ),
   }),
   {
@@ -55,8 +54,8 @@ const Message = S.transform(
 );
 
 export const Response = S.Union(
-  Modal,
   Message,
+  Modal,
 );
 
 export type Response = typeof Response.Type;

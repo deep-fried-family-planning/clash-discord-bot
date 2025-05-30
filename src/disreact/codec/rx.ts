@@ -2,7 +2,8 @@ import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {Params} from '#src/disreact/codec/rest/params.ts';
-import {Declare} from '#src/disreact/mode/schema/declare.ts';
+import * as Declarations from '#src/disreact/model/util/declarations.ts';
+import * as Declarations from '#src/disreact/model/util/declarations.ts';
 import {pipe, hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
 
@@ -35,9 +36,9 @@ const Modal = pipe(
       isEphemeral: S.optional(S.Boolean),
       fresh      : S.typeSchema(Doken.Latest),
       doken      : S.optional(S.typeSchema(Doken.Serial)),
-      hydrator   : S.typeSchema(Declare.Hydrator),
-      event      : Declare.trigger(DAPI.Modal.Data),
-      message    : S.optional(S.typeSchema(Declare.Hydrator)),
+      hydrator   : S.typeSchema(Declarations.Hydrator),
+      event      : Declarations.trigger(DAPI.Modal.Data),
+      message    : S.optional(S.typeSchema(Declarations.Hydrator)),
     }),
     {
       encode: forbidden,
@@ -87,8 +88,8 @@ const Message = pipe(
       isEphemeral: S.Boolean,
       fresh      : S.typeSchema(Doken.Latest),
       doken      : S.typeSchema(Doken.Serial),
-      hydrator   : S.typeSchema(Declare.Hydrator),
-      event      : Declare.trigger(DAPI.Ix.ComponentData),
+      hydrator   : S.typeSchema(Declarations.Hydrator),
+      event      : Declarations.trigger(DAPI.Ix.ComponentData),
     }),
     {
       encode: forbidden,

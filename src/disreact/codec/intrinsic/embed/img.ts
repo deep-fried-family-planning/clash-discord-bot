@@ -1,6 +1,6 @@
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 
 export * as Img from '#src/disreact/codec/intrinsic/embed/img.ts';
@@ -19,7 +19,7 @@ export const Attributes = declareProps(
 
 export const Element = declareElem(TAG, Attributes);
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     url: self.props.url,
   };

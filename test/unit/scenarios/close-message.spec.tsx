@@ -6,7 +6,7 @@ import * as E from 'effect/Effect';
 const runtime = makeTestRuntime([CloseMessage], false);
 
 it.effect('when closing', E.fn(function* () {
-  const root = yield* runtime.synthesize(CloseMessage);
+  const root = yield* runtime.synthesize(CloseMessage, {}, {});
 
   expect(root).toMatchSnapshot();
 

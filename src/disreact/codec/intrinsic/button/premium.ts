@@ -1,7 +1,7 @@
 import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 
 export * as Premium from '#src/disreact/codec/intrinsic/button/premium.ts';
@@ -25,7 +25,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     type    : DAPIComponent.BUTTON,
     sku_id  : self.props.sku_id,

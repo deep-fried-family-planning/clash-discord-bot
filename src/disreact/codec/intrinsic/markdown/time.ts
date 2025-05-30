@@ -1,5 +1,5 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as BI from 'effect/BigInt';
 import * as S from 'effect/Schema';
 
@@ -26,7 +26,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   const {d, D, t, T, f, F, R} = self.props;
 
   const input =

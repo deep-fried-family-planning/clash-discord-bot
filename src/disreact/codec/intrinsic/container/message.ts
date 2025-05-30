@@ -4,8 +4,9 @@ import {Select} from '#src/disreact/codec/intrinsic/select/select.ts';
 import {Users} from '#src/disreact/codec/intrinsic/select/users.ts';
 import {Actions} from '#src/disreact/codec/intrinsic/button/actions.ts';
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
+import console from 'node:console';
 import {Keys} from '../keys';
 
 export * as Message from '#src/disreact/codec/intrinsic/container/message.ts';
@@ -35,7 +36,7 @@ export const Element = Util.declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     content   : self.props.content ?? acc[Keys.primitive]?.[0] ?? undefined,
     embeds    : acc[Keys.embeds],

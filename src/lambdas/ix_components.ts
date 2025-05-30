@@ -1,4 +1,4 @@
-import {DisReact} from '#src/disreact/runtime/DisReact.ts';
+import {DisReact} from '#src/disreact/DisReact.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {Interacting} from '#src/service/Interacting.ts';
 import type {Discord} from 'dfx';

@@ -1,5 +1,4 @@
 import {Snowflake} from '#src/disreact/codec/dapi/snowflake.ts';
-import * as Data from 'effect/Data';
 import * as DateTime from 'effect/DateTime';
 import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
@@ -15,7 +14,7 @@ export type Latest = S.mutable<typeof Latest>['Type'];
 export type Active = S.mutable<typeof Active>['Type'];
 export type Cached = S.mutable<typeof Cached>['Type'];
 export type Single = S.mutable<typeof Single>['Type'];
-export type Dialog = S.mutable<typeof Modal>['Type'];
+export type Dialog = S.mutable<typeof Dialog>['Type'];
 export type Source = S.mutable<typeof Source>['Type'];
 export type Update = S.mutable<typeof Update>['Type'];
 export type Never = S.mutable<typeof Never>['Type'];
@@ -33,7 +32,7 @@ export const LATEST = 'Latest' as const,
              CACHED = 'Cached' as const,
              SINGLE = 'Single' as const,
              SOURCE = 'Source' as const,
-             MODAL  = 'Modal' as const,
+             DIALOG = 'Modal' as const,
              UPDATE = 'Update' as const,
              NEVER  = 'Never' as const;
 
@@ -41,7 +40,7 @@ export const isLatest = (doken?: Doken): doken is Latest => doken?._tag === LATE
 export const isActive = (doken?: Doken): doken is Active => doken?._tag === ACTIVE;
 export const isCached = (doken?: Doken): doken is Cached => doken?._tag === CACHED;
 export const isSingle = (doken?: Doken): doken is Single => doken?._tag === SINGLE;
-export const isModal = (doken?: Doken): doken is Dialog => doken?._tag === MODAL;
+export const isDialog = (doken?: Doken): doken is Dialog => doken?._tag === DIALOG;
 export const isSource = (doken?: Doken): doken is Source => doken?._tag === SOURCE;
 export const isUpdate = (doken?: Doken): doken is Update => doken?._tag === UPDATE;
 export const isNever = (doken?: Doken): doken is Never => doken?._tag === NEVER;
@@ -83,7 +82,6 @@ export const Latest = pipe(
     },
   ),
   S.attachPropertySignature('_tag', LATEST),
-  S.mutable,
 );
 
 export const Single = pipe(
@@ -102,7 +100,6 @@ export const Single = pipe(
     },
   ),
   S.attachPropertySignature('_tag', SINGLE),
-  S.mutable,
 );
 
 export const single = (doken: Doken): Single =>
@@ -114,7 +111,7 @@ export const single = (doken: Doken): Single =>
 export const Active = pipe(
   S.TemplateLiteralParser('a/', Snowflake.Id, '/', S.Redacted(S.String)),
   S.transform(
-    S.Struct({
+    S.TaggedStruct(ACTIVE, {
       ...Base.fields,
       ttl: Snowflake.TimeToLive(ACTIVE_OFFSET),
     }),
@@ -122,15 +119,14 @@ export const Active = pipe(
       encode: ({id, val}) => ['a/', id, '/', val] as const,
       decode: ([, id, , val]) =>
         ({
-          id : id,
-          ttl: id,
-          val: val,
-          app: '',
+          _tag: ACTIVE,
+          id  : id,
+          ttl : id,
+          val : val,
+          app : '',
         }),
     },
   ),
-  S.attachPropertySignature('_tag', ACTIVE),
-  S.mutable,
 );
 
 export const active = (doken: Doken): Active => {
@@ -160,7 +156,6 @@ export type Serial =
 export const Never = pipe(
   Base,
   S.attachPropertySignature('_tag', NEVER),
-  S.mutable,
 );
 
 export const never = (): Never =>
@@ -168,22 +163,20 @@ export const never = (): Never =>
     _tag: NEVER,
   } as unknown as Never);
 
-export const Modal = pipe(
+export const Dialog = pipe(
   Base,
-  S.attachPropertySignature('_tag', MODAL),
-  S.mutable,
+  S.attachPropertySignature('_tag', DIALOG),
 );
 
-export const modal = (fresh: Latest): Dialog =>
+export const dialog = (fresh: Latest): Dialog =>
   ({
     ...fresh,
-    _tag: MODAL,
+    _tag: DIALOG,
   });
 
 export const Source = pipe(
   Base,
   S.attachPropertySignature('_tag', SOURCE),
-  S.mutable,
 );
 
 export const source = (fresh: Latest): Source =>
@@ -196,7 +189,6 @@ export const source = (fresh: Latest): Source =>
 export const Update = pipe(
   Base,
   S.attachPropertySignature('_tag', UPDATE),
-  S.mutable,
 );
 
 export const update = (fresh: Latest): Update =>
@@ -233,7 +225,6 @@ export const Cached = pipe(
     },
   ),
   S.attachPropertySignature('_tag', CACHED),
-  S.mutable,
 );
 
 export const cache = (doken: Doken): Cached =>
@@ -248,25 +239,10 @@ export const Serial = S.Union(
   Single,
 );
 
-export const serial = (doken: Doken): Serial => {
+export const convert = (doken: Doken): Serial => {
   switch (doken._tag) {
     case ACTIVE:
     case SINGLE:
-    case CACHED: {
-      return doken;
-    }
-    default: {
-      return single(doken);
-    }
-  }
-};
-
-export const convertSerial = (doken: Doken): Serial => {
-  switch (doken._tag) {
-    case ACTIVE:
-      return doken;
-    case SINGLE:
-      return doken;
     case CACHED:
       return doken;
     default:
@@ -274,24 +250,13 @@ export const convertSerial = (doken: Doken): Serial => {
   }
 };
 
-export class DokenDefect extends Data.TaggedError('disreact/DokenDefect')<{
-  msg?: string;
-}> {}
-
 export const value = (dk: Doken) => Redacted.value(dk.val);
 
-export const remaining = (dk: Doken, now?: DateTime.Utc) => {
-  if (!now) {
-    return DateTime.now.pipe(E.map(DateTime.distanceDurationEither(dk.ttl)));
-  }
-  return E.succeed(DateTime.distanceDurationEither(now, dk.ttl));
-};
-
-export const ttl = (dk: Doken | undefined, utc: DateTime.Utc) =>
+export const ttl = (dk: Doken | undefined, now: DateTime.Utc) =>
   pipe(
     Option.fromNullable(dk),
     Option.map((dk) => dk.ttl),
-    Option.map((then) => DateTime.distanceDurationEither(utc, then)),
+    Option.map((then) => DateTime.distanceDurationEither(now, then)),
     Option.map((dis) => Either.getOrUndefined(dis)),
     Option.getOrUndefined,
   );

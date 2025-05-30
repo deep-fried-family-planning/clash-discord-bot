@@ -2,8 +2,9 @@ import {usePage} from '#src/disreact/index.ts';
 import {SimpleModal} from '#test/unit/components/simple-modal.tsx';
 
 export const SimpleMessage = (props) => {
-  const page = usePage([SimpleModal]);
-
+  const page = usePage();
+  console.log(props);
+  console.log(props.title);
   return (
     <message>
       <embed>{'Hello World!'}</embed>
@@ -14,7 +15,7 @@ export const SimpleMessage = (props) => {
           label={'Modal'}
           onclick={() => {
             console.log('OpenModal');
-            page.next(SimpleModal);
+            page.next(SimpleModal, {});
           }}
         />
       </actions>

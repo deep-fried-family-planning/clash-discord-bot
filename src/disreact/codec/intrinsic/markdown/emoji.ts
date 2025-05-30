@@ -1,5 +1,5 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 
 export * as Emoji from '#src/disreact/codec/intrinsic/markdown/emoji.ts';
@@ -25,7 +25,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     name    : self.props.name,
     id      : self.props.id,

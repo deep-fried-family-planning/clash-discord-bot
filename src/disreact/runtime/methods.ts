@@ -1,21 +1,21 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import type * as Rx from '#src/disreact/codec/rx.ts';
-import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
-import * as Model from '#src/disreact/mode/model.ts';
-import {RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
-import * as Progress from '#src/disreact/mode/util/progress.ts';
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import * as Model from '#src/disreact/model/model.ts';
+import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import * as Progress from '#src/disreact/model/util/progress.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/runtime/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
+import * as Match from 'effect/Match';
 import * as DateTime from 'effect/DateTime';
 import * as Deferred from 'effect/Deferred';
-import type * as Duration from 'effect/Duration';
+import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
-import * as Either from 'effect/Either';
 import * as Fiber from 'effect/Fiber';
 import * as FiberHandle from 'effect/FiberHandle';
-import {pipe} from 'effect/Function';
+import {flow, pipe} from 'effect/Function';
 import * as Option from 'effect/Option';
 
 export * as Methods from '#src/disreact/runtime/methods.ts';
@@ -37,7 +37,7 @@ export const createRoot = (id: Rehydrant.SourceId, props?: any, data?: any) =>
         encoding: root as any,
       });
     }),
-    E.provide(RehydrantDOM.Fresh),
+    E.provide(RehydrantDOM.Fresh()),
   );
 
 const pollDeferred = <A, E>(deferred: Deferred.Deferred<A, E>) =>
@@ -57,42 +57,62 @@ const isTimingArmed = pipe(
   })),
 );
 
-const disarmJoinTiming = pipe(
+const awaitDisarm = pipe(
   DokenState.timing,
+  E.tap(E.logTrace('disarming')),
   E.tap((timing) => FiberHandle.clear(timing)),
-  E.tap((timing) => FiberHandle.join(timing)),
+  E.tap(E.logTrace('awaiting disarm')),
+  E.tap((timing) => FiberHandle.awaitEmpty(timing)),
+  E.tap(E.logTrace('disarmed')),
+);
+
+const interruptDisarm = pipe(
+  DokenState.timing,
+  E.tap(E.logTrace('disarming interrupt')),
+  E.tap((timing) => FiberHandle.clear(timing)),
+  E.tap(E.logTrace('disarmed')),
+);
+
+const awaitDisarmIfArmed = pipe(
+  awaitDisarm,
+  E.whenEffect(isTimingArmed),
 );
 
 const armTiming = (duration: Duration.Duration) => <R>(effect: E.Effect<void, HttpClientError | DokenDefect, R>) =>
   DokenState.use((ds) =>
     pipe(
-      effect,
-      E.tapDefect(E.logFatal),
+      E.logTrace('dispatched'),
+      E.andThen(effect),
       E.delay(duration),
       FiberHandle.run(ds.timing, {
         onlyIfMissing        : false,
         propagateInterruption: true,
       }),
+      E.tap(E.logTrace(`armed ${Duration.toSeconds(duration)}s`)),
     ),
   );
 
 const armImmediate = <R>(effect: E.Effect<void, HttpClientError | DokenDefect, R>) =>
   DokenState.use((ds) =>
     pipe(
-      effect,
+      E.logTrace('immediate dispatching'),
+      E.andThen(effect),
       E.tapDefect(E.logFatal),
       FiberHandle.run(ds.timing, {
         onlyIfMissing        : false,
         propagateInterruption: true,
       }),
+      E.tap(E.logTrace('immediate armed')),
     ),
   );
 
 const isDone = DokenState.use((ds) => ds.result.pipe(pollDeferred));
 
 const armExit = E.gen(function* () {
+  yield* E.logTrace('armExit');
+
   if (yield* isTimingArmed) {
-    yield* E.fork(disarmJoinTiming);
+    yield* E.fork(awaitDisarm);
   }
   const dokens = yield* DokenState;
   const latest = yield* dokens.latest;
@@ -132,19 +152,30 @@ const armExit = E.gen(function* () {
       armImmediate,
     );
   }
-  return yield* new DokenDefect({cause: new Error('No tokens available to dismount')});
+  return yield* new DokenDefect({
+    utc   : now,
+    latest: latest,
+    synced: synced,
+    active: active,
+    result: result,
+    cause : new Error('No tokens available to dismount'),
+  });
 });
 
 const armReuse = E.gen(function* () {
-  if (yield* isTimingArmed) {
-    yield* disarmJoinTiming;
-  }
+  yield* E.logTrace('armReuse');
+  yield* awaitDisarmIfArmed;
+
+  const now = yield* DateTime.now;
+
   if (yield* isDone) {
-    return yield* new DokenDefect({cause: new Error('Interaction already finished')});
+    return yield* new DokenDefect({
+      utc  : now,
+      cause: new Error('Interaction already finished'),
+    });
   }
   const latest = yield* DokenState.latest;
   const active = yield* DokenState.active;
-  const now = yield* DateTime.now;
 
   const latestTtl = Doken.ttl(latest, now);
   const activeTtl = Doken.ttl(active, now);
@@ -154,13 +185,19 @@ const armReuse = E.gen(function* () {
       return yield* DokenState.finish(active!);
     }
     return yield* pipe(
-      DiscordDOM.discard(latest),
+      E.logTrace('discard'),
+      E.tap(DiscordDOM.discard(latest)),
       E.tap(DokenState.finish(active!)),
       E.uninterruptible,
     );
   }
   if (!latestTtl) {
-    return yield* new DokenDefect({cause: new Error('Latest token expired')});
+    return yield* new DokenDefect({
+      utc  : now,
+      latest,
+      active,
+      cause: new Error('Latest token expired'),
+    });
   }
   return yield* pipe(
     DiscordDOM.deferUpdate(latest),
@@ -170,17 +207,21 @@ const armReuse = E.gen(function* () {
 });
 
 const armSource = E.gen(function* () {
-  if (yield* isTimingArmed) {
-    yield* disarmJoinTiming;
-  }
+  yield* E.logTrace('armSource');
+  yield* awaitDisarmIfArmed;
+
+  const now = yield* DateTime.now;
+
   if (yield* isDone) {
-    return yield* new DokenDefect({cause: new Error('Interaction already finished')});
+    return yield* new DokenDefect({
+      utc  : now,
+      cause: new Error('Interaction already finished'),
+    });
   }
   const latest = yield* DokenState.latest;
-  const now = yield* DateTime.now;
   const freshTtl = Doken.ttl(latest, now);
 
-  yield* DokenState.update(Doken.source(latest));
+  yield* DokenState.sync(Doken.source(latest));
 
   if (!freshTtl) {
     return yield* pipe(
@@ -197,17 +238,27 @@ const armSource = E.gen(function* () {
 });
 
 const armUpdate = E.gen(function* () {
-  if (yield* isTimingArmed) {
-    yield* disarmJoinTiming;
-  }
+  yield* E.logTrace('armUpdate');
+  yield* awaitDisarmIfArmed;
+
+  const now = yield* DateTime.now;
+
   if (yield* isDone) {
-    return yield* new DokenDefect({cause: new Error('Interaction already finished')});
+    return yield* new DokenDefect({
+      utc  : now,
+      cause: new Error('Interaction already finished'),
+    });
   }
   const latest = yield* DokenState.latest;
-  const now = yield* DateTime.now;
   const freshTtl = Doken.ttl(latest, now);
 
-  yield* DokenState.update(Doken.update(latest));
+  yield* E.log(freshTtl);
+
+  yield* pipe(
+    latest,
+    Doken.update,
+    DokenState.sync,
+  );
 
   if (!freshTtl) {
     return yield* pipe(
@@ -223,39 +274,65 @@ const armUpdate = E.gen(function* () {
   );
 });
 
-const listen = (rx: Rx.Request) => E.gen(function* () {
+const armDialog = E.gen(function* () {
+  yield* E.logTrace('dialog');
+  yield* awaitDisarmIfArmed;
+  const now = yield* DateTime.now;
+
+  if (yield* isDone) {
+    return yield* new DokenDefect({
+      utc  : now,
+      cause: new Error('Interaction already finished'),
+    });
+  }
+
+  const latest = yield* DokenState.latest;
+
+  if (!Doken.ttl(latest, now)) {
+    return yield* new DokenDefect({
+      utc   : now,
+      latest: latest,
+      cause : new Error('Modal cannot be opened'),
+    });
+  }
+
+  return yield* pipe(
+    latest,
+    Doken.dialog,
+    DokenState.finish,
+  );
+});
+
+const listen = E.gen(function* () {
+  const rx = yield* DokenState.rx;
+
   let isSame = false;
   let isNext = false;
 
-  const body = (p: Progress.Progress) => E.suspend(() => {
-    if (Progress.isExit(p)) {
+  const body = (current: Progress.Progress) => E.suspend(() => {
+    if (Progress.isExit(current)) {
       return armExit;
     }
-    if (Progress.isSame(p)) {
+    if (Progress.isSame(current)) {
       isSame = true;
       return armReuse;
     }
-    if (Progress.isNext(p)) {
+    if (Progress.isNext(current)) {
       isNext = true;
-      return disarmJoinTiming;
+      return interruptDisarm;
     }
-    if (Progress.isPart(p)) {
+    if (Progress.isPart(current)) {
       if (isSame) {
-        return disarmJoinTiming;
+        return awaitDisarm;
       }
       if (isNext) {
-        if (p.type === 'modal') {
-          return pipe(
-            disarmJoinTiming,
-            E.andThen(DokenState.latest),
-            E.andThen(Doken.modal),
-            E.flatMap(DokenState.finish),
-          );
+        if (current.type === 'modal') {
+          return armDialog;
         }
-        if (p.type === 'message') {
+        if (current.type === 'message') {
           return rx.isEphemeral ? armSource : armUpdate;
         }
-        if (p.type === 'ephemeral') {
+        if (current.type === 'ephemeral') {
           return rx.isEphemeral ? armUpdate : armSource;
         }
       }
@@ -264,283 +341,123 @@ const listen = (rx: Rx.Request) => E.gen(function* () {
   });
 
   const dom = yield* RehydrantDOM;
-  const listen = dom.listen.pipe(E.orElseSucceed(Progress.done));
+
+  const listen = pipe(
+    dom.listen,
+    E.catchTags({
+      NoSuchElementException: () => E.succeed(Progress.done()),
+    }),
+    E.timeout(Duration.seconds(1)),
+  );
 
   const initial = yield* listen;
+
   yield* E.iterate(initial, {
     while: (p) => !Progress.isDone(p),
-    body : (p) => body(p).pipe(E.andThen(listen)),
+    body : flow(body, E.andThen(listen)),
   });
 });
 
-export const respond = E.fnUntraced(
+export const respond = E.fn('respond')(
   function* (body: unknown) {
     const req = yield* DokenState.rx;
 
-    const listener = yield* E.fork(listen(req));
+    const listener = yield* E.fork(listen);
     const invoking = yield* E.fork(Model.invokeRoot(req.hydrator!, req.event, body));
 
     yield* Fiber.join(listener);
     const root = yield* Fiber.join(invoking);
 
     if (!root) {
+      yield* awaitDisarm;
       return null;
     }
 
+    const latest = yield* DokenState.latest;
+    const synced = yield* DokenState.synced;
     const now = yield* DateTime.now;
-    const isDeferPhase = Doken.ttl(req.fresh, now);
 
-    if (isDeferPhase) {
-      const doken = yield* DokenState.result;
+    if (Doken.isDialog(synced)) {
+      if (!Doken.ttl(synced, now)) {
+        return yield* new DokenDefect({
+          utc   : now,
+          latest: latest,
+          synced: synced,
+          cause : new Error('Modal cannot be opened'),
+        });
+      }
 
-      if (!Doken.isActive(doken)) {
-        return yield* new DokenDefect({cause: new Error('Inactive token')});
-      }
-      if (!Doken.ttl(doken, now)) {
-        return yield* new DokenDefect({cause: new Error('Expired token')});
-      }
       const payload = yield* Codec.encodeResponse({
         base    : 'https://dffp.org',
-        doken   : doken,
+        doken   : Doken.convert(synced),
         encoding: root as any,
       });
-      yield* DiscordDOM.deferEdit(doken, payload);
+      yield* DiscordDOM.createModal(synced, payload);
       return payload;
     }
 
-    yield* disarmJoinTiming;
-    const doken = yield* DokenState.synced;
+    if (!Doken.ttl(latest, now)) {
+      const result = yield* DokenState.result;
 
-    if (!Doken.ttl(doken, now)) {
-      return yield* new DokenDefect({cause: new Error('Expired token')});
-    }
-
-    if (Doken.isActive(doken)) {
+      if (!Doken.isActive(result)) {
+        return yield* new DokenDefect({
+          utc   : now,
+          latest: latest,
+          synced: synced,
+          result: result,
+          cause : new Error('Token must be deferred'),
+        });
+      }
+      if (!Doken.ttl(result, now)) {
+        return yield* new DokenDefect({
+          utc   : now,
+          latest: latest,
+          synced: synced,
+          result: result,
+          cause : new Error('Expired token'),
+        });
+      }
       const payload = yield* Codec.encodeResponse({
         base    : 'https://dffp.org',
-        doken   : doken,
+        doken   : result,
         encoding: root as any,
       });
-      yield* DiscordDOM.deferEdit(doken, payload);
+      yield* DiscordDOM.deferEdit(result, payload);
       return payload;
+    }
+
+    if (!Doken.ttl(synced, now)) {
+      return yield* new DokenDefect({
+        utc   : now,
+        latest: latest,
+        synced: synced,
+        cause : new Error('Expired token'),
+      });
     }
 
     const payload = yield* Codec.encodeResponse({
       base    : 'https://dffp.org',
-      doken   : Doken.convertSerial(doken),
+      doken   : Doken.convert(synced),
       encoding: root as any,
     });
 
-    if (Doken.isModal(doken)) {
-      yield* DiscordDOM.createModal(doken, payload);
+    if (Doken.isActive(synced)) {
+      yield* awaitDisarm;
+      yield* DiscordDOM.deferEdit(synced, payload);
       return payload;
     }
-    if (Doken.isSource(doken)) {
-      yield* DiscordDOM.createSource(doken, payload);
+
+    yield* interruptDisarm;
+
+    if (Doken.isSource(synced)) {
+      yield* DiscordDOM.createSource(synced, payload);
       return payload;
     }
-    if (Doken.isUpdate(doken)) {
-      yield* DiscordDOM.createUpdate(doken, payload);
+    if (Doken.isUpdate(synced) || Doken.isLatest(synced)) {
+      yield* DiscordDOM.createUpdate(synced, payload);
       return payload;
     }
     return null;
   },
-  (effect, body) => E.provide(effect, [DokenState.Fresh(body), RehydrantDOM.Fresh]),
+  (effect, body) => E.provide(effect, [DokenState.Fresh(body), RehydrantDOM.Fresh()]),
 );
-
-// export const respond = ({req, body}: thing) => E.gen(function* () {
-//   const listener = yield* E.fork(listen(req));
-//   const invoking = yield* E.fork(Model.invokeRoot(req.hydrator!, req.event, body));
-//
-//   yield* Fiber.join(listener);
-//   const root = yield* Fiber.join(invoking);
-//
-//   if (!root) {
-//     return null;
-//   }
-//
-//   const isDeferPhase = yield* DateTime.isPast(req.fresh.ttl);
-//
-//   if (isDeferPhase) {
-//     const doken = yield* DokenState.result;
-//
-//     if (Doken.isNever(doken)) {
-//       return yield* E.fail(new Error('Never token found.'));
-//     }
-//
-//     const payload = yield* Codec.encodeResponse({
-//       base    : 'https://dffp.org',
-//       doken   : Doken.convertSerial(doken),
-//       encoding: root as any,
-//     });
-//     yield* DiscordDOM.deferEdit(doken, payload);
-//     return payload;
-//   }
-//
-//   yield* disarmJoinTiming;
-//   const doken = yield* DokenState.synced;
-//
-//   if (Doken.isActive(doken)) {
-//     const payload = yield* Codec.encodeResponse({
-//       base    : 'https://dffp.org',
-//       doken   : doken,
-//       encoding: root as any,
-//     });
-//     yield* DiscordDOM.deferEdit(doken, payload);
-//     return payload;
-//   }
-//
-//   const payload = yield* Codec.encodeResponse({
-//     base    : 'https://dffp.org',
-//     doken   : Doken.convertSerial(doken),
-//     encoding: root as any,
-//   });
-//
-//   if (Doken.isModal(doken)) {
-//     yield* DiscordDOM.createModal(doken, payload);
-//     return payload;
-//   }
-//   if (Doken.isSource(doken)) {
-//     yield* DiscordDOM.createSource(doken, payload);
-//     return payload;
-//   }
-//   if (Doken.isUpdate(doken)) {
-//     yield* DiscordDOM.createUpdate(doken, payload);
-//     return payload;
-//   }
-//   return null;
-// });
-
-// export const respondv1 = (body: any) => E.gen(function* () {
-//   const codec = yield* Codec;
-//   const req = codec.decodeRequest(body);
-//
-//   const ds = yield* Dokens.make(req.fresh, req.doken);
-//
-//   const model = yield* E.fork(Model.invokeRoot(req.hydrator!, req.event, body));
-//
-//   let isSame = false;
-//
-//   const relay = yield* Relay;
-//   const thing = yield* E.fork(E.iterate(Progress.Start(), {
-//     while: (r) => r._tag !== 'Done',
-//     body : () => E.tap(relay.awaitStatus, (r) => {
-//       if (r._tag === 'Close') {
-//         return handleClose(ds);
-//       }
-//       if (r._tag === 'Same') {
-//         isSame = true;
-//         return handleSame(ds);
-//       }
-//       if (r._tag === 'Part') {
-//         if (isSame) {
-//           return E.void;
-//         }
-//         if (r.type === 'modal') {
-//           return Dokens.finalizeModal(ds);
-//         }
-//         if (r.isEphemeral === req.isEphemeral) {
-//           return handleUpdate(ds);
-//         }
-//         return handleSource(ds);
-//       }
-//     }),
-//   }));
-//
-//   const root = yield* Fiber.join(model);
-//   yield* Fiber.await(thing);
-//
-//   if (!root) {
-//     return null;
-//   }
-//
-//   const isDeferPhase = yield* DateTime.isPast(req.fresh.ttl);
-//   const dom = yield* DiscordDOM;
-//
-//   if (isDeferPhase) {
-//     const doken = yield* Dokens.final(ds);
-//
-//     if (Doken.isNever(doken)) {
-//       return yield* E.fail(new Error('Never token found.'));
-//     }
-//     const payload = codec.encodeResponse({
-//       base    : 'https://dffp.org',
-//       doken   : doken,
-//       encoding: root as any,
-//     });
-//     yield* dom.deferEdit(doken, payload);
-//     return payload;
-//   }
-//
-//   yield* Dokens.stop(ds);
-//   const doken = yield* Dokens.current(ds);
-//
-//   if (doken._tag === Doken.ACTIVE) {
-//     const payload = codec.encodeResponse({
-//       base    : 'https://dffp.org',
-//       doken   : doken,
-//       encoding: root as any,
-//     });
-//     yield* dom.deferEdit(doken, payload);
-//     return payload;
-//   }
-//
-//   const payload = codec.encodeResponse({
-//     base    : 'https://dffp.org',
-//     doken   : Doken.convertSerial(doken),
-//     encoding: root as any,
-//   });
-//
-//   if (Doken.isModal(doken)) {
-//     yield* dom.createModal(doken, payload);
-//     return payload;
-//   }
-//   if (Doken.isSource(doken)) {
-//     yield* dom.createSource(doken, payload);
-//     return payload;
-//   }
-//   if (Doken.isUpdate(doken)) {
-//     yield* dom.createUpdate(doken, payload);
-//     return payload;
-//   }
-//   return null;
-// });
-
-// const dismount = DokenState.use((ds) => pipe(
-//   disarm,
-//   E.whenEffect(isArmed),
-//   E.andThen(
-//     E.all(
-//       [
-//         ds.active.pipe(pollDeferred),
-//         ds.current,
-//         ds.final.pipe(pollDeferred),
-//       ],
-//       {concurrency: 1},
-//     ),
-//   ),
-//   E.tap(([, current, final]) =>
-//     ds.finalize(current).pipe(E.unless(() => !!final)),
-//   ),
-//   E.tap(([active, current, final]) => {
-//     if (Doken.isNever(current)) {
-//       return E.void;
-//     }
-//     if (final) {
-//       return DiscordDOM.dismount(final);
-//     }
-//     if (Doken.isActive(current)) {
-//       return DiscordDOM.dismount(current);
-//     }
-//     if (active) {
-//       return DiscordDOM.dismount(active);
-//     }
-//     if (Doken.isLatest(current)) {
-//       return E.andThen(
-//         DiscordDOM.deferUpdate(current),
-//         DiscordDOM.dismount(current),
-//       );
-//     }
-//     return new DokenDefect({cause: new Error('No tokens available to dismount')});
-//   }),
-// ));

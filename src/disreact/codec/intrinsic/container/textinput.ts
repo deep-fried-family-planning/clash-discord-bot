@@ -1,7 +1,7 @@
 import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 
 export * as TextInput from '#src/disreact/codec/intrinsic/container/textinput.ts';
@@ -32,7 +32,7 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     type      : DAPIComponent.ACTION_ROW,
     components: [{

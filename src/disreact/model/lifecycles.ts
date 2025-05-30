@@ -1,487 +1,491 @@
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Elem} from '#src/disreact/model/elem/elem.ts';
-import {Props} from '#src/disreact/model/elem/props.ts';
-import {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Fibril} from '#src/disreact/model/meta/fibril.ts';
-import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Side} from '#src/disreact/model/meta/side.ts';
-import {Progress, Relay} from '#src/disreact/model/Relay.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
+import * as El from '#src/disreact/model/entity/el.ts';
+import * as FC from '#src/disreact/model/entity/fc.ts';
+import * as Polymer from '#src/disreact/model/entity/polymer.ts';
+import * as Props from '#src/disreact/model/entity/props.ts';
+import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+import * as Hook from '#src/disreact/model/hook.ts';
+import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
+import * as Diff from '#src/disreact/model/util/diff.ts';
+import * as Progress from '#src/disreact/model/util/progress.ts';
+import * as Stack from '#src/disreact/model/util/stack.ts';
+import {Duration} from 'effect';
+import * as Array from 'effect/Array';
+import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import * as MutableList from 'effect/MutableList';
-import * as ML from 'effect/MutableList';
+import * as StackV1 from 'effect/MutableList';
+import * as P from 'effect/Predicate';
+import type * as Cause from 'effect/Cause';
 
-export * as Lifecycles from '#src/disreact/model/lifecycles.ts';
-export type Lifecycles = never;
+const connect = (nd: El.Nd, rs: El.Cs = nd.nodes): El.El[] => {
+  const cs = Array.ensure(rs).flat();
+  const rests = {} as Record<string, number>;
+  const comps = new WeakMap<FC.FC, number>();
+  for (let i = 0; i < cs.length; i++) {
+    const c = cs[i];
+    if (!El.isElem(c)) {
+      const temp = El.text(c);
+      temp.pos = i;
+      cs[i] = temp;
+      El.setParent(temp, nd);
+      continue;
+    }
+    c.pos = i;
+    El.setParent(c, nd);
+    if (El.isText(c)) {
+      continue;
+    }
+    else if (El.isRest(c)) {
+      const idx = rests[c.type] ??= 0;
+      c.pos = i;
+      c.idx = idx;
+      c.ids = `${nd.name}:${nd.idx}:${c.name}:${c.idx}`;
+      c.idn = `${nd.idn}:${c.type}:${idx}`;
+      rests[c.type]++;
+    }
+    else {
+      const idx = comps.get(c.type) ?? 0;
+      c.pos = i;
+      c.idx = idx;
+      c.ids = `${nd.name}:${nd.idx}:${c.name}:${c.idx}`;
+      c.idn = `${nd.idn}:${c.name}:${c.idx}`;
+      comps.set(c.type, idx + 1);
+    }
+  }
+  return El.ns(cs) as El.El[];
+};
 
-const relayClose = () => Relay.use((relay) =>
+export class UpdateDefect extends Data.TaggedError('UpdateDefect')<{
+  root : Rehydrant.Rehydrant;
+  node : El.Comp;
+  cause: Cause.Cause<Error>;
+}> {}
+
+const renderUpdate = (root: Rehydrant.Rehydrant, node: El.Comp) =>
   pipe(
-    relay.setOutput(null),
-    E.tap(() => relay.sendStatus(
-      Progress.Close(),
-    )),
-  ),
-);
-
-const relaySame = (root: Rehydrant) =>
-  Relay.use((relay) =>
-    pipe(
-      relay.setOutput(root),
-      E.tap(() => relay.sendStatus(
-        Progress.Same(),
-      )),
+    E.sync(() => Polymer.get(node)),
+    E.flatMap((polymer) =>
+      E.forEach(polymer.queue, (effect) => {
+        if (effect.constructor.name === 'AsyncFunction') {
+          return E.promise(async () => await effect()) as E.Effect<void>;
+        }
+        const out = effect();
+        if (P.isPromise(out)) {
+          return E.promise(async () => await out) as E.Effect<void>;
+        }
+        if (E.isEffect(out)) {
+          return out as E.Effect<void>;
+        }
+        return E.void;
+      }),
+    ),
+    E.catchAllCause((cause) =>
+      new UpdateDefect({
+        root : root,
+        node : node,
+        cause: cause,
+      }),
     ),
   );
 
-const relayNext = (root: Rehydrant) => Relay.use((relay) =>
+const LOCK = E.unsafeMakeSemaphore(1);
+
+export class RenderDefect extends Data.TaggedError('RenderDefect')<{
+  root : Rehydrant.Rehydrant;
+  node : El.Comp;
+  cause: Cause.Cause<Error>;
+}> {}
+
+const renderNode = (root: Rehydrant.Rehydrant, node: El.Comp) =>
   pipe(
-    Sources.checkout(root.next.id!, root.next.props),
-    E.tap((next) => relay.setOutput(next)),
-    E.tap(() => relay.sendStatus(
-      Progress.Next({
-        id   : root.next.id,
-        props: root.next.props,
-      }),
-    )),
-  ),
-);
-
-/**
- * @desc relay
- */
-const relayPartial = (elem: Elem.Rest) => {
-  if (elem.type === 'modal') {
-    return pipe(
-      Relay.use((relay) => relay.sendStatus(
-        Progress.Part({
-          type: 'modal',
-        }),
-      )),
-      E.as(true),
-    );
-  }
-
-  if (elem.type === 'message') {
-    return pipe(
-      Relay.use((relay) =>
-        relay.sendStatus(
-          Progress.Part({
-            type       : 'message',
-            isEphemeral: elem.props.display === 'ephemeral' ? true : false,
+    LOCK.take(1),
+    E.andThen(Hook.set(root, node)),
+    E.andThen(FC.render(node.type, node.props)),
+    E.tap(Hook.reset),
+    E.tap(LOCK.release(1)),
+    E.map((rendered) => connect(node, rendered)),
+    E.catchAllCause((cause) =>
+      pipe(
+        Hook.reset,
+        E.andThen(LOCK.release(1)),
+        E.andThen(
+          new RenderDefect({
+            root : root,
+            node : node,
+            cause: cause,
           }),
         ),
       ),
-      E.as(true),
-    );
-  }
+    ),
+    E.tap(() => renderUpdate(root, node)),
+  );
 
-  if (elem.type === 'ephemeral') {
-    return pipe(
-      Relay.use((relay) =>
-        relay.sendStatus(
-          Progress.Part({
-            type       : 'ephemeral',
-            isEphemeral: true,
-          }),
-        ),
-      ),
-      E.as(true),
-    );
-  }
+export const initialize = (root: Rehydrant.Rehydrant) => {
+  const stack = StackV1.make<El.Nd>(root.elem);
 
-  return E.succeed(false);
-};
+  const body = () => {
+    const node = StackV1.pop(stack)!;
+    connect(node);
 
-export const invoke = (root: Rehydrant, event: Trigger) => E.suspend(() => {
-  const stack = ML.make<Elem>(root.elem);
-
-  while (ML.tail(stack)) {
-    const elem = ML.pop(stack)!;
-
-    if (Elem.isValue(elem)) {
-      continue;
+    if (!El.isComp(node)) {
+      for (let i = 0; i < node.nodes.length; i++) {
+        const c = node.nodes[i];
+        if (!El.isText(c)) {
+          StackV1.append(stack, c);
+        }
+      }
+      return pipe(
+        RehydrantDOM.send(Progress.part(root.id, node.type, node.props)),
+        E.asVoid,
+      );
     }
 
-    if (Trigger.isTarget(event, elem)) {
+    return pipe(
+      renderNode(root, node),
+      E.map((rendered) => {
+        for (let i = 0; i < rendered.length; i++) {
+          const r = rendered[i];
+          if (!El.isText(r)) {
+            StackV1.append(stack, r);
+          }
+        }
+        node.nodes = rendered;
+      }),
+      E.asVoid,
+    );
+  };
+
+  return pipe(
+    E.whileLoop({
+      while: () => !!StackV1.tail(stack),
+      step : () => {},
+      body,
+    }),
+    E.as(root),
+  );
+};
+
+export class EncodeDefect extends Data.TaggedError('EncodeDefect')<{
+  root : Rehydrant.Rehydrant | null;
+  cause: Cause.Cause<Error>;
+}> {}
+
+export const encode = (root: Rehydrant.Rehydrant | null) =>
+  pipe(
+    Rehydrator.use((rehydrator) => {
+      if (!root) {
+        return null;
+      }
+      const primitive = rehydrator.primitive;
+      const normalization = rehydrator.normalization;
+      const encoding = rehydrator.encoding;
+
+      const stack = Stack.make(root.elem);
+      const args = new WeakMap();
+      const outs = new WeakMap();
+      const seen = new WeakSet();
+      const last = {} as any;
+      outs.set(root.elem, last);
+
+      while (Stack.check(stack)) {
+        const n = Stack.pop(stack);
+        const out = outs.get(n);
+
+        // if (seen.has(node)) {
+        //   continue;
+        // }
+
+        if (El.isComp(n)) {
+          for (const c of n.nodes.toReversed()) {
+            outs.set(c, out);
+            Stack.push(stack, c);
+          }
+        }
+        else if (El.isText(n)) {
+          out[primitive] ??= [];
+          out[primitive].push(n.value);
+        }
+        else if (args.has(n)) {
+          const norm = normalization[n.type];
+          out[norm] ??= [];
+          out[norm].push((encoding[n.type](n, args.get(n)!)));
+        }
+        else if (n.nodes.length === 0) {
+          const norm = normalization[n.type];
+          out[norm] ??= [];
+          out[norm].push((encoding[n.type](n, {})));
+        }
+        else {
+          const arg = {};
+          args.set(n, arg);
+          Stack.push(stack, n);
+          for (const child of n.nodes.toReversed()) {
+            outs.set(child, arg);
+            Stack.push(stack, child);
+          }
+        }
+        seen.add(n);
+      }
+      for (const key of Object.keys(last)) {
+        if (last[key]) {
+          return {
+            _tag    : key,
+            hydrator: Rehydrant.hydrator(root),
+            data    : last[key][0],
+          };
+        }
+      }
+      return null;
+    }),
+    E.timeout(Duration.seconds(1)),
+    E.tapDefect(E.logFatal),
+    E.catchAllCause((cause) =>
+      new EncodeDefect({
+        root : root,
+        cause: cause,
+      }),
+    ),
+  );
+
+export const rehydrate = (root: Rehydrant.Rehydrant) => E.suspend(() => {
+  const stack = StackV1.make<El.Nd>(root.elem);
+
+  const body = () => {
+    const next = StackV1.pop(stack)!;
+    connect(next);
+
+    if (El.isComp(next)) {
+      const polymer = root.poly[next.idn!];
+
+      if (polymer) {
+        Polymer.set(next, polymer);
+      }
+
       return pipe(
-        Trigger.apply(elem.handler!, event),
-        E.tap(() => {
-          if (root.next.id === null) {
-            return relayClose();
+        renderNode(root, next),
+        E.map((rendered) => {
+          next.nodes = rendered;
+          for (let i = 0; i < next.nodes.length; i++) {
+            const child = next.nodes[i];
+            if (!El.isText(child)) {
+              StackV1.append(stack, child);
+            }
           }
-          if (root.next.id !== root.id) {
-            return relayNext(root);
-          }
-          return relaySame(root);
         }),
       );
     }
 
-    for (let i = 0; i < elem.nodes.length; i++) {
-      const node = elem.nodes[i];
-
-      if (!Elem.isValue(node)) {
-        ML.append(stack, elem.nodes[i]);
+    for (let i = 0; i < next.nodes.length; i++) {
+      const child = next.nodes[i];
+      if (!El.isText(child)) {
+        StackV1.append(stack, child);
       }
     }
-  }
 
-  return E.fail(new Error('Event not handled'));
+    return E.void;
+  };
+
+  return pipe(
+    E.whileLoop({
+      while: () => !!StackV1.tail(stack),
+      step : () => {},
+      body : body,
+    }),
+    E.as(root),
+  );
 });
 
-/**
- * @desc render
- */
-const effect = (root: Rehydrant, fibril: Fibril) => {
-  if (fibril.queue.length) {
-    const effects = Array<ReturnType<typeof Side.effect>>(fibril.queue.length);
+export class EventDefect extends Data.TaggedError('EventDefect')<{
+  root : Rehydrant.Rehydrant;
+  node?: El.Rest;
+  event: El.Event;
+  cause: Cause.Cause<Error>;
+}> {}
 
-    for (let i = 0; i < effects.length; i++) {
-      effects[i] = Side.effect(fibril.queue[i]);
+const renderEvent = (root: Rehydrant.Rehydrant, node: El.Rest, event: El.Event) =>
+  pipe(
+    E.suspend(() => {
+      const handler = node.handler;
+      if (!handler) {
+        throw new Error('Target element has no handler');
+      }
+      if (handler.constructor.name === 'AsyncFunction') {
+        return E.promise(async () => await handler(event)) as E.Effect<void>;
+      }
+      const output = handler(event);
+      if (!output) {
+        return E.void;
+      }
+      if (P.isPromise(output)) {
+        return E.promise(async () => await output);
+      }
+      return output as E.Effect<void>;
+    }),
+    E.flatMap(() => {
+      if (root.next.id === null) {
+        return pipe(
+          RehydrantDOM.send(Progress.exit()),
+          E.as(null),
+        );
+      }
+      if (root.next.id === root.id) {
+        return pipe(
+          RehydrantDOM.send(Progress.same()),
+          E.as(root),
+        );
+      }
+      return pipe(
+        RehydrantDOM.send(Progress.next(root.next.id)),
+        E.flatMap(() => Rehydrator.checkout(root.next.id!, root.next.props, root.data)),
+      );
+    }),
+    E.flatMap((next) => RehydrantDOM.finalize(next)),
+    E.tapDefect(E.logFatal),
+    E.catchAllCause((cause) =>
+      new EventDefect({
+        root : root,
+        node : node,
+        event: event,
+        cause: cause,
+      }),
+    ),
+  );
+
+export const invoke = (root: Rehydrant.Rehydrant, event: El.Event) =>
+  pipe(
+    E.sync(() => {
+      const stack = Stack.make(root.elem);
+
+      let target: El.Rest | undefined;
+
+      while (Stack.check(stack)) {
+        const node = Stack.pop(stack)!;
+
+        if (El.isText(node)) {
+          continue;
+        }
+        if (El.isRest(node)) {
+          if (node.props.custom_id === event.id || node.ids === event.id) {
+            target = node;
+            break;
+          }
+        }
+        for (let i = 0; i < node.nodes.length; i++) {
+          const child = node.nodes[i];
+          if (!El.isText(child)) {
+            Stack.push(stack, child);
+          }
+        }
+      }
+      if (!target) {
+        throw new Error('Event target does not exist');
+      }
+
+      return target;
+    }),
+    E.flatMap((target) => renderEvent(root, target, event)),
+    E.as(root),
+    E.catchAllCause((cause) =>
+      new EventDefect({
+        root : root,
+        event: event,
+        cause: cause,
+      }),
+    ),
+  );
+
+const mount = (root: Rehydrant.Rehydrant, node: El.El) => E.suspend(() => {
+  const stack = Stack.make(node);
+
+  const body = () => {
+    const next = Stack.pop(stack)!;
+
+    if (El.isText(next)) {
+      return E.void;
+    }
+    connect(next);
+
+    if (!El.isComp(next)) {
+      for (let i = 0; i < next.nodes.length; i++) {
+        const c = next.nodes[i];
+        Stack.push(stack, c);
+      }
+      return E.void;
     }
 
     return pipe(
-      E.all(effects),
-      E.tap(() => {
-        if (root.next.id === null) return relayClose();
-        if (root.next.id !== root.id) return relayNext(root);
+      renderNode(root, next),
+      E.map((rendered) => {
+        for (let i = 0; i < rendered.length; i++) {
+          const r = rendered[i];
+          Stack.push(stack, r);
+        }
+        next.nodes = rendered;
       }),
     );
-  }
-};
+  };
 
-/**
- * @desc mount
- */
-const renderMount = (root: Rehydrant, elem: Elem.Task) =>
-  pipe(
-    Dispatcher.mount(root, elem),
-    E.tap((children) => {
-      elem.nodes = children;
-
-      for (let i = 0; i < elem.nodes.length; i++) {
-        const node = elem.nodes[i];
-
-        if (!Elem.isValue(node)) {
-          MutableList.append(root.mount, node);
-        }
-      }
-
-      return effect(root, elem.fibril);
+  return pipe(
+    E.whileLoop({
+      while: () => Stack.check(stack),
+      step : () => {},
+      body,
     }),
-    E.asVoid,
+    E.as(node),
   );
+});
 
-/**
- * @desc mount
- */
-const mount = (root: Rehydrant, elem: Elem.Node, data?: any) => {
-  MutableList.append(root.mount, elem);
-  root.data = data;
-  let sent = false;
+export const rerender = (root: Rehydrant.Rehydrant) => E.gen(function* () {
+  const stack = Stack.make();
+  const initial = yield* renderNode(root, root.elem);
+  Diff.diffs(root.elem, initial);
+  Stack.push(stack, root.elem);
 
-  return E.whileLoop({
-    while: () => !!MutableList.tail(root.mount),
-    step : () => {},
-    body : (): E.Effect<void, Error, Relay | Sources | Dispatcher> => {
-      const next = MutableList.pop(root.mount)!;
+  while (Stack.check(stack)) {
+    const node = Stack.pop(stack);
 
-      if (Elem.isTask(next)) {
-        Rehydrant.mountTask(root, next);
-        return renderMount(root, next);
-      }
+    if (El.isText(node)) {
+      continue;
+    }
+    connect(node);
+    const diffs = Diff.getDiffs(node);
 
-      for (let i = 0; i < next.nodes.length; i++) {
-        const child = next.nodes[i];
-
-        if (!Elem.isValue(child)) {
-          Elem.connectChild(next, child, i);
-          MutableList.append(root.mount, child);
-        }
-      }
-
-      if (!sent && Elem.isRest(next)) {
-        return pipe(
-          relayPartial(next),
-          E.map((did) => {
-            sent = did;
-          }),
-        );
-      }
-
-      return E.void;
-    },
-  });
-};
-
-/**
- * @desc mount
- */
-export const initialize = (root: Rehydrant, data?: any) => mount(root, root.elem, data);
-
-/**
- * @desc rehydrate
- */
-const rehydrateRender = (root: Rehydrant, elem: Elem.Task) =>
-  pipe(
-    Dispatcher.hydrate(root, elem),
-    E.map((children) => {
-      Fibril.commit(elem.fibril);
-      elem.nodes = children.filter(Boolean);
-
-      for (let i = 0; i < elem.nodes.length; i++) {
-        const node = elem.nodes[i];
-
-        if (!Elem.isValue(node)) {
-          Elem.connectChild(elem, node, i);
-          MutableList.append(root.mount, node);
-        }
-      }
-
-      return elem.nodes;
-    }),
-  );
-
-/**
- * @desc rehydrate
- */
-export const rehydrate = (root: Rehydrant, data?: any) => {
-  MutableList.append(root.mount, root.elem);
-  root.data = data;
-
-  return E.iterate(undefined as any, {
-    while: () => !!MutableList.tail(root.mount),
-    body : () => {
-      const next = MutableList.pop(root.mount)!;
-
-      if (Elem.isTask(next)) {
-        if (root.fibrils[next.id!]) {
-          next.fibril = root.fibrils[next.id!];
-          next.fibril.rc = 1;
-        }
-        next.fibril.rehydrant = root;
-        return rehydrateRender(root, next);
-      }
-
-      for (let i = 0; i < next.nodes.length; i++) {
-        const child = next.nodes[i];
-
-        if (!Elem.isValue(child)) {
-          Elem.connectChild(next, child, i);
-          MutableList.append(root.mount, child);
-        }
-      }
-
-      return E.void;
-    },
-  });
-};
-
-/**
- * @desc dismount
- */
-export const dismount = (root: Rehydrant, elem: Elem.Node) => {
-  MutableList.append(root.dismount, elem);
-
-  while (MutableList.tail(root.dismount)) {
-    const next = MutableList.pop(root.dismount)!;
-
-    if (Elem.isTask(next)) {
-      // @ts-expect-error temporary
-      delete next.fibril.elem;
-      // @ts-expect-error temporary
-      delete next.fibril.rehydrant;
-      // @ts-expect-error temporary
-      delete next.fibril;
-      delete root.fibrils[next.id!];
+    if (!diffs) {
+      continue;
     }
 
-    for (const child of next.nodes) {
-      if (Elem.isValue(child)) continue;
-      MutableList.append(root.dismount, child);
-    }
-  }
-};
-
-/**
- * @desc render
- */
-const renderTask = (root: Rehydrant, elem: Elem.Task) =>
-  pipe(
-    Dispatcher.render(root, elem),
-    E.map((children) => {
-      Fibril.commit(elem.fibril);
-      const nodes = children.filter(Boolean);
-
-      for (let i = 0; i < nodes.length; i++) {
-        const node = nodes[i];
-
-        if (!Elem.isValue(node)) {
-          Elem.connectChild(elem, node, i);
-        }
-      }
-
-      return nodes;
-    }),
-    E.tap(() => effect(root, elem.fibril)),
-  );
-
-/**
- * @desc rerender
- */
-export const rerender = (root: Rehydrant) => E.gen(function* () {
-  const stack = ML.empty<[Elem.Node, Elem[]]>();
-  const hasSentPartial = false;
-
-  if (Elem.isRest(root.elem) || Elem.isFragment(root.elem)) {
-    for (let i = 0; i < root.elem.nodes.length; i++) {
-      const node = root.elem.nodes[i];
-
-      if (Elem.isValue(node)) {
+    for (let i = 0; i < diffs.length; i++) {
+      const diff = diffs[i];
+      const child = node.nodes[i];
+      if (Diff.isSkip(diff)) {
         continue;
       }
-      else if (Elem.isTask(node)) {
-        ML.append(stack, [node, yield* renderTask(root, node)]);
-      }
-      else {
-        ML.append(stack, [node, node.nodes]);
-      }
-    }
-  }
-  else {
-    ML.append(stack, [root.elem, yield* renderTask(root, root.elem as Elem.Task)]);
-  }
-
-  while (ML.tail(stack)) {
-    const [parent, rs] = ML.pop(stack)!;
-    const maxlen = Math.max(parent.nodes.length, rs.length);
-
-    for (let i = 0; i < maxlen; i++) {
-      const curr = parent.nodes[i];
-      const rend = rs[i];
-
-      if (!curr) {
-        if (Elem.isValue(rend)) {
-          parent.nodes[i] = rend;
+      else if (Diff.isUpdate(diff)) {
+        const updated = diff.node;
+        if (El.isText(updated)) {
+          node.nodes[i] = updated;
         }
         else {
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
+          (node.nodes[i] as any).props = Props.make((diff.node as any).props);
+          Diff.diffs(child as El.Comp, updated.nodes);
+          Stack.push(stack, child);
         }
       }
-      else if (!rend) {
-        if (Elem.isValue(curr)) {
-          delete parent.nodes[i];
-        }
-        else {
-          dismount(root, curr);
-          delete parent.nodes[i];
-        }
+      else if (Diff.isRender(diff)) {
+        const rendered = yield* renderNode(root, child as El.Comp);
+        Diff.diffs(child as El.Comp, rendered);
+        Stack.push(stack, child);
       }
-
-      else if (Elem.isValue(curr)) {
-        if (Elem.isValue(rend)) {
-          if (curr !== rend) {
-            parent.nodes[i] = rend;
-          }
-        }
-        else if (Elem.isRest(rend)) {
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
-        else {
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
+      else if (Diff.isReplace(diff)) {
+        node.nodes[i] = yield* mount(root, diff.node);
       }
-
-      else if (Elem.isRest(curr)) {
-        if (!hasSentPartial) {
-          // hasSentPartial = yield* relayPartial(curr);
-        }
-
-        if (Elem.isValue(rend)) {
-          dismount(root, curr);
-          parent.nodes[i] = rend;
-        }
-        else if (Elem.isRest(rend)) {
-          if (curr.type !== rend.type) {
-            dismount(root, curr);
-            yield* mount(root, rend);
-            parent.nodes[i] = rend;
-          }
-          if (!Props.isEqual(curr.props, rend.props)) {
-            curr.props = rend.props;
-          }
-          ML.append(stack, [curr, rend.nodes]);
-        }
-        else {
-          dismount(root, curr);
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
+      else if (Diff.isInsert(diff)) {
+        const insertion = yield* mount(root, diff.node);
+        El.insertNode(node, insertion);
       }
-
-      else if (Elem.isFragment(curr)) {
-        if (!hasSentPartial) {
-          // hasSentPartial = yield* relayPartial(curr);
-        }
-
-        if (Elem.isValue(rend)) {
-          dismount(root, curr);
-          parent.nodes[i] = rend;
-        }
-        else if (Elem.isRest(rend)) {
-          dismount(root, curr);
-          parent.nodes[i] = rend;
-        }
-        else if (Elem.isFragment(rend)) {
-          if (curr.type !== rend.type) {
-            dismount(root, curr);
-            yield* mount(root, rend);
-            parent.nodes[i] = rend;
-          }
-          if (!Props.isEqual(curr.props, rend.props)) {
-            curr.props = rend.props;
-          }
-          ML.append(stack, [curr, rend.nodes]);
-        }
-        else {
-          dismount(root, curr);
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
-      }
-
-      else {
-        if (Elem.isValue(rend)) { // Task => Primitive
-          dismount(root, curr);
-          parent.nodes[i] = rend;
-        }
-        else if (Elem.isRest(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
-          dismount(root, curr);
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
-        else if (Elem.isFragment(rend) || curr.idn !== rend.idn) { // Task => Rest or Task => Task
-          dismount(root, curr);
-          yield* mount(root, rend);
-          parent.nodes[i] = rend;
-        }
-        else if (
-          Props.isEqual(curr.props, rend.props) && // Task Changed
-          Fibril.isSame(curr.fibril)
-        ) {
-          // console.log('same');
-          // console.log(curr.id);
-          // console.log(rend.type);
-          // ML.append(stack, [curr, rend.nodes]);
-        }
-        else {
-          const rerendered = yield* renderTask(root, curr);
-          ML.append(stack, [curr, rerendered]);
-        }
+      else if (Diff.isRemove(diff)) {
+        El.removeNode(node, i);
       }
     }
   }

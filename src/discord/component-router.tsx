@@ -1,7 +1,7 @@
 import {AccountLinker} from '#src/discord/omni-board/accounts/account-linker.tsx';
 import {OmniUser} from '#src/discord/omni-board/accounts/omni-user.tsx';
 import {TagTokenModal} from '#src/discord/omni-board/accounts/tag-token-modal.tsx';
-import {DisReact} from '#src/disreact/runtime/DisReact.ts';
+import {DisReact} from '#src/disreact/DisReact.ts';
 import {DisReactConfig} from '#src/disreact/model/DisReactConfig.ts';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';

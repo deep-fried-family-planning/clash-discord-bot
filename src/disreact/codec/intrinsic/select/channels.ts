@@ -1,8 +1,8 @@
 import {Default} from '#src/disreact/codec/intrinsic/select/default.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {Declare} from '#src/disreact/mode/schema/declare.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+import * as Declarations from '#src/disreact/model/util/declarations.ts';
+
 import * as S from 'effect/Schema';
 import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
 
@@ -16,7 +16,7 @@ export const EventData = S.Struct({
   data: DAPI.Component.ChannelSelectData,
 });
 
-export const Handler = Declare.handler(EventData);
+export const Handler = Declarations.handler(EventData);
 
 export const Children = S.Union(
   Default.Element,
@@ -40,7 +40,7 @@ export const Element = declareHandlerElem(
   Handler,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   return {
     type      : DAPI.Component.ACTION_ROW,
     components: [{

@@ -1,4 +1,4 @@
-import * as Pragma from '#src/disreact/mode/pragma.ts';
+import * as Pragma from '#src/disreact/model/pragma.ts';
 
 export const Fragment = Pragma.Fragment;
 export const jsx = Pragma.jsx;
