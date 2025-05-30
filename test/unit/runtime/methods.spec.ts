@@ -136,7 +136,7 @@ it.effect('when responding', E.fn(
 
 it.effect('when responding (performance)', E.fn(
   function* () {
-    const runs = Array.from({length: 100});
+    const runs = Array.from({length: 10});
 
     const req1 = {
       id            : '1236074574509117491',

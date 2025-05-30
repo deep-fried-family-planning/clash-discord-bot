@@ -46,8 +46,8 @@ export const makeTestRuntime = (src: (El | FC)[], random?: boolean) => {
       DokenCache.Default({capacity: 0}),
     ),
     L.provideMerge(L.succeed(DiscordREST, {} as any)),
-    L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
-    L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
+    // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+    // L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   );
 
   return {

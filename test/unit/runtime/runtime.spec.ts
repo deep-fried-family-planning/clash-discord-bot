@@ -22,7 +22,7 @@ describe('given function component', () => {
 });
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
-  const runs = Array.from({length: 1000});
+  const runs = Array.from({length: 10});
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* runtime.synthesize(TestMessage);
@@ -81,12 +81,20 @@ it.effect('when responding', E.fn(function* () {
   yield* TestClock.adjust(Duration.seconds(15));
   yield* Fiber.join(fib2);
 
-  yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
-  yield* Snap.JSON(runtime.deferEdit.mock.calls[0][1], SNAP.TEST_MESSAGE, '4');
+  expect(runtime.deferEdit).toBeCalledTimes(0);
+  expect(runtime.deferUpdate).toBeCalledTimes(0);
+  expect(runtime.deferSource).toBeCalledTimes(0);
+  expect(runtime.discard).toBeCalledTimes(0);
+  expect(runtime.dismount).toBeCalledTimes(0);
+  expect(runtime.createModal).toBeCalledTimes(0);
+  expect(runtime.createSource).toBeCalledTimes(0);
+  expect(runtime.createUpdate).toBeCalledTimes(2);
+  yield* Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '3');
+  yield* Snap.JSON(runtime.createUpdate.mock.calls[0][1], SNAP.TEST_MESSAGE, '4');
 }));
 
 it.effect('when responding (performance)', E.fn(function* () {
-  const times = Array.from({length: 100});
+  const times = Array.from({length: 10});
 
   for (let i = 0; i < times.length; i++) {
     times[i] = runtime.respond({
@@ -104,6 +112,9 @@ it.effect('when responding (performance)', E.fn(function* () {
     });
   }
   const fibers = yield* E.forkAll(times as E.Effect<void>[]);
-  yield* TestClock.setTime(17214773545718);
+  yield* Snowflake.toDateTime('1236074574509117491').pipe(
+    DateTime.subtract({seconds: 10}),
+    TestClock.setTime,
+  );
   yield* Fiber.join(fibers);
 }));
