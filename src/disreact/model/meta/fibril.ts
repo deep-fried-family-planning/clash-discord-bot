@@ -22,7 +22,7 @@ export const State = S.Struct({s: S.Any});
 export const Dependency = S.Struct({d: S.Any});
 export const Modal = S.Struct({m: S.Any});
 export const Message = S.Struct({e: S.Any});
-export const Any = S.Union(Null, State, Dependency, Modal, Message);
+export const Any = S.Union(Null, State, Dependency);
 
 export const isNull = (self: Monomer): self is Null => self === null;
 export const isState = (self: Monomer): self is State => !!self && 's' in self;

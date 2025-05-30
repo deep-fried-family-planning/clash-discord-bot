@@ -1,5 +1,5 @@
 import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {bench, vi} from '@effect/vitest';
@@ -25,7 +25,7 @@ const layer = pipe(
           TestMessage,
         ],
       },
-      dom: L.succeed(DisReactDOM, DisReactDOM.make({
+      dom: L.succeed(DiscordDOM, DiscordDOM.make({
         createUpdate,
         deferEdit,
         deferUpdate,

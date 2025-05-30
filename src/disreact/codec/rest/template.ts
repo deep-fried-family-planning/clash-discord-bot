@@ -1,5 +1,5 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {Declare} from '#src/disreact/model/declare.ts';
+import {Declare} from '#src/disreact/mode/schema/declare.ts';
 import * as S from 'effect/Schema';
 
 export * as Template from '#src/disreact/codec/rest/template.ts';

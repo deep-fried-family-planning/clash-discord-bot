@@ -1,7 +1,7 @@
 import {Default} from '#src/disreact/codec/intrinsic/select/default.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {declareHandlerElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import {Declare} from '#src/disreact/model/declare.ts';
+import {Declare} from '#src/disreact/mode/schema/declare.ts';
 import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import * as S from 'effect/Schema';
 import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';

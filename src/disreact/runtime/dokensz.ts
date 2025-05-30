@@ -42,9 +42,9 @@ const resolveActive = (fresh: Doken.Fresh, serial?: Doken.Serial) => {
   );
 };
 
-export * as Dokens from '#src/disreact/runtime/dokens.ts';
-export type Dokens = {
-  fresh   : Doken.Fresh;
+export * as Dokensz from '#src/disreact/runtime/dokensz.ts';
+export type Dokensz = {
+  fresh   : Doken.Latest;
   active  : Fiber.Fiber<Doken.Active | undefined, DokenMemoryError>;
   current : SynchronizedRef.SynchronizedRef<Doken>;
   deferred: Deferred.Deferred<Doken.Active | Doken.Never>;
@@ -60,12 +60,12 @@ export const make = (fresh: Doken.Fresh, serial?: Doken.Serial) =>
     handle  : Fiber.fromEffect(E.succeed(undefined)),
   });
 
-export const current = (ds: Dokens) => SynchronizedRef.get(ds.current);
+export const current = (ds: Dokensz) => SynchronizedRef.get(ds.current);
 
-export const set = (ds: Dokens, next?: Doken) => SynchronizedRef.updateAndGet(ds.current, (prev) => {
+export const set = (ds: Dokensz, next?: Doken) => SynchronizedRef.updateAndGet(ds.current, (prev) => {
   if (!next) {
     switch (prev._tag) {
-      case Doken.FRESH:
+      case Doken.LATEST:
         return Doken.active(prev);
       default:
         return prev;
@@ -83,9 +83,9 @@ export const set = (ds: Dokens, next?: Doken) => SynchronizedRef.updateAndGet(ds
   }
 });
 
-export const final = (ds: Dokens) => Deferred.await(ds.deferred);
+export const final = (ds: Dokensz) => Deferred.await(ds.deferred);
 
-export const finalize = (ds: Dokens, next?: Doken.Active | Doken.Never) => {
+export const finalize = (ds: Dokensz, next?: Doken.Active | Doken.Never) => {
   const doken = next ?? Doken.active(ds.fresh);
 
   return pipe(
@@ -94,7 +94,7 @@ export const finalize = (ds: Dokens, next?: Doken.Active | Doken.Never) => {
   );
 };
 
-export const finalizeModal = (ds: Dokens) => {
+export const finalizeModal = (ds: Dokensz) => {
   return pipe(
     set(ds, Doken.modal(ds.fresh)),
     E.tap(() => Deferred.succeed(ds.deferred, Doken.never())),
@@ -102,7 +102,7 @@ export const finalizeModal = (ds: Dokens) => {
   );
 };
 
-export const finalizeWith = <A, I, R>(ds: Dokens, next?: Doken.Active | Doken.Never) => (effect: E.Effect<A, I, R>) => {
+export const finalizeWith = <A, I, R>(ds: Dokensz, next?: Doken.Active | Doken.Never) => (effect: E.Effect<A, I, R>) => {
   const doken = next ?? Doken.active(ds.fresh);
 
   return pipe(
@@ -122,15 +122,15 @@ export const finalizeWith = <A, I, R>(ds: Dokens, next?: Doken.Active | Doken.Ne
   );
 };
 
-export const stop = (d: Dokens) => pipe(
+export const stop = (d: Dokensz) => pipe(
   Fiber.interrupt(d.handle),
 );
 
-export const fiber = (d: Dokens) => flow(
+export const fiber = (d: Dokensz) => flow(
   E.fork,
   E.tap((fiber) => {
     d.handle = fiber as unknown as Fiber.Fiber<any>;
   }),
 );
 
-export const wait = (d: Dokens) => Fiber.await(d.handle);
+export const wait = (d: Dokensz) => Fiber.await(d.handle);

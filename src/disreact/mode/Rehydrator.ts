@@ -4,7 +4,6 @@ import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
 import * as JsxSchema from '#src/disreact/mode/schema/declarations-jsx.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
-import * as Stack from 'effect/MutableList';
 
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
@@ -15,12 +14,11 @@ const getId = (input: string | Rehydrant.SourceId) => {
 export class RehydratorError extends Data.TaggedError('RehydratorError')<{}> {}
 
 export type RehydratorConfig = {
-  sources?: | Rehydrant.Registrant[]
-            | { [K in string]: Rehydrant.Registrant };
-
   primitive?    : string;
   normalization?: Record<string, string>;
   encoding?     : Record<string, (self: any, acc: any) => any>;
+  sources?: | Rehydrant.Registrant[]
+            | { [K in string]: Rehydrant.Registrant };
 };
 
 export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
@@ -76,64 +74,13 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       return E.succeed(Rehydrant.fromHydrator(source, hydrator, data));
     });
 
-    const encode = (root: Rehydrant.Rehydrant | null) => {
-      if (!root || El.isText(root.elem)) {
-        return null;
-      }
-
-      const result = {} as any,
-            stack  = Stack.make<[any, El.El[]]>([result, [root.elem]]),
-            args   = new WeakMap<El.Nd, any>();
-
-      while (Stack.tail(stack)) {
-        const [acc, cs] = Stack.pop(stack)!;
-        for (let i = 0; i < cs.length; i++) {
-          const c = cs[i];
-
-          if (El.isText(c)) {
-            acc[primitive] ??= [];
-            acc[primitive].push(c);
-          }
-          else if (args.has(c) && El.isRest(c)) {
-            const norm = normalization[c.type];
-            const arg = args.get(c)!;
-            acc[norm] ??= [];
-            acc[norm].push((encoding[c.type](c, arg)));
-          }
-          else if (!c.nodes.length && El.isRest(c)) {
-            const norm = normalization[c.type];
-            const arg = {};
-            args.set(c, arg);
-            acc[norm] ??= [];
-            acc[norm].push((encoding[c.type](c, arg)));
-          }
-          else {
-            Stack.append(stack, [acc, cs.slice(i)]);
-            const arg = {};
-            args.set(c, arg);
-            const next = El.isRest(c) ? arg : acc;
-            Stack.append(stack, [next, c.nodes]);
-            break;
-          }
-        }
-      }
-      for (const key of Object.keys(result)) {
-        if (result[key]) {
-          return {
-            _tag    : key,
-            hydrator: Rehydrant.hydrator(root),
-            data    : result[key][0],
-          };
-        }
-      }
-      return null;
-    };
-
     return {
       register,
       checkout,
       decode,
-      encode,
+      primitive,
+      normalization,
+      encoding,
     };
   }),
   accessors: true,

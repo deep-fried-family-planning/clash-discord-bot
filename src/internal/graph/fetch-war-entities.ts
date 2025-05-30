@@ -11,7 +11,7 @@ export const fetchWarEntities = (ops: SharedOptions) => E.gen(function* () {
   const returnable = {
     options   : ops,
     currentWar: [],
-    current   : {
+    doken     : {
       clans  : [],
       cwl,
       players: [],

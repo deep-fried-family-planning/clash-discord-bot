@@ -1,13 +1,16 @@
 import * as El from '#src/disreact/mode/entity/el.ts';
+import * as Stack from '#src/disreact/mode/util/stack.ts';
 import * as FC from '#src/disreact/mode/entity/fc.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
+import * as Props from '#src/disreact/mode/entity/props.ts';
 import * as MutableList from 'effect/MutableList';
 import * as Record from 'effect/Record';
 import type * as Declarations from '#src/disreact/mode/schema/declarations.ts';
 
+
 export declare namespace Rehydrant {
-  export type Registrant = FC.FC | El.El;
-  export type SourceId = string | FC.FC | El.El;
+  export type Registrant = FC.Any | El.El;
+  export type SourceId = string | FC.Any | El.El;
   export type Source = {
     id  : string;
     elem: El.Comp;
@@ -19,7 +22,7 @@ export declare namespace Rehydrant {
     data : any;
     poly : Record<string, Polymer.Polymer>;
     next : {id: string | null; props?: any};
-    stack: MutableList.MutableList<El.Nd>;
+    stack: Stack.Stack;
   };
   export type Hydrator = typeof Declarations.Hydrator.Type;
   export type Encoded = typeof Declarations.Hydrator.Encoded;
@@ -31,7 +34,7 @@ export type Rehydrant = Rehydrant.Rehydrant;
 export type Hydrator = Rehydrant.Hydrator;
 export type Encoded = Rehydrant.Encoded;
 
-export const source = (input: Rehydrant.Registrant, id?: string): Rehydrant.Source => {
+export const source = (input: Registrant, id?: string): Source => {
   if (FC.isFC(input)) {
     const fn = El.comp(input, {});
     if (id) {
@@ -54,54 +57,54 @@ export const source = (input: Rehydrant.Registrant, id?: string): Rehydrant.Sour
   throw new Error('Invalid Input');
 };
 
-export const fromSource = (source: Rehydrant.Source, props: any, data: any): Rehydrant.Rehydrant => {
-  const cloned = El.comp(source.elem.type, props);
+export const fromSource = (source: Source, props: any, data: any): Rehydrant => {
+  const cloned = El.comp(source.elem.type, props ?? {});
   return {
-    id   : source.id,
-    props: props,
-    elem : cloned,
-    data : data,
-    poly : {},
-    next : {id: source.id},
-    stack: MutableList.empty(),
+    id    : source.id,
+    props : cloned.props,
+    elem  : cloned,
+    data  : data ?? {},
+    poly  : {},
+    update: {id: source.id, props: cloned.props},
+    stack : Stack.make(),
   };
 };
 
-export const fromFC = (fc: FC.Any, props: any, data: any): Rehydrant.Rehydrant => {
-  const elem = El.comp(fc, props);
+export const fromFC = (fc: FC.Any, props: any, data: any): Rehydrant => {
+  const comp = El.comp(fc, props);
   return {
-    id   : elem.type[FC.NameId]!,
-    props: props,
-    elem : elem,
-    data : data,
-    poly : {},
-    next : {id: elem.type[FC.NameId]!},
-    stack: MutableList.empty(),
+    id    : comp.type[FC.NameId]!,
+    props : comp.props,
+    elem  : comp,
+    data  : data,
+    poly  : {},
+    update: {id: FC.name(comp.type), props: comp.props},
+    stack : Stack.make(),
   };
 };
 
-export const fromHydrator = (source: Rehydrant.Source, hydrator: Rehydrant.Hydrator, data: any): Rehydrant.Rehydrant => {
+export const fromHydrator = (source: Source, hydrator: Hydrator, data: any): Rehydrant => {
   const cloned = El.comp(source.elem.type, hydrator.props);
   return {
-    id   : source.id,
-    props: hydrator.props,
-    elem : cloned,
-    data : data,
-    poly : Record.map(hydrator.stacks, (s) => Polymer.decode(s)),
-    next : {id: source.id},
-    stack: MutableList.empty(),
+    id    : source.id,
+    props : cloned.props,
+    elem  : cloned,
+    data  : data,
+    poly  : Record.map(hydrator.stacks, (s) => Polymer.decode(s)),
+    update: {id: source.id},
+    stack : Stack.make(),
   };
 };
 
-export const hydrator = (rehydrant: Rehydrant.Rehydrant): Rehydrant.Hydrator => {
-  const stack = El.stack(rehydrant.elem);
+export const hydrator = (rehydrant: Rehydrant): Hydrator => {
+  const stack = Stack.make(rehydrant.elem);
   const acc = {} as any;
-  while (El.tail(stack)) {
-    const next = El.pop(stack);
+  while (Stack.check(stack)) {
+    const next = Stack.pop(stack);
     if (El.isComp(next)) {
       acc[next.idn!] = Polymer.get(next).stack;
     }
-    El.push(stack, next);
+    Stack.push(stack, next);
   }
   return {
     id    : rehydrant.id,
@@ -110,10 +113,10 @@ export const hydrator = (rehydrant: Rehydrant.Rehydrant): Rehydrant.Hydrator => 
   };
 };
 
-export const addNode = (rehydrant: Rehydrant.Rehydrant, node: El.Nd) => {
-  MutableList.append(rehydrant.stack, node);
+export const addNode = (rehydrant: Rehydrant, node: El.Nd) => {
+
 };
 
-export const getNode = (rehydrant: Rehydrant.Rehydrant) => {
+export const getNode = (rehydrant: Rehydrant) => {
 
 };

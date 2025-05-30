@@ -2,8 +2,8 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactConfig} from '#src/disreact/model/DisReactConfig.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
 import {TestDialog} from '#test/unit/components/test-dialog.tsx';
@@ -42,8 +42,8 @@ export const TestRegistry = pipe(
     Codec.Default.pipe(L.provide(config)),
     Dispatcher.Default,
     L.succeed(
-      DisReactDOM,
-      DisReactDOM.make({
+      DiscordDOM,
+      DiscordDOM.make({
         discard     : vi.fn(() => E.void) as any,
         dismount    : vi.fn(() => E.void) as any,
         createModal : vi.fn(() => E.void) as any,

@@ -1,4 +1,4 @@
-import type {Declare} from '#src/disreact/model/declare.ts';
+import type {Declare} from '#src/disreact/mode/schema/declare.ts';
 import {Elem} from '#src/disreact/model/elem/elem.ts';
 import {Fibril} from '#src/disreact/model/meta/fibril.ts';
 import type {Source} from '#src/disreact/model/meta/source.ts';
@@ -31,7 +31,7 @@ export const make = (src: Source, props?: any): Rehydrant => {
     id      : src.id,
     props   : props,
     elem    : elem,
-    next    : {id: src.id},
+    update  : {id: src.id},
     data    : {},
     fibrils : {},
     mount   : MutableList.empty(),

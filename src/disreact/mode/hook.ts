@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type * as El from '#src/disreact/mode/entity/el.ts';
 import type {FC} from '#src/disreact/mode/entity/fc.ts';
+import * as Monomer from '#src/disreact/mode/entity/monomer.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
 import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
 import type {Discord} from 'dfx';
-import type * as E from 'effect/Effect';
+import * as Data from 'effect/Data';
+import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
-import {globalValue} from 'effect/GlobalValue';
+import {pipe} from 'effect/Function';
+import * as GlobalValue from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
+import * as P from 'effect/Predicate';
 
 const __ctx = {
   root   : undefined as undefined | Rehydrant.Rehydrant,
@@ -51,71 +55,143 @@ const getPolymer = () => {
   return __ctx.polymer;
 };
 
-export const TypeId = Symbol.for('disreact/Deps/TypeId');
+export const DepTypeId = Symbol.for('disreact/dep');
+export const DepLinkId = Symbol.for('disreact/dep/link');
 
-const fns = globalValue(Symbol.for('disreact/deps'), () => new WeakMap<any, El.Comp>());
-
-export declare namespace Deps {
-  export interface Fn<P extends any[] = any[], O = any> extends Function {
-    (...p: P): O;
-    [TypeId]: string;
+export type DepObj<A> = A & {
+  [DepTypeId]: string;
+  [DepLinkId]: {
     [Equal.symbol](that: Equal.Equal): boolean;
     [Hash.symbol](): number;
-  }
+  };
+  [Equal.symbol](that: Equal.Equal): boolean;
+  [Hash.symbol](): number;
+};
+
+export interface DepFn extends Function {
+  (...p: any): any;
+  [DepTypeId]: string;
+  [Equal.symbol](that: Equal.Equal): boolean;
+  [Hash.symbol](): number;
 }
-export type Fn<P extends any[] = any[], O = any> = Deps.Fn<P, O>;
 
-export const isFn = (fn: any): fn is Deps.Fn =>
-  typeof fn === 'function' &&
-  fn[TypeId];
+export const isDepObj = (obj: any): obj is DepObj<any> => obj && typeof obj === 'object' && obj[DepTypeId];
 
-export const fn = <P extends any[], O>(hook: string, link: El.Comp, input: (...p: P) => O): Deps.Fn<P, O> => {
-  const fn = input as Deps.Fn<P, O>;
-  fn[TypeId] = hook;
-  fn[Equal.symbol] = (that: Equal.Equal & Deps.Fn): boolean => {
-    if (!isFn(that)) return false;
+export const isDepFn = (fn: any): fn is DepFn => typeof fn === 'function' && fn[DepTypeId];
+
+const links = GlobalValue.globalValue(
+  Symbol.for('disreact/dep/links'),
+  () => new WeakMap<any, El.Comp>(),
+);
+
+const depObj = <A>(hook: string, comp: El.Comp, obj: A): A => {
+  const dep = obj as unknown as DepObj<A>;
+  dep[DepTypeId] = hook;
+  dep[DepLinkId] = {
+    [Equal.symbol]: (that: Equal.Equal): boolean => {
+      const thisLink = links.get(this);
+      const thatLink = links.get(that);
+      return Equal.equals(thisLink, thatLink);
+    },
+    [Hash.symbol]: (): number => Hash.hash(hook),
+  };
+  links.set(dep[DepLinkId], comp);
+  return Data.struct(dep);
+};
+
+const depFn = <F extends (...p: any) => any>(hook: string, comp: El.Comp, func: F): F => {
+  const fn = func as unknown as DepFn;
+  fn[DepTypeId] = hook;
+  fn[Equal.symbol] = (that: Equal.Equal & DepFn): boolean => {
+    if (!isDepFn(that)) return false;
     return (
-      isFn(that)
+      isDepFn(that)
       && Equal.equals(fn.name, that.name)
-      && Equal.equals(fns.get(fn), fns.get(that))
+      && Equal.equals(links.get(fn), links.get(that))
     );
   };
   fn[Hash.symbol] = (): number => Hash.hash(hook);
-  fns.set(fn, link);
-  return fn;
+  links.set(fn, comp);
+  return fn as unknown as F;
 };
 
 export declare namespace Hook {
-  export interface SetState<A> {
-    (next: A | ((prev: A) => A)): void;
+  export interface SetState<S> extends Function {
+    (next: S | ((prev: S) => S)): void;
   }
   export interface Effect extends Function {
     (): void | Promise<void> | E.Effect<void>;
   }
 }
-export type Effect = Hook.Effect;
+export interface SetState<S> extends Function {
+  (next: S | ((prev: S) => S)): void;
+}
+export interface Effect extends Function {
+  (): void | Promise<void> | E.Effect<void>;
+}
 
-export const $useState = <A>(initial: A): readonly [A, Hook.SetState<A>] => {
+export const $useState = <S>(initial: S): readonly [S, Hook.SetState<S>] => {
   const polymer = getPolymer();
-  const curr = Polymer.next(
-    polymer,
-    Polymer.isState,
-    () => ({s: initial}),
-  );
+  const monomer = Polymer.next(polymer, Monomer.isState, () => Monomer.state(initial));
   const root = getRoot();
   const node = getComp();
 
-  const set: Hook.SetState<A> = fn('useState', __ctx.comp!, (next) => {
+  const set: Hook.SetState<S> = depFn('useState', node, (next) => {
     if (typeof next === 'function') {
-      curr.s = (next as (prev: A) => A)(curr.s);
+      monomer.s = (next as (prev: S) => S)(monomer.s);
     }
     else {
-      curr.s = next;
+      monomer.s = next;
     }
     Rehydrant.addNode(root, node);
   });
 
-  return [curr.s, set];
+  return [monomer.s, set];
+};
+
+export const $useReducer = <A, S>(reducer: (state: S, action: A) => S | Promise<S> | E.Effect<S, any, any>, initial: S) => {
+  const polymer = getPolymer();
+  const monomer = Polymer.next(polymer, Monomer.isState, () => Monomer.state(initial));
+  const root = getRoot();
+  const node = getComp();
+
+  const dispatch = depFn('useReducer', node, (action: A) => {
+    Rehydrant.addNode(root, node);
+    polymer.queue.push(() => {
+      if (reducer.constructor.name === 'AsyncFunction') {
+        return pipe(
+          E.promise(async () => await reducer(monomer.s, action)) as E.Effect<S>,
+          E.tap((output) => {
+            monomer.s = output;
+          }),
+          E.asVoid,
+        );
+      }
+      const state = reducer(monomer.s, action);
+      if (P.isPromise(state)) {
+        return pipe(
+          E.promise(async () => await state) as E.Effect<S>,
+          E.tap((output) => {
+            monomer.s = output;
+          }),
+          E.asVoid,
+        );
+      }
+      if (E.isEffect(state)) {
+        return pipe(
+          state as E.Effect<S>,
+          E.tap((output) => {
+            monomer.s = output;
+          }),
+          E.asVoid,
+        );
+      }
+      monomer.s = state;
+      return E.void;
+    });
+  });
+
+  return [monomer.s, dispatch] as readonly [S, (action: A) => void];
 };
 
 export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
@@ -128,68 +204,54 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
       }
     }
   }
+  const polymer = getPolymer();
+  const monomer = Polymer.next(polymer, Monomer.isDep, () => Monomer.dep(deps));
+  const root = getRoot();
+  const node = getComp();
+  const fn = depFn('useEffect', node, effect);
 
-  const fibril = getPolymer();
-  const curr = Polymer.next(fibril, Polymer.isDep, () => ({d: deps ?? []}));
-
-  const depEffect = fn('useEffect', __ctx.comp!, effect);
-
-  if (fibril.rc === 0) {
-    fibril.queue.push(depEffect);
+  if (polymer.rc === 0) {
+    polymer.queue.push(fn);
     return;
   }
   if (!deps) {
     return;
   }
-  if (curr.d.length !== deps.length) {
+  if (monomer.d.length !== deps.length) {
     throw new Error('Hook dependency length mismatch');
   }
-  if (curr.d.length === 0 && deps.length === 0) {
-    fibril.queue.push(depEffect);
+  if (monomer.d.length === 0 && deps.length === 0) {
+    polymer.queue.push(fn);
     return;
   }
   for (let i = 0; i < deps.length; i++) {
-    if (!Equal.equals(deps[i], curr.d[i])) {
-      curr.d = deps;
-      fibril.queue.push(depEffect);
+    if (!Equal.equals(deps[i], monomer.d[i])) {
+      monomer.d = deps;
+      polymer.queue.push(fn);
       break;
     }
   }
 };
 
 export const $useIx = () => {
-  const rehydrant = getRoot();
-  const node = getPolymer();
-  Polymer.next(
-    node,
-    Polymer.isNull,
-    () => null,
-  );
-  return rehydrant.data as Discord.APIInteraction;
+  const polymer = getPolymer();
+  const monomer = Polymer.next(polymer, Monomer.isNull, () => Monomer.null());
+  const root = getRoot();
+  const node = getComp();
+  return root.data as Discord.APIInteraction;
 };
 
 export const $usePage = () => {
-  const rehydrant = getRoot();
-  const node = getPolymer();
-
-  if (!node.stack[node.pc]) {
-    node.stack[node.pc] = null;
-  }
-
-  if (!Polymer.isNull(node.stack[node.pc])) {
-    throw new Error('Hooks must be called in the same order');
-  }
-
-  node.pc++;
-
-  return {
-    next: (next: FC, props: any = {}) => {
-      rehydrant.next.id = next.name;
-      rehydrant.next.props = props;
-    },
-
-    close: () => {
-      rehydrant.next.id = null;
-    },
-  };
+  const polymer = getPolymer();
+  const monomer = Polymer.next(polymer, Monomer.isNull, () => Monomer.null());
+  const root = getRoot();
+  const node = getComp();
+  const next = depFn('usePage', node, (next: FC, props: any = {}) => {
+    root.next.id = next.name;
+    root.next.props = props;
+  });
+  const close = depFn('usePage', node, () => {
+    root.next.id = null;
+  });
+  return depObj('usePage', node, {next, close} as const);
 };

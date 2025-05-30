@@ -87,7 +87,7 @@ export const deriveModel = (model: DispatchedModel): DerivedModel => {
 
   return {
     ...model,
-    current: model.current,
-    wars   : pipe(model.wars, mapL(deriveWar)),
+    doken: model.current,
+    wars : pipe(model.wars, mapL(deriveWar)),
   };
 };

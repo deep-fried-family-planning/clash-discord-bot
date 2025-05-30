@@ -1,17 +1,19 @@
 import {RehydrantDOM} from '#src/disreact/mode/RehydrantDOM.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/mode/Rehydrator.ts';
 import * as Rehydrant from '#src/disreact/mode/entity/rehydrant.ts';
+import type {FC} from '#src/disreact/mode/entity/fc.ts';
 import * as E from 'effect/Effect';
 import * as L from 'effect/Layer';
 import {pipe} from 'effect/Function';
 import * as Lifecycle from './lifecycle.ts';
 import type * as El from './entity/el.ts';
 
-export const synthesizeRoot = (source: Rehydrant.Registrant, props?: any, data?: any) =>
+export namespace Model {}
+
+export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
   pipe(
-    Rehydrant.fromSource(Rehydrant.source(source), props, data),
-    Lifecycle.initialize,
-    E.flatMap((root) => Rehydrator.encode(root)),
+    Lifecycle.initialize(Rehydrant.fromFC(source, props, data)),
+    E.flatMap((root) => Lifecycle.encode(root)),
   );
 
 export const registerRoot = (source: Rehydrant.Registrant, id?: string) =>
@@ -21,7 +23,7 @@ export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) 
   pipe(
     Rehydrator.checkout(source, props, data),
     E.flatMap((root) => Lifecycle.initialize(root)),
-    E.flatMap((root) => Rehydrator.encode(root)),
+    E.flatMap((root) => Lifecycle.encode(root)),
   );
 
 export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
@@ -40,5 +42,5 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
       }
       return Lifecycle.initialize(output);
     }),
-    E.flatMap((root) => Rehydrator.encode(root)),
+    E.flatMap((root) => Lifecycle.encode(root)),
   );

@@ -5,6 +5,8 @@ import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 import * as Array from 'effect/Array';
 
+export const TypeId = Symbol.for('disreact/props');
+
 export declare namespace Props {
   export type Props = Record<string, any>;
   export type NoChild = Props & {children?: never};
@@ -45,14 +47,18 @@ export const cloneKnownProps = (props: Props): Props => {
   return cloned;
 };
 
+export const isProps = (p: any): p is Props =>
+  !!p
+  && typeof p === 'object'
+  && !Array.isArray(p)
+  && Equal.symbol in p;
+
 export const make = (p: any): Props.Props => {
-  if (!p) {
-    return p;
-  }
-  if (typeof p !== 'object') {
-    return p;
-  }
-  if (Equal.symbol in p) {
+  if (
+    !p
+    || typeof p !== 'object'
+    || Equal.symbol in p
+  ) {
     return p;
   }
   if (Array.isArray(p)) {

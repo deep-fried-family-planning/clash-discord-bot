@@ -4,8 +4,8 @@ import type {Elem} from '#src/disreact/model/elem/elem.ts';
 import type {FC} from '#src/disreact/model/elem/fc.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactConfig} from '#src/disreact/model/DisReactConfig.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
 import {type Mock, vi} from '@effect/vitest';
@@ -43,7 +43,7 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
   const layer = pipe(
     L.mergeAll(
       // L.effectContext(E.succeed(TestServices.liveServices)),
-      L.succeed(DisReactDOM, DisReactDOM.make(dom as any)),
+      L.succeed(DiscordDOM, DiscordDOM.make(dom as any)),
       Sources.Default,
       Dispatcher.Default,
       Relay.Default,

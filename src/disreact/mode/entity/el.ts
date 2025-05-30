@@ -3,8 +3,10 @@ import * as Props from '#src/disreact/mode/entity/props.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
-import {globalValue} from 'effect/GlobalValue';
+import * as GlobalValue from 'effect/GlobalValue';
 import * as MutableList from 'effect/MutableList';
+
+export const TypeId = Symbol.for('disreact/el');
 
 export namespace El {
   export type Pr = | string
@@ -14,28 +16,29 @@ export namespace El {
                    | undefined
                    | bigint;
   type Meta = {
-    key?: string;
-    idn?: string;
-    ids?: string;
-    name: string;
-    idx : number;
-    pos : number;
+    [TypeId]: typeof TypeId;
+    key?    : string;
+    idn?    : string;
+    ids?    : string;
+    name    : string;
+    idx     : number;
+    pos     : number;
   };
   export interface Text extends Meta {
-    _tag : 'Text';
+    _tag : typeof TEXT;
     type?: undefined;
     pos  : number;
     value: any;
   }
   export interface Rest extends Meta {
-    _tag    : 'rest';
+    _tag    : typeof REST;
     type    : string;
     handler?: Event.Handler | undefined;
     props   : Props.Props;
     nodes   : El[];
   }
   export interface Comp extends Meta {
-    _tag : 'comp';
+    _tag : typeof COMP;
     type : FC.Any;
     props: Props.Props;
     nodes: El[];
@@ -51,23 +54,31 @@ export type Comp = El.Comp;
 export type Nd = El.Nd;
 export type El = El.El;
 
-export const isElem = (e: Cs.Cs): e is El.El => !!e && typeof e === 'object' && '_tag' in e;
-export const isText = (e: Cs.Cs): e is El.Text => !!e && typeof e === 'object' && !Array.isArray(e) && e._tag === 'Text';
+export const TEXT = 'text' as const,
+             REST = 'rest' as const,
+             COMP = 'comp' as const;
+
+export const isElem = (e: Cs.Cs): e is El.El => !!e && typeof e === 'object' && TypeId in e;
+
+export const isText = (e: Cs.Cs): e is El.Text => !!e && typeof e === 'object' && !Array.isArray(e) && e._tag === TEXT;
+
 export const isNode = (e: Cs.Cs): e is El.Nd => !!e && typeof e === 'object' && !Array.isArray(e) && 'type' in e;
-export const isRest = (e: Cs.Cs): e is El.Rest => isNode(e) && e._tag === 'rest';
-export const isComp = (e: Cs.Cs): e is El.Comp => isNode(e) && e._tag === 'comp';
 
-export const text = (type: any): El.Text => {
-  return Data.struct({
-    _tag : 'Text',
-    name : '',
-    idx  : 0,
-    pos  : 0,
-    value: type,
+export const isRest = (e: Cs.Cs): e is El.Rest => isNode(e) && e._tag === REST;
+
+export const isComp = (e: Cs.Cs): e is El.Comp => isNode(e) && e._tag === COMP;
+
+export const text = (type: any = {}): El.Text =>
+  Data.struct({
+    [TypeId]: TypeId,
+    _tag    : TEXT,
+    name    : '',
+    idx     : 0,
+    pos     : 0,
+    value   : type,
   });
-};
 
-export const rest = (type: string, props: Props.Props): El.Rest => {
+export const rest = (type: string, props: Props.Props = {}): El.Rest => {
   const handler = Props.extractHandler(props);
   const key = Props.extractKey(props);
   const children = props.children;
@@ -75,30 +86,34 @@ export const rest = (type: string, props: Props.Props): El.Rest => {
     delete props.children;
   }
   return Data.struct({
-    _tag   : 'rest',
-    key    : key,
-    type   : type,
-    name   : type,
-    pos    : 0,
-    idx    : 0,
-    props  : Props.make(props),
-    nodes  : Data.array(children ? Array.ensure(children) : Array.empty()) as El.El[],
-    handler: handler,
+    [TypeId]: TypeId,
+    _tag    : REST,
+    key     : key,
+    type    : type,
+    name    : type,
+    pos     : 0,
+    idx     : 0,
+    idn     : `${type}:${0}`,
+    props   : Props.make(props),
+    nodes   : Data.array(children ? Array.ensure(children) : Array.empty()) as El.El[],
+    handler : handler,
   });
 };
 
-export const comp = (type: FC.FC, props: Props.Props): El.Comp => {
+export const comp = (type: FC.FC, props: Props.Props = {}): El.Comp => {
   const key = Props.extractKey(props);
   const fc = FC.make(type);
   return Data.struct({
-    _tag : 'comp',
-    key  : key,
-    name : FC.name(fc),
-    pos  : 0,
-    idx  : 0,
-    type : fc,
-    props: Props.make(props),
-    nodes: Data.array(Array.empty()) as El.El[],
+    [TypeId]: TypeId,
+    _tag    : COMP,
+    key     : key,
+    name    : FC.name(fc),
+    pos     : 0,
+    idx     : 0,
+    type    : fc,
+    idn     : `${FC.name(fc)}:${0}`,
+    props   : Props.make(props),
+    nodes   : Data.array(Array.empty()) as El.El[],
   });
 };
 
@@ -125,114 +140,16 @@ export namespace Cs {
 }
 export type Cs = Cs.Cs;
 
-const parents = globalValue(Symbol.for('disreact/parents'), () => new WeakMap<El.El, El.Nd>());
+const parents = GlobalValue.globalValue(
+  Symbol.for('disreact/parents'),
+  () => new WeakMap<El.El, El.Nd>(),
+);
 
 export const getParent = (child: El.El) => parents.get(child);
 
 export const setParent = (child: El.El, parent: El.Nd) => parents.set(child, parent);
 
-export const pragmaCs = (node: El.Nd) => {
-  const rests = {} as Record<string, number>;
-  const comps = new WeakMap<FC.FC, number>();
-  const pn = name(node);
-  for (let i = 0; i < node.nodes.length; i++) {
-    if (!isElem(node.nodes[i])) {
-      const child = text(node.nodes[i]);
-      node.nodes[i] = child;
-    }
-    const child = node.nodes[i];
-    setParent(child, node);
-    if (isText(child)) {
-      child.pos = i;
-    }
-    else if (isRest(child)) {
-      const idx = rests[child.type] ??= 0;
-      child.idn = `${node.idn}:${child.type}:${idx}`;
-      child.ids = `${node.name}:${node.idx}:${child.type}:${idx}`;
-      child.idx = idx;
-      rests[child.type]++;
-    }
-    else {
-      const cname = FC.name(child.type);
-      const idx = comps.get(child.type) ?? 0;
-      child.idn = `${node.idn}:${cname}:${idx}`;
-      child.ids = `${pn}:${node.idx}:${cname}:${idx}`;
-      child.idx = idx;
-      comps.set(child.type, idx + 1);
-    }
-  }
-};
-
-export const renderCs = (node: El.Nd) => {
-  const rests = {} as Record<string, number>;
-  const comps = new WeakMap<FC.FC, number>();
-  const pn = name(node);
-  for (let i = 0; i < node.nodes.length; i++) {
-    if (!isElem(node.nodes[i])) {
-      const child = text(node.nodes[i]);
-      node.nodes[i] = child;
-    }
-    const child = node.nodes[i];
-    setParent(child, node);
-    if (isText(child)) {
-      child.pos = i;
-    }
-    else if (isRest(child)) {
-      const idx = rests[child.type] ??= 0;
-      child.idn = `${node.idn}:${child.type}:${idx}`;
-      child.ids = `${node.name}:${node.idx}:${child.type}:${idx}`;
-      child.idx = idx;
-      rests[child.type]++;
-    }
-    else {
-      const cname = FC.name(child.type);
-      const idx = comps.get(child.type) ?? 0;
-      child.idn = `${node.idn}:${cname}:${idx}`;
-      child.ids = `${pn}:${node.idx}:${cname}:${idx}`;
-      child.idx = idx;
-      comps.set(child.type, idx + 1);
-    }
-  }
-};
-
 export const name = (nd: El.Nd) => isRest(nd) ? nd.type : nd.type[FC.NameId]!;
-
-export const normalize = (nd: El.Nd, rs: Cs.Cs = nd.nodes): El.El[] => {
-  const pn = name(nd);
-  const cs = Array.ensure(rs).flat();
-  const is = {} as Record<string, number>;
-  const fs = new WeakMap<FC.FC, number>();
-
-  for (let i = 0; i < cs.length; i++) {
-    const c = cs[i];
-    if (!isElem(c)) {
-      const child = text(c);
-      child.pos = i;
-      cs[i] = child;
-      continue;
-    }
-    if (isText(c)) {
-      continue;
-    }
-    c.pos = i;
-    if (isRest(c)) {
-      const idx = is[c.type] ??= 0;
-      c.idn = `${nd.idn}:${c.type}:${idx}`;
-      c.ids = `${pn}:${nd.idx}:${c.type}:${idx}`;
-      c.idx = idx;
-      is[c.type]++;
-    }
-    else {
-      const cname = FC.name(c.type);
-      const idx = fs.get(c.type) ?? 0;
-      c.idn = `${nd.idn}:${cname}:${idx}`;
-      c.ids = `${pn}:${nd.idx}:${cname}:${idx}`;
-      c.idx = idx;
-      fs.set(c.type, idx + 1);
-    }
-  }
-  return Data.array(cs) as El.El[];
-};
 
 export const connect = (node: El.El, next: El.El, idx: number) => {
   if (node._tag === 'Text' || next._tag === 'Text') {

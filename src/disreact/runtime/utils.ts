@@ -1,6 +1,6 @@
 import {Doken, DokenDefect} from '#src/disreact/codec/rest/doken.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
-import {Dokens} from '#src/disreact/runtime/dokens.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
+import {Dokensz} from '#src/disreact/runtime/dokensz.ts';
 import * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -9,9 +9,9 @@ import {pipe} from 'effect/Function';
 import * as SynchronizedRef from 'effect/SynchronizedRef';
 import {Misc} from '../utils/misc';
 
-export const handleSame = (ds: Dokens) =>
+export const handleSame = (ds: Dokensz) =>
   pipe(
-    Dokens.stop(ds),
+    Dokensz.stop(ds),
     E.flatMap(() =>
       E.all([
         Fiber.join(ds.active),
@@ -25,17 +25,17 @@ export const handleSame = (ds: Dokens) =>
         : undefined;
 
       if (activeLeft && !freshLeft) {
-        return Dokens.finalize(ds, active!);
+        return Dokensz.finalize(ds, active!);
       }
 
       if (!activeLeft && freshLeft) {
         return pipe(
-          Dokens.set(ds, Doken.update(ds.fresh)),
+          Dokensz.set(ds, Doken.update(ds.fresh)),
           E.tap(() =>
             pipe(
-              E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
-              Dokens.finalizeWith(ds),
-              Dokens.fiber(ds),
+              E.tap(DiscordDOM, (dom) => dom.deferUpdate(ds.fresh)),
+              Dokensz.finalizeWith(ds),
+              Dokensz.fiber(ds),
               E.delay(freshLeft),
             ),
           ),
@@ -43,13 +43,13 @@ export const handleSame = (ds: Dokens) =>
       }
 
       return pipe(
-        E.tap(DisReactDOM, (dom) => dom.discard(ds.fresh)),
-        Dokens.finalizeWith(ds, active!),
+        E.tap(DiscordDOM, (dom) => dom.discard(ds.fresh)),
+        Dokensz.finalizeWith(ds, active!),
       );
     }),
   );
 
-export const handleClose = (ds: Dokens) =>
+export const handleClose = (ds: Dokensz) =>
   pipe(
     Dokens.stop(ds),
     E.flatMap(() =>
@@ -65,25 +65,25 @@ export const handleClose = (ds: Dokens) =>
         return E.void;
       }
       if (final) {
-        return DisReactDOM.dismount(final);
+        return DiscordDOM.dismount(final);
       }
       if (Doken.isActive(current)) {
-        return DisReactDOM.dismount(current);
+        return DiscordDOM.dismount(current);
       }
       if (active) {
-        return DisReactDOM.dismount(active);
+        return DiscordDOM.dismount(active);
       }
-      if (Doken.isFresh(current)) {
+      if (Doken.isLatest(current)) {
         return pipe(
-          DisReactDOM.deferUpdate(current),
-          E.tap(() => DisReactDOM.dismount(current)),
+          DiscordDOM.deferUpdate(current),
+          E.tap(() => DiscordDOM.dismount(current)),
         );
       }
       return new DokenDefect({msg: 'No tokens available to dismount.'});
     }),
   );
 
-export const handleSource = (ds: Dokens) =>
+export const handleSource = (ds: Dokensz) =>
   pipe(
     Dokens.stop(ds),
     E.tap(() => Dokens.set(ds, Doken.source(ds.fresh))),
@@ -93,7 +93,7 @@ export const handleSource = (ds: Dokens) =>
         DateTime.distanceDurationEither(now, ds.fresh.ttl),
         Either.map((delay) =>
           pipe(
-            E.tap(DisReactDOM, (dom) => dom.deferSource(ds.fresh)),
+            E.tap(DiscordDOM, (dom) => dom.deferSource(ds.fresh)),
             Dokens.finalizeWith(ds),
             E.delay(delay),
             Dokens.fiber(ds),
@@ -101,7 +101,7 @@ export const handleSource = (ds: Dokens) =>
         ),
         Either.getOrElse(() =>
           pipe(
-            E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
+            E.tap(DiscordDOM, (dom) => dom.deferUpdate(ds.fresh)),
             Dokens.finalizeWith(ds),
           ),
         ),
@@ -109,7 +109,7 @@ export const handleSource = (ds: Dokens) =>
     ),
   );
 
-export const handleUpdate = (ds: Dokens) =>
+export const handleUpdate = (ds: Dokensz) =>
   pipe(
     Dokens.stop(ds),
     E.tap(() => Dokens.set(ds, Doken.update(ds.fresh))),
@@ -119,7 +119,7 @@ export const handleUpdate = (ds: Dokens) =>
         DateTime.distanceDurationEither(now, ds.fresh.ttl),
         Either.map((delay) =>
           pipe(
-            E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
+            E.tap(DiscordDOM, (dom) => dom.deferUpdate(ds.fresh)),
             Dokens.finalizeWith(ds),
             E.delay(delay),
             Dokens.fiber(ds),
@@ -127,7 +127,7 @@ export const handleUpdate = (ds: Dokens) =>
         ),
         Either.getOrElse(() =>
           pipe(
-            E.tap(DisReactDOM, (dom) => dom.deferUpdate(ds.fresh)),
+            E.tap(DiscordDOM, (dom) => dom.deferUpdate(ds.fresh)),
             Dokens.finalizeWith(ds),
           ),
         ),

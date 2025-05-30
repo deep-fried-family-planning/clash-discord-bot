@@ -1,4 +1,4 @@
-import {Declare} from '#src/disreact/model/declare.ts';
+import {Declare} from '#src/disreact/mode/schema/declare.ts';
 import {FC} from '#src/disreact/model/elem/fc.ts';
 import {Trigger} from '#src/disreact/model/elem/trigger.ts';
 import {Lifecycles} from '#src/disreact/model/lifecycles.ts';

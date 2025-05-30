@@ -1,6 +1,6 @@
 import {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
 import {resolveId, Source} from '#src/disreact/model/meta/source.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
+import {DisReactConfig} from '#src/disreact/model/DisReactConfig.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
 import * as Hash from 'effect/Hash';

@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Declare} from 'src/disreact/model/declare.ts';
+import type {Declare} from '#src/disreact/mode/schema/declare.ts';
 import {Rehydrant} from 'src/disreact/model/meta/rehydrant.ts';
 import {Elem} from './elem/elem';
 import * as ML from 'effect/MutableList';

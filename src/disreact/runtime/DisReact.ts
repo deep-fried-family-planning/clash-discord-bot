@@ -3,7 +3,7 @@ import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import type {Source} from '#src/disreact/model/meta/source.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import {Methods} from './methods';
 import * as Effect from 'effect/Effect';
@@ -18,7 +18,7 @@ export class DisReact extends Effect.Service<DisReact>()('disreact/DisReact', {
         Dispatcher.Default,
         Codec.Default,
         Relay.Default,
-        DisReactDOM.Default,
+        DiscordDOM.Default,
         DokenMemory.Default,
       ),
     );

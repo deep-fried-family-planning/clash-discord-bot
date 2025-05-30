@@ -2,8 +2,8 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DisReactConfig} from '#src/disreact/model/DisReactConfig.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
 import * as E from 'effect/Effect';
 import {flow, pipe} from 'effect/Function';
@@ -16,7 +16,7 @@ export type Runtime = ReturnType<typeof makeRuntime>;
 export const makeGlobalRuntimeLayer = (
   config?: {
     config?: DisReactConfig.Input;
-    dom?   : L.Layer<DisReactDOM>;
+    dom?   : L.Layer<DiscordDOM>;
     memory?: L.Layer<DokenMemory, never, DisReactConfig>;
   },
 ) =>
@@ -26,7 +26,7 @@ export const makeGlobalRuntimeLayer = (
       Codec.Default,
       Sources.Default,
       Relay.Default,
-      config?.dom ?? DisReactDOM.Default,
+      config?.dom ?? DiscordDOM.Default,
       config?.memory ?? DokenMemory.Default,
     ),
     L.provideMerge(

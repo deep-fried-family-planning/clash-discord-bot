@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/mode/entity/el.ts';
 import * as Polymer from '#src/disreact/mode/entity/polymer.ts';
 import * as Equal from 'effect/Equal';
-import {globalValue} from 'effect/GlobalValue';
+import * as GlobalValue from 'effect/GlobalValue';
 
 export namespace Diff {
   export type Skip = {
@@ -85,6 +85,13 @@ const render = (): Diff.Render =>
     _tag: 'Render',
   });
 
+const __diff = GlobalValue.globalValue(
+  Symbol.for('disreact/diff'),
+  () => new WeakMap<any, Diff.Diff>(),
+);
+
+export const getDiff = (nd: El.El) => __diff.get(nd);
+
 export const node = (a: El.El, b: El.El) => {
   if (Equal.equals(a, b)) {
     return skip();
@@ -111,13 +118,20 @@ export const node = (a: El.El, b: El.El) => {
   return skip();
 };
 
-const __children = globalValue(Symbol.for('disreact/diff/children'), () => new WeakMap<El.Nd, Diff.Cd[]>());
+export const diff = (a: El.El, b: El.El) => {
+  const diff = node(a, b);
+  __diff.set(a, diff);
+  return diff;
+};
 
-export const getChildren = (nd: El.Nd) => __children.get(nd)!;
+const __diffs = GlobalValue.globalValue(
+  Symbol.for('disreact/diffs'),
+  () => new WeakMap<any, Diff.Cd[]>(),
+);
 
-const setChildren = (nd: El.Nd, cs: Diff.Cd[]) => __children.set(nd, cs);
+export const getDiffs = (nd: El.El) => __diffs.get(nd);
 
-export const children = (nd: El.Nd, rs: El.El[]) => {
+const children = (nd: El.Nd, rs: El.El[]) => {
   const acc = [] as Diff.Cd[];
   for (let i = 0; i < Math.max(nd.nodes.length, rs.length); i++) {
     const c = nd.nodes[i];
@@ -132,5 +146,11 @@ export const children = (nd: El.Nd, rs: El.El[]) => {
       acc.push(node(c, r));
     }
   }
-  setChildren(nd, acc);
+  return acc;
+};
+
+export const diffs = (nd: El.Nd, rs: El.El[]) => {
+  const diffs = children(nd, rs);
+  __diffs.set(nd, diffs);
+  return diffs;
 };

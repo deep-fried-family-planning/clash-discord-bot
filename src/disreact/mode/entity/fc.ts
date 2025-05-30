@@ -1,18 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type * as El from '#src/disreact/mode/entity/el.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
 
-export const TypeId = Symbol.for('disreact/fc/type');
+export const TypeId = Symbol.for('disreact/fc');
 export const NameId = Symbol.for('disreact/fc/name');
-export const SYNC = 0;
-export const PROMISE = 1;
-export const EFFECT = 2;
+
+export const SYNC    = 0,
+             PROMISE = 1,
+             EFFECT  = 2;
 
 export namespace FC {
   export type Output = El.Cs;
   export type OutEffect = E.Effect<El.Cs>;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   export interface Any<P, O> extends Function {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
     [TypeId]?   : number;

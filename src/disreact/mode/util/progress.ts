@@ -1,4 +1,7 @@
 export namespace Progress {
+  export type Done = {
+    _tag: 'done';
+  };
   export type Exit = {
     _tag: 'exit';
   };
@@ -15,21 +18,33 @@ export namespace Progress {
     type : string;
     props: any;
   };
-  export type Progress = | Exit
+  export type Progress = | Done
+  | Exit
                          | Same
                          | Next
                          | Part;
 }
+export type Done = Progress.Done;
 export type Exit = Progress.Exit;
 export type Same = Progress.Same;
 export type Next = Progress.Next;
 export type Part = Progress.Part;
 export type Progress = Progress.Progress;
 
+export const isDone = (p: Progress.Progress): p is Progress.Done => p._tag === 'done';
+
 export const isExit = (p: Progress.Progress): p is Progress.Exit => p._tag === 'exit';
+
 export const isSame = (p: Progress.Progress): p is Progress.Same => p._tag === 'same';
+
 export const isNext = (p: Progress.Progress): p is Progress.Next => p._tag === 'next';
+
 export const isPart = (p: Progress.Progress): p is Progress.Part => p._tag === 'part';
+
+export const done = (): Progress.Done =>
+  ({
+    _tag: 'done',
+  });
 
 export const exit = (): Progress.Exit =>
   ({

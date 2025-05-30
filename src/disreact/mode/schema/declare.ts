@@ -5,7 +5,7 @@ import {deflate, inflate} from 'pako';
 import * as S from 'effect/Schema';
 import type * as E from 'effect/Effect';
 
-export * as Declare from '#src/disreact/model/declare.ts';
+export * as Declare from '#src/disreact/mode/schema/declare.ts';
 export type Declare = never;
 
 export const SourceId = S.String;

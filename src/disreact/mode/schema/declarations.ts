@@ -14,7 +14,7 @@ export const Chain = S.Array(Monomer);
 
 export const Hydrator = S.Struct({
   id    : S.String,
-  props : S.Any,
+  props : S.optional(S.Any),
   stacks: S.Record({key: S.String, value: Chain}),
 });
 

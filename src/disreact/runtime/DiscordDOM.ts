@@ -4,7 +4,7 @@ import {InteractionCallbackTypes} from 'dfx/types';
 import * as Effect from 'effect/Effect';
 import * as Redacted from 'effect/Redacted';
 
-export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
+export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactDOM', {
   effect: Effect.gen(function* () {
     const api = yield* DiscordREST;
 
@@ -93,9 +93,9 @@ export class DisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReac
   accessors: true,
 }) {}
 
-export class DiscordJsDisReactDOM extends Effect.Service<DisReactDOM>()('disreact/DisReactDOM', {
+export class DiscordJsDisReactDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactDOM', {
   effect: Effect.sync(() => {
-    return {} as DisReactDOM;
+    return {} as DiscordDOM;
   }),
   accessors: true,
 }) {}

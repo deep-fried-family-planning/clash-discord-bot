@@ -1,5 +1,5 @@
 import type {Rehydrant} from '#src/disreact/mode/entity/rehydrant.ts';
-import type {Progress} from '#src/disreact/mode/progress.ts';
+import type * as Progress from '#src/disreact/mode/util/progress.ts';
 import * as Data from 'effect/Data';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
@@ -16,7 +16,7 @@ export class RehydrantDOM extends E.Service<RehydrantDOM>()('disreact/RehydrantD
 
     return {
       mount   : (root: Rehydrant.Rehydrant) => Deferred.succeed(first, root),
-      listen  : () => mailbox.take,
+      listen  : mailbox.take,
       send    : (progress: Progress.Progress) => mailbox.offer(progress),
       finalize: (root: Rehydrant.Rehydrant | null) => Deferred.succeed(final, root),
       output  : () => Deferred.await(final),
