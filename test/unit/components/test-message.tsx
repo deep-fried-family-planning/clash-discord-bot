@@ -1,7 +1,6 @@
 import {useState} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import * as E from 'effect/Effect';
-import {pipe} from 'effect/Function';
 
 const Header = (props: {title: string; description: string}) => {
   return (

@@ -1,7 +1,7 @@
-import {TextInput} from '#src/disreact/codec/intrinsic/component/textinput.ts';
+import {TextInput} from '#src/disreact/codec/intrinsic/container/textinput.ts';
 import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Util} from '#src/disreact/codec/intrinsic/util.ts';
-import {Declare} from '#src/disreact/model/declare.ts';
+import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 import * as S from 'effect/Schema';
 import {DAPI} from '../../dapi/dapi';
 
@@ -15,7 +15,7 @@ export const EventData = S.Struct({
   data: DAPI.Modal.Data,
 });
 
-export const Handler = Declare.handler(EventData);
+export const Handler = Declarations.handler(EventData);
 
 export const Children = S.Union(
   TextInput.Element,

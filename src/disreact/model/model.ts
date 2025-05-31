@@ -1,66 +1,54 @@
-import type {Trigger} from '#src/disreact/model/elem/trigger.ts';
-import {Lifecycles} from '#src/disreact/model/lifecycles.ts';
-import type {Rehydrant} from '#src/disreact/model/meta/rehydrant.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
-import {pipe} from 'effect/Function';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
+import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as E from 'effect/Effect';
-import type {Source} from './meta/source';
-import {Pragma} from './pragma';
+import {pipe} from 'effect/Function';
+import type * as El from 'src/disreact/model/entity/el.ts';
 
-export * as Model from '#src/disreact/model/model.ts';
-export type Model = never;
+export namespace Model {}
 
-export const register = Sources.register;
-
-export const create = (key: Source.Key, props: any = {}) =>
+export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
   pipe(
-    Sources.checkout(key, props),
-    E.tap((root) => Lifecycles.initialize(root)),
-    E.flatMap((root) => Pragma.encode(root)),
+    Lifecycle.initialize(Rehydrant.fromFC(source, props, data)),
+    E.flatMap((root) => Lifecycle.encode(root)),
+    E.provide(RehydrantDOM.Fresh()),
   );
 
-export const rehydrate = (hydrator: Rehydrant.Decoded) =>
+export const registerRoot = (source: Rehydrant.Registrant, id?: string) =>
+  Rehydrator.register(source, id);
+
+export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) =>
   pipe(
-    Sources.rehydrate(hydrator),
-    E.tap((root) => Lifecycles.rehydrate(root)),
-    E.flatMap((root) => Pragma.encode(root)),
+    Rehydrator.checkout(source, props, data),
+    E.flatMap((root) => Lifecycle.initialize(root)),
+    // E.tap(RehydrantDOM.finalize),
+    // E.tap(RehydrantDOM.complete),
+    // E.tapError((error) => RehydrantDOM.fail(error)),
+    // E.andThen(RehydrantDOM.output()),
+    E.flatMap((root) => Lifecycle.encode(root)),
+    // E.provide(RehydrantDOM.Fresh()),
   );
 
-export const invoke = (hydrator: Rehydrant.Decoded, event: Trigger, data?: any) =>
+export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
   pipe(
-    Sources.rehydrate(hydrator),
-    E.flatMap((original) =>
-      pipe(
-        Lifecycles.rehydrate(original, data),
-        E.andThen(() => Lifecycles.invoke(original, event)),
-        E.andThen(() => Lifecycles.rerender(original)),
-        E.andThen(() =>
-          Relay.use((relay) =>
-            relay.setOutput(original),
-          ),
-        ),
-        E.zipRight(
-          Relay.use((relay) =>
-            pipe(
-              relay.awaitOutput,
-              E.flatMap((output) => {
-                if (output === null) {
-                  return E.succeed(output);
-                }
-                if (output.id === original.id) {
-                  return Pragma.encode(output);
-                }
-                return pipe(
-                  Lifecycles.initialize(output, data),
-                  E.flatMap(() => Pragma.encode(output)),
-                );
-              }),
-              E.tap(() => relay.setComplete()),
-            ),
-          ),
-          {concurrent: true},
-        ),
-      ),
-    ),
+    Rehydrator.decode(hydrator, data),
+    E.flatMap((root) => Lifecycle.rehydrate(root)),
+    E.flatMap((root) => Lifecycle.invoke(root, event)),
+    E.flatMap((root) => Lifecycle.rerender(root)),
+    E.tapError((error) => RehydrantDOM.fail(error)),
+    E.fork,
+    E.andThen(RehydrantDOM.output()),
+    E.flatMap((output) => {
+      if (output === null) {
+        return E.succeed(null);
+      }
+      if (output.id === hydrator.id) {
+        return E.succeed(output);
+      }
+      return Lifecycle.initialize(output);
+    }),
+    E.tap(RehydrantDOM.complete),
+    E.flatMap((root) => Lifecycle.encode(root)),
   );

@@ -1,10 +1,7 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
+import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
+import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
 import * as E from 'effect/Effect';
 import {flow, pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
@@ -15,26 +12,19 @@ export type Runtime = ReturnType<typeof makeRuntime>;
 
 export const makeGlobalRuntimeLayer = (
   config?: {
-    config?: DisReactConfig.Input;
-    dom?   : L.Layer<DisReactDOM>;
-    memory?: L.Layer<DokenMemory, never, DisReactConfig>;
+    rehydrator?: RehydratorConfig;
+    capacity?  : number;
+    dom?       : L.Layer<DiscordDOM>;
+    memory?    : L.Layer<DokenCache>;
   },
-) =>
-  pipe(
-    L.mergeAll(
-      Dispatcher.Default,
-      Codec.Default,
-      Sources.Default,
-      Relay.Default,
-      config?.dom ?? DisReactDOM.Default,
-      config?.memory ?? DokenMemory.Default,
-    ),
-    L.provideMerge(
-      config?.config
-        ? DisReactConfig.configLayer(config.config)
-        : DisReactConfig.Default,
-    ),
+) => {
+  return L.mergeAll(
+    Codec.Default(),
+    Rehydrator.Default(config?.rehydrator ?? {}),
+    config?.dom ?? DiscordDOM.Default,
+    config?.memory ?? DokenCache.Default({capacity: config?.capacity ?? 100}),
   );
+};
 
 export type GlobalRuntimeLayer = ReturnType<typeof makeGlobalRuntimeLayer>;
 
@@ -48,7 +38,6 @@ export const makeRuntime = (layer: GlobalRuntimeLayer) => {
     pipe(
       Methods.respond(input),
       E.provide(layer),
-      E.provide(Relay.Fresh),
     );
 
   return {

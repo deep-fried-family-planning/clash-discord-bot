@@ -1,12 +1,12 @@
 import {CloseButton} from '#src/discord/components/close-button.tsx';
+import {OmniUser} from '#src/discord/omni-board/accounts/omni-user.tsx';
 import {useIx, usePage} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
-import type { Effect } from 'effect/Effect';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 import console from 'node:console';
 
 export const StartMenu: FC = () => {
   const ix = useIx();
-  const page = usePage([]);
+  const page = usePage();
 
   console.log('ix:ix', ix);
 
@@ -22,7 +22,7 @@ export const StartMenu: FC = () => {
         <success
           label={'Link'}
           onclick={() => {
-
+            page.next(OmniUser);
           }}
         />
         <primary

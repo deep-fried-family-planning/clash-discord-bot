@@ -177,6 +177,7 @@ export const TextInput = S.Struct({
   type       : S.Literal(TEXT_INPUT),
   custom_id  : S.String,
   style      : S.Literal(SHORT, PARAGRAPH),
+  label      : S.optional(S.String),
   placeholder: S.optional(S.String),
   min_length : S.optional(S.Number),
   max_length : S.optional(S.Number),
