@@ -23,7 +23,7 @@ const makeStub = (random = true) =>
     : E.void,
   ) as Mock<(...args: any) => any>;
 
-export const makeTestRuntime = (src: (El | FC)[], random?: boolean) => {
+export const makeTestRuntime = (src: (El | FC)[], random?: boolean, live?: boolean) => {
   const dom = {
     discard     : makeStub(random),
     dismount    : makeStub(random),
@@ -37,7 +37,7 @@ export const makeTestRuntime = (src: (El | FC)[], random?: boolean) => {
 
   const layer = pipe(
     L.mergeAll(
-      L.effectContext(E.succeed(TestServices.liveServices)),
+      // L.effectContext(E.succeed(TestServices.liveServices)),
       L.succeed(DiscordDOM, DiscordDOM.make(dom as any)),
       Rehydrator.Default({
         sources: src,
