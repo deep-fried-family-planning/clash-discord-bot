@@ -14,7 +14,7 @@ export class SimpleModalService extends E.Service<SimpleModalService>()('test/Si
 }) {}
 
 export const SimpleModal = () => {
-  const page = usePage([SimpleMessage]);
+  const page = usePage();
 
   return (
     <modal

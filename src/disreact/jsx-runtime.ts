@@ -1,12 +1,12 @@
 import type {IntrinsicTuplesMapped} from '#src/disreact/codec/intrinsic/index.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from './model/elem/fc';
-import {Pragma} from './model/pragma';
+import * as Dsx from '#src/disreact/model/dsx.ts';
+import type * as FC from '#src/disreact/model/entity/fc.ts';
+import type * as El from '#src/disreact/model/entity/el.ts';
 
-export const Fragment = Pragma.Fragment;
-export const jsx = Pragma.jsx;
-export const jsxs = Pragma.jsxs;
-export const jsxDEV = Pragma.jsxDEV;
+export const Fragment = Dsx.Fragment;
+export const jsx = Dsx.jsx;
+export const jsxs = Dsx.jsxs;
+export const jsxDEV = Dsx.jsxDEV;
 
 export declare namespace JSX {
   type ElementType =
@@ -18,9 +18,9 @@ export declare namespace JSX {
     | boolean
     | symbol
     | bigint
-    | FC;
+    | FC.Any;
 
-  type Element = Elem;
+  type Element = El.El;
 
   interface ElementAttributesProperty {
     props?: {};

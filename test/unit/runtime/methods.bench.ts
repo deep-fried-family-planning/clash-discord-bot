@@ -1,5 +1,4 @@
-import {Relay} from '#src/disreact/model/Relay.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {Methods} from '#src/disreact/runtime/methods';
 import {Runtime} from '#src/disreact/runtime/runtime';
 import {bench, vi} from '@effect/vitest';
@@ -19,13 +18,12 @@ const layer = pipe(
   L.effectContext(E.succeed(TestServices.liveServices)),
   L.provideMerge(
     Runtime.makeGlobalRuntimeLayer({
-      config: {
-        token  : '',
+      rehydrator: {
         sources: [
           TestMessage,
         ],
       },
-      dom: L.succeed(DisReactDOM, DisReactDOM.make({
+      dom: L.succeed(DiscordDOM, DiscordDOM.make({
         createUpdate,
         deferEdit,
         deferUpdate,
@@ -40,7 +38,7 @@ const runtime = makeTestRuntime([TestMessage], false);
 describe('synthesize', () => {
   bench('scoped', async () => {
     await pipe(
-      Methods.createRoot(TestMessage),
+      Methods.createRoot(TestMessage, {}, {}),
       E.provide(layer),
       E.runPromise,
     );
@@ -48,19 +46,19 @@ describe('synthesize', () => {
 
   bench('runtime', async () => {
     await pipe(
-      runtime.synthesize(TestMessage),
+      runtime.synthesize(TestMessage, {}, {}),
       E.runPromise,
     );
   });
 });
 
-const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage));
+const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage, {}, {}));
 
 describe('respond', () => {
   bench('scoped', async () => {
     await pipe(
       Methods.respond({
-        id            : '1236074574509117491',
+        id            : '13781533544247460140',
         token         : 'respond1',
         application_id: 'app',
         user_id       : 'user',
@@ -68,10 +66,10 @@ describe('respond', () => {
         message       : testmessage,
         type          : 3,
         data          : {
-          custom_id     : 'actions:2:button:0',
+          custom_id     : 'actions:0:button:0',
           component_type: 2,
         },
-      }).pipe(E.provide(Relay.Fresh), E.scoped),
+      }),
       E.provide(layer),
       E.runPromise,
     );
@@ -80,7 +78,7 @@ describe('respond', () => {
   bench('runtime', async () => {
     await pipe(
       runtime.respond({
-        id            : '1236074574509117491',
+        id            : '13781533544247460140',
         token         : 'respond1',
         application_id: 'app',
         user_id       : 'user',
@@ -88,7 +86,7 @@ describe('respond', () => {
         message       : testmessage,
         type          : 3,
         data          : {
-          custom_id     : 'actions:2:button:0',
+          custom_id     : 'actions:0:button:0',
           component_type: 2,
         },
       }),

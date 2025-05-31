@@ -5,12 +5,12 @@
       "title": "Omni Board",
       "description": "V2 - JSX Pragma",
       "image": {
-        "url": "https://dffp.org/s/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziJmSpiY0Lixn3IQlY5UJpAyuP1MSU1CIrgwkAkBMhbQ"
+        "url": "https://dffp.org/s/eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPeVEARs8qFszxSE1NSi6wMJgAAI6kifg"
       }
     },
     {
       "title": "Test Title - NOT markdown",
-      "description": "### H3-# \n@123456\n__$ not a link__"
+      "description": "### H3-# \n<@123456>\n__$ not a link__"
     }
   ],
   "components": [
@@ -20,13 +20,13 @@
         {
           "type": 2,
           "style": 1,
-          "custom_id": "actions:2:button:0",
+          "custom_id": "actions:0:button:0",
           "label": "Start 1"
         },
         {
           "type": 2,
           "style": 2,
-          "custom_id": "actions:2:secondary:1",
+          "custom_id": "actions:0:secondary:0",
           "label": "Help"
         }
       ]
@@ -36,7 +36,7 @@
       "components": [
         {
           "type": 3,
-          "custom_id": "message:0:select:3",
+          "custom_id": "message:0:select:0",
           "options": [
             {
               "value": "1",

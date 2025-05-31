@@ -1,17 +1,17 @@
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {Declare} from '#src/disreact/model/declare.ts';
 import * as S from 'effect/Schema';
+import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 
 export * as Template from '#src/disreact/codec/rest/template.ts';
 export type Template = never;
 
 export const SourceCustomId = S.transform(
   S.TemplateLiteralParser(
-    Declare.SourceId,
+    S.String,
     '/', S.String,
   ),
   S.typeSchema(S.Struct({
-    source_id: Declare.SourceId,
+    source_id: S.String,
     custom_id: S.String,
   })),
   {
@@ -26,12 +26,12 @@ export const DokenRehydrantUrl = S.transform(
   S.TemplateLiteralParser(
     S.String,
     '/', Doken.Serial,
-    '/', Declare.Hydrator,
+    '/', Declarations.HydratorTransform,
   ),
   S.typeSchema(S.Struct({
     base    : S.String,
     doken   : Doken.Serial,
-    hydrator: Declare.Hydrator,
+    hydrator: Declarations.Hydrator,
   })),
   {
     encode: ({base, doken, hydrator}) =>

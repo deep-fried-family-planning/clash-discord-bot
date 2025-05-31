@@ -1,9 +1,9 @@
 import {StartMenu} from '#src/discord/omni-board/start-menu.tsx';
 import {usePage} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
 
 export const OmniBoard: FC = () => {
-  const page = usePage([StartMenu]);
+  const page = usePage();
 
   return (
     <message display={'public'}>

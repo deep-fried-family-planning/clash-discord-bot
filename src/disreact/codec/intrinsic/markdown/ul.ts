@@ -1,5 +1,5 @@
 import {declareElem, declareProps} from '#src/disreact/codec/intrinsic/util.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
+
 import * as S from 'effect/Schema';
 
 export * as UnorderedList from '#src/disreact/codec/intrinsic/markdown/ul.ts';
@@ -21,6 +21,6 @@ export const Element = declareElem(
   Attributes,
 );
 
-export const encode = (self: Elem.Rest, acc: any) => {
+export const encode = (self: any, acc: any) => {
   throw new Error('Not implemented');
 };

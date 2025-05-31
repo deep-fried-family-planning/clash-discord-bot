@@ -1,18 +1,18 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {Dispatcher} from '#src/disreact/model/Dispatcher.ts';
-import type {Elem} from '#src/disreact/model/elem/elem.ts';
-import type {FC} from '#src/disreact/model/elem/fc.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
-import {Sources} from '#src/disreact/model/Sources.ts';
-import {DisReactConfig} from '#src/disreact/runtime/DisReactConfig.ts';
-import {DisReactDOM} from '#src/disreact/runtime/DisReactDOM.ts';
-import {DokenMemory} from '#src/disreact/runtime/DokenMemory.ts';
+import type {El} from '#src/disreact/model/entity/el.ts';
+import type {FC} from '#src/disreact/model/entity/fc.ts';
+import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
+import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
+import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
 import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
-import {type Mock, vi} from '@effect/vitest';
+import {type Mock, vi, expect as viexpect, chai} from '@effect/vitest';
+import {DiscordREST} from 'dfx';
+import * as LogLevel from 'effect/LogLevel';
+import * as Logger from 'effect/Logger';
+import * as TestServices from 'effect/TestServices';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
-import * as Redacted from 'effect/Redacted';
 
 const makeStub = (random = true) =>
   vi.fn(() => random
@@ -23,12 +23,7 @@ const makeStub = (random = true) =>
     : E.void,
   ) as Mock<(...args: any) => any>;
 
-export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
-  const config = DisReactConfig.configLayer({
-    token  : Redacted.make(''),
-    sources: src,
-  });
-
+export const makeTestRuntime = (src: (El | FC)[], random?: boolean) => {
   const dom = {
     discard     : makeStub(random),
     dismount    : makeStub(random),
@@ -42,15 +37,17 @@ export const makeTestRuntime = (src: (Elem | FC)[], random?: boolean) => {
 
   const layer = pipe(
     L.mergeAll(
-      // L.effectContext(E.succeed(TestServices.liveServices)),
-      L.succeed(DisReactDOM, DisReactDOM.make(dom as any)),
-      Sources.Default,
-      Dispatcher.Default,
-      Relay.Default,
-      Codec.Default,
-      DokenMemory.Default,
+      L.effectContext(E.succeed(TestServices.liveServices)),
+      L.succeed(DiscordDOM, DiscordDOM.make(dom as any)),
+      Rehydrator.Default({
+        sources: src,
+      }),
+      Codec.Default(),
+      DokenCache.Default({capacity: 0}),
     ),
-    L.provideMerge(config),
+    L.provideMerge(L.succeed(DiscordREST, {} as any)),
+    // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+    // L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
   );
 
   return {
@@ -88,3 +85,18 @@ export const JSON = (input: any, file: string, post?: string) => {
     await expect(serial).toMatchFileSnapshot(key(file, post)),
   );
 };
+
+export declare namespace Chai {
+  export interface Assertion {
+    toMatchFileSnapshotEffect(file: string, post?: string): E.Effect<void>;
+  }
+}
+
+export const expect = Object.assign(viexpect, {
+  toMatchFileSnapshotEffect: (input: any, file: string, post?: string) => {
+    const serial = global.JSON.stringify(input, null, 2);
+    return E.promise(async () =>
+      await viexpect(serial).toMatchFileSnapshot(key(file, post)),
+    );
+  },
+});

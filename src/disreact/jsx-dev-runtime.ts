@@ -1,6 +1,6 @@
-import {Pragma} from './model/pragma';
+import * as Dsx from '#src/disreact/model/dsx.ts';
 
-export const Fragment = Pragma.Fragment;
-export const jsx = Pragma.jsx;
-export const jsxs = Pragma.jsxs;
-export const jsxDEV = Pragma.jsxDEV;
+export const Fragment = Dsx.Fragment;
+export const jsx = Dsx.jsx;
+export const jsxs = Dsx.jsxs;
+export const jsxDEV = Dsx.jsxDEV;
