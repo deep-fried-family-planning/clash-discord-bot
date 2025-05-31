@@ -32,14 +32,12 @@ export const makeRuntime = (layer: GlobalRuntimeLayer) => {
   const synthesize = flow(
     Methods.createRoot,
     E.provide(layer),
-    E.tapDefect(E.logFatal),
   );
 
   const respond = (input: any) =>
     pipe(
       Methods.respond(input),
       E.provide(layer),
-      E.tapDefect(E.logFatal),
     );
 
   return {

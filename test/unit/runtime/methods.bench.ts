@@ -38,7 +38,7 @@ const runtime = makeTestRuntime([TestMessage], false);
 describe('synthesize', () => {
   bench('scoped', async () => {
     await pipe(
-      Methods.createRoot(TestMessage),
+      Methods.createRoot(TestMessage, {}, {}),
       E.provide(layer),
       E.runPromise,
     );
@@ -46,19 +46,19 @@ describe('synthesize', () => {
 
   bench('runtime', async () => {
     await pipe(
-      runtime.synthesize(TestMessage),
+      runtime.synthesize(TestMessage, {}, {}),
       E.runPromise,
     );
   });
 });
 
-const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage));
+const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage, {}, {}));
 
 describe('respond', () => {
   bench('scoped', async () => {
     await pipe(
       Methods.respond({
-        id            : '1236074574509117491',
+        id            : '13781533544247460140',
         token         : 'respond1',
         application_id: 'app',
         user_id       : 'user',
@@ -66,7 +66,7 @@ describe('respond', () => {
         message       : testmessage,
         type          : 3,
         data          : {
-          custom_id     : 'actions:2:button:0',
+          custom_id     : 'actions:0:button:0',
           component_type: 2,
         },
       }),
@@ -78,7 +78,7 @@ describe('respond', () => {
   bench('runtime', async () => {
     await pipe(
       runtime.respond({
-        id            : '1236074574509117491',
+        id            : '13781533544247460140',
         token         : 'respond1',
         application_id: 'app',
         user_id       : 'user',
@@ -86,7 +86,7 @@ describe('respond', () => {
         message       : testmessage,
         type          : 3,
         data          : {
-          custom_id     : 'actions:2:button:0',
+          custom_id     : 'actions:0:button:0',
           component_type: 2,
         },
       }),

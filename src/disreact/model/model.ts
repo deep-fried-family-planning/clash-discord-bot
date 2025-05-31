@@ -28,7 +28,6 @@ export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) 
     E.tapError((error) => RehydrantDOM.fail(error)),
     E.andThen(RehydrantDOM.output()),
     E.flatMap((root) => Lifecycles.encode(root)),
-    E.tap((enc) => E.log(enc)),
     E.provide(RehydrantDOM.Fresh()),
   );
 

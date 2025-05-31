@@ -25,7 +25,6 @@ export class DokenDefect extends Data.TaggedError('DokenDefect')<{
 
 export class DokenState extends E.Service<DokenState>()('disreact/DokenState', {
   scoped: E.fn('DokenState')(function* (init: any) {
-    yield* E.log('init', init);
     const rx = yield* Codec.decodeRequest(init);
     const latest = rx.fresh;
     const serial = rx.doken;

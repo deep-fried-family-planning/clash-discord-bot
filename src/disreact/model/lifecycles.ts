@@ -239,7 +239,6 @@ export const encode = (root: Rehydrant.Rehydrant | null) =>
       return null;
     }),
     E.timeout(Duration.seconds(1)),
-    E.tapDefect(E.logFatal),
     E.catchAllCause((cause) =>
       new EncodeDefect({
         root : root,
@@ -341,7 +340,6 @@ const renderEvent = (root: Rehydrant.Rehydrant, node: El.Rest, event: El.Event) 
       );
     }),
     E.flatMap((next) => RehydrantDOM.finalize(next)),
-    E.tapDefect(E.logFatal),
     E.catchAllCause((cause) =>
       new EventDefect({
         root : root,

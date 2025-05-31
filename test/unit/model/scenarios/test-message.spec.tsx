@@ -17,7 +17,7 @@ const TestLayer = () => L.mergeAll(
   Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
 );
 
-it.live('when rendered', E.fn(function* () {
+it.effect('when rendered', E.fn(function* () {
   const actual = yield* Model.createRoot(TestMessage, {}, {});
 
   expect(sjson(actual?._tag)).toMatchInlineSnapshot(`""message""`);
