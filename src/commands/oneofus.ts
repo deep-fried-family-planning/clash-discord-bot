@@ -1,8 +1,8 @@
-import {UserPlayerRegistry} from '#src/data/index.ts';
+import {Registry} from '#src/data/index.ts';
 import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
-import * as E from 'effect/Effect';
 import type {Discord} from 'dfx';
+import * as E from 'effect/Effect';
 
 export const ONE_OF_US = {
   type       : 1,
@@ -48,7 +48,7 @@ export const ONE_OF_US = {
  * @desc [SLASH /oneofus]
  */
 export const oneofus = (data: Discord.APIInteraction, options: IxDS<typeof ONE_OF_US>) => E.gen(function* () {
-  const registration = yield* UserPlayerRegistry.register({
+  const registration = yield* Registry.registerPlayer({
     player_tag  : options.player_tag,
     caller_roles: data.member!.roles,
     caller_id   : data.member!.user.id,

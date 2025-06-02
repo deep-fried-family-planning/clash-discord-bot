@@ -1,4 +1,4 @@
-import * as ServerClanRegistry from '#src/data/registry/clan-registry.ts';
+import {registerClan} from '#src/data/registry.ts';
 import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataServerClanElderVerified, TestDataServerClanLeaderVerified, TestDataUser, TestDataUserPlayer} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
@@ -27,7 +27,7 @@ it.effect('when registering a new server clan', E.fn(function* () {
     }));
 
   const actual = yield* pipe(
-    ServerClanRegistry.register({
+    registerClan({
       caller_id   : 'user',
       caller_roles: ['admin'],
       guild_id    : 'guild',
@@ -79,7 +79,7 @@ describe('given caller user is not registered', () => {
       }));
 
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
@@ -108,7 +108,7 @@ describe('given caller user is not registered', () => {
 describe('given caller server is not registered', () => {
   it.effect('when registering', E.fn(function* () {
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
@@ -146,7 +146,7 @@ describe('given caller is not admin', () => {
       }));
 
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: [],
         guild_id    : 'guild',
@@ -189,7 +189,7 @@ describe('given caller has no verified accounts in clan', () => {
       }));
 
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
@@ -238,7 +238,7 @@ describe('given server clan is already registered with elder verification to a d
       }));
 
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',
@@ -292,7 +292,7 @@ describe('given server clan is already leader verified', () => {
       }));
 
     const actual = yield* pipe(
-      ServerClanRegistry.register({
+      registerClan({
         caller_id   : 'user',
         caller_roles: ['admin'],
         guild_id    : 'guild',

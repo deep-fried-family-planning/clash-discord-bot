@@ -21,11 +21,5 @@ export type User = typeof User.Latest.Type;
 export * as Link from '#src/data/partition-user/link.ts';
 export type Link = typeof Link.Item.Type;
 
-export * as UserRegistry from '#src/data/registry/user-registry.ts';
-export type UserRegistry = typeof UserRegistry;
-export * as ServerRegistry from '#src/data/registry/server-registry.ts';
-export type ServerRegistry = typeof ServerRegistry;
-export * as ServerClanRegistry from '#src/data/registry/clan-registry.ts';
-export type ServerClanRegistry = typeof ServerClanRegistry;
-export * as UserPlayerRegistry from '#src/data/registry/player-registry.ts';
-export type UserPlayerRegistry = typeof UserPlayerRegistry;
+export * as Registry from '#src/data/registry.ts';
+export type Registry = typeof Registry;

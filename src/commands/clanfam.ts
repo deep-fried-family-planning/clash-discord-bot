@@ -1,4 +1,4 @@
-import {ServerClanRegistry} from '#src/data/index.ts';
+import {Registry} from '#src/data/index.ts';
 import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
 import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
@@ -21,7 +21,7 @@ export const CLAN_FAM = {
 } as const satisfies CommandSpec;
 
 export const clanfam = (data: Discord.APIInteraction, options: IxDS<typeof CLAN_FAM>) => E.gen(function* () {
-  const registration = yield* ServerClanRegistry.register({
+  const registration = yield* Registry.registerClan({
     guild_id    : data.guild_id!,
     caller_roles: data.member!.roles,
     caller_id   : data.member!.user.id,

@@ -1,4 +1,4 @@
-import { UserPlayerRegistry } from '#src/data';
+import {Registry} from '#src/data';
 import {useCaller} from '#src/discord/hooks/use-caller.ts';
 import * as E from 'effect/Effect';
 
@@ -15,7 +15,7 @@ export const TagTokenModal = (props: Props) => {
       onsubmit={E.fn(function* (event) {
         const texts = event.data.components.map((c) => c.components[0].value);
 
-        yield* UserPlayerRegistry.register({
+        yield* Registry.registerPlayer({
           caller_roles: caller.roles,
           caller_id   : caller.user_id,
           player_tag  : texts[0]!,

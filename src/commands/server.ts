@@ -1,4 +1,4 @@
-import {ServerRegistry} from '#src/data/index.ts';
+import {Registry} from '#src/data/index.ts';
 import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {OPTION_TZ} from '#src/discord/old/ix-constants.ts';
 import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
@@ -32,7 +32,7 @@ export const SERVER = {
  * @desc [SLASH /server]
  */
 export const server = (data: Discord.APIInteraction, options: IxDS<typeof SERVER>) => E.gen(function* () {
-  const registration = yield* ServerRegistry.register({
+  const registration = yield* Registry.registerServer({
     caller_id   : data.member!.user.id,
     caller_roles: data.member!.roles,
     guild_id    : data.guild_id!,

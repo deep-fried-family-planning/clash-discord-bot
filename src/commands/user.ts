@@ -1,4 +1,4 @@
-import {UserRegistry} from '#src/data/index.ts';
+import {Registry} from '#src/data/index.ts';
 import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {OPTION_TZ} from '#src/discord/old/ix-constants.ts';
 import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
@@ -29,7 +29,7 @@ export const USER = {
 export const user = (data: Discord.APIInteraction, options: IxDS<typeof USER>) => E.gen(function* () {
   const timezone = yield* S.decodeUnknown(S.TimeZone)(options.tz);
 
-  const registration = yield* UserRegistry.register({
+  const registration = yield* Registry.registerUser({
     caller_id: data.member!.user.id,
     target_id: options.discord_user,
     payload  : {
