@@ -1,6 +1,6 @@
-import * as Document from '#src/data/DDB.ts';
-import * as Id from '#src/data/Id.ts';
-import * as Table from '#src/data/Table.ts';
+import * as Document from '#src/data/util/DDB.ts';
+import * as Id from '#src/data/util/Id.ts';
+import * as Table from '#src/data/util/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
 import * as S from 'effect/Schema';
 

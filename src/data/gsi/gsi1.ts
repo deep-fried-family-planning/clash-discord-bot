@@ -1,4 +1,4 @@
-import * as Document from '#src/data/DDB.ts';
+import * as Document from '#src/data/util/DDB.ts';
 import * as Server from '#src/data/server/server.ts';
 import * as User from '#src/data/user/user.ts';
 import * as S from 'effect/Schema';

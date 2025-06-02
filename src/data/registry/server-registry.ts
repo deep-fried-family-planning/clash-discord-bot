@@ -1,4 +1,4 @@
-import {RegistryAdminError, RegistryUserError} from '#src/data/util.ts';
+import {RegistryAdminError, RegistryUserError} from '#src/data/util/util.ts';
 import * as Server from '#src/data/server/server.ts';
 import {pipe} from 'effect/Function';
 import * as E from 'effect/Effect';

@@ -1,4 +1,4 @@
-import * as Table from '#src/data/Table.ts';
+import * as Table from '#src/data/util/Table.ts';
 import * as S from 'effect/Schema';
 
 export const PartitionRoot = S.tag('@');

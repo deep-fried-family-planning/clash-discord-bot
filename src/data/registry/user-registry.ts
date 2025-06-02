@@ -1,4 +1,4 @@
-import {RegistryAdminError} from '#src/data/util.ts';
+import {RegistryAdminError} from '#src/data/util/util.ts';
 import * as User from '#src/data/user/user.ts';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';

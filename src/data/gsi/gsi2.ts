@@ -1,4 +1,4 @@
-import * as Document from '#src/data/DDB.ts';
+import * as Document from '#src/data/util/DDB.ts';
 import * as Clan from '#src/data/server/clan.ts';
 import * as Player from '#src/data/user/player.ts';
 import * as Link from '#src/data/user/link.ts';

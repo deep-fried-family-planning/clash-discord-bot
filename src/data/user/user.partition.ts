@@ -1,5 +1,5 @@
-import * as DDB from '#src/data/DDB.ts';
-import * as Id from '#src/data/Id.ts';
+import * as DDB from '#src/data/util/DDB.ts';
+import * as Id from '#src/data/util/Id.ts';
 import * as Player from '#src/data/user/player.ts';
 import * as User from '#src/data/user/user.ts';
 import * as Link from '#src/data/user/link.ts';

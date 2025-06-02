@@ -1,5 +1,5 @@
-import * as Document from '#src/data/DDB.ts';
-import * as Id from '#src/data/Id.ts';
+import * as Document from '#src/data/util/DDB.ts';
+import * as Id from '#src/data/util/Id.ts';
 import * as Clan from '#src/data/server/clan.ts';
 import * as Server from '#src/data/server/server.ts';
 import * as Info from '#src/data/server/info.ts';
