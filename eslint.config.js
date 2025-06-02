@@ -19,7 +19,7 @@ const style = stylistic.configs.customize({
 
 const config = [
   {
-    ignores: ['terraform', 'dist', 'coverage', 'node_modules', '.husky'],
+    ignores: ['terraform', '.dist', '.coverage', 'node_modules', '.autogen', '.husky'],
   },
   ...tseslint.config(
     {

@@ -1,7 +1,7 @@
 locals {
   fn_name = replace(var.fn_name, "_", "-")
 
-  source_map_filename = "../${path.root}/dist/${var.fn_name}/index.mjs.map"
+  source_map_filename = "../${path.root}/.dist/${var.fn_name}/index.mjs.map"
   source_map_file     = try(file(local.source_map_filename), null)
 }
 
@@ -18,7 +18,7 @@ data "archive_file" "source_code" {
   output_path = "${path.root}/.terraform/${var.fn_name}.zip"
 
   source {
-    content  = file("../${path.root}/dist/${var.fn_name}/index.mjs")
+    content  = file("../${path.root}/.dist/${var.fn_name}/index.mjs")
     filename = "index.mjs"
   }
 
@@ -57,5 +57,3 @@ resource "aws_lambda_function" "main" {
     #     system_log_level      = "INFO"
   }
 }
-
-

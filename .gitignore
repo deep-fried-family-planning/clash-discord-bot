@@ -14,5 +14,8 @@ terraform.tfstate.d
 .secret.tfvars
 test/unit/scratch
 src/scratch
-/coverage
-/autogen
+coverage
+.coverage
+autogen
+.autogen
+.dist
