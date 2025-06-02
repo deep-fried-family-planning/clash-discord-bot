@@ -1,5 +1,5 @@
 import {ClashOfClans} from '#src/service/ClashOfClans.ts';
-import type {ServerClan} from '#src/data/index.ts';
+import type {Clan} from '#src/data/index.ts';
 import type {str} from '#src/internal/pure/types-pure.ts';
 import type {ClanWar} from 'clashofclans.js';
 import {DiscordREST} from 'dfx/DiscordREST';
@@ -18,7 +18,7 @@ const channel_names = {
   batt: (name: str, time: str) => ({name: `🗡│${name}│${time}`}),
 } as const;
 
-export const updateWarCountdown = (clan: ServerClan, apiWars: ClanWar[]) => E.gen(function* () {
+export const updateWarCountdown = (clan: Clan, apiWars: ClanWar[]) => E.gen(function* () {
   const discord = yield* DiscordREST;
   const apiClan = yield* ClashOfClans.getClan(clan.sk);
 

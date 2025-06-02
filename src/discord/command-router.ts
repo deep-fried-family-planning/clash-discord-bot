@@ -1,16 +1,16 @@
-import {CACHE_BUST, cacheBust} from '#src/discord/commands/cache-bust.ts';
-import {CLAN_FAM, clanfam} from '#src/discord/commands/clanfam.ts';
-import {GIMME_DATA, gimmeData} from '#src/discord/commands/gimme-data.ts';
-import {OMNI_BOARD, omniBoard} from '#src/discord/commands/omni-board.ts';
-import {ONE_OF_US, oneofus} from '#src/discord/commands/oneofus.ts';
-import {remind_me, REMINDME} from '#src/discord/commands/remind-me.ts';
-import {server, SERVER} from '#src/discord/commands/server.ts';
-import {smoke, SMOKE} from '#src/discord/commands/smoke.ts';
-import {time, TIME} from '#src/discord/commands/time.ts';
-import {user, USER} from '#src/discord/commands/user.ts';
-import {WA_LINKS, waLinks} from '#src/discord/commands/wa-links.ts';
-import {WA_MIRRORS, waMirrors} from '#src/discord/commands/wa-mirrors.ts';
-import {WA_SCOUT, waScout} from '#src/discord/commands/wa-scout.ts';
+import {CACHE_BUST, cacheBust} from '#src/commands/cache-bust.ts';
+import {CLAN_FAM, clanfam} from '#src/commands/clanfam.ts';
+import {GIMME_DATA, gimmeData} from '#src/commands/gimme-data.ts';
+import {OMNI_BOARD, omniBoard} from '#src/commands/omni-board.ts';
+import {ONE_OF_US, oneofus} from '#src/commands/oneofus.ts';
+import {remind_me, REMIND_ME} from '#src/commands/remind-me.ts';
+import {server, SERVER} from '#src/commands/server.ts';
+import {smoke, SMOKE} from '#src/commands/smoke.ts';
+import {time, TIME} from '#src/commands/time.ts';
+import {user, USER} from '#src/commands/user.ts';
+import {WA_LINKS, waLinks} from '#src/commands/wa-links.ts';
+import {WA_MIRRORS, waMirrors} from '#src/commands/wa-mirrors.ts';
+import {WA_SCOUT, waScout} from '#src/commands/wa-scout.ts';
 import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
@@ -33,7 +33,7 @@ const IXS_LOOKUP = {
   [CACHE_BUST.name]: cacheBust,
   [GIMME_DATA.name]: gimmeData,
   [OMNI_BOARD.name]: omniBoard,
-  [REMINDME.name]  : remind_me,
+  [REMIND_ME.name] : remind_me,
 } as const;
 
 const overrideNames = <T extends {name: string; value?: unknown}>(options: T[]): Record<string, T['value']> =>

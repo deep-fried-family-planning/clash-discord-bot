@@ -1,4 +1,4 @@
-import type {Server, ServerClan, User, UserPlayer} from '#src/data/index.ts';
+import type {Server, Clan, User, Player} from '#src/data/index.ts';
 import type {Discord} from 'dfx';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
@@ -9,9 +9,9 @@ export class Interacting extends E.Service<Interacting>()('deepfryer/Caller', {
   effect: E.gen(function* () {
     const request = yield* Deferred.make<Discord.APIInteraction>();
     const server = yield* Deferred.make<Server>();
-    const serverClans = yield* Deferred.make<ServerClan[]>();
+    const serverClans = yield* Deferred.make<Clan[]>();
     const user = yield* Deferred.make<User>();
-    const userPlayers = yield* Deferred.make<UserPlayer[]>();
+    const userPlayers = yield* Deferred.make<Player[]>();
 
     // const getServer = (ix: Discord.APIInteraction) =>
     //   readItem(Server, ix.guild_id!, 'now').pipe(

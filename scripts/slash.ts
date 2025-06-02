@@ -1,16 +1,16 @@
-import {CACHE_BUST} from '#src/discord/commands/cache-bust.ts';
-import {CLAN_FAM} from '#src/discord/commands/clanfam.ts';
-import {GIMME_DATA} from '#src/discord/commands/gimme-data.ts';
-import {OMNI_BOARD} from '#src/discord/commands/omni-board.ts';
-import {ONE_OF_US} from '#src/discord/commands/oneofus.ts';
-import {REMINDME} from '#src/discord/commands/remind-me.ts';
-import {SERVER} from '#src/discord/commands/server.ts';
-import {SMOKE} from '#src/discord/commands/smoke.ts';
-import {TIME} from '#src/discord/commands/time.ts';
-import {USER} from '#src/discord/commands/user.ts';
-import {WA_LINKS} from '#src/discord/commands/wa-links.ts';
-import {WA_MIRRORS} from '#src/discord/commands/wa-mirrors.ts';
-import {WA_SCOUT} from '#src/discord/commands/wa-scout.ts';
+import {CACHE_BUST} from '#src/commands/cache-bust.ts';
+import {CLAN_FAM} from '#src/commands/clanfam.ts';
+import {GIMME_DATA} from '#src/commands/gimme-data.ts';
+import {OMNI_BOARD} from '#src/commands/omni-board.ts';
+import {ONE_OF_US} from '#src/commands/oneofus.ts';
+import {REMIND_ME} from '#src/commands/remind-me.ts';
+import {SERVER} from '#src/commands/server.ts';
+import {SMOKE} from '#src/commands/smoke.ts';
+import {TIME} from '#src/commands/time.ts';
+import {USER} from '#src/commands/user.ts';
+import {WA_LINKS} from '#src/commands/wa-links.ts';
+import {WA_MIRRORS} from '#src/commands/wa-mirrors.ts';
+import {WA_SCOUT} from '#src/commands/wa-scout.ts';
 import type {CommandSpec} from '#src/discord/old/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
@@ -44,7 +44,7 @@ const specs = {
   CACHE_BUST,
   GIMME_DATA,
   OMNI_BOARD,
-  REMINDME,
+  REMINDME: REMIND_ME,
 } as const;
 
 type Sorted = {required?: boolean};

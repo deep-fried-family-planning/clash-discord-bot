@@ -1,6 +1,7 @@
 import {updateWarCountdown} from '#src/clash/poll/clan-war-countdown.ts';
-import {type Server, ServerClan, type UserPlayer} from '#src/data/index.ts';
-import {messageEmbedScout} from '#src/discord/commands/wa-scout.ts';
+import type { Clan} from '#src/data/index.ts';
+import type {Server, Player} from '#src/data/index.ts';
+import {messageEmbedScout} from '#src/commands/wa-scout.ts';
 import {COLOR, nColor} from '#src/discord/old/colors.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
@@ -15,7 +16,7 @@ import * as CSL from 'effect/Console';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
-export const eachClan = (server: Server, clan: ServerClan, players: UserPlayer[]) => E.gen(function* () {
+export const eachClan = (server: Server, clan: Clan, players: Player[]) => E.gen(function* () {
   const discord = yield* DiscordREST;
 
   const wars = yield* pipe(
