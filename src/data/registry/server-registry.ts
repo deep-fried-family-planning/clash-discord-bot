@@ -5,7 +5,7 @@ import * as E from 'effect/Effect';
 
 export const get = (guild_id: string) =>
   pipe(
-    Server.get({
+    Server.read({
       Key           : {pk: guild_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -14,7 +14,7 @@ export const get = (guild_id: string) =>
 
 export const getAssert = (guild_id: string) =>
   pipe(
-    Server.get({
+    Server.read({
       Key           : {pk: guild_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -40,7 +40,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
   const server = yield* get(params.guild_id);
 
   if (!server) {
-    yield* Server.put(
+    yield* Server.create(
       Server.make({
         pk : params.guild_id,
         sk : '@',
@@ -60,7 +60,7 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
     });
   }
 
-  yield* Server.put(
+  yield* Server.create(
     Server.make({
       ...server,
       pk: params.guild_id,

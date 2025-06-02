@@ -101,7 +101,7 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
     yield* E.fork(
       E.all(
         Record.map(invalid, (link) =>
-          Link.del({
+          Link.remove({
             Key: Link.Key.make(link),
           }),
         ),
@@ -115,7 +115,7 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
     yield* E.fork(
       E.all(
         newServers.map((serverId) =>
-          Link.put(
+          Link.create(
             Link.make({
               pk  : partition.user.pk,
               sk  : serverId,
@@ -137,12 +137,12 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
         tags: tags,
       });
 
-      if (Link.equal(link, updated)) {
+      if (Link.equals(link, updated)) {
         return Option.none();
       }
 
       return Option.some(
-        Link.put(updated),
+        Link.create(updated),
       );
     },
   );

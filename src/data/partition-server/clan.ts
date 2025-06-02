@@ -49,5 +49,4 @@ export const encode = S.encode(Latest);
 export const decode = S.decode(Versions);
 export const create = DDB.Put(Latest);
 export const read = DDB.GetUpgradeV1(Key, Versions);
-const delete$ = DDB.Delete(Key);
-export {delete$ as delete};
+export const remove = DDB.Delete(Key);

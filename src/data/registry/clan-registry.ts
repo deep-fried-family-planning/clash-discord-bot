@@ -93,7 +93,7 @@ export const register = E.fn('registerClan')(function* (p: RegisterParams) {
     }
 
     if (current.pk !== p.guild_id) {
-      yield* Clan.delete({
+      yield* Clan.remove({
         Key: {pk: current.pk, sk: current.sk},
       });
 

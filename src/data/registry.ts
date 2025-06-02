@@ -37,13 +37,13 @@ export class RegistryAssertError extends Data.TaggedError('RegistryAssertError')
 
 const saveUser = (user: Parameters<typeof User.make>[0]) =>
   pipe(
-    User.put(User.make(user)),
+    User.create(User.make(user)),
     E.catchAllCause((cause) => new RegistryFailure({cause})),
   );
 
 const getUser = (user_id: string) =>
   pipe(
-    User.get({
+    User.read({
       Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -60,13 +60,13 @@ export const assertUser = (user_id: string) =>
 
 const saveServer = (server: Parameters<typeof Server.make>[0]) =>
   pipe(
-    Server.put(Server.make(server)),
+    Server.create(Server.make(server)),
     E.catchAllCause((cause) => new RegistryFailure({cause})),
   );
 
 const getServer = (server_id: string) =>
   pipe(
-    Server.get({
+    Server.read({
       Key           : {pk: server_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -99,12 +99,8 @@ const getPlayer = (user_id: string, player_tag: string) =>
 
 export const assertPlayer = (user_id: string, player_tag: string) =>
   pipe(
-    Player.read({
-      Key           : {pk: user_id, sk: player_tag},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryFailure({cause})),
-    E.flatMap((res) => E.fromNullable(res.Item)),
+    getPlayer(user_id, player_tag),
+    E.flatMap(E.fromNullable),
     E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'Player is not registered.'})),
   );
 
@@ -155,15 +151,13 @@ export const registerUser = E.fn('registerUser')(function* (params: UserParams) 
       });
     }
 
-    yield* User.put(
-      User.make({
-        pk     : params.target_id,
-        sk     : '@',
-        pk1    : params.target_id,
-        servers: new Set([]),
-        ...params.payload,
-      }),
-    );
+    yield* saveUser({
+      pk     : params.target_id,
+      sk     : '@',
+      pk1    : params.target_id,
+      servers: new Set([]),
+      ...params.payload,
+    });
 
     return {
       description: 'Success',
@@ -171,7 +165,7 @@ export const registerUser = E.fn('registerUser')(function* (params: UserParams) 
   }
 
   if (!caller) {
-    yield* User.put(
+    yield* User.create(
       User.make({
         pk     : params.caller_id,
         sk     : '@',
@@ -192,7 +186,7 @@ export const registerUser = E.fn('registerUser')(function* (params: UserParams) 
   });
 
   if (!User.equal(updated, caller)) {
-    yield* User.put(updated);
+    yield* User.create(updated);
   }
 
   return {
@@ -219,14 +213,12 @@ export const registerServer = E.fn('registerServer')(function* (params: ServerPa
   const server = yield* getServer(params.guild_id);
 
   if (!server) {
-    yield* Server.put(
-      Server.make({
-        pk : params.guild_id,
-        sk : '@',
-        pk1: params.guild_id,
-        ...params.payload,
-      }),
-    );
+    yield* saveServer({
+      pk : params.guild_id,
+      sk : '@',
+      pk1: params.guild_id,
+      ...params.payload,
+    });
 
     return {
       description: 'Success',
@@ -239,14 +231,12 @@ export const registerServer = E.fn('registerServer')(function* (params: ServerPa
     });
   }
 
-  yield* Server.put(
-    Server.make({
-      ...server,
-      pk: params.guild_id,
-      sk: '@',
-      ...params.payload,
-    }),
-  );
+  yield* saveServer({
+    ...server,
+    pk: params.guild_id,
+    sk: '@',
+    ...params.payload,
+  });
 
   return {
     description: 'Success',
@@ -335,7 +325,7 @@ export const registerClan = E.fn('registerClan')(function* (p: ClanParams) {
     }
 
     if (current.pk !== p.guild_id) {
-      yield* Clan.delete({
+      yield* Clan.remove({
         Key: {pk: current.pk, sk: current.sk},
       });
 
@@ -441,7 +431,7 @@ export const registerPlayer = E.fn('registerPlayer')(function* (p: PlayerParams)
         });
       }
 
-      yield* Player.del({
+      yield* Player.remove({
         Key: {
           pk: current.pk,
           sk: current.sk,
@@ -502,7 +492,7 @@ export const registerPlayer = E.fn('registerPlayer')(function* (p: PlayerParams)
     const current = gsi.Items[0];
 
     if (current.pk !== p.caller_id) {
-      yield* Player.del({
+      yield* Player.remove({
         Key: {
           pk: current.pk,
           sk: current.sk,

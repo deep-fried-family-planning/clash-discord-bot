@@ -29,13 +29,11 @@ export const Versions = S.Union(
   Item,
 );
 
-export const encode = S.encode(Item);
-export const decode = S.decode(Versions);
 export const is = S.is(Item);
 export const make = Item.make;
-export const equal = S.equivalence(Item);
-export type Type = typeof Item.Type;
-export type Encoded = typeof Item.Encoded;
-export const put = DDB.Put(Item);
-export const get = DDB.GetUpgradeV1(Key, Versions);
-export const del = DDB.Delete(Key);
+export const equals = S.equivalence(Item);
+export const encode = S.encode(Item);
+export const decode = S.decode(Versions);
+export const create = DDB.Put(Item);
+export const read = DDB.GetUpgradeV1(Key, Versions);
+export const remove = DDB.Delete(Key);

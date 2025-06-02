@@ -79,7 +79,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         });
       }
 
-      yield* Player.del({
+      yield* Player.remove({
         Key: {
           pk: current.pk,
           sk: current.sk,
@@ -140,7 +140,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
     const current = gsi.Items[0];
 
     if (current.pk !== p.caller_id) {
-      yield* Player.del({
+      yield* Player.remove({
         Key: {
           pk: current.pk,
           sk: current.sk,

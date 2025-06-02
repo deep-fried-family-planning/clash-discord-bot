@@ -6,7 +6,7 @@ import {pipe} from 'effect/Function';
 
 export const get = (user_id: string) =>
   pipe(
-    User.get({
+    User.read({
       Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -15,7 +15,7 @@ export const get = (user_id: string) =>
 
 export const getAssert = (user_id: string) =>
   pipe(
-    User.get({
+    User.read({
       Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
@@ -54,7 +54,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
       });
     }
 
-    yield* User.put(
+    yield* User.create(
       User.make({
         pk     : params.target_id,
         sk     : '@',
@@ -70,7 +70,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   }
 
   if (!caller) {
-    yield* User.put(
+    yield* User.create(
       User.make({
         pk     : params.caller_id,
         sk     : '@',
@@ -91,7 +91,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   });
 
   if (!User.equal(updated, caller)) {
-    yield* User.put(updated);
+    yield* User.create(updated);
   }
 
   return {

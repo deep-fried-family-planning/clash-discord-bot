@@ -8,7 +8,7 @@ export const validateServer = (data: Discord.APIInteraction) => E.gen(function* 
     return yield* new SlashUserError({issue: 'Contextual authentication failed.'});
   }
 
-  const server = yield* Server.get({
+  const server = yield* Server.read({
       Key: {
         pk: data.guild_id!,
         sk: '@',

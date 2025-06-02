@@ -1,4 +1,4 @@
-import * as Document from '#src/data/util/DDB.ts';
+import * as DDB from '#src/data/util/DDB.ts';
 import * as Id from '#src/data/util/Id.ts';
 import * as Table from '#src/data/util/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
@@ -85,8 +85,7 @@ export const make = Latest.make;
 export const equals = S.equivalence(Latest);
 export const decode = S.decode(Versions);
 export const encode = S.encode(Latest);
-export const create = Document.Put(Latest);
-export const read = Document.GetUpgradeV1(Key, Versions);
-export const update = Document.Update(Key);
-const delete$ = Document.Delete(Key);
-export {delete$ as delete};
+export const create = DDB.Put(Latest);
+export const read = DDB.GetUpgradeV1(Key, Versions);
+export const update = DDB.Update(Key);
+export const remove = DDB.Delete(Key);

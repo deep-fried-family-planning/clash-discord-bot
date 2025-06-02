@@ -25,11 +25,10 @@ export const Versions = S.Union(
   Latest,
 );
 
-export const encode = S.encode(Latest);
-export const decode = S.decode(Versions);
 export const is = S.is(Latest);
 export const make = Latest.make;
-export const equal = S.equivalence(Latest);
-export const put = DDB.Put(Latest);
-export const get = DDB.GetUpgradeV1(Key, Versions);
-export const del = DDB.Delete(Key);
+export const encode = S.encode(Latest);
+export const decode = S.decode(Versions);
+export const equals = S.equivalence(Latest);
+export const create = DDB.Put(Latest);
+export const read = DDB.GetUpgradeV1(Key, Versions);
