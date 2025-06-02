@@ -1,4 +1,4 @@
-import type {ServerClan} from '#src/data/index.ts';
+import type {Clan} from '#src/data/index.ts';
 import type {CreateScheduleCommandInput} from '@aws-sdk/client-scheduler';
 import type {DeleteCommandInput, PutCommandInput, TransactWriteCommandInput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
 import type {ClanWar} from 'clashofclans.js';

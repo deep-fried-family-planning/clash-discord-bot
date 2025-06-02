@@ -1,4 +1,4 @@
-import * as UserPlayerRegistry from '#src/data/registry/user-player.registry.ts';
+import {registerPlayer} from '#src/data/registry.ts';
 import {mockCoc, mockCocLayer} from '#unit/.mock/mock-coc.ts';
 import {TestDataServer, TestDataUser, TestDataUserPlayer, TestDataUserPlayer2} from '#unit/.mock/mock-db.testdata.ts';
 import {mockDb, mockDbLayer} from '#unit/.mock/mock-db.ts';
@@ -13,7 +13,7 @@ describe('given caller user is not registered', () => {
       .mockReturnValueOnce(E.succeed({Item: undefined}));
 
     const actual = yield* pipe(
-      UserPlayerRegistry.register({
+      registerPlayer({
         caller_id : 'user',
         player_tag: '#player',
         api_token : 'api_token',
@@ -27,7 +27,7 @@ describe('given caller user is not registered', () => {
       E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
     );
 
-    expect(actual).toMatchInlineSnapshot(`[NoSuchElementException]`);
+    expect(actual).toMatchInlineSnapshot(`[RegistryAssertError: User is not registered.]`);
     expect(mockCoc.verifyPlayerToken).not.toBeCalled();
     expect(mockCoc.getPlayer).not.toBeCalled();
     expect(mockDb.get.mock.calls[0][0].Key).toMatchSnapshot();
@@ -52,7 +52,7 @@ describe('given new user player registration', () => {
       .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
-      UserPlayerRegistry.register({
+      registerPlayer({
         caller_id : 'user',
         player_tag: '#player',
         api_token : 'api_token',
@@ -95,7 +95,7 @@ describe('given new user player registration', () => {
         .mockReturnValueOnce(E.succeed(false));
 
       const actual = yield* pipe(
-        UserPlayerRegistry.register({
+        registerPlayer({
           caller_id : 'user',
           player_tag: '#player',
           api_token : 'api_token',
@@ -137,7 +137,7 @@ describe('given user player is already registered', () => {
       .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
-      UserPlayerRegistry.register({
+      registerPlayer({
         caller_id : 'user',
         player_tag: '#player',
         api_token : 'api_token',
@@ -186,7 +186,7 @@ describe('given caller is attempting admin registration', () => {
       .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
     const actual = yield* pipe(
-      UserPlayerRegistry.register({
+      registerPlayer({
         guild_id    : 'guild',
         caller_id   : 'user',
         player_tag  : '#player',
@@ -236,7 +236,7 @@ describe('given caller is attempting admin registration', () => {
         .mockReturnValueOnce(E.succeed({name: 'PlayerName'}));
 
       const actual = yield* pipe(
-        UserPlayerRegistry.register({
+        registerPlayer({
           guild_id    : 'guild',
           caller_id   : 'user',
           player_tag  : '#player',
@@ -273,7 +273,7 @@ describe('given caller is attempting admin registration', () => {
         .mockReturnValueOnce(E.succeed({Item: undefined}));
 
       const actual = yield* pipe(
-        UserPlayerRegistry.register({
+        registerPlayer({
           guild_id    : 'guild',
           caller_id   : 'user',
           player_tag  : '#player',
@@ -289,7 +289,7 @@ describe('given caller is attempting admin registration', () => {
         E.provide([GetRandomValues.layer(() => E.succeed(new Uint8Array([]))), DateTimes.Fixed(new Date(0))]),
       );
 
-      expect(actual).toMatchInlineSnapshot(`[NoSuchElementException]`);
+      expect(actual).toMatchInlineSnapshot(`[RegistryAssertError: User is not registered.]`);
       expect(mockCoc.verifyPlayerToken).not.toBeCalled();
       expect(mockCoc.getPlayer).not.toBeCalled();
       expect(mockDb.get).toBeCalled();
@@ -306,7 +306,7 @@ describe('given caller is attempting admin registration', () => {
         .mockReturnValueOnce(E.succeed({Item: TestDataServer}));
 
       const actual = yield* pipe(
-        UserPlayerRegistry.register({
+        registerPlayer({
           guild_id    : 'guild',
           caller_id   : 'user',
           player_tag  : '#player',

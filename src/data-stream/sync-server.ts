@@ -1,6 +1,6 @@
 import {ClashOfClans} from '#src/service/ClashOfClans.ts';
-import type {Server, UserLink} from '#src/data/index.ts';
-import {GSI2, ServerClan, ServerPartition, User} from '#src/data/index.ts';
+import {type Server, type Link, Clan} from '#src/data/index.ts';
+import {GSI2, ServerPartition, User} from '#src/data/index.ts';
 import {DataClient} from '#src/service/DataClient.ts';
 import type {Maybe} from '#src/internal/pure/types.ts';
 import type {ClanWar} from 'clashofclans.js';
@@ -17,12 +17,12 @@ import * as Sink from 'effect/Sink';
 import * as Stream from 'effect/Stream';
 
 type ServerClanWars = {
-  clan   : ServerClan;
+  clan   : Clan;
   prep?  : ClanWar | undefined;
   battle?: ClanWar | undefined;
 };
 
-const getServerClanWars = (clan: ServerClan) =>
+const getServerClanWars = (clan: Clan) =>
   pipe(
     ClashOfClans.getWars(clan.sk),
     E.orElse(() =>
@@ -72,7 +72,7 @@ const updateCountdown = E.fn('updateCountdown')(function* (wars: ServerClanWars)
   }
 });
 
-export const pollClanWar = E.fn('pollClanWar')(function* (server: Server, clan: ServerClan) {
+export const pollClanWar = E.fn('pollClanWar')(function* (server: Server, clan: Clan) {
   const wars = yield* getServerClanWars(clan);
 
   if (!clan.polling) {
@@ -94,12 +94,10 @@ export const pollClanWar = E.fn('pollClanWar')(function* (server: Server, clan: 
   }
 
   yield* E.fork(
-    ServerClan.put({
-      Item: {
-        ...clan,
-        battle_opponent: clan.prep_opponent,
-        prep_opponent  : wars.prep.opponent.tag,
-      },
+    Clan.create({
+      ...clan,
+      battle_opponent: clan.prep_opponent,
+      prep_opponent  : wars.prep.opponent.tag,
     }),
   );
 
@@ -108,7 +106,7 @@ export const pollClanWar = E.fn('pollClanWar')(function* (server: Server, clan: 
 
 type ServerPartitionUpStream = {
   server: Server;
-  clans : ServerClan[];
+  clans : Clan[];
 };
 
 const makeAccUpStream = (): ServerPartitionUpStream => ({
@@ -163,7 +161,7 @@ const syncMemberLinksStream = (serverId: string) =>
       ),
     ),
     Stream.transduce(
-      Sink.foldLeft(Record.empty<string, UserLink>(), (acc, link) => {
+      Sink.foldLeft(Record.empty<string, Link>(), (acc, link) => {
         acc[link.pk] = link;
         return acc;
       }),

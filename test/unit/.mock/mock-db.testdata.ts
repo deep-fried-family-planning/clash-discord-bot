@@ -1,4 +1,4 @@
-import type {Server, ServerClan, User, UserPlayer} from '#src/data/index.ts';
+import type {Server, Clan, User, Player} from '#src/data/index.ts';
 
 export const TestDataUser = {
   _tag    : 'User',

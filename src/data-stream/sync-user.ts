@@ -1,6 +1,5 @@
+import {Link, Player, type User, UserPartition} from '#src/data/index.ts';
 import {ClashOfClans} from '#src/service/ClashOfClans.ts';
-import {type User, UserLink, UserPartition, UserPlayer} from '#src/data/index.ts';
-import {user} from '#src/discord/commands/user.ts';
 import * as Chunk from 'effect/Chunk';
 import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
@@ -10,7 +9,7 @@ import * as Record from 'effect/Record';
 import * as Sink from 'effect/Sink';
 import * as Stream from 'effect/Stream';
 
-const pollPlayer = E.fn('pollPlayer')(function* (user: User, userPlayer: UserPlayer) {
+const pollPlayer = E.fn('pollPlayer')(function* (user: User, userPlayer: Player) {
   const account = yield* pipe(
     ClashOfClans.getPlayer(userPlayer.sk),
     E.timeout(Duration.seconds(10)),
@@ -28,9 +27,7 @@ const pollPlayer = E.fn('pollPlayer')(function* (user: User, userPlayer: UserPla
     };
 
     yield* E.fork(
-      UserPlayer.put({
-        Item: updated,
-      }),
+      Player.create(updated),
     );
 
     return updated;
@@ -41,8 +38,8 @@ const pollPlayer = E.fn('pollPlayer')(function* (user: User, userPlayer: UserPla
 
 const makeAcc = () => ({
   user   : undefined as any as User,
-  players: Record.empty<string, UserPlayer>(),
-  links  : Record.empty<string, UserLink>(),
+  players: Record.empty<string, Player>(),
+  links  : Record.empty<string, Link>(),
 });
 
 const streamUserPartition = (userId: string) =>
@@ -104,8 +101,8 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
     yield* E.fork(
       E.all(
         Record.map(invalid, (link) =>
-          UserLink.del({
-            Key: UserLink.Key.make(link),
+          Link.remove({
+            Key: Link.Key.make(link),
           }),
         ),
       ),
@@ -118,15 +115,15 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
     yield* E.fork(
       E.all(
         newServers.map((serverId) =>
-          UserLink.put({
-            Item: UserLink.make({
+          Link.create(
+            Link.make({
               pk  : partition.user.pk,
               sk  : serverId,
               pk2 : serverId,
               sk2 : partition.user.pk,
               tags: tags,
             }),
-          }),
+          ),
         ),
       ),
     );
@@ -135,19 +132,17 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
   const updates = Record.filterMap(
     current,
     (link) => {
-      const updated = UserLink.make({
+      const updated = Link.make({
         ...link,
         tags: tags,
       });
 
-      if (UserLink.equal(link, updated)) {
+      if (Link.equals(link, updated)) {
         return Option.none();
       }
 
       return Option.some(
-        UserLink.put({
-          Item: updated,
-        }),
+        Link.create(updated),
       );
     },
   );
