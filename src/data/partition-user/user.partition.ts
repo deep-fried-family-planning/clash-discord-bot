@@ -1,8 +1,8 @@
 import * as DDB from '#src/data/util/DDB.ts';
 import * as Id from '#src/data/util/Id.ts';
-import * as Player from '#src/data/user/player.ts';
-import * as User from '#src/data/user/user.ts';
-import * as Link from '#src/data/user/link.ts';
+import * as Player from '#src/data/partition-user/player.ts';
+import * as User from '#src/data/partition-user/user.ts';
+import * as Link from '#src/data/partition-user/link.ts';
 import * as S from 'effect/Schema';
 
 const Key = Id.UserId;

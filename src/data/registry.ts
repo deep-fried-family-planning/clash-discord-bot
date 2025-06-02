@@ -1,25 +1,25 @@
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
 import * as GSI2 from '#src/data/gsi/gsi2.ts';
-import * as Clan from '#src/data/server/clan.ts';
-import * as Server from '#src/data/server/server.ts';
-import * as Player from '#src/data/user/player.ts';
-import * as UserPartition from '#src/data/user/user.partition.ts';
-import * as User from '#src/data/user/user.ts';
+import * as Clan from '#src/data/partition-server/clan.ts';
+import * as Server from '#src/data/partition-server/server.ts';
+import * as Player from '#src/data/partition-user/player.ts';
+import * as UserPartition from '#src/data/partition-user/user.partition.ts';
+import * as User from '#src/data/partition-user/user.ts';
 import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import * as Array from 'effect/Array';
+import type * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
 import type * as DateTime from 'effect/DateTime';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as Order from 'effect/Order';
 import * as Record from 'effect/Record';
-import type * as Cause from 'effect/Cause';
 
-export class RegistryIndexDefect extends Data.TaggedError('RegistryIndexDefect')<{
+export class RegistryDefect extends Data.TaggedError('RegistryDefect')<{
   cause: string;
 }> {}
 
-export class RegistryDefect extends Data.TaggedError('RegistryDBFailure')<{
+export class RegistryFailure extends Data.TaggedError('RegistryFailure')<{
   cause: Cause.Cause<Error>;
 }> {}
 
@@ -35,10 +35,10 @@ export class RegistryAssertError extends Data.TaggedError('RegistryAssertError')
   message: string;
 }> {}
 
-const saveUser = (user: typeof User.Latest.Type) =>
+const saveUser = (user: Parameters<typeof User.make>[0]) =>
   pipe(
     User.put(User.make(user)),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
   );
 
 const getUser = (user_id: string) =>
@@ -47,20 +47,81 @@ const getUser = (user_id: string) =>
       Key           : {pk: user_id, sk: '@'},
       ConsistentRead: true,
     }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
     E.map((res) => res.Item),
   );
 
 export const assertUser = (user_id: string) =>
   pipe(
-    User.get({
-      Key           : {pk: user_id, sk: '@'},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
-    E.flatMap((res) => E.fromNullable(res.Item)),
+    getUser(user_id),
+    E.flatMap(E.fromNullable),
     E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'User is not registered.'})),
   );
+
+const saveServer = (server: Parameters<typeof Server.make>[0]) =>
+  pipe(
+    Server.put(Server.make(server)),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+  );
+
+const getServer = (server_id: string) =>
+  pipe(
+    Server.get({
+      Key           : {pk: server_id, sk: '@'},
+      ConsistentRead: true,
+    }),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+    E.map((res) => res.Item),
+  );
+
+export const assertServer = (server_id: string) =>
+  pipe(
+    getServer(server_id),
+    E.flatMap(E.fromNullable),
+    E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'User is not registered.'})),
+  );
+
+const savePlayer = (player: Parameters<typeof Player.make>[0]) =>
+  pipe(
+    Player.create(Player.make(player)),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+  );
+
+const getPlayer = (user_id: string, player_tag: string) =>
+  pipe(
+    Player.read({
+      Key           : {pk: user_id, sk: player_tag},
+      ConsistentRead: true,
+    }),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+    E.map((res) => res.Item),
+  );
+
+export const assertPlayer = (user_id: string, player_tag: string) =>
+  pipe(
+    Player.read({
+      Key           : {pk: user_id, sk: player_tag},
+      ConsistentRead: true,
+    }),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+    E.flatMap((res) => E.fromNullable(res.Item)),
+    E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'Player is not registered.'})),
+  );
+
+const saveClan = (clan: Parameters<typeof Clan.make>[0]) =>
+  pipe(
+    Clan.create(Clan.make(clan)),
+    E.catchAllCause((cause) => new RegistryFailure({cause})),
+  );
+
+type Caller = {
+  id    : string;
+  roles?: string[];
+};
+
+type CallerContext = {
+  id: string;
+};
 
 type UserParams = {
   caller_id : string;
@@ -138,27 +199,6 @@ export const registerUser = E.fn('registerUser')(function* (params: UserParams) 
     description: 'Success',
   };
 });
-
- const getServer = (guild_id: string) =>
-  pipe(
-    Server.get({
-      Key           : {pk: guild_id, sk: '@'},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
-    E.map((res) => res.Item),
-  );
-
-export const assertServer = (guild_id: string) =>
-  pipe(
-    Server.get({
-      Key           : {pk: guild_id, sk: '@'},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
-    E.flatMap((res) => E.fromNullable(res.Item)),
-    E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'Server is not registered.'})),
-  );
 
 type ServerParams = {
   caller_id   : string;
@@ -257,7 +297,7 @@ export const registerClan = E.fn('registerClan')(function* (p: ClanParams) {
   const gsi = yield* GSI2.queryClan(p.clan_tag);
 
   if (gsi.Items.length > 1) {
-    return yield* new RegistryIndexDefect({
+    return yield* new RegistryDefect({
       cause: 'Multiple clan records found.',
     });
   }
@@ -295,37 +335,33 @@ export const registerClan = E.fn('registerClan')(function* (p: ClanParams) {
     }
 
     if (current.pk !== p.guild_id) {
-      yield* Clan.del({
+      yield* Clan.delete({
         Key: {pk: current.pk, sk: current.sk},
       });
 
-      yield* Clan.put(
-        Clan.make({
-          pk         : p.guild_id,
-          sk         : p.clan_tag,
-          pk2        : p.clan_tag,
-          sk2        : p.guild_id,
-          name       : clan.name,
-          description: clan.description,
-          select     : {
-            value: p.clan_tag,
-            label: clan.name,
-          },
-          verification,
-          ...p.payload,
-        }),
-      );
+      yield* saveClan({
+        pk         : p.guild_id,
+        sk         : p.clan_tag,
+        pk2        : p.clan_tag,
+        sk2        : p.guild_id,
+        name       : clan.name,
+        description: clan.description,
+        select     : {
+          value: p.clan_tag,
+          label: clan.name,
+        },
+        verification,
+        ...p.payload,
+      });
     }
     else {
-      yield* Clan.put(
-        Clan.make({
-          ...current,
-          name       : clan.name,
-          description: clan.description,
-          verification,
-          ...p.payload,
-        }),
-      );
+      yield* saveClan({
+        ...current,
+        name       : clan.name,
+        description: clan.description,
+        verification,
+        ...p.payload,
+      });
     }
 
     return {
@@ -333,48 +369,25 @@ export const registerClan = E.fn('registerClan')(function* (p: ClanParams) {
     };
   }
 
-  yield* Clan.put(
-    Clan.make({
-      pk         : p.guild_id,
-      sk         : p.clan_tag,
-      pk2        : p.clan_tag,
-      sk2        : p.guild_id,
-      name       : clan.name,
-      description: clan.description,
-      select     : {
-        value: p.clan_tag,
-        label: clan.name,
-      },
-      verification,
-      ...p.payload,
-    }),
-  );
+  yield* saveClan({
+    pk         : p.guild_id,
+    sk         : p.clan_tag,
+    pk2        : p.clan_tag,
+    sk2        : p.guild_id,
+    name       : clan.name,
+    description: clan.description,
+    select     : {
+      value: p.clan_tag,
+      label: clan.name,
+    },
+    verification,
+    ...p.payload,
+  });
 
   return {
     description: 'Success',
   };
 });
-
- const getPlayer = (user_id: string, player_tag: string) =>
-  pipe(
-    Player.read({
-      Key           : {pk: user_id, sk: player_tag},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
-    E.map((res) => res.Item),
-  );
-
-export const assertPlayer = (user_id: string, player_tag: string) =>
-  pipe(
-    Player.read({
-      Key           : {pk: user_id, sk: player_tag},
-      ConsistentRead: true,
-    }),
-    E.catchAllCause((cause) => new RegistryDefect({cause})),
-    E.flatMap((res) => E.fromNullable(res.Item)),
-    E.catchTag('NoSuchElementException', () => new RegistryAssertError({message: 'Player is not registered.'})),
-  );
 
 type PlayerParams = {
   guild_id?    : string;
@@ -414,7 +427,7 @@ export const registerPlayer = E.fn('registerPlayer')(function* (p: PlayerParams)
     const gsi = yield* GSI2.queryPlayer(p.player_tag);
 
     if (gsi.Items.length > 1) {
-      return yield* new RegistryIndexDefect({cause: 'Multiple player records found.'});
+      return yield* new RegistryDefect({cause: 'Multiple player records found.'});
     }
 
     const player = yield* ClashOfClans.getPlayer(p.player_tag);
@@ -435,17 +448,15 @@ export const registerPlayer = E.fn('registerPlayer')(function* (p: PlayerParams)
         },
       });
 
-      yield* Player.create(
-        Player.make({
-          pk          : p.target_id,
-          sk          : p.player_tag,
-          pk2         : p.player_tag,
-          sk2         : p.target_id,
-          name        : player.name,
-          ...p.payload,
-          verification: PlayerVerification.admin,
-        }),
-      );
+      yield* savePlayer({
+        pk          : p.target_id,
+        sk          : p.player_tag,
+        pk2         : p.player_tag,
+        sk2         : p.target_id,
+        name        : player.name,
+        ...p.payload,
+        verification: PlayerVerification.admin,
+      });
 
       return {
         description: 'Success',
@@ -480,7 +491,7 @@ export const registerPlayer = E.fn('registerPlayer')(function* (p: PlayerParams)
   const gsi = yield* GSI2.queryPlayer(p.player_tag);
 
   if (gsi.Items.length > 1) {
-    return yield* new RegistryIndexDefect({
+    return yield* new RegistryDefect({
       cause: 'Multiple player records found.',
     });
   }

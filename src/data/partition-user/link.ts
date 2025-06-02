@@ -1,4 +1,4 @@
-import * as Document from '#src/data/util/DDB.ts';
+import * as DDB from '#src/data/util/DDB.ts';
 import * as Id from '#src/data/util/Id.ts';
 import * as Table from '#src/data/util/Table.ts';
 import * as DataTag from '#src/data/constants/data-tag.ts';
@@ -36,6 +36,6 @@ export const make = Item.make;
 export const equal = S.equivalence(Item);
 export type Type = typeof Item.Type;
 export type Encoded = typeof Item.Encoded;
-export const put = Document.Put(Item);
-export const get = Document.GetUpgradeV1(Key, Versions);
-export const del = Document.Delete(Key);
+export const put = DDB.Put(Item);
+export const get = DDB.GetUpgradeV1(Key, Versions);
+export const del = DDB.Delete(Key);

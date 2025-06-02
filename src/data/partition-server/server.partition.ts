@@ -1,8 +1,8 @@
-import * as Document from '#src/data/util/DDB.ts';
+import * as DDB from '#src/data/util/DDB.ts';
 import * as Id from '#src/data/util/Id.ts';
-import * as Clan from '#src/data/server/clan.ts';
-import * as Server from '#src/data/server/server.ts';
-import * as Info from '#src/data/server/info.ts';
+import * as Clan from '#src/data/partition-server/clan.ts';
+import * as Server from '#src/data/partition-server/server.ts';
+import * as Info from '#src/data/partition-server/info.ts';
 import * as S from 'effect/Schema';
 
 const Key = Id.ServerId;
@@ -23,7 +23,7 @@ const ItemsDown = S.Union(
   Info.Versions,
 );
 
-export const scan = Document.QueryV2(
+export const scan = DDB.QueryV2(
   Items,
   Key,
   (key) => ({
@@ -34,7 +34,7 @@ export const scan = Document.QueryV2(
   }),
 );
 
-export const scanUp = Document.QueryV2(
+export const scanUp = DDB.QueryV2(
   ItemsUp,
   S.Struct({
     server: Key,
@@ -52,7 +52,7 @@ export const scanUp = Document.QueryV2(
   }),
 );
 
-export const scanDown = Document.QueryV2(
+export const scanDown = DDB.QueryV2(
   ItemsDown,
   Key,
   (key) => ({

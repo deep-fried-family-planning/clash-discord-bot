@@ -2,11 +2,11 @@ import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import {RegistryAdminError, RegistryDefect} from '#src/data/util/util.ts';
 import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
 import * as GSI2 from '#src/data/gsi/gsi2.ts';
-import * as Clan from '#src/data/server/clan.ts';
+import * as Clan from '#src/data/partition-server/clan.ts';
 import * as ServerRegistry from '#src/data/registry/server-registry.ts';
-import * as Player from '#src/data/user/player.ts';
-import * as UserPartition from '#src/data/user/user.partition.ts';
-import * as User from '#src/data/user/user.ts';
+import * as Player from '#src/data/partition-user/player.ts';
+import * as UserPartition from '#src/data/partition-user/user.partition.ts';
+import * as User from '#src/data/partition-user/user.ts';
 import * as Array from 'effect/Array';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -93,11 +93,11 @@ export const register = E.fn('registerClan')(function* (p: RegisterParams) {
     }
 
     if (current.pk !== p.guild_id) {
-      yield* Clan.del({
+      yield* Clan.delete({
         Key: {pk: current.pk, sk: current.sk},
       });
 
-      yield* Clan.put(
+      yield* Clan.create(
         Clan.make({
           pk         : p.guild_id,
           sk         : p.clan_tag,
@@ -115,7 +115,7 @@ export const register = E.fn('registerClan')(function* (p: RegisterParams) {
       );
     }
     else {
-      yield* Clan.put(
+      yield* Clan.create(
         Clan.make({
           ...current,
           name       : clan.name,
@@ -131,7 +131,7 @@ export const register = E.fn('registerClan')(function* (p: RegisterParams) {
     };
   }
 
-  yield* Clan.put(
+  yield* Clan.create(
     Clan.make({
       pk         : p.guild_id,
       sk         : p.clan_tag,

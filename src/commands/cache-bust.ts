@@ -32,7 +32,7 @@ export const cacheBust = (data: Discord.APIInteraction, options: IxDS<typeof CAC
 
   yield* CSL.debug(clanTag);
 
-  const clan = yield* Clan.get({
+  const clan = yield* Clan.read({
     ConsistentRead: true,
     Key           : {
       pk: data.guild_id!,
@@ -40,7 +40,7 @@ export const cacheBust = (data: Discord.APIInteraction, options: IxDS<typeof CAC
     },
   });
 
-  yield* Clan.put({
+  yield* Clan.create({
     ...clan.Item!,
     prep_opponent  : '',
     battle_opponent: '',
