@@ -37,10 +37,10 @@ const layer = Runtime.makeGlobalRuntimeLayer({
   } as any)),
 }).pipe(
   L.provideMerge(L.effectContext(E.succeed(TestServices.liveServices))),
-  L.provideMerge(Logger.pretty),
-  L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
-  L.provideMerge(L.setTracerEnabled(true)),
-  L.provideMerge(L.setTracerTiming(true)),
+  // L.provideMerge(Logger.pretty),
+  // L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
+  // L.provideMerge(L.setTracerEnabled(true)),
+  // L.provideMerge(L.setTracerTiming(true)),
   // L.provideMerge(
   //   NodeSdk.layer(() => ({
   //     resource     : { serviceName: 'test' },
