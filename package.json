@@ -38,7 +38,7 @@
     "teehee": "export BUILD_ENV=$(terraform -chdir=terraform workspace show) && pnpm run format && pnpm run types && pnpm run sendit",
     "commitlint": "commitlint --edit",
     "slash": "tsx scripts/slash.ts",
-    "autogen": "pnpm exec swagger-typescript-api generate -o ./autogen --name v1.ts --type-prefix Clash --modular -p ./autogen/v1.yaml",
+    "autogen": "pnpm exec swagger-typescript-api generate -o .autogen --name v1.ts --type-prefix Clash --modular -p .autogen/v1.yaml",
     "prepare": "husky"
   },
   "dependencies": {
@@ -56,7 +56,7 @@
     "@effect/platform": "0.84.4",
     "@effect/platform-node": "0.84.2",
     "@msgpack/msgpack": "3.1.2",
-    "@opentelemetry/sdk-logs": "0.201.1",
+    "@opentelemetry/sdk-logs": "0.202.0",
     "@opentelemetry/sdk-metrics": "2.0.1",
     "@opentelemetry/sdk-trace-base": "2.0.1",
     "@opentelemetry/sdk-trace-node": "2.0.1",
@@ -104,7 +104,7 @@
     "tsoa": "6.6.0",
     "tsx": "4.19.4",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.33.0",
+    "typescript-eslint": "8.33.1",
     "typescript-language-server": "4.3.4",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.0"

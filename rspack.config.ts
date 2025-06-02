@@ -29,6 +29,7 @@ export default defineConfig({
   },
 
   output: {
+    path                         : resolve(process.cwd(), '.dist'),
     module                       : true,
     environment                  : {module: true},
     library                      : {type: 'module'},
