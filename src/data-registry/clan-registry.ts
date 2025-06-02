@@ -23,7 +23,7 @@ type RegisterParams = {
   };
 };
 
-export const register = E.fn('ServerClanRegistry.register')(function* (p: RegisterParams) {
+export const register = E.fn('registerClan')(function* (p: RegisterParams) {
   const server = yield* ServerRegistry.getAssert(p.guild_id);
 
   if (!p.caller_roles.includes(server.admin)) {
@@ -97,8 +97,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
         Key: {pk: current.pk, sk: current.sk},
       });
 
-      yield* Clan.put({
-        Item: Clan.make({
+      yield* Clan.put(
+        Clan.make({
           pk         : p.guild_id,
           sk         : p.clan_tag,
           pk2        : p.clan_tag,
@@ -112,18 +112,18 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
           verification,
           ...p.payload,
         }),
-      });
+      );
     }
     else {
-      yield* Clan.put({
-        Item: Clan.make({
+      yield* Clan.put(
+        Clan.make({
           ...current,
           name       : clan.name,
           description: clan.description,
           verification,
           ...p.payload,
         }),
-      });
+      );
     }
 
     return {
@@ -131,8 +131,8 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
     };
   }
 
-  yield* Clan.put({
-    Item: Clan.make({
+  yield* Clan.put(
+    Clan.make({
       pk         : p.guild_id,
       sk         : p.clan_tag,
       pk2        : p.clan_tag,
@@ -146,7 +146,7 @@ export const register = E.fn('ServerClanRegistry.register')(function* (p: Regist
       verification,
       ...p.payload,
     }),
-  });
+  );
 
   return {
     description: 'Success',

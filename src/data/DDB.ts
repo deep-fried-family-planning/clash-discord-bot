@@ -1,7 +1,10 @@
 import {DataClient} from '#src/service/DataClient.ts';
-import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, PutCommandInput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import type {DeleteCommandInput, GetCommandInput, GetCommandOutput, QueryCommandInput, QueryCommandOutput, ScanCommandInput, ScanCommandOutput, UpdateCommandInput} from '@aws-sdk/lib-dynamodb';
+import type * as Cause from 'effect/Cause';
+import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
+import type * as ParseResult from 'effect/ParseResult';
 import * as S from 'effect/Schema';
 
 const noUndefinedAtEncode = <I>(encoded: I) => {
@@ -15,6 +18,14 @@ const noUndefinedAtEncode = <I>(encoded: I) => {
   return acc as I;
 };
 
+export class DataDecodeError extends Data.TaggedError('DataDecodeError')<{
+  cause: ParseResult.ParseError | Cause.Cause<Error>;
+}> {}
+
+export class DataEncodeError extends Data.TaggedError('DataInputError')<{
+  cause: ParseResult.ParseError | Cause.Cause<Error>;
+}> {}
+
 export const PutBaseInput = S.Struct({
   TableName: S.optional(S.String),
   Item     : S.Any,
@@ -24,18 +35,15 @@ export const PutBaseOutput = S.Struct({
   ConsumedCapacity: S.optional(S.Any),
 });
 
-export const Put = <A, I, R>(item: S.Schema<A, I, R>) => {
-  const encodeItem = S.encode(item);
+type AnyItem = Record<string, any>;
 
-  return (input: Omit<Partial<PutCommandInput>, 'Item'> & {Item: A}) =>
+export const Put = <A, I extends AnyItem, R>(i: S.Schema<A, I, R>) => {
+  const encodeItem = S.encode(i);
+  return (input: A) =>
     pipe(
-      encodeItem(input.Item),
-      E.flatMap((item) =>
-        DataClient.put({
-          ...input,
-          Item: item as any,
-        }),
-      ),
+      encodeItem(input),
+      E.catchTag('ParseError', (cause) => new DataEncodeError({cause})),
+      E.flatMap((item) => DataClient.put({Item: item})),
     );
 };
 
@@ -47,6 +55,24 @@ export const GetBaseInput = S.Struct({
 export const GetBaseOutput = S.Struct({
   Item: S.optional(S.Any),
 });
+
+export const GetExpression = <A, I, R, A2, I2, R2>(
+  i: S.Schema<A, I, R>,
+  o: S.Schema<A2, I2, R2>,
+  t: (i: I) => Partial<GetCommandInput>,
+) => {
+  const encodeKey = S.encode(i);
+  const decodeItem = S.decode(o);
+  return (input: A) =>
+    pipe(
+      encodeKey(input),
+      E.map((enc) => t(enc)),
+      E.catchAllCause((cause) => new DataEncodeError({cause})),
+      E.flatMap((cmd) => DataClient.get(cmd)),
+      E.flatMap((res) => !res.Item ? E.succeed(undefined) : decodeItem(res.Item as any)),
+      E.catchTag('ParseError', (cause) => new DataDecodeError({cause})),
+    );
+};
 
 export const GetV1 = <A, I, R, A2, I2, R2>(key: S.Schema<A, I, R>, item: S.Schema<A2, I2, R2>) => {
   const encodeKey = S.encode(key);

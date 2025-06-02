@@ -86,8 +86,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         },
       });
 
-      yield* Player.create({
-        Item: Player.make({
+      yield* Player.create(
+        Player.make({
           pk          : p.target_id,
           sk          : p.player_tag,
           pk2         : p.player_tag,
@@ -96,15 +96,15 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
           ...p.payload,
           verification: PlayerVerification.admin,
         }),
-      });
+      );
 
       return {
         description: 'Success',
       };
     }
 
-    yield* Player.create({
-      Item: Player.make({
+    yield* Player.create(
+      Player.make({
         pk          : p.target_id,
         sk          : p.player_tag,
         pk2         : p.player_tag,
@@ -113,7 +113,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         ...p.payload,
         verification: PlayerVerification.admin,
       }),
-    });
+    );
 
     return {
       description: 'Success',
@@ -147,8 +147,8 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
         },
       });
 
-      yield* Player.create({
-        Item: Player.make({
+      yield* Player.create(
+        Player.make({
           ...current,
           pk          : p.caller_id,
           sk          : p.player_tag,
@@ -158,29 +158,29 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
           ...p.payload,
           verification: PlayerVerification.token,
         }),
-      });
+      );
 
       return {
         description: 'Success',
       };
     }
 
-    yield* Player.create({
-      Item: Player.make({
+    yield* Player.create(
+      Player.make({
         ...current,
         name        : player.name,
         ...p.payload,
         verification: PlayerVerification.token,
       }),
-    });
+    );
 
     return {
       description: 'Success',
     };
   }
 
-  yield* Player.create({
-    Item: Player.make({
+  yield* Player.create(
+    Player.make({
       pk          : p.caller_id,
       sk          : p.player_tag,
       pk2         : p.player_tag,
@@ -189,7 +189,7 @@ export const register = E.fn('UserPlayerRegistry.register')(function* (p: Regist
       ...p.payload,
       verification: PlayerVerification.token,
     }),
-  });
+  );
 
   return {
     description: 'Success',

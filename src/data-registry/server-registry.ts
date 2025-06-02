@@ -40,14 +40,14 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
   const server = yield* get(params.guild_id);
 
   if (!server) {
-    yield* Server.put({
-      Item: Server.make({
+    yield* Server.put(
+      Server.make({
         pk : params.guild_id,
         sk : '@',
         pk1: params.guild_id,
         ...params.payload,
       }),
-    });
+    );
 
     return {
       description: 'Success',
@@ -60,14 +60,14 @@ export const register = E.fn('ServerRegistry.register')(function* (params: Regis
     });
   }
 
-  yield* Server.put({
-    Item: Server.make({
+  yield* Server.put(
+    Server.make({
       ...server,
       pk: params.guild_id,
       sk: '@',
       ...params.payload,
     }),
-  });
+  );
 
   return {
     description: 'Success',

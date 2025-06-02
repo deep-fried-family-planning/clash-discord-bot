@@ -65,38 +65,28 @@ const ApiEmbed = S.Struct({
   timestamp: S.optional(S.String),
 });
 
-export const Key = Table.Key({
-  pk: Id.EmbedId,
-  sk: Id.PartitionRoot,
-});
+export const Key = Table.CompKey(Id.EmbedId, Id.PartitionRoot);
 
 export const TAG = DataTag.DISCORD_EMBED;
 export const LATEST = 0;
 
-export const Item = Table.Item(TAG, LATEST, {
+export const Latest = Table.Item(TAG, LATEST, {
   pk   : Id.EmbedId,
   sk   : Id.PartitionRoot,
   embed: ApiEmbed,
 });
 
 export const Versions = S.Union(
-  Item,
+  Latest,
 );
 
-export type Type = typeof Item.Type;
-export type Encoded = typeof Item.Encoded;
-export const is = S.is(Item);
-export const make = Item.make;
-export const equal = S.equivalence(Item);
+export const is = S.is(Latest);
+export const make = Latest.make;
+export const equals = S.equivalence(Latest);
 export const decode = S.decode(Versions);
-export const encode = S.encode(Item);
-
-export const createInfoEmbed = Document.Put(Item);
+export const encode = S.encode(Latest);
+export const create = Document.Put(Latest);
+export const read = Document.GetUpgradeV1(Key, Versions);
 export const update = Document.Update(Key);
-export const read = Document.GetV1(Key, Versions);
-const $delete = Document.Delete(Key);
-export {$delete as delete};
-
-export const put = Document.Put(Item);
-export const get = Document.GetUpgradeV1(Key, Versions);
-export const del = Document.Delete(Key);
+const delete$ = Document.Delete(Key);
+export {delete$ as delete};

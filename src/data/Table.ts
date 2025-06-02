@@ -32,13 +32,13 @@ export const Key = <F extends S.Struct.Fields>(fields: F) => {
   return S.Struct(fields);
 };
 
-export const CompKey = <A, I, R, A2, I2, R2>(pk: S.Schema<A, I, R>, sk: S.Schema<A2, I2, R2>) =>
+export const CompKey = <S1 extends S.Struct.Field, S2 extends S.Struct.Field>(pk: S1, sk: S2) =>
   S.Struct({
     pk,
     sk,
   });
 
-export const GSIKey = <A, I, R, A2, I2, R2>(gsi: number, pk: S.Schema<A, I, R>, sk: S.Schema<A2, I2, R2>) =>
+export const GSIKey = <S1 extends S.Struct.Field, S2 extends S.Struct.Field>(gsi: number, pk: S1, sk: S2) =>
   S.Struct({
     [`pk${gsi}`]: pk,
     [`sk${gsi}`]: sk,

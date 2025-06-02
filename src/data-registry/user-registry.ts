@@ -54,15 +54,15 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
       });
     }
 
-    yield* User.put({
-      Item: User.make({
+    yield* User.put(
+      User.make({
         pk     : params.target_id,
         sk     : '@',
         pk1    : params.target_id,
         servers: new Set([]),
         ...params.payload,
       }),
-    });
+    );
 
     return {
       description: 'Success',
@@ -70,15 +70,15 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   }
 
   if (!caller) {
-    yield* User.put({
-      Item: User.make({
+    yield* User.put(
+      User.make({
         pk     : params.caller_id,
         sk     : '@',
         pk1    : params.caller_id,
         servers: new Set([]),
         ...params.payload,
       }),
-    });
+    );
 
     return {
       description: 'Success',
@@ -91,9 +91,7 @@ export const register = E.fn('UserRegistry.register')(function* (params: Registe
   });
 
   if (!User.equal(updated, caller)) {
-    yield* User.put({
-      Item: updated,
-    });
+    yield* User.put(updated);
   }
 
   return {

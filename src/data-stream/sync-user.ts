@@ -27,9 +27,7 @@ const pollPlayer = E.fn('pollPlayer')(function* (user: User, userPlayer: Player)
     };
 
     yield* E.fork(
-      Player.create({
-        Item: updated,
-      }),
+      Player.create(updated),
     );
 
     return updated;
@@ -117,15 +115,15 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
     yield* E.fork(
       E.all(
         newServers.map((serverId) =>
-          Link.put({
-            Item: Link.make({
+          Link.put(
+            Link.make({
               pk  : partition.user.pk,
               sk  : serverId,
               pk2 : serverId,
               sk2 : partition.user.pk,
               tags: tags,
             }),
-          }),
+          ),
         ),
       ),
     );
@@ -144,9 +142,7 @@ export const syncUser = E.fn('syncUser')(function* (userId: string) {
       }
 
       return Option.some(
-        Link.put({
-          Item: updated,
-        }),
+        Link.put(updated),
       );
     },
   );

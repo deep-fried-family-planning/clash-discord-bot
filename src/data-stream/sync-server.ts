@@ -95,11 +95,9 @@ export const pollClanWar = E.fn('pollClanWar')(function* (server: Server, clan: 
 
   yield* E.fork(
     Clan.put({
-      Item: {
-        ...clan,
-        battle_opponent: clan.prep_opponent,
-        prep_opponent  : wars.prep.opponent.tag,
-      },
+      ...clan,
+      battle_opponent: clan.prep_opponent,
+      prep_opponent  : wars.prep.opponent.tag,
     }),
   );
 
