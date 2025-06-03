@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {Doken} from '#src/disreact/codec/rest/doken.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import * as Model from '#src/disreact/model/model.ts';
 import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
@@ -13,11 +13,8 @@ import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import * as FiberHandle from 'effect/FiberHandle';
-import {flow, pipe} from 'effect/Function';
+import {pipe} from 'effect/Function';
 import * as Option from 'effect/Option';
-
-export * as Methods from '#src/disreact/runtime/methods.ts';
-export type Methods = never;
 
 export const registerRoot = Model.registerRoot;
 

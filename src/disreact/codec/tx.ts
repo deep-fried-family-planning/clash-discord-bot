@@ -1,11 +1,11 @@
-import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
-import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {Params} from '#src/disreact/codec/rest/params.ts';
+import * as DAPI from '#src/disreact/codec/dapi/dapi.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
+import * as Params from '#src/disreact/codec/rest/params.ts';
 import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 import {hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
-import * as RestMessage from '#src/disreact/codec/intrinsic/message.ts';
-import * as RestModal from '#src/disreact/codec/intrinsic/modal.ts';
+import * as IntrinsicMessage from '#src/disreact/codec/intrinsic/message.ts';
+import * as IntrinsicModal from '#src/disreact/codec/intrinsic/modal.ts';
 
 export * as Tx from '#src/disreact/codec/tx.ts';
 export type Tx = never;
@@ -15,7 +15,7 @@ const Modal = S.transform(
   S.Struct({
     base    : S.String,
     doken   : S.typeSchema(Doken.Serial),
-    encoding: Declarations.encoded(RestModal.MODAL, DAPI.Modal.Open),
+    encoding: Declarations.encoded(IntrinsicModal.MODAL, DAPI.Modal.Open),
   }),
   {
     encode: (tx) =>
@@ -36,8 +36,8 @@ const Message = S.transform(
     base    : S.String,
     doken   : S.typeSchema(Doken.Serial),
     encoding: S.Union(
-      Declarations.encoded(RestMessage.EPHEMERAL, DAPI.Message.Base),
-      Declarations.encoded(RestMessage.MESSAGE, DAPI.Message.Base),
+      Declarations.encoded(IntrinsicMessage.EPHEMERAL, DAPI.Message.Base),
+      Declarations.encoded(IntrinsicMessage.MESSAGE, DAPI.Message.Base),
     ),
   }),
   {

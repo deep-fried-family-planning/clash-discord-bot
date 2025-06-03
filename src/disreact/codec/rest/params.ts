@@ -1,9 +1,6 @@
-import {Template} from '#src/disreact/codec/rest/template.ts';
-import {DAPI} from 'src/disreact/codec/dapi/dapi.ts';
+import * as Template from '#src/disreact/codec/rest/template.ts';
+import * as DAPI from 'src/disreact/codec/dapi/dapi.ts';
 import * as S from 'effect/Schema';
-
-export * as Params from '#src/disreact/codec/rest/params.ts';
-export type Params = never;
 
 export const Modal = S.transform(
   S.typeSchema(DAPI.Modal.Any),

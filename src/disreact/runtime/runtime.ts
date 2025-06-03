@@ -2,13 +2,10 @@ import {Codec} from '#src/disreact/codec/Codec.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
+import * as Methods from '#src/disreact/runtime/methods.ts';
 import * as E from 'effect/Effect';
 import {flow, pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
-import {Methods} from './methods';
-
-export * as Runtime from '#src/disreact/runtime/runtime.ts';
-export type Runtime = ReturnType<typeof makeRuntime>;
 
 export const makeGlobalRuntimeLayer = (
   config?: {

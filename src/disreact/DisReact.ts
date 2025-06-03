@@ -3,10 +3,10 @@ import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache, type DokenCacheConfig} from '#src/disreact/runtime/DokenCache.ts';
+import * as Methods from '#src/disreact/runtime/methods.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
-import {Methods} from 'src/disreact/runtime/methods.ts';
 
 export type DisReactConfig = {
   rehydrator: RehydratorConfig;

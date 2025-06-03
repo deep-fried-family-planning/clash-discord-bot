@@ -1,9 +1,6 @@
-import {Doken} from '#src/disreact/codec/rest/doken.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
 import * as S from 'effect/Schema';
 import * as Declarations from '#src/disreact/model/schema/declarations.ts';
-
-export * as Template from '#src/disreact/codec/rest/template.ts';
-export type Template = never;
 
 export const SourceCustomId = S.transform(
   S.TemplateLiteralParser(

@@ -1,6 +1,6 @@
-import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
-import {Doken} from '#src/disreact/codec/rest/doken.ts';
-import {Params} from '#src/disreact/codec/rest/params.ts';
+import * as DAPI from '#src/disreact/codec/dapi/dapi.ts';
+import * as Doken from '#src/disreact/codec/rest/doken.ts';
+import * as Params from '#src/disreact/codec/rest/params.ts';
 import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 import {pipe, hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
@@ -15,7 +15,7 @@ const Modal = pipe(
   S.transform(
     S.Struct({
       body   : S.typeSchema(DAPI.Ix.ModalRequestBody),
-      fresh  : Doken.Latest,
+      fresh  : Doken.LatestFromRequest,
       modal  : Params.Modal,
       message: S.optional(Params.Message),
     }),
@@ -34,7 +34,7 @@ const Modal = pipe(
     S.Struct({
       body       : S.typeSchema(DAPI.Ix.ModalRequestBody),
       isEphemeral: S.optional(S.Boolean),
-      fresh      : S.typeSchema(Doken.Latest),
+      fresh      : S.typeSchema(Doken.LatestFromRequest),
       doken      : S.optional(S.typeSchema(Doken.Serial)),
       hydrator   : S.typeSchema(Declarations.Hydrator),
       event      : Declarations.trigger(DAPI.Modal.Data),
@@ -69,7 +69,7 @@ const Message = pipe(
   S.transform(
     S.Struct({
       body   : S.typeSchema(DAPI.Ix.ComponentRequestBody),
-      fresh  : Doken.Latest,
+      fresh  : Doken.LatestFromRequest,
       message: Params.Message,
     }),
     {
@@ -86,7 +86,7 @@ const Message = pipe(
     S.Struct({
       body       : S.typeSchema(DAPI.Ix.ComponentRequestBody),
       isEphemeral: S.Boolean,
-      fresh      : S.typeSchema(Doken.Latest),
+      fresh      : S.typeSchema(Doken.LatestFromRequest),
       doken      : S.typeSchema(Doken.Serial),
       hydrator   : S.typeSchema(Declarations.Hydrator),
       event      : Declarations.trigger(DAPI.Ix.ComponentData),
