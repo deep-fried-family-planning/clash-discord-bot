@@ -1,6 +1,4 @@
-import * as Keys from '#src/disreact/codec/intrinsic/keys.ts';
 import type * as El from '#src/disreact/model/entity/el.ts';
-import {key} from '#unit/util.ts';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 import * as Array from 'effect/Array';
@@ -16,15 +14,15 @@ export declare namespace Props {
 export type Props = Props.Props;
 
 const HANDLER_KEYS = [
-  Keys.onclick,
-  Keys.onselect,
-  Keys.onsubmit,
+  'onclick',
+  'onselect',
+  'onsubmit',
 ];
 
 const RESERVED = [
   ...HANDLER_KEYS,
-  Keys.children,
-  Keys.handler,
+  'children',
+  'handler',
 ];
 
 export const cloneKnownProps = (props: Props): Props => {

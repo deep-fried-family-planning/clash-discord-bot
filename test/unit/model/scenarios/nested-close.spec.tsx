@@ -68,14 +68,14 @@ it.effect('when rendered', E.fn(function* () {
           "components": [
             {
               "type": 2,
-              "custom_id": "NestedCloseButton",
               "style": 1,
+              "custom_id": "NestedCloseButton",
               "label": "NestedCloseButton"
             },
             {
               "type": 2,
-              "custom_id": "NestedIncrementButton",
               "style": 1,
+              "custom_id": "NestedIncrementButton",
               "label": "NestedIncrementButton"
             }
           ]

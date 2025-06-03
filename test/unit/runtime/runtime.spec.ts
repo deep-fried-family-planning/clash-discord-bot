@@ -97,7 +97,12 @@ it.effect('when responding (performance)', E.fn(function* () {
   const times = Array.from({length: 10});
 
   for (let i = 0; i < times.length; i++) {
-    times[i] = runtime.respond({
+    yield* Snowflake.toDateTime('1236074574509117491').pipe(
+      DateTime.subtract({seconds: 12}),
+      TestClock.setTime,
+    );
+
+    times[i] = yield* E.fork(runtime.respond({
       id            : '1236074574509117491',
       token         : 'respond1',
       application_id: 'app',
@@ -109,12 +114,10 @@ it.effect('when responding (performance)', E.fn(function* () {
         custom_id     : 'actions:0:button:0',
         component_type: 2,
       },
-    });
+    }));
+
+    yield* TestClock.adjust(Duration.seconds(12));
+
+    yield* Fiber.join(times[i]);
   }
-  const fibers = yield* E.forkAll(times as E.Effect<void>[]);
-  yield* Snowflake.toDateTime('1236074574509117491').pipe(
-    DateTime.subtract({seconds: 12}),
-    TestClock.setTime,
-  );
-  yield* Fiber.join(fibers);
 }));

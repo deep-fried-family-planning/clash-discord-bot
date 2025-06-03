@@ -1,4 +1,4 @@
-import type {IntrinsicTuplesMapped} from '#src/disreact/codec/intrinsic/index.ts';
+import type {IntrinsicAttributesMap} from '#src/disreact/codec/types.ts';
 import * as Dsx from '#src/disreact/model/dsx.ts';
 import type * as FC from '#src/disreact/model/entity/fc.ts';
 import type * as El from '#src/disreact/model/entity/el.ts';
@@ -31,11 +31,11 @@ export declare namespace JSX {
   }
 
   interface IntrinsicAttributes {
-
+    children?: any;
   }
 
   interface IntrinsicClassAttributes {
   }
 
-  interface IntrinsicElements extends IntrinsicTuplesMapped {}
+  interface IntrinsicElements extends IntrinsicAttributesMap {}
 }

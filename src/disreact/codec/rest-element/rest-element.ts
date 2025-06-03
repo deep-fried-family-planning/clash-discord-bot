@@ -1,5 +1,4 @@
 import type * as E from 'effect/Effect';
-import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
 
 export const Attributes = <F extends S.Struct.Fields>(fields: F) =>

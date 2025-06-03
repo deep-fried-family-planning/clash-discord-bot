@@ -1,7 +1,7 @@
 import * as S from 'effect/Schema';
 import * as Norm from '#src/disreact/codec/rest-element/norm.ts';
 import * as Rest from '#src/disreact/codec/rest-element/rest-element.ts';
-import * as Misc from '#src/disreact/codec/rest-element/misc.ts';
+import * as Embed from '#src/disreact/codec/rest-element/embed.ts';
 
 export const MESSAGE = 'message';
 export const MessageAttributes = Rest.Attributes({
@@ -12,7 +12,7 @@ export const MessageAttributes = Rest.Attributes({
 export const encodeMessage = (self: any, arg: any) => {
   return {
     content   : self.props.content ?? arg[Norm.PRIMITIVE]?.[0] ?? undefined,
-    embeds    : arg[Norm.EMBEDS],
+    embeds    : arg[Embed.EMBED],
     components: arg[Norm.COMPONENTS],
     flags     : self.props.flags ?? self.props.display === 'ephemeral' ? 64 : undefined,
   };
@@ -26,7 +26,7 @@ export const EphemeralAttributes = Rest.Attributes({
 export const encodeEphemeral = (self: any, arg: any) => {
   return {
     content   : self.props.content ?? arg[Norm.PRIMITIVE]?.[0] ?? undefined,
-    embeds    : arg[Norm.EMBEDS],
+    embeds    : arg[Embed.EMBED],
     components: arg[Norm.COMPONENTS],
     flags     : 64,
   };

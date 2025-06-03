@@ -13,7 +13,6 @@ export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
   pipe(
     Lifecycle.initialize(Rehydrant.fromFC(source, props, data)),
     E.flatMap((root) => Lifecycle.encode(root)),
-    E.provide(RehydrantDOM.Fresh()),
   );
 
 export const registerRoot = (source: Rehydrant.Registrant, id?: string) =>
@@ -23,12 +22,7 @@ export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) 
   pipe(
     Rehydrator.checkout(source, props, data),
     E.flatMap((root) => Lifecycle.initialize(root)),
-    // E.tap(RehydrantDOM.finalize),
-    // E.tap(RehydrantDOM.complete),
-    // E.tapError((error) => RehydrantDOM.fail(error)),
-    // E.andThen(RehydrantDOM.output()),
     E.flatMap((root) => Lifecycle.encode(root)),
-    // E.provide(RehydrantDOM.Fresh()),
   );
 
 export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>

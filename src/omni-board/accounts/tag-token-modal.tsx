@@ -13,7 +13,7 @@ export const TagTokenModal = (props: Props) => {
     <modal
       title={'Player Tag & API Token'}
       onsubmit={E.fn(function* (event) {
-        const texts = event.data.components.map((c) => c.components[0].value);
+        const texts = event.data.components.map((c: any) => c.components[0].value);
 
         yield* Registry.registerPlayer({
           caller_roles: caller.roles,

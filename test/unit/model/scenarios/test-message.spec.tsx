@@ -38,16 +38,16 @@ it.effect('when rendered', E.fn(function* () {
           "type": 1,
           "components": [
             {
-              "label": "Start 0",
-              "style": 1,
               "type": 2,
-              "custom_id": "actions:0:button:0"
+              "style": 1,
+              "custom_id": "actions:0:button:0",
+              "label": "Start 0"
             },
             {
-              "label": "Help",
-              "style": 2,
               "type": 2,
-              "custom_id": "actions:0:secondary:0"
+              "style": 2,
+              "custom_id": "actions:0:secondary:0",
+              "label": "Help"
             }
           ]
         },
@@ -55,8 +55,8 @@ it.effect('when rendered', E.fn(function* () {
           "type": 1,
           "components": [
             {
-              "custom_id": "message:0:select:0",
               "type": 3,
+              "custom_id": "message:0:select:0",
               "options": [
                 {
                   "value": "1",
@@ -131,16 +131,16 @@ it.effect('when clicked', E.fn(function* () {
           "type": 1,
           "components": [
             {
-              "label": "Start 1",
-              "style": 1,
               "type": 2,
-              "custom_id": "actions:0:button:0"
+              "style": 1,
+              "custom_id": "actions:0:button:0",
+              "label": "Start 1"
             },
             {
-              "label": "Help",
-              "style": 2,
               "type": 2,
-              "custom_id": "actions:0:secondary:0"
+              "style": 2,
+              "custom_id": "actions:0:secondary:0",
+              "label": "Help"
             }
           ]
         },
@@ -148,8 +148,8 @@ it.effect('when clicked', E.fn(function* () {
           "type": 1,
           "components": [
             {
-              "custom_id": "message:0:select:0",
               "type": 3,
+              "custom_id": "message:0:select:0",
               "options": [
                 {
                   "value": "1",

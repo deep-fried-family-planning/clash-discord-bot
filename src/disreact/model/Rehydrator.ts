@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/model/entity/el.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as JsxSchema from '#src/disreact/model/schema/jsx-default.ts';
+import * as JsxDefault from '#src/disreact/codec/rest-element/index.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 
@@ -24,9 +24,9 @@ export type RehydratorConfig = {
 export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
   effect: E.fnUntraced(function* (config: RehydratorConfig) {
     const store         = new Map<string, Rehydrant.Source>(),
-          primitive     = config?.primitive ?? JsxSchema.primitive,
-          normalization = config?.normalization ?? JsxSchema.normalization,
-          encoding      = config?.encoding ?? JsxSchema.encoding,
+          primitive     = config?.primitive ?? JsxDefault.primitive,
+          normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
+          encoding      = config?.encoding ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>,
           sources       = config?.sources ?? [];
 
     if (Array.isArray(sources)) {
