@@ -1,4 +1,4 @@
-import {commandRouter} from '#src/discord/command-router.ts';
+import {commandRouter} from '#src/command-router.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
@@ -9,7 +9,6 @@ export const ix_commands = (ix: Discord.APIInteraction) =>
   pipe(
     E.fork(Interacting.init(ix)),
     E.flatMap(() => commandRouter(ix)),
-    E.tapError((error) => DeepFryerLogger.logError(error)),
     E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
     E.provide(Interacting.Fresh),
   );

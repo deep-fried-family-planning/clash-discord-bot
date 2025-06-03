@@ -61,7 +61,7 @@ const streamUserPartition = (userId: string) =>
         if (item._tag === 'User') {
           acc.user = item;
         }
-        else if (item._tag === 'UserPlayer') {
+        else if (item._tag === 'Player') {
           acc.players[item.sk] = item;
         }
         else {

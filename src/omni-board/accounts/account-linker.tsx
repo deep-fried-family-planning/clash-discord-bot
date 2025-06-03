@@ -1,6 +1,6 @@
-import {CloseButton} from '#src/discord/components/close-button.tsx';
-import {SELECT_ACCOUNT_TYPE} from '#src/discord/old/ix-constants.ts';
-import {TagTokenModal} from '#src/discord/omni-board/accounts/tag-token-modal.tsx';
+import {CloseButton} from '#src/components/close-button.tsx';
+import {SELECT_ACCOUNT_TYPE} from '#src/internal/old/ix-constants.ts';
+import {TagTokenModal} from '#src/omni-board/accounts/tag-token-modal.tsx';
 import {usePage, useState} from '#src/disreact/index.ts';
 
 type Props = {

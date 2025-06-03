@@ -6,6 +6,5 @@ export const task = E.fn(
   function* (event: SQSEvent) {
 
   },
-  E.tapError((error) => DeepFryerLogger.logError(error)),
   E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );

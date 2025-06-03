@@ -11,7 +11,7 @@ import {user, USER} from '#src/commands/user.ts';
 import {WA_LINKS, waLinks} from '#src/commands/wa-links.ts';
 import {WA_MIRRORS, waMirrors} from '#src/commands/wa-mirrors.ts';
 import {WA_SCOUT, waScout} from '#src/commands/wa-scout.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
 import {emptyKV} from '#src/internal/pure/pure-kv.ts';
 import {reduceL} from '#src/internal/pure/pure-list.ts';
 import type {Discord} from 'dfx';

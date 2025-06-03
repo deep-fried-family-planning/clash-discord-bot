@@ -11,7 +11,7 @@ export const Key = Table.CompKey(Id.ClashTag, Table.Created);
 export const Latest = Table.Item(TAG, VER, {
   ...Key.fields,
   current     : S.String,
-  previous    : S.String,
+  previous    : S.optional(S.String),
   verification: S.Int,
 });
 

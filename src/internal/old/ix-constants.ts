@@ -1,4 +1,4 @@
-import type {CommandSpec} from '#src/discord/old/types.ts';
+import type {CommandSpec} from '#src/internal/old/types.ts';
 
 export const SELECT_ACCOUNT_TYPE = [
   {

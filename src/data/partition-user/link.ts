@@ -1,23 +1,17 @@
 import * as DDB from '#src/data/util/DDB.ts';
 import * as Id from '#src/data/util/Id.ts';
 import * as Table from '#src/data/util/Table.ts';
-import * as DataTag from '#src/data/constants/data-tag.ts';
 import * as S from 'effect/Schema';
 
-export const TAG = DataTag.USER_LINK;
-export const LATEST = 0;
+export const TAG = 'Link';
+export const VER = 0;
 
 export const Key = Table.Key({
   pk: Id.UserId,
   sk: Id.ServerId,
 });
 
-export const GSI2Key = Table.Key({
-  pk2: Id.ServerId,
-  sk2: Id.UserId,
-});
-
-export const Item = Table.Item(TAG, LATEST, {
+export const Item = Table.Item(TAG, VER, {
   pk  : Id.UserId,
   sk  : Id.ServerId,
   pk2 : Id.ServerId,
@@ -32,8 +26,6 @@ export const Versions = S.Union(
 export const is = S.is(Item);
 export const make = Item.make;
 export const equals = S.equivalence(Item);
-export const encode = S.encode(Item);
-export const decode = S.decode(Versions);
 export const create = DDB.Put(Item);
 export const read = DDB.GetUpgradeV1(Key, Versions);
 export const remove = DDB.Delete(Key);

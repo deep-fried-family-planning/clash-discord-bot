@@ -9,7 +9,6 @@ export const ix_components = (ix: Discord.APIInteraction) =>
   pipe(
     E.fork(Interacting.init(ix)),
     E.flatMap(() => DisReact.respond(ix)),
-    E.tapError((error) => DeepFryerLogger.logError(error)),
     E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
     E.provide(Interacting.Fresh),
   );

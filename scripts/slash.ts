@@ -11,12 +11,12 @@ import {USER} from '#src/commands/user.ts';
 import {WA_LINKS} from '#src/commands/wa-links.ts';
 import {WA_MIRRORS} from '#src/commands/wa-mirrors.ts';
 import {WA_SCOUT} from '#src/commands/wa-scout.ts';
-import type {CommandSpec} from '#src/discord/old/types.ts';
 import {invokeCount, showMetric} from '#src/internal/metrics.ts';
+import type {CommandSpec} from '#src/internal/old/types.ts';
 import {toValuesKV} from '#src/internal/pure/pure-kv.ts';
 import {concatL, filterL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {OrdB} from '#src/internal/pure/pure.ts';
-import {DiscordLayer} from '#src/util/layers';
+import {DiscordLive} from '#src/layers.ts';
 import {makeLambda} from '@effect-aws/lambda';
 import {fromParameterStore} from '@effect-aws/ssm';
 import type {Discord} from 'dfx';
@@ -108,7 +108,7 @@ const h = () => E.gen(function* () {
 });
 
 const live = pipe(
-  DiscordLayer,
+  DiscordLive(),
   L.provideMerge(L.setConfigProvider(fromParameterStore())),
   L.provideMerge(L.setTracerTiming(true)),
   L.provideMerge(L.setTracerEnabled(true)),

@@ -52,7 +52,6 @@ export const ix_api = (req: APIGatewayProxyEventBase<any>) =>
       }
       return E.die('Not Implemented');
     }),
-    E.tapError((error) => DeepFryerLogger.logError(error)),
     E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
     E.catchAllDefect(() => succeedResponse(500)),
   );

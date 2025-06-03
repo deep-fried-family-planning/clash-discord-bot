@@ -1,4 +1,4 @@
-import {CloseButton} from '#src/discord/components/close-button.tsx';
+import {CloseButton} from '#src/components/close-button.tsx';
 import * as E from 'effect/Effect';
 
 export const UserAccounts = () => E.gen(function* () {

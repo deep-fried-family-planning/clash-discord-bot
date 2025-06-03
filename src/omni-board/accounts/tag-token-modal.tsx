@@ -1,5 +1,5 @@
-import {Registry} from '#src/data';
-import {useCaller} from '#src/discord/hooks/use-caller.ts';
+import {Registry} from '#src/data/index.ts';
+import {useCaller} from '#src/omni-board/hooks/use-caller.ts';
 import * as E from 'effect/Effect';
 
 type Props = {

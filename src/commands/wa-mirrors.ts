@@ -1,10 +1,10 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/discord/old/ix-constants.ts';
-import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/discord/old/markdown.ts';
-import {dTable} from '#src/discord/old/message-table.ts';
-import type {IxDS} from '#src/discord/old/types.ts';
-import {validateServer} from '#src/discord/old/validation.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_FROM, OPTION_LIMIT, OPTION_TO} from '#src/internal/old/ix-constants.ts';
+import {dEmpL, dHdr3, dLines, dSubC, nNatr, nNatT, nPrct} from '#src/internal/old/markdown.ts';
+import {dTable} from '#src/internal/old/message-table.ts';
+import type {IxDS} from '#src/internal/old/types.ts';
+import {validateServer} from '#src/internal/old/validation.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {descriptiveHitRates} from '#src/internal/graph/model-descriptive/descriptive-hit-rates.ts';
 import {concatL, filterL, flattenL, mapL, zipL} from '#src/internal/pure/pure-list.ts';

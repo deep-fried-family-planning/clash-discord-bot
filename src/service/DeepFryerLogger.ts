@@ -1,4 +1,4 @@
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
 import {AwsLambdaEnv, DiscordEnv} from 'config/external.ts';
 import type {Discord} from 'dfx';
 import {DiscordREST} from 'dfx/DiscordREST';

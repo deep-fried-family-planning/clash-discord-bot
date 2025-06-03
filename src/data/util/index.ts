@@ -1,4 +1,4 @@
-export const enum ClanVerification {
+export enum ClanVerification {
   admin     = 0,
   elder     = 1,
   coleader  = 2,
@@ -6,7 +6,7 @@ export const enum ClanVerification {
   developer = 4,
 }
 
-export const enum PlayerVerification {
+export enum PlayerVerification {
   none      = 0,
   admin     = 1,
   token     = 2,

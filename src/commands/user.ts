@@ -1,7 +1,7 @@
 import {Registry} from '#src/data/index.ts';
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {OPTION_TZ} from '#src/discord/old/ix-constants.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {OPTION_TZ} from '#src/internal/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
 import type {Discord} from 'dfx';
 import * as E from 'effect/Effect';
 import * as S from 'effect/Schema';

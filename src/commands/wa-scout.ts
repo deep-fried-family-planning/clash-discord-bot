@@ -1,10 +1,10 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/discord/old/ix-constants.ts';
-import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/discord/old/markdown.ts';
-import {dTable} from '#src/discord/old/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
-import {validateServer} from '#src/discord/old/validation.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {OPTION_CLAN, OPTION_EXHAUSTIVE, OPTION_LIMIT} from '#src/internal/old/ix-constants.ts';
+import {dBold, dCode, dHdr1, dHdr3, dLines, dNotA, dSubC, nIdex, nNatr, nPrct} from '#src/internal/old/markdown.ts';
+import {dTable} from '#src/internal/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
+import {validateServer} from '#src/internal/old/validation.ts';
 import {buildGraphModel} from '#src/internal/graph/build-graph-model.ts';
 import {describeSamples} from '#src/internal/graph/model-descriptive/describe-samples.ts';
 import {describeScout} from '#src/internal/graph/model-descriptive/describe-scout.ts';
