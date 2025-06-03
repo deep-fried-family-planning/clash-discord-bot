@@ -3,8 +3,7 @@ import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Props from '#src/disreact/model/entity/props.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Hook from '#src/disreact/model/hook.ts';
-import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as Diff from '#src/disreact/model/util/diff.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
@@ -18,6 +17,7 @@ import * as StackV1 from 'effect/MutableList';
 import * as P from 'effect/Predicate';
 import type * as Cause from 'effect/Cause';
 import * as Option from 'effect/Option';
+import * as Globals from '#src/disreact/model/util/globals.ts';
 
 const connect = (nd: El.Nd, rs: El.Cs = nd.nodes): El.El[] => {
   const cs = Array.ensure(rs).flat();
@@ -98,38 +98,56 @@ export class RenderDefect extends Data.TaggedError('RenderDefect')<{
   cause: Cause.Cause<Error>;
 }> {}
 
+Globals.init();
+
 const renderNode = (root: Rehydrant.Rehydrant, node: El.Comp) =>
-  pipe(
-    LOCK.take(1),
-    E.andThen(Hook.set(root, node)),
-    E.andThen(FC.render(node.type, node.props)),
-    E.tap(Hook.reset),
-    E.tap(LOCK.release(1)),
+  Globals.withLock(
+    root,
+    node,
+    0,
+    FC.render(node.type, node.props),
+  ).pipe(
     E.map((rendered) => connect(node, rendered)),
     E.catchAllCause((cause) =>
-      pipe(
-        Hook.reset,
-        E.andThen(LOCK.release(1)),
-        E.andThen(
-          new RenderDefect({
-            root : root,
-            node : node,
-            cause: cause,
-          }),
-        ),
-      ),
+      new RenderDefect({
+        root : root,
+        node : node,
+        cause: cause,
+      }),
     ),
     E.tap(() => renderUpdate(root, node)),
   );
+  // pipe(
+  //   Globals.set(root, node),
+  //   E.andThen(),
+  //   E.tap(Globals.reset),
+  //   E.map((rendered) => connect(node, rendered)),
+  //   E.catchAllCause((cause) =>
+  //     pipe(
+  //       Globals.reset,
+  //       E.andThen(
+  //         new RenderDefect({
+  //           root : root,
+  //           node : node,
+  //           cause: cause,
+  //         }),
+  //       ),
+  //     ),
+  //   ),
+  //
+  // );
 
-export const initialize = (root: Rehydrant.Rehydrant) => E.serviceOption(RehydrantDOM).pipe(E.flatMap((maybeDOM) => {
+const OptionalPart = E.serviceOption(Relay).pipe(
+  E.map(Option.map((relay) =>
+    (id: string, type: string, props: any) => relay.send(Progress.part(id, type, props)),
+  )),
+  E.map(Option.getOrElse(() =>
+    (...p: Parameters<typeof Progress.part>) => E.void,
+  )),
+);
+
+export const initialize = (root: Rehydrant.Rehydrant) => OptionalPart.pipe(E.flatMap((part) => {
   const stack = StackV1.make<El.Nd>(root.elem);
-
-  const partial = pipe(
-    maybeDOM,
-    Option.map((DOM) => flow(Progress.part, DOM.send, E.asVoid)),
-    Option.getOrElse(() => flow(Progress.part, E.succeed, E.asVoid)),
-  );
 
   const body = () => {
     const node = StackV1.pop(stack)!;
@@ -142,7 +160,7 @@ export const initialize = (root: Rehydrant.Rehydrant) => E.serviceOption(Rehydra
           StackV1.append(stack, c);
         }
       }
-      return partial(root.id, node.type, node.props);
+      return part(root.id, node.type, node.props);
     }
 
     return pipe(
@@ -327,23 +345,13 @@ const renderEvent = (root: Rehydrant.Rehydrant, node: El.Rest, event: El.Event) 
     }),
     E.flatMap(() => {
       if (root.next.id === null) {
-        return pipe(
-          RehydrantDOM.send(Progress.exit()),
-          E.as(null),
-        );
+        return Relay.final(Progress.exit());
       }
       if (root.next.id === root.id) {
-        return pipe(
-          RehydrantDOM.send(Progress.same()),
-          E.as(root),
-        );
+        return Relay.final(Progress.same(root));
       }
-      return pipe(
-        RehydrantDOM.send(Progress.next(root.next.id)),
-        E.flatMap(() => Rehydrator.checkout(root.next.id!, root.next.props, root.data)),
-      );
+      return Relay.final(Progress.next(root));
     }),
-    E.flatMap((next) => RehydrantDOM.finalize(next)),
     E.catchAllCause((cause) =>
       new EventDefect({
         root : root,

@@ -1,9 +1,7 @@
 import type * as Button from '#src/disreact/codec/intrinsic/button.ts';
+import type * as Container from '#src/disreact/codec/intrinsic/container.ts';
 import type * as Embed from '#src/disreact/codec/intrinsic/embed.ts';
-import type * as Message from '#src/disreact/codec/intrinsic/message.ts';
 import type * as Markdown from '#src/disreact/codec/intrinsic/markdown.ts';
-import type * as Misc from '#src/disreact/codec/intrinsic/misc.ts';
-import type * as Modal from '#src/disreact/codec/intrinsic/modal.ts';
 import type * as Select from '#src/disreact/codec/intrinsic/select.ts';
 
 export interface IntrinsicAttributesMap {
@@ -27,7 +25,7 @@ export interface IntrinsicAttributesMap {
   time      : Markdown.TimeAttributes & {children?: any};
   u         : Markdown.UnderlineAttributes & {children?: any};
   ul        : Markdown.UnorderedListAttributes & {children?: any};
-  emoji     : Misc.EmojiAttributes & {children?: any};
+  emoji     : Markdown.EmojiAttributes & {children?: any};
   primary   : Button.PrimaryAttributes & {children?: any};
   secondary : Button.SecondaryAttributes & {children?: any};
   success   : Button.SuccessAttributes & {children?: any};
@@ -41,10 +39,10 @@ export interface IntrinsicAttributesMap {
   image     : Embed.ImageAttributes & {children?: any};
   field     : Embed.FieldAttributes & {children?: any};
   footer    : Embed.FooterAttributes & {children?: any};
-  message   : Message.MessageAttributes & {children?: any};
-  ephemeral : Message.EphemeralAttributes & {children?: any};
-  modal     : Modal.ModalAttributes & {children?: any};
-  textinput : Modal.TextInputAttributes & {children?: any};
+  message   : Container.MessageAttributes & {children?: any};
+  ephemeral : Container.EphemeralAttributes & {children?: any};
+  modal     : Container.ModalAttributes & {children?: any};
+  textinput : Container.TextInputAttributes & {children?: any};
   option    : Select.OptionAttributes & {children?: any};
   select    : Select.SelectAttributes & {children?: any};
   default   : Select.DefaultAttributes & {children?: any};

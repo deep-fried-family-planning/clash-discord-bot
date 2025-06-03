@@ -1,4 +1,4 @@
-import type * as Doken from '#src/disreact/codec/rest/doken.ts';
+import type * as Doken from '#src/disreact/codec/doken.ts';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';
 import type * as Cause from 'effect/Cause';
 import * as Cache from 'effect/Cache';

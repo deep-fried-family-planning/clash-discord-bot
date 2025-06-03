@@ -7,7 +7,6 @@ import * as MutableList from 'effect/MutableList';
 import * as Record from 'effect/Record';
 import type * as Declarations from '#src/disreact/model/schema/declarations.ts';
 
-
 export declare namespace Rehydrant {
   export type Registrant = FC.Any | El.El;
   export type SourceId = string | FC.Any | El.El;

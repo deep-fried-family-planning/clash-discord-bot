@@ -17,7 +17,7 @@ export const makeGlobalRuntimeLayer = (
 ) => {
   return L.mergeAll(
     Codec.Default(),
-    Rehydrator.Default(config?.rehydrator ?? {}),
+    Rehydrator.Default(config?.rehydrator),
     config?.dom ?? DiscordDOM.Default,
     config?.memory ?? DokenCache.Default({capacity: config?.capacity ?? 100}),
   );

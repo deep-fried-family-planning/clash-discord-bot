@@ -1,3 +1,5 @@
+import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+
 export namespace Progress {
   export type Done = {
     _tag: 'done';
@@ -5,12 +7,11 @@ export namespace Progress {
   export type Exit = {
     _tag: 'exit';
   };
-  export type Same = {
+  export type Same = Rehydrant.Rehydrant & {
     _tag: 'same';
   };
-  export type Next = {
+  export type Next = Rehydrant.Rehydrant & {
     _tag: 'next';
-    id  : string;
   };
   export type Part = {
     _tag : 'part';
@@ -51,15 +52,16 @@ export const exit = (): Progress.Exit =>
     _tag: 'exit',
   });
 
-export const same = (): Progress.Same =>
+export const same = (root: Rehydrant.Rehydrant): Progress.Same =>
   ({
     _tag: 'same',
+    ...root,
   });
 
-export const next = (id: string): Progress.Next =>
+export const next = (root: Rehydrant.Rehydrant): Progress.Next =>
   ({
     _tag: 'next',
-    id,
+    ...root,
   });
 
 export const part = (id: string, type: string, props: any): Progress.Part =>

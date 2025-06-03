@@ -1,6 +1,6 @@
-import * as Misc from '#src/disreact/codec/intrinsic/misc.ts';
+import * as Markdown from '#src/disreact/codec/intrinsic/markdown.ts';
 import * as Norm from '#src/disreact/codec/intrinsic/norm.ts';
-import * as Rest from '#src/disreact/codec/intrinsic/rest-element.ts';
+import * as Rest from '#src/disreact/codec/rest-element.ts';
 import {Discord} from 'dfx';
 import * as S from 'effect/Schema';
 
@@ -8,7 +8,7 @@ export const PRIMARY = 'primary';
 export const PrimaryAttributes = Rest.Attributes({
   custom_id: S.optional(S.String),
   label    : S.optional(S.String),
-  emoji    : S.optional(Misc.EmojiAttributes),
+  emoji    : S.optional(Markdown.EmojiAttributes),
   disabled : S.optional(S.Boolean),
   onclick  : Rest.Handler(S.Any),
 });
@@ -18,7 +18,7 @@ export const encodePrimary = (self: any, arg: any) => {
     style    : Discord.ButtonStyleTypes.PRIMARY as number,
     custom_id: self.props.custom_id ?? self.ids,
     label    : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
-    emoji    : self.props.emoji ?? arg[Misc.EMOJI]?.[0],
+    emoji    : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     disabled : self.props.disabled,
   };
 };
@@ -27,7 +27,7 @@ export const SECONDARY = 'secondary';
 export const SecondaryAttributes = Rest.Attributes({
   custom_id: S.optional(S.String),
   label    : S.optional(S.String),
-  emoji    : S.optional(Misc.EmojiAttributes),
+  emoji    : S.optional(Markdown.EmojiAttributes),
   disabled : S.optional(S.Boolean),
   onclick  : Rest.Handler(S.Any),
 });
@@ -41,7 +41,7 @@ export const SUCCESS = 'success';
 export const SuccessAttributes = Rest.Attributes({
   custom_id: S.optional(S.String),
   label    : S.optional(S.String),
-  emoji    : S.optional(Misc.EmojiAttributes),
+  emoji    : S.optional(Markdown.EmojiAttributes),
   disabled : S.optional(S.Boolean),
   onclick  : Rest.Handler(S.Any),
 });
@@ -55,7 +55,7 @@ export const DANGER = 'danger';
 export const DangerAttributes = Rest.Attributes({
   custom_id: S.optional(S.String),
   label    : S.optional(S.String),
-  emoji    : S.optional(Misc.EmojiAttributes),
+  emoji    : S.optional(Markdown.EmojiAttributes),
   disabled : S.optional(S.Boolean),
   onclick  : Rest.Handler(S.Any),
 });
@@ -69,7 +69,7 @@ export const LINK = 'link';
 export const LinkAttributes = S.Struct({
   url     : S.String,
   label   : S.optional(S.String),
-  emoji   : S.optional(Misc.EmojiAttributes),
+  emoji   : S.optional(Markdown.EmojiAttributes),
   disabled: S.optional(S.Boolean),
 });
 export const encodeLink = (self: any, arg: any) => {
@@ -78,7 +78,7 @@ export const encodeLink = (self: any, arg: any) => {
     style   : Discord.ButtonStyleTypes.LINK,
     url     : self.props.url,
     label   : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
-    emoji   : self.props.emoji ?? arg[Misc.EMOJI]?.[0],
+    emoji   : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     disabled: self.props.disabled,
   };
 };
@@ -102,7 +102,7 @@ export const ButtonAttributes = Rest.Attributes({
   custom_id: S.optional(S.String),
   style    : S.optional(S.Literal(1, 2, 3, 4, 5, 6)),
   label    : S.optional(S.String),
-  emoji    : S.optional(Misc.EmojiAttributes),
+  emoji    : S.optional(Markdown.EmojiAttributes),
   disabled : S.optional(S.Boolean),
   url      : S.optional(S.String),
   onclick  : S.optional(Rest.Handler(S.Any)),
@@ -113,7 +113,7 @@ export const encodeButton = (self: any, arg: any) => {
     style    : self.props.style ?? Discord.ButtonStyleTypes.PRIMARY,
     custom_id: self.props.custom_id ?? self.ids,
     label    : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
-    emoji    : self.props.emoji ?? arg[Misc.EMOJI]?.[0],
+    emoji    : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     disabled : self.props.disabled,
   };
 };
@@ -123,7 +123,7 @@ export const ActionsAttributes = Rest.Attributes({});
 export const encodeActions = (self: any, arg: any) => {
   return {
     type      : 1,
-    components: arg[Norm.BUTTONS],
+    components: arg[Norm.COMPONENTS],
   };
 };
 

@@ -1,8 +1,8 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import * as Doken from '#src/disreact/codec/rest/doken.ts';
+import * as Doken from '#src/disreact/codec/doken.ts';
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
-import * as Model from '#src/disreact/model/model.ts';
-import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import * as Model from '#src/disreact/model/Model.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/runtime/DokenState.ts';
@@ -302,16 +302,14 @@ const armDialog = E.gen(function* () {
 const listen = E.gen(function* () {
   const rx = yield* DokenState.rx;
 
-  const dom = yield* RehydrantDOM;
-
-  const listen = dom.listen.pipe(E.orElseSucceed(() => Progress.done()));
+  const dom = yield* Relay;
 
   let isSame = false;
   let isNext = false;
   let current: Progress.Progress;
 
   do {
-    current = yield* listen;
+    current = yield* dom.take;
 
     if (Progress.isExit(current)) {
       yield* armExit;
@@ -459,5 +457,5 @@ export const respond = E.fn('respond')(
     }
     return null;
   },
-  (effect, body) => E.provide(effect, [DokenState.Fresh(body), RehydrantDOM.Fresh()]),
+  (effect, body) => E.provide(effect, [DokenState.Fresh(body), Relay.Fresh]),
 );

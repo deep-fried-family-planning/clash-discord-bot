@@ -22,7 +22,7 @@ export type RehydratorConfig = {
 };
 
 export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
-  effect: E.fnUntraced(function* (config: RehydratorConfig) {
+  effect: (config?: RehydratorConfig) => {
     const store         = new Map<string, Rehydrant.Source>(),
           primitive     = config?.primitive ?? JsxDefault.primitive,
           normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
@@ -39,7 +39,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       for (const [id, input] of Object.entries(sources)) {
         const src = Rehydrant.source(input, id);
         if (store.has(src.id)) {
-          return yield* new RehydratorError({cause: new Error(`Source (${src.id}) already registered`)});
+          return new RehydratorError({cause: new Error(`Source (${src.id}) already registered`)});
         }
         store.set(src.id, src);
       }
@@ -48,7 +48,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
     const register = (input: Rehydrant.Registrant, id?: string) => E.suspend(() => {
       const src = Rehydrant.source(input, id);
       if (store.has(src.id)) {
-          return new RehydratorError({cause: new Error(`Source (${src.id}) already registered`)});
+        return new RehydratorError({cause: new Error(`Source (${src.id}) already registered`)});
       }
       store.set(src.id, src);
       return E.void;
@@ -74,14 +74,14 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       return E.succeed(Rehydrant.fromHydrator(source, hydrator, data));
     });
 
-    return {
+    return E.succeed({
       register,
       checkout,
       decode,
       primitive,
       normalization,
       encoding,
-    };
-  }),
+    });
+  },
   accessors: true,
 }) {}

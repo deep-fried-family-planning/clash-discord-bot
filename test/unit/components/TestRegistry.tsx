@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
@@ -38,7 +38,7 @@ export const TestRegistry = L.mergeAll(
     deferEdit   : vi.fn(() => E.void) as any,
   })),
   DokenCache.Default({capacity: 1}),
-  L.fresh(RehydrantDOM.Fresh()),
+  L.fresh(Relay.Fresh),
   Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
 );
 

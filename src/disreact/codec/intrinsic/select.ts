@@ -1,6 +1,6 @@
-import * as Misc from '#src/disreact/codec/intrinsic/misc.ts';
+import * as Markdown from '#src/disreact/codec/intrinsic/markdown.ts';
 import * as Norm from '#src/disreact/codec/intrinsic/norm.ts';
-import * as Rest from '#src/disreact/codec/intrinsic/rest-element.ts';
+import * as Rest from '#src/disreact/codec/rest-element.ts';
 import {Discord} from 'dfx';
 import * as S from 'effect/Schema';
 
@@ -9,7 +9,7 @@ export const OptionAttributes = S.Struct({
   label      : S.String,
   value      : S.String,
   description: S.optional(S.String),
-  emoji      : S.optional(Misc.EmojiAttributes),
+  emoji      : S.optional(Markdown.EmojiAttributes),
   default    : S.optional(S.Boolean),
 });
 export const encodeOption = (self: any, arg: any) => {
@@ -17,7 +17,7 @@ export const encodeOption = (self: any, arg: any) => {
     value      : self.props.value,
     label      : self.props.label,
     description: self.props.description ?? arg[Norm.PRIMITIVE]?.[0],
-    emoji      : self.props.emoji ?? arg[Misc.EMOJI]?.[0],
+    emoji      : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     default    : self.props.default,
   };
 };

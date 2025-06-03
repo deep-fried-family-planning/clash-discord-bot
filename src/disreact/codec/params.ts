@@ -1,5 +1,5 @@
-import * as Template from '#src/disreact/codec/rest/template.ts';
-import * as DAPI from 'src/disreact/codec/dapi/dapi.ts';
+import * as Template from '#src/disreact/codec/template.ts';
+import * as DAPI from '#src/disreact/codec/dapi/dapi.ts';
 import * as S from 'effect/Schema';
 
 export const Modal = S.transform(

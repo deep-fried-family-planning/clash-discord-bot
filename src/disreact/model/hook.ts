@@ -4,6 +4,7 @@ import type {FC} from '#src/disreact/model/entity/fc.ts';
 import * as Monomer from '#src/disreact/model/entity/monomer.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+import * as Globals from '#src/disreact/model/util/globals.ts';
 import type {Discord} from 'dfx';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
@@ -12,6 +13,8 @@ import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
 import * as P from 'effect/Predicate';
+import console from 'node:console';
+
 
 const __ctx = {
   root   : undefined as undefined | Rehydrant.Rehydrant,
@@ -35,24 +38,27 @@ export const reset = E.sync(() => {
 });
 
 const getRoot = () => {
-  if (!__ctx.root) {
+  const ctx = Globals.get();
+  if (!ctx.root) {
     throw new Error('Hooks must be called within a component.');
   }
-  return __ctx.root;
+  return ctx.root;
 };
 
 const getComp = () => {
-  if (!__ctx.comp) {
+  const ctx = Globals.get();
+  if (!ctx.comp) {
     throw new Error('Hooks must be called within a component.');
   }
-  return __ctx.comp;
+  return ctx.comp;
 };
 
 const getPolymer = () => {
-  if (!__ctx.polymer) {
+  const ctx = Globals.get();
+  if (!ctx.poly) {
     throw new Error('Hooks must be called within a component.');
   }
-  return __ctx.polymer;
+  return ctx.poly;
 };
 
 export const DepTypeId = Symbol.for('disreact/dep');

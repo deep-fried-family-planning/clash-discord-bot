@@ -1,6 +1,6 @@
 import {usePage} from '#src/disreact/index.ts';
-import * as Model from '#src/disreact/model/model.ts';
-import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
+import * as Model from '#src/disreact/model/Model.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {sjson} from '#unit/model/scenarios/util.ts';
 import {it} from '@effect/vitest';
@@ -116,4 +116,4 @@ it.effect('when clicked', E.fn(function* () {
   };
   const actual = yield* Model.invokeRoot(hydrator, event, {});
   expect(actual).toEqual(null);
-}, E.provide([TestLayer(), RehydrantDOM.Fresh()])));
+}, E.provide([TestLayer(), Relay.Fresh])));

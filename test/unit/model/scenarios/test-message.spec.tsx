@@ -1,20 +1,23 @@
-import * as Model from '#src/disreact/model/model.ts';
-import {RehydrantDOM} from '#src/disreact/model/RehydrantDOM.ts';
-import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
+import {Model} from '#src/disreact/model/Model.ts';
+import {Relay} from '#src/disreact/model/Relay.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {sjson} from '#unit/model/scenarios/util.ts';
 import {it} from '@effect/vitest';
+import * as LogLevel from 'effect/LogLevel';
 import * as E from 'effect/Effect';
 import * as L from 'effect/Layer';
 import * as Logger from 'effect/Logger';
 
 const TestLayer = () => L.mergeAll(
-  Rehydrator.Default({
+  Model.layer({
     sources: {
       TestMessage,
     },
   }),
-  Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault),
+).pipe(
+
+  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+  L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
 );
 
 it.effect('when rendered', E.fn(function* () {
@@ -186,4 +189,4 @@ it.effect('when clicked', E.fn(function* () {
       }
     }"
   `);
-}, E.provide([TestLayer(), RehydrantDOM.Fresh()])));
+}, E.provide([TestLayer(), Relay.Fresh])));

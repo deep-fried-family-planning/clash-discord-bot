@@ -1,3 +1,2 @@
-export const BUTTONS    = 'buttons',
-             COMPONENTS = 'components',
+export const COMPONENTS = 'components',
              PRIMITIVE  = 'primitive';
