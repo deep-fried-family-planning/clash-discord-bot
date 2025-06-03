@@ -66,7 +66,7 @@ export const encodeEmbed = (self: any, args: any) => {
     description: self.props.description ?? args[Norm.PRIMITIVE]?.join(''),
     color      : self.props.color,
     url        : self.props.url,
-    fields     : self.props.fields ?? args[Norm.FIELDS],
+    fields     : self.props.fields ?? args[FIELD],
     image      : self.props.image ?? args[IMAGE],
     footer     : self.props.footer ?? args.footer,
   };

@@ -35,7 +35,6 @@ export const createRoot = (id: Rehydrant.SourceId, props?: any, data?: any) =>
         encoding: root as any,
       });
     }),
-    E.provide(RehydrantDOM.Fresh()),
   );
 
 const pollDeferred = <A, E>(deferred: Deferred.Deferred<A, E>) =>

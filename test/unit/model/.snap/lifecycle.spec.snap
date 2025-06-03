@@ -19,16 +19,16 @@ exports[`when dispatching an event > initial encoded 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "Start 0",
-          "style": 1,
           "type": 2,
-          "custom_id": "actions:0:button:0"
+          "style": 1,
+          "custom_id": "actions:0:button:0",
+          "label": "Start 0"
         },
         {
-          "label": "Help",
-          "style": 2,
           "type": 2,
-          "custom_id": "actions:0:secondary:0"
+          "style": 2,
+          "custom_id": "actions:0:secondary:0",
+          "label": "Help"
         }
       ]
     },
@@ -36,8 +36,8 @@ exports[`when dispatching an event > initial encoded 1`] = `
       "type": 1,
       "components": [
         {
-          "custom_id": "message:0:select:0",
           "type": 3,
+          "custom_id": "message:0:select:0",
           "options": [
             {
               "value": "1",
@@ -82,16 +82,16 @@ exports[`when dispatching an event > rerendered encoded 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "Start 1",
-          "style": 1,
           "type": 2,
-          "custom_id": "actions:0:button:0"
+          "style": 1,
+          "custom_id": "actions:0:button:0",
+          "label": "Start 1"
         },
         {
-          "label": "Help",
-          "style": 2,
           "type": 2,
-          "custom_id": "actions:0:secondary:0"
+          "style": 2,
+          "custom_id": "actions:0:secondary:0",
+          "label": "Help"
         }
       ]
     },
@@ -99,8 +99,8 @@ exports[`when dispatching an event > rerendered encoded 1`] = `
       "type": 1,
       "components": [
         {
-          "custom_id": "message:0:select:0",
           "type": 3,
+          "custom_id": "message:0:select:0",
           "options": [
             {
               "value": "1",
@@ -145,16 +145,16 @@ exports[`when initial rendering 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "Start 0",
-          "style": 1,
           "type": 2,
-          "custom_id": "actions:0:button:0"
+          "style": 1,
+          "custom_id": "actions:0:button:0",
+          "label": "Start 0"
         },
         {
-          "label": "Help",
-          "style": 2,
           "type": 2,
-          "custom_id": "actions:0:secondary:0"
+          "style": 2,
+          "custom_id": "actions:0:secondary:0",
+          "label": "Help"
         }
       ]
     },
@@ -162,8 +162,8 @@ exports[`when initial rendering 1`] = `
       "type": 1,
       "components": [
         {
-          "custom_id": "message:0:select:0",
           "type": 3,
+          "custom_id": "message:0:select:0",
           "options": [
             {
               "value": "1",
@@ -199,22 +199,22 @@ exports[`when rendering async > MessageAsync 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "ButtonSync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonSync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonSync:0:button:0",
+          "label": "ButtonSync"
         },
         {
-          "label": "ButtonAsync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonAsync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonAsync:0:button:0",
+          "label": "ButtonAsync"
         },
         {
-          "label": "ButtonEffect",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonEffect:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonEffect:0:button:0",
+          "label": "ButtonEffect"
         }
       ]
     }
@@ -235,22 +235,22 @@ exports[`when rendering effect > MessageEffect 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "ButtonSync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonSync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonSync:0:button:0",
+          "label": "ButtonSync"
         },
         {
-          "label": "ButtonAsync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonAsync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonAsync:0:button:0",
+          "label": "ButtonAsync"
         },
         {
-          "label": "ButtonEffect",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonEffect:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonEffect:0:button:0",
+          "label": "ButtonEffect"
         }
       ]
     }
@@ -271,22 +271,22 @@ exports[`when rendering sync > MessageSync 1`] = `
       "type": 1,
       "components": [
         {
-          "label": "ButtonSync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonSync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonSync:0:button:0",
+          "label": "ButtonSync"
         },
         {
-          "label": "ButtonAsync",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonAsync:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonAsync:0:button:0",
+          "label": "ButtonAsync"
         },
         {
-          "label": "ButtonEffect",
-          "style": 1,
           "type": 2,
-          "custom_id": "ButtonEffect:0:button:0"
+          "style": 1,
+          "custom_id": "ButtonEffect:0:button:0",
+          "label": "ButtonEffect"
         }
       ]
     }
