@@ -1,6 +1,6 @@
-import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
-import {OmniBoard} from '#src/discord/omni-board/omni-board.tsx';
+import {OPTION_CLAN} from '#src/internal/old/ix-constants.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
+import {OmniBoard} from '#src/omni-board/omni-board.tsx';
 import {DisReact} from '#src/disreact/DisReact.ts';
 import type {Discord} from 'dfx';
 import * as E from 'effect/Effect';

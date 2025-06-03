@@ -1,0 +1,10 @@
+coverage
+dist
+.coverage
+.dist
+.husky
+.terraform/providers
+.terraform.lock.hcl
+.plan.tfplan
+.idea
+*.zip

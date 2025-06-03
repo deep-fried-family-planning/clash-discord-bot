@@ -1,10 +1,10 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/discord/old/ix-constants.ts';
-import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/discord/old/markdown.ts';
-import {dTable} from '#src/discord/old/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
-import {validateServer} from '#src/discord/old/validation.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {OPTION_CLAN, OPTION_FROM, OPTION_TO} from '#src/internal/old/ix-constants.ts';
+import {dBold, dCode, dEmpL, dHdr3, dLine, dLink, dSubH, nNatT} from '#src/internal/old/markdown.ts';
+import {dTable} from '#src/internal/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
+import {validateServer} from '#src/internal/old/validation.ts';
 import {fetchWarEntities} from '#src/internal/graph/fetch-war-entities.ts';
 import {concatL, mapL, sortL} from '#src/internal/pure/pure-list.ts';
 import {fromCompare, OrdN} from '#src/internal/pure/pure.ts';

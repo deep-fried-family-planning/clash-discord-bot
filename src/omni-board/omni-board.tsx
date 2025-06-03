@@ -1,4 +1,4 @@
-import {StartMenu} from '#src/discord/omni-board/start-menu.tsx';
+import {StartMenu} from '#src/omni-board/start-menu.tsx';
 import {usePage} from '#src/disreact/index.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 

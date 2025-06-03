@@ -1,9 +1,9 @@
 import {getAliasTag} from '#src/clash/get-alias-tag.ts';
 import {Clan} from '#src/data/index.ts';
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {OPTION_CLAN} from '#src/discord/old/ix-constants.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/discord/old/types.ts';
-import {validateServer} from '#src/discord/old/validation.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {OPTION_CLAN} from '#src/internal/old/ix-constants.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/internal/old/types.ts';
+import {validateServer} from '#src/internal/old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import * as E from 'effect/Effect';
 import * as CSL from 'effect/Console';

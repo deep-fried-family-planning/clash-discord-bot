@@ -13,6 +13,5 @@ const raidWeekend = Cron.make({
 export const poll = () => E.gen(function* () {
 
 }).pipe(
-  E.tapError((error) => DeepFryerLogger.logError(error)),
   E.tapDefect((defect) => DeepFryerLogger.logFatal(defect)),
 );

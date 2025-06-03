@@ -1,4 +1,4 @@
-import {ClanVerification, PlayerVerification} from '#src/data/constants/index.ts';
+import {ClanVerification, PlayerVerification} from '#src/data/util/index.ts';
 import * as GSI2 from '#src/data/gsi/gsi2.ts';
 import * as Clan from '#src/data/partition-server/clan.ts';
 import * as Server from '#src/data/partition-server/server.ts';

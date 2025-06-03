@@ -1,4 +1,4 @@
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
 import {MD} from '#src/internal/pure/pure.ts';
 import {DeepFryerLogger} from '#src/service/DeepFryerLogger.ts';
 import {LambdaHandler} from '@effect-aws/lambda';

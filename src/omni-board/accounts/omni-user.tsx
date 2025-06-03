@@ -1,5 +1,5 @@
-import {useCaller} from '#src/discord/hooks/use-caller.ts';
-import {AccountLinker} from '#src/discord/omni-board/accounts/account-linker.tsx';
+import {useCaller} from '#src/omni-board/hooks/use-caller.ts';
+import {AccountLinker} from '#src/omni-board/accounts/account-linker.tsx';
 import {usePage} from '#src/disreact/index.ts';
 import * as E from 'effect/Effect';
 

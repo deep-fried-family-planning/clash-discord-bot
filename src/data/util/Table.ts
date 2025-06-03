@@ -1,4 +1,4 @@
-import {failReservedDEV} from '#src/data/constants/document-reserved.ts';
+import {failReservedDEV} from '#src/data/util/document-reserved.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import {makeUuid7, Uuid7State} from '@typed/id';
 import * as DateTime from 'effect/DateTime';
@@ -113,11 +113,11 @@ export const Item = <T extends string, F extends S.Struct.Fields>(tag: T, versio
     _tag    : S.tag(tag),
     _v      : S.tag(version),
     _v7     : UUIDv7,
-    created : S.optionalWith(Created, {default: () => undefined}),
-    updated : S.optionalWith(Updated, {default: () => undefined}),
+    _c      : S.optionalWith(Created, {default: () => undefined}),
+    _u      : S.optionalWith(Updated, {default: () => undefined}),
+    _m      : Migrated,
     upgraded: Upgraded,
-    migrated: Migrated,
-    migrate : Migrate,
+    migrated: Migrate,
   };
   failReservedDEV(item);
   return S.Struct(item);

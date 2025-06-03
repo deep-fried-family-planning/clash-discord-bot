@@ -1,5 +1,5 @@
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import type {CommandSpec} from '#src/discord/old/types.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import type {CommandSpec} from '#src/internal/old/types.ts';
 import * as E from 'effect/Effect';
 import type {Discord} from 'dfx';
 

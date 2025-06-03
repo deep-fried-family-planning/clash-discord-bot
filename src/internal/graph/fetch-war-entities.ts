@@ -1,4 +1,4 @@
-import type {SharedOptions} from '#src/discord/old/types.ts';
+import type {SharedOptions} from '#src/internal/old/types.ts';
 import {ClashOfClans} from '#src/service/ClashOfClans.ts';
 import type {Clan, ClanWar, ClanWarLeagueGroup, Player} from 'clashofclans.js';
 import * as E from 'effect/Effect';

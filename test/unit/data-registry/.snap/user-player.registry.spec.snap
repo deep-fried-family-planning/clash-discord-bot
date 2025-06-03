@@ -46,17 +46,17 @@ exports[`given caller is attempting admin registration > when admin registering 
 
 exports[`given caller is attempting admin registration > when admin registering user player 6`] = `
 {
-  "_tag": "UserPlayer",
-  "_v": 1,
+  "_c": "1970-01-01T00:00:00.000Z",
+  "_tag": "Player",
+  "_u": "1970-01-01T00:00:00.000Z",
+  "_v": 0,
   "_v7": "00000000-0000-7000-8000-000000000000",
   "account_type": "main",
-  "created": "1970-01-01T00:00:00.000Z",
   "name": "PlayerName",
   "pk": "user2",
   "pk2": "#player",
   "sk": "#player",
   "sk2": "user2",
-  "updated": "1970-01-01T00:00:00.000Z",
   "verification": 1,
 }
 `;
@@ -113,17 +113,17 @@ exports[`given new user player registration > when registering user player 5`] =
 
 exports[`given new user player registration > when registering user player 6`] = `
 {
-  "_tag": "UserPlayer",
-  "_v": 1,
+  "_c": "1970-01-01T00:00:00.000Z",
+  "_tag": "Player",
+  "_u": "1970-01-01T00:00:00.000Z",
+  "_v": 0,
   "_v7": "00000000-0000-7000-8000-000000000000",
   "account_type": "main",
-  "created": "1970-01-01T00:00:00.000Z",
   "name": "PlayerName",
   "pk": "user",
   "pk2": "#player",
   "sk": "#player",
   "sk2": "user",
-  "updated": "1970-01-01T00:00:00.000Z",
   "verification": 2,
 }
 `;
@@ -152,17 +152,17 @@ exports[`given user player is already registered > when registering user player 
 
 exports[`given user player is already registered > when registering user player 6`] = `
 {
-  "_tag": "UserPlayer",
-  "_v": 1,
+  "_c": "1970-01-01T00:00:00.000Z",
+  "_tag": "Player",
+  "_u": "1970-01-01T00:00:00.000Z",
+  "_v": 0,
   "_v7": "00000000-0000-7000-8000-000000000000",
   "account_type": "main",
-  "created": "1970-01-01T00:00:00.000Z",
   "name": "PlayerName",
   "pk": "user",
   "pk2": "#player",
   "sk": "#player",
   "sk2": "user",
-  "updated": "1970-01-01T00:00:00.000Z",
   "verification": 2,
 }
 `;

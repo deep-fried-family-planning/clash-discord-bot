@@ -13,6 +13,8 @@
       <excludeFolder url="file://$MODULE_DIR$/terraform/.terraform" />
       <excludeFolder url="file://$MODULE_DIR$/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/.autogen" />
+      <excludeFolder url="file://$MODULE_DIR$/.dist" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

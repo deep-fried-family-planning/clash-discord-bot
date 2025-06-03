@@ -1,6 +1,6 @@
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import type {CommandSpec, IxDS, snflk} from '#src/discord/old/types.ts';
-import {validateServer} from '#src/discord/old/validation.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import type {CommandSpec, IxDS, snflk} from '#src/internal/old/types.ts';
+import {validateServer} from '#src/internal/old/validation.ts';
 import {SlashUserError} from '#src/internal/errors.ts';
 import * as E from 'effect/Effect';
 import {DynamoDBDocument} from '@effect-aws/lib-dynamodb';

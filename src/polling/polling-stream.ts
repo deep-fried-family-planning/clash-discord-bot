@@ -1,5 +1,5 @@
-import {syncServerStream} from '#src/data-stream/sync-server.ts';
-import {syncUser} from '#src/data-stream/sync-user.ts';
+import {syncServerStream} from '#src/polling/sync-server.ts';
+import {syncUser} from '#src/polling/sync-user.ts';
 import * as Stream from 'effect/Stream';
 import * as E from 'effect/Effect';
 import { GSI1 } from '#src/data/index.ts';

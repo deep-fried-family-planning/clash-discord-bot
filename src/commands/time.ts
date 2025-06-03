@@ -1,7 +1,7 @@
-import {COLOR, nColor} from '#src/discord/old/colors.ts';
-import {dCodes, dLines} from '#src/discord/old/markdown.ts';
-import {dTable} from '#src/discord/old/message-table.ts';
-import type {CommandSpec, IxDS} from '#src/discord/old/types.ts';
+import {COLOR, nColor} from '#src/internal/old/colors.ts';
+import {dCodes, dLines} from '#src/internal/old/markdown.ts';
+import {dTable} from '#src/internal/old/message-table.ts';
+import type {CommandSpec, IxDS} from '#src/internal/old/types.ts';
 import dayjs from 'dayjs';
 import daytimezone from 'dayjs/plugin/timezone';
 import dayutc from 'dayjs/plugin/utc';
