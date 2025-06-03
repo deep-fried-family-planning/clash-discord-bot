@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/model/entity/el.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as JsxDefault from '#src/disreact/codec/rest-element/index.ts';
+import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 

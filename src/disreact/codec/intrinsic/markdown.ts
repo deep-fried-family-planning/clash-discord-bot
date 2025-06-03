@@ -1,5 +1,5 @@
-import * as Norm from '#src/disreact/codec/rest-element/norm.ts';
-import * as Rest from '#src/disreact/codec/rest-element/rest-element.ts';
+import * as Norm from '#src/disreact/codec/intrinsic/norm.ts';
+import * as Rest from '#src/disreact/codec/intrinsic/rest-element.ts';
 import * as BigInt from 'effect/BigInt';
 import * as S from 'effect/Schema';
 

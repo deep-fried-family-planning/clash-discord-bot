@@ -1,10 +1,11 @@
 import {DAPI} from '#src/disreact/codec/dapi/dapi.ts';
-import {Keys} from '#src/disreact/codec/intrinsic/keys.ts';
 import {Doken} from '#src/disreact/codec/rest/doken.ts';
 import {Params} from '#src/disreact/codec/rest/params.ts';
 import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 import {pipe, hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
+import * as RestModal from '#src/disreact/codec/intrinsic/modal.ts';
+import * as RestMessage from '#src/disreact/codec/intrinsic/message.ts';
 
 export * as Rx from '#src/disreact/codec/rx.ts';
 export type Rx = never;
@@ -60,7 +61,7 @@ const Modal = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', Keys.modal),
+  S.attachPropertySignature('_tag', RestModal.MODAL),
 );
 
 const Message = pipe(
@@ -106,7 +107,7 @@ const Message = pipe(
         }),
     },
   ),
-  S.attachPropertySignature('_tag', Keys.message),
+  S.attachPropertySignature('_tag', RestMessage.MESSAGE),
 );
 
 export const Request = S.Union(

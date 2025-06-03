@@ -1,7 +1,7 @@
 import * as S from 'effect/Schema';
-import * as Norm from '#src/disreact/codec/rest-element/norm.ts';
-import * as Rest from '#src/disreact/codec/rest-element/rest-element.ts';
-import * as Embed from '#src/disreact/codec/rest-element/embed.ts';
+import * as Norm from '#src/disreact/codec/intrinsic/norm.ts';
+import * as Rest from '#src/disreact/codec/intrinsic/rest-element.ts';
+import * as Embed from '#src/disreact/codec/intrinsic/embed.ts';
 
 export const MESSAGE = 'message';
 export const MessageAttributes = Rest.Attributes({
