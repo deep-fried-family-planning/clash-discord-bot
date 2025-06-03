@@ -4,8 +4,8 @@ import {Params} from '#src/disreact/codec/rest/params.ts';
 import * as Declarations from '#src/disreact/model/schema/declarations.ts';
 import {pipe, hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
-import * as RestModal from '#src/disreact/codec/rest-element/modal.ts';
-import * as RestMessage from '#src/disreact/codec/rest-element/message.ts';
+import * as RestModal from '#src/disreact/codec/intrinsic/modal.ts';
+import * as RestMessage from '#src/disreact/codec/intrinsic/message.ts';
 
 export * as Rx from '#src/disreact/codec/rx.ts';
 export type Rx = never;

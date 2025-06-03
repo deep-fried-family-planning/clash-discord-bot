@@ -1,4 +1,4 @@
-import * as Rest from '#src/disreact/codec/rest-element/rest-element.ts';
+import * as Rest from '#src/disreact/codec/intrinsic/rest-element.ts';
 import * as S from 'effect/Schema';
 
 export const EMOJI = 'emoji';

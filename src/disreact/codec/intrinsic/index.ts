@@ -1,11 +1,11 @@
-import * as Button from '#src/disreact/codec/rest-element/button.ts';
-import * as Embed from '#src/disreact/codec/rest-element/embed.ts';
-import * as Markdown from '#src/disreact/codec/rest-element/markdown.ts';
-import * as Message from '#src/disreact/codec/rest-element/message.ts';
-import * as Misc from '#src/disreact/codec/rest-element/misc.ts';
-import * as Modal from '#src/disreact/codec/rest-element/modal.ts';
-import * as Select from '#src/disreact/codec/rest-element/select.ts';
-import * as Norm from '#src/disreact/codec/rest-element/norm.ts';
+import * as Button from '#src/disreact/codec/intrinsic/button.ts';
+import * as Embed from '#src/disreact/codec/intrinsic/embed.ts';
+import * as Markdown from '#src/disreact/codec/intrinsic/markdown.ts';
+import * as Message from '#src/disreact/codec/intrinsic/message.ts';
+import * as Misc from '#src/disreact/codec/intrinsic/misc.ts';
+import * as Modal from '#src/disreact/codec/intrinsic/modal.ts';
+import * as Select from '#src/disreact/codec/intrinsic/select.ts';
+import * as Norm from '#src/disreact/codec/intrinsic/norm.ts';
 
 export const primitive = Norm.PRIMITIVE;
 

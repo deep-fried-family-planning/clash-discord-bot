@@ -1,4 +1,4 @@
-import type {IntrinsicAttributesMap} from '#src/disreact/codec/types.ts';
+import type {IntrinsicAttributesMap} from '#src/disreact/codec/intrinsic/types.ts';
 import * as Dsx from '#src/disreact/model/dsx.ts';
 import type * as FC from '#src/disreact/model/entity/fc.ts';
 import type * as El from '#src/disreact/model/entity/el.ts';
