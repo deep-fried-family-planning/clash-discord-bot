@@ -1,14 +1,15 @@
-import * as El from '#src/disreact/model/entity/el.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
+import console from 'node:console';
 
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
-  if (FC.isFC(input)) return input[FC.FCNameId]!;
-  if (El.isComp(input)) return input.type[FC.FCNameId]!;
+  if (FC.isFC(input)) return FC.id(input);
+  if (El.isComp(input)) return FC.id(input.type);
 };
 
 export class RehydratorError extends Data.TaggedError('RehydratorError')<{cause: Error}> {}
@@ -71,7 +72,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
         return new RehydratorError({cause: new Error(`Source (${hydrator.id}) is not registered`)});
       }
       const source = store.get(hydrator.id)!;
-      return E.succeed(Rehydrant.fromHydrator(source, hydrator, data));
+      return E.succeed(Rehydrant.rehydrate(source, hydrator, data));
     });
 
     return E.succeed({

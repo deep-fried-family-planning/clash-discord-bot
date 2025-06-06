@@ -1,25 +1,24 @@
-import * as El from '#src/disreact/model/entity/el.ts';
-import * as Stack from '#src/disreact/model/util/stack.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
-import * as Props from '#src/disreact/model/entity/props.ts';
-import * as MutableList from 'effect/MutableList';
-import * as Record from 'effect/Record';
-import type * as Declarations from '#src/disreact/model/schema/declarations.ts';
+import type * as Declarations from '#src/disreact/model/util/declarations.ts';
+import * as Stack from '#src/disreact/model/util/stack.ts';
+import {Structural} from 'effect/Data';
+import * as GlobalValue from 'effect/GlobalValue';
+import type * as Record from 'effect/Record';
+import console from 'node:console';
 
 export declare namespace Rehydrant {
   export type Registrant = FC.Any | El.El;
   export type SourceId = string | FC.Any | El.El;
   export type Source = {
-    id  : string;
-    elem: El.Comp;
+    id: string;
+    el: El.Comp;
   };
   export type Rehydrant = {
     id   : string;
-    props: any;
-    elem : El.Comp;
+    root : El.Comp;
     data : any;
-    poly : Record<string, Polymer.Polymer>;
     next : {id: string | null; props?: any};
     stack: Stack.Stack;
   };
@@ -33,95 +32,76 @@ export type Rehydrant = Rehydrant.Rehydrant;
 export type Hydrator = Rehydrant.Hydrator;
 export type Encoded = Rehydrant.Encoded;
 
-export const source = (input: Registrant, id?: string): Source => {
-  if (FC.isFC(input)) {
-    const fn = El.comp(input, {});
-    if (id) {
-      fn.type[FC.FCNameId] = id;
-    }
-    return {
-      id  : fn.type[FC.FCNameId]!,
-      elem: fn,
-    };
+export const source = (src: Registrant, id?: string): Source => {
+  const comp = FC.isFC(src)
+    ? El.root(src, {})
+    : src;
+  if (id) {
+    FC.name(comp.type, id);
   }
-  if (El.isComp(input)) {
-    if (id) {
-      input.type[FC.FCNameId] = id;
-    }
-    return {
-      id  : input.type[FC.FCNameId]!,
-      elem: input,
-    };
-  }
-  throw new Error('Invalid Input');
-};
-
-export const fromSource = (source: Source, props: any, data: any): Rehydrant => {
-  const cloned = El.comp(source.elem.type, props ?? {});
   return {
-    id   : source.id,
-    props: cloned.props,
-    elem : cloned,
-    data : data ?? {},
-    poly : {},
-    next : {id: source.id, props: cloned.props},
-    stack: Stack.make(),
+    id: FC.id((comp as El.Comp).type)!,
+    el: comp as El.Comp,
   };
 };
 
-export const fromFC = (fc: FC.Any, props: any, data: any): Rehydrant => {
-  const comp = El.comp(fc, props);
-  return {
-    id   : comp.type[FC.FCNameId]!,
-    props: comp.props,
-    elem : comp,
-    data : data,
-    poly : {},
-    next : {id: FC.name(comp.type), props: comp.props},
-    stack: Stack.make(),
-  };
+const rehydrant = (id: string, el: El.Comp, data: any): Rehydrant =>
+  ({
+    id,
+    root : el,
+    data,
+    next : {id: id},
+    stack: Stack.empty(),
+  });
+
+export const fromSource = (s: Source, p: any, d: any): Rehydrant => {
+  const fn = El.root(s.el.type, p ?? s.el.props);
+  const rh = rehydrant(s.id, fn, d);
+  return rh;
 };
 
-export const fromHydrator = (source: Source, hydrator: Hydrator, data: any): Rehydrant => {
-  const cloned = El.comp(source.elem.type, hydrator.props);
-  return {
-    id   : source.id,
-    props: cloned.props,
-    elem : cloned,
-    data : data,
-    poly : Record.map(hydrator.stacks, (s) => Polymer.decode(s)),
-    next : {id: source.id},
-    stack: Stack.make(),
-  };
+export const fromFC = (f: FC.Any, p: any, d: any): Rehydrant => {
+  const comp = El.root(f, p);
+  const rh = rehydrant(FC.id(comp.type)!, comp, d);
+  return rh;
 };
 
-export const hydrator = (rehydrant: Rehydrant): Hydrator => {
-  const stack = Stack.make(rehydrant.elem);
+const pmap = GlobalValue
+  .globalValue(Symbol.for('disreact/rehydrant/polymers'), () => new WeakMap<Rehydrant, Record<string, Polymer.Encoded>>());
+
+export const rehydrate = (src: Source, hydrator: Hydrator, data: any): Rehydrant => {
+  const cloned = El.root(src.el.type, hydrator.props);
+  const rh = rehydrant(src.id, cloned, data);
+  pmap.set(rh, hydrator.stacks as any);
+  return rh;
+};
+
+export const hydration = (rh: Rehydrant) => pmap.get(rh);
+
+export const dehydrate = (rh: Rehydrant): Hydrator => {
+  const s = Stack.make(rh.root);
   const acc = {} as any;
-  while (Stack.check(stack)) {
-    const node = Stack.pop(stack);
-    if (El.isText(node)) {
-      continue;
+
+  while (Stack.cont(s)) {
+    const n = Stack.pull(s);
+
+    if (El.isComp(n)) {
+      acc[n._n!] = Polymer.get(n).curr;
     }
-    if (El.isComp(node)) {
-      acc[node.idn!] = Polymer.get(node).stack;
-    }
-    for (let i = 0; i < node.nodes.length; i++) {
-      const next = node.nodes[i];
-      Stack.push(stack, next);
-    }
+    Stack.pushAll(s, n);
   }
+
   return {
-    id    : rehydrant.id,
-    props : rehydrant.props,
+    id    : rh.id,
+    props : rh.root.props,
     stacks: acc,
   };
 };
 
-export const addNode = (rehydrant: Rehydrant, node: El.Nd) => {
-
+export const addNode = (rh: Rehydrant, node: El.Comp) => {
+  Stack.push(rh.stack, node);
 };
 
-export const getNode = (rehydrant: Rehydrant) => {
-
+export const getNode = (rh: Rehydrant) => {
+  new Set();
 };

@@ -49,7 +49,7 @@ export const encodeTextInput = (self: any, acc: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type       : Discord.MessageComponentTypes.TEXT_INPUT,
-      custom_id  : self.props.custom_id ?? self.ids,
+      custom_id  : self.props.custom_id ?? self._s,
       style      : self.props.style ?? Discord.TextInputStyleTypes.SHORT,
       label      : self.props.label,
       min_length : self.props.min_length,
@@ -69,7 +69,7 @@ export const ModalAttributes = Rest.Attributes({
 });
 export const encodeModal = (self: any, acc: any) => {
   return {
-    custom_id : self.props.custom_id ?? self.ids,
+    custom_id : self.props.custom_id ?? self._s,
     title     : self.props.title,
     components: acc[Norm.COMPONENTS],
   };

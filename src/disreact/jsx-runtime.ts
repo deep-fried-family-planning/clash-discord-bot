@@ -1,12 +1,11 @@
 import type {IntrinsicAttributesMap} from '#src/disreact/codec/intrinsic/types.ts';
-import * as Dsx from '#src/disreact/model/dsx.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 import type * as FC from '#src/disreact/model/entity/fc.ts';
-import type * as El from '#src/disreact/model/entity/el.ts';
 
-export const Fragment = Dsx.Fragment;
-export const jsx = Dsx.jsx;
-export const jsxs = Dsx.jsxs;
-export const jsxDEV = Dsx.jsxDEV;
+export const Fragment = El.Fragment,
+             jsx      = El.jsx,
+             jsxs     = El.jsxs,
+             jsxDEV   = El.jsxDEV;
 
 export declare namespace JSX {
   type ElementType =
@@ -20,7 +19,7 @@ export declare namespace JSX {
     | bigint
     | FC.Any;
 
-  type Element = El.El;
+  type Element = El.Node;
 
   interface ElementAttributesProperty {
     props?: {};

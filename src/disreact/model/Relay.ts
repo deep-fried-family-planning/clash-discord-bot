@@ -1,5 +1,5 @@
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
-import type {EventDefect, RenderDefect, UpdateDefect} from '#src/disreact/model/lifecycle.ts';
+import type {EventDefect, RenderDefect, UpdateDefect} from '#src/disreact/model/lifecycle/lifecycle.ts';
 import type {RehydratorError} from '#src/disreact/model/Rehydrator.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import * as Deferred from 'effect/Deferred';
@@ -44,6 +44,7 @@ const service = pipe(
       end  : mailbox.end,
       take : take,
       send : send,
+      sendN: (ps: Progress.Progress[]) => mailbox.offerAll(ps),
       final: finalize,
       await: Deferred.await(final),
     };

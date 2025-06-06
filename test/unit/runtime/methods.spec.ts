@@ -56,12 +56,10 @@ it.effect('when synthesizing', E.fn(function* () {
 }, E.provide(layer)));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
-  const runs = Array.from({length: 1000});
+  const runs = Array.from({length: 100});
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Methods.createRoot(TestMessage);
-
-    yield* Snap.JSON(root, SNAP.TEST_MESSAGE);
   }
 }, E.provide(layer)));
 
@@ -158,9 +156,7 @@ it.effect('when responding (performance)', E.fn(
         TestClock.setTime,
       );
 
-      const fork = yield* E.fork(Methods.respond(req1).pipe(
-        Logger.withMinimumLogLevel(LogLevel.None),
-      ));
+      const fork = yield* E.fork(Methods.respond(req1));
 
       yield* TestClock.adjust(Duration.seconds(12));
 

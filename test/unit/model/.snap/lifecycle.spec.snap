@@ -63,7 +63,24 @@ exports[`when dispatching an event > initial encoded 1`] = `
 
 exports[`when dispatching an event > initial hash 1`] = `"eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPcVEARs8qFszxSE1NSi6wMJgAAI4UifQ"`;
 
-exports[`when dispatching an event > initial stacks 1`] = `{}`;
+exports[`when dispatching an event > initial stacks 1`] = `
+{
+  "id": "TestMessage",
+  "props": {
+    Symbol(disreact/props): Symbol(disreact/props),
+    Symbol(effect/Hash): [Function],
+    Symbol(effect/Equal): [Function],
+  },
+  "stacks": {
+    "TestMessage:0": [
+      {
+        "s": 0,
+      },
+    ],
+    "TestMessage:0:message:0:Header:0": [],
+  },
+}
+`;
 
 exports[`when dispatching an event > rerendered encoded 1`] = `
 "{
@@ -124,9 +141,24 @@ exports[`when dispatching an event > rerendered encoded 1`] = `
 }"
 `;
 
-exports[`when dispatching an event > rerendered hash 1`] = `"eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPeVEARs8qFszxSE1NSi6wMJgAAI6kifg"`;
-
-exports[`when dispatching an event > rerendered stacks 1`] = `{}`;
+exports[`when dispatching an event > rerendered stacks 1`] = `
+{
+  "id": "TestMessage",
+  "props": {
+    Symbol(disreact/props): Symbol(disreact/props),
+    Symbol(effect/Hash): [Function],
+    Symbol(effect/Equal): [Function],
+  },
+  "stacks": {
+    "TestMessage:0": [
+      {
+        "s": 1,
+      },
+    ],
+    "TestMessage:0:message:0:Header:0": [],
+  },
+}
+`;
 
 exports[`when initial rendering 1`] = `
 "{
@@ -292,4 +324,211 @@ exports[`when rendering sync > MessageSync 1`] = `
     }
   ]
 }"
+`;
+
+exports[`when rendering sync 1`] = `
+{
+  "$d": 0,
+  "$i": 0,
+  "$p": 0,
+  "_n": "MessageSync:0",
+  "_s": "MessageSync:0",
+  "name": "MessageSync",
+  "props": {
+    Symbol(disreact/props): Symbol(disreact/props),
+    Symbol(effect/Hash): [Function],
+    Symbol(effect/Equal): [Function],
+  },
+  "rs": [
+    {
+      "$d": 1,
+      "$i": 0,
+      "$p": 0,
+      "_n": "MessageSync:0:message:0",
+      "_s": "MessageSync:0:message:0",
+      "handler": undefined,
+      "name": "message",
+      "props": {
+        Symbol(disreact/props): Symbol(disreact/props),
+        Symbol(effect/Hash): [Function],
+        Symbol(effect/Equal): [Function],
+      },
+      "rs": [
+        {
+          "$d": 2,
+          "$i": 0,
+          "$p": 0,
+          "_n": "MessageSync:0:message:0:embed:0",
+          "_s": "message:0:embed:0",
+          "handler": undefined,
+          "name": "embed",
+          "props": {
+            Symbol(disreact/props): Symbol(disreact/props),
+            Symbol(effect/Hash): [Function],
+            Symbol(effect/Equal): [Function],
+          },
+          "rs": [
+            {
+              "$d": 3,
+              "$i": 0,
+              "$p": 0,
+              "_n": "MessageSync:0:message:0:embed:0:undefined:0",
+              "_s": "embed:0:undefined:0",
+              "text": "MessageSync",
+              Symbol(disreact/element): 1,
+              Symbol(effect/Hash): [Function],
+              Symbol(effect/Equal): [Function],
+            },
+          ],
+          "type": "embed",
+          Symbol(disreact/element): 2,
+          Symbol(effect/Hash): [Function],
+          Symbol(effect/Equal): [Function],
+        },
+        {
+          "$d": 2,
+          "$i": 0,
+          "$p": 1,
+          "_n": "MessageSync:0:message:0:actions:0",
+          "_s": "message:0:actions:0",
+          "handler": undefined,
+          "name": "actions",
+          "props": {
+            Symbol(disreact/props): Symbol(disreact/props),
+            Symbol(effect/Hash): [Function],
+            Symbol(effect/Equal): [Function],
+          },
+          "rs": [
+            {
+              "$d": 3,
+              "$i": 0,
+              "$p": 0,
+              "_n": "MessageSync:0:message:0:actions:0:ButtonSync:0",
+              "_s": "actions:0:ButtonSync:0",
+              "name": "ButtonSync",
+              "props": {
+                Symbol(disreact/props): Symbol(disreact/props),
+                Symbol(effect/Hash): [Function],
+                Symbol(effect/Equal): [Function],
+              },
+              "rs": [
+                {
+                  "$d": 4,
+                  "$i": 0,
+                  "$p": 0,
+                  "_n": "MessageSync:0:message:0:actions:0:ButtonSync:0:button:0",
+                  "_s": "ButtonSync:0:button:0",
+                  "handler": [Function],
+                  "name": "button",
+                  "props": {
+                    "label": "ButtonSync",
+                    Symbol(disreact/props): Symbol(disreact/props),
+                    Symbol(effect/Hash): [Function],
+                    Symbol(effect/Equal): [Function],
+                  },
+                  "type": "button",
+                  Symbol(disreact/element): 2,
+                  Symbol(effect/Hash): [Function],
+                  Symbol(effect/Equal): [Function],
+                },
+              ],
+              "type": [Function],
+              Symbol(disreact/element): 3,
+              Symbol(effect/Hash): [Function],
+              Symbol(effect/Equal): [Function],
+            },
+            {
+              "$d": 3,
+              "$i": 0,
+              "$p": 1,
+              "_n": "MessageSync:0:message:0:actions:0:ButtonAsync:0",
+              "_s": "actions:0:ButtonAsync:0",
+              "name": "ButtonAsync",
+              "props": {
+                Symbol(disreact/props): Symbol(disreact/props),
+                Symbol(effect/Hash): [Function],
+                Symbol(effect/Equal): [Function],
+              },
+              "rs": [
+                {
+                  "$d": 4,
+                  "$i": 0,
+                  "$p": 0,
+                  "_n": "MessageSync:0:message:0:actions:0:ButtonAsync:0:button:0",
+                  "_s": "ButtonAsync:0:button:0",
+                  "handler": [Function],
+                  "name": "button",
+                  "props": {
+                    "label": "ButtonAsync",
+                    Symbol(disreact/props): Symbol(disreact/props),
+                    Symbol(effect/Hash): [Function],
+                    Symbol(effect/Equal): [Function],
+                  },
+                  "type": "button",
+                  Symbol(disreact/element): 2,
+                  Symbol(effect/Hash): [Function],
+                  Symbol(effect/Equal): [Function],
+                },
+              ],
+              "type": [Function],
+              Symbol(disreact/element): 3,
+              Symbol(effect/Hash): [Function],
+              Symbol(effect/Equal): [Function],
+            },
+            {
+              "$d": 3,
+              "$i": 0,
+              "$p": 2,
+              "_n": "MessageSync:0:message:0:actions:0:ButtonEffect:0",
+              "_s": "actions:0:ButtonEffect:0",
+              "name": "ButtonEffect",
+              "props": {
+                Symbol(disreact/props): Symbol(disreact/props),
+                Symbol(effect/Hash): [Function],
+                Symbol(effect/Equal): [Function],
+              },
+              "rs": [
+                {
+                  "$d": 4,
+                  "$i": 0,
+                  "$p": 0,
+                  "_n": "MessageSync:0:message:0:actions:0:ButtonEffect:0:button:0",
+                  "_s": "ButtonEffect:0:button:0",
+                  "handler": [Function],
+                  "name": "button",
+                  "props": {
+                    "label": "ButtonEffect",
+                    Symbol(disreact/props): Symbol(disreact/props),
+                    Symbol(effect/Hash): [Function],
+                    Symbol(effect/Equal): [Function],
+                  },
+                  "type": "button",
+                  Symbol(disreact/element): 2,
+                  Symbol(effect/Hash): [Function],
+                  Symbol(effect/Equal): [Function],
+                },
+              ],
+              "type": [Function],
+              Symbol(disreact/element): 3,
+              Symbol(effect/Hash): [Function],
+              Symbol(effect/Equal): [Function],
+            },
+          ],
+          "type": "actions",
+          Symbol(disreact/element): 2,
+          Symbol(effect/Hash): [Function],
+          Symbol(effect/Equal): [Function],
+        },
+      ],
+      "type": "message",
+      Symbol(disreact/element): 2,
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+  ],
+  "type": [Function],
+  Symbol(disreact/element): 3,
+  Symbol(effect/Hash): [Function],
+  Symbol(effect/Equal): [Function],
+}
 `;

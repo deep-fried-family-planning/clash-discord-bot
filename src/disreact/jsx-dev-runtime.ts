@@ -1,6 +1,6 @@
-import * as Dsx from '#src/disreact/model/dsx.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 
-export const Fragment = Dsx.Fragment;
-export const jsx = Dsx.jsx;
-export const jsxs = Dsx.jsxs;
-export const jsxDEV = Dsx.jsxDEV;
+export const Fragment = El.Fragment,
+             jsx      = El.jsx,
+             jsxs     = El.jsxs,
+             jsxDEV   = El.jsxDEV;

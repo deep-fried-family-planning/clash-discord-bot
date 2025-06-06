@@ -16,8 +16,8 @@ const TestLayer = () => L.mergeAll(
   }),
 ).pipe(
 
-  L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
-  L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
+  // L.provideMerge(Logger.replace(Logger.defaultLogger, Logger.prettyLoggerDefault)),
+  // L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
 );
 
 it.effect('when rendered', E.fn(function* () {

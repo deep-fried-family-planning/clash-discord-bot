@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {El} from '#src/disreact/model/entity/el.ts';
+import type {Node} from '#src/disreact/model/entity/element.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
@@ -23,7 +23,7 @@ const makeStub = (random = true) =>
     : E.void,
   ) as Mock<(...args: any) => any>;
 
-export const makeTestRuntime = (src: (El | FC)[], random?: boolean, live?: boolean) => {
+export const makeTestRuntime = (src: (Node | FC)[], random?: boolean, live?: boolean) => {
   const dom = {
     discard     : makeStub(random),
     dismount    : makeStub(random),

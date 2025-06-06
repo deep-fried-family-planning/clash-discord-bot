@@ -10,8 +10,11 @@ export namespace Progress {
   export type Same = Rehydrant.Rehydrant & {
     _tag: 'same';
   };
-  export type Next = Rehydrant.Rehydrant & {
-    _tag: 'next';
+  export type Next = {
+    _tag : 'next';
+    id   : string;
+    props: any;
+    data : any;
   };
   export type Part = {
     _tag : 'part';
@@ -20,7 +23,7 @@ export namespace Progress {
     props: any;
   };
   export type Progress = | Done
-  | Exit
+                         | Exit
                          | Same
                          | Next
                          | Part;
@@ -60,8 +63,10 @@ export const same = (root: Rehydrant.Rehydrant): Progress.Same =>
 
 export const next = (root: Rehydrant.Rehydrant): Progress.Next =>
   ({
-    _tag: 'next',
-    ...root,
+    _tag : 'next',
+    id   : root.next.id!,
+    props: root.next.props,
+    data : root.data,
   });
 
 export const part = (id: string, type: string, props: any): Progress.Part =>

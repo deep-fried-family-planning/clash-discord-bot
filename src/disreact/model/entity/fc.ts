@@ -1,85 +1,133 @@
-import type * as El from '#src/disreact/model/entity/el.ts';
+import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as E from 'effect/Effect';
-import * as P from 'effect/Predicate';
+import * as Equal from 'effect/Equal';
+import * as Hash from 'effect/Hash';
+import * as Predicate from 'effect/Predicate';
 
-export const FCTypeId = Symbol.for('disreact/fc'),
-             FCNameId = Symbol.for('disreact/fc/name');
-
-export const SYNC    = 0,
-             PROMISE = 1,
-             EFFECT  = 2;
+export const TypeId  = Symbol('disreact/fc'),
+             SYNC    = 1,
+             PROMISE = 2,
+             EFFECT  = 3,
+             KindId  = Symbol('disreact/fc/kind'),
+             NameId  = Symbol('disreact/fc/name');
 
 export namespace FC {
-  export type Output = El.Cs;
-  export type OutEffect = E.Effect<El.Cs>;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   export interface Any<P, O> extends Function {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
-    [FCTypeId]? : number;
-    [FCNameId]? : string;
+    [TypeId]?   : FC;
+    [KindId]?   : number;
+    [NameId]?   : string;
     displayName?: string;
   }
   export interface Sync<P, O> extends Any<P, O> {
     (props: P): O;
-    [FCTypeId]: typeof SYNC;
-    [FCNameId]: string;
+    [KindId]: typeof SYNC;
+    [NameId]: string;
   }
   export interface Async<P, O> extends Any<P, O> {
     (props: P): O | Promise<O>;
-    [FCTypeId]: typeof PROMISE;
-    [FCNameId]: string;
+    [KindId]: typeof PROMISE;
+    [NameId]: string;
   }
   export interface Effect<P, O> extends Any<P, O> {
     (props: P): E.Effect<O, any, any>;
-    [FCTypeId]: typeof EFFECT;
-    [FCNameId]: string;
+    [KindId]: typeof EFFECT;
+    [NameId]: string;
   }
-  export type FC<P = any, O = FC.Output> =
+  export type FC<P = any, O = any> =
     | FC.Any<P, O>
     | FC.Sync<P, O>
     | FC.Async<P, O>
     | FC.Effect<P, O>;
 }
-export type Any<P = any, O = FC.Output> = FC.Any<P, O>;
-export type Sync<P = any, O = FC.Output> = FC.Sync<P, O>;
-export type Async<P = any, O = FC.Output> = FC.Async<P, O>;
-export type Effect<P = any, O = FC.Output> = FC.Effect<P, O>;
-export type FC<P = any, O = FC.Output> = FC.FC<P, O>;
-
-export const make = (fc: FC.Any<any, any>) => {
-  if (fc[FCTypeId] || fc[FCNameId]) return fc;
-  if (fc.displayName) fc[FCNameId] = fc.displayName;
-  else if (fc.name) fc[FCNameId] = fc.name;
-  else fc[FCNameId] = '.';
-  if (fc.constructor.name === 'AsyncFunction') fc[FCTypeId] = PROMISE;
-  return fc;
-};
+export type Any<P = any, O = any> = FC.Any<P, O>;
+export type Sync<P = any, O = any> = FC.Sync<P, O>;
+export type Async<P = any, O = any> = FC.Async<P, O>;
+export type Effect<P = any, O = any> = FC.Effect<P, O>;
+export type FC<P = any, O = any> = FC.FC<P, O>;
 
 export const isFC = (fc: unknown): fc is FC => typeof fc === 'function';
 
-export const name = (input: FC.FC) => input[FCNameId]!;
+export const isDefined = (fc: unknown): fc is FC =>
+  typeof fc === 'function'
+  && TypeId in fc
+  && fc[TypeId] === TypeId;
 
-export const render = (fc: FC.FC, props: any) => {
-  if (fc[FCTypeId] === SYNC) {
-    return E.sync(() => fc(props)) as FC.OutEffect;
+const FcProto = {
+  [Hash.symbol](this: FC) {
+    return Hash.string(TypeId.toString());
+  },
+  [Equal.symbol](this: FC, that: FC) {
+    return this[TypeId] === that[TypeId];
+  },
+};
+
+export const type = (fc: FC) => fc[TypeId]!;
+const kind = (fc: FC) => fc[KindId];
+
+export const make = (f: Any): Any => {
+  if (f[TypeId]) {
+    return f;
   }
-  if (fc[FCTypeId] === PROMISE) {
-    return E.promise(async () => await fc(props)) as FC.OutEffect;
-  }
-  if (fc[FCTypeId] === EFFECT) {
-    return fc(props) as FC.OutEffect;
-  }
-  return E.suspend(() => {
-    const out = fc(props);
-    if (P.isPromise(out)) {
-      fc[FCTypeId] = PROMISE;
-      return E.promise(async () => await out) as FC.OutEffect;
+  if (!f[NameId]) {
+    if (f.displayName) {
+      f[NameId] = f.displayName;
     }
-    if (E.isEffect(out)) {
-      fc[FCTypeId] = EFFECT;
-      return out as FC.OutEffect;
+    else if (f.name) {
+      f[NameId] = f.name;
     }
-    fc[FCTypeId] = SYNC;
-    return E.succeed(out) as FC.OutEffect;
-  });
+    else {
+      f[NameId] = '.';
+    }
+    if (f.constructor.name === 'AsyncFunction') {
+      f[KindId] = PROMISE;
+    }
+  }
+  (f[TypeId] as any) = TypeId;
+  return f;
+};
+
+export const id = (input: FC.FC) => input[NameId];
+
+export const name = (fc: FC.FC, name: string) => {
+  const current = id(fc);
+  if (current === name) {
+    return;
+  }
+  if (current === '.') {
+    fc[NameId] = name;
+  }
+  else {
+    throw new Error(`Renaming ${current} to ${name}`);
+  }
+};
+
+export const render = (f: FC, p: any): E.Effect<any> => {
+  switch (f[KindId]) {
+    case SYNC: {
+      return E.sync(() => f(p));
+    }
+    case PROMISE: {
+      return E.promise(() => f(p));
+    }
+    case EFFECT: {
+      return f(p);
+    }
+    default: {
+      return E.suspend(() => {
+        const out = f(p);
+        if (Predicate.isPromise(out)) {
+          f[KindId] = PROMISE;
+          return E.promise(() => out);
+        }
+        if (E.isEffect(out)) {
+          f[KindId] = EFFECT;
+          return out as E.Effect<any>;
+        }
+        f[KindId] = SYNC;
+        return E.succeed(out);
+      });
+    }
+  }
 };

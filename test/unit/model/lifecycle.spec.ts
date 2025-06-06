@@ -1,9 +1,9 @@
-import * as El from '#src/disreact/model/entity/el.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
+import * as Lifecycle from '#src/disreact/model/lifecycle/lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
-import * as Declarations from '#src/disreact/model/schema/declarations.ts';
+import * as Declarations from '#src/disreact/model/util/declarations.ts';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
 import {MessageEffect} from '#test/unit/components/message-effect.tsx';
 import {MessageSync} from '#test/unit/components/message-sync.tsx';
@@ -11,20 +11,20 @@ import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {it} from '#test/unit/components/TestRegistry.tsx';
 import * as E from 'effect/Effect';
 import {flow} from 'effect/Function';
-import * as Record from 'effect/Record';
 import * as S from 'effect/Schema';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
 const snap = (root: Rehydrant.Rehydrant) => json(root);
-const hydrator = (root: Rehydrant.Rehydrant) => Record.map(root.poly, (v) => v.stack);
-const hash = flow(Rehydrant.hydrator, S.encodeSync(Declarations.HydratorTransform));
+const hydrator = (root: Rehydrant.Rehydrant) => Rehydrant.dehydrate(root);
+const hash = flow(Rehydrant.dehydrate, S.encodeSync(Declarations.HydratorTransform));
 
 it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageSync, {});
   yield* Lifecycle.initialize(root);
   const rehydrator = yield* Rehydrator;
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.name(MessageSync));
+  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageSync));
+  expect(root.root).toMatchSnapshot();
 }));
 
 it.effect('when rendering async', E.fn(function* () {
@@ -32,7 +32,7 @@ it.effect('when rendering async', E.fn(function* () {
   yield* Lifecycle.initialize(root);
   const rehydrator = yield* Rehydrator;
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.name(MessageAsync));
+  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageAsync));
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
@@ -40,7 +40,7 @@ it.effect('when rendering effect', E.fn(function* () {
   yield* Lifecycle.initialize(root);
   const rehydrator = yield* Rehydrator;
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.name(MessageEffect));
+  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageEffect));
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
@@ -86,12 +86,12 @@ describe('given event.id does not match any node.id', () => {
   }));
 });
 
-it.effect(`when hydrating an empty root (performance)`, E.fn(function* () {
+it.effect(`when hydrating an empty root (performance)`, E.fnUntraced(function* () {
   const runs = Array.from({length: 1000});
   const rehydrator = yield* Rehydrator;
 
   for (let i = 0; i < runs.length; i++) {
-    const root = yield* Rehydrator.checkout(TestMessage, {});
+    const root = yield* Rehydrator.checkout(TestMessage, {}, {});
     yield* Lifecycle.initialize(root);
     yield* Lifecycle.rehydrate(root);
 

@@ -1,12 +1,12 @@
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
+import * as Lifecycle from '#src/disreact/model/lifecycle/lifecycle.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import type * as El from 'src/disreact/model/entity/el.ts';
+import type * as El from '#src/disreact/model/entity/element.ts';
 import * as L from 'effect/Layer';
 
 export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
@@ -42,7 +42,7 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
         return E.succeed(out);
       }
       return pipe(
-        Rehydrator.checkout(out.next.id!, out.next.props, out.data),
+        Rehydrator.checkout(out.id!, out.props, out.data),
         E.flatMap((root) => Lifecycle.initialize(root)),
       );
     }),

@@ -1,21 +1,20 @@
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import * as Methods from '#src/disreact/runtime/methods.ts';
 import * as Runtime from '#src/disreact/runtime/runtime.ts';
-import {TestMessage} from '#test/unit/components/test-message.tsx';
-import {testmessage} from '#test/unit/runtime/methods.testdata.ts';
-import {makeTestRuntime} from '#test/unit/util.ts';
-import {bench, vi} from '@effect/vitest';
-import {TestServices} from 'effect';
+import {TestMessage} from '#unit/components/test-message.tsx';
+import {testmessage} from '#unit/runtime/methods.testdata.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
+import {bench, describe, vi} from 'vitest';
 
 const createUpdate = vi.fn((...args: any) => E.void);
 const deferEdit = vi.fn((...args: any) => E.void);
 const deferUpdate = vi.fn((...args: any) => E.void);
 
 const layer = pipe(
-  L.effectContext(E.succeed(TestServices.liveServices)),
+  L.empty,
+  // L.effectContext(E.succeed(TestServices.liveServices)),
   L.provideMerge(
     Runtime.makeGlobalRuntimeLayer({
       rehydrator: {
@@ -33,29 +32,19 @@ const layer = pipe(
   ),
 );
 
-const runtime = makeTestRuntime([TestMessage], false);
-
-describe('synthesize', () => {
-  bench('scoped', async () => {
+describe.shuffle('methods', () => {
+  bench('synthesize', async () => {
     await pipe(
       Methods.createRoot(TestMessage, {}, {}),
       E.provide(layer),
       E.runPromise,
     );
+  }, {
+    time      : 1000,
+    warmupTime: 500,
   });
 
-  bench('runtime', async () => {
-    await pipe(
-      runtime.synthesize(TestMessage, {}, {}),
-      E.runPromise,
-    );
-  });
-});
-
-const runtimeRoot = await E.runPromise(runtime.synthesize(TestMessage, {}, {}));
-
-describe('respond', () => {
-  bench('scoped', async () => {
+  bench('respond', async () => {
     await pipe(
       Methods.respond({
         id            : '13781533544247460140',
@@ -73,24 +62,8 @@ describe('respond', () => {
       E.provide(layer),
       E.runPromise,
     );
-  });
-
-  bench('runtime', async () => {
-    await pipe(
-      runtime.respond({
-        id            : '13781533544247460140',
-        token         : 'respond1',
-        application_id: 'app',
-        user_id       : 'user',
-        guild_id      : 'guild',
-        message       : testmessage,
-        type          : 3,
-        data          : {
-          custom_id     : 'actions:0:button:0',
-          component_type: 2,
-        },
-      }),
-      E.runPromise,
-    );
+  }, {
+    time      : 1000,
+    warmupTime: 500,
   });
 });

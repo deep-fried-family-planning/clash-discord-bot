@@ -37,7 +37,7 @@ export const encodeSelect = (self: any, arg: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type       : Discord.MessageComponentTypes.STRING_SELECT,
-      custom_id  : self.props.custom_id ?? self.ids,
+      custom_id  : self.props.custom_id ?? self._s,
       placeholder: self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
       options    : self.props.options ?? arg[OPTION],
       min_values : self.props.min_values,
@@ -89,7 +89,7 @@ export const encodeChannels = (self: any, arg: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type          : Discord.MessageComponentTypes.CHANNEL_SELECT,
-      custom_id     : self.props.custom_id ?? self.ids,
+      custom_id     : self.props.custom_id ?? self._s,
       placeholder   : self.props.placeholder ?? arg[Norm.PRIMITIVE]?.[0],
       min_values    : self.props.min_values,
       max_values    : self.props.max_values,
@@ -114,7 +114,7 @@ export const encodeMentions = (self: any, arg: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type          : Discord.MessageComponentTypes.MENTIONABLE_SELECT,
-      custom_id     : self.props.custom_id ?? self.ids,
+      custom_id     : self.props.custom_id ?? self._s,
       placeholder   : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
       min_values    : self.props.min_values,
       max_values    : self.props.max_values,
@@ -137,7 +137,7 @@ export const encodeRoles = (self: any, arg: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type          : Discord.MessageComponentTypes.ROLE_SELECT,
-      custom_id     : self.props.custom_id ?? self.ids,
+      custom_id     : self.props.custom_id ?? self._s,
       placeholder   : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
       min_values    : self.props.min_values,
       max_values    : self.props.max_values,
@@ -160,7 +160,7 @@ export const encodeUsers = (self: any, arg: any) => {
     type      : Discord.MessageComponentTypes.ACTION_ROW,
     components: [{
       type          : Discord.MessageComponentTypes.USER_SELECT,
-      custom_id     : self.props.custom_id ?? self.ids,
+      custom_id     : self.props.custom_id ?? self._s,
       placeholder   : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
       min_values    : self.props.min_values,
       max_values    : self.props.max_values,

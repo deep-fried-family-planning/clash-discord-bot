@@ -1,7 +1,11 @@
-import * as El from '#src/disreact/model/entity/el.ts';
+import * as El from '#src/disreact/model/entity/element.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
+import {Differ, Either, Predicate} from 'effect';
 import * as Equal from 'effect/Equal';
+import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
+import * as Boolean from 'effect/Boolean';
+import console from 'node:console';
 
 export namespace Diff {
   export type Skip = {
@@ -90,59 +94,51 @@ const render = (): Diff.Render =>
     _tag: 'Render',
   });
 
-const __diff = GlobalValue.globalValue(
-  Symbol.for('disreact/diff'),
-  () => new WeakMap<any, Diff.Diff>(),
-);
-
-export const getDiff = (nd: El.El) => __diff.get(nd);
+const __diff = GlobalValue
+  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<El.El, Diff>());
 
 export const node = (a: El.El, b: El.El) => {
   if (Equal.equals(a, b)) {
-    if (El.isComp(a)) {
-      return render();
-    }
     return skip();
   }
-  if (a._tag !== b._tag) {
+  if (a.type !== b.type) {
     return replace(b);
   }
   if (El.isText(a) || El.isText(b)) {
-    return replace(b);
+    return update(b);
   }
   if (El.isRest(a) || El.isRest(b)) {
     return update(b);
   }
-  const polymer = Polymer.get(a);
-  if (polymer.rc === 0) {
+  const poly = Polymer.get(a);
+  if (poly.rc === 0) {
     return render();
   }
   if (!Equal.equals(a.props, b.props)) {
     return render();
   }
-  if (!Equal.equals(polymer.stack, polymer.saved)) {
+  if (!Equal.equals(poly.curr, poly.save)) {
     return render();
   }
   return skip();
 };
 
-export const diff = (a: El.El, b: El.El) => {
-  const diff = node(a, b);
-  __diff.set(a, diff);
-  return diff;
-};
+const diffs = GlobalValue
+  .globalValue(Symbol.for('disreact/diffs'), () => new WeakMap<any, Cd[]>());
 
-const __diffs = GlobalValue.globalValue(
-  Symbol.for('disreact/diffs'),
-  () => new WeakMap<any, Diff.Cd[]>(),
-);
+export const nodes = (n: El.El) => diffs.get(n);
 
-export const getDiffs = (nd: El.El) => __diffs.get(nd);
+export const rendered = (n: El.El, rs?: El.El[]) => {
+  if (rs === undefined) {
+    diffs.set(n, []);
+    return [];
+  }
 
-const children = (nd: El.Nd, rs: El.El[]) => {
   const acc = [] as Diff.Cd[];
-  for (let i = 0; i < Math.max(nd.nodes.length, rs.length); i++) {
-    const c = nd.nodes[i];
+  const len = Math.max(n.rs?.length ?? 0, rs.length);
+
+  for (let i = 0; i < len; i++) {
+    const c = n.rs![i];
     const r = rs[i];
     if (!c && r) {
       acc.push(insert(r));
@@ -154,11 +150,6 @@ const children = (nd: El.Nd, rs: El.El[]) => {
       acc.push(node(c, r));
     }
   }
+  diffs.set(n, acc);
   return acc;
-};
-
-export const diffs = (nd: El.Nd, rs: El.El[]) => {
-  const diffs = children(nd, rs);
-  __diffs.set(nd, diffs);
-  return diffs;
 };

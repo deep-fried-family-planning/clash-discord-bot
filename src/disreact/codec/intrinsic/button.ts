@@ -16,7 +16,7 @@ export const encodePrimary = (self: any, arg: any) => {
   return {
     type     : Discord.MessageComponentTypes.BUTTON,
     style    : Discord.ButtonStyleTypes.PRIMARY as number,
-    custom_id: self.props.custom_id ?? self.ids,
+    custom_id: self.props.custom_id ?? self._s,
     label    : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
     emoji    : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     disabled : self.props.disabled,
@@ -111,7 +111,7 @@ export const encodeButton = (self: any, arg: any) => {
   return {
     type     : Discord.MessageComponentTypes.BUTTON,
     style    : self.props.style ?? Discord.ButtonStyleTypes.PRIMARY,
-    custom_id: self.props.custom_id ?? self.ids,
+    custom_id: self.props.custom_id ?? self._s,
     label    : self.props.label ?? arg[Norm.PRIMITIVE]?.[0],
     emoji    : self.props.emoji ?? arg[Markdown.EMOJI]?.[0],
     disabled : self.props.disabled,

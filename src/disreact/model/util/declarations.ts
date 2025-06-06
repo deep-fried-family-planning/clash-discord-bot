@@ -7,10 +7,12 @@ import {deflate, inflate} from 'pako';
 export const Null = S.Null;
 export const State = S.Struct({s: S.Any}).pipe(S.mutable);
 export const Dep = S.Struct({d: S.Any}).pipe(S.mutable);
+export const Data = S.Struct({a: S.Literal('a')});
 export const Monomer = S.Union(
   Null,
   State,
   Dep,
+  Data,
 );
 export const Chain = S.Array(Monomer);
 
