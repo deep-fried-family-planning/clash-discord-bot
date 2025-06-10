@@ -28,7 +28,7 @@ const StructProto = {
   },
   [Equal.symbol](this: any, that: any) {
     if (!(TypeId in that) || that[TypeId] !== TypeId) {
-      throw new Error('tsk tsk');
+      throw new Error();
     }
     const selfKeys = Object.keys(this);
     const thatKeys = Object.keys(that as object);
@@ -44,7 +44,7 @@ const StructProto = {
   },
 };
 
-import * as Proto from '#src/disreact/model/entity/proto.ts';
+import * as Proto from '#src/disreact/model/util/proto.ts';
 const ArrayProto = Object.assign(Proto.array(), {
   [TypeId]: TypeId,
   [Hash.symbol]() {
@@ -52,7 +52,7 @@ const ArrayProto = Object.assign(Proto.array(), {
   },
   [Equal.symbol](this: any, that: any) {
     if (!(TypeId in that) || that[TypeId] !== TypeId) {
-      throw new Error('tsk tsk');
+      throw new Error();
     }
     if (!Array.isArray(that) || this.length !== that.length) {
       return false;

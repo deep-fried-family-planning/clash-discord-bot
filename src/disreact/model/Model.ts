@@ -11,7 +11,7 @@ import * as L from 'effect/Layer';
 
 export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
   pipe(
-    Lifecycle.initialize(Rehydrant.fromFC(source, props, data)),
+    Lifecycle.init2(Rehydrant.fromFC(source, props, data)),
     E.flatMap((root) => Lifecycle.encode(root)),
   );
 
@@ -21,16 +21,16 @@ export const registerRoot = (source: Rehydrant.Registrant, id?: string) =>
 export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) =>
   pipe(
     Rehydrator.checkout(source, props, data),
-    E.flatMap((root) => Lifecycle.initialize(root)),
+    E.flatMap((root) => Lifecycle.init2(root)),
     E.flatMap((root) => Lifecycle.encode(root)),
   );
 
 export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
   pipe(
     Rehydrator.decode(hydrator, data),
-    E.flatMap((root) => Lifecycle.rehydrate(root)),
+    E.flatMap((root) => Lifecycle.rehy2(root)),
     E.flatMap((root) => Lifecycle.invoke(root, event)),
-    E.flatMap((root) => Lifecycle.rerender(root)),
+    E.flatMap((root) => Lifecycle.rerenders(root)),
     E.tapError((error) => Relay.fail(error)),
     E.fork,
     E.andThen(Relay.await),
@@ -43,7 +43,7 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
       }
       return pipe(
         Rehydrator.checkout(out.id!, out.props, out.data),
-        E.flatMap((root) => Lifecycle.initialize(root)),
+        E.flatMap((root) => Lifecycle.init2(root)),
       );
     }),
     E.tap(Relay.end),
@@ -56,7 +56,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
 
     const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
       pipe(
-        Lifecycle.initialize(Rehydrant.fromFC(source, props, data)),
+        Lifecycle.init2(Rehydrant.fromFC(source, props, data)),
         E.flatMap((root) => Lifecycle.encode(root)),
       );
 
@@ -65,7 +65,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
     const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) =>
       pipe(
         rehydrator.checkout(source, props, data),
-        E.flatMap((root) => Lifecycle.initialize(root)),
+        E.flatMap((root) => Lifecycle.init2(root)),
         E.flatMap((root) => Lifecycle.encode(root)),
       );
 
@@ -73,9 +73,9 @@ export class Model extends E.Service<Model>()('disreact/Model', {
       Relay.use((relay) =>
         pipe(
           rehydrator.decode(hydrator, data),
-          E.flatMap((root) => Lifecycle.rehydrate(root)),
+          E.flatMap((root) => Lifecycle.rehy2(root)),
           E.flatMap((root) => Lifecycle.invoke(root, event)),
-          E.flatMap((root) => Lifecycle.rerender(root)),
+          E.flatMap((root) => Lifecycle.rerenders(root)),
           E.tapError((error) => relay.fail(error)),
           E.fork,
           E.andThen(relay.await),
@@ -88,7 +88,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
             }
             return pipe(
               rehydrator.checkout(out.id, out.props, out.data),
-              E.flatMap((root) => Lifecycle.initialize(root)),
+              E.flatMap((root) => Lifecycle.init2(root)),
             );
           }),
           E.tap(relay.end),

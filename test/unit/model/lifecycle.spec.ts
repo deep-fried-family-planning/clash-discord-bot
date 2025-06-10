@@ -20,33 +20,29 @@ const hash = flow(Rehydrant.dehydrate, S.encodeSync(Declarations.HydratorTransfo
 
 it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageSync, {});
-  yield* Lifecycle.initialize(root);
-  const rehydrator = yield* Rehydrator;
+  yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageSync));
-  expect(root.root).toMatchSnapshot();
+  expect(root.element).toMatchSnapshot();
 }));
 
 it.effect('when rendering async', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageAsync, {});
-  yield* Lifecycle.initialize(root);
-  const rehydrator = yield* Rehydrator;
+  yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageAsync));
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageEffect, {});
-  yield* Lifecycle.initialize(root);
-  const rehydrator = yield* Rehydrator;
+  yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageEffect));
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
   const root = yield* Rehydrator.checkout(TestMessage, {});
-  yield* Lifecycle.initialize(root);
-  const rehydrator = yield* Rehydrator;
+  yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
@@ -55,20 +51,19 @@ it.effect('when dispatching an event', E.fn(function* () {
   const registry = yield* Rehydrator;
   const root = yield* registry.checkout(TestMessage, {});
 
-  yield* Lifecycle.initialize(root);
+  yield* Lifecycle.init2(root);
 
   expect(hydrator(root)).toMatchSnapshot('initial stacks');
   expect(hash(root)).toMatchSnapshot('initial hash');
-  const rehydrator = yield* Rehydrator;
   const initial = yield* Lifecycle.encode(root);
   expect(snap(initial?.data)).toMatchSnapshot('initial encoded');
 
   const event = El.event('actions:0:button:0', {});
   yield* Lifecycle.invoke(root, event);
-  yield* Lifecycle.rerender(root);
+  yield* Lifecycle.rerenders(root);
 
   expect(hydrator(root)).toMatchSnapshot('rerendered stacks');
-  // expect(hash(root)).toMatchSnapshot('rerendered hash');
+  expect(hash(root)).toMatchSnapshot('rerendered hash');
   const rerendered = yield* Lifecycle.encode(root);
   expect(snap(rerendered?.data)).toMatchSnapshot('rerendered encoded');
 }));
@@ -77,8 +72,8 @@ describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
     const registry = yield* Rehydrator;
     const root = yield* registry.checkout(TestMessage, {});
-    yield* Lifecycle.initialize(root);
-    yield* Lifecycle.rerender(root);
+    yield* Lifecycle.init2(root);
+    yield* Lifecycle.rerenders(root);
 
     const event = El.event('buttons:1:button:0', {});
 
@@ -88,17 +83,16 @@ describe('given event.id does not match any node.id', () => {
 
 it.effect(`when hydrating an empty root (performance)`, E.fnUntraced(function* () {
   const runs = Array.from({length: 1000});
-  const rehydrator = yield* Rehydrator;
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Rehydrator.checkout(TestMessage, {}, {});
-    yield* Lifecycle.initialize(root);
-    yield* Lifecycle.rehydrate(root);
+    yield* Lifecycle.init2(root);
+    yield* Lifecycle.rehy2(root);
 
     const event = El.event('actions:0:button:0', {});
 
     yield* Lifecycle.invoke(root, event);
-    yield* Lifecycle.rerender(root);
+    yield* Lifecycle.rerenders(root);
 
     yield* Lifecycle.encode(root);
   }

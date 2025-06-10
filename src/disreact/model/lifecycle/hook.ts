@@ -3,35 +3,16 @@ import type * as El from '#src/disreact/model/entity/element.ts';
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Globals from '#src/disreact/model/util/globals.ts';
+import * as Deps from '#src/disreact/model/util/deps.ts';
+import * as Globals from '#src/disreact/model/entity/globals.ts';
 import type {Discord} from 'dfx';
-import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import {pipe} from 'effect/Function';
-import * as GV from 'effect/GlobalValue';
-import * as Hash from 'effect/Hash';
 import * as P from 'effect/Predicate';
-import * as Deps from '#src/disreact/model/util/deps.ts';
 import type * as Runtime from 'effect/Runtime';
-import type * as GlobalValue from 'effect/GlobalValue';
 
-let runtime: Runtime.Runtime<any>;
-
-const context = () => {
-  if (
-    !Globals.root
-    || !Globals.node
-    || !Globals.poly
-  ) {
-    throw new Error('Hooks must be called within a component.');
-  }
-  return {
-    root: Globals.root,
-    comp: Globals.node,
-    poly: Globals.poly,
-  };
-};
+const op = {};
 
 const getRoot = () => {
   const ctx = Globals.root;

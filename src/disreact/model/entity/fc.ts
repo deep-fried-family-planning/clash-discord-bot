@@ -1,4 +1,4 @@
-import * as Proto from '#src/disreact/model/entity/proto.ts';
+import * as Proto from '#src/disreact/model/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';

@@ -2,22 +2,96 @@ import * as El from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Props from '#src/disreact/model/entity/props.ts';
-import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import * as Diff from '#src/disreact/model/lifecycle/diff.ts';
+import * as Globals from '#src/disreact/model/entity/globals.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Globals from '#src/disreact/model/util/globals.ts';
+import * as Const from '#src/disreact/model/util/const.ts';
+import * as Mutex from '#src/disreact/model/util/mutex.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import * as Stack from '#src/disreact/model/util/stack.ts';
-import {Duration, GlobalValue} from 'effect';
-import type * as Cause from 'effect/Cause';
+import * as Duration from 'effect/Duration';
+import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
 import * as P from 'effect/Predicate';
+
+export type Lifecycle = {
+  _tag: Const.LifecycleType;
+};
+
+interface BaseOp {
+  root : Rehydrant.Rehydrant;
+  node : El.Comp;
+  stack: Stack.Stack;
+}
+type Op = BaseOp;
+
+export class EffectDefect extends Data.TaggedError('EffectDefect')<{
+  message: string;
+  cause  : Cause.Cause<Error>;
+  op     : Op;
+}> {}
+
+export class LifecycleDefect extends Data.TaggedError('LifecycleDefect')<{
+  cause?: Cause.Cause<Error>;
+  op    : Op;
+}> {}
+
+const renderEffects = (op: Op) =>
+  pipe(
+    E.forEach(Polymer.get(op.node).queue, (fx) => {
+      if (fx.constructor.name === Const.ASYNC_FUNCTION) {
+        return E.promise(fx as () => Promise<void>);
+      }
+      const out = fx();
+      if (P.isPromise(out)) {
+        return E.promise(() => out) as E.Effect<void>;
+      }
+      if (E.isEffect(out)) {
+        return out as E.Effect<void>;
+      }
+      return E.void;
+    }),
+    E.tapErrorCause((cause) => E.logFatal(Cause.pretty(cause))),
+    E.catchAllCause((cause) =>
+      new EffectDefect({
+        message: Cause.pretty(cause),
+        cause  : cause,
+        op     : op,
+      }),
+    ),
+  );
+
+export class RendereredDefect extends Data.TaggedError('RenderDefect')<{
+  cause: Cause.Cause<Error>;
+  op   : Op;
+}> {}
+
+const renderInitialize = (op: Op) =>
+  pipe(
+    Mutex.lock,
+    E.flatMap(() => {
+      Globals.set(op.root, op.node);
+      return FC.render(op.node.type, op.node.props);
+    }),
+    E.tap(() => {
+      Globals.reset();
+      return Mutex.done;
+    }),
+  );
+
+export class RehydrateDefect extends Data.TaggedError('RehydrateDefect')<{
+  cause: Cause.Cause<Error>;
+}> {}
+
+const renderRehydrate = (rh: Rehydrant.Rehydrant, n: El.Comp) => {
+  rh.polymers;
+};
 
 export class RenderDefect extends Data.TaggedError('RenderDefect')<{
   root : Rehydrant.Rehydrant;
@@ -28,21 +102,16 @@ export class RenderDefect extends Data.TaggedError('RenderDefect')<{
 const renderNode = (rh: Rehydrant.Rehydrant, n: El.Comp) => {
   const poly = Polymer.get(n);
   return pipe(
-    Globals.lock(rh, n, poly),
-    E.andThen(FC.render(n.type, n.props)),
+    Mutex.lock,
+    E.andThen(() => {
+      return FC.render(n.type, n.props);
+    }),
     E.map((rs) => {
       Polymer.commit(poly);
       return El.trie(n, rs);
     }),
     E.tap(Globals.done),
-    Proto.isDEV
-    ? E.tapDefect(() => Globals.done)
-    : E.catchAllCause(
-      (cause) => E.zipRight(
-        Globals.done,
-        new RenderDefect({root: rh, node: n, cause: cause}),
-      ),
-    ),
+    E.tapDefect(() => Globals.done),
     E.tap(updateNode(rh, n, poly)),
   );
 };
@@ -77,65 +146,6 @@ const updateNode = (r: Rehydrant.Rehydrant, n: El.Comp, poly: Polymer.Polymer) =
     ),
   );
 
-const enum OP {
-  INIT = 1,
-  REHYDRATE,
-  MOUNT,
-  RERENDER,
-  DISMOUNT,
-  NOTIFY,
-}
-namespace Op {
-
-}
-
-namespace Patch {
-  export type Done = {
-    _tag: 'Done';
-  };
-
-  export const {done, cont, append, prepend, replace, update, insert, remove, render, splice, $match: match} = Data.taggedEnum<Patch>();
-  export type Patch = Data.TaggedEnum<{
-    done   : {};
-    cont   : {};
-    append : {with: El.El[]};
-    prepend: {with: El.El[]};
-    replace: {at: number; with: El.El};
-    update : {at: number; with: El.El};
-    insert : {at: number; with: El.El[]};
-    remove : {at: number; len: number};
-    render : {component: El.Comp};
-    splice : {with: El.El[]; at: number; len: number};
-  }>;
-}
-
-const node = Data.taggedEnum<Data.TaggedEnum<{
-  done   : {};
-  cont   : {parent: El.El; nodes: El.El[]};
-  replace: {parent: El.El; node: El.El};
-  update : {parent: El.El; node: El.El};
-}>>();
-
-const children = Data.taggedEnum<Data.TaggedEnum<{
-  append : {with: El.El[]};
-  prepend: {with: El.El[]};
-  insert : {at: number; with: El.El[]};
-  remove : {at: number; len: number};
-}>>();
-
-const thing = Patch.match({
-  done   : (p) => {},
-  cont   : (p) => {},
-  append : (p) => {},
-  prepend: (p) => {},
-  replace: (p) => {},
-  update : (p) => {},
-  insert : (p) => {},
-  remove : (p) => {},
-  render : (p) => {},
-  splice : (p) => {},
-});
-
 const OptionalPart = E.serviceOption(Relay).pipe(
   E.map(Option.map((relay) =>
     (p: Progress.Part[]) => relay.sendN(p),
@@ -145,8 +155,8 @@ const OptionalPart = E.serviceOption(Relay).pipe(
   )),
 );
 
-export const initialize = (rh: Rehydrant.Rehydrant) => OptionalPart.pipe(E.flatMap((sendParts) => {
-  const s = Stack.make(rh.root);
+export const init2 = (rh: Rehydrant.Rehydrant) => OptionalPart.pipe(E.flatMap((sendParts) => {
+  const s = Stack.make(rh.element);
 
   const body = () => {
     const n = Stack.pull(s)!;
@@ -201,11 +211,11 @@ export const encode = (root: Rehydrant.Rehydrant | null) =>
       const normalization = rehydrator.normalization;
       const encoding = rehydrator.encoding;
 
-      const stack = MutableList.make<El.El>(root.root);
+      const stack = MutableList.make<El.El>(root.element);
       const args = new WeakMap();
       const outs = new WeakMap();
       const last = {} as any;
-      outs.set(root.root, last);
+      outs.set(root.element, last);
 
       while (MutableList.tail(stack)) {
         const n = MutableList.pop(stack)!;
@@ -272,9 +282,9 @@ export const encode = (root: Rehydrant.Rehydrant | null) =>
     ),
   );
 
-export const rehydrate = (rh: Rehydrant.Rehydrant) => E.suspend(() => {
+export const rehy2 = (rh: Rehydrant.Rehydrant) => E.suspend(() => {
   const ps = Rehydrant.hydration(rh);
-  const s = Stack.make(rh.root);
+  const s = Stack.make(rh.element);
 
   const body = () => {
     const n = Stack.pull(s);
@@ -355,7 +365,7 @@ const renderEvent = (rh: Rehydrant.Rehydrant, n: El.Rest, event: El.Event) =>
 export const invoke = (rh: Rehydrant.Rehydrant, event: El.Event) =>
   pipe(
     E.sync(() => {
-      const stack = Stack.make(rh.root);
+      const stack = Stack.make(rh.element);
 
       let target: El.Rest | undefined;
 
@@ -423,10 +433,10 @@ const mount = <A extends El.El>(rh: Rehydrant.Rehydrant, n0: A) => E.suspend(() 
   );
 });
 
-export const rerender = (rh: Rehydrant.Rehydrant) => E.gen(function* () {
-  const s = Stack.make(rh.root);
-  const rs = yield* renderNode(rh, rh.root);
-  Diff.rendered(rh.root, rs);
+export const rerenders = (rh: Rehydrant.Rehydrant) => E.gen(function* () {
+  const s = Stack.make(rh.element);
+  const rs = yield* renderNode(rh, rh.element);
+  Diff.rendered(rh.element, rs);
 
   while (Stack.cont(s)) {
     const n = Stack.pull(s);
@@ -482,33 +492,4 @@ export const rerender = (rh: Rehydrant.Rehydrant) => E.gen(function* () {
   }
 
   return rh;
-});
-
-const mutex = E.unsafeMakeSemaphore(1);
-export const lock = mutex.withPermits;
-
-const render = (n: El.Comp) =>
-  pipe(
-    {},
-  );
-
-const synth = (n: El.Comp) =>
-  pipe(
-    {},
-  );
-
-export class RehydrationDefect extends Data.TaggedError('RehydrationDefect')<{
-  cause?: Cause.Cause<Error>;
-}> {}
-
-const rehydration = (rh: Rehydrant.Rehydrant, n: El.Comp) => E.suspend(() => {
-  const hydrator = Rehydrant.hydration(rh);
-  if (!hydrator) {
-    return new RehydrationDefect({});
-  }
-  const polymer = hydrator[n._n!];
-  if (!polymer) {
-    return E.void;
-  }
-  return E.void;
 });

@@ -141,6 +141,8 @@ exports[`when dispatching an event > rerendered encoded 1`] = `
 }"
 `;
 
+exports[`when dispatching an event > rerendered hash 1`] = `"eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPeVEARs8qFszxSE1NSi6wMJgAAI6kifg"`;
+
 exports[`when dispatching an event > rerendered stacks 1`] = `
 {
   "id": "TestMessage",

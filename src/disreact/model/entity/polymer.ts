@@ -1,6 +1,6 @@
 import type * as El from '#src/disreact/model/entity/element.ts';
 import type * as Hook from '#src/disreact/model/lifecycle/hook.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
@@ -82,7 +82,10 @@ export const rehydrated = (m: Monomer[]): Polymer =>
   });
 
 const polymers = GlobalValue
-  .globalValue(Symbol.for('disreact/polymers'), () => new WeakMap<El.Comp, Polymer>());
+  .globalValue(
+    Symbol.for('disreact/polymers'),
+    () => new WeakMap<El.Comp, Polymer>(),
+  );
 
 export const get = (fn: El.Comp): Polymer => {
   if (polymers.has(fn)) {
@@ -117,7 +120,7 @@ export const changed = pipe(
 
 export const current = (p: Polymer): Monomer | undefined => p.curr[p.pc];
 
-export const advance = (p: Polymer) => {
+export const advance = (p: Polymer, m: Monomer) => {
   p.pc++;
 };
 
@@ -133,4 +136,12 @@ export const commit = (p: Polymer) => {
   p.save = Data.array(structuredClone(p.curr)) as any[];
   p.pc = 0;
   p.rc++;
+};
+
+export const done = (n: El.Comp) => {
+  const polymer = polymers.get(n)!;
+  delete polymer.lock;
+  polymer.save = Data.array(structuredClone(polymer.curr)) as any[];
+  polymer.pc = 0;
+  polymer.rc++;
 };
