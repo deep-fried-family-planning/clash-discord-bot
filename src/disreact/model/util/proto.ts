@@ -1,4 +1,4 @@
-export const array = () => Object.create(global.Array.prototype);
+export const newArray = () => Object.create(global.Array.prototype);
 
 export const isDEV = process.env.NODE_ENV === 'development';
 
@@ -11,6 +11,18 @@ const assignProto = (proto: any, obj: any) =>
 const setPrototype = (proto: any, obj: any) =>
   Object.setPrototypeOf(
     obj,
+    proto,
+  );
+
+export const array = (proto: any) =>
+  assignProto(
+    Object.create(Array.prototype),
+    proto,
+  );
+
+export const object = (proto: any) =>
+  assignProto(
+    Object.create(Object.prototype),
     proto,
   );
 

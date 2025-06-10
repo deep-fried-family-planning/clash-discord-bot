@@ -12,22 +12,22 @@ export const TypeId = Symbol.for('disreact/dep'),
              HookId = Symbol.for('disreact/hook');
 
 const upstream = GlobalValue
-  .globalValue(Symbol.for('disreact/deps'), () => new WeakMap<El.Comp | Rehydrant.Rehydrant, Set<El.Comp>>());
+  .globalValue(Symbol.for('disreact/deps'), () => new WeakMap<El.Component | Rehydrant.Rehydrant, Set<El.Component>>());
 
-export const get = (nd: El.Comp) => {
+export const get = (nd: El.Component) => {
   if (!upstream.has(nd)) {
-    const deps = new Set<El.Comp>();
+    const deps = new Set<El.Component>();
     upstream.set(nd, deps);
     return deps;
   }
   return upstream.get(nd)!;
 };
 
-export const has = (n: El.Comp, d: El.Comp) => get(n).has(d);
+export const has = (n: El.Component, d: El.Component) => get(n).has(d);
 
-export const add = (n: El.Comp, d: El.Comp) => get(n).add(d);
+export const add = (n: El.Component, d: El.Component) => get(n).add(d);
 
-export const transfer = (n: El.Comp, ds: Set<El.Comp>) => {
+export const transfer = (n: El.Component, ds: Set<El.Component>) => {
   const deps = get(n);
   for (const d of ds) {
     deps.add(d);
@@ -36,14 +36,14 @@ export const transfer = (n: El.Comp, ds: Set<El.Comp>) => {
   return deps;
 };
 
-export const clear = (n: El.Comp) => {
+export const clear = (n: El.Component) => {
   const deps = get(n);
   deps.clear();
 };
 
-export const remove = (n: El.Comp, d: El.Comp) => get(n).delete(d);
+export const remove = (n: El.Component, d: El.Component) => get(n).delete(d);
 
-export const set = (n: El.Comp, ds: Set<El.Comp>) => {
+export const set = (n: El.Component, ds: Set<El.Component>) => {
   const deps = get(n);
   deps.clear();
   for (const d of ds) {
@@ -53,7 +53,7 @@ export const set = (n: El.Comp, ds: Set<El.Comp>) => {
 };
 
 const origins = GlobalValue
-  .globalValue(Symbol.for('disreact/origins'), () => new WeakMap<any, El.Comp>());
+  .globalValue(Symbol.for('disreact/origins'), () => new WeakMap<any, El.Component>());
 
 export const origin = (i: any) => origins.get(i);
 
@@ -109,7 +109,7 @@ export type Item = any;
 
 export const isItem = (i: any): i is Item => typeof i === 'object' && i !== null && i[TypeId] === TypeId;
 
-export const item = <A>(hook: string, origin: El.Comp, i: A): A => {
+export const item = <A>(hook: string, origin: El.Component, i: A): A => {
   if (i === null || i === undefined || typeof i !== 'object') {
     throw new Error();
   }
@@ -154,7 +154,7 @@ export interface Fn extends Function {
 
 export const isFn = (fn: any): fn is Fn => typeof fn === 'function' && fn[TypeId] === TypeId;
 
-export const fn = <F extends (...p: any) => any>(hook: string, origin: El.Comp, f: F): F => {
+export const fn = <F extends (...p: any) => any>(hook: string, origin: El.Component, f: F): F => {
   const fn = Object.setPrototypeOf(f, FnProto);
   fn[TypeId] = TypeId;
   fn[HookId] = hook;

@@ -12,7 +12,7 @@ import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
 import type * as Runtime from 'effect/Runtime';
 
-const op = {};
+
 
 const getRoot = () => {
   const ctx = Globals.root;

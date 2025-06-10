@@ -1,3 +1,4 @@
+import * as Const from '#src/disreact/model/util/const.ts';
 import * as Proto from '#src/disreact/model/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -80,8 +81,8 @@ export const make = (f: Any): Any => {
     else {
       f[NameId] = '.';
     }
-    if (f.constructor.name === 'AsyncFunction') {
-      f[KindId] = PROMISE;
+    if (f.constructor.name === Const.ASYNC_FUNCTION) {
+      f[KindId] = Const.PROMISE;
     }
   }
   (f[TypeId] as any) = TypeId;
@@ -105,27 +106,27 @@ export const name = (fc: FC.FC, name: string) => {
 
 export const render = (f: FC, p: any): E.Effect<any> => {
   switch (f[KindId]) {
-    case SYNC: {
+    case Const.SYNC: {
       return E.sync(() => f(p));
     }
-    case PROMISE: {
+    case Const.PROMISE: {
       return E.promise(() => f(p));
     }
-    case EFFECT: {
+    case Const.EFFECT: {
       return f(p);
     }
     default: {
       return E.suspend(() => {
         const out = f(p);
         if (Predicate.isPromise(out)) {
-          f[KindId] = PROMISE;
+          f[KindId] = Const.PROMISE;
           return E.promise(() => out);
         }
         if (E.isEffect(out)) {
-          f[KindId] = EFFECT;
+          f[KindId] = Const.EFFECT;
           return out as E.Effect<any>;
         }
-        f[KindId] = SYNC;
+        f[KindId] = Const.SYNC;
         return E.succeed(out);
       });
     }

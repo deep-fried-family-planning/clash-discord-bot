@@ -13,18 +13,18 @@ export namespace Diff {
   };
   export type Insert = {
     _tag: 'Insert';
-    node: El.El;
+    node: El.Element;
   };
   export type Remove = {
     _tag: 'Remove';
   };
   export type Replace = {
     _tag: 'Replace';
-    node: El.El;
+    node: El.Element;
   };
   export type Update = {
     _tag: 'Update';
-    node: El.El;
+    node: El.Element;
   };
   export type Render = {
     _tag: 'Render';
@@ -66,19 +66,19 @@ const skip = (): Diff.Skip =>
     _tag: 'Skip',
   });
 
-const replace = (node: El.El): Diff.Replace =>
+const replace = (node: El.Element): Diff.Replace =>
   ({
     _tag: 'Replace',
     node,
   });
 
-const update = (node: El.El): Diff.Update =>
+const update = (node: El.Element): Diff.Update =>
   ({
     _tag: 'Update',
     node,
   });
 
-const insert = (node: El.El): Diff.Insert =>
+const insert = (node: El.Element): Diff.Insert =>
   ({
     _tag: 'Insert',
     node,
@@ -95,9 +95,9 @@ const render = (): Diff.Render =>
   });
 
 const __diff = GlobalValue
-  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<El.El, Diff>());
+  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<El.Element, Diff>());
 
-export const node = (a: El.El, b: El.El) => {
+export const node = (a: El.Element, b: El.Element) => {
   if (Equal.equals(a, b)) {
     return skip();
   }
@@ -126,9 +126,9 @@ export const node = (a: El.El, b: El.El) => {
 const diffs = GlobalValue
   .globalValue(Symbol.for('disreact/diffs'), () => new WeakMap<any, Cd[]>());
 
-export const nodes = (n: El.El) => diffs.get(n);
+export const nodes = (n: El.Element) => diffs.get(n);
 
-export const rendered = (n: El.El, rs?: El.El[]) => {
+export const rendered = (n: El.Element, rs?: El.Element[]) => {
   if (rs === undefined) {
     diffs.set(n, []);
     return [];

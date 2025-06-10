@@ -1,27 +1,27 @@
 export type Const = never;
 
-export const TEXT = 1,
-             REST = 2,
-             COMP = 3;
+export const TEXT = 1 as const,
+             REST = 2 as const,
+             COMP = 3 as const;
 
 export type ElementType = | typeof TEXT
                           | typeof REST
                           | typeof COMP;
 
-export const SYNC    = 1,
-             PROMISE = 2,
-             EFFECT  = 3;
+export const SYNC    = 1 as const,
+             PROMISE = 2 as const,
+             EFFECT  = 3 as const;
 
 export type FunctionType = | typeof SYNC
                            | typeof PROMISE
                            | typeof EFFECT;
 
-export const SKIP    = 1,
-             REPLACE = 2,
-             UPDATE  = 3,
-             INSERT  = 4,
-             REMOVE  = 5,
-             RENDER  = 6;
+export const SKIP    = 1 as const,
+             REPLACE = 2 as const,
+             UPDATE  = 3 as const,
+             INSERT  = 4 as const,
+             REMOVE  = 5 as const,
+             RENDER  = 6 as const;
 
 export type DiffType = | typeof SKIP
                        | typeof REPLACE
@@ -30,13 +30,13 @@ export type DiffType = | typeof SKIP
                        | typeof REMOVE
                        | typeof RENDER;
 
-export const INITIALIZE = 1,
-             REHYDRATE  = 2,
-             RERENDER   = 3,
-             MOUNT      = 4,
-             DISMOUNT   = 5,
-             EFFECTS    = 6,
-             ENCODE     = 7;
+export const INITIALIZE = 1 as const,
+             REHYDRATE  = 2 as const,
+             RERENDER   = 3 as const,
+             MOUNT      = 4 as const,
+             DISMOUNT   = 5 as const,
+             EFFECTS    = 6 as const,
+             ENCODE     = 7 as const;
 
 export type LifecycleType = | typeof INITIALIZE
                             | typeof REHYDRATE
@@ -47,3 +47,4 @@ export type LifecycleType = | typeof INITIALIZE
                             | typeof ENCODE;
 
 export const ASYNC_FUNCTION = 'AsyncFunction';
+export const ANONYMOUS_FUNCTION = 'Anonymous';

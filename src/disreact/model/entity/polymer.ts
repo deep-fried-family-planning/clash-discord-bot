@@ -64,7 +64,7 @@ export type Polymer = Polymer.Polymer;
 export type Encoded = Polymer.Encoded;
 
 export const empty = (): Polymer =>
-  Data.struct({
+  ({
     pc   : 0,
     rc   : 0,
     curr : chain(),
@@ -73,7 +73,7 @@ export const empty = (): Polymer =>
   });
 
 export const rehydrated = (m: Monomer[]): Polymer =>
-  Data.struct({
+  ({
     pc   : 0,
     rc   : 1,
     curr : chain(m),
@@ -84,10 +84,10 @@ export const rehydrated = (m: Monomer[]): Polymer =>
 const polymers = GlobalValue
   .globalValue(
     Symbol.for('disreact/polymers'),
-    () => new WeakMap<El.Comp, Polymer>(),
+    () => new WeakMap<El.Component, Polymer>(),
   );
 
-export const get = (fn: El.Comp): Polymer => {
+export const get = (fn: El.Component): Polymer => {
   if (polymers.has(fn)) {
     return polymers.get(fn)!;
   }
@@ -96,7 +96,7 @@ export const get = (fn: El.Comp): Polymer => {
   return polymer;
 };
 
-export const set = (fn: El.Comp, p: Polymer) => polymers.set(fn, p);
+export const set = (fn: El.Component, p: Polymer) => polymers.set(fn, p);
 
 export const next = <A extends Monomer>(p: Polymer, predicate: (i: any) => i is A, lazy: () => A): A => {
   if (p.rc === 0) {
@@ -112,11 +112,6 @@ export const next = <A extends Monomer>(p: Polymer, predicate: (i: any) => i is 
   }
   throw new Error('Invalid Hook');
 };
-
-export const changed = pipe(
-  Equal.equivalence(),
-  Equivalence.array<Monomer>,
-);
 
 export const current = (p: Polymer): Monomer | undefined => p.curr[p.pc];
 
@@ -138,7 +133,7 @@ export const commit = (p: Polymer) => {
   p.rc++;
 };
 
-export const done = (n: El.Comp) => {
+export const done = (n: El.Component) => {
   const polymer = polymers.get(n)!;
   delete polymer.lock;
   polymer.save = Data.array(structuredClone(polymer.curr)) as any[];

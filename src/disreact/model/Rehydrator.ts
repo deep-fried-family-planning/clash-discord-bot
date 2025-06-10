@@ -9,7 +9,7 @@ import console from 'node:console';
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
   if (FC.isFC(input)) return FC.id(input);
-  if (El.isComp(input)) return FC.id(input.type);
+  if (El.isComponent(input)) return FC.id(input.type);
 };
 
 export class RehydratorError extends Data.TaggedError('RehydratorError')<{cause: Error}> {}

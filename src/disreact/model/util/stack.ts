@@ -19,15 +19,14 @@ export const empty = (): Stack =>
 export const make = (n: El.Node): Stack => {
   const s = empty();
   push(s, n);
-  s.seen;
   return s;
 };
 
-export const push = (s: Stack, n: El.El) => {
+export const push = (s: Stack, n: El.Element) => {
   MutableList.append(s.list, n);
 };
 
-export const pushAll = (s: Stack, n: El.El) => {
+export const pushAll = (s: Stack, n: El.Element) => {
   if (!n.rs) {
     return;
   }

@@ -1,4 +1,4 @@
-import * as El from '#src/disreact/model/entity/element.ts';
+import * as Element from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
@@ -12,49 +12,51 @@ export interface Rehydrant {
   data     : any;
   next     : {id: string | null; props?: any};
   polymers?: {[K in string]: Polymer.Polymer};
-  element  : El.Comp;
+  element  : Element.Component;
   stack    : Stack.Stack;
+  notify   : Set<Element.Component>;
 };
 
-export type Registrant = FC.Any | El.El;
-export type SourceId = string | FC.Any | El.El;
+export type Registrant = FC.Any | Element.Element;
+export type SourceId = string | FC.Any | Element.Element;
 export type Source = {
   id: string;
-  el: El.Comp;
+  el: Element.Component;
 };
 export type Hydrator = typeof Declarations.Hydrator.Type;
 export type Encoded = typeof Declarations.Hydrator.Encoded;
 
 export const source = (src: Registrant, id?: string): Source => {
   const comp = FC.isFC(src)
-    ? El.createRoot(src, {})
+    ? Element.createRoot(src, {})
     : src;
   if (id) {
     FC.name(comp.type, id);
   }
   return {
-    id: FC.id((comp as El.Comp).type)!,
-    el: comp as El.Comp,
+    id: FC.id((comp as Element.Component).type)!,
+    el: comp as Element.Component,
   };
 };
 
-const rehydrant = (id: string, el: El.Comp, data: any): Rehydrant =>
+const rehydrant = (id: string, el: Element.Component, data: any): Rehydrant =>
   ({
     id,
     element: el,
     data,
     next   : {id: id},
     stack  : Stack.empty(),
+    notify : new Set(),
   });
 
 export const fromSource = (s: Source, p: any, d: any): Rehydrant => {
-  const fn = El.createRoot(s.el.type, p ?? s.el.props);
+  const fn = Element.createRoot(s.el.type, p ?? s.el.props);
   const rh = rehydrant(s.id, fn, d);
   return rh;
 };
 
 export const fromFC = (f: FC.Any, p: any, d: any): Rehydrant => {
-  const comp = El.createRoot(f, p);
+  const comp = Element.createRoot(f, p);
   const rh = rehydrant(FC.id(comp.type)!, comp, d);
   return rh;
 };
@@ -63,7 +65,7 @@ const pmap = GlobalValue
   .globalValue(Symbol.for('disreact/rehydrant/polymers'), () => new WeakMap<Rehydrant, Record<string, Polymer.Encoded>>());
 
 export const rehydrate = (src: Source, hydrator: Hydrator, data: any): Rehydrant => {
-  const cloned = El.createRoot(src.el.type, hydrator.props);
+  const cloned = Element.createRoot(src.el.type, hydrator.props);
   const rh = rehydrant(src.id, cloned, data);
   pmap.set(rh, hydrator.stacks as any);
   return rh;
@@ -78,7 +80,7 @@ export const dehydrate = (rh: Rehydrant): Hydrator => {
   while (Stack.cont(s)) {
     const n = Stack.pull(s);
 
-    if (El.isComp(n)) {
+    if (Element.isComponent(n)) {
       acc[n._n!] = Polymer.get(n).curr;
     }
     Stack.pushAll(s, n);
@@ -91,7 +93,7 @@ export const dehydrate = (rh: Rehydrant): Hydrator => {
   };
 };
 
-export const addNode = (rh: Rehydrant, node: El.Comp) => {
+export const addNode = (rh: Rehydrant, node: Element.Component) => {
   Stack.push(rh.stack, node);
 };
 
@@ -99,6 +101,6 @@ export const getNode = (rh: Rehydrant) => {
   new Set();
 };
 
-export const notify = (rh: Rehydrant, node: El.Comp) => {
+export const notify = (rh: Rehydrant, node: Element.Component) => {
 
 };

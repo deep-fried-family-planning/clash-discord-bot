@@ -7,10 +7,14 @@ import {pipe} from 'effect/Function';
 export let id   = 0,
            kind = undefined as undefined | number,
            root = undefined as undefined | Rehydrant.Rehydrant,
-           node = undefined as undefined | El.Comp,
+           node = undefined as undefined | El.Component,
            poly = undefined as undefined | Polymer.Polymer;
 
-export const set = (rh: Rehydrant.Rehydrant, el: El.Comp) => {
+export const get = () => {
+
+};
+
+export const set = (rh: Rehydrant.Rehydrant, el: El.Component) => {
   try {id++;}
   catch (_) {id = 0;}
   root = rh;
