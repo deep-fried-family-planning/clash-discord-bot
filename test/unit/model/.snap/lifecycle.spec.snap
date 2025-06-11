@@ -257,12 +257,80 @@ exports[`when rendering async > MessageAsync 1`] = `
 }"
 `;
 
+exports[`when rendering async 1`] = `
+"{
+  "embeds": [
+    {}
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonSync:0:button:0",
+          "label": "ButtonSync"
+        },
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonAsync:0:button:0",
+          "label": "ButtonAsync"
+        },
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonEffect:0:button:0",
+          "label": "ButtonEffect"
+        }
+      ]
+    }
+  ],
+  "flags": 64
+}"
+`;
+
 exports[`when rendering effect > MessageEffect 1`] = `
 "{
   "embeds": [
     {
       "description": "EphemeralEffect"
     }
+  ],
+  "components": [
+    {
+      "type": 1,
+      "components": [
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonSync:0:button:0",
+          "label": "ButtonSync"
+        },
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonAsync:0:button:0",
+          "label": "ButtonAsync"
+        },
+        {
+          "type": 2,
+          "style": 1,
+          "custom_id": "ButtonEffect:0:button:0",
+          "label": "ButtonEffect"
+        }
+      ]
+    }
+  ],
+  "flags": 64
+}"
+`;
+
+exports[`when rendering effect 1`] = `
+"{
+  "embeds": [
+    {}
   ],
   "components": [
     {

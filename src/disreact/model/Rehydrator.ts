@@ -8,11 +8,14 @@ import console from 'node:console';
 
 const getId = (input: string | Rehydrant.SourceId) => {
   if (typeof input === 'string') return input;
-  if (FC.isFC(input)) return FC.id(input);
-  if (El.isComponent(input)) return FC.id(input.type);
+  if (El.isFc(input)) return El.fcId(input);
+  if (El.isComponent(input)) return El.fcId(input.type);
 };
 
-export class RehydratorError extends Data.TaggedError('RehydratorError')<{cause: Error}> {}
+export class RehydratorError extends Data.TaggedError('RehydratorError')<{
+  message?: string;
+  cause   : Error;
+}> {}
 
 export type RehydratorConfig = {
   primitive?    : string;
@@ -40,7 +43,10 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       for (const [id, input] of Object.entries(sources)) {
         const src = Rehydrant.source(input, id);
         if (store.has(src.id)) {
-          return new RehydratorError({cause: new Error(`Source (${src.id}) already registered`)});
+          return new RehydratorError({
+            name : new Error(`Source (${src.id}) already registered`).message,
+            cause: new Error(`Source (${src.id}) already registered`),
+          });
         }
         store.set(src.id, src);
       }
@@ -61,7 +67,10 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
         return new RehydratorError({cause: new Error('No source id')});
       }
       if (!store.has(id)) {
-        return new RehydratorError({cause: new Error(`Source (${id}) is not registered`)});
+        return new RehydratorError({
+          message: new Error(`Source (${id}) is not registered`).message,
+          cause  : new Error(`Source (${id}) is not registered`),
+        });
       }
       const source = store.get(id)!;
       return E.succeed(Rehydrant.fromSource(source, props, data));

@@ -1,4 +1,4 @@
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import type * as E from 'effect/Effect';
 import * as S from 'effect/Schema';
@@ -17,6 +17,7 @@ export const Monomer = S.Union(
 export const Chain = S.Array(Monomer);
 
 export const Hydrator = S.Struct({
+  key   : S.optional(S.String),
   id    : S.String,
   props : S.optional(S.Any),
   stacks: S.Record({key: S.String, value: Chain}),

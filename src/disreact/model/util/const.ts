@@ -1,5 +1,9 @@
 export type Const = never;
 
+export const isDev = process.env.NODE_ENV === 'development';
+
+export const ElementId = Symbol.for('ElementId');
+
 export const TEXT = 1 as const,
              REST = 2 as const,
              COMP = 3 as const;
@@ -36,7 +40,8 @@ export const INITIALIZE = 1 as const,
              MOUNT      = 4 as const,
              DISMOUNT   = 5 as const,
              EFFECTS    = 6 as const,
-             ENCODE     = 7 as const;
+             INVOKE    = 7 as const,
+             ENCODE     = 8 as const;
 
 export type LifecycleType = | typeof INITIALIZE
                             | typeof REHYDRATE
@@ -44,6 +49,7 @@ export type LifecycleType = | typeof INITIALIZE
                             | typeof MOUNT
                             | typeof DISMOUNT
                             | typeof EFFECTS
+                            | typeof INVOKE
                             | typeof ENCODE;
 
 export const ASYNC_FUNCTION = 'AsyncFunction';

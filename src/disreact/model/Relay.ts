@@ -1,5 +1,5 @@
 import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
-import type {EventDefect, RenderDefect, UpdateDefect} from '#src/disreact/model/lifecycle/lifecycle.ts';
+import type {EventDefect, RenderDefect, UpdateDefect} from '#src/disreact/model/lifecycle.ts';
 import type {RehydratorError} from '#src/disreact/model/Rehydrator.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import * as Deferred from 'effect/Deferred';

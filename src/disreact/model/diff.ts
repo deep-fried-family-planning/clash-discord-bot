@@ -1,11 +1,7 @@
-import * as El from '#src/disreact/model/entity/element.ts';
+import * as Element from '#src/disreact/model/entity/element.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
-import {Differ, Either, Predicate} from 'effect';
 import * as Equal from 'effect/Equal';
-import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
-import * as Boolean from 'effect/Boolean';
-import console from 'node:console';
 
 export namespace Diff {
   export type Skip = {
@@ -13,18 +9,18 @@ export namespace Diff {
   };
   export type Insert = {
     _tag: 'Insert';
-    node: El.Element;
+    node: Element.Element;
   };
   export type Remove = {
     _tag: 'Remove';
   };
   export type Replace = {
     _tag: 'Replace';
-    node: El.Element;
+    node: Element.Element;
   };
   export type Update = {
     _tag: 'Update';
-    node: El.Element;
+    node: Element.Element;
   };
   export type Render = {
     _tag: 'Render';
@@ -66,19 +62,19 @@ const skip = (): Diff.Skip =>
     _tag: 'Skip',
   });
 
-const replace = (node: El.Element): Diff.Replace =>
+const replace = (node: Element.Element): Diff.Replace =>
   ({
     _tag: 'Replace',
     node,
   });
 
-const update = (node: El.Element): Diff.Update =>
+const update = (node: Element.Element): Diff.Update =>
   ({
     _tag: 'Update',
     node,
   });
 
-const insert = (node: El.Element): Diff.Insert =>
+const insert = (node: Element.Element): Diff.Insert =>
   ({
     _tag: 'Insert',
     node,
@@ -95,19 +91,19 @@ const render = (): Diff.Render =>
   });
 
 const __diff = GlobalValue
-  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<El.Element, Diff>());
+  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<Element.Element, Diff>());
 
-export const node = (a: El.Element, b: El.Element) => {
+export const node = (a: Element.Element, b: Element.Element) => {
   if (Equal.equals(a, b)) {
     return skip();
   }
   if (a.type !== b.type) {
     return replace(b);
   }
-  if (El.isText(a) || El.isText(b)) {
+  if (Element.isText(a) || Element.isText(b)) {
     return update(b);
   }
-  if (El.isRest(a) || El.isRest(b)) {
+  if (Element.isRest(a) || Element.isRest(b)) {
     return update(b);
   }
   const poly = Polymer.get(a);
@@ -126,9 +122,9 @@ export const node = (a: El.Element, b: El.Element) => {
 const diffs = GlobalValue
   .globalValue(Symbol.for('disreact/diffs'), () => new WeakMap<any, Cd[]>());
 
-export const nodes = (n: El.Element) => diffs.get(n);
+export const nodes = (n: Element.Element) => diffs.get(n);
 
-export const rendered = (n: El.Element, rs?: El.Element[]) => {
+export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
   if (rs === undefined) {
     diffs.set(n, []);
     return [];

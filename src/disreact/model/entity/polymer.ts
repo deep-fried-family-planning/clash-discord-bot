@@ -1,13 +1,17 @@
 import type * as El from '#src/disreact/model/entity/element.ts';
-import type * as Hook from '#src/disreact/model/lifecycle/hook.ts';
+import type * as Hook from '#src/disreact/model/hook.ts';
 import type * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
+import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import * as Equal from 'effect/Equal';
 import * as Equivalence from 'effect/Equivalence';
 import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
+
+export const MonomerId = Symbol.for('disreact/monomer');
+export const EncodeId = Symbol.for('disreact/encode');
 
 export namespace Monomer {
   export type None = typeof Declarations.Null.Type;
@@ -46,7 +50,7 @@ const nest = (data: any) => {
 export const none = (): Monomer.None => null;
 export const state = (s: any): Monomer.State => nest({s});
 export const deps = (d: any = []): Monomer.Deps => nest(({d}));
-export const chain = (c: Monomer[] = []) => Data.array(c) as Monomer[];
+export const chain = (c: Encoded = []) => Data.array(c) as Monomer[];
 
 export namespace Polymer {
   export type Polymer = {
@@ -58,7 +62,7 @@ export namespace Polymer {
     root?: WeakRef<Rehydrant.Rehydrant>;
     lock?: number;
   };
-  export type Encoded = Monomer[];
+  export type Encoded = readonly Monomer[];
 }
 export type Polymer = Polymer.Polymer;
 export type Encoded = Polymer.Encoded;
@@ -72,14 +76,28 @@ export const empty = (): Polymer =>
     queue: [],
   });
 
-export const rehydrated = (m: Monomer[]): Polymer =>
+export const rehydrate = (ms: Encoded): Polymer =>
   ({
     pc   : 0,
     rc   : 1,
-    curr : chain(m),
-    save : chain(structuredClone(m)),
+    curr : chain(ms),
+    save : chain(structuredClone(ms)),
     queue: [],
   });
+
+export const dehydrate = (n: El.Component): Encoded => {
+  const self = get(n);
+  if (!self.rc) {
+    throw new Error();
+  }
+  if (self.pc > 0) {
+    throw new Error();
+  }
+  if (self.queue.length) {
+    throw new Error();
+  }
+  return self.curr;
+};
 
 const polymers = GlobalValue
   .globalValue(

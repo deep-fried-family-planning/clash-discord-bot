@@ -12,10 +12,8 @@ import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
 import type * as Runtime from 'effect/Runtime';
 
-
-
 const getRoot = () => {
-  const ctx = Globals.root;
+  const ctx = Globals.get().root;
   if (!ctx) {
     throw new Error('Hooks must be called within a component.');
   }
@@ -23,7 +21,7 @@ const getRoot = () => {
 };
 
 const getComp = () => {
-  const ctx = Globals.node;
+  const ctx = Globals.get().node;
   if (!ctx) {
     throw new Error('Hooks must be called within a component.');
   }
@@ -31,7 +29,7 @@ const getComp = () => {
 };
 
 const getPolymer = () => {
-  const ctx = Globals.poly;
+  const ctx = Globals.get().poly;
   if (!ctx) {
     throw new Error('Hooks must be called within a component.');
   }
@@ -66,7 +64,7 @@ export const $useState = <S>(initial: S): readonly [S, Hook.SetState<S>] => {
     else {
       monomer.s = next;
     }
-    Rehydrant.addNode(root, node);
+    Rehydrant.enqueue(root, node);
   });
 
   return [monomer.s, set];
@@ -79,7 +77,7 @@ export const $useReducer = <A, S>(reducer: (state: S, action: A) => S | Promise<
   const node = getComp();
 
   const dispatch = Deps.fn('useReducer', node, (action: A) => {
-    Rehydrant.addNode(root, node);
+    Rehydrant.enqueue(root, node);
     polymer.queue.push(() => {
       if (reducer.constructor.name === 'AsyncFunction') {
         return pipe(

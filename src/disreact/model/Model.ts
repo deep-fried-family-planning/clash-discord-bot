@@ -1,6 +1,6 @@
 import type {FC} from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Lifecycle from '#src/disreact/model/lifecycle/lifecycle.ts';
+import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
@@ -29,7 +29,7 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
   pipe(
     Rehydrator.decode(hydrator, data),
     E.flatMap((root) => Lifecycle.rehy2(root)),
-    E.flatMap((root) => Lifecycle.invoke(root, event)),
+    E.flatMap((root) => Lifecycle.invoke2(root, event)),
     E.flatMap((root) => Lifecycle.rerenders(root)),
     E.tapError((error) => Relay.fail(error)),
     E.fork,
@@ -74,7 +74,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
         pipe(
           rehydrator.decode(hydrator, data),
           E.flatMap((root) => Lifecycle.rehy2(root)),
-          E.flatMap((root) => Lifecycle.invoke(root, event)),
+          E.flatMap((root) => Lifecycle.invoke2(root, event)),
           E.flatMap((root) => Lifecycle.rerenders(root)),
           E.tapError((error) => relay.fail(error)),
           E.fork,

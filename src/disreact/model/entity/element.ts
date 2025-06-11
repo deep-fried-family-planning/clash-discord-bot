@@ -1,42 +1,58 @@
 import type * as El from '#src/disreact/model/entity/element.ts';
 import type * as FC from '#src/disreact/model/entity/fc.ts';
+import {extend} from '#src/disreact/model/entity/proto.ts';
 import * as Const from '#src/disreact/model/util/const.ts';
 import * as Deps from '#src/disreact/model/util/deps.ts';
-import * as Proto from '#src/disreact/model/util/proto.ts';
+import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
-import * as F from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
 import * as MutableList from 'effect/MutableList';
 import * as Order from 'effect/Order';
 import console from 'node:console';
+import {inspect} from 'node:util';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
+export type Primitive = | null
+                        | undefined
+                        | boolean
+                        | number
+                        | string
+                        | symbol;
 
+export const TypeId = Symbol.for('disreact/element'),
+             SrcId  = Symbol.for('disreact/source'),
+             PropId = Symbol.for('disreact/props'),
+             FuncId = Symbol.for('disreact/fc'),
+             KindId = Symbol.for('disreact/fc/kind');
 
-export const TypeId = Symbol('disreact/element'),
-             SourceId = Symbol('disreact/source');
+export type Element = | Text
+                      | Rest
+                      | Component;
+
+export type Node = | Rest
+                   | Component;
 
 export interface Base {
-  [TypeId]   : Const.ElementType;
-  [SourceId]?: string;
-  type?      : any;
-  $d         : number;
-  $i         : number;
-  $p         : number;
-  _n?        : string;
-  _s?        : string;
-  props?     : Props;
-  rs?        : Elements;
-  text?      : any;
-  name?      : string;
+  [TypeId]: Const.ElementType;
+  [SrcId]?: string;
+  type?   : any;
+  $d      : number;
+  $i      : number;
+  $p      : number;
+  _n?     : string;
+  _s?     : string;
+  props?  : Props;
+  rs?     : Elements;
+  text?   : any;
+  name?   : string;
 };
 
 export interface Text extends Base {
   [TypeId]: typeof Const.TEXT;
-  text    : Elements.Primitive;
+  text    : Primitive;
 }
 
 export interface Rest extends Base {
@@ -50,87 +66,112 @@ export interface Component extends Base {
   type    : Fc;
 }
 
-export type Element = | Text
-                      | Rest
-                      | Component;
+const ElementProto = Proto.make<Element>({
+  $d: 0,
+  $i: 0,
+  $p: 0,
+});
 
-export type Node = | Rest
-                   | Component;
-
-export const isElem = (e: any): e is Element => !!e && typeof e === 'object' && e[TypeId];
-
-const ElementProto = {
+const TextProto = Proto.extend<Text>(ElementProto, {
+  [TypeId]: Const.TEXT,
   [Hash.symbol](this: Element) {
-    return Hash.structure(this);
+    return Hash.structure(this); // todo
   },
-  [Equal.symbol](this: Element, that: Element) {
+  [Equal.symbol](this: Text, that: Text) {
     if (!(TypeId in that)) {
       throw new Error();
     }
-    const selfKeys = Object.keys(this) as (keyof Element)[];
-    const thatKeys = Object.keys(that) as (keyof Element)[];
-    if (selfKeys.length !== thatKeys.length) {
+    if (that[TypeId] !== Const.TEXT || this.text !== that.text) {
       return false;
     }
-    for (const key of selfKeys) {
-      if (!(key in that) || !Equal.equals(this[key], that[key])) {
-        return false;
-      }
-    }
-    return true;
+    return true; // todo
   },
-};
+});
+
+const RestProto = Proto.extend<Rest>(ElementProto, {
+  [TypeId]: Const.REST,
+  [Hash.symbol](this: Element) {
+    return Hash.structure(this); // todo
+  },
+  [Equal.symbol](this: Rest, that: Rest) {
+    if (!(TypeId in that)) {
+      throw new Error();
+    }
+    if (that[TypeId] !== Const.REST) {
+      return false;
+    }
+    if (this.type !== that.type) {
+      return false;
+    }
+    if (!Equal.equals(this.props, that.props)) {
+      return false;
+    }
+    return true; // todo
+  },
+});
+
+const ComponentProto = Proto.extend<Component>(ElementProto, {
+  [TypeId]: Const.COMP,
+  [Hash.symbol](this: Element) {
+    return Hash.structure(this); // todo
+  },
+  [Equal.symbol](this: Component, that: Component) {
+    if (!(TypeId in that)) {
+      throw new Error();
+    }
+    if (that[TypeId] !== Const.COMP || this.type !== that.type) {
+      return false;
+    }
+    if (!Equal.equals(this.props, that.props)) {
+      return false;
+    }
+    return true; // todo
+  },
+});
+
+export const isElem = (e: any): e is Element => typeof e === 'object' && e !== null && TypeId in e;
 
 export const isText = (e: any): e is Text => e[TypeId] === Const.TEXT;
 
-const text = (text?: Elements.Primitive): Text =>
-  Proto.from(
-    ElementProto,
+export const isRest = (e: any): e is Rest => e[TypeId] === Const.REST;
+
+export const isComponent = (e: any): e is Component => e[TypeId] === Const.COMP;
+
+const text = (text?: Primitive): Text =>
+  Proto.create<Text>(
+    TextProto,
     {
-      [TypeId]: Const.TEXT,
-      $d      : 0,
-      $i      : 0,
-      $p      : 0,
-      text    : text,
+      text: text,
     },
   );
 
-export const isRest = (e: any): e is Rest => e[TypeId] === Const.REST;
-
 const rest = (type: string, atts: any): Rest => {
   const handler = propsHandler(atts);
-  return Proto.from(
-    ElementProto,
+  return Proto.create<Rest>(
+    RestProto,
     {
-      [TypeId]: Const.REST,
-      $d      : 0,
-      $i      : 0,
-      $p      : 0,
-      type    : type,
-      name    : type,
-      props   : props(atts),
-      handler : handler,
+      type   : type,
+      name   : type,
+      props  : props(atts),
+      handler: handler,
     },
   );
 };
 
-export const isComponent = (e: any): e is Component => e[TypeId] === Const.COMP;
-
 const component = (type: Fc, atts: any): Component => {
   const f = registerFc(type);
-  return Proto.from(
-    ElementProto,
+
+  const self = Proto.create<Component>(
+    ComponentProto,
     {
-      [TypeId]  : Const.COMP,
-      [SourceId]: f[FcId]!,
-      $d        : 0,
-      $i        : 0,
-      $p        : 0,
-      type      : f,
-      name      : f[FcId]!,
-      props     : props(atts),
+      [SrcId]: f[FcId]!,
+      type   : f,
+      name   : f[FcId]!,
     },
   );
+  self.props = props(atts, self);
+
+  return self;
 };
 
 export const ElementsId = Symbol('disreact/elements');
@@ -196,9 +237,11 @@ const emptyCount = (): Count =>
 
 const connect = (p: Element, n: Element, count: Count) => {
   if (!isElem(n)) {
-    count.t++;
-    count.p++;
-    return text(n);
+    const t = text(n);
+    t.$d = p.$d + 1;
+    t.$p = count.p++;
+    t.$i = count.t;
+    return t;
   }
   n.$d = p.$d + 1;
   n.$p = count.p++;
@@ -220,7 +263,7 @@ const connect = (p: Element, n: Element, count: Count) => {
 
 export const trie = (p: Element, rs = p.rs): Elements => {
   const count = emptyCount(),
-        cs    = Proto.from(ElementsProto, Array.ensure(rs ?? []).flat());
+        cs    = Proto.create(ElementsProto, Array.ensure(rs ?? []).flat() as any);
 
   let ids = new Set<string>();
 
@@ -283,47 +326,10 @@ export const accept = (p: Element, ns: Element[]) => {
   return p;
 };
 
-type M<A> = {
-  text: (n: Text) => A;
-  rest: (n: Rest) => A;
-  comp: (n: Component) => A;
-};
-export const match = F.dual<<A>(m: M<A>) => (n: Element) => A, <A>(n: Element, m: M<A>) => A>(
-  2,
-  (n, m) => {
-    if (isText(n)) {
-      return m.text(n);
-    }
-    else if (isRest(n)) {
-      return m.rest(n);
-    }
-    return m.comp(n);
-  },
-);
-
-export namespace Event {
-  export type Event = {
-    id  : string;
-    data: any;
-  };
-
-  export interface Handler extends Function {
-    (event: Event.Event): void | Promise<void> | E.Effect<void, any, any>;
-  }
-}
-export type Event = Event.Event;
-export type Handler = Event.Handler;
-
-export const event = (id: string, data: any): Event.Event =>
-  ({
-    id,
-    data,
-  });
-
-export const order = () =>
+export const order = <A extends Element>() =>
   Order.combineAll([
-    Order.mapInput(Order.number, (e: Element) => e.$d),
-    Order.mapInput(Order.number, (e: Element) => e.$p),
+    Order.mapInput(Order.number, (e: A) => e.$d),
+    Order.mapInput(Order.number, (e: A) => e.$p),
   ]);
 
 const HANDLER_KEYS = [
@@ -429,14 +435,14 @@ const propsHandler = (props: any): El.Handler | undefined => {
   }
 };
 
-export const FcId     = Symbol.for('disreact/fc'),
-             RenderId = Symbol.for('disreact/render');
+export const FcId  = Symbol.for('disreact/fc'),
+             RunId = Symbol.for('disreact/render');
 
 export namespace Fc {
   export interface Base<P> extends Function {
     (props: P): Elements.Rendered | Promise<Elements.Rendered> | E.Effect<Elements.Rendered, any, any>;
     [FcId]?     : string;
-    [RenderId]? : Const.FunctionType;
+    [RunId]?    : Const.FunctionType;
     displayName?: string;
   }
   export interface Known<P> extends Base<P> {
@@ -444,15 +450,15 @@ export namespace Fc {
   }
   export interface Sync<P> extends Known<P> {
     (props: P): Elements.Rendered;
-    [RenderId]: typeof Const.SYNC;
+    [RunId]: typeof Const.SYNC;
   }
   export interface Async<P> extends Known<P> {
     (props: P): Promise<Elements.Rendered>;
-    [RenderId]: typeof Const.PROMISE;
+    [RunId]: typeof Const.PROMISE;
   }
   export interface Effect<P> extends Known<P> {
     (props: P): E.Effect<Elements.Rendered, any, any>;
-    [RenderId]: typeof Const.EFFECT;
+    [RunId]: typeof Const.EFFECT;
   }
   export type Any<P> = | Sync<P>
                        | Async<P>
@@ -475,10 +481,16 @@ const registerFc = (fc: Fc) => {
     fc[FcId] = Const.ANONYMOUS_FUNCTION;
   }
   if (fc.constructor.name === Const.ASYNC_FUNCTION) {
-    fc[RenderId] = Const.PROMISE;
+    fc[RunId] = Const.PROMISE;
   }
   return fc;
 };
+
+export const isFc = (e: any): e is Fc => !!e && typeof e === 'function' && e[FcId];
+
+export const fcId = (fc: Fc): string => fc[FcId]!;
+
+export const sourceId = (source: Element): string => source[SrcId]!;
 
 export const findFirst = (from: Element, fn: (e: Element) => boolean): Element | undefined => {
   let stack = MutableList.make<Element>(from);
@@ -516,7 +528,7 @@ export const jsx = (type: any, atts: any): Element => {
       const children = atts.children;
       delete atts.children;
       const el = rest(type, atts);
-      el.rs = trie(el, children);
+      el.rs = trie(el, [children] as any);
       return el;
     }
     case 'function': {
@@ -552,6 +564,37 @@ export const jsxDEV = (type: any, atts: any): Element => {
   return jsx(type, atts);
 };
 
+export type Source = Element & {
+  [SrcId]?: string;
+};
+
+export const registerSource = (input: Fc | Element, atts?: Props): string => {
+  if (typeof input === 'function') {
+    const name = input[FcId];
+
+    if (!atts?.source) {
+
+    }
+    return;
+  }
+  switch (input[TypeId]) {
+    case Const.REST: {
+      if (input[SrcId]) {
+        return input[SrcId]!;
+      }
+      if (input.props?.source) {
+        const id = input.props.source;
+        input[SrcId] = id;
+        return id;
+      }
+    }
+    case Const.COMP: {
+
+    }
+  }
+  throw new Error('Text element cannot be a source.');
+};
+
 export const createSource = (type: Fc | Element, atts?: Props): Element => {
   if (isElem(type)) {
     const props = rootProps(type.props);
@@ -559,30 +602,41 @@ export const createSource = (type: Fc | Element, atts?: Props): Element => {
       throw new Error();
     }
     const element = jsxDEV(type.type, props);
-    element[SourceId] = element.props!.source;
+    element[SrcId] = element.props!.source;
     delete element.props!.source;
     return element;
   }
+
   if (!atts) {
     throw new Error();
   }
   const props = rootProps(atts);
+  const element = jsxDEV(type, props) as Component;
+
   if (!props.source) {
-    throw new Error();
+    const id = element.type[FcId];
+    if (!id || id === Const.ANONYMOUS_FUNCTION) {
+      throw new Error();
+    }
+    element[SrcId] = id;
   }
-  const element = jsxDEV(type, props);
-  element[SourceId] = element.props!.source;
-  delete element.props!.source;
+  else {
+    if (element.type[FcId] !== element.props!.source) {
+      element.type[FcId] = element.props!.source;
+    }
+    element[SrcId] = element.props!.source;
+    delete element.props!.source;
+  }
   return element;
 };
 
 export const sourceRoot = (source: Element, atts?: Props): Element => {
-  if (!source[SourceId]) {
+  if (!source[SrcId]) {
     throw new Error();
   }
   const props = rootProps(atts ?? source.props);
   const element = jsxDEV(source.type, props);
-  element[SourceId] = source[SourceId];
+  element[SrcId] = source[SrcId];
   element.$d = 0;
   element.$i = 0;
   element.$p = 0;
@@ -601,3 +655,41 @@ export const createRoot = (type: FC.FC, atts: Props): Component => {
   el._s = `${el.name}:${0}`;
   return el;
 };
+
+export namespace Event {
+  export type Event = {
+    id  : string;
+    data: any;
+  };
+
+  export interface Handler extends Function {
+    (event: Event.Event): void | Promise<void> | E.Effect<void, any, any>;
+  }
+}
+export type Event = Event.Event;
+export type Handler = Event.Handler;
+
+export const event = (id: string, data: any): Event.Event =>
+  ({
+    id,
+    data,
+  });
+
+//
+// type M<A> = {
+//   text: (n: Text) => A;
+//   rest: (n: Rest) => A;
+//   comp: (n: Component) => A;
+// };
+// export const match = F.dual<<A>(m: M<A>) => (n: Element) => A, <A>(n: Element, m: M<A>) => A>(
+//   2,
+//   (n, m) => {
+//     if (isText(n)) {
+//       return m.text(n);
+//     }
+//     else if (isRest(n)) {
+//       return m.rest(n);
+//     }
+//     return m.comp(n);
+//   },
+// );

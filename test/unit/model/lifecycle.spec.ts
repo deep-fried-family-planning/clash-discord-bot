@@ -1,7 +1,7 @@
 import * as El from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Lifecycle from '#src/disreact/model/lifecycle/lifecycle.ts';
+import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as Declarations from '#src/disreact/model/util/declarations.ts';
 import {MessageAsync} from '#test/unit/components/message-async.tsx';
@@ -22,22 +22,22 @@ it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageSync, {});
   yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageSync));
-  expect(root.element).toMatchSnapshot();
+  expect(snap(encoding?.data)).toMatchSnapshot();
+  expect(root.root).toMatchSnapshot();
 }));
 
 it.effect('when rendering async', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageAsync, {});
   yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageAsync));
+  expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageEffect, {});
   yield* Lifecycle.init2(root);
   const encoding = yield* Lifecycle.encode(root);
-  expect(snap(encoding?.data)).toMatchSnapshot(FC.id(MessageEffect));
+  expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
@@ -59,7 +59,7 @@ it.effect('when dispatching an event', E.fn(function* () {
   expect(snap(initial?.data)).toMatchSnapshot('initial encoded');
 
   const event = El.event('actions:0:button:0', {});
-  yield* Lifecycle.invoke(root, event);
+  yield* Lifecycle.invoke2(root, event);
   yield* Lifecycle.rerenders(root);
 
   expect(hydrator(root)).toMatchSnapshot('rerendered stacks');
@@ -77,7 +77,7 @@ describe('given event.id does not match any node.id', () => {
 
     const event = El.event('buttons:1:button:0', {});
 
-    expect(() => E.runSync(Lifecycle.invoke(root, event) as any)).toThrowErrorMatchingSnapshot();
+    expect(() => E.runSync(Lifecycle.invoke2(root, event) as any)).toThrowErrorMatchingSnapshot();
   }));
 });
 
@@ -91,7 +91,7 @@ it.effect(`when hydrating an empty root (performance)`, E.fnUntraced(function* (
 
     const event = El.event('actions:0:button:0', {});
 
-    yield* Lifecycle.invoke(root, event);
+    yield* Lifecycle.invoke2(root, event);
     yield* Lifecycle.rerenders(root);
 
     yield* Lifecycle.encode(root);

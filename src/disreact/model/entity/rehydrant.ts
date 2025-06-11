@@ -1,21 +1,107 @@
+import {trie} from '#src/disreact/model/entity/element.ts';
 import * as Element from '#src/disreact/model/entity/element.ts';
 import * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
+import * as Proto from '#src/disreact/model/entity/proto.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
 import * as Stack from '#src/disreact/model/util/stack.ts';
+import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
-import type * as Record from 'effect/Record';
+import * as Order from 'effect/Order';
+import * as Record from 'effect/Record';
+import * as SortedSet from 'effect/SortedSet';
+import * as Trie from 'effect/Trie';
 
 export interface Rehydrant {
-  key?     : string;
-  id       : string;
-  data     : any;
-  next     : {id: string | null; props?: any};
-  polymers?: {[K in string]: Polymer.Polymer};
-  element  : Element.Component;
-  stack    : Stack.Stack;
-  notify   : Set<Element.Component>;
+  key? : string | undefined;
+  id   : string;
+  data : any;
+  next : {id: string | null; props?: any};
+  trie : Trie.Trie<Polymer.Encoded>;
+  root : Element.Element;
+  stack: Stack.Stack;
+  queue: Set<Element.Component>;
 };
+
+export const restore = (rh: Rehydrant, node: Element.Component) => {
+  if (!node._n) {
+    throw new Error();
+  }
+  if (Trie.has(rh.trie, node._n)) {
+    const encoded = Trie.unsafeGet(rh.trie, node._n);
+    const polymer = Polymer.rehydrate(encoded);
+
+    Polymer.set(node, polymer);
+    rh.trie = Trie.remove(rh.trie, node._n);
+
+    return polymer;
+  }
+  return;
+};
+
+export const trieSize = (rh: Rehydrant) => Trie.size(rh.trie);
+
+const ord = Order.combineAll([
+  Order.mapInput(Order.number, (n: Element.Component) => n.$d),
+  Order.mapInput(Order.number, (n: Element.Component) => n.$p),
+]);
+
+export const enqueue = (rh: Rehydrant, node: Element.Component) => {
+  rh.queue.add(node);
+};
+
+export const dequeue = (rh: Rehydrant) => {
+  const ns = Array.from(rh.queue);
+
+  switch (ns.length) {
+    case 0: {
+      return;
+    }
+    case 1: {
+      const [n] = ns;
+      rh.queue.clear();
+      return n;
+    }
+  }
+  ns.sort(ord);
+  const [a, b] = ns;
+  rh.queue.clear();
+  return a;
+};
+
+const sortedQueue = () =>
+  pipe(
+    Order.combineAll([
+      Order.mapInput(Order.number, (n: Element.Component) => n.$d),
+      Order.mapInput(Order.number, (n: Element.Component) => n.$p),
+    ]),
+    SortedSet.empty,
+  );
+
+const RehydrantProto = Proto.make<Rehydrant>({
+  key  : undefined,
+  id   : '',
+  data : {},
+  next : {id: '', props: {}},
+  trie : Trie.empty(),
+  root : {} as any,
+  stack: Stack.empty(),
+  queue: new Set(),
+});
+
+const make = (id: string, root: Element.Element, data: any): Rehydrant =>
+  Proto.extend<Rehydrant>(
+    RehydrantProto,
+    {
+      id   : id,
+      data : data,
+      next : {id: id},
+      root : root,
+      stack: Stack.empty(),
+      trie : Trie.empty(),
+      queue: new Set(),
+    },
+  );
 
 export type Registrant = FC.Any | Element.Element;
 export type SourceId = string | FC.Any | Element.Element;
@@ -27,80 +113,74 @@ export type Hydrator = typeof Declarations.Hydrator.Type;
 export type Encoded = typeof Declarations.Hydrator.Encoded;
 
 export const source = (src: Registrant, id?: string): Source => {
-  const comp = FC.isFC(src)
-    ? Element.createRoot(src, {})
-    : src;
+  const comp = Element.isFc(src) ? Element.createRoot(src, {})
+               : src;
   if (id) {
-    FC.name(comp.type, id);
+    comp.type[Element.FcId] = id;
   }
   return {
-    id: FC.id((comp as Element.Component).type)!,
+    id: Element.fcId((comp as Element.Component).type)!,
     el: comp as Element.Component,
   };
 };
 
-const rehydrant = (id: string, el: Element.Component, data: any): Rehydrant =>
-  ({
-    id,
-    element: el,
-    data,
-    next   : {id: id},
-    stack  : Stack.empty(),
-    notify : new Set(),
-  });
-
 export const fromSource = (s: Source, p: any, d: any): Rehydrant => {
   const fn = Element.createRoot(s.el.type, p ?? s.el.props);
-  const rh = rehydrant(s.id, fn, d);
+  const rh = make(s.id, fn, d);
   return rh;
 };
 
 export const fromFC = (f: FC.Any, p: any, d: any): Rehydrant => {
   const comp = Element.createRoot(f, p);
-  const rh = rehydrant(FC.id(comp.type)!, comp, d);
+  const rh = make(FC.id(comp.type)!, comp, d);
   return rh;
 };
-
-const pmap = GlobalValue
-  .globalValue(Symbol.for('disreact/rehydrant/polymers'), () => new WeakMap<Rehydrant, Record<string, Polymer.Encoded>>());
 
 export const rehydrate = (src: Source, hydrator: Hydrator, data: any): Rehydrant => {
-  const cloned = Element.createRoot(src.el.type, hydrator.props);
-  const rh = rehydrant(src.id, cloned, data);
-  pmap.set(rh, hydrator.stacks as any);
-  return rh;
+  const root = Element.createRoot(src.el.type, hydrator.props);
+  const self = make(src.id, root, data);
+  self.trie = pipe(
+    hydrator.stacks,
+    Record.toEntries,
+    Trie.fromIterable,
+  );
+  return self;
 };
 
-export const hydration = (rh: Rehydrant) => pmap.get(rh);
-
 export const dehydrate = (rh: Rehydrant): Hydrator => {
-  const s = Stack.make(rh.element);
+  if (Stack.cont(rh.stack)) {
+    throw new Error('Cannot dehydrate a rehydrant that is still in progress');
+  }
+  Stack.reset(rh.stack);
+  Stack.push(rh.stack, rh.root);
+
   const acc = {} as any;
 
-  while (Stack.cont(s)) {
-    const n = Stack.pull(s);
+  while (Stack.cont(rh.stack)) {
+    const n = Stack.pull(rh.stack);
 
     if (Element.isComponent(n)) {
-      acc[n._n!] = Polymer.get(n).curr;
+      acc[n._n!] = Polymer.dehydrate(n);
     }
-    Stack.pushAll(s, n);
+
+    Stack.pushAll(rh.stack, n);
   }
 
   return {
+    key   : rh.key,
     id    : rh.id,
-    props : rh.element.props,
+    props : rh.root.props,
     stacks: acc,
   };
 };
 
-export const addNode = (rh: Rehydrant, node: Element.Component) => {
-  Stack.push(rh.stack, node);
+export const cont = (rh: Rehydrant) => Stack.cont(rh.stack);
+
+export const pull = (rh: Rehydrant) => Stack.pull(rh.stack);
+
+export const push = (rh: Rehydrant, n: Element.Element) => {
+  Stack.push(rh.stack, n);
 };
 
-export const getNode = (rh: Rehydrant) => {
-  new Set();
-};
-
-export const notify = (rh: Rehydrant, node: Element.Component) => {
-
-};
+export const pushChildren = (rh: Rehydrant, n: Element.Element) =>
+  Stack.pushAll(rh.stack, n);
