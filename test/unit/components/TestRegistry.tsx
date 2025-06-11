@@ -20,10 +20,10 @@ export const TestRegistry = L.mergeAll(
   Codec.Default(),
   Rehydrator.Default({
     sources: [
-      <TestDialog/>,
+      <TestDialog source={'asdf'}/>,
       <TestMessage/>,
       <MessageEffect/>,
-      <MessageSync/>,
+      <MessageSync source={'asdf'}/>,
       <MessageAsync/>,
     ],
   }),

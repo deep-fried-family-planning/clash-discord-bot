@@ -1,5 +1,4 @@
-import * as El from '#src/disreact/model/entity/element.ts';
-import * as FC from '#src/disreact/model/entity/fc.ts';
+import * as Element from '#src/disreact/model/entity/element.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
@@ -58,7 +57,7 @@ it.effect('when dispatching an event', E.fn(function* () {
   const initial = yield* Lifecycle.encode(root);
   expect(snap(initial?.data)).toMatchSnapshot('initial encoded');
 
-  const event = El.event('actions:0:button:0', {});
+  const event = Element.event('actions:0:button:0', {});
   yield* Lifecycle.invoke2(root, event);
   yield* Lifecycle.rerenders(root);
 
@@ -75,21 +74,21 @@ describe('given event.id does not match any node.id', () => {
     yield* Lifecycle.init2(root);
     yield* Lifecycle.rerenders(root);
 
-    const event = El.event('buttons:1:button:0', {});
+    const event = Element.event('buttons:1:button:0', {});
 
     expect(() => E.runSync(Lifecycle.invoke2(root, event) as any)).toThrowErrorMatchingSnapshot();
   }));
 });
 
 it.effect(`when hydrating an empty root (performance)`, E.fnUntraced(function* () {
-  const runs = Array.from({length: 1000});
+  const runs = Array.from({length: 10000});
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Rehydrator.checkout(TestMessage, {}, {});
     yield* Lifecycle.init2(root);
     yield* Lifecycle.rehy2(root);
 
-    const event = El.event('actions:0:button:0', {});
+    const event = Element.event('actions:0:button:0', {});
 
     yield* Lifecycle.invoke2(root, event);
     yield* Lifecycle.rerenders(root);

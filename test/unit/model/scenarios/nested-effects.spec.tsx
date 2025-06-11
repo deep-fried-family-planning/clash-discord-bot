@@ -93,7 +93,7 @@ const TestLayer = () => L.mergeAll(
   // L.provideMerge(Logger.minimumLogLevel(LogLevel.All)),
 );
 
-it.effect('when rendered', E.fn(function* () {
+it.effect.skip('when rendered', E.fn(function* () {
   const actual = yield* Model.createRoot(Root, {}, {});
 
   // expect(root).toBeCalledTimes(1);

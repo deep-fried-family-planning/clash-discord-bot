@@ -7,7 +7,7 @@ import {deflate, inflate} from 'pako';
 export const Null = S.Null;
 export const State = S.Struct({s: S.Any}).pipe(S.mutable);
 export const Dep = S.Struct({d: S.Any}).pipe(S.mutable);
-export const Data = S.Struct({a: S.Literal('a')});
+export const Data = S.Struct({a: S.Any}).pipe(S.mutable);
 export const Monomer = S.Union(
   Null,
   State,
@@ -17,7 +17,7 @@ export const Monomer = S.Union(
 export const Chain = S.Array(Monomer);
 
 export const Hydrator = S.Struct({
-  key   : S.optional(S.String),
+  key   : S.optional(S.Union(S.String, S.Null)),
   id    : S.String,
   props : S.optional(S.Any),
   stacks: S.Record({key: S.String, value: Chain}),

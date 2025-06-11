@@ -1,109 +1,25 @@
+import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/model/diff.ts';
 import * as Element from '#src/disreact/model/entity/element.ts';
-import {poly} from '#src/disreact/model/entity/globals.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Const from '#src/disreact/model/util/const.ts';
 import * as Mutex from '#src/disreact/model/util/mutex.ts';
 import * as Progress from '#src/disreact/model/util/progress.ts';
 import * as Stack from '#src/disreact/model/util/stack.ts';
-import {Predicate} from 'effect';
 import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
-import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
-import * as P from 'effect/Predicate';
+import * as Predicate from 'effect/Predicate';
+import * as Stream from 'effect/Stream';
 
 export interface Base<T extends number> {
   _tag: T;
 }
-
-export class EncodeDefect extends Data.TaggedError('EncodeDefect')<{
-  root : Rehydrant.Rehydrant | null;
-  cause: Cause.Cause<Error>;
-}> {}
-
-export const encode = (rh: Rehydrant.Rehydrant | null) =>
-  pipe(
-    Rehydrator.use((rehydrator) => {
-      if (!rh) {
-        return null;
-      }
-      const primitive = rehydrator.primitive;
-      const normalization = rehydrator.normalization;
-      const encoding = rehydrator.encoding;
-
-      const stack = MutableList.make<Element.Element>(rh.root);
-      const args = new WeakMap();
-      const outs = new WeakMap();
-      const last = {} as any;
-      outs.set(rh.root, last);
-
-      while (MutableList.tail(stack)) {
-        const n = MutableList.pop(stack)!;
-        const out = outs.get(n);
-
-        if (Element.isComponent(n)) {
-          if (!n.rs) {
-            continue;
-          }
-          for (const c of n.rs.toReversed()) {
-            outs.set(c, out);
-            MutableList.append(stack, c);
-          }
-        }
-        else if (Element.isText(n)) {
-          if (!n.text) {
-            continue;
-          }
-          out[primitive] ??= [];
-          out[primitive].push(n.text);
-        }
-        else if (args.has(n)) {
-          const norm = normalization[n.type];
-          out[norm] ??= [];
-          out[norm].push((encoding[n.type](n, args.get(n)!)));
-        }
-        else if (!n.rs || n.rs.length === 0) {
-          const norm = normalization[n.type];
-          out[norm] ??= [];
-          out[norm].push((encoding[n.type](n, {})));
-        }
-        else {
-          const arg = {};
-          args.set(n, arg);
-          MutableList.append(stack, n);
-
-          for (const c of n.rs.toReversed()) {
-            outs.set(c, arg);
-            MutableList.append(stack, c);
-          }
-        }
-      }
-      for (const key of Object.keys(last)) {
-        if (last[key]) {
-          return {
-            _tag    : key,
-            hydrator: Rehydrant.dehydrate(rh),
-            data    : last[key][0],
-          };
-        }
-      }
-      return null;
-    }),
-    E.timeout(Duration.seconds(1)),
-    E.catchAllCause((cause) =>
-      new LifecycleDefect({
-        message: Cause.pretty(cause),
-        cause  : cause,
-      }),
-    ),
-  );
 
 export class LifecycleDefect extends Data.TaggedError('LifecycleDefect')<{
   message?: string;
@@ -144,7 +60,7 @@ const updateNode = (r: Rehydrant.Rehydrant, n: Element.Component) =>
       }
       const out = fx();
 
-      if (P.isPromise(out)) {
+      if (Predicate.isPromise(out)) {
         return E.promise(() => out) as E.Effect<void>;
       }
       if (E.isEffect(out)) {
@@ -211,6 +127,8 @@ export const init2 = (rh: Rehydrant.Rehydrant) => OptionalPart.pipe(E.flatMap((s
   );
 }));
 
+Stream;
+
 export const rehy2 = (rh: Rehydrant.Rehydrant) => E.suspend(() => {
   const s = Stack.make(rh.root);
 
@@ -233,9 +151,9 @@ export const rehy2 = (rh: Rehydrant.Rehydrant) => E.suspend(() => {
           if (polymer.queue.length) {
             throw new Error();
           }
-          if (!didRehydrate && polymer.curr.length) {
-            throw new Error();
-          }
+          // if (!didRehydrate && polymer.curr.length) {
+          //   throw new Error();
+          // }
         }),
         E.map((rs) => {
           n.rs = rs;
@@ -278,7 +196,7 @@ const renderEvent = (rh: Rehydrant.Rehydrant, n: Element.Rest, event: Element.Ev
       if (!output) {
         return E.void;
       }
-      if (P.isPromise(output)) {
+      if (Predicate.isPromise(output)) {
         return E.promise(async () => await output);
       }
       return output as E.Effect<void>;
@@ -447,7 +365,7 @@ const flushEffects = (node: Element.Component) => E.suspend(() => {
         return E.promise(fx as () => Promise<void>);
       }
       const out = fx();
-      if (P.isPromise(out)) {
+      if (Predicate.isPromise(out)) {
         return E.promise(() => out) as E.Effect<void>;
       }
       if (E.isEffect(out)) {
@@ -497,3 +415,86 @@ const render = (node: Element.Component) => {
     return E.succeed(out);
   });
 };
+
+export class EncodeDefect extends Data.TaggedError('EncodeDefect')<{
+  message: string;
+  root   : Rehydrant.Rehydrant | null;
+  cause  : Cause.Cause<Error>;
+}> {}
+
+const primitive     = JsxDefault.primitive,
+      normalization = JsxDefault.normalization as Record<string, string>,
+      encoding      = JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
+
+export const encode = (rh: Rehydrant.Rehydrant | null) =>
+  pipe(
+    E.sync(() => {
+      if (!rh) {
+        return null;
+      }
+      const stack = MutableList.make<Element.Element>(rh.root);
+      const args = new WeakMap();
+      const outs = new WeakMap();
+      const last = {} as any;
+      outs.set(rh.root, last);
+
+      while (MutableList.tail(stack)) {
+        const n = MutableList.pop(stack)!;
+        const out = outs.get(n);
+
+        if (Element.isComponent(n)) {
+          if (!n.rs) {
+            continue;
+          }
+          for (const c of n.rs.toReversed()) {
+            outs.set(c, out);
+            MutableList.append(stack, c);
+          }
+        }
+        else if (Element.isText(n)) {
+          if (!n.text) {
+            continue;
+          }
+          out[primitive] ??= [];
+          out[primitive].push(n.text);
+        }
+        else if (args.has(n)) {
+          const norm = normalization[n.type];
+          out[norm] ??= [];
+          out[norm].push((encoding[n.type](n, args.get(n)!)));
+        }
+        else if (!n.rs || n.rs.length === 0) {
+          const norm = normalization[n.type];
+          out[norm] ??= [];
+          out[norm].push((encoding[n.type](n, {})));
+        }
+        else {
+          const arg = {};
+          args.set(n, arg);
+          MutableList.append(stack, n);
+
+          for (const c of n.rs.toReversed()) {
+            outs.set(c, arg);
+            MutableList.append(stack, c);
+          }
+        }
+      }
+      for (const key of Object.keys(last)) {
+        if (last[key]) {
+          return {
+            _tag    : key,
+            hydrator: Rehydrant.dehydrate(rh),
+            data    : last[key][0],
+          };
+        }
+      }
+      return null;
+    }),
+    // E.timeout(Duration.seconds(1)),
+    E.catchAllCause((cause) =>
+      new LifecycleDefect({
+        message: Cause.pretty(cause),
+        cause  : cause,
+      }),
+    ),
+  );

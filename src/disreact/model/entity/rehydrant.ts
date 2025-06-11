@@ -1,6 +1,6 @@
 import {trie} from '#src/disreact/model/entity/element.ts';
 import * as Element from '#src/disreact/model/entity/element.ts';
-import * as FC from '#src/disreact/model/entity/fc.ts';
+import type * as FC from '#src/disreact/model/entity/fc.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import * as Proto from '#src/disreact/model/entity/proto.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
@@ -112,33 +112,21 @@ export type Source = {
 export type Hydrator = typeof Declarations.Hydrator.Type;
 export type Encoded = typeof Declarations.Hydrator.Encoded;
 
-export const source = (src: Registrant, id?: string): Source => {
-  const comp = Element.isFc(src) ? Element.createRoot(src, {})
-               : src;
-  if (id) {
-    comp.type[Element.FcId] = id;
-  }
-  return {
-    id: Element.fcId((comp as Element.Component).type)!,
-    el: comp as Element.Component,
-  };
-};
-
-export const fromSource = (s: Source, p: any, d: any): Rehydrant => {
-  const fn = Element.createRoot(s.el.type, p ?? s.el.props);
-  const rh = make(s.id, fn, d);
-  return rh;
+export const fromSource = (src: Element.Source, p: any, d: any): Rehydrant => {
+  const root = Element.createRootFromSource(src, p ?? src.props);
+  const self = make(Element.getSourceId(root)!, root, d);
+  return self;
 };
 
 export const fromFC = (f: FC.Any, p: any, d: any): Rehydrant => {
   const comp = Element.createRoot(f, p);
-  const rh = make(FC.id(comp.type)!, comp, d);
-  return rh;
+  const self = make(Element.getSourceId(comp.type)!, comp, d);
+  return self;
 };
 
-export const rehydrate = (src: Source, hydrator: Hydrator, data: any): Rehydrant => {
-  const root = Element.createRoot(src.el.type, hydrator.props);
-  const self = make(src.id, root, data);
+export const rehydrate = (src: Element.Source, hydrator: Hydrator, data: any): Rehydrant => {
+  const root = Element.createRootFromSource(src, hydrator.props);
+  const self = make(Element.getSourceId(root)!, root, data);
   self.trie = pipe(
     hydrator.stacks,
     Record.toEntries,

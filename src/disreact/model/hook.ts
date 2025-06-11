@@ -156,7 +156,7 @@ export const $useEffect = (effect: Hook.Effect, deps?: any[]): void => {
 
 export const $useIx = () => {
   const polymer = getPolymer();
-  const monomer = Polymer.next(polymer, Polymer.isNone, () => Polymer.none());
+  // const monomer = Polymer.next(polymer, Polymer.isNone, () => Polymer.none());
   const root = getRoot();
   const node = getComp();
   const data = root.data as Discord.APIInteraction;
@@ -165,7 +165,7 @@ export const $useIx = () => {
 
 export const $usePage = () => {
   const polymer = getPolymer();
-  const monomer = Polymer.next(polymer, Polymer.isNone, () => Polymer.none());
+  // const monomer = Polymer.next(polymer, Polymer.isNone, () => Polymer.none());
   const root = getRoot();
   const node = getComp();
   const next = Deps.fn('usePage', node, (next: FC, props: any = {}) => {

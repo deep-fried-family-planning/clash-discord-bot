@@ -1,9 +1,8 @@
 import type * as El from '#src/disreact/model/entity/element.ts';
 import type * as FC from '#src/disreact/model/entity/fc.ts';
-import {extend} from '#src/disreact/model/entity/proto.ts';
+import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as Const from '#src/disreact/model/util/const.ts';
 import * as Deps from '#src/disreact/model/util/deps.ts';
-import * as Proto from '#src/disreact/model/entity/proto.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -12,7 +11,6 @@ import * as Hash from 'effect/Hash';
 import * as MutableList from 'effect/MutableList';
 import * as Order from 'effect/Order';
 import console from 'node:console';
-import {inspect} from 'node:util';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export type Primitive = | null
@@ -23,10 +21,7 @@ export type Primitive = | null
                         | symbol;
 
 export const TypeId = Symbol.for('disreact/element'),
-             SrcId  = Symbol.for('disreact/source'),
-             PropId = Symbol.for('disreact/props'),
-             FuncId = Symbol.for('disreact/fc'),
-             KindId = Symbol.for('disreact/fc/kind');
+             SrcId  = Symbol.for('disreact/source');
 
 export type Element = | Text
                       | Rest
@@ -174,7 +169,7 @@ const component = (type: Fc, atts: any): Component => {
   return self;
 };
 
-export const ElementsId = Symbol('disreact/elements');
+export const ElementsId = Symbol.for('disreact/elements');
 
 export namespace Elements {
   export type Primitive = | null
@@ -488,10 +483,6 @@ const registerFc = (fc: Fc) => {
 
 export const isFc = (e: any): e is Fc => !!e && typeof e === 'function' && e[FcId];
 
-export const fcId = (fc: Fc): string => fc[FcId]!;
-
-export const sourceId = (source: Element): string => source[SrcId]!;
-
 export const findFirst = (from: Element, fn: (e: Element) => boolean): Element | undefined => {
   let stack = MutableList.make<Element>(from);
 
@@ -568,71 +559,68 @@ export type Source = Element & {
   [SrcId]?: string;
 };
 
-export const registerSource = (input: Fc | Element, atts?: Props): string => {
-  if (typeof input === 'function') {
-    const name = input[FcId];
+const registerSourceFC = (type: Fc, atts: Props = {}): Source => {
+  const element = jsxDEV(type, atts) as Component;
 
-    if (!atts?.source) {
-
-    }
-    return;
-  }
-  switch (input[TypeId]) {
-    case Const.REST: {
-      if (input[SrcId]) {
-        return input[SrcId]!;
-      }
-      if (input.props?.source) {
-        const id = input.props.source;
-        input[SrcId] = id;
-        return id;
-      }
-    }
-    case Const.COMP: {
-
-    }
-  }
-  throw new Error('Text element cannot be a source.');
-};
-
-export const createSource = (type: Fc | Element, atts?: Props): Element => {
-  if (isElem(type)) {
-    const props = rootProps(type.props);
-    if (!props.source) {
-      throw new Error();
-    }
-    const element = jsxDEV(type.type, props);
-    element[SrcId] = element.props!.source;
-    delete element.props!.source;
+  if (element.props?.source) {
+    const id = element.props.source;
+    element[SrcId] = id;
+    element.type[FcId] = id;
+    delete element.props.source;
     return element;
   }
-
-  if (!atts) {
-    throw new Error();
+  if (element.type[FcId] === Const.ANONYMOUS_FUNCTION) {
+    throw new Error('Anonymous function component cannot be a source element.');
   }
-  const props = rootProps(atts);
-  const element = jsxDEV(type, props) as Component;
-
-  if (!props.source) {
-    const id = element.type[FcId];
-    if (!id || id === Const.ANONYMOUS_FUNCTION) {
-      throw new Error();
-    }
-    element[SrcId] = id;
-  }
-  else {
-    if (element.type[FcId] !== element.props!.source) {
-      element.type[FcId] = element.props!.source;
-    }
-    element[SrcId] = element.props!.source;
-    delete element.props!.source;
-  }
+  element[SrcId] = element.type[FcId]!;
   return element;
 };
 
-export const sourceRoot = (source: Element, atts?: Props): Element => {
+const registerSourceElement = (type: Element): Source => {
+  if (isText(type)) {
+    throw new Error('Root text element cannot be a source element.');
+  }
+  if (isRest(type)) {
+    if (type.props?.source) {
+      throw new Error('Root rest element must have a "source" prop to be a source element.');
+    }
+    type[SrcId] = type.props!.source;
+    delete type.props!.source;
+    return type;
+  }
+  if (!type.props?.source) {
+    if (type.type[FcId] === Const.ANONYMOUS_FUNCTION) {
+      throw new Error('Anonymous function component cannot be a source element.');
+    }
+    type[SrcId] = type.type[FcId]!;
+    return type;
+  }
+  type[SrcId] = type.props!.source;
+  type.type[FcId] = type[SrcId]!;
+  delete type.props!.source;
+  return type;
+};
+
+export const registerSource = (type: Element | Fc, atts?: Props): Source => {
+  if (isElem(type)) {
+    return registerSourceElement(type);
+  }
+  return registerSourceFC(type, atts);
+};
+
+export const getSourceId = (type: Element | Fc): string | undefined => {
+  if (isFc(type)) {
+    return type[FcId];
+  }
+  if (isComponent(type)) {
+    return type[SrcId] ?? type.type[FcId];
+  }
+  return type[SrcId];
+};
+
+export const createRootFromSource = (source: Source, atts?: Props): Element => {
   if (!source[SrcId]) {
-    throw new Error();
+    throw new Error(`Invalid source element ${source.name}`);
   }
   const props = rootProps(atts ?? source.props);
   const element = jsxDEV(source.type, props);
@@ -642,7 +630,7 @@ export const sourceRoot = (source: Element, atts?: Props): Element => {
   element.$p = 0;
   element._n = `${element.name}:${0}`;
   element._s = `${element.name}:${0}`;
-  return jsxDEV(source.type, props);
+  return element;
 };
 
 export const createRoot = (type: FC.FC, atts: Props): Component => {

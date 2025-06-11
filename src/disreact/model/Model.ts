@@ -15,8 +15,8 @@ export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
     E.flatMap((root) => Lifecycle.encode(root)),
   );
 
-export const registerRoot = (source: Rehydrant.Registrant, id?: string) =>
-  Rehydrator.register(source, id);
+export const registerRoot = (source: Rehydrant.Registrant) =>
+  Rehydrator.register(source);
 
 export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) =>
   pipe(
@@ -27,7 +27,7 @@ export const createRoot = (source: Rehydrant.SourceId, props?: any, data?: any) 
 
 export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
   pipe(
-    Rehydrator.decode(hydrator, data),
+    Rehydrator.rehydrate(hydrator, data),
     E.flatMap((root) => Lifecycle.rehy2(root)),
     E.flatMap((root) => Lifecycle.invoke2(root, event)),
     E.flatMap((root) => Lifecycle.rerenders(root)),
@@ -72,7 +72,7 @@ export class Model extends E.Service<Model>()('disreact/Model', {
     const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?: any) =>
       Relay.use((relay) =>
         pipe(
-          rehydrator.decode(hydrator, data),
+          rehydrator.rehydrate(hydrator, data),
           E.flatMap((root) => Lifecycle.rehy2(root)),
           E.flatMap((root) => Lifecycle.invoke2(root, event)),
           E.flatMap((root) => Lifecycle.rerenders(root)),

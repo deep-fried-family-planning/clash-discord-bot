@@ -61,11 +61,12 @@ exports[`when dispatching an event > initial encoded 1`] = `
 }"
 `;
 
-exports[`when dispatching an event > initial hash 1`] = `"eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPcVEARs8qFszxSE1NSi6wMJgAAI4UifQ"`;
+exports[`when dispatching an event > initial hash 1`] = `"eJxrWZydWnlgUWbK6pDU4hLf1OLixPTUpQVF-QXFDcuKSxKTs4ub1iJJWRlMbFxYzHBTAUXMKhfO8khNTEktsjKYAAAOriUq"`;
 
 exports[`when dispatching an event > initial stacks 1`] = `
 {
   "id": "TestMessage",
+  "key": undefined,
   "props": {
     Symbol(disreact/props): Symbol(disreact/props),
     Symbol(effect/Hash): [Function],
@@ -141,11 +142,12 @@ exports[`when dispatching an event > rerendered encoded 1`] = `
 }"
 `;
 
-exports[`when dispatching an event > rerendered hash 1`] = `"eJxrXpSZsjoktbjEN7W4ODE9dWlBUX5BccOy4pLE5OziprVIUlYGExsXFjPeVEARs8qFszxSE1NSi6wMJgAAI6kifg"`;
+exports[`when dispatching an event > rerendered hash 1`] = `"eJxrWZydWnlgUWbK6pDU4hLf1OLixPTUpQVF-QXFDcuKSxKTs4ub1iJJWRlMbFxYzHhTAUXMKhfO8khNTEktsjKYAAAO0iUr"`;
 
 exports[`when dispatching an event > rerendered stacks 1`] = `
 {
   "id": "TestMessage",
+  "key": undefined,
   "props": {
     Symbol(disreact/props): Symbol(disreact/props),
     Symbol(effect/Hash): [Function],
@@ -221,7 +223,7 @@ exports[`when initial rendering 1`] = `
 }"
 `;
 
-exports[`when rendering async > MessageAsync 1`] = `
+exports[`when rendering async 1`] = `
 "{
   "embeds": [
     {
@@ -257,41 +259,7 @@ exports[`when rendering async > MessageAsync 1`] = `
 }"
 `;
 
-exports[`when rendering async 1`] = `
-"{
-  "embeds": [
-    {}
-  ],
-  "components": [
-    {
-      "type": 1,
-      "components": [
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonSync:0:button:0",
-          "label": "ButtonSync"
-        },
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonAsync:0:button:0",
-          "label": "ButtonAsync"
-        },
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonEffect:0:button:0",
-          "label": "ButtonEffect"
-        }
-      ]
-    }
-  ],
-  "flags": 64
-}"
-`;
-
-exports[`when rendering effect > MessageEffect 1`] = `
+exports[`when rendering effect 1`] = `
 "{
   "embeds": [
     {
@@ -327,41 +295,7 @@ exports[`when rendering effect > MessageEffect 1`] = `
 }"
 `;
 
-exports[`when rendering effect 1`] = `
-"{
-  "embeds": [
-    {}
-  ],
-  "components": [
-    {
-      "type": 1,
-      "components": [
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonSync:0:button:0",
-          "label": "ButtonSync"
-        },
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonAsync:0:button:0",
-          "label": "ButtonAsync"
-        },
-        {
-          "type": 2,
-          "style": 1,
-          "custom_id": "ButtonEffect:0:button:0",
-          "label": "ButtonEffect"
-        }
-      ]
-    }
-  ],
-  "flags": 64
-}"
-`;
-
-exports[`when rendering sync > MessageSync 1`] = `
+exports[`when rendering sync 1`] = `
 "{
   "embeds": [
     {
@@ -396,14 +330,14 @@ exports[`when rendering sync > MessageSync 1`] = `
 }"
 `;
 
-exports[`when rendering sync 1`] = `
+exports[`when rendering sync 2`] = `
 {
   "$d": 0,
   "$i": 0,
   "$p": 0,
-  "_n": "MessageSync:0",
-  "_s": "MessageSync:0",
-  "name": "MessageSync",
+  "_n": "asdf:0",
+  "_s": "asdf:0",
+  "name": "asdf",
   "props": {
     Symbol(disreact/props): Symbol(disreact/props),
     Symbol(effect/Hash): [Function],
@@ -414,8 +348,8 @@ exports[`when rendering sync 1`] = `
       "$d": 1,
       "$i": 0,
       "$p": 0,
-      "_n": "MessageSync:0:message:0",
-      "_s": "MessageSync:0:message:0",
+      "_n": "asdf:0:message:0",
+      "_s": "asdf:0:message:0",
       "handler": undefined,
       "name": "message",
       "props": {
@@ -428,7 +362,7 @@ exports[`when rendering sync 1`] = `
           "$d": 2,
           "$i": 0,
           "$p": 0,
-          "_n": "MessageSync:0:message:0:embed:0",
+          "_n": "asdf:0:message:0:embed:0",
           "_s": "message:0:embed:0",
           "handler": undefined,
           "name": "embed",
@@ -442,7 +376,7 @@ exports[`when rendering sync 1`] = `
               "$d": 3,
               "$i": 0,
               "$p": 0,
-              "_n": "MessageSync:0:message:0:embed:0:undefined:0",
+              "_n": "asdf:0:message:0:embed:0:undefined:0",
               "_s": "embed:0:undefined:0",
               "text": "MessageSync",
               Symbol(disreact/element): 1,
@@ -459,7 +393,7 @@ exports[`when rendering sync 1`] = `
           "$d": 2,
           "$i": 0,
           "$p": 1,
-          "_n": "MessageSync:0:message:0:actions:0",
+          "_n": "asdf:0:message:0:actions:0",
           "_s": "message:0:actions:0",
           "handler": undefined,
           "name": "actions",
@@ -473,7 +407,7 @@ exports[`when rendering sync 1`] = `
               "$d": 3,
               "$i": 0,
               "$p": 0,
-              "_n": "MessageSync:0:message:0:actions:0:ButtonSync:0",
+              "_n": "asdf:0:message:0:actions:0:ButtonSync:0",
               "_s": "actions:0:ButtonSync:0",
               "name": "ButtonSync",
               "props": {
@@ -486,7 +420,7 @@ exports[`when rendering sync 1`] = `
                   "$d": 4,
                   "$i": 0,
                   "$p": 0,
-                  "_n": "MessageSync:0:message:0:actions:0:ButtonSync:0:button:0",
+                  "_n": "asdf:0:message:0:actions:0:ButtonSync:0:button:0",
                   "_s": "ButtonSync:0:button:0",
                   "handler": [Function],
                   "name": "button",
@@ -503,6 +437,7 @@ exports[`when rendering sync 1`] = `
                 },
               ],
               "type": [Function],
+              Symbol(disreact/source): "ButtonSync",
               Symbol(disreact/element): 3,
               Symbol(effect/Hash): [Function],
               Symbol(effect/Equal): [Function],
@@ -511,7 +446,7 @@ exports[`when rendering sync 1`] = `
               "$d": 3,
               "$i": 0,
               "$p": 1,
-              "_n": "MessageSync:0:message:0:actions:0:ButtonAsync:0",
+              "_n": "asdf:0:message:0:actions:0:ButtonAsync:0",
               "_s": "actions:0:ButtonAsync:0",
               "name": "ButtonAsync",
               "props": {
@@ -524,7 +459,7 @@ exports[`when rendering sync 1`] = `
                   "$d": 4,
                   "$i": 0,
                   "$p": 0,
-                  "_n": "MessageSync:0:message:0:actions:0:ButtonAsync:0:button:0",
+                  "_n": "asdf:0:message:0:actions:0:ButtonAsync:0:button:0",
                   "_s": "ButtonAsync:0:button:0",
                   "handler": [Function],
                   "name": "button",
@@ -541,6 +476,7 @@ exports[`when rendering sync 1`] = `
                 },
               ],
               "type": [Function],
+              Symbol(disreact/source): "ButtonAsync",
               Symbol(disreact/element): 3,
               Symbol(effect/Hash): [Function],
               Symbol(effect/Equal): [Function],
@@ -549,7 +485,7 @@ exports[`when rendering sync 1`] = `
               "$d": 3,
               "$i": 0,
               "$p": 2,
-              "_n": "MessageSync:0:message:0:actions:0:ButtonEffect:0",
+              "_n": "asdf:0:message:0:actions:0:ButtonEffect:0",
               "_s": "actions:0:ButtonEffect:0",
               "name": "ButtonEffect",
               "props": {
@@ -562,7 +498,7 @@ exports[`when rendering sync 1`] = `
                   "$d": 4,
                   "$i": 0,
                   "$p": 0,
-                  "_n": "MessageSync:0:message:0:actions:0:ButtonEffect:0:button:0",
+                  "_n": "asdf:0:message:0:actions:0:ButtonEffect:0:button:0",
                   "_s": "ButtonEffect:0:button:0",
                   "handler": [Function],
                   "name": "button",
@@ -579,6 +515,7 @@ exports[`when rendering sync 1`] = `
                 },
               ],
               "type": [Function],
+              Symbol(disreact/source): "ButtonEffect",
               Symbol(disreact/element): 3,
               Symbol(effect/Hash): [Function],
               Symbol(effect/Equal): [Function],
@@ -597,6 +534,7 @@ exports[`when rendering sync 1`] = `
     },
   ],
   "type": [Function],
+  Symbol(disreact/source): "asdf",
   Symbol(disreact/element): 3,
   Symbol(effect/Hash): [Function],
   Symbol(effect/Equal): [Function],

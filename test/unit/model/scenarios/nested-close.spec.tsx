@@ -90,9 +90,7 @@ it.effect('when rendered', E.fn(function* () {
       "stacks": {
         "NestedClose:0": [],
         "NestedClose:0:message:0:NestedActions:0": [],
-        "NestedClose:0:message:0:NestedActions:0:actions:0:NestedCloseButton:0": [
-          null
-        ]
+        "NestedClose:0:message:0:NestedActions:0:actions:0:NestedCloseButton:0": []
       }
     }"
   `);

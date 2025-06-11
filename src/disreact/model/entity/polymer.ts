@@ -1,4 +1,4 @@
-import type * as El from '#src/disreact/model/entity/element.ts';
+import type * as Element from '#src/disreact/model/entity/element.ts';
 import type * as Hook from '#src/disreact/model/hook.ts';
 import type * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
 import type * as Declarations from '#src/disreact/model/util/declarations.ts';
@@ -85,7 +85,7 @@ export const rehydrate = (ms: Encoded): Polymer =>
     queue: [],
   });
 
-export const dehydrate = (n: El.Component): Encoded => {
+export const dehydrate = (n: Element.Component): Encoded => {
   const self = get(n);
   if (!self.rc) {
     throw new Error();
@@ -102,19 +102,19 @@ export const dehydrate = (n: El.Component): Encoded => {
 const polymers = GlobalValue
   .globalValue(
     Symbol.for('disreact/polymers'),
-    () => new WeakMap<El.Component, Polymer>(),
+    () => new WeakMap<Element.Component, Polymer>(),
   );
 
-export const get = (fn: El.Component): Polymer => {
-  if (polymers.has(fn)) {
-    return polymers.get(fn)!;
+export const get = (n: Element.Component): Polymer => {
+  if (polymers.has(n)) {
+    return polymers.get(n)!;
   }
   const polymer = empty();
-  polymers.set(fn, polymer);
+  polymers.set(n, polymer);
   return polymer;
 };
 
-export const set = (fn: El.Component, p: Polymer) => polymers.set(fn, p);
+export const set = (n: Element.Component, p: Polymer) => polymers.set(n, p);
 
 export const next = <A extends Monomer>(p: Polymer, predicate: (i: any) => i is A, lazy: () => A): A => {
   if (p.rc === 0) {
@@ -151,7 +151,7 @@ export const commit = (p: Polymer) => {
   p.rc++;
 };
 
-export const done = (n: El.Component) => {
+export const done = (n: Element.Component) => {
   const polymer = polymers.get(n)!;
   delete polymer.lock;
   polymer.save = Data.array(structuredClone(polymer.curr)) as any[];

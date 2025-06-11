@@ -40,8 +40,8 @@ it.effect('when submitting', E.fn(
       TestClock.setTime,
     );
 
-    const message = yield* runtime.synthesize(SimpleMessage);
-    const modal = yield* runtime.synthesize(SimpleModal);
+    const message = yield* runtime.synthesize(SimpleMessage, {});
+    const modal = yield* runtime.synthesize(SimpleModal, {});
 
     const res = yield* runtime.respond({
       id            : '1236074574509117491',

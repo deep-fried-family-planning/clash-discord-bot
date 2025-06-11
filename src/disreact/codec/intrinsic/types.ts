@@ -12,6 +12,7 @@ export interface IntrinsicAttributesMap {
   br        : Markdown.BreakAttributes & {children?: any};
   code      : Markdown.CodeAttributes & {children?: any};
   details   : Markdown.DetailsAttributes & {children?: any};
+  p         : Markdown.ParagraphAttributes & {children?: any};
   h1        : Markdown.H1Attributes & {children?: any};
   h2        : Markdown.H2Attributes & {children?: any};
   h3        : Markdown.H3Attributes & {children?: any};
