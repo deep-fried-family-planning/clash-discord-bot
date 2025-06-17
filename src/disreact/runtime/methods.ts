@@ -3,7 +3,7 @@ import * as Doken from '#src/disreact/codec/doken.ts';
 import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
 import * as Model from '#src/disreact/model/Model.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Progress from '#src/disreact/model/internal/core/progress2.ts';
+import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/runtime/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';

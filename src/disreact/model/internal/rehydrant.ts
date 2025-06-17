@@ -1,9 +1,9 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
-import * as Element from '#src/disreact/model/internal/entity/element.ts';
-import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
-import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/prototype.ts';
 import * as Order from 'effect/Order';
 
 export interface Rehydrant {
@@ -21,10 +21,10 @@ export interface Envelope {
   trie : Polymer.Bundle;
   root : Element.Element;
   stack: Stack.Stack;
-  queue: Set<Element.Instance>;
+  queue: Set<Element.Comp>;
 };
 
-export const enqueue = (env: Envelope, n: Element.Instance) => {
+export const enqueue = (env: Envelope, n: Element.Comp) => {
   env.queue.add(n);
   return env;
 };
@@ -34,7 +34,7 @@ export const dequeue = (env: Envelope) => {
   return Element.lca(ns);
 };
 
-const RehydrantProto = Proto.make<Envelope>({});
+const RehydrantProto = Proto.declare<Envelope>({});
 
 const make = (id: string, root: Element.Element, data: any): Envelope =>
   Proto.create(RehydrantProto, {
@@ -84,7 +84,7 @@ export const dehydrate = (rh: Envelope): Hydrator => {
   while (Stack.next(rh.stack)) {
     const n = Stack.pull(rh.stack);
 
-    if (Element.isInstance(n)) {
+    if (Element.isComp(n)) {
       acc[n._n!] = Polymer.dehydrate(n.polymer!);
     }
 

@@ -1,6 +1,6 @@
-import type * as Element from '#src/disreact/model/internal/entity/element.ts';
-import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
-import * as Const from '#src/disreact/model/internal/core/enum.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as Const from '#src/disreact/model/internal/infrastructure/enum.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
@@ -66,7 +66,7 @@ export interface Polymer extends Pipeable.Pipeable {
   unmount: EffectFn[];
 };
 
-const PolymerProto = Proto.make<Polymer>({
+const PolymerProto = Proto.declare<Polymer>({
   ...Pipeable.Prototype,
 });
 
@@ -101,7 +101,7 @@ export const dehydrate = (self: Polymer): Chain => {
   return self.stack;
 };
 
-export const get = (n: Element.Instance): Polymer => {
+export const get = (n: Element.Comp): Polymer => {
   if (!n.polymer) {
     throw new Error();
   }

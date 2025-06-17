@@ -1,21 +1,20 @@
-import * as FC from '#src/disreact/model/internal/adaptors/fc.ts';
-import {EFFECT, ASYNC, SYNC} from '#src/disreact/model/internal/core/enum.ts';
-import * as Element from '#src/disreact/model/internal/entity/element.ts';
-import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
-import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
+import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/prototype.ts';
 import * as E from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import * as Predicate from 'effect/Predicate';
 
-export interface Component extends Element.Instance {
+export interface Component extends Element.Comp {
   polymer: Polymer.Polymer;
 }
 
 export const didMount = (el: Element.Element): el is Component =>
-  Element.isInstance(el)
+  Element.isComp(el)
   && !!el.polymer;
 
-export const mount = (fn: Element.Instance) => {
+export const mount = (fn: Element.Comp) => {
   const self = fn as Component;
 
   if (self.rs?.length) {
@@ -26,12 +25,13 @@ export const mount = (fn: Element.Instance) => {
   return self;
 };
 
-export const unmount = (self: Element.Instance) => {
+export const unmount = (self: Element.Comp) => {
   delete self.polymer;
+  delete self.rs;
   return E.void;
 };
 
-export const hydrate = (fn: Element.Instance, ps: Polymer.Bundle) => {
+export const hydrate = (fn: Element.Comp, ps: Polymer.Bundle) => {
   const self = fn as Component;
 
   if (self.rs?.length) {
@@ -52,7 +52,7 @@ export const dehydrate = (self: Component, ps: Polymer.Bundle) => {
   return self.rs;
 };
 
-export const render = (self: Element.Instance): E.Effect<any> => {
+export const render = (self: Element.Comp): E.Effect<any> => {
   if (!didMount(self)) {
     throw new Error('Component render called before mount.');
   }
@@ -88,7 +88,7 @@ export const render = (self: Element.Instance): E.Effect<any> => {
   });
 };
 
-export const effects = (self: Element.Instance) => E.suspend(() => {
+export const effects = (self: Element.Comp) => E.suspend(() => {
   if (!didMount(self)) {
     throw new Error('Component effects called before mount.');
   }

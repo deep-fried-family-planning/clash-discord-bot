@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as Element from '#src/disreact/model/internal/entity/element.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
 import type {FC} from '#src/disreact/codec/fc.ts';
-import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
-import * as Globals from '#src/disreact/model/internal/adaptors/globals.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Globals from '#src/disreact/model/internal/infrastructure/global.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Deps from '#src/disreact/codec/old/deps.ts';
 import type {Discord} from 'dfx';
@@ -18,10 +18,10 @@ const throwop = () => {
 };
 
 export let env: Rehydrant.Envelope | undefined = undefined,
-           node: Element.Instance | undefined  = undefined,
+           node: Element.Comp | undefined      = undefined,
            next: () => void                    = throwop;
 
-export const unsafeSet = (rh: Rehydrant.Envelope, n: Element.Instance, f?: () => void) => {
+export const unsafeSet = (rh: Rehydrant.Envelope, n: Element.Comp, f?: () => void) => {
   env = rh;
   node = n;
   next = f ?? noop;

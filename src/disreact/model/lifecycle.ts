@@ -1,13 +1,13 @@
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/codec/old/diffs.ts';
-import * as Component from '#src/disreact/model/internal/entity/component.ts';
-import * as Element from '#src/disreact/model/internal/entity/element.ts';
-import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
+import * as Component from '#src/disreact/model/internal/component.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Const from '#src/disreact/model/internal/core/enum.ts';
-import * as Mutex from '#src/disreact/model/internal/adaptors/mutex.ts';
-import * as Progress from '#src/disreact/model/internal/core/progress2.ts';
+import * as Const from '#src/disreact/model/internal/infrastructure/enum.ts';
+import * as Mutex from '#src/disreact/model/internal/infrastructure/global-mutex.ts';
+import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
 import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
@@ -18,7 +18,7 @@ import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import * as Stream from 'effect/Stream';
 
-export const initialize = (rh: Rehydrant.Envelope, n: Element.Instance) =>
+export const initialize = (rh: Rehydrant.Envelope, n: Element.Comp) =>
   pipe(
     Mutex.acquire(rh, n),
     E.andThen(
@@ -35,7 +35,7 @@ export const initialize = (rh: Rehydrant.Envelope, n: Element.Instance) =>
     }),
   );
 
-const renderNode = (rh: Rehydrant.Envelope, n: Element.Instance) =>
+const renderNode = (rh: Rehydrant.Envelope, n: Element.Comp) =>
   pipe(
     Mutex.acquire(rh, n),
     E.andThen(Component.render(n)),
@@ -63,7 +63,7 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
     const n = Stack.pull(s)!;
     Element.trie(n);
 
-    if (Element.isIntrinsic(n)) {
+    if (Element.isRest(n)) {
       if (!n.rs) {
         return E.void;
       }
@@ -106,7 +106,7 @@ export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
     const n = Stack.pull(s);
     Element.trie(n);
 
-    if (Element.isInstance(n)) {
+    if (Element.isComp(n)) {
       if (Component.didMount(n)) {
         return E.void;
       }
@@ -141,12 +141,12 @@ export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
 
 export class EventDefect extends Data.TaggedError('EventDefect')<{
   root : Rehydrant.Envelope;
-  node?: Element.Intrinsic;
+  node?: Element.Rest;
   event: Element.Event;
   cause: Cause.Cause<Error>;
 }> {}
 
-const renderEvent = (rh: Rehydrant.Envelope, n: Element.Intrinsic, event: Element.Event) =>
+const renderEvent = (rh: Rehydrant.Envelope, n: Element.Rest, event: Element.Event) =>
   pipe(
     E.suspend(() => {
       const handler = n.handler;
@@ -189,12 +189,12 @@ export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
     E.sync(() => {
       const stack = Stack.make(rh.root);
 
-      let target: Element.Intrinsic | undefined;
+      let target: Element.Rest | undefined;
 
       while (Stack.next(stack)) {
         const node = Stack.pull(stack)!;
 
-        if (Element.isIntrinsic(node)) {
+        if (Element.isRest(node)) {
           if (node.props!.custom_id === event.id || node._s === event.id) {
             target = node;
             break;
@@ -231,7 +231,7 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
     const next = Stack.pull(stack)!;
     Element.trie(next);
 
-    if (Element.isIntrinsic(next)) {
+    if (Element.isRest(next)) {
       Stack.pushNodes(stack, next);
       return E.void;
     }
@@ -273,7 +273,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
       return E.void;
     }
 
-    if (Element.isIntrinsic(n)) {
+    if (Element.isRest(n)) {
       delete n.rs;
       return E.void;
     }
@@ -293,7 +293,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
 
 export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
   const s = Stack.make(rh.root);
-  const rs = yield* renderNode(rh, rh.root as Element.Instance);
+  const rs = yield* renderNode(rh, rh.root as Element.Comp);
   Diff.rendered(rh.root, rs);
 
   while (Stack.next(s)) {
@@ -322,7 +322,7 @@ export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
           n.rs[i] = u;
           continue;
         }
-        else if (Element.isIntrinsic(u)) {
+        else if (Element.isRest(u)) {
           n.rs[i].props = Element.props(u.props);
         }
         else {
@@ -332,7 +332,7 @@ export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
         Stack.push(s, c);
       }
       else if (Diff.isRender(d)) {
-        const rs = yield* renderNode(rh, c as Element.Instance);
+        const rs = yield* renderNode(rh, c as Element.Comp);
         Diff.rendered(c, rs);
         Stack.push(s, c);
       }
@@ -378,7 +378,7 @@ export const encode = (rh: Rehydrant.Envelope | null) =>
         const n = MutableList.pop(stack)!;
         const out = outs.get(n);
 
-        if (Element.isInstance(n)) {
+        if (Element.isComp(n)) {
           if (!Component.didMount(n)) {
             throw new Error();
           }
@@ -442,7 +442,7 @@ export const encode = (rh: Rehydrant.Envelope | null) =>
 
 export class UpdateDefect extends Data.TaggedError('UpdateDefect')<{
   root : Rehydrant.Envelope;
-  node : Element.Instance;
+  node : Element.Comp;
   cause: Cause.Cause<Error>;
 }> {}
 export class LifecycleDefect extends Data.TaggedError('LifecycleDefect')<{
@@ -452,6 +452,6 @@ export class LifecycleDefect extends Data.TaggedError('LifecycleDefect')<{
 
 export class RenderDefect extends Data.TaggedError('RenderDefect')<{
   root : Rehydrant.Envelope;
-  node : Element.Instance;
+  node : Element.Comp;
   cause: Cause.Cause<Error>;
 }> {}

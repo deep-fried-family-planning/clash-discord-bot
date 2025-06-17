@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Node} from '#src/disreact/model/internal/entity/element.ts';
-import type {FC} from '#src/disreact/codec/fc.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
@@ -23,7 +23,7 @@ const makeStub = (random = true) =>
     : E.void,
   ) as Mock<(...args: any) => any>;
 
-export const makeTestRuntime = (src: (Node | FC)[], random?: boolean, live?: boolean) => {
+export const makeTestRuntime = (src: (Element.Element | FC.FC)[], random?: boolean, live?: boolean) => {
   const dom = {
     discard     : makeStub(random),
     dismount    : makeStub(random),

@@ -1,13 +1,11 @@
-import type * as Component from '#src/disreact/model/internal/entity/component.ts';
-import type * as Element from '#src/disreact/model/internal/entity/element.ts';
-import type * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
+import type * as Component from '#src/disreact/model/internal/component.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
+import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import type * as Stack from '#src/disreact/model/internal/stack.ts';
 
-
-
-export type Globals = {
-  node?: Element.Instance;
+export type Global = {
+  node?: Component.Component;
   root?: Rehydrant.Envelope;
   poly?: Polymer.Polymer;
 };
@@ -27,10 +25,10 @@ export const get = () => {
     root : env,
     poly : poly,
     stack: stack,
-  } as Required<Globals>;
+  } as Required<Global>;
 };
 
-export const set = (rh: Rehydrant.Envelope, el: Element.Instance) => {
+export const set = (rh: Rehydrant.Envelope, el: Component.Component) => {
   env = rh;
   component = el as Component.Component;
   poly = el.polymer!;
@@ -43,7 +41,7 @@ export const reset = (_id?: number) => {
   stack = undefined;
 };
 
-export const parents = new WeakMap<any, Element.Instance>();
+export const parents = new WeakMap<any, Component.Component>();
 
 export const origins = new WeakMap<any, any>();
 

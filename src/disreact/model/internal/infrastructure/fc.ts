@@ -1,6 +1,6 @@
-import * as Prototype from '#src/disreact/model/internal/adaptors/prototype.ts';
-import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/internal/core/enum.ts';
-import type * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/internal/infrastructure/enum.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
 import type * as E from 'effect/Effect';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
@@ -55,19 +55,19 @@ export type Any<P extends Props = Props, O extends Out = Out>
 
 export type FC<P extends Props = Props, O extends Out = Out> = Base<P, O>;
 
-const KnownProto = Prototype.make<Known<Props, Out>>({
+const KnownProto = Prototype.declare<Known<Props, Out>>({
   [TypeId]: ANONYMOUS,
 });
 
-const SyncProto = Prototype.make<Sync<Props, Out>>({
+const SyncProto = Prototype.declare<Sync<Props, Out>>({
   [KindId]: SYNC,
 });
 
-const AsyncProto = Prototype.make<Async<Props, Out>>({
+const AsyncProto = Prototype.declare<Async<Props, Out>>({
   [KindId]: ASYNC,
 });
 
-const EffectProto = Prototype.make<Effect<Props, Out>>({
+const EffectProto = Prototype.declare<Effect<Props, Out>>({
   [KindId]: EFFECT,
 });
 

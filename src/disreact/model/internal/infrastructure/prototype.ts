@@ -53,7 +53,7 @@ const setPrototype = (proto: any, obj: any) =>
     proto,
   );
 
-export const make = <A>(proto: Partial<A>): A =>
+export const declare = <A>(proto: Partial<A>): A =>
   proto as A;
 
 export const array = <A>(proto: Partial<A>): A =>

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as El from '#src/disreact/model/internal/entity/element.ts';
+import type * as El from '#src/disreact/model/internal/core/element.ts';
 import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
@@ -12,22 +12,22 @@ export const TypeId = Symbol.for('disreact/dep'),
              HookId = Symbol.for('disreact/hook');
 
 const upstream = GlobalValue
-  .globalValue(Symbol.for('disreact/deps'), () => new WeakMap<El.Instance | Rehydrant.Envelope, Set<El.Instance>>());
+  .globalValue(Symbol.for('disreact/deps'), () => new WeakMap<El.Comp | Rehydrant.Envelope, Set<El.Comp>>());
 
-export const get = (nd: El.Instance) => {
+export const get = (nd: El.Comp) => {
   if (!upstream.has(nd)) {
-    const deps = new Set<El.Instance>();
+    const deps = new Set<El.Comp>();
     upstream.set(nd, deps);
     return deps;
   }
   return upstream.get(nd)!;
 };
 
-export const has = (n: El.Instance, d: El.Instance) => get(n).has(d);
+export const has = (n: El.Comp, d: El.Comp) => get(n).has(d);
 
-export const add = (n: El.Instance, d: El.Instance) => get(n).add(d);
+export const add = (n: El.Comp, d: El.Comp) => get(n).add(d);
 
-export const transfer = (n: El.Instance, ds: Set<El.Instance>) => {
+export const transfer = (n: El.Comp, ds: Set<El.Comp>) => {
   const deps = get(n);
   for (const d of ds) {
     deps.add(d);
@@ -36,14 +36,14 @@ export const transfer = (n: El.Instance, ds: Set<El.Instance>) => {
   return deps;
 };
 
-export const clear = (n: El.Instance) => {
+export const clear = (n: El.Comp) => {
   const deps = get(n);
   deps.clear();
 };
 
-export const remove = (n: El.Instance, d: El.Instance) => get(n).delete(d);
+export const remove = (n: El.Comp, d: El.Comp) => get(n).delete(d);
 
-export const set = (n: El.Instance, ds: Set<El.Instance>) => {
+export const set = (n: El.Comp, ds: Set<El.Comp>) => {
   const deps = get(n);
   deps.clear();
   for (const d of ds) {
@@ -53,7 +53,7 @@ export const set = (n: El.Instance, ds: Set<El.Instance>) => {
 };
 
 const origins = GlobalValue
-  .globalValue(Symbol.for('disreact/origins'), () => new WeakMap<any, El.Instance>());
+  .globalValue(Symbol.for('disreact/origins'), () => new WeakMap<any, El.Comp>());
 
 export const origin = (i: any) => origins.get(i);
 
@@ -109,7 +109,7 @@ export type Item = any;
 
 export const isItem = (i: any): i is Item => typeof i === 'object' && i !== null && i[TypeId] === TypeId;
 
-export const item = <A>(hook: string, origin: El.Instance, i: A): A => {
+export const item = <A>(hook: string, origin: El.Comp, i: A): A => {
   if (i === null || i === undefined || typeof i !== 'object') {
     throw new Error();
   }
@@ -154,7 +154,7 @@ export interface Fn extends Function {
 
 export const isFn = (fn: any): fn is Fn => typeof fn === 'function' && fn[TypeId] === TypeId;
 
-export const fn = <F extends (...p: any) => any>(hook: string, origin: El.Instance, f: F): F => {
+export const fn = <F extends (...p: any) => any>(hook: string, origin: El.Comp, f: F): F => {
   const fn = Object.setPrototypeOf(f, FnProto);
   fn[TypeId] = TypeId;
   fn[HookId] = hook;

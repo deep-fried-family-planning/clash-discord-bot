@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/internal/entity/element.ts';
-import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';
 
@@ -100,14 +100,14 @@ export const node = (a: Element.Element, b: Element.Element) => {
     }
     return replace(b);
   }
-  if (Element.isIntrinsic(a)) {
-    if (Element.isIntrinsic(b)) {
+  if (Element.isRest(a)) {
+    if (Element.isRest(b)) {
       return update(b);
     }
     return replace(b);
   }
-  if (Element.isInstance(a)) {
-    if (Element.isInstance(b)) {
+  if (Element.isComp(a)) {
+    if (Element.isComp(b)) {
       const poly = Polymer.get(a);
       if (poly.rc === 0) {
         return render();

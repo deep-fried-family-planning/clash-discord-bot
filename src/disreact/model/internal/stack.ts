@@ -1,11 +1,11 @@
-import * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
 import * as MutableList from 'effect/MutableList';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface Stack extends Pipeable.Pipeable {
-  list : MutableList.MutableList<Element.Node>;
-  seen : WeakSet<Element.Node>;
-  flags: Set<Element.Instance>;
+  list : MutableList.MutableList<Element.Element>;
+  seen : WeakSet<Element.Element>;
+  flags: Set<Element.Comp>;
 };
 
 const Proto = {
@@ -55,14 +55,14 @@ export const pull = (s: Stack) => {
 export const pullWith = (s: Stack, f: (n: Element.Element) => boolean) => {
 };
 
-export const visit = (s: Stack, n: Element.Node) => {
+export const visit = (s: Stack, n: Element.Element) => {
   s.seen.add(n);
   return s;
 };
 
-export const visited = (s: Stack, n: Element.Node) => s.seen.has(n);
+export const visited = (s: Stack, n: Element.Element) => s.seen.has(n);
 
-export const reset = (s: Stack): Element.Instance[] => {
+export const reset = (s: Stack): Element.Comp[] => {
   s.seen = new WeakSet();
   MutableList.reset(s.list);
   const nodes = [...s.flags];
@@ -70,12 +70,12 @@ export const reset = (s: Stack): Element.Instance[] => {
   return nodes;
 };
 
-export const flag = (s: Stack, n: Element.Instance) => {
+export const flag = (s: Stack, n: Element.Comp) => {
   s.flags.add(n);
   return s;
 };
 
-export const flagAll = (s: Stack, ns: Element.Instance[]) => {
+export const flagAll = (s: Stack, ns: Element.Comp[]) => {
   for (const n of ns) {
     flag(s, n);
   }

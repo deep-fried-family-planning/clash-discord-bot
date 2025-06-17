@@ -1,20 +1,18 @@
-import * as Const from '#src/disreact/model/internal/core/enum.ts';
-import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 import * as Predicate from 'effect/Predicate';
 
-export const TypeId  = Symbol('disreact/fc'),
-             SYNC    = 1,
-             PROMISE = 2,
-             EFFECT  = 3,
-             KindId  = Symbol('disreact/fc/kind'),
-             NameId  = Symbol('disreact/fc/name');
+export const TypeId         = Symbol('disreact/fc'),
+             SYNC           = 1,
+             PROMISE        = 2,
+             EFFECT         = 3,
+             ASYNC_FUNCTION = 'AsyncFunction',
+             KindId         = Symbol('disreact/fc/kind'),
+             NameId         = Symbol('disreact/fc/name');
 
 export namespace FC {
   type Thing<A, B> = (props: A) => B;
-
 
   export interface Any<P, O> extends Thing<P, O> {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
@@ -83,8 +81,8 @@ export const make = (f: Any): Any => {
     else {
       f[NameId] = '.';
     }
-    if (f.constructor.name === Const.ASYNC_FUNCTION) {
-      f[KindId] = Const.ASYNC;
+    if (f.constructor.name === ASYNC_FUNCTION) {
+      f[KindId] = PROMISE;
     }
   }
   (f[TypeId] as any) = TypeId;
@@ -108,27 +106,27 @@ export const name = (fc: FC.FC, name: string) => {
 
 export const render = (f: FC, p: any): E.Effect<any> => {
   switch (f[KindId]) {
-    case Const.SYNC: {
+    case SYNC: {
       return E.sync(() => f(p));
     }
-    case Const.ASYNC: {
+    case PROMISE: {
       return E.promise(() => f(p));
     }
-    case Const.EFFECT: {
+    case EFFECT: {
       return f(p);
     }
     default: {
       return E.suspend(() => {
         const out = f(p);
         if (Predicate.isPromise(out)) {
-          f[KindId] = Const.ASYNC;
+          f[KindId] = PROMISE;
           return E.promise(() => out);
         }
         if (E.isEffect(out)) {
-          f[KindId] = Const.EFFECT;
+          f[KindId] = EFFECT;
           return out as E.Effect<any>;
         }
-        f[KindId] = Const.SYNC;
+        f[KindId] = SYNC;
         return E.succeed(out);
       });
     }
