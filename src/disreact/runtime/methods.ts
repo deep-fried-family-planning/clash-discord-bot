@@ -3,7 +3,7 @@ import * as Doken from '#src/disreact/codec/doken.ts';
 import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
 import * as Model from '#src/disreact/model/Model.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Progress from '#src/disreact/model/internal/core/progress.ts';
+import * as Progress from '#src/disreact/model/internal/core/progress2.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/runtime/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
@@ -306,7 +306,7 @@ const listen = E.gen(function* () {
 
   let isSame = false;
   let isNext = false;
-  let current: Progress.Progress;
+  let current: Progress.Progress2;
 
   do {
     current = yield* dom.take;

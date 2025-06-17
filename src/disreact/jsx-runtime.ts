@@ -1,5 +1,5 @@
 import type {IntrinsicAttributesMap} from '#src/disreact/codec/intrinsic/types.ts';
-import * as El from '#src/disreact/model/internal/element.ts';
+import * as El from '#src/disreact/model/internal/entity/element.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
 
 export const Fragment = El.Fragment,

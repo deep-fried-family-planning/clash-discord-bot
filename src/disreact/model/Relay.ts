@@ -1,7 +1,7 @@
 import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
 import type {EventDefect, RenderDefect, UpdateDefect} from '#src/disreact/model/lifecycle.ts';
 import type {SourceDefect} from '#src/disreact/model/Rehydrator.ts';
-import * as Progress from '#src/disreact/model/internal/core/progress.ts';
+import * as Progress from '#src/disreact/model/internal/core/progress2.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -15,7 +15,7 @@ type RelayError = | SourceDefect
 
 const service = pipe(
   E.zip(
-    Mailbox.make<Progress.Progress, RelayError>(),
+    Mailbox.make<Progress.Progress2, RelayError>(),
     Deferred.make<Progress.Exit | Progress.Same | Progress.Next, RelayError>(),
   ),
   E.map(([mailbox, final]) => {
@@ -29,7 +29,7 @@ const service = pipe(
         E.catchTag('NoSuchElementException', () => E.succeed(Progress.done())),
       );
 
-    const send = (progress: Progress.Progress) =>
+    const send = (progress: Progress.Progress2) =>
       mailbox.offer(progress).pipe(
         E.asVoid,
       );
@@ -44,7 +44,7 @@ const service = pipe(
       end  : mailbox.end,
       take : take,
       send : send,
-      sendN: (ps: Progress.Progress[]) => mailbox.offerAll(ps),
+      sendN: (ps: Progress.Progress2[]) => mailbox.offerAll(ps),
       final: finalize,
       await: Deferred.await(final),
     };

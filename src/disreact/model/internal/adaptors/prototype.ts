@@ -1,6 +1,6 @@
 import * as Equal from 'effect/Equal';
 
-export type Proto = any;
+export type Prototype = never;
 
 export const isDEV = process.env.NODE_ENV === 'development';
 
@@ -41,15 +41,6 @@ export const isMaybeSync = (x: any) => x.constructor === syncFn.constructor;
 export const isAsync = <A extends unknown[], B, C extends Extract<B, Promise<any>>>(x: Fn<A, B>): x is Fn<A, C> =>
   x.constructor === asyncFn.constructor;
 
-export const array = <A>(proto: Partial<A>): A =>
-  assignProto(
-    Object.create(Array.prototype),
-    proto,
-  );
-
-export const struct = <A>(proto: Partial<A>): A =>
-  proto as A;
-
 const assignProto = (proto: any, obj: any) =>
   Object.assign(
     obj,
@@ -65,14 +56,16 @@ const setPrototype = (proto: any, obj: any) =>
 export const make = <A>(proto: Partial<A>): A =>
   proto as A;
 
-export const extend = <A>(proto: any, obj: Partial<A>): A =>
-  ({
-    ...proto,
-    ...obj,
-  });
+export const array = <A>(proto: Partial<A>): A =>
+  assignProto(
+    Object.create(Array.prototype),
+    proto,
+  );
+
+export const struct = <A>(proto: Partial<A>): A =>
+  proto as A;
 
 export const create = <A>(proto: A, obj: Partial<A>): A =>
-  // setPrototype(proto, obj);
   Object.assign(obj, proto);
 
 export const pure = <A>(proto: any, obj: Partial<A>): A =>

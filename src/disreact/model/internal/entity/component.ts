@@ -1,7 +1,8 @@
-import {EFFECT, PROMISE, SYNC} from '#src/disreact/model/internal/core/enum.ts';
-import * as Element from '#src/disreact/model/internal/element.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as FC from '#src/disreact/model/internal/adaptors/fc.ts';
+import {EFFECT, ASYNC, SYNC} from '#src/disreact/model/internal/core/enum.ts';
+import * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
+import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as E from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
 import * as Predicate from 'effect/Predicate';
@@ -59,14 +60,14 @@ export const render = (self: Element.Instance): E.Effect<any> => {
   const p = self.props!;
   const fc = self.type;
 
-  switch (fc[Element.RunId]) {
-    case SYNC: {
+  switch (fc[FC.KindId]) {
+    case FC.SYNC: {
       return E.sync(() => fc(p));
     }
-    case PROMISE: {
+    case FC.ASYNC: {
       return E.promise(() => fc(p) as Promise<any>);
     }
-    case EFFECT: {
+    case FC.EFFECT: {
       return fc(p) as E.Effect<any>;
     }
   }
@@ -75,17 +76,14 @@ export const render = (self: Element.Instance): E.Effect<any> => {
     const out = fc(p);
 
     if (Predicate.isPromise(out)) {
-      fc[Element.RunId] = PROMISE;
-
+      FC.castAsync(fc);
       return E.promise(() => out);
     }
     if (E.isEffect(out)) {
-      fc[Element.RunId] = EFFECT;
-
+      FC.castEffect(fc);
       return out as E.Effect<any>;
     }
-    fc[Element.RunId] = SYNC;
-
+    FC.castSync(fc);
     return E.succeed(out);
   });
 };

@@ -1,5 +1,5 @@
-import type * as Element from '#src/disreact/model/internal/element.ts';
-import * as Globals from '#src/disreact/model/internal/infrastructure/globals.ts';
+import type * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Globals from '#src/disreact/model/internal/adaptors/globals.ts';
 import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as E from 'effect/Effect';
 import * as GlobalValue from 'effect/GlobalValue';

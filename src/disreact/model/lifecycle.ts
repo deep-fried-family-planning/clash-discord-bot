@@ -1,13 +1,13 @@
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/codec/old/diffs.ts';
-import * as Component from '#src/disreact/model/internal/component.ts';
-import * as Element from '#src/disreact/model/internal/element.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Component from '#src/disreact/model/internal/entity/component.ts';
+import * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Const from '#src/disreact/model/internal/core/enum.ts';
-import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
-import * as Progress from '#src/disreact/model/internal/core/progress.ts';
+import * as Mutex from '#src/disreact/model/internal/adaptors/mutex.ts';
+import * as Progress from '#src/disreact/model/internal/core/progress2.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
 import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';

@@ -1,4 +1,4 @@
-import * as El from '#src/disreact/model/internal/element.ts';
+import * as El from '#src/disreact/model/internal/entity/element.ts';
 
 export const Fragment = El.Fragment,
              jsx      = El.jsx,

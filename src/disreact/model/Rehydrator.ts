@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/element.ts';
+import * as Element from '#src/disreact/model/internal/entity/element.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';

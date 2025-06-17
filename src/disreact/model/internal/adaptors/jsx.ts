@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/element.ts';
+import * as Element from '#src/disreact/model/internal/entity/element.ts';
 import * as Array from 'effect/Array';
 
 export const Fragment = undefined;

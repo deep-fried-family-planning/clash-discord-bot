@@ -1,5 +1,5 @@
-import * as Globals from '#src/disreact/model/internal/infrastructure/globals.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Globals from '#src/disreact/model/internal/adaptors/globals.ts';
+import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 

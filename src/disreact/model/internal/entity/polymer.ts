@@ -1,5 +1,5 @@
-import type * as Element from '#src/disreact/model/internal/element.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as Const from '#src/disreact/model/internal/core/enum.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import * as Array from 'effect/Array';
@@ -57,7 +57,6 @@ export interface EffectFn extends Function {
 }
 
 export interface Polymer extends Pipeable.Pipeable {
-  phase  : Const.LifecycleType;
   pc     : number;
   rc     : number;
   lk?    : number;
@@ -82,7 +81,6 @@ export const empty = (): Polymer =>
 
 export const rehydrate = (ms: Chain): Polymer =>
   Proto.create<Polymer>(PolymerProto, {
-    phase: Const.REHYDRATE,
     pc   : 0,
     rc   : 1,
     stack: chain(ms),

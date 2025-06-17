@@ -1,9 +1,10 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
+import * as FC from '#src/disreact/model/internal/adaptors/fc.ts';
+import * as Globals from '#src/disreact/model/internal/adaptors/globals.ts';
+import * as Prototype from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as Const from '#src/disreact/model/internal/core/enum.ts';
 import {COMP, REST, TEXT} from '#src/disreact/model/internal/core/enum.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Globals from '#src/disreact/model/internal/infrastructure/globals.ts';
-import * as Prototype from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -33,12 +34,13 @@ interface Base extends Hash.Hash, Equal.Equal, Pipeable.Pipeable, Inspectable.In
   name?   : string;
 };
 
-export type Primitive = | null
-                        | undefined
-                        | boolean
-                        | number
-                        | string
-                        | symbol;
+export type Primitive =
+  | null
+  | undefined
+  | boolean
+  | number
+  | string
+  | symbol;
 
 export interface Text extends Base {
   [TypeId]: typeof TEXT;
@@ -53,16 +55,18 @@ export interface Intrinsic extends Base {
 
 export interface Instance extends Base {
   [TypeId]: typeof COMP;
-  type    : Fc;
+  type    : FC.Known;
   polymer?: Polymer.Polymer;
 }
 
-export type Element = | Text
-                      | Intrinsic
-                      | Instance;
+export type Element =
+  | Text
+  | Intrinsic
+  | Instance;
 
-export type Node = | Intrinsic
-                   | Instance;
+export type Node =
+  | Intrinsic
+  | Instance;
 
 const ElementProto = Prototype.make<Base>({
   ...Pipeable.Prototype,
@@ -112,13 +116,13 @@ export const intrinsic = (type: string, atts: any): Intrinsic => {
   });
 };
 
-export const instance = (type: Fc, atts: any): Instance => {
-  const f = registerFc(type);
+export const instance = (type: FC.FC, atts: any): Instance => {
+  const f = FC.register(type);
 
   const self = Prototype.create(InstanceProto, {
-    [SrcId]: f[FcId]!,
+    [SrcId]: FC.name(f),
     type   : f,
-    name   : f[FcId]!,
+    name   : FC.name(f),
   });
   self.props = props(atts, self);
 
@@ -357,8 +361,6 @@ export const accept = (p: Element, ns: Element[]) => {
   return p;
 };
 
-
-
 export const FcId  = Symbol.for('disreact/fc'),
              RunId = Symbol.for('disreact/render');
 
@@ -366,7 +368,6 @@ export namespace Fc {
   export interface Base<P> extends Function {
     (props: P): Rendered | Promise<Rendered> | E.Effect<Rendered, any, any>;
     [FcId]?     : string;
-    [RunId]?    : Const.FunctionType;
     displayName?: string;
   }
   export interface Known<P> extends Base<P> {
@@ -378,7 +379,7 @@ export namespace Fc {
   }
   export interface Async<P> extends Known<P> {
     (props: P): Promise<Rendered>;
-    [RunId]: typeof Const.PROMISE;
+    [RunId]: typeof Const.ASYNC;
   }
   export interface Effect<P> extends Known<P> {
     (props: P): E.Effect<Rendered, any, any>;
@@ -405,7 +406,7 @@ const registerFc = (fc: Fc) => {
     fc[FcId] = Const.ANONYMOUS_FUNCTION;
   }
   if (fc.constructor.name === Const.ASYNC_FUNCTION) {
-    fc[RunId] = Const.PROMISE;
+    fc[RunId] = Const.ASYNC;
   }
   return fc;
 };

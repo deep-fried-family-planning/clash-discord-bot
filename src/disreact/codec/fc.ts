@@ -1,5 +1,5 @@
 import * as Const from '#src/disreact/model/internal/core/enum.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -84,7 +84,7 @@ export const make = (f: Any): Any => {
       f[NameId] = '.';
     }
     if (f.constructor.name === Const.ASYNC_FUNCTION) {
-      f[KindId] = Const.PROMISE;
+      f[KindId] = Const.ASYNC;
     }
   }
   (f[TypeId] as any) = TypeId;
@@ -111,7 +111,7 @@ export const render = (f: FC, p: any): E.Effect<any> => {
     case Const.SYNC: {
       return E.sync(() => f(p));
     }
-    case Const.PROMISE: {
+    case Const.ASYNC: {
       return E.promise(() => f(p));
     }
     case Const.EFFECT: {
@@ -121,7 +121,7 @@ export const render = (f: FC, p: any): E.Effect<any> => {
       return E.suspend(() => {
         const out = f(p);
         if (Predicate.isPromise(out)) {
-          f[KindId] = Const.PROMISE;
+          f[KindId] = Const.ASYNC;
           return E.promise(() => out);
         }
         if (E.isEffect(out)) {

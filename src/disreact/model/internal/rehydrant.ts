@@ -1,9 +1,9 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
-import * as Element from '#src/disreact/model/internal/element.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Element from '#src/disreact/model/internal/entity/element.ts';
+import * as Polymer from '#src/disreact/model/internal/entity/polymer.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Proto from '#src/disreact/model/internal/adaptors/prototype.ts';
 import * as Order from 'effect/Order';
 
 export interface Rehydrant {

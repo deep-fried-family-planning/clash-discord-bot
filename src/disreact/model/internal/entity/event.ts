@@ -1,6 +1,6 @@
 import * as E from 'effect/Effect';
 import * as Predicate from 'effect/Predicate';
-import * as Prototype from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Prototype from '#src/disreact/model/internal/adaptors/prototype.ts';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export type Event = {
