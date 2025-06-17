@@ -1,25 +1,25 @@
-import * as Element from '#src/disreact/model/entity/element.ts';
-import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+import * as Element from '#src/disreact/model/internal/element.ts';
+import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
-import * as Declarations from '#src/disreact/model/util/declarations.ts';
-import {MessageAsync} from '#test/unit/components/message-async.tsx';
-import {MessageEffect} from '#test/unit/components/message-effect.tsx';
-import {MessageSync} from '#test/unit/components/message-sync.tsx';
-import {TestMessage} from '#test/unit/components/test-message.tsx';
-import {it} from '#test/unit/components/TestRegistry.tsx';
+import * as Declarations from '#src/disreact/codec/old/declarations.ts';
+import {MessageAsync} from '#unit/components/message-async.tsx';
+import {MessageEffect} from '#unit/components/message-effect.tsx';
+import {MessageSync} from '#unit/components/message-sync.tsx';
+import {TestMessage} from '#unit/components/test-message.tsx';
+import {it} from '#unit/components/TestRegistry.tsx';
 import * as E from 'effect/Effect';
 import {flow} from 'effect/Function';
 import * as S from 'effect/Schema';
 
 const json = (input: any) => JSON.stringify(input, null, 2);
-const snap = (root: Rehydrant.Rehydrant) => json(root);
-const hydrator = (root: Rehydrant.Rehydrant) => Rehydrant.dehydrate(root);
+const snap = (root: Rehydrant.Envelope) => json(root);
+const hydrator = (root: Rehydrant.Envelope) => Rehydrant.dehydrate(root);
 const hash = flow(Rehydrant.dehydrate, S.encodeSync(Declarations.HydratorTransform));
 
 it.effect('when rendering sync', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageSync, {});
-  yield* Lifecycle.init2(root);
+  yield* Lifecycle.init__(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
   expect(root.root).toMatchSnapshot();
@@ -27,21 +27,21 @@ it.effect('when rendering sync', E.fn(function* () {
 
 it.effect('when rendering async', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageAsync, {});
-  yield* Lifecycle.init2(root);
+  yield* Lifecycle.init__(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
 it.effect('when rendering effect', E.fn(function* () {
   const root = yield* Rehydrator.checkout(MessageEffect, {});
-  yield* Lifecycle.init2(root);
+  yield* Lifecycle.init__(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
 
 it.effect('when initial rendering', E.fn(function* () {
   const root = yield* Rehydrator.checkout(TestMessage, {});
-  yield* Lifecycle.init2(root);
+  yield* Lifecycle.init__(root);
   const encoding = yield* Lifecycle.encode(root);
   expect(snap(encoding?.data)).toMatchSnapshot();
 }));
@@ -50,7 +50,7 @@ it.effect('when dispatching an event', E.fn(function* () {
   const registry = yield* Rehydrator;
   const root = yield* registry.checkout(TestMessage, {});
 
-  yield* Lifecycle.init2(root);
+  yield* Lifecycle.init__(root);
 
   expect(hydrator(root)).toMatchSnapshot('initial stacks');
   expect(hash(root)).toMatchSnapshot('initial hash');
@@ -71,7 +71,7 @@ describe('given event.id does not match any node.id', () => {
   it.effect('when dispatching an event', E.fn(function* () {
     const registry = yield* Rehydrator;
     const root = yield* registry.checkout(TestMessage, {});
-    yield* Lifecycle.init2(root);
+    yield* Lifecycle.init__(root);
     yield* Lifecycle.rerenders(root);
 
     const event = Element.event('buttons:1:button:0', {});
@@ -85,8 +85,8 @@ it.effect(`when hydrating an empty root (performance)`, E.fnUntraced(function* (
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Rehydrator.checkout(TestMessage, {}, {});
-    yield* Lifecycle.init2(root);
-    yield* Lifecycle.rehy2(root);
+    yield* Lifecycle.init__(root);
+    yield* Lifecycle.rehydrate__(root);
 
     const event = Element.event('actions:0:button:0', {});
 

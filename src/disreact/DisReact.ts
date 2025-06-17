@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache, type DokenCacheConfig} from '#src/disreact/runtime/DokenCache.ts';
@@ -23,13 +23,13 @@ export class DisReact extends E.Service<DisReact>()('disreact', {
     );
 
     return {
-      registerRoot: (src: Rehydrant.Registrant, id?: string) =>
+      registerRoot: (src: Envelope.Registrant, id?: string) =>
         pipe(
           Methods.registerRoot(src, id),
           E.provide(layers),
         ),
 
-      createRoot: (id: Rehydrant.SourceId, props?: any, data?: any) =>
+      createRoot: (id: Envelope.SourceId, props?: any, data?: any) =>
         pipe(
           Methods.createRoot(id, props, data),
           E.provide(layers),

@@ -56,7 +56,7 @@ it.effect('when synthesizing', E.fn(function* () {
 }, E.provide(layer)));
 
 it.effect('when synthesizing (performance)', E.fn(function* () {
-  const runs = Array.from({length: 100});
+  const runs = Array.from({length: 1000});
 
   for (let i = 0; i < runs.length; i++) {
     const root = yield* Methods.createRoot(TestMessage);
@@ -84,11 +84,7 @@ it.effect('when responding', E.fn(
       TestClock.setTime,
     );
 
-    const supervisor = yield* Supervisor.track;
-
     const res1Fork = yield* Methods.respond(req1).pipe(
-      E.tapErrorCause((cause) => E.logFatal(Cause.prettyErrors(cause))),
-      E.supervised(supervisor),
       E.fork,
     );
 
@@ -134,7 +130,7 @@ it.effect('when responding', E.fn(
 
 it.effect('when responding (performance)', E.fn(
   function* () {
-    const runs = Array.from({length: 10});
+    const runs = Array.from({length: 100});
 
     const req1 = {
       id            : '1236074574509117491',

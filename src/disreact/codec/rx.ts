@@ -2,7 +2,7 @@ import * as DAPI from '#src/disreact/codec/dapi/dapi.ts';
 import * as Doken from '#src/disreact/codec/doken.ts';
 import * as Container from '#src/disreact/codec/intrinsic/container.ts';
 import * as Params from '#src/disreact/codec/params.ts';
-import * as Declarations from '#src/disreact/model/util/declarations.ts';
+import * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import {hole as forbidden, pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
 

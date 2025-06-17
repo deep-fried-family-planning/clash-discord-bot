@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target"                      : "esnext",
-    "lib"                         : ["esnext", "es2023"],
+    "lib"                         : ["esnext"],
     "jsx"                         : "react-jsx",
     "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",

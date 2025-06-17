@@ -1,5 +1,5 @@
-import * as Const from '#src/disreact/model/util/const.ts';
-import * as Proto from '#src/disreact/model/entity/proto.ts';
+import * as Const from '#src/disreact/model/internal/core/enum.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -13,8 +13,10 @@ export const TypeId  = Symbol('disreact/fc'),
              NameId  = Symbol('disreact/fc/name');
 
 export namespace FC {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  export interface Any<P, O> extends Function {
+  type Thing<A, B> = (props: A) => B;
+
+
+  export interface Any<P, O> extends Thing<P, O> {
     (props: P): O | Promise<O> | E.Effect<O, any, any>;
     [TypeId]?   : FC;
     [KindId]?   : number;

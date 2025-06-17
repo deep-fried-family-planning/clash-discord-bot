@@ -1,4 +1,4 @@
-export type Const = never;
+export type Enum = never;
 
 export const isDev = process.env.NODE_ENV === 'development';
 
@@ -25,7 +25,8 @@ export const SKIP    = 1 as const,
              UPDATE  = 3 as const,
              INSERT  = 4 as const,
              REMOVE  = 5 as const,
-             RENDER  = 6 as const;
+             RENDER  = 6 as const,
+             ADD = 7 as const;
 
 export type DiffType = | typeof SKIP
                        | typeof REPLACE

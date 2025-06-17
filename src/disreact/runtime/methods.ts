@@ -1,9 +1,9 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import * as Doken from '#src/disreact/codec/doken.ts';
-import type {Rehydrant} from '#src/disreact/model/entity/rehydrant.ts';
+import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
 import * as Model from '#src/disreact/model/Model.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Progress from '#src/disreact/model/util/progress.ts';
+import * as Progress from '#src/disreact/model/internal/core/progress.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/runtime/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
@@ -18,7 +18,7 @@ import * as Option from 'effect/Option';
 
 export const registerRoot = Model.registerRoot;
 
-export const createRoot = (id: Rehydrant.SourceId, props?: any, data?: any) =>
+export const createRoot = (id: Envelope.SourceId, props?: any, data?: any) =>
   pipe(
     Model.createRoot(id, props, data),
     E.flatMap((root) => {

@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/entity/element.ts';
-import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
+import * as Element from '#src/disreact/model/internal/element.ts';
+import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 

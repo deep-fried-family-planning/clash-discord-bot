@@ -1,0 +1,279 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`given element source > when checking out > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {},
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given element source > when registering again > then a defect is returned 1`] = `[SourceDefect: Source (TestDialog) already registered.]`;
+
+exports[`given element source > when rehydrating > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {
+    "data": "data",
+  },
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given function component source > when checking out > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {},
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given function component source > when registering again > then a defect is returned 1`] = `[SourceDefect: Source (TestDialog) already registered.]`;
+
+exports[`given function component source > when rehydrating > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {
+    "data": "data",
+  },
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given no sources > when checking out > then a defect is returned 1`] = `[SourceDefect: Source (TestDialog) is not registered.]`;
+
+exports[`given no sources > when registering > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {},
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given no sources > when registering and checking out > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {},
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;
+
+exports[`given no sources > when rehydrating > then a defect is returned 1`] = `[SourceDefect: Source (TestDialog) is not registered.]`;
+
+exports[`when registering and checking out > then the rehydrant envelope is initialized 1`] = `
+{
+  "data": {},
+  "id": "TestDialog",
+  "next": {
+    "id": "TestDialog",
+  },
+  "queue": Set {},
+  "root": {
+    "$d": 0,
+    "$i": 0,
+    "$p": 0,
+    "_n": "TestDialog:0",
+    "_s": "TestDialog:0",
+    "name": "TestDialog",
+    "pipe": [Function],
+    "props": {
+      Symbol(disreact/props): Symbol(disreact/props),
+      Symbol(effect/Hash): [Function],
+      Symbol(effect/Equal): [Function],
+    },
+    "type": [Function],
+    Symbol(disreact/source): "TestDialog",
+    Symbol(effect/Equal): [Function],
+    Symbol(disreact/element): 3,
+    Symbol(effect/Hash): [Function],
+  },
+  "stack": {
+    "list": {
+      "_id": "MutableList",
+      "values": [],
+    },
+    "seen": WeakSet {},
+  },
+  "trie": {},
+}
+`;

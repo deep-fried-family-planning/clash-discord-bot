@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/entity/element.ts';
-import * as Polymer from '#src/disreact/model/entity/polymer.ts';
+import * as Element from '#src/disreact/model/internal/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';
 
@@ -41,7 +41,7 @@ export namespace Diff {
                    | Render
                    | Remove;
 }
-export type Diff = Diff.Diff;
+export type Diffs = Diff.Diff;
 export type Nd = Diff.Nd;
 export type Cd = Diff.Cd;
 
@@ -91,30 +91,36 @@ const render = (): Diff.Render =>
   });
 
 const __diff = GlobalValue
-  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<Element.Element, Diff>());
+  .globalValue(Symbol.for('disreact/diff'), () => new WeakMap<Element.Element, Diffs>());
 
 export const node = (a: Element.Element, b: Element.Element) => {
-  if (Equal.equals(a, b)) {
-    return skip();
-  }
-  if (a.type !== b.type) {
+  if (Element.isText(a)) {
+    if (Element.isText(b)) {
+      return update(b);
+    }
     return replace(b);
   }
-  if (Element.isText(a) || Element.isText(b)) {
-    return update(b);
+  if (Element.isIntrinsic(a)) {
+    if (Element.isIntrinsic(b)) {
+      return update(b);
+    }
+    return replace(b);
   }
-  if (Element.isRest(a) || Element.isRest(b)) {
-    return update(b);
-  }
-  const poly = Polymer.get(a);
-  if (poly.rc === 0) {
-    return render();
-  }
-  if (!Equal.equals(a.props, b.props)) {
-    return render();
-  }
-  if (!Equal.equals(poly.curr, poly.save)) {
-    return render();
+  if (Element.isInstance(a)) {
+    if (Element.isInstance(b)) {
+      const poly = Polymer.get(a);
+      if (poly.rc === 0) {
+        return render();
+      }
+      if (!Equal.equals(a.props, b.props)) {
+        return render();
+      }
+      if (!Equal.equals(poly.stack, poly.saved)) {
+        return render();
+      }
+      return skip();
+    }
+    return replace(b);
   }
   return skip();
 };
@@ -128,6 +134,14 @@ export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
   if (rs === undefined) {
     diffs.set(n, []);
     return [];
+  }
+  if (!n.rs?.length) {
+    const acc = [] as Diff.Cd[];
+    for (const r of rs) {
+      acc.push(insert(r));
+    }
+    diffs.set(n, acc);
+    return acc;
   }
 
   const acc = [] as Diff.Cd[];

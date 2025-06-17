@@ -1,16 +1,37 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as El from '#src/disreact/model/entity/element.ts';
-import type {FC} from '#src/disreact/model/entity/fc.ts';
-import * as Polymer from '#src/disreact/model/entity/polymer.ts';
-import * as Rehydrant from '#src/disreact/model/entity/rehydrant.ts';
-import * as Deps from '#src/disreact/model/util/deps.ts';
-import * as Globals from '#src/disreact/model/entity/globals.ts';
+import type * as Element from '#src/disreact/model/internal/element.ts';
+import type {FC} from '#src/disreact/codec/fc.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Globals from '#src/disreact/model/internal/infrastructure/globals.ts';
+import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
+import * as Deps from '#src/disreact/codec/old/deps.ts';
 import type {Discord} from 'dfx';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
-import type * as Runtime from 'effect/Runtime';
+
+const noop = () => {};
+
+const throwop = () => {
+  throw new Error('Hooks must be called within a component.');
+};
+
+export let env: Rehydrant.Envelope | undefined = undefined,
+           node: Element.Instance | undefined  = undefined,
+           next: () => void                    = throwop;
+
+export const unsafeSet = (rh: Rehydrant.Envelope, n: Element.Instance, f?: () => void) => {
+  env = rh;
+  node = n;
+  next = f ?? noop;
+};
+
+export const unsafeReset = () => {
+  env = undefined;
+  node = undefined;
+  next = throwop;
+};
 
 const getRoot = () => {
   const ctx = Globals.get().root;
