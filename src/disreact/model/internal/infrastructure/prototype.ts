@@ -1,74 +1,92 @@
+import * as Hash from 'effect/Hash';
 import * as Equal from 'effect/Equal';
 
 export type Prototype = never;
 
-export const isDEV = process.env.NODE_ENV === 'development';
+export const isDEV = (process.env.NODE_ENV === 'development') as true;
 
-export function structEquals(this: any, that: any): boolean {
-  const selfKeys = Object.keys(this);
+export const INTERNAL_ERROR = 'Internal Error';
+
+const assignProto = (p: any, o: any) =>
+  Object.assign(
+    o,
+    p,
+  );
+
+const setPrototype = (p: any, o: any) =>
+  Object.setPrototypeOf(
+    o,
+    p,
+  );
+
+export const declare = <A>(p: Partial<A>): A => p as A;
+
+export const declareArray = <A>(p: Partial<A>): A =>
+  assignProto(
+    Object.create(Array.prototype),
+    p,
+  );
+
+export const declares = <A>(...ps: Partial<A>[]): A =>
+  Object.assign({}, ...ps);
+
+export const instance = <A>(p: A, o: Partial<A>): A =>
+  Object.assign(o, p);
+
+export const impure = <A>(p: A, o: Partial<A>): A =>
+  Object.assign(o, p);
+
+export const pure = <A>(p: any, o: Partial<A>): A => {
+  const inst = impure(p, o);
+
+  return isDEV
+         ? Object.freeze(inst)
+         : inst;
+};
+
+export const structHash = (self: any): number => Hash.structure(self);
+
+export const structEquals = (self: any, that: any): boolean => {
+  const selfKeys = Object.keys(self);
   const thatKeys = Object.keys(that);
   if (selfKeys.length !== thatKeys.length) {
     return false;
   }
   for (const key of selfKeys) {
-    if (!(key in that) || !Equal.equals(this[key], that[key])) {
+    if (!(key in that) || !Equal.equals(self[key], that[key])) {
       return false;
     }
   }
   return true;
-}
+};
 
-export function arrayEquals(this: any, that: any): boolean {
-  if (this.length !== that.length) {
+export const arrayHash = (self: any): number => Hash.array(self);
+
+export const arrayEquals = (self: any, that: any): boolean => {
+  if (self.length !== that.length) {
     return false;
   }
-  for (let i = 0; i < this.length; i++) {
-    if (!Equal.equals(this[i], that[i])) {
+  for (let i = 0; i < self.length; i++) {
+    if (!Equal.equals(self[i], that[i])) {
       return false;
     }
   }
   return true;
-}
+};
 
-type Fn<A extends unknown[], B> = (...p: A) => B;
+export type ProtoFn<A extends unknown[], B> = (...p: A) => B;
 
-const syncFn = () => {};
+const syncProto = () => {};
 
-const asyncFn = async () => {};
+export const isMaybeSync = (x: any) => x.constructor === syncProto.constructor;
 
-export const isMaybeSync = (x: any) => x.constructor === syncFn.constructor;
+const asyncProto = async () => {};
 
-export const isAsync = <A extends unknown[], B, C extends Extract<B, Promise<any>>>(x: Fn<A, B>): x is Fn<A, C> =>
-  x.constructor === asyncFn.constructor;
-
-const assignProto = (proto: any, obj: any) =>
-  Object.assign(
-    obj,
-    proto,
-  );
-
-const setPrototype = (proto: any, obj: any) =>
-  Object.setPrototypeOf(
-    obj,
-    proto,
-  );
-
-export const declare = <A>(proto: Partial<A>): A =>
-  proto as A;
-
-export const array = <A>(proto: Partial<A>): A =>
-  assignProto(
-    Object.create(Array.prototype),
-    proto,
-  );
-
-export const struct = <A>(proto: Partial<A>): A =>
-  proto as A;
-
-export const create = <A>(proto: A, obj: Partial<A>): A =>
-  Object.assign(obj, proto);
-
-export const pure = <A>(proto: any, obj: Partial<A>): A =>
-  isDEV
-  ? Object.freeze(create(proto, obj))
-  : create(proto, obj);
+export const isAsync = <
+  A extends unknown[],
+  B,
+  C extends Extract<B, Promise<any>>,
+>(
+  u: ProtoFn<A, B>,
+): u is ProtoFn<A, C> =>
+  u.constructor === asyncProto.constructor;

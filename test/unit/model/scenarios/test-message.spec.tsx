@@ -1,4 +1,4 @@
-import {Model} from '#src/disreact/model/Model.ts';
+import {ModelV1} from '#src/disreact/model/ModelV1.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {sjson} from '#unit/model/scenarios/util.ts';
@@ -9,7 +9,7 @@ import * as L from 'effect/Layer';
 import * as Logger from 'effect/Logger';
 
 const TestLayer = () => L.mergeAll(
-  Model.layer({
+  ModelV1.layer({
     sources: {
       TestMessage,
     },
@@ -21,7 +21,7 @@ const TestLayer = () => L.mergeAll(
 );
 
 it.effect('when rendered', E.fn(function* () {
-  const actual = yield* Model.createRoot(TestMessage, {}, {});
+  const actual = yield* ModelV1.createRoot(TestMessage, {}, {});
 
   expect(sjson(actual?._tag)).toMatchInlineSnapshot(`""message""`);
   expect(sjson(actual?.data)).toMatchInlineSnapshot(`
@@ -115,7 +115,7 @@ it.effect('when clicked', E.fn(function* () {
     id  : 'actions:0:button:0',
     data: {},
   };
-  const actual = yield* Model.invokeRoot(hydrator, event, {});
+  const actual = yield* ModelV1.invokeRoot(hydrator, event, {});
   expect(sjson(actual?._tag)).toMatchInlineSnapshot(`""message""`);
   // expect(sjson(actual?.data)).toMatchInlineSnapshot(`
   //   "{

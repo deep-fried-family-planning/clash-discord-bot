@@ -1,118 +1,131 @@
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Diff from '#src/disreact/model/internal/core/diff.ts';
 import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
+import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as E from 'effect/Effect';
-import * as Fiber from 'effect/Fiber';
-import * as Predicate from 'effect/Predicate';
+import {dual, pipe} from 'effect/Function';
+import * as P from 'effect/Predicate';
 
-export interface Component extends Element.Comp {
-  polymer: Polymer.Polymer;
-}
-
-export const didMount = (el: Element.Element): el is Component =>
-  Element.isComp(el)
-  && !!el.polymer;
-
-export const mount = (fn: Element.Comp) => {
-  const self = fn as Component;
-
-  if (self.rs?.length) {
-    throw new Error(`${self.name} already has rendered children`);
+export const diff = (self: Element.Func, that: Element.Element): Diff.Diff<Element.Element> => {
+  if (!Element.isFunc(that)) {
+    return Diff.replace(that);
   }
-
-  self.polymer = Polymer.empty();
-  return self;
 };
 
-export const unmount = (self: Element.Comp) => {
-  delete self.polymer;
-  delete self.rs;
-  return E.void;
+export const hydrate = (n: Element.Element, rh: Rehydrant.Envelope) => {
+  if (!Element.isFunc(n)) {
+    return n;
+  }
+
+  if (n.polymer) {
+    throw new Error(`${n.name} already has a polymer instance`);
+  }
+  if (n.rs?.length) {
+    throw new Error(`${n.name} already has rendered children`);
+  }
+  if (!n._n) {
+    throw new Error(`${n.name} has no trie id`);
+  }
+  n.polymer = Polymer.hydrate(rh.trie, n._n);
+
+  return n;
 };
 
-export const hydrate = (fn: Element.Comp, ps: Polymer.Bundle) => {
-  const self = fn as Component;
-
-  if (self.rs?.length) {
-    throw new Error(`${self.name} already has rendered children`);
+export const dehydrate = (n: Element.Func, rh: Rehydrant.Envelope) => {
+  if (!n._n) {
+    throw new Error(`${n.name} has no trie id`);
   }
-  if (!self._n) {
-    throw new Error(`${self.name} has no trie id`);
-  }
-  self.polymer = Polymer.hydrate(ps, self._n);
-  return self;
+  Polymer.dehydrate(rh.trie, n._n, n.polymer!);
+  return n.rs;
 };
 
-export const dehydrate = (self: Component, ps: Polymer.Bundle) => {
-  if (!self._n) {
-    throw new Error(`${self.name} has no trie id`);
+export const mount = (n: Element.Element, rh: Rehydrant.Envelope) => {
+  if (!Element.isFunc(n)) {
+    return n;
   }
-  ps[self._n] = Polymer.dehydrate(self.polymer);
-  return self.rs;
+
+  if (n.rs?.length) {
+    throw new Error(`${n.name} already has rendered children`);
+  }
+  n.polymer = Polymer.empty();
+
+  return n;
 };
 
-export const render = (self: Element.Comp): E.Effect<any> => {
-  if (!didMount(self)) {
-    throw new Error('Component render called before mount.');
+export const unmount = (n: Element.Element) => E.sync(() => {
+  if (Element.isFunc(n)) {
+    delete n.polymer;
   }
+  delete n.rs;
+  n.setParent(null);
+});
 
-  const p = self.props!;
-  const fc = self.type;
+export const render = (n: Element.Func, rh: Rehydrant.Envelope) =>
+  pipe(
+    Mutex.acquire(n, rh),
+    E.andThen(() => {
+      const p = n.props!;
+      const f = n.type;
 
-  switch (fc[FC.KindId]) {
-    case FC.SYNC: {
-      return E.sync(() => fc(p));
-    }
-    case FC.ASYNC: {
-      return E.promise(() => fc(p) as Promise<any>);
-    }
-    case FC.EFFECT: {
-      return fc(p) as E.Effect<any>;
-    }
-  }
-
-  return E.suspend(() => {
-    const out = fc(p);
-
-    if (Predicate.isPromise(out)) {
-      FC.castAsync(fc);
-      return E.promise(() => out);
-    }
-    if (E.isEffect(out)) {
-      FC.castEffect(fc);
-      return out as E.Effect<any>;
-    }
-    FC.castSync(fc);
-    return E.succeed(out);
-  });
-};
-
-export const effects = (self: Element.Comp) => E.suspend(() => {
-  if (!didMount(self)) {
-    throw new Error('Component effects called before mount.');
-  }
-
-  if (!Polymer.hasEffects(self.polymer)) {
-    return E.succeed(self);
-  }
-
-  return self.polymer.pipe(
-    Polymer.flush,
-    E.forEach((fx) => {
-      if (Proto.isAsync(fx)) {
-        return E.promise(fx);
+      switch (FC.kind(f)) {
+        case FC.SYNC: {
+          return E.sync(() => f(p) as Element.Rendered);
+        }
+        case FC.ASYNC: {
+          return E.promise(() => f(p) as Promise<Element.Rendered>);
+        }
+        case FC.EFFECT: {
+          return f(p) as E.Effect<Element.Rendered>;
+        }
       }
+      const output = f(p);
 
-      const out = fx();
+      if (P.isPromise(output)) {
+        FC.cast(f, FC.AsyncProto);
+        return E.promise(() => output);
+      }
+      if (E.isEffect(output)) {
+        FC.cast(f, FC.EffectProto);
+        return output as E.Effect<any>;
+      }
+      FC.cast(f, FC.SyncProto);
+      return E.succeed(output);
+    }),
+    Mutex.release(n, rh),
+    E.map((rs) => {
+      Polymer.commit(n.polymer!);
+      return Element.trie(n, rs);
+    }),
+  );
 
-      if (Predicate.isPromise(out)) {
+export const runEffects = (n: Element.Func) => E.suspend(() => {
+  if (!Polymer.hasEffects(n.polymer!)) {
+    return E.succeed(n);
+  }
+  return pipe(
+    n.polymer!,
+    Polymer.flush,
+    E.forEach((f) => {
+      if (Prototype.isAsync(f)) {
+        return E.promise(f);
+      }
+      const out = f();
+
+      if (P.isPromise(out)) {
         return E.promise(() => out);
       }
       if (E.isEffect(out)) {
         return out;
       }
       return E.void;
-    }, {discard: true}),
+    }),
+    E.as(n),
   );
 });
+
+export const didMount = (el: Element.Element) =>
+  Element.isFunc(el)
+  && !!el.polymer;

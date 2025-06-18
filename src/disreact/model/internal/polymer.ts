@@ -1,6 +1,6 @@
 import type * as Element from '#src/disreact/model/internal/core/element.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/prototype.ts';
 import * as Proto from '#src/disreact/model/internal/infrastructure/prototype.ts';
-import * as Const from '#src/disreact/model/internal/infrastructure/enum.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
@@ -71,42 +71,13 @@ const PolymerProto = Proto.declare<Polymer>({
 });
 
 export const empty = (): Polymer =>
-  Proto.create<Polymer>(PolymerProto, {
+  Proto.instance<Polymer>(PolymerProto, {
     rc   : 0,
     pc   : 0,
     stack: chain(),
     saved: chain(),
     queue: [],
   });
-
-export const rehydrate = (ms: Chain): Polymer =>
-  Proto.create<Polymer>(PolymerProto, {
-    pc   : 0,
-    rc   : 1,
-    stack: chain(ms),
-    saved: chain(structuredClone(ms)),
-    queue: [],
-  });
-
-export const dehydrate = (self: Polymer): Chain => {
-  if (!self.rc) {
-    throw new Error();
-  }
-  if (self.pc > 0) {
-    throw new Error();
-  }
-  if (self.queue.length) {
-    throw new Error();
-  }
-  return self.stack;
-};
-
-export const get = (n: Element.Comp): Polymer => {
-  if (!n.polymer) {
-    throw new Error();
-  }
-  return n.polymer;
-};
 
 
 export const isTerminal = (p: Polymer) => {
@@ -163,11 +134,42 @@ export type Bundle = Record<string, Monomer[]>;
 export const bundle = (): Bundle => ({});
 
 export const hydrate = (ps: Bundle, key: string): Polymer => {
-  const chain = ps[key];
-  if (!chain) {
+  const encoded = ps[key];
+
+  if (!encoded) {
     return empty();
   }
-  const hydrated = rehydrate(chain);
+
+  const self = Proto.instance<Polymer>(PolymerProto, {
+    pc   : 0,
+    rc   : 1,
+    stack: chain(encoded),
+    saved: chain(structuredClone(encoded)),
+    queue: [],
+  });
+
   delete ps[key];
-  return hydrated;
+  return self;
+};
+
+export const dehydrate = (ps: Bundle, key: string, self: Polymer) => {
+  if (!self.rc) {
+    throw new Error(INTERNAL_ERROR);
+  }
+  if (self.pc > 0) {
+    throw new Error(INTERNAL_ERROR);
+  }
+  if (self.queue.length) {
+    throw new Error(INTERNAL_ERROR);
+  }
+
+  ps[key] = self.stack;
+};
+
+
+export const get = (n: Element.Func): Polymer => {
+  if (!n.polymer) {
+    throw new Error();
+  }
+  return n.polymer;
 };

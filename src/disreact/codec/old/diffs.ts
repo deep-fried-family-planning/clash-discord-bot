@@ -3,7 +3,7 @@ import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';
 
-export namespace Diff {
+export namespace Diffsv1 {
   export type Skip = {
     _tag: 'Skip';
   };
@@ -41,51 +41,51 @@ export namespace Diff {
                    | Render
                    | Remove;
 }
-export type Diffs = Diff.Diff;
-export type Nd = Diff.Nd;
-export type Cd = Diff.Cd;
+export type Diffs = Diffsv1.Diff;
+export type Nd = Diffsv1.Nd;
+export type Cd = Diffsv1.Cd;
 
-export const isSkip = (diff: Diff.Diff): diff is Diff.Skip => diff._tag === 'Skip';
+export const isSkip = (diff: Diffsv1.Diff): diff is Diffsv1.Skip => diff._tag === 'Skip';
 
-export const isInsert = (diff: Diff.Diff): diff is Diff.Insert => diff._tag === 'Insert';
+export const isInsert = (diff: Diffsv1.Diff): diff is Diffsv1.Insert => diff._tag === 'Insert';
 
-export const isRemove = (diff: Diff.Diff): diff is Diff.Remove => diff._tag === 'Remove';
+export const isRemove = (diff: Diffsv1.Diff): diff is Diffsv1.Remove => diff._tag === 'Remove';
 
-export const isReplace = (diff: Diff.Diff): diff is Diff.Replace => diff._tag === 'Replace';
+export const isReplace = (diff: Diffsv1.Diff): diff is Diffsv1.Replace => diff._tag === 'Replace';
 
-export const isUpdate = (diff: Diff.Diff): diff is Diff.Update => diff._tag === 'Update';
+export const isUpdate = (diff: Diffsv1.Diff): diff is Diffsv1.Update => diff._tag === 'Update';
 
-export const isRender = (diff: Diff.Diff): diff is Diff.Render => diff._tag === 'Render';
+export const isRender = (diff: Diffsv1.Diff): diff is Diffsv1.Render => diff._tag === 'Render';
 
-const skip = (): Diff.Skip =>
+const skip = (): Diffsv1.Skip =>
   ({
     _tag: 'Skip',
   });
 
-const replace = (node: Element.Element): Diff.Replace =>
+const replace = (node: Element.Element): Diffsv1.Replace =>
   ({
     _tag: 'Replace',
     node,
   });
 
-const update = (node: Element.Element): Diff.Update =>
+const update = (node: Element.Element): Diffsv1.Update =>
   ({
     _tag: 'Update',
     node,
   });
 
-const insert = (node: Element.Element): Diff.Insert =>
+const insert = (node: Element.Element): Diffsv1.Insert =>
   ({
     _tag: 'Insert',
     node,
   });
 
-const remove = (): Diff.Remove =>
+const remove = (): Diffsv1.Remove =>
   ({
     _tag: 'Remove',
   });
 
-const render = (): Diff.Render =>
+const render = (): Diffsv1.Render =>
   ({
     _tag: 'Render',
   });
@@ -106,8 +106,8 @@ export const node = (a: Element.Element, b: Element.Element) => {
     }
     return replace(b);
   }
-  if (Element.isComp(a)) {
-    if (Element.isComp(b)) {
+  if (Element.isFunc(a)) {
+    if (Element.isFunc(b)) {
       const poly = Polymer.get(a);
       if (poly.rc === 0) {
         return render();
@@ -136,7 +136,7 @@ export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
     return [];
   }
   if (!n.rs?.length) {
-    const acc = [] as Diff.Cd[];
+    const acc = [] as Diffsv1.Cd[];
     for (const r of rs) {
       acc.push(insert(r));
     }
@@ -144,7 +144,7 @@ export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
     return acc;
   }
 
-  const acc = [] as Diff.Cd[];
+  const acc = [] as Diffsv1.Cd[];
   const len = Math.max(n.rs?.length ?? 0, rs.length);
 
   for (let i = 0; i < len; i++) {

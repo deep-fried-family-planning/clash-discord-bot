@@ -1,5 +1,5 @@
 import {usePage} from '#src/disreact/index.ts';
-import * as Model from '#src/disreact/model/Model.ts';
+import * as Model from '#src/disreact/model/ModelV1.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {sjson} from '#unit/model/scenarios/util.ts';

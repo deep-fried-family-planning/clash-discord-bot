@@ -19,7 +19,7 @@ export const jsx = (type: any, atts: any): Element.Element => {
       return el;
     }
     case 'function': {
-      return Element.comp(type, atts);
+      return Element.func(type, atts);
     }
   }
   throw new Error(`Invalid jsx type: ${type}`);
@@ -38,7 +38,7 @@ export const jsxs = (type: any, atts: any): Element.Element => {
       return el;
     }
     case 'function': {
-      return Element.comp(type, atts);
+      return Element.func(type, atts);
     }
   }
   throw new Error(`Invalid jsx type: ${type}`);

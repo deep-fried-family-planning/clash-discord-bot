@@ -11,28 +11,6 @@ import * as Equal from 'effect/Equal';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
 
-const noop = () => {};
-
-const throwop = () => {
-  throw new Error('Hooks must be called within a component.');
-};
-
-export let env: Rehydrant.Envelope | undefined = undefined,
-           node: Element.Comp | undefined      = undefined,
-           next: () => void                    = throwop;
-
-export const unsafeSet = (rh: Rehydrant.Envelope, n: Element.Comp, f?: () => void) => {
-  env = rh;
-  node = n;
-  next = f ?? noop;
-};
-
-export const unsafeReset = () => {
-  env = undefined;
-  node = undefined;
-  next = throwop;
-};
-
 const getRoot = () => {
   const ctx = Globals.get().root;
   if (!ctx) {
@@ -85,7 +63,7 @@ export const $useState = <S>(initial: S): readonly [S, Hook.SetState<S>] => {
     else {
       monomer.s = next;
     }
-    Rehydrant.enqueue(root, node);
+    Rehydrant.enqueueRender(root, node);
   });
 
   return [monomer.s, set];
@@ -98,7 +76,7 @@ export const $useReducer = <A, S>(reducer: (state: S, action: A) => S | Promise<
   const node = getComp();
 
   const dispatch = Deps.fn('useReducer', node, (action: A) => {
-    Rehydrant.enqueue(root, node);
+    Rehydrant.enqueueRender(root, node);
     polymer.queue.push(() => {
       if (reducer.constructor.name === 'AsyncFunction') {
         return pipe(

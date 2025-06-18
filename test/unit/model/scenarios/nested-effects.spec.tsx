@@ -1,5 +1,5 @@
 import {useEffect, useState} from '#src/disreact/index.ts';
-import {Model} from '#src/disreact/model/Model.ts';
+import {ModelV1} from '#src/disreact/model/ModelV1.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import {sjson} from '#unit/model/scenarios/util.ts';
 import {it} from '@effect/vitest';
@@ -82,7 +82,7 @@ const Nest2 = (props: Props) => E.gen(function* () {
 });
 
 const TestLayer = () => L.mergeAll(
-  Model.layer({
+  ModelV1.layer({
     sources: {
       Root,
     },
@@ -94,7 +94,7 @@ const TestLayer = () => L.mergeAll(
 );
 
 it.effect.skip('when rendered', E.fn(function* () {
-  const actual = yield* Model.createRoot(Root, {}, {});
+  const actual = yield* ModelV1.createRoot(Root, {}, {});
 
   // expect(root).toBeCalledTimes(1);
   // expect(nest1).toBeCalledTimes(0);
@@ -186,7 +186,7 @@ it.effect.skip('when nest1 clicked', E.fn(function* () {
     id  : 'actions:0:primary:0',
     data: {},
   };
-  const actual = yield* Model.invokeRoot(hydrator, event, {});
+  const actual = yield* ModelV1.invokeRoot(hydrator, event, {});
 
   expect(root).toBeCalledTimes(1);
   expect(nest1).toBeCalledTimes(0);

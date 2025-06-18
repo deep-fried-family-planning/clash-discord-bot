@@ -1,4 +1,5 @@
 import * as Element from '#src/disreact/model/internal/core/element.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
@@ -8,11 +9,11 @@ export class SourceDefect extends Data.TaggedError('SourceDefect')<{
 }> {}
 
 export type RehydratorConfig = {
-  sources?: | (Element.Element | Element.Fc)[]
-            | { [K in string]: Element.Element | Element.Fc };
+  sources?: | (Element.Element | FC.FC)[]
+            | { [K in string]: Element.Element | FC.FC };
 };
 
-const getId = (input: Element.Element | Element.Fc | string) => {
+const getId = (input: Element.Element | FC.FC | string) => {
   if (typeof input === 'string') {
     return input;
   }
@@ -47,7 +48,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
     }
 
     const register = (
-      input: Element.Element | Element.Fc,
+      input: Element.Element | FC.FC,
     ) => E.suspend(() => {
       const src = Element.registerSource(input);
       const id = Element.getSourceId(src);
@@ -63,7 +64,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
     });
 
     const checkout = (
-      input: Element.Element | Element.Fc | string,
+      input: Element.Element | FC.FC | string,
       props: any,
       data?: any,
     ) => E.suspend(() => {

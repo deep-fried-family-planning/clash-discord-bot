@@ -2,7 +2,6 @@
 import * as E from 'effect/Effect';
 
 export type ModelCodecConfig = {
-  id_prop      : string;
   primitive    : string;
   normalization: Record<string, string>;
   encoders     : Record<string, (self: any, acc: any) => any>;

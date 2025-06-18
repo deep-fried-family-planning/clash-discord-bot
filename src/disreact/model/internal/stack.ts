@@ -1,11 +1,12 @@
 import * as Element from '#src/disreact/model/internal/core/element.ts';
+import {dual} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface Stack extends Pipeable.Pipeable {
   list : MutableList.MutableList<Element.Element>;
   seen : WeakSet<Element.Element>;
-  flags: Set<Element.Comp>;
+  flags: Set<Element.Func>;
 };
 
 const Proto = {
@@ -32,18 +33,30 @@ export const push = (s: Stack, n: Element.Element) => {
   return s;
 };
 
-export const pushNodes = (s: Stack, n: Element.Element) => {
-  if (!n.rs) {
-    return s;
-  }
-  for (let i = n.rs.length - 1; i >= 0; i--) {
-    const c = n.rs[i];
-    if (!Element.isText(c)) {
-      push(s, c);
+export const pushNodes = dual<
+  (s: Stack) => (n: Element.Element) => Stack,
+  (s: Stack, n: Element.Element) => Stack
+>(
+  2, (s: Stack, n: Element.Element) => {
+    if (!n.rs) {
+      return s;
     }
-  }
-  return s;
-};
+    for (let i = n.rs.length - 1; i >= 0; i--) {
+      const c = n.rs[i];
+      if (!Element.isText(c)) {
+        push(s, c);
+      }
+    }
+    return s;
+  },
+);
+
+export const pushNodeInto = dual<
+  (s: Stack) => (n: Element.Element) => Stack,
+  (n: Element.Element, s: Stack) => Stack
+>(
+  2, (n: Element.Element, s: Stack) => pushNodes(s, n),
+);
 
 export const next = (s: Stack) => !!MutableList.tail(s.list);
 
@@ -62,7 +75,7 @@ export const visit = (s: Stack, n: Element.Element) => {
 
 export const visited = (s: Stack, n: Element.Element) => s.seen.has(n);
 
-export const reset = (s: Stack): Element.Comp[] => {
+export const reset = (s: Stack): Element.Func[] => {
   s.seen = new WeakSet();
   MutableList.reset(s.list);
   const nodes = [...s.flags];
@@ -70,12 +83,12 @@ export const reset = (s: Stack): Element.Comp[] => {
   return nodes;
 };
 
-export const flag = (s: Stack, n: Element.Comp) => {
+export const flag = (s: Stack, n: Element.Func) => {
   s.flags.add(n);
   return s;
 };
 
-export const flagAll = (s: Stack, ns: Element.Comp[]) => {
+export const flagAll = (s: Stack, ns: Element.Func[]) => {
   for (const n of ns) {
     flag(s, n);
   }

@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import * as Doken from '#src/disreact/codec/doken.ts';
 import type {Envelope} from '#src/disreact/model/internal/rehydrant.ts';
-import * as Model from '#src/disreact/model/Model.ts';
+import * as Model from '#src/disreact/model/ModelV1.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';

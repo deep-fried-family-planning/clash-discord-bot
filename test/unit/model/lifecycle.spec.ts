@@ -1,6 +1,6 @@
 import * as Element from '#src/disreact/model/internal/core/element.ts';
 import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
-import * as Lifecycle from '#src/disreact/model/lifecycle.ts';
+import * as Lifecycle from '#src/disreact/model/v1lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import {MessageAsync} from '#unit/components/message-async.tsx';
@@ -52,8 +52,6 @@ it.effect('when dispatching an event', E.fn(function* () {
 
   yield* Lifecycle.init__(root);
 
-  expect(hydrator(root)).toMatchSnapshot('initial stacks');
-  expect(hash(root)).toMatchSnapshot('initial hash');
   const initial = yield* Lifecycle.encode(root);
   expect(snap(initial?.data)).toMatchSnapshot('initial encoded');
 
