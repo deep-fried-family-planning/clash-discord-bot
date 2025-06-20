@@ -1,6 +1,6 @@
 import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/infrastructure/proto.ts';
-import type * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as Element from '#src/disreact/model/entity/domain/element.ts';
 import * as type from '#src/disreact/model/infrastructure/type.ts';
 import type * as E from 'effect/Effect';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */

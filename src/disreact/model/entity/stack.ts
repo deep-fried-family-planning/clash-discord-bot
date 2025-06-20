@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import * as Element from '#src/disreact/model/entity/domain/element.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
 import {constant, dual} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';

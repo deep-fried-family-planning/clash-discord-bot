@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import * as Element from '#src/disreact/model/entity/domain/element.ts';
 import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 
 export const Fragment = undefined;

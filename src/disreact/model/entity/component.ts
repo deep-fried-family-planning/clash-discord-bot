@@ -1,5 +1,5 @@
 import * as Diff from '#src/disreact/model/entity/core/diff.ts';
-import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import * as Element from '#src/disreact/model/entity/domain/element.ts';
 import * as FC from '#src/disreact/model/entity/domain/fc.ts';
 import * as Mutex from '#src/disreact/model/infrastructure/mutex.ts';
 import * as Prototype from '#src/disreact/model/infrastructure/proto.ts';

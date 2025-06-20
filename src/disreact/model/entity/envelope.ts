@@ -1,7 +1,7 @@
 /* eslint-disable prefer-rest-params */
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
-import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import * as Element from '#src/disreact/model/entity/domain/element.ts';
 import * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import type * as Stack from '#src/disreact/model/entity/stack.ts';
 import * as Proto from '#src/disreact/model/infrastructure/proto.ts';

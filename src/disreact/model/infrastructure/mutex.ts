@@ -1,4 +1,4 @@
-import type * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as Element from '#src/disreact/model/entity/domain/element.ts';
 import type * as Rehydrant from '#src/disreact/model/entity/envelope.ts';
 import * as Globals from '#src/disreact/model/infrastructure/global.ts';
 import * as E from 'effect/Effect';

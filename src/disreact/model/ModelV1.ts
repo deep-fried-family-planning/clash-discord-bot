@@ -6,7 +6,7 @@ import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import type * as El from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as El from '#src/disreact/model/entity/domain/element.ts';
 import * as L from 'effect/Layer';
 
 export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>

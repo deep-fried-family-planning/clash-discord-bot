@@ -1,5 +1,5 @@
 import type * as Component from '#src/disreact/model/entity/component.ts';
-import type * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as Element from '#src/disreact/model/entity/domain/element.ts';
 import type * as Polymer from '#src/disreact/model/entity/polymer.ts';
 import type * as Rehydrant from '#src/disreact/model/entity/envelope.ts';
 import type * as Stack from '#src/disreact/model/entity/stack.ts';
