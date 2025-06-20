@@ -1,10 +1,10 @@
 import * as Diff from '#src/disreact/model/internal/core/diff.ts';
-import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
-import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as Prototype from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
+import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import * as E from 'effect/Effect';
 import {dual, pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
@@ -23,7 +23,7 @@ export const hydrate = (n: Element.Element, rh: Rehydrant.Envelope) => {
   if (n.polymer) {
     throw new Error(`${n.name} already has a polymer instance`);
   }
-  if (n.rs?.length) {
+  if (n.under?.length) {
     throw new Error(`${n.name} already has rendered children`);
   }
   if (!n._n) {
@@ -39,7 +39,7 @@ export const dehydrate = (n: Element.Func, rh: Rehydrant.Envelope) => {
     throw new Error(`${n.name} has no trie id`);
   }
   Polymer.dehydrate(rh.trie, n._n, n.polymer!);
-  return n.rs;
+  return n.under;
 };
 
 export const mount = (n: Element.Element, rh: Rehydrant.Envelope) => {
@@ -47,7 +47,7 @@ export const mount = (n: Element.Element, rh: Rehydrant.Envelope) => {
     return n;
   }
 
-  if (n.rs?.length) {
+  if (n.under?.length) {
     throw new Error(`${n.name} already has rendered children`);
   }
   n.polymer = Polymer.empty();
@@ -59,7 +59,7 @@ export const unmount = (n: Element.Element) => E.sync(() => {
   if (Element.isFunc(n)) {
     delete n.polymer;
   }
-  delete n.rs;
+  delete n.under;
   n.setParent(null);
 });
 

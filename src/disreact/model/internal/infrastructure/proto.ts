@@ -1,7 +1,8 @@
-import * as Hash from 'effect/Hash';
+import {Types} from 'effect';
 import * as Equal from 'effect/Equal';
+import * as Hash from 'effect/Hash';
 
-export type Prototype = never;
+export type Proto = never;
 
 export const isDEV = (process.env.NODE_ENV === 'development') as true;
 
@@ -21,14 +22,16 @@ const setPrototype = (p: any, o: any) =>
 
 export const declare = <A>(p: Partial<A>): A => p as A;
 
+export const declareTagged = <A>(_tag: A) => ({_tag});
+
+export const declares = <A>(...ps: Partial<A>[]): A =>
+  Object.assign({}, ...ps);
+
 export const declareArray = <A>(p: Partial<A>): A =>
   assignProto(
     Object.create(Array.prototype),
     p,
   );
-
-export const declares = <A>(...ps: Partial<A>[]): A =>
-  Object.assign({}, ...ps);
 
 export const instance = <A>(p: A, o: Partial<A>): A =>
   Object.assign(o, p);
@@ -76,11 +79,11 @@ export const arrayEquals = (self: any, that: any): boolean => {
 
 export type ProtoFn<A extends unknown[], B> = (...p: A) => B;
 
-const syncProto = () => {};
+const __sync = () => {};
 
-export const isMaybeSync = (x: any) => x.constructor === syncProto.constructor;
+export const isMaybeSync = (x: any) => x.constructor === __sync.constructor;
 
-const asyncProto = async () => {};
+const __async = async () => {};
 
 export const isAsync = <
   A extends unknown[],
@@ -89,4 +92,17 @@ export const isAsync = <
 >(
   u: ProtoFn<A, B>,
 ): u is ProtoFn<A, C> =>
-  u.constructor === asyncProto.constructor;
+  u.constructor === __async.constructor;
+
+export type IsTF<A, B> = A extends B ? true : false;
+
+export type IsAny<A> =
+  boolean extends (A extends never
+                   ? true
+                   : false) ? true
+                            : false;
+
+export type IfAny<A, B, C> =
+  IsAny<A> extends true
+  ? B
+  : C;

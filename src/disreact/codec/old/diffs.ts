@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';
@@ -135,7 +135,7 @@ export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
     diffs.set(n, []);
     return [];
   }
-  if (!n.rs?.length) {
+  if (!n.under?.length) {
     const acc = [] as Diffsv1.Cd[];
     for (const r of rs) {
       acc.push(insert(r));
@@ -145,10 +145,10 @@ export const rendered = (n: Element.Element, rs?: Element.Element[]) => {
   }
 
   const acc = [] as Diffsv1.Cd[];
-  const len = Math.max(n.rs?.length ?? 0, rs.length);
+  const len = Math.max(n.under?.length ?? 0, rs.length);
 
   for (let i = 0; i < len; i++) {
-    const c = n.rs![i];
+    const c = n.under![i];
     const r = rs[i];
     if (!c && r) {
       acc.push(insert(r));

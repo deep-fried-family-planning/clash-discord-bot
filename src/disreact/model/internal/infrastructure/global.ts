@@ -1,7 +1,7 @@
 import type * as Component from '#src/disreact/model/internal/component.ts';
-import type * as Element from '#src/disreact/model/internal/core/element.ts';
+import type * as Element from '#src/disreact/model/internal/core/exp/element.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
+import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import type * as Stack from '#src/disreact/model/internal/stack.ts';
 
 export type Global = {

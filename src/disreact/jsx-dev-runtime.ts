@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/core/element.ts';
+import type * as JsxRuntime from '#src/disreact/jsx-runtime.ts';
 import * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 
 export const Fragment = Jsx.Fragment,
@@ -7,26 +7,11 @@ export const Fragment = Jsx.Fragment,
              jsxDEV   = Jsx.jsxDEV;
 
 export declare namespace JSX {
-  export type ElementType =
-    | keyof IntrinsicElements
-    | Element.Primitive
-    | FC.FC;
-
-  export type Element = Element.Element;
-
-  export interface ElementAttributesProperty {
-    props?: any;
-  }
-
-  export interface ElementChildrenAttribute {
-    children?: any;
-  }
-
-  export interface IntrinsicAttributes {
-    children?: any;
-  }
-
-  export interface IntrinsicClassAttributes {}
-
-  export interface IntrinsicElements extends IntrinsicAttributesMap {}
+  export type ElementType = JsxRuntime.JsxElementType;
+  export type Element = JsxRuntime.JsxElement;
+  export interface ElementAttributesProperty extends JsxRuntime.JsxElementAttributesProperty {}
+  export interface ElementChildrenAttribute extends JsxRuntime.JsxElementChildrenAttribute {}
+  export interface IntrinsicAttributes extends JsxRuntime.JsxIntrinsicAttributes {}
+  export interface IntrinsicClassAttributes extends JsxRuntime.JsxIntrinsicClassAttributes {}
+  export interface IntrinsicElements extends JsxRuntime.JsxIntrinsicElements {}
 }

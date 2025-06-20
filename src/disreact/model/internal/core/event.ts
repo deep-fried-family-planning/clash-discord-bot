@@ -1,6 +1,6 @@
 import * as E from 'effect/Effect';
 import * as Predicate from 'effect/Predicate';
-import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as Prototype from '#src/disreact/model/internal/infrastructure/proto.ts';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export type Event = {
@@ -20,13 +20,14 @@ export const make = (
     data     : data,
   });
 
-export interface Handler extends Function {
+export interface Handler<E, R> extends Function {
   (event: any): | void
                 | Promise<void>
-                | E.Effect<void, any, any>;
+                | E.Effect<void, E, R>;
 }
+type AnyHandler = Handler<any, any>;
 
-export const handle = (h: Handler, e: Event): E.Effect<void> => E.suspend(() => {
+export const handle = (h: AnyHandler, e: Event): E.Effect<void> => E.suspend(() => {
   if (Prototype.isAsync(h)) {
     return E.promise(() => h(e));
   }

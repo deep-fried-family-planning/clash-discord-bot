@@ -1,9 +1,9 @@
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/codec/old/diffs.ts';
 import * as Component from '#src/disreact/model/internal/component.ts';
-import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
+import * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
@@ -46,10 +46,10 @@ const OptionalPart = E.serviceOption(Relay).pipe(
 );
 
 export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((sendParts) => {
-  const s = Stack.make(rh.root);
+  const s = Stack.start(rh.root);
 
   const body = () => {
-    const n = Stack.pull(s)!;
+    const n = Stack.pop(s)!;
 
     if (Element.isText(n)) {
       return E.void;
@@ -58,12 +58,12 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
     Element.trie(n);
 
     if (Element.isRest(n)) {
-      if (!n.rs) {
+      if (!n.under) {
         return E.void;
       }
       const parts = [] as Progress.Part[];
-      for (let i = 0; i < n.rs.length; i++) {
-        const c = n.rs[i];
+      for (let i = 0; i < n.under.length; i++) {
+        const c = n.under[i];
         if (!Element.isText(c)) {
           parts.push(Progress.part(rh.id, n.type, n.props));
           Stack.push(s, c);
@@ -75,7 +75,7 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
     return pipe(
       renderNode(rh, Component.mount(n, rh)),
       E.map((rendered) => {
-        n.rs = rendered;
+        n.under = rendered;
         Stack.pushNodes(s, n);
       }),
     );
@@ -83,7 +83,7 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
 
   return pipe(
     E.whileLoop({
-      while: () => Stack.next(s),
+      while: () => Stack.condition(s),
       step : () => {},
       body,
     }),
@@ -94,10 +94,10 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
 Stream;
 
 export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
-  const s = Stack.make(rh.root);
+  const s = Stack.start(rh.root);
 
   const body = () => {
-    const n = Stack.pull(s);
+    const n = Stack.pop(s);
 
     Element.trie(n);
 
@@ -115,7 +115,7 @@ export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
           }
         }),
         E.map((rs) => {
-          n.rs = rs;
+          n.under = rs;
           Stack.pushNodes(s, n);
         }),
       );
@@ -126,7 +126,7 @@ export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
 
   return pipe(
     E.whileLoop({
-      while: () => Stack.next(s),
+      while: () => Stack.condition(s),
       step : () => {},
       body : body,
     }),
@@ -182,12 +182,12 @@ const renderEvent = (rh: Rehydrant.Envelope, n: Element.Rest, event: Element.Eve
 export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
   pipe(
     E.sync(() => {
-      const stack = Stack.make(rh.root);
+      const stack = Stack.start(rh.root);
 
       let target: Element.Rest | undefined;
 
-      while (Stack.next(stack)) {
-        const node = Stack.pull(stack)!;
+      while (Stack.condition(stack)) {
+        const node = Stack.pop(stack)!;
 
         if (Element.isRest(node)) {
           if (node.props!.custom_id === event.id || node._s === event.id) {
@@ -196,7 +196,7 @@ export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
           }
         }
 
-        Stack.pushNodes(stack, node);
+        Stack.pushNodes__(stack, node);
       }
       if (!target) {
         throw new Error('Event target does not exist');
@@ -220,10 +220,10 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
     return E.succeed(n0);
   }
 
-  const stack = Stack.make(n0);
+  const stack = Stack.start(n0);
 
   const body = () => {
-    const next = Stack.pull(stack)!;
+    const next = Stack.pop(stack)!;
 
     if (Element.isText(next)) {
       return E.void;
@@ -239,7 +239,7 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
     return pipe(
       renderNode(rh, Component.mount(next, rh)),
       E.map((rendered) => {
-        next.rs = rendered;
+        next.under = rendered;
         Stack.pushNodes(stack, next);
       }),
     );
@@ -247,7 +247,7 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
 
   return pipe(
     E.whileLoop({
-      while: () => Stack.next(stack),
+      while: () => Stack.condition(stack),
       step : () => {},
       body,
     }),
@@ -256,13 +256,13 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
 });
 
 const dismount = <A extends Element.Element>(n0: A) => {
-  const stack = Stack.make(n0);
+  const stack = Stack.start(n0);
 
   const body = () => {
-    const n = Stack.pull(stack)!;
+    const n = Stack.pop(stack)!;
     Element.trie(n);
 
-    if (!Stack.visited(stack, n)) {
+    if (!Stack.isVisited(stack, n)) {
       Stack.visit(stack, n);
       Stack.push(stack, n);
       Stack.pushNodes(stack, n);
@@ -274,7 +274,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
     }
 
     if (Element.isRest(n)) {
-      delete n.rs;
+      delete n.under;
       return E.void;
     }
 
@@ -283,7 +283,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
 
   return pipe(
     E.whileLoop({
-      while: () => Stack.next(stack),
+      while: () => Stack.condition(stack),
       step : () => {},
       body,
     }),
@@ -292,14 +292,14 @@ const dismount = <A extends Element.Element>(n0: A) => {
 };
 
 export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
-  const s = Stack.make(rh.root);
+  const s = Stack.start(rh.root);
   const rs = yield* renderNode(rh, rh.root as Element.Func);
   Diff.rendered(rh.root, rs);
 
-  while (Stack.next(s)) {
-    const n = Stack.pull(s);
+  while (Stack.condition(s)) {
+    const n = Stack.pop(s);
 
-    if (!n.rs) {
+    if (!n.under) {
       continue;
     }
     Element.trie(n);
@@ -312,23 +312,23 @@ export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
 
     for (let i = 0; i < diffs.length; i++) {
       const d = diffs[i];
-      const c = n.rs[i];
+      const c = n.under[i];
       if (Diff.isSkip(d)) {
         continue;
       }
       else if (Diff.isUpdate(d)) {
         const u = d.node;
         if (Element.isText(u)) {
-          n.rs[i] = u;
+          n.under[i] = u;
           continue;
         }
         else if (Element.isRest(u)) {
-          n.rs[i].props = Element.props(u.props);
+          n.under[i].props = Element.props(u.props);
         }
         else {
-          n.rs[i].props = Element.props(u.props);
+          n.under[i].props = Element.props(u.props);
         }
-        Diff.rendered(c, u.rs);
+        Diff.rendered(c, u.under);
         Stack.push(s, c);
       }
       else if (Diff.isRender(d)) {
@@ -337,7 +337,7 @@ export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
         Stack.push(s, c);
       }
       else if (Diff.isReplace(d)) {
-        n.rs[i] = yield* mount__(rh, d.node);
+        n.under[i] = yield* mount__(rh, d.node);
       }
       else if (Diff.isInsert(d)) {
         const ins = yield* mount__(rh, d.node);
@@ -403,7 +403,7 @@ export const encode = (rh: Rehydrant.Envelope | null) =>
           out[norm] ??= [];
           out[norm].push((encoding[n.type](n, args.get(n)!)));
         }
-        else if (!n.rs || n.rs.length === 0) {
+        else if (!n.under || n.under.length === 0) {
           const norm = normalization[n.type];
           out[norm] ??= [];
           out[norm].push((encoding[n.type](n, {})));
@@ -413,7 +413,7 @@ export const encode = (rh: Rehydrant.Envelope | null) =>
           args.set(n, arg);
           MutableList.append(stack, n);
 
-          for (const c of n.rs.toReversed()) {
+          for (const c of n.under.toReversed()) {
             outs.set(c, arg);
             MutableList.append(stack, c);
           }

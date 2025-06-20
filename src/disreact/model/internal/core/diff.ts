@@ -1,4 +1,4 @@
-import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type {Add} from 'effect/FiberRefsPatch';
 
 export const SKIP     = 1 as const,
@@ -87,27 +87,27 @@ export type Nodes<A> = | Skip
                        | Insert<A>
                        | Remove<A>;
 
-const Skip = Prototype.declare<Skip>({
+const Skip = proto.declare<Skip>({
   _tag: SKIP,
 });
 
-const Update = Prototype.declare<Update<any>>({
+const Update = proto.declare<Update<any>>({
   _tag: UPDATE,
 });
 
-const Replace = Prototype.declare<Replace<any>>({
+const Replace = proto.declare<Replace<any>>({
   _tag: REPLACE,
 });
 
-const RenderProto = Prototype.declare<Render>({
+const RenderProto = proto.declare<Render>({
   _tag: RENDER,
 });
 
-const Remove = Prototype.declare<Remove>({
+const Remove = proto.declare<Remove>({
   _tag: REMOVE,
 });
 
-const Insert = Prototype.declare<Insert<any>>({
+const Insert = proto.declare<Insert<any>>({
   _tag: INSERT,
 });
 
@@ -121,17 +121,17 @@ export const skip = (): Skip => Skip;
 export const remove = (): Remove => Remove;
 
 export const insert = <A>(node: A): Insert<A> =>
-  Prototype.instance(Insert, {
+  proto.instance(Insert, {
     node: node,
   });
 
 export const update = <A>(node: A): Update<A> =>
-  Prototype.instance(Update, {
+  proto.instance(Update, {
     node: node,
   });
 
 export const replace = <A>(node: A): Replace<A> =>
-  Prototype.instance(Replace, {
+  proto.instance(Replace, {
     node: node,
   });
 

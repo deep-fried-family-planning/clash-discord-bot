@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/internal/core/element.ts';
-import * as Rehydrant from '#src/disreact/model/internal/rehydrant.ts';
+import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
+import * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import * as Lifecycle from '#src/disreact/model/v1lifecycle.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as Declarations from '#src/disreact/codec/old/declarations.ts';

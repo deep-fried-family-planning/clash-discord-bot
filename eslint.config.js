@@ -126,6 +126,8 @@ const config = [
         '@stylistic/indent'                     : [0, 4, {flatTernaryExpressions: true}],
         '@stylistic/no-multiple-empty-lines'    : [2, {max: 3}],
         '@stylistic/lines-between-class-members': [0],
+        '@stylistic/brace-style'                : [0],
+        '@stylistic/no-trailing-spaces'         : [0],
         // '@typescript-eslint/no-unused-vars'     : [2, {
         //   args                          : 'all',
         //   argsIgnorePattern             : '^_',

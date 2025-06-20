@@ -1,4 +1,4 @@
-import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export const PART = 1,
              SAME = 2,
@@ -25,30 +25,29 @@ export type Exit = {
   _tag: typeof EXIT;
 };
 
-export type Output =
-  | Part
-  | Same
-  | Next
-  | Exit;
+export type Output = | Part
+                     | Same
+                     | Next
+                     | Exit;
 
-const Part = Prototype.declare<Part>({
+const Part = proto.declare<Part>({
   _tag: PART,
 });
 
-const Same = Prototype.declare<Same>({
+const Same = proto.declare<Same>({
   _tag: SAME,
 });
 
-const Next = Prototype.declare<Next>({
+const Next = proto.declare<Next>({
   _tag: NEXT,
 });
 
-const Exit = Prototype.declare<Exit>({
+const Exit = proto.declare<Exit>({
   _tag: EXIT,
 });
 
 export const part = (id: string, type: string, props: any): Part =>
-  Prototype.instance(Part, {
+  proto.instance(Part, {
     id   : id,
     type : type,
     props: props,
@@ -57,7 +56,7 @@ export const part = (id: string, type: string, props: any): Part =>
 export const same = (): Same => Same;
 
 export const next = (id: string): Next =>
-  Prototype.instance(Next, {
+  proto.instance(Next, {
     id: id,
   });
 

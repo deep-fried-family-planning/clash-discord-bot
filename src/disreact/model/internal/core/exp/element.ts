@@ -1,9 +1,8 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import * as Prototype from '#src/disreact/model/internal/infrastructure/prototype.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/prototype.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type {Types} from 'effect';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -14,8 +13,8 @@ import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import * as MutableList from 'effect/MutableList';
 import * as Pipeable from 'effect/Pipeable';
-import type {NoInfer} from 'effect/Types';
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import type * as P from 'effect/Predicate';
+
 
 export const PropsTypeId = Symbol.for('disreact/props');
 
@@ -112,7 +111,7 @@ export const isPropsStruct = (u: Props): u is Props.Obj => isProps(u) && !Array.
 
 export const isPropsArray = (u: Props): u is Props.Arr => isProps(u) && Array.isArray(u);
 
-const Props = Prototype.declare<Props>({
+const Props = proto.declare<Props>({
   [PropsTypeId]: PropsTypeId,
   ...Inspectable.BaseProto,
 });
@@ -140,7 +139,7 @@ const PropsStructProto = {
   },
 };
 
-const PropsArrayProto = Prototype.declareArray({
+const PropsArrayProto = proto.declareArray({
   [PropsTypeId]: PropsTypeId,
   [Hash.symbol](this: Props.Arr) {
     return Hash.array(this);
@@ -175,13 +174,13 @@ export const props = (p: any, fn?: Func): Props => {
     for (let i = 0; i < p.length; i++) {
       acc.push(props(p[i]));
     }
-    return Prototype.pure(PropsArrayProto, acc);
+    return proto.pure(PropsArrayProto, acc);
   }
   const acc = {} as any;
   for (const key of Object.keys(p)) {
     acc[key] = props(p[key]);
   }
-  return Prototype.pure(PropsStructProto, acc);
+  return proto.pure(PropsStructProto, acc);
 };
 
 export const rootProps = (p: any): Props => {
@@ -214,7 +213,7 @@ export const TypeId  = Symbol.for('disreact/element'),
              NodesId = Symbol.for('disreact/nodes'),
              SrcId   = Symbol.for('disreact/source');
 
-interface Base extends Hash.Hash, Equal.Equal, Pipeable.Pipeable, Inspectable.Inspectable {
+export interface Base extends Hash.Hash, Equal.Equal, Pipeable.Pipeable, Inspectable.Inspectable {
   [TypeId]: typeof TEXT | typeof REST | typeof FUNC;
   [SrcId]?: string;
   type?   : any;
@@ -224,7 +223,7 @@ interface Base extends Hash.Hash, Equal.Equal, Pipeable.Pipeable, Inspectable.In
   _n?     : string;
   _s?     : string;
   props?  : Props;
-  rs?     : Nodes;
+  under?  : Nodes;
   text?   : any;
   name?   : string;
   parent(parent?: Element | null): Element | undefined;
@@ -275,7 +274,7 @@ export const isRest = (e: Element): e is Rest => e[TypeId] === REST;
 
 export const isText = (e: Element): e is Text => e[TypeId] === TEXT;
 
-const Base = Prototype.declares<Base>(
+const Base = proto.declares<Base>(
   Pipeable.Prototype,
   Inspectable.BaseProto,
   {
@@ -285,17 +284,17 @@ const Base = Prototype.declares<Base>(
   },
 );
 
-const Func = Prototype.declare<Func>({
+const Func = proto.declare<Func>({
   ...Base,
   [TypeId]: FUNC,
 });
 
-const Rest = Prototype.declare<Rest>({
+const Rest = proto.declare<Rest>({
   ...Base,
   [TypeId]: REST,
 });
 
-const Text = Prototype.declare<Text>({
+const Text = proto.declare<Text>({
   ...Base,
   [TypeId]: TEXT,
 });
@@ -303,7 +302,7 @@ const Text = Prototype.declare<Text>({
 export const func = (type: FC.FC, atts: any): Func => {
   const fc = FC.register(type);
 
-  const self = Prototype.instance(Func, {
+  const self = proto.instance(Func, {
     [SrcId]: FC.name(fc),
     type   : fc,
     name   : FC.name(fc),
@@ -316,7 +315,7 @@ export const func = (type: FC.FC, atts: any): Func => {
 export const rest = (type: string, atts: any): Rest => {
   const handler = propsHandler(atts);
 
-  const self = Prototype.instance(Rest, {
+  const self = proto.instance(Rest, {
     type   : type,
     name   : type,
     props  : props(atts),
@@ -327,7 +326,7 @@ export const rest = (type: string, atts: any): Rest => {
 };
 
 export const text = (text?: Primitive): Text => {
-  const self = Prototype.instance(Text, {
+  const self = proto.instance(Text, {
     text: text,
   });
 
@@ -340,7 +339,7 @@ export interface Nodes extends NodesArray, Hash.Hash, Equal.Equal {
   [NodesId]: typeof NodesId;
 };
 
-const ElementsProto = Prototype.declareArray<Nodes>({
+const ElementsProto = proto.declareArray<Nodes>({
   [NodesId]: NodesId,
   [Hash.symbol](this: Nodes) {
     return Hash.array(this);
@@ -349,7 +348,7 @@ const ElementsProto = Prototype.declareArray<Nodes>({
     if (that[NodesId] !== NodesId) {
       throw new Error();
     }
-    return Prototype.arrayEquals(this, that);
+    return proto.arrayEquals(this, that);
   },
 });
 
@@ -394,9 +393,9 @@ const connect = (p: Element, n: Element, count: Count) => {
   return n;
 };
 
-export const trie = (p: Element, rs = p.rs): Nodes => {
+export const trie = (p: Element, rs = p.under): Nodes => {
   const count = emptyCount(),
-        cs    = Prototype.instance(ElementsProto, Array.ensure(rs ?? []).flat() as any);
+        cs    = proto.instance(ElementsProto, Array.ensure(rs ?? []).flat() as any);
 
   let ids = new Set<string>();
 
@@ -426,34 +425,34 @@ export const update = (a: Element, b: Element) => {
 
 export const replace = (a: Element, b: Element) => {
   const p = a.getParent();
-  if (!p || !p.rs || p.rs[b.$p] !== a) {
+  if (!p || !p.under || p.under[b.$p] !== a) {
     throw new Error();
   }
-  p.rs![b.$p!] = b;
+  p.under![b.$p!] = b;
 };
 
 export const prepend = (p: Element, n: Element) => {
-  p.rs!.unshift(n);
+  p.under!.unshift(n);
   return p;
 };
 
 export const append = (p: Element, n: Element) => {
-  p.rs!.push(n);
+  p.under!.push(n);
   return p;
 };
 
 export const remove = (p: Element, pos: number) => {
-  p.rs!.splice(pos, 1);
+  p.under!.splice(pos, 1);
   return p;
 };
 
 export const insert = (p: Element, n: Element, pos: number) => {
-  p.rs!.splice(pos, 0, n);
+  p.under!.splice(pos, 0, n);
   return p;
 };
 
 export const accept = (p: Element, ns: Element[]) => {
-  if (p.rs) {
+  if (p.under) {
     throw new Error();
   }
   return p;
@@ -469,7 +468,7 @@ export const findFirst = (from: Element, fn: (e: Element) => boolean): Element |
       return n;
     }
 
-    const rs = n.rs?.toReversed();
+    const rs = n.under?.toReversed();
 
     if (rs) {
       for (let i = 0; i < rs.length; i++) {
@@ -495,7 +494,7 @@ export const jsx = (type: any, atts: any): Element => {
       const children = atts.children;
       delete atts.children;
       const el = rest(type, atts);
-      el.rs = trie(el, [children] as any);
+      el.under = trie(el, [children] as any);
       return el;
     }
     case 'function': {
@@ -514,7 +513,7 @@ export const jsxs = (type: any, atts: any): Element => {
       const children = atts.children.flat();
       delete atts.children;
       const el = rest(type, atts);
-      el.rs = trie(el, children);
+      el.under = trie(el, children);
       return el;
     }
     case 'function': {
@@ -626,7 +625,7 @@ export namespace Event {
     data: any;
   };
 
-  export interface Handler extends Function {
+  export interface Handler {
     (event: Event.Event): void | Promise<void> | E.Effect<void, any, any>;
   }
 }
@@ -647,34 +646,25 @@ type M<A, B, C> = {
 
 type AnyE = E.Effect<any, any, any>;
 
-export const match = dual<
-  <A extends AnyE, B extends AnyE, C extends AnyE>(m: M<A, B, C>) => (n: Element) => E.Effect.AsEffect<A | B | C>,
-  <A extends AnyE, B extends AnyE, C extends AnyE>(n: Element, m: M<A, B, C>) => E.Effect.AsEffect<A | B | C>
->(
-  2, (n, m) => {
-    if (isText(n)) {
-      return m.text(n);
-    }
-    else if (isRest(n)) {
-      return m.rest(n);
-    }
-    return m.func(n);
-  },
-);
-type thing = E.Effect.AsEffect<any>;
+type ExtendsE<A, B, C> =
+  [A, B, C] extends (infer Z)[]
+  ? A | B | C extends AnyE
+    ? E.Effect.AsEffect<A | B | C>
+    : Z
+  : never;
 
-export const matchEffect = dual<
-  <A extends E.Effect<any, any, any>>(m: M<A>) => (n: Element) => E.Effect.AsEffect<A>,
-  <A extends E.Effect<any, any, any>>(n: Element, m: M<A>) => E.Effect.AsEffect<A>
+export const match = dual<
+  <A, B, C>(m: M<A, B, C>) => (n: Element) => ExtendsE<A, B, C>,
+  <A, B, C>(n: Element, m: M<A, B, C>) => ExtendsE<A, B, C>
 >(
-  2, (n, m) => {
+  2, <A, B, C>(n: Element, m: M<A, B, C>): ExtendsE<A, B, C> => {
     if (isText(n)) {
-      return m.text(n);
+      return m.text(n) as ExtendsE<A, B, C>;
     }
     else if (isRest(n)) {
-      return m.rest(n);
+      return m.rest(n) as ExtendsE<A, B, C>;
     }
-    return m.func(n);
+    return m.func(n) as ExtendsE<A, B, C>;
   },
 );
 
@@ -695,3 +685,39 @@ export const equalPropsChildren = Equivalence.struct({
     children: Equivalence.strict(),
   }),
 });
+
+export type Predicate = P.Predicate<Element>;
+
+export type Refinement<A extends Element> = P.Refinement<Element, A>;
+
+export type Refined<A> = A extends Refinement<infer B> ? B : Element;
+
+export const forEachChild = dual<
+  (f: (n: Element, idx: number, p: Element) => void) => (n: Element) => Element,
+  (n: Element, f: (n: Element, idx: number, p: Element) => void) => Element
+>(
+  2, (n: Element, f: (n: Element, idx: number, p: Element) => void) => {
+    if (!n.under) {
+      return n;
+    }
+    for (let i = 0; i < n.under.length; i++) {
+      f(n.under[i], i, n);
+    }
+    return n;
+  },
+);
+
+export const forEachChildRight = dual<
+  (f: (n: Element, idx: number, p: Element) => void) => (n: Element) => Element,
+  (n: Element, f: (n: Element, idx: number, p: Element) => void) => Element
+>(
+  2, (n: Element, f: (n: Element, idx: number, p: Element) => void) => {
+    if (!n.under) {
+      return n;
+    }
+    for (let i = n.under.length - 1; i >= 0; i--) {
+      f(n.under[i], i, n);
+    }
+    return n;
+  },
+);
