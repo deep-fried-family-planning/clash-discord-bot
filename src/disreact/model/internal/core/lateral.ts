@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 
@@ -37,7 +37,7 @@ export const Prototype = proto.declare<Lateral>({
 
 export const make = <A extends Lateral>(target: A, head?: A, tail?: A): A => {
   const self = proto.instance(Prototype, target);
-  
+
   return self as A;
 };
 
@@ -77,10 +77,10 @@ export const remove = (self: WeakKey) => {
 export const adjacency = <A extends Lateral>(self: A): A[] => {
   const hs = [],
         ts = [];
-  
+
   let h = self,
       t = self;
-  
+
   while (h) {
     h = getTail(h);
     if (h) {
@@ -94,7 +94,7 @@ export const adjacency = <A extends Lateral>(self: A): A[] => {
     }
   }
   return [...hs, self, ...ts] as A[];
-  
+
   // const rest = [] as A[];
   //
   // let head    = self,

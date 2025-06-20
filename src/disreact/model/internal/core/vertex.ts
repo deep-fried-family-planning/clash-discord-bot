@@ -1,5 +1,5 @@
-import type * as Lineage from '#src/disreact/model/entity/core/lineage.ts';
-import type * as Lateral from '#src/disreact/model/entity/core/lateral.ts';
+import type * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
+import type * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import type * as Pipeable from 'effect/Pipeable';
 
 const VertexId = Symbol.for('disreact/vertex');

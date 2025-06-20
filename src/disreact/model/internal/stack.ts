@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/entity/domain/element.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
+import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {constant, dual} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';

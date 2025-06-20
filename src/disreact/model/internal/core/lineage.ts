@@ -1,5 +1,5 @@
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Eq from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
@@ -80,14 +80,14 @@ export const root = <A extends Lineage>(self: A): A => {
 
 export const adjacency = <A extends Lineage>(self?: A): Set<A> => {
   const ancestors = new Set<A>();
-  
+
   if (!self) {
     return ancestors;
   }
   ancestors.add(self);
-  
+
   let current = self.__lineage();
-  
+
   while (current) {
     ancestors.add(current);
     current = current.__lineage();
@@ -103,12 +103,12 @@ export const naiveLCA = <A extends Lineage>(ns: A[]): A | undefined => {
     return ns[0];
   }
   let lowest = ns.at(0);
-  
+
   let ancestors = adjacency(lowest);
-  
+
   for (let i = 1; i < ns.length; i++) {
     let current = ns.at(i);
-    
+
     while (current) {
       if (ancestors.has(current)) {
         lowest = current;

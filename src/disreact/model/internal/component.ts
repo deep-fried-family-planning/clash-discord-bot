@@ -1,10 +1,10 @@
-import * as Diff from '#src/disreact/model/entity/core/diff.ts';
-import * as type from '#src/disreact/model/entity/core/type.ts';
-import * as Element from '#src/disreact/model/entity/domain/element.ts';
-import * as FC from '#src/disreact/model/entity/domain/fc.ts';
-import type * as Rehydrant from '#src/disreact/model/entity/envelope.ts';
-import * as Polymer from '#src/disreact/model/entity/polymer.ts';
-import * as Mutex from '#src/disreact/model/infrastructure/mutex.ts';
+import * as Diff from '#src/disreact/model/internal/core/diff.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as FC from '#src/disreact/model/internal/domain/fc.ts';
+import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';

@@ -1,7 +1,7 @@
-import * as type from '#src/disreact/model/entity/core/type.ts';
-import type * as Element from '#src/disreact/model/entity/domain/element.ts';
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
-import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/infrastructure/proto.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import type * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as E from 'effect/Effect';
 
 const TypeId = Symbol.for('disreact/fc'),

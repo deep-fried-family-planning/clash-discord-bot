@@ -1,4 +1,4 @@
-import * as type from '#src/disreact/model/entity/core/type.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
 
@@ -31,7 +31,7 @@ export const handle = (h: AnyHandler, e: Event): E.Effect<void> => E.suspend(() 
     return E.promise(() => h(e));
   }
   const out = h(e);
-  
+
   if (P.isPromise(out)) {
     return E.promise(() => out);
   }

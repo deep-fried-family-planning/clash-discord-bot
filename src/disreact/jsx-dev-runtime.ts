@@ -1,5 +1,5 @@
 import type * as JsxRuntime from '#src/disreact/jsx-runtime.ts';
-import * as Jsx from '#src/disreact/model/entity/domain/jsx.ts';
+import * as Jsx from '#src/disreact/model/internal/domain/jsx.ts';
 
 export const Fragment = Jsx.Fragment,
              jsx      = Jsx.jsx,
