@@ -540,7 +540,7 @@ const registerSourceFC = (type: FC.FC, atts: Props = {}): Source => {
   if (element.props?.source) {
     const id = element.props.source;
     element[SrcId] = id;
-    element.type[FC.TypeId] = id;
+    FC.overrideName(element.type, id);
     delete element.props.source;
     return element;
   }
@@ -571,7 +571,7 @@ const registerSourceElement = (type: Element): Source => {
     return type;
   }
   type[SrcId] = type.props!.source;
-  type.type[FC.TypeId] = type[SrcId]!;
+  FC.overrideName(type.type, type[SrcId]!);
   delete type.props!.source;
   return type;
 };
@@ -583,14 +583,14 @@ export const registerSource = (type: Element | FC.FC, atts?: Props): Source => {
   return registerSourceFC(type, atts);
 };
 
-export const getSourceId = (type: Element | FC.FC): string | undefined => {
-  if (typeof type === 'function') {
-    return (type as FC.Known)[FC.TypeId];
+export const getSourceId = (n: Element | FC.FC): string | undefined => {
+  if (typeof n === 'function') {
+    return FC.name(n);
   }
-  if (isFunc(type)) {
-    return type[SrcId] ?? type.type[FC.TypeId];
+  if (isFunc(n)) {
+    return n[SrcId] ?? FC.name(n.type);
   }
-  return type[SrcId];
+  return n[SrcId];
 };
 
 export const createRootFromSource = (source: Source, atts?: Props): Element => {

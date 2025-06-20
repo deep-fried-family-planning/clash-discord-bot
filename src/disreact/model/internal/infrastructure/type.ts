@@ -1,4 +1,3 @@
-
 export type IsEqual<A, B> =
   A extends B
   ? true
@@ -15,7 +14,7 @@ export type IfAny<A, B, C> =
   : C;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export type Fun = Function;
+export type Fn = Function;
 
 export type FnN<A extends unknown[], B> = (...p: A) => B;
 

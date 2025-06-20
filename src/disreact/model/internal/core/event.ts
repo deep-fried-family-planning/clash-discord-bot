@@ -1,4 +1,4 @@
-import * as type from '#src/disreact/model/infrastructure/type.ts';
+import * as type from '#src/disreact/model/entity/core/type.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
 
@@ -19,7 +19,7 @@ export const make = (
     data     : data,
   });
 
-export interface Handler<E, R> extends type.Fun {
+export interface Handler<E, R> extends type.Fn {
   (event: any): | void
                 | Promise<void>
                 | E.Effect<void, E, R>;

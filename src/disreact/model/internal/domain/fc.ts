@@ -1,12 +1,11 @@
+import * as type from '#src/disreact/model/entity/core/type.ts';
+import type * as Element from '#src/disreact/model/entity/domain/element.ts';
 import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/infrastructure/proto.ts';
-import type * as Element from '#src/disreact/model/entity/domain/element.ts';
-import * as type from '#src/disreact/model/infrastructure/type.ts';
 import type * as E from 'effect/Effect';
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
-export const TypeId    = Symbol.for('disreact/fc'),
-             CastId    = Symbol.for('disreact/fc/kind');
+const TypeId = Symbol.for('disreact/fc'),
+      CastId = Symbol.for('disreact/fc/kind');
 
 export const SYNC      = 1,
              ASYNC     = 2,
@@ -16,7 +15,7 @@ export const SYNC      = 1,
 type Props = Element.Props;
 type Out = Element.Rendered;
 
-interface Base<P, O, E = any, R = any> extends Function {
+interface Base<P, O, E = any, R = any> extends type.Fn {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
   displayName?: string;
 }
@@ -27,26 +26,26 @@ interface Internal {
   displayName?: string;
 }
 
-export interface Known<A = any, B = any> extends Function, Internal {
+export interface Known<A = any, B = any> extends type.Fn, Internal {
   (props: A): B | Promise<B> | E.Effect<B, any, any>;
 }
 
-export interface Sync<A = any, B = any> extends Function, Internal {
+export interface Sync<A = any, B = any> extends type.Fn, Internal {
   [CastId]: typeof SYNC;
   (props: A): B;
 }
 
-export interface Async<A = any, B = any> extends Function, Internal {
+export interface Async<A = any, B = any> extends type.Fn, Internal {
   [CastId]: typeof ASYNC;
   (props: A): Promise<B>;
 }
 
-export interface Effect<A = any, B = any> extends Function, Internal {
+export interface Effect<A = any, B = any> extends type.Fn, Internal {
   [CastId]: typeof EFFECT;
   (props: A): E.Effect<B>;
 }
 
-export interface FC<P = any, O = any, E = any, R = any> extends Function {
+export interface FC<P = any, O = any, E = any, R = any> extends type.Fn {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
   displayName?: string;
 }
@@ -92,7 +91,7 @@ export const register = (fn: FC): Known => {
     return fn;
   }
   const fc = proto.impure(Prototype, fn);
-  
+
   if (fc.displayName) {
     fc[TypeId] = fc.displayName;
   }
