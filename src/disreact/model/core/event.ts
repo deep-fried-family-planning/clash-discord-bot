@@ -1,4 +1,4 @@
-import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import * as type from '#src/disreact/model/infrastructure/type.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
 

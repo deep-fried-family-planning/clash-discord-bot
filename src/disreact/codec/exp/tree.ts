@@ -1,7 +1,7 @@
-import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
-import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Lateral from '#src/disreact/model/core/lateral.ts';
+import * as Lineage from '#src/disreact/model/core/lineage.ts';
+import type * as FC from '#src/disreact/model/domain/fc.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import type {PrimitiveValue} from '@effect/platform/Template';
 import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';

@@ -1,8 +1,8 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
-import * as FC from '#src/disreact/model/internal/domain/fc.ts';
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as FC from '#src/disreact/model/domain/fc.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
+import type * as Polymer from '#src/disreact/model/domain/polymer.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
@@ -14,7 +14,6 @@ import * as Inspectable from 'effect/Inspectable';
 import * as MutableList from 'effect/MutableList';
 import * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
-
 
 export const PropsTypeId = Symbol.for('disreact/props');
 

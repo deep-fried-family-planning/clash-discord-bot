@@ -1,6 +1,6 @@
-import * as Element from '#src/disreact/model/internal/core/element.ts';
-import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Element from '#src/disreact/model/domain/element.ts';
+import * as Lineage from '#src/disreact/model/core/lineage.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
 import {dual} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';

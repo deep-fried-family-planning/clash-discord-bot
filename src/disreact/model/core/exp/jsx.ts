@@ -1,5 +1,5 @@
-import * as FC from '#src/disreact/model/internal/domain/fc.ts';
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as FC from '#src/disreact/model/domain/fc.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 
 export type Primitive =
   | null
@@ -14,14 +14,13 @@ export const Fragment = Symbol.for('disreact/fragment');
 const TypeId = Symbol.for('disreact/jsx');
 const JsxDEV = Symbol.for('disreact/jsxDEV');
 
-export const TEXT      = 0,
-             INTRINSIC = 1,
+export const INTRINSIC = 1,
              FUNCTION  = 2;
 
 export interface Precursor {
   [TypeId]  : number;
   [JsxDEV]? : typeof JsxDEV;
-  _tag      : any;
+  _tag      : typeof Fragment | typeof INTRINSIC | typeof FUNCTION;
   component?: any;
   props?    : any;
 }
@@ -37,6 +36,21 @@ const Prototype = proto.declare<Precursor>({
   component: undefined,
   props    : undefined,
 });
+
+export type Jsx =
+  | Primitive
+  | Precursor;
+
+export const childs = (p: Precursor): Jsx[] => {
+  switch (p[TypeId]) {
+    case 0:
+      return [];
+    case 1:
+      return [p.props.children];
+    default:
+      return p.props.children;
+  }
+};
 
 export const make = (_tag: any, props: any, len: number): Precursor => {
   const self = proto.instance(Prototype, {});
@@ -62,22 +76,27 @@ export const make = (_tag: any, props: any, len: number): Precursor => {
   throw new Error(`Invalid type: ${_tag}`);
 };
 
-export type Jsx =
-  | Primitive
-  | Precursor;
+export const jsx = (_tag: any, props: any): Precursor => {
+  const self = make(_tag, props, props.children ? 1 : 0);
 
-export const childs = (p: Precursor): Jsx[] => {
-  switch (p[TypeId]) {
-    case 0:
-      return [];
-    case 1:
-      return [p.props.children];
-    default:
-      return p.props.children;
-  }
+  return self;
 };
 
-export const setDev = (p: Precursor) => {
-  p[JsxDEV] = JsxDEV;
-  return p;
+export const jsxs = (_tag: any, props: any): Precursor => {
+  return make(_tag, props, props.children.length);
+};
+
+export const jsxDEV = (_tag: any, props: any): Precursor => {
+  const self = make(_tag, props, 0);
+  self[JsxDEV] = JsxDEV;
+
+  if (!props.children) {
+    return self;
+  }
+  if (props.children.length) {
+    self[TypeId] = props.children.length;
+    return self;
+  }
+  self[TypeId] = 1;
+  return self;
 };
