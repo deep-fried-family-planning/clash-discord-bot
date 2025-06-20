@@ -1,13 +1,9 @@
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 
-const HeadId = Symbol.for('disreact/head'),
-      TailId = Symbol.for('disreact/tail');
-
-const hs = globalValue(HeadId, () => new WeakMap()),
-      ts = globalValue(TailId, () => new WeakMap());
+const HeadId = Symbol.for('disreact/head');
+const TailId = Symbol.for('disreact/tail');
 
 export interface Lateral<A = any> {
   [HeadId]: typeof TailId;
@@ -19,6 +15,16 @@ export const isLateral = (u: unknown): u is Lateral =>
   P.hasProperty(u, HeadId)
   && u[HeadId] === TailId;
 
+const hs = globalValue(HeadId, () => new WeakMap());
+const ts = globalValue(TailId, () => new WeakMap());
+
+export const isHead = (self: Lateral) => self.__head() === undefined;
+export const isTail = (self: Lateral) => self.__tail() === undefined;
+export const getHead = (self: WeakKey) => hs.get(self);
+export const getTail = (self: WeakKey) => ts.get(self);
+export const setHead = (self?: WeakKey, head?: WeakKey) => void (self && hs.set(self, head));
+export const setTail = (self?: WeakKey, tail?: WeakKey) => void (self && ts.set(self, tail));
+
 export const Prototype = proto.declare<Lateral>({
   [HeadId]: TailId,
   __head() {
@@ -28,14 +34,6 @@ export const Prototype = proto.declare<Lateral>({
     return getTail(this);
   },
 });
-
-export const getHead = (self: WeakKey) => hs.get(self);
-
-export const setHead = (self?: WeakKey, head?: WeakKey) => void (self && hs.set(self, head));
-
-export const getTail = (self: WeakKey) => ts.get(self);
-
-export const setTail = (self?: WeakKey, tail?: WeakKey) => void (self && ts.set(self, tail));
 
 export const make = <A extends Lateral>(target: A, head?: A, tail?: A): A => {
   const self = proto.instance(Prototype, target);
@@ -54,14 +52,19 @@ export const append = (self?: WeakKey, tail?: WeakKey) => {
 };
 
 export const insertAfter = (self: WeakKey, next: WeakKey) => {
-  if (!next) {
-    throw new Error(INTERNAL_ERROR);
-  }
   const head = getHead(self);
   setHead(next, head); // self <-> head     next -> head
   setHead(self, next); // self  -> next  -> head
   setTail(next, self); // self <-> next  -> head
   setTail(head, next); // self <-> next <-> head
+};
+
+export const insertBefore = (self: WeakKey, next: WeakKey) => {
+  const tail = getTail(self);
+  setHead(next, self); // tail <-> self     next -> self
+  setHead(tail, next); // tail  -> next  -> self
+  setTail(self, next); // tail  -> next <-> self
+  setTail(next, tail); // tail <-> next <-> self
 };
 
 export const remove = (self: WeakKey) => {
@@ -71,7 +74,7 @@ export const remove = (self: WeakKey) => {
   setTail(head, tail);
 };
 
-export const adjacency = <A extends WeakKey>(self: A): A[] => {
+export const adjacency = <A extends Lateral>(self: A): A[] => {
   const hs = [],
         ts = [];
   

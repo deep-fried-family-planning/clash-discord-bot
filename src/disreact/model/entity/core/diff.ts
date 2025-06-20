@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import type {Add} from 'effect/FiberRefsPatch';
 
 export const SKIP     = 1 as const,

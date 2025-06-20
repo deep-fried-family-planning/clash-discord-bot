@@ -1,7 +1,7 @@
-import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
-import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Lateral from '#src/disreact/model/entity/core/lateral.ts';
+import * as Lineage from '#src/disreact/model/entity/core/lineage.ts';
+import type * as FC from '#src/disreact/model/entity/domain/fc.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
 import type {PrimitiveValue} from '@effect/platform/Template';
 import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
@@ -13,7 +13,7 @@ export const TypeId = Symbol.for('disreact/vertex'),
              REST   = 2 as const,
              FUNC   = 3 as const;
 
-export interface Base<A = any> extends Pipeable.Pipeable,
+export interface Base<A = Vertex> extends Pipeable.Pipeable,
   Lineage.Lineage<A>,
   Lateral.Lateral<A>,
   Hash.Hash,
@@ -40,16 +40,9 @@ export interface Func extends Base {
   component: FC.Known;
 }
 
-export type Primitive = | undefined
-                        | null
-                        | boolean
-                        | number
-                        | bigint
-                        | string;
-
 export interface Text extends Base {
   _tag: typeof TEXT;
-  text: Primitive;
+  text: PrimitiveValue;
 }
 
 export type Vertex = | Rest
@@ -69,13 +62,13 @@ export const isFunc = (u: Vertex): u is Func => u._tag === FUNC;
 
 export const isText = (u: Vertex): u is Text => u._tag === TEXT;
 
-export const Base = {
+export const Base = proto.declare<Base>({
   [TypeId]: PRAGMA,
-  _tag    : undefined,
+  _tag    : undefined as any,
   ...Pipeable.Prototype,
   ...Lineage.Prototype,
   ...Lateral.Prototype,
-};
+});
 
 export const Rest = proto.declare<Rest>({
   ...Base,
@@ -122,51 +115,49 @@ export const Valence = proto.declareArray<Valence>({
 });
 
 export const PropsId = Symbol.for('disreact/props'),
-             NONE    = 1 as const,
-             JUST    = 2 as const,
-             MANY    = 3 as const;
+      NONE    = 1 as const,
+      JUST    = 2 as const,
+      MANY    = 3 as const;
 
-export namespace Props {
-  export type Base = Record<string, any>;
-  // @formatter:off
-  export type Props<A extends typeof NONE | typeof JUST | typeof MANY, B>
-    = A extends typeof NONE ? Base & {[PropsId]: typeof NONE}
-    : A extends typeof JUST ? Base & {[PropsId]: typeof JUST; children: B}
-    : A extends typeof MANY ? Base & {[PropsId]: typeof MANY; children: B[]}
-    : never;
-  // @formatter:on
-  export type All<A> = Props<typeof NONE | typeof JUST | typeof MANY, A>;
-  export type None = Props<typeof NONE, never>;
-  export type Just<A> = Props<typeof JUST, A>;
-  export type Many<A> = Props<typeof MANY, A>;
-}
-export type Props = Props.Props<typeof NONE | typeof JUST | typeof MANY, any>;
+type None = typeof NONE;
+type Just = typeof JUST;
+type Many = typeof MANY;
+
+type PropsTag = | None
+                | Just
+                | Many;
+
+// @formatter:off
+export type Props<A extends PropsTag = PropsTag, B = Pragma>
+  = A extends None ? Record<string, any> & {[PropsId]: None}
+  : A extends Just ? Record<string, any> & {[PropsId]: Just; children: B}
+  : A extends Many ? Record<string, any> & {[PropsId]: Many; children: B[]}
+  : never;
+// @formatter:on
 
 export const isProps = (u: unknown): u is Props => typeof u === 'object' && u !== null && PropsId in u;
-export const isNone = (u: Props): u is Props.None => u[PropsId] === NONE;
-export const isJust = <A>(u: Props): u is Props.Just<A> => u[PropsId] === JUST;
-export const isMany = <A>(u: Props): u is Props.Many<A> => u[PropsId] === MANY;
 
-// export const Props: Props = {
-//   [TypeId]: NONE,
-// };
-//
-// export const propsNone = (attrs: Props.Base): Props.None =>
-//   proto.instance(Props, {
-//     [PropsId]: NONE,
-//     ...attrs,
-//   });
-//
-// export const propsJust = <A>(attrs: Props.Base): Props.Just<A> => {
-//   const self = proto.instance(Props, {
-//     [PropsId]: JUST,
-//     ...attrs,
-//   });
-//   return self;
-// };
-//
-// export const propsMany = <A>(attrs: Props.Base): Props.Many<A> => {
-//   const self = proto.instance(Props, {...attrs});
-//   self[PropsId] = MANY;
-//   return self;
-// };
+export const isNone = (u: Props): u is Props<typeof NONE> => u[PropsId] === NONE;
+
+export const isJust = (u: Props): u is Props<typeof JUST> => u[PropsId] === JUST;
+
+export const isMany = (u: Props): u is Props<typeof MANY> => u[PropsId] === MANY;
+
+export const Props = proto.declare<Props>({
+  [PropsId]: NONE,
+});
+
+export const propsNone = (attrs: Props): Props =>
+  proto.instance(Props, attrs);
+
+export const propsJust = (attrs: Props): Props => {
+  const self = proto.instance(Props, attrs);
+  self[PropsId] = JUST;
+  return self;
+};
+
+export const propsMany = (attrs: Props): Props => {
+  const self = proto.instance(Props, attrs);
+  self[PropsId] = MANY;
+  return self;
+};

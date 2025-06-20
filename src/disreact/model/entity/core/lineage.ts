@@ -1,5 +1,5 @@
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/infrastructure/proto.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
 import * as Eq from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';

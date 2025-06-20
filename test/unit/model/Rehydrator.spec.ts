@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
+import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 import {it} from '@effect/vitest';

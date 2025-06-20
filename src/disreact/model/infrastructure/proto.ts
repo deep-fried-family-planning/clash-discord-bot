@@ -1,8 +1,7 @@
-import {Types} from 'effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 
-export type Proto = never;
+export type proto = never;
 
 export const isDEV = (process.env.NODE_ENV === 'development') as true;
 

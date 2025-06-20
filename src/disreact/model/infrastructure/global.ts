@@ -1,8 +1,8 @@
-import type * as Component from '#src/disreact/model/internal/component.ts';
-import type * as Element from '#src/disreact/model/internal/core/exp/element.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
-import type * as Stack from '#src/disreact/model/internal/stack.ts';
+import type * as Component from '#src/disreact/model/entity/component.ts';
+import type * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as Polymer from '#src/disreact/model/entity/polymer.ts';
+import type * as Rehydrant from '#src/disreact/model/entity/envelope.ts';
+import type * as Stack from '#src/disreact/model/entity/stack.ts';
 
 export type Global = {
   node?: Element.Func;

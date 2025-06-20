@@ -1,7 +1,7 @@
-import * as Component from '#src/disreact/model/internal/component.ts';
-import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
-import * as Stack from '#src/disreact/model/internal/stack.ts';
+import * as Component from '#src/disreact/model/entity/component.ts';
+import * as Element from '#src/disreact/model/entity/core/exp/element.ts';
+import type * as Rehydrant from '#src/disreact/model/entity/envelope.ts';
+import * as Stack from '#src/disreact/model/entity/stack.ts';
 import type * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';

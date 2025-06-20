@@ -1,5 +1,5 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type {Envelope} from '#src/disreact/model/internal/envelope.ts';
+import type {Envelope} from '#src/disreact/model/entity/envelope.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
 import {DokenCache, type DokenCacheConfig} from '#src/disreact/runtime/DokenCache.ts';
