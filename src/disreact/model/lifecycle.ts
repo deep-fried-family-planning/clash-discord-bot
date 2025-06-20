@@ -1,5 +1,5 @@
 import * as Component from '#src/disreact/model/internal/component.ts';
-import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
 import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
 import type * as Cause from 'effect/Cause';
@@ -18,7 +18,7 @@ export const hydrateNode = (n: Element.Element, rh: Rehydrant.Envelope) =>
   );
 
 export const hydrateRoot = (rh: Rehydrant.Envelope) => {
-  return E.iterate(Stack.start(rh.root), {
+  return E.iterate(Stack.make(rh.root), {
     while: Stack.condition,
     body : (stack) =>
       stack.pipe(

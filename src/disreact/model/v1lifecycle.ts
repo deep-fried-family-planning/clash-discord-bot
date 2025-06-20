@@ -1,7 +1,7 @@
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/codec/old/diffs.ts';
 import * as Component from '#src/disreact/model/internal/component.ts';
-import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
@@ -46,7 +46,7 @@ const OptionalPart = E.serviceOption(Relay).pipe(
 );
 
 export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((sendParts) => {
-  const s = Stack.start(rh.root);
+  const s = Stack.make(rh.root);
 
   const body = () => {
     const n = Stack.pop(s)!;
@@ -94,7 +94,7 @@ export const init__ = (rh: Rehydrant.Envelope) => OptionalPart.pipe(E.flatMap((s
 Stream;
 
 export const rehydrate__ = (rh: Rehydrant.Envelope) => E.suspend(() => {
-  const s = Stack.start(rh.root);
+  const s = Stack.make(rh.root);
 
   const body = () => {
     const n = Stack.pop(s);
@@ -182,7 +182,7 @@ const renderEvent = (rh: Rehydrant.Envelope, n: Element.Rest, event: Element.Eve
 export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
   pipe(
     E.sync(() => {
-      const stack = Stack.start(rh.root);
+      const stack = Stack.make(rh.root);
 
       let target: Element.Rest | undefined;
 
@@ -220,7 +220,7 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
     return E.succeed(n0);
   }
 
-  const stack = Stack.start(n0);
+  const stack = Stack.make(n0);
 
   const body = () => {
     const next = Stack.pop(stack)!;
@@ -256,7 +256,7 @@ const mount__ = <A extends Element.Element>(rh: Rehydrant.Envelope, n0: A) => E.
 });
 
 const dismount = <A extends Element.Element>(n0: A) => {
-  const stack = Stack.start(n0);
+  const stack = Stack.make(n0);
 
   const body = () => {
     const n = Stack.pop(stack)!;
@@ -292,7 +292,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
 };
 
 export const rerenders = (rh: Rehydrant.Envelope) => E.gen(function* () {
-  const s = Stack.start(rh.root);
+  const s = Stack.make(rh.root);
   const rs = yield* renderNode(rh, rh.root as Element.Func);
   Diff.rendered(rh.root, rs);
 

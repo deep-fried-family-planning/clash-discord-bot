@@ -605,6 +605,7 @@ export const createRootFromSource = (source: Source, atts?: Props): Element => {
   element.$p = 0;
   element._n = `${element.name}:${0}`;
   element._s = `${element.name}:${0}`;
+  element.under = source.under!;
   return element;
 };
 

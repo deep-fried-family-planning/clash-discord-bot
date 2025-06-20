@@ -1,27 +1,40 @@
-import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
+import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
-import {constant, dual} from 'effect/Function';
+import {dual} from 'effect/Function';
 import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 
 const TypeId = Symbol.for('disreact/stack');
 
-export interface Stack extends Pipeable.Pipeable {
+export interface Stack<A = any> extends Pipeable.Pipeable,
+  Lineage.Lineage<Stack<A>>
+{
   [TypeId]: typeof TypeId;
   size    : number;
-  list    : MutableList.MutableList<Element.Element>;
-  seen    : WeakSet<Element.Element>;
-  flags   : Set<Element.Func>;
-  lca?    : Element.Func | undefined;
-  root?   : Element.Element | undefined;
+  list    : MutableList.MutableList<A>;
+  seen    : WeakSet<any>;
+  flags   : Set<A>;
+  lca?    : A | undefined;
+  root    : A | undefined;
 };
 
-export const isStack = (s: unknown): s is Stack =>
-  typeof s === 'object'
-  && s !== null
-  && TypeId in s
-  && s[TypeId] === TypeId;
+export const isStack = <A>(u: unknown): u is Stack<A> =>
+  typeof u === 'object'
+  && u !== null
+  && TypeId in u
+  && u[TypeId] === TypeId;
+
+const Prototype = {
+  [TypeId]: TypeId,
+  size    : 0,
+  list    : MutableList.empty(),
+  seen    : new WeakSet(),
+  flags   : new Set(),
+  root    : undefined,
+  lca     : undefined,
+};
 
 const pure = (s: Stack) => s;
 
@@ -29,41 +42,23 @@ const empty = (): Stack =>
   Object.assign(
     {},
     Pipeable.Prototype,
-    {
-      [TypeId]: TypeId,
-      size    : 0,
-      list    : MutableList.empty(),
-      seen    : new WeakSet(),
-      flags   : new Set(),
-      root    : undefined,
-      lca     : undefined,
-    },
+    Lineage.Prototype,
+    Prototype,
   ) as Stack;
 
-export const getRoot = (s: Stack) => s.root;
-
-export const start = (root: Element.Element): Stack => {
-  return empty().pipe(
-    modify((s) => {
-      s.root = root;
-    }),
-    push(root),
-  );
-  // const s = empty();
-  // s.root = root;
-  // return push(s, root);
-};
-
-export const push__ = (s: Stack, n: Element.Element) => {
-  MutableList.append(s.list, n);
+export const push__ = <A>(s: Stack, a: A) => {
+  MutableList.append(s.list, a);
   s.size++;
   return s;
 };
 
-export const push = dual<
-  (n: Element.Element) => (s: Stack) => Stack,
-  (s: Stack, n: Element.Element) => Stack
->(2, push__);
+export const push = dual<<A>(a: A) => (s: Stack<A>) => Stack<A>, typeof push__>(2, push__);
+
+export const make = (root: Element.Element): Stack => {
+  const self = empty();
+  self.root = root;
+  return push__(self, root);
+};
 
 export const pushNodes__ = (s: Stack, n: Element.Element): Stack => {
   if (!n.under) {

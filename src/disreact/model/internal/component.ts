@@ -1,6 +1,6 @@
 import * as Diff from '#src/disreact/model/internal/core/diff.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
-import * as Element from '#src/disreact/model/internal/domain/element.ts';
+import * as Element from '#src/disreact/model/internal/core/element.ts';
 import * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import type * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';

@@ -1,4 +1,4 @@
-import type * as Element from '#src/disreact/model/internal/domain/element.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';

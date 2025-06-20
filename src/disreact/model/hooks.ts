@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as Element from '#src/disreact/model/internal/domain/element.ts';
+import type * as Element from '#src/disreact/model/internal/core/element.ts';
 import type {FC} from '#src/disreact/codec/fc.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Globals from '#src/disreact/model/internal/infrastructure/global.ts';

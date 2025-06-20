@@ -1,7 +1,6 @@
-import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
-import type * as Element from '#src/disreact/model/internal/domain/element.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import type * as E from 'effect/Effect';
 
 const TypeId = Symbol.for('disreact/fc'),
@@ -11,9 +10,6 @@ export const SYNC      = 1,
              ASYNC     = 2,
              EFFECT    = 3,
              ANONYMOUS = 'Anonymous';
-
-type Props = Element.Props;
-type Out = Element.Rendered;
 
 interface Base<P, O, E = any, R = any> extends type.Fn {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
@@ -50,9 +46,9 @@ export interface FC<P = any, O = any, E = any, R = any> extends type.Fn {
   displayName?: string;
 }
 
-export const isFC = (fc: unknown): fc is FC => typeof fc === 'function';
+export const isFC = (u: unknown): u is FC => typeof u === 'function';
 
-export const isKnown = (fc: FC): fc is Known => TypeId in fc;
+export const isKnown = (u: FC): u is Known => TypeId in u;
 
 export const Prototype = proto.declare<Known>({
   [TypeId]: ANONYMOUS,
