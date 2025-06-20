@@ -1,6 +1,6 @@
 import * as Diff from '#src/disreact/model/internal/core/diff.ts';
 import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
 import * as Prototype from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
@@ -84,14 +84,14 @@ export const render = (n: Element.Func, rh: Rehydrant.Envelope) =>
       const output = f(p);
 
       if (P.isPromise(output)) {
-        FC.cast(f, FC.AsyncProto);
+        FC.cast(f, FC.AsyncPrototype);
         return E.promise(() => output);
       }
       if (E.isEffect(output)) {
-        FC.cast(f, FC.EffectProto);
+        FC.cast(f, FC.EffectPrototype);
         return output as E.Effect<any>;
       }
-      FC.cast(f, FC.SyncProto);
+      FC.cast(f, FC.SyncPrototype);
       return E.succeed(output);
     }),
     Mutex.release(n, rh),

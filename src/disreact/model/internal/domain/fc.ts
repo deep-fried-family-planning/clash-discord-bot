@@ -6,8 +6,9 @@ import type * as E from 'effect/Effect';
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export const TypeId    = Symbol.for('disreact/fc'),
-             KindId    = Symbol.for('disreact/fc/kind'),
-             SYNC      = 1,
+             CastId    = Symbol.for('disreact/fc/kind');
+
+export const SYNC      = 1,
              ASYNC     = 2,
              EFFECT    = 3,
              ANONYMOUS = 'Anonymous';
@@ -22,30 +23,28 @@ interface Base<P, O, E = any, R = any> extends Function {
 
 interface Internal {
   [TypeId]    : string;
-  [KindId]?   : number;
+  [CastId]?   : number;
   displayName?: string;
 }
 
-export interface Known<A, B> extends Function, Internal {
+export interface Known<A = any, B = any> extends Function, Internal {
   (props: A): B | Promise<B> | E.Effect<B, any, any>;
 }
 
-export interface Sync<A, B> extends Function, Internal {
-  [KindId]: typeof SYNC;
+export interface Sync<A = any, B = any> extends Function, Internal {
+  [CastId]: typeof SYNC;
   (props: A): B;
 }
 
-export interface Async<A, B> extends Function, Internal {
-  [KindId]: typeof ASYNC;
+export interface Async<A = any, B = any> extends Function, Internal {
+  [CastId]: typeof ASYNC;
   (props: A): Promise<B>;
 }
 
-export interface Effect<A, B> extends Function, Internal {
-  [KindId]: typeof EFFECT;
+export interface Effect<A = any, B = any> extends Function, Internal {
+  [CastId]: typeof EFFECT;
   (props: A): E.Effect<B>;
 }
-
-type thing = JSX.Element;
 
 export interface FC<P = any, O = any, E = any, R = any> extends Function {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
@@ -56,27 +55,27 @@ export const isFC = (fc: unknown): fc is FC => typeof fc === 'function';
 
 export const isKnown = (fc: FC): fc is Known => TypeId in fc;
 
-export const Prototype = proto.declare<Known<Props, Out>>({
+export const Prototype = proto.declare<Known>({
   [TypeId]: ANONYMOUS,
 });
 
-export const SyncProto = proto.declare<Sync<Props, Out>>({
-  [KindId]: SYNC,
+export const SyncPrototype = proto.declare<Sync>({
+  [CastId]: SYNC,
 });
 
-export const AsyncProto = proto.declare<Async<Props, Out>>({
-  [KindId]: ASYNC,
+export const AsyncPrototype = proto.declare<Async>({
+  [CastId]: ASYNC,
 });
 
-export const EffectProto = proto.declare<Effect<Props, Out>>({
-  [KindId]: EFFECT,
+export const EffectPrototype = proto.declare<Effect>({
+  [CastId]: EFFECT,
 });
 
-type Proto = | typeof SyncProto
-             | typeof AsyncProto
-             | typeof EffectProto;
+type Proto = | typeof SyncPrototype
+             | typeof AsyncPrototype
+             | typeof EffectPrototype;
 
-export const isCasted = (fc: FC) => KindId in fc;
+export const isCasted = (fc: FC) => CastId in fc;
 
 export const cast = (fc: FC, p: Proto) => {
   if (isDEV && isKnown(fc)) {
@@ -104,7 +103,7 @@ export const register = (fn: FC): Known => {
     fc[TypeId] = ANONYMOUS;
   }
   if (proto.isAsync(fc)) {
-    cast(fc, AsyncProto);
+    cast(fc, AsyncPrototype);
     return fc;
   }
   return fc;
@@ -129,4 +128,4 @@ export const name = (maybe?: string | FC) => {
   return (maybe as any)[TypeId] as string;
 };
 
-export const kind = (fc: FC): number | undefined => (fc as Known)[KindId];
+export const kind = (fc: FC): number | undefined => (fc as Known)[CastId];

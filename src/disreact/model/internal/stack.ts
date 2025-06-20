@@ -5,7 +5,7 @@ import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 
-export const TypeId = Symbol.for('disreact/stack');
+const TypeId = Symbol.for('disreact/stack');
 
 export interface Stack extends Pipeable.Pipeable {
   [TypeId]: typeof TypeId;

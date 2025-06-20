@@ -1,9 +1,5 @@
-import {func, rest, trie} from '#src/disreact/model/internal/core/exp/element.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import type * as Equal from 'effect/Equal';
-import type * as Hash from 'effect/Hash';
-import type * as Pipeable from 'effect/Pipeable';
 import * as Element from '#src/disreact/model/internal/core/exp/element.ts';
+import * as proto from 'src/disreact/model/internal/infrastructure/proto.ts';
 
 export const Fragment = undefined;
 
@@ -23,10 +19,11 @@ export const jsx = (type: any, atts: any): Element.Element => {
       return el;
     }
     case 'function': {
-      return func(type, atts);
+      return Element.func(type, atts);
     }
+    default:
+      throw new Error(`Invalid type: ${type}`);
   }
-  throw new Error(`Invalid jsx type: ${type}`);
 };
 
 export const jsxs = (type: any, atts: any): Element.Element => {

@@ -1,4 +1,4 @@
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as Rehydrant from '#src/disreact/model/internal/envelope.ts';
 import * as Lifecycle from '#src/disreact/model/v1lifecycle.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
