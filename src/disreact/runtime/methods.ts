@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import * as Doken from '#src/disreact/codec/doken.ts';
-import type {Envelope} from '#src/disreact/model/internal/core/domain/old/envelope.ts';
+import type {Envelope} from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import * as Model from '#src/disreact/model/ModelV1.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';

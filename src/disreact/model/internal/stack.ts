@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
 import {dual} from 'effect/Function';

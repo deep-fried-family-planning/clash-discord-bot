@@ -1,4 +1,4 @@
-import type * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';

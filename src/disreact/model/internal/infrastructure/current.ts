@@ -1,7 +1,7 @@
-import type * as Component from '#src/disreact/model/internal/core/domain/old/component.ts';
-import type * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import type * as Component from '#src/disreact/model/adaptor/exp/domain/old/component.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/core/domain/old/envelope.ts';
+import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import type * as Stack from '#src/disreact/model/internal/stack.ts';
 
 export let component = undefined as undefined | Element.Func,
