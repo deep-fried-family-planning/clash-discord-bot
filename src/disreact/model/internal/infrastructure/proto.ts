@@ -1,11 +1,8 @@
+import {IS_DEV} from '#src/disreact/model/internal/core/constants.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 
 export type proto = never;
-
-export const isDEV = (process.env.NODE_ENV === 'development') as true;
-
-export const INTERNAL_ERROR = 'Internal Error';
 
 const assignProto = (p: any, o: any) =>
   Object.assign(
@@ -32,7 +29,7 @@ export const declareArray = <A>(p: Partial<A>): A =>
     p,
   );
 
-export const instance = <A>(p: A, o: Partial<A>): A =>
+export const init = <A>(p: A, o: Partial<A>): A =>
   Object.assign({}, o, p);
 
 export const impure = <A>(p: A, o: Partial<A>): A =>
@@ -41,13 +38,13 @@ export const impure = <A>(p: A, o: Partial<A>): A =>
 export const pure = <A>(p: any, o: Partial<A>): A => {
   const inst = impure(p, o);
 
-  return isDEV
+  return IS_DEV
          ? Object.freeze(inst)
          : inst;
 };
 
 export const ensure = <A>(p: A): A => {
-  if (isDEV) {
+  if (IS_DEV) {
     if (typeof p !== 'object') {
       return p;
     }

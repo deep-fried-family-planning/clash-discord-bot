@@ -1,7 +1,8 @@
-import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
-import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
@@ -57,21 +58,22 @@ export interface EffectFn extends Function {
 }
 
 export interface Polymer extends Pipeable.Pipeable {
-  pc     : number;
-  rc     : number;
-  lk?    : number;
-  stack  : Monomer[];
-  saved  : Monomer[];
-  queue  : EffectFn[];
-  unmount: EffectFn[];
+  pc      : number;
+  rc      : number;
+  lk?     : number;
+  stack   : Monomer[];
+  saved   : Monomer[];
+  queue   : EffectFn[];
+  unmount : EffectFn[];
+  document: Document.Document;
 };
 
-const PolymerProto = Proto.declare<Polymer>({
+const PolymerProto = proto.declare<Polymer>({
   ...Pipeable.Prototype,
 });
 
 export const empty = (): Polymer =>
-  Proto.instance<Polymer>(PolymerProto, {
+  proto.init<Polymer>(PolymerProto, {
     rc   : 0,
     pc   : 0,
     stack: chain(),
@@ -139,7 +141,7 @@ export const hydrate = (ps: Bundle, key: string): Polymer => {
     return empty();
   }
 
-  const self = Proto.instance<Polymer>(PolymerProto, {
+  const self = proto.init<Polymer>(PolymerProto, {
     pc   : 0,
     rc   : 1,
     stack: chain(encoded),
@@ -164,7 +166,6 @@ export const dehydrate = (ps: Bundle, key: string, self: Polymer) => {
 
   ps[key] = self.stack;
 };
-
 
 export const get = (n: Element.Func): Polymer => {
   if (!n.polymer) {

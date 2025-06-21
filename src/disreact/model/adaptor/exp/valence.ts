@@ -31,7 +31,7 @@ export const of = <A>(a: A): Valence<A> => make([a]);
 
 
 export const make = <A>(as: Iterable<A>, lineage?: Lineage.Lineage<A>): Valence<A> => {
-  const self = proto.instance(Prototype, [...as] as any);
+  const self = proto.init(Prototype, [...as] as any);
   if (lineage) {
     Lineage.set(self, lineage);
   }

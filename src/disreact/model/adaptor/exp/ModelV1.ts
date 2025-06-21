@@ -1,8 +1,8 @@
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
-import * as Lifecycle from '#src/disreact/model/v1lifecycle.ts';
-import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
-import {Relay} from '#src/disreact/model/Relay.ts';
+import * as Lifecycle from '#src/disreact/model/adaptor/exp/v1lifecycle.ts';
+import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/adaptor/exp/Rehydrator.ts';
+import {Relay} from '#src/disreact/model/adaptor/exp/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

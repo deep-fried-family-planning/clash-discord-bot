@@ -1,5 +1,5 @@
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import type * as type from '#src/disreact/model/internal/core/type.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Eq from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
@@ -37,7 +37,7 @@ export const Prototype: Lineage = {
 };
 
 export const make = <A extends Lineage>(target: A, origin: A): A => {
-  const self = proto.instance(Prototype, target);
+  const self = proto.init(Prototype, target);
   set(self, origin);
   return self as A;
 };
@@ -68,7 +68,7 @@ export const EqualPrototype: Equal = {
 };
 
 export const makeEqual = <A extends (...p: any) => any>(f: A, origin: any): A => {
-  const self = proto.instance(EqualPrototype, f as any);
+  const self = proto.init(EqualPrototype, f as any);
   set(self, origin);
   return self as unknown as A;
 };

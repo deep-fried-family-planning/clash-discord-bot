@@ -1,4 +1,4 @@
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export const Type = Symbol.for('disreact/jsx');
@@ -51,7 +51,7 @@ export const isPragma = (u: unknown): u is Pragma =>
 export const Fragment = undefined;
 
 export const jsx = (type: any, props: any) => {
-  const self = proto.instance(Prototype, {});
+  const self = proto.init(Prototype, {});
   delete self.childs;
 
   if (type === Fragment) {
@@ -81,7 +81,7 @@ export const jsx = (type: any, props: any) => {
 };
 
 export const jsxs = (type: any, props: any) => {
-  const self = proto.instance(Prototype, {});
+  const self = proto.init(Prototype, {});
   delete self.child;
 
   if (type === Fragment) {

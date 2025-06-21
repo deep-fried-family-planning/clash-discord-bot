@@ -2,9 +2,9 @@ import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import * as Precursor from '#src/disreact/model/adaptor/exp/precursor.ts';
 import type * as Valence from '#src/disreact/model/adaptor/exp/valence.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as types from '#src/disreact/model/internal/infrastructure/type.ts';
+import type * as types from '#src/disreact/model/internal/core/type.ts';
 import {Match, type Predicate} from 'effect';
 import * as E from 'effect/Effect';
 import {dual, flow} from 'effect/Function';
@@ -62,14 +62,14 @@ export const isText = (u: Vertex): u is Text => u._tag === Precursor.TEXT;
 export const valence = (v: Vertex): Valence.Valence => v.valence!;
 
 export const fromPrecursor = (p: Precursor.Precursor): Vertex => {
-  const self = proto.instance(Prototype, {
+  const self = proto.init(Prototype, {
     ...p,
   });
   return self;
 };
 
 export const fromPrimitive = (p: Precursor.Primitive): Vertex => {
-  const self = proto.instance(Prototype, {
+  const self = proto.init(Prototype, {
     _tag     : Precursor.TEXT,
     component: p,
   });

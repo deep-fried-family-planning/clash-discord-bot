@@ -1,5 +1,5 @@
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import type * as type from '#src/disreact/model/internal/core/type.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 
@@ -37,7 +37,7 @@ export const Prototype = proto.declare<Lateral>({
 });
 
 export const make = <A extends Lateral>(target: A, head?: A, tail?: A): A => {
-  const self = proto.instance(Prototype, target);
+  const self = proto.init(Prototype, target);
 
   return self as A;
 };

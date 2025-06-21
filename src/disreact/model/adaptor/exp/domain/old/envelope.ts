@@ -1,9 +1,9 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
 import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type {Relay} from '#src/disreact/model/Relay.ts';
+import type {Relay} from '#src/disreact/model/adaptor/exp/Relay.ts';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface Rehydrant {
@@ -27,7 +27,7 @@ export interface Envelope extends Pipeable.Pipeable {
 const RehydrantProto = Proto.declare<Envelope>(Pipeable.Prototype);
 
 const make = (id: string, root: Element.Element, data: any): Envelope =>
-  Proto.instance(RehydrantProto, {
+  Proto.init(RehydrantProto, {
     id   : id,
     data : data,
     next : {id: id},

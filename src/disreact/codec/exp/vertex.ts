@@ -1,6 +1,6 @@
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type {PrimitiveValue} from '@effect/platform/Template';
 import type * as Equal from 'effect/Equal';
@@ -87,7 +87,7 @@ export const Text = proto.declare<Text>({
 });
 
 export const text = (text: PrimitiveValue) =>
-  proto.instance(Text, {
+  proto.init(Text, {
     text: text,
   });
 
@@ -148,16 +148,16 @@ export const Props = proto.declare<Props>({
 });
 
 export const propsNone = (attrs: Props): Props =>
-  proto.instance(Props, attrs);
+  proto.init(Props, attrs);
 
 export const propsJust = (attrs: Props): Props => {
-  const self = proto.instance(Props, attrs);
+  const self = proto.init(Props, attrs);
   self[PropsId] = JUST;
   return self;
 };
 
 export const propsMany = (attrs: Props): Props => {
-  const self = proto.instance(Props, attrs);
+  const self = proto.init(Props, attrs);
   self[PropsId] = MANY;
   return self;
 };

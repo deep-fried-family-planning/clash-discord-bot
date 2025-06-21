@@ -1,6 +1,6 @@
 import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
 import {dual} from 'effect/Function';
 import * as iterable from 'effect/Iterable';
 import * as MutableList from 'effect/MutableList';
@@ -12,29 +12,24 @@ const TypeId = Symbol.for('disreact/stack');
 export interface Stack<A = any> extends Pipeable.Pipeable
 {
   [TypeId]: typeof TypeId;
+  done    : boolean;
   flags   : Set<A>;
-  lca?    : A | undefined;
   list    : MutableList.MutableList<A>;
   root    : A;
   seen    : WeakSet<any>;
   z       : Document.Document<A>;
 };
 
-export const isStack = <A>(u: unknown): u is Stack<A> =>
-  typeof u === 'object'
-  && u !== null
-  && TypeId in u
-  && u[TypeId] === TypeId;
+export const isStack = <A>(u: unknown): u is Stack<A> => typeof u === 'object' && u !== null && TypeId in u && u[TypeId] === TypeId;
 
 const Prototype = {
   [TypeId]: TypeId,
-  size    : 0,
-  list    : MutableList.empty(),
-  seen    : new WeakSet(),
+  done    : false,
   flags   : new Set(),
+  list    : MutableList.empty(),
   root    : undefined,
-  lca     : undefined,
-  document: undefined as any,
+  seen    : new WeakSet(),
+  size    : 0,
   z       : undefined as any,
 };
 
@@ -75,7 +70,10 @@ export const pushAllF = <A>(s: Stack<A>, as?: Iterable<A>): Stack<A> => {
   return iterable.reduce(as, s, (z, a) => pushF(z, a));
 };
 
-export const pushAll = dual<<A>(as: Iterable<A>) => (s: Stack<A>) => Stack<A>, typeof pushAllF>(2, pushAllF);
+export const pushAll = dual<
+  <A>(as: Iterable<A>) => (s: Stack<A>) => Stack<A>,
+  typeof pushAllF
+>(2, pushAllF);
 
 export const pushIntoF = <A>(as: Iterable<A> | undefined, s: Stack<A>): Stack<A> => pushAllF(s, as);
 
@@ -161,19 +159,6 @@ export const tap = dual<
 >(
   2, <A>(s: Stack, f: (s: Stack) => A) => {
     f(s);
-    return s;
-  },
-);
-
-export const modify = dual<
-  (f: (s: Stack) => Stack | void) => (s: Stack) => Stack,
-  (s: Stack, f: (s: Stack) => Stack | void) => Stack
->(
-  2, (s: Stack, f: (s: Stack) => Stack | void) => {
-    const output = f(s);
-    if (isStack(output)) {
-      return output;
-    }
     return s;
   },
 );

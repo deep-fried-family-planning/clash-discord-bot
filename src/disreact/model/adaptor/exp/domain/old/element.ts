@@ -1,6 +1,6 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as FC from '#src/disreact/model/internal/domain/fc.ts';
+import type * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Array from 'effect/Array';
@@ -305,7 +305,7 @@ const Text = proto.declare<Text>({
 export const func = (type: FC.FC, atts: any): Func => {
   const fc = FC.register(type);
 
-  const self = proto.instance(Func, {
+  const self = proto.init(Func, {
     [SrcId]: FC.name(fc),
     type   : fc,
     name   : FC.name(fc),
@@ -318,7 +318,7 @@ export const func = (type: FC.FC, atts: any): Func => {
 export const rest = (type: string, atts: any): Rest => {
   const handler = propsHandler(atts);
 
-  const self = proto.instance(Rest, {
+  const self = proto.init(Rest, {
     type   : type,
     name   : type,
     props  : props(atts),
@@ -329,7 +329,7 @@ export const rest = (type: string, atts: any): Rest => {
 };
 
 export const text = (text?: Primitive): Text => {
-  const self = proto.instance(Text, {
+  const self = proto.init(Text, {
     text: text,
   });
 
@@ -398,7 +398,7 @@ const connect = (p: Element, n: Element, count: Count) => {
 
 export const trie = (p: Element, rs = p.under): Nodes => {
   const count = emptyCount(),
-        cs    = proto.instance(ElementsProto, Array.ensure(rs ?? []).flat() as any);
+        cs    = proto.init(ElementsProto, Array.ensure(rs ?? []).flat() as any);
 
   let ids = new Set<string>();
 

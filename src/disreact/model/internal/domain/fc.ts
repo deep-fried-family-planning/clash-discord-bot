@@ -1,15 +1,10 @@
+import {ANONYMOUS, ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/model/internal/core/constants.ts';
+import * as type from '#src/disreact/model/internal/core/type.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import {INTERNAL_ERROR, isDEV} from '#src/disreact/model/internal/infrastructure/proto.ts';
-import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import type * as E from 'effect/Effect';
 
 const TypeId = Symbol.for('disreact/fc'),
       CastId = Symbol.for('disreact/fc/kind');
-
-export const SYNC      = 1,
-             ASYNC     = 2,
-             EFFECT    = 3,
-             ANONYMOUS = 'Anonymous';
 
 interface Base<P, O, E = any, R = any> extends type.Fn {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
@@ -73,10 +68,10 @@ type Proto = | typeof SyncPrototype
 export const isCasted = (fc: FC) => CastId in fc;
 
 export const cast = (fc: FC, p: Proto) => {
-  if (isDEV && isKnown(fc)) {
+  if (IS_DEV && isKnown(fc)) {
     throw new Error(INTERNAL_ERROR);
   }
-  if (isDEV && isCasted(fc)) {
+  if (IS_DEV && isCasted(fc)) {
     throw new Error(INTERNAL_ERROR);
   }
   proto.impure(p, fc as any);
@@ -117,7 +112,7 @@ export const name = (maybe?: string | FC) => {
   if (!isFC(maybe)) {
     return maybe;
   }
-  if (isDEV && !isKnown(maybe)) {
+  if (IS_DEV && !isKnown(maybe)) {
     throw new Error(INTERNAL_ERROR);
   }
   return (maybe as any)[TypeId] as string;

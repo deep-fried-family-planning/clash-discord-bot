@@ -121,17 +121,17 @@ export const skip = (): Skip => Skip;
 export const remove = (): Remove => Remove;
 
 export const insert = <A>(node: A): Insert<A> =>
-  proto.instance(Insert, {
+  proto.init(Insert, {
     node: node,
   });
 
 export const update = <A>(node: A): Update<A> =>
-  proto.instance(Update, {
+  proto.init(Update, {
     node: node,
   });
 
 export const replace = <A>(node: A): Replace<A> =>
-  proto.instance(Replace, {
+  proto.init(Replace, {
     node: node,
   });
 

@@ -1,4 +1,4 @@
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export type Primitive =
@@ -53,7 +53,7 @@ export const childs = (p: Precursor): Jsx[] => {
 };
 
 export const make = (_tag: any, props: any, len: number): Precursor => {
-  const self = proto.instance(Prototype, {});
+  const self = proto.init(Prototype, {});
   self[TypeId] = len;
   self.props = props;
 

@@ -1,8 +1,8 @@
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
-import * as Pragma from '#src/disreact/model/internal/core/pragma.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import * as Pragma from '#src/disreact/model/internal/domain/pragma.ts';
+import type * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';
 import * as Pipeable from 'effect/Pipeable';
@@ -92,7 +92,7 @@ const Func = proto.declare<Func>({
 
 export const coerce = (j: Pragma.Child): Vertex => {
   if (typeof j !== 'object' || j === null) {
-    const self = proto.instance(Text, {
+    const self = proto.init(Text, {
       component: j,
     });
     delete self.props;
@@ -101,28 +101,28 @@ export const coerce = (j: Pragma.Child): Vertex => {
   }
   switch (j._tag) {
     case Pragma.REST: {
-      const self = proto.instance(Rest, {
+      const self = proto.init(Rest, {
         component: j.component,
         props    : j.props,
       });
       return self;
     }
     case Pragma.FUNC: {
-      const self = proto.instance(Func, {
+      const self = proto.init(Func, {
         component: j.component,
         props    : j.props,
       });
       return self;
     }
   }
-  const self = proto.instance(Frag, {});
+  const self = proto.init(Frag, {});
   delete self.component;
   delete self.props;
   return self;
 };
 
 export const make = (p: Pragma.Text | Pragma.Pragma): Vertex => {
-  const self = proto.instance(Base, {});
+  const self = proto.init(Base, {});
 
   if (typeof p !== 'object' || p === null) {
     self._tag = Pragma.TEXT;

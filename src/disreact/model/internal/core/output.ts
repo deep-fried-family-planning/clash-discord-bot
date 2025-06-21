@@ -47,7 +47,7 @@ const Exit = proto.declare<Exit>({
 });
 
 export const part = (id: string, type: string, props: any): Part =>
-  proto.instance(Part, {
+  proto.init(Part, {
     id   : id,
     type : type,
     props: props,
@@ -56,7 +56,7 @@ export const part = (id: string, type: string, props: any): Part =>
 export const same = (): Same => Same;
 
 export const next = (id: string): Next =>
-  proto.instance(Next, {
+  proto.init(Next, {
     id: id,
   });
 
