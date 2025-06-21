@@ -1,5 +1,5 @@
-import * as Element from '#src/disreact/model/domain/element.ts';
-import * as Polymer from '#src/disreact/model/domain/polymer.ts';
+import * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';
 

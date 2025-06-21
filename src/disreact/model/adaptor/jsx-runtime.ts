@@ -1,12 +1,13 @@
 import type {IntrinsicAttributesMap} from '#src/disreact/codec/intrinsic/types.ts';
-import type * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
+import * as Pragma from '#src/disreact/model/internal/core/pragma.ts';
 
-export const Fragment = Jsx.Fragment,
-             jsx      = Jsx.jsx,
-             jsxs     = Jsx.jsxs,
-             jsxDEV   = Jsx.jsxDEV;
+export const Fragment = Pragma.Fragment;
+
+export const jsx = Pragma.jsx;
+
+export const jsxs = Pragma.jsxs;
+
+export const jsxDEV = Pragma.jsxDEV;
 
 export type JsxElementType = | keyof IntrinsicAttributesMap
                              | Element.Primitive

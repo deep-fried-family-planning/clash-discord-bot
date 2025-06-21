@@ -1,13 +1,10 @@
-/* eslint-disable prefer-rest-params */
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/codec/fc.ts';
-import * as Element from '#src/disreact/model/domain/element.ts';
-import * as Polymer from '#src/disreact/model/domain/polymer.ts';
-import type * as Stack from '#src/disreact/model/domain/stack.ts';
-import * as Proto from '#src/disreact/model/infrastructure/proto.ts';
+import * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type {Relay} from '#src/disreact/model/Relay.ts';
 import * as Pipeable from 'effect/Pipeable';
-import * as Order from 'effect/Order';
 
 export interface Rehydrant {
   key? : string | number | bigint | undefined;
@@ -27,11 +24,7 @@ export interface Envelope extends Pipeable.Pipeable {
   queue: Set<Element.Func>;
 };
 
-const RehydrantProto = Proto.declare<Envelope>({
-  pipe() {
-    return Pipeable.pipeArguments(this, arguments);
-  },
-});
+const RehydrantProto = Proto.declare<Envelope>(Pipeable.Prototype);
 
 const make = (id: string, root: Element.Element, data: any): Envelope =>
   Proto.instance(RehydrantProto, {

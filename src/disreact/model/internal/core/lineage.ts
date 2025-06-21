@@ -1,5 +1,6 @@
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Eq from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
 import * as Hash from 'effect/Hash';
@@ -11,11 +12,14 @@ const ls = globalValue(TypeId, () => new WeakMap());
 
 export const get = (u: WeakKey) => ls.get(u);
 
-export const set = (u: WeakKey, o: WeakKey) => ls.set(u, o);
+export const set = <A>(u: A, o: WeakKey) => {
+  ls.set(u as any, o);
+  return u;
+};
 
 export interface Lineage<A = any> {
   [TypeId]: typeof TypeId;
-  __lineage<B extends WeakKey>(this: B): proto.IfAny<A, B | undefined, A | B | undefined>;
+  __lineage<B extends WeakKey>(this: B): type.IfAny<A, B | undefined, A | B | undefined>;
 }
 export namespace Lineage {
   export interface Equal<A = any> extends Lineage<A>, Hash.Hash, Eq.Equal {}
@@ -40,7 +44,8 @@ export const make = <A extends Lineage>(target: A, origin: A): A => {
 
 export interface Equal<A = any> extends Lineage<A>,
   Hash.Hash,
-  Eq.Equal {}
+  Eq.Equal
+{}
 
 export const strict = (a: unknown, b: unknown): boolean =>
   isLineage(a) &&

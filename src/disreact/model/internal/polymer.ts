@@ -1,6 +1,6 @@
-import type * as Element from '#src/disreact/model/domain/element.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/infrastructure/proto.ts';
-import * as Proto from '#src/disreact/model/infrastructure/proto.ts';
+import type * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
+import * as Proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
@@ -78,7 +78,6 @@ export const empty = (): Polymer =>
     saved: chain(),
     queue: [],
   });
-
 
 export const isTerminal = (p: Polymer) => {
   if (p.rc === 0) {

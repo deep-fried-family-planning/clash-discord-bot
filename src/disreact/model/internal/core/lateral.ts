@@ -1,4 +1,5 @@
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 
@@ -7,8 +8,8 @@ const TailId = Symbol.for('disreact/tail');
 
 export interface Lateral<A = any> {
   [HeadId]: typeof TailId;
-  __head<B extends A>(this: B): proto.IfAny<A, B | undefined, A | B | undefined>;
-  __tail<B extends A>(this: B): proto.IfAny<A, B | undefined, A | B | undefined>;
+  __head<B extends A>(this: B): type.IfAny<A, B | undefined, A | B | undefined>;
+  __tail<B extends A>(this: B): type.IfAny<A, B | undefined, A | B | undefined>;
 }
 
 export const isLateral = (u: unknown): u is Lateral =>

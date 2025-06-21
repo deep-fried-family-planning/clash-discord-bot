@@ -1,12 +1,12 @@
-import type * as FC from '#src/disreact/model/domain/fc.ts';
-import * as Rehydrant from '#src/disreact/model/domain/envelope.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Rehydrant from '#src/disreact/model/internal/core/domain/old/envelope.ts';
 import * as Lifecycle from '#src/disreact/model/v1lifecycle.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/model/Rehydrator.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import type * as El from '#src/disreact/model/domain/element.ts';
+import type * as El from '#src/disreact/model/internal/core/domain/old/element.ts';
 import * as L from 'effect/Layer';
 
 export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>

@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/model/infrastructure/proto.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export const PART = 1,
              SAME = 2,

@@ -1,10 +1,13 @@
-import type * as JsxRuntime from '#src/disreact/jsx-runtime.ts';
-import * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
+import type * as JsxRuntime from '#src/disreact/model/adaptor/jsx-runtime.ts';
+import * as Pragma from '#src/disreact/model/internal/core/pragma.ts';
 
-export const Fragment = Jsx.Fragment,
-             jsx      = Jsx.jsx,
-             jsxs     = Jsx.jsxs,
-             jsxDEV   = Jsx.jsxDEV;
+export const Fragment = JsxRuntime.Fragment;
+
+export const jsx = JsxRuntime.jsx;
+
+export const jsxs = JsxRuntime.jsxs;
+
+export const jsxDEV = JsxRuntime.jsxDEV;
 
 export declare namespace JSX {
   export type ElementType = JsxRuntime.JsxElementType;

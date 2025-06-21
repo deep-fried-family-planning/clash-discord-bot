@@ -1,6 +1,6 @@
-import * as Element from '#src/disreact/model/domain/element.ts';
-import type * as FC from '#src/disreact/model/domain/fc.ts';
-import * as Rehydrant from '#src/disreact/model/domain/envelope.ts';
+import * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Rehydrant from '#src/disreact/model/internal/core/domain/old/envelope.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 

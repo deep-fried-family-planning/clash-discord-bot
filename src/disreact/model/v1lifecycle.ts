@@ -1,13 +1,13 @@
 import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/codec/old/diffs.ts';
-import * as Component from '#src/disreact/model/domain/component.ts';
-import * as Element from '#src/disreact/model/domain/element.ts';
-import * as Polymer from '#src/disreact/model/domain/polymer.ts';
-import * as Rehydrant from '#src/disreact/model/domain/envelope.ts';
+import * as Component from '#src/disreact/model/internal/core/domain/old/component.ts';
+import * as Element from '#src/disreact/model/internal/core/domain/old/element.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Rehydrant from '#src/disreact/model/internal/core/domain/old/envelope.ts';
 import {Relay} from '#src/disreact/model/Relay.ts';
-import * as Mutex from '#src/disreact/model/infrastructure/mutex.ts';
+import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
-import * as Stack from '#src/disreact/model/domain/stack.ts';
+import * as Stack from '#src/disreact/model/internal/stack.ts';
 import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
@@ -196,7 +196,7 @@ export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
           }
         }
 
-        Stack.pushNodes__(stack, node);
+        Stack.pushNodesF(stack, node);
       }
       if (!target) {
         throw new Error('Event target does not exist');
@@ -262,7 +262,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
     const n = Stack.pop(stack)!;
     Element.trie(n);
 
-    if (!Stack.isVisited(stack, n)) {
+    if (!Stack.hasVisited(stack, n)) {
       Stack.visit(stack, n);
       Stack.push(stack, n);
       Stack.pushNodes(stack, n);
