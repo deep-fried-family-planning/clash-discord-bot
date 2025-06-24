@@ -1,6 +1,6 @@
 import {useEffect, useState} from '#src/disreact/index.ts';
-import {ModelV1} from '#src/disreact/model/adaptor/exp/ModelV1.ts';
-import {Relay} from '#src/disreact/model/adaptor/exp/Relay.ts';
+import {ModelV1} from '#src/disreact/model/internal/adaptor/exp/ModelV1.ts';
+import {Relay} from '#src/disreact/model/internal/adaptor/exp/Relay.ts';
 import {sjson} from '#unit/model/scenarios/util.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';

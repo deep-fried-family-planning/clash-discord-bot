@@ -1,43 +1,43 @@
-import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
 import {ASYNC, EFFECT, SYNC} from '#src/disreact/model/internal/core/constants.ts';
-import * as type from '#src/disreact/model/internal/core/type.ts';
-import * as FC from '#src/disreact/model/internal/domain/fc.ts';
-import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
+import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
 
 export type dispatch = never;
 
-const renderJsxFn = (f: FC.FC, p: any): E.Effect<any> => {
-  switch (FC.kind(f)) {
+const renderJsxFn = (fc: FC.FC, p: any): E.Effect<any> => {
+  switch (FC.kind(fc)) {
     case SYNC: {
-      return E.sync(() => f(p) as Element.Rendered);
+      return E.sync(() => fc(p) as Element.Rendered);
     }
     case ASYNC: {
-      return E.promise(() => f(p) as Promise<Element.Rendered>);
+      return E.promise(() => fc(p) as Promise<Element.Rendered>);
     }
     case EFFECT: {
-      return f(p) as E.Effect<Element.Rendered>;
+      return fc(p) as E.Effect<Element.Rendered>;
     }
   }
   return E.suspend(() => {
-    const output = f(p);
+    const output = fc(p);
 
     if (P.isPromise(output)) {
-      FC.cast(f, FC.AsyncPrototype);
+      FC.cast(fc, FC.AsyncPrototype);
       return E.promise(() => output);
     }
     if (E.isEffect(output)) {
-      FC.cast(f, FC.EffectPrototype);
+      FC.cast(fc, FC.EffectPrototype);
       return output as E.Effect<any>;
     }
-    FC.cast(f, FC.SyncPrototype);
+    FC.cast(fc, FC.SyncPrototype);
     return E.succeed(output);
   });
 };
 
-const renderEffect = (fx: Polymer.EffectFn) => E.suspend(() => {
+const renderFx = (fx: Polymer.EffectFn) => E.suspend(() => {
   if (type.isAsync(fx)) {
     return E.promise(fx);
   }
@@ -58,7 +58,7 @@ const renderEffects = (p: Polymer.Polymer) => E.suspend(() => {
   }
   return pipe(
     Polymer.flush(p),
-    E.forEach(renderEffect),
+    E.forEach(renderFx),
     E.asVoid,
   );
 });

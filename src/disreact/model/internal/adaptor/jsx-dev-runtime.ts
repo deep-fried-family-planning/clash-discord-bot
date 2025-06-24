@@ -1,5 +1,5 @@
-import type * as JsxRuntime from '#src/disreact/model/adaptor/jsx-runtime.ts';
-import * as Pragma from '#src/disreact/model/internal/domain/pragma.ts';
+import type * as JsxRuntime from '#src/disreact/model/internal/adaptor/jsx-runtime.ts';
+import * as Pragma from '#src/disreact/model/internal/adaptor/domain/pragma.ts';
 
 export const Fragment = JsxRuntime.Fragment;
 

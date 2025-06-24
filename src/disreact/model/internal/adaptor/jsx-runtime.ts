@@ -1,5 +1,5 @@
 import type {IntrinsicAttributesMap} from '#src/disreact/codec/intrinsic/types.ts';
-import * as Pragma from '#src/disreact/model/internal/domain/pragma.ts';
+import * as Pragma from '#src/disreact/model/internal/adaptor/domain/pragma.ts';
 
 export const Fragment = Pragma.Fragment;
 

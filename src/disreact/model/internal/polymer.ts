@@ -1,7 +1,7 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
-import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
-import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import type * as Document from '#src/disreact/model/internal/document.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';

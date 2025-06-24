@@ -1,4 +1,4 @@
-import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
+import type * as Rehydrant from '#src/disreact/model/internal/adaptor/exp/domain/old/envelope.ts';
 import {decode, encode} from '@msgpack/msgpack';
 import type * as E from 'effect/Effect';
 import * as S from 'effect/Schema';

@@ -1,5 +1,5 @@
 import {ANONYMOUS, ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/model/internal/core/constants.ts';
-import * as type from '#src/disreact/model/internal/core/type.ts';
+import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as E from 'effect/Effect';
 

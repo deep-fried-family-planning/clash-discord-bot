@@ -1,5 +1,5 @@
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as type from '#src/disreact/model/internal/core/type.ts';
+import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 

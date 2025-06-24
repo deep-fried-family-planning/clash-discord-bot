@@ -1,6 +1,6 @@
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
-import type * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
+import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
@@ -78,7 +78,7 @@ export const isClose = <A>(d: Document<A>) => d._next === null;
 
 export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
 
-const __putPolymer = <A>(d: Document<A>, k: string, p: Polymer.Chain) => {
+const putChain__ = <A>(d: Document<A>, k: string, p: Polymer.Chain) => {
   if (d.trie[k]) {
     throw new Error(INTERNAL_ERROR);
   }
@@ -86,12 +86,12 @@ const __putPolymer = <A>(d: Document<A>, k: string, p: Polymer.Chain) => {
   return d;
 };
 
-export const putPolymer = dual<
+export const putChain = dual<
   <A>(k: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
-  typeof __putPolymer
->(3, __putPolymer);
+  typeof putChain__
+>(3, putChain__);
 
-const __getPolymer = <A>(d: Document<A>, k: string) => {
+const getChain__ = <A>(d: Document<A>, k: string) => {
   const p = d.trie[k];
   if (!p) {
     return undefined;
@@ -100,9 +100,9 @@ const __getPolymer = <A>(d: Document<A>, k: string) => {
   return p;
 };
 
-export const getPolymer = dual<
+export const getChain = dual<
   <A>(k: string) => (d: Document<A>) => Polymer.Polymer | undefined,
-  typeof __getPolymer
->(2, __getPolymer);
+  typeof getChain__
+>(2, getChain__);
 
 export const dehydrate = <A>(d: Document<A>) => {};
