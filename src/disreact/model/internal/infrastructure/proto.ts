@@ -30,7 +30,7 @@ export const declareArray = <A>(p: Partial<A>): A =>
   );
 
 export const init = <A>(p: A, o: Partial<A>): A =>
-  Object.assign({}, o, p);
+  Object.assign({}, p, o);
 
 export const impure = <A>(p: A, o: Partial<A>): A =>
   Object.assign(o, p);

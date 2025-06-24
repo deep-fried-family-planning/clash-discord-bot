@@ -5,34 +5,11 @@ import * as FC from '#src/disreact/model/internal/domain/fc.ts';
 import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
 
-const renderEffects = (p: Polymer.Polymer) => E.suspend(() => {
-  if (!Polymer.hasEffects(p)) {
-    return E.void;
-  }
-  return pipe(
-    Polymer.flush(p),
-    E.forEach((f) => {
-      if (type.isAsync(f)) {
-        return E.promise(f);
-      }
-      const out = f();
+export type dispatch = never;
 
-      if (P.isPromise(out)) {
-        return E.promise(() => out);
-      }
-      if (E.isEffect(out)) {
-        return out;
-      }
-      return E.void;
-    }),
-    E.asVoid,
-  );
-});
-
-const renderFC = (f: FC.FC, p: any): E.Effect<any> => {
+const renderJsxFn = (f: FC.FC, p: any): E.Effect<any> => {
   switch (FC.kind(f)) {
     case SYNC: {
       return E.sync(() => f(p) as Element.Rendered);
@@ -59,6 +36,32 @@ const renderFC = (f: FC.FC, p: any): E.Effect<any> => {
     return E.succeed(output);
   });
 };
+
+const renderEffect = (fx: Polymer.EffectFn) => E.suspend(() => {
+  if (type.isAsync(fx)) {
+    return E.promise(fx);
+  }
+  const out = fx();
+
+  if (P.isPromise(out)) {
+    return E.promise(() => out);
+  }
+  if (E.isEffect(out)) {
+    return out;
+  }
+  return E.void;
+});
+
+const renderEffects = (p: Polymer.Polymer) => E.suspend(() => {
+  if (!Polymer.hasEffects(p)) {
+    return E.void;
+  }
+  return pipe(
+    Polymer.flush(p),
+    E.forEach(renderEffect),
+    E.asVoid,
+  );
+});
 
 export const render = () => {};
 

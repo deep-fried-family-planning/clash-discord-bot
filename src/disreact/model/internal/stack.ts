@@ -1,6 +1,6 @@
 import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';
 import * as iterable from 'effect/Iterable';
 import * as MutableList from 'effect/MutableList';
@@ -12,38 +12,31 @@ const TypeId = Symbol.for('disreact/stack');
 export interface Stack<A = any> extends Pipeable.Pipeable
 {
   [TypeId]: typeof TypeId;
+  document: Document.Document<A>;
   done    : boolean;
   flags   : Set<A>;
   list    : MutableList.MutableList<A>;
   root    : A;
   seen    : WeakSet<any>;
-  z       : Document.Document<A>;
 };
 
 export const isStack = <A>(u: unknown): u is Stack<A> => typeof u === 'object' && u !== null && TypeId in u && u[TypeId] === TypeId;
 
-const Prototype = {
+const Prototype = proto.declare<Stack>({
   [TypeId]: TypeId,
+  document: undefined as any,
   done    : false,
   flags   : new Set(),
   list    : MutableList.empty(),
   root    : undefined,
   seen    : new WeakSet(),
-  size    : 0,
-  z       : undefined as any,
-};
-
-const empty = (): Stack =>
-  Object.assign(
-    {},
-    Pipeable.Prototype,
-    Lineage.Prototype,
-    Prototype,
-  ) as Stack;
+  ...Pipeable.Prototype,
+});
 
 export const make = <A>(root: A): Stack<A> => {
-  const self = empty();
-  self.root = root;
+  const self = proto.init(Prototype, {
+    root: root,
+  });
   return pushF(self, root);
 };
 

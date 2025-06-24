@@ -1,12 +1,14 @@
+import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
-import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
+import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
 import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Pipeable from 'effect/Pipeable';
+import type * as Record from 'effect/Record';
 
 const Id = Symbol.for('disreact/document');
 
@@ -20,7 +22,7 @@ export interface Document<A = any> extends Pipeable.Pipeable,
   _id   : string;
   _key  : string;
   _hash : string;
-  _next : string;
+  _next : string | null;
   _props: any;
   data  : any;
   hash? : string;
@@ -28,7 +30,7 @@ export interface Document<A = any> extends Pipeable.Pipeable,
   phase : string;
   queue : Mailbox.Mailbox<any>;
   root  : A;
-  trie  : Record<string, Polymer.Polymer>;
+  trie  : Record<string, Polymer.Chain>;
 }
 
 const Prototype = proto.declare<Document>({
@@ -56,7 +58,7 @@ export const make = <A>(
   phase: string,
   queue: Mailbox.Mailbox<any>,
   root: A,
-  trie: Record<string, Polymer.Polymer> = {},
+  trie: Record<string, Polymer.Chain> = {},
 ) =>
   proto.init(Prototype, {
     _id   : _id,
@@ -72,18 +74,28 @@ export const make = <A>(
     trie  : trie,
   });
 
-export const __putPolymer = <A>(d: Document<A>, k: string, p: Polymer.Polymer) => {
+export const isClose = <A>(d: Document<A>) => d._next === null;
+
+export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
+
+const __putPolymer = <A>(d: Document<A>, k: string, p: Polymer.Chain) => {
+  if (d.trie[k]) {
+    throw new Error(INTERNAL_ERROR);
+  }
   d.trie[k] = p;
   return d;
 };
 
 export const putPolymer = dual<
-  <A>(k: string, p: Polymer.Polymer) => (d: Document<A>) => Document<A>,
+  <A>(k: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
   typeof __putPolymer
 >(3, __putPolymer);
 
-export const __getPolymer = <A>(d: Document<A>, k: string) => {
+const __getPolymer = <A>(d: Document<A>, k: string) => {
   const p = d.trie[k];
+  if (!p) {
+    return undefined;
+  }
   delete d.trie[k];
   return p;
 };
@@ -93,9 +105,4 @@ export const getPolymer = dual<
   typeof __getPolymer
 >(2, __getPolymer);
 
-// todo
-export const isSameSource = <A>(d: Document<A>, r: A) => d.root === r;
-
-export const isClose = <A>(d: Document<A>, r: A) => d.root === r;
-
-export const isDifferentSource = <A>(d: Document<A>, r: A) => d.root !== r;
+export const dehydrate = <A>(d: Document<A>) => {};
