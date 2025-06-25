@@ -128,6 +128,7 @@ const config = [
         '@stylistic/lines-between-class-members': [0],
         '@stylistic/brace-style'                : [0],
         '@stylistic/no-trailing-spaces'         : [0],
+        'require-yield'                         : [0],
         // '@typescript-eslint/no-unused-vars'     : [2, {
         //   args                          : 'all',
         //   argsIgnorePattern             : '^_',
