@@ -1,0 +1,63 @@
+import type * as Document from '#src/disreact/model/internal/document.ts';
+import type * as Node from '#src/disreact/model/internal/node.ts';
+import * as Source from '#src/disreact/model/internal/source.ts';
+import {Exit} from 'effect';
+import * as Cache from 'effect/Cache';
+import * as Duration from 'effect/Duration';
+import * as E from 'effect/Effect';
+import {pipe} from 'effect/Function';
+
+export type RehydratorConfig = {
+  sources  : Source.Registrant[];
+  capacity?: number;
+  ttl?     : Duration.Duration;
+};
+
+export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
+  effect: E.fnUntraced(function* (config: RehydratorConfig) {
+    const sources = new Map<string, Source.Source>();
+
+    for (const s of config.sources) {
+      const source = Source.make(s);
+      if (sources.has(source.id)) {
+        throw new Error();
+      }
+      sources.set(source.id, source);
+    }
+
+    const ttl = config.ttl ?? Duration.minutes(5);
+
+    const memory = yield* Cache.makeWith({
+      capacity: config.capacity ?? 100,
+
+      lookup: (key: string) =>
+        E.succeed(undefined as undefined | Document.Document<Node.Node>),
+
+      timeToLive: (exit) =>
+        Exit.isFailure(exit) ? Duration.zero :
+        !exit.value ? Duration.zero :
+        ttl,
+    });
+
+    const loadMemory = (key: string, hash: string) =>
+      pipe(
+        memory.get(key),
+        E.map((d) => {
+          if (!d) {
+            return undefined;
+          }
+          return d; // todo verify hash
+        }),
+      );
+
+    const saveMemory = (d: Document.Document<Node.Node>) =>
+      memory.set(d._key, d);
+
+    return {
+      loadMemory,
+      saveMemory,
+    };
+  }),
+  accessors: true,
+})
+{}

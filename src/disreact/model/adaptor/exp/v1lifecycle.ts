@@ -5,7 +5,7 @@ import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts'
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import {Relay} from '#src/disreact/model/adaptor/exp/Relay.ts';
-import * as Mutex from '#src/disreact/model/internal/infrastructure/mutex.ts';
+import * as Mutex from '#src/disreact/model/adaptor/mutex.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
 import * as Stack from '#src/disreact/model/internal/stack.ts';
 import * as Cause from 'effect/Cause';

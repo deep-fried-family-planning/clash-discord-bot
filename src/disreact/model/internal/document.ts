@@ -1,5 +1,6 @@
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
+import type * as Node from '#src/disreact/model/internal/node.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Equal from 'effect/Equal';
@@ -12,11 +13,9 @@ import type * as Record from 'effect/Record';
 
 const Id = Symbol.for('disreact/document');
 
-export interface Document<A = any> extends Pipeable.Pipeable,
-  Lateral.Lateral<Document<A>>,
-  Hash.Hash,
-  Equal.Equal,
-  Inspectable.Inspectable
+export interface Document<A = Node.Node> extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
+  Lateral.Lateral<Document<A>>
 {
   [Id]  : typeof Id;
   _id   : string;
@@ -33,7 +32,7 @@ export interface Document<A = any> extends Pipeable.Pipeable,
   trie  : Record<string, Polymer.Chain>;
 }
 
-const Prototype = proto.declare<Document>({
+const Prototype = proto.declare<Document<Node.Node>>({
   [Id]: Id,
   ...Pipeable.Prototype,
   ...Lateral.Prototype,
@@ -50,14 +49,14 @@ const Prototype = proto.declare<Document>({
   },
 });
 
-export const make = <A>(
+export const make = (
   _id: string,
   _key: string,
   _hash: string,
   data: any,
   phase: string,
   queue: Mailbox.Mailbox<any>,
-  root: A,
+  root: Node.Node,
   trie: Record<string, Polymer.Chain> = {},
 ) =>
   proto.init(Prototype, {
@@ -78,39 +77,4 @@ export const isClose = <A>(d: Document<A>) => d._next === null;
 
 export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
 
-const putChain__ = <A>(d: Document<A>, k: string, p: Polymer.Chain) => {
-  if (d.trie[k]) {
-    throw new Error(INTERNAL_ERROR);
-  }
-  d.trie[k] = p;
-  return d;
-};
-
-export const putChain = dual<
-  <A>(k: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
-  typeof putChain__
->(3, putChain__);
-
-const getChain__ = <A>(d: Document<A>, k: string) => {
-  const p = d.trie[k];
-  if (!p) {
-    return undefined;
-  }
-  delete d.trie[k];
-  return p;
-};
-
-export const getChain = dual<
-  <A>(k: string) => (d: Document<A>) => Polymer.Polymer | undefined,
-  typeof getChain__
->(2, getChain__);
-
-export const dehydrate = <A>(d: Document<A>) => {};
-
-export type Hydrator = {
-  hash? : string;
-  id    : string;
-  key   : string;
-  props?: any;
-  trie? : Record<string, Polymer.Chain>;
-};
+export const create;

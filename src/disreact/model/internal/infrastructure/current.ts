@@ -8,7 +8,7 @@ import type * as Node from '#src/disreact/model/internal/node.ts';
 export let component = undefined as undefined | Element.Func,
            env       = undefined as undefined | Rehydrant.Envelope,
            poly      = undefined as undefined | Polymer.Polymer,
-           stack     = undefined as undefined | Stack.Stack,
+           stack     = undefined as undefined | Stack.Stack<Node.Node>,
            vertex    = undefined as undefined | Node.Node,
            document  = undefined as undefined | Document.Document<Node.Node>;
 
@@ -18,6 +18,7 @@ export type Current = {
   poly?    : Polymer.Polymer;
   vertex?  : Node.Node;
   document?: Document.Document<Node.Node>;
+  stack?   : Stack.Stack<Node.Node>;
 };
 
 export const set = (v: Node.Functional, d: Document.Document<Node.Node>) => {
@@ -50,6 +51,7 @@ export const get = (): Required<Current> => {
     node    : component,
     root    : env,
     poly    : poly,
+    stack   : stack,
     vertex  : vertex,
     document: document,
   } as Required<Current>;

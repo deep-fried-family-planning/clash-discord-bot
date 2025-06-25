@@ -4,14 +4,14 @@ import * as Node from '#src/disreact/model/internal/node.ts';
 import * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
 
-export type DocumentCodecConfig = {
+export type ModelCodecConfig = {
   primitive    : string;
   encoding     : Record<string, (self: any, acc: any) => any>;
   normalization: Record<string, string>;
 };
 
-export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/DocumentCodec', {
-  effect: E.fnUntraced(function* (config?: DocumentCodecConfig) {
+export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCodec', {
+  effect: E.fnUntraced(function* (config?: ModelCodecConfig) {
     const primitive     = config?.primitive ?? JsxDefault.primitive,
           normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
           encoding      = config?.encoding ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;

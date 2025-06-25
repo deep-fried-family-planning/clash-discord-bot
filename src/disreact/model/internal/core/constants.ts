@@ -1,4 +1,4 @@
-export const IS_DEV = (process.env.NODE_ENV === 'development') as true,
+export const IS_DEV         = (process.env.NODE_ENV === 'development') as true,
              INTERNAL_ERROR = 'Internal Error' as const;
 
 export const TEXT_NODE  = 0 as const,
@@ -12,5 +12,9 @@ export const SYNC   = 1 as const,
 
 export const ANONYMOUS = 'Anonymous' as const;
 
-export const JSX = 0,
+export const JSX  = 0,
              JSXS = 1;
+
+export const PROPS  = 0,
+             STRUCT = 1,
+             ARRAY  = 2;

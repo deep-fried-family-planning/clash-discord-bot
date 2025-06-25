@@ -5,7 +5,7 @@ import * as E from 'effect/Effect';
 export type Model = never;
 
 export type SynthesizeInput = {
-  data: any;
+
 };
 
 export const synthesize = () =>
@@ -14,7 +14,7 @@ export const synthesize = () =>
   );
 
 export type GenerateInput = {
-
+  data: any;
 };
 
 export const generate = (source: Source.Lookup) =>
@@ -23,7 +23,7 @@ export const generate = (source: Source.Lookup) =>
   );
 
 export type InvokeInput = {
-
+  data: any;
 };
 
 export const invoke = () =>

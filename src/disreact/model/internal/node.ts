@@ -1,13 +1,14 @@
-import {FRAGMENT, INTRINSIC, IS_DEV, TEXT_NODE} from '#src/disreact/model/internal/core/constants.ts';
+import {FRAGMENT, INTERNAL_ERROR, INTRINSIC, IS_DEV, TEXT_NODE} from '#src/disreact/model/internal/core/constants.ts';
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
 import * as dispatch from '#src/disreact/model/internal/infrastructure/dispatch.ts';
+import * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import * as Jsx from '#src/disreact/model/internal/core/jsx.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as E from 'effect/Effect';
-import {pipe} from 'effect/Function';
+import {dual, pipe} from 'effect/Function';
+import type * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
 export type Node = | Text
@@ -16,6 +17,7 @@ export type Node = | Text
                    | Functional;
 
 interface Base extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
   Lineage.Lineage<Node>,
   Lateral.Lateral<Node>
 {
@@ -158,6 +160,11 @@ export const mount__ = (v: Node, d: Document.Document<Node>) => {
   );
 };
 
+export const mount = dual<
+  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
+  typeof mount__
+>(2, mount__);
+
 export const hydrate__ = (v: Node, d: Document.Document<Node>) => {
   switch (v._tag) {
     case TEXT_NODE: {
@@ -195,6 +202,11 @@ export const hydrate__ = (v: Node, d: Document.Document<Node>) => {
   );
 };
 
+export const hydrate = dual<
+  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
+  typeof hydrate__
+>(2, hydrate__);
+
 export const rerender__ = (v: Node, d: Document.Document<Node>) => {
 
 };
@@ -209,25 +221,35 @@ export const unmount__ = (v: Node, d: Document.Document<Node>) => E.suspend(() =
   return E.void;
 });
 
+export const unmount = dual<
+  (d: Document.Document<Node>) => (n: Node) => E.Effect<void>,
+  typeof unmount__
+>(2, unmount__);
+
 export const dehydrate__ = (v: Node, d: Document.Document<Node>) => {
   if (isFunctional(v)) {
     if (IS_DEV && !v.$trie) {
-      throw new Error();
+      throw new Error(INTERNAL_ERROR);
     }
     if (IS_DEV && v.$trie! in d.trie) {
-      throw new Error();
+      throw new Error(INTERNAL_ERROR);
     }
     if (IS_DEV && !v.polymer) {
-      throw new Error();
+      throw new Error(INTERNAL_ERROR);
     }
     d.trie[v.$trie!] = v.polymer!.stack;
   }
   return v.valence;
 };
 
+export const dehydrate = dual<
+  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
+  typeof dehydrate__
+>(2, dehydrate__);
+
 export const invoke = (v: Node, e: any) => {
-  if (!isIntrinsic(v)) {
-    throw new Error();
+  if (IS_DEV && !isIntrinsic(v)) {
+    throw new Error(INTERNAL_ERROR);
   }
   return E.suspend(() => {
     return E.void;

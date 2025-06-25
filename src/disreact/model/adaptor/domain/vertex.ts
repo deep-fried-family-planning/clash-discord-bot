@@ -1,7 +1,7 @@
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import type * as FC from '#src/disreact/model/internal/core/fc.ts';
 import * as Pragma from '#src/disreact/model/adaptor/domain/pragma.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';

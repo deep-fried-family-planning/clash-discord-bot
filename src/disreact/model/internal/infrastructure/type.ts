@@ -13,6 +13,10 @@ export type UnifyM<A extends unknown[]> =
   ? E.Effect.AsEffect<A[number]>
   : A[number];
 
+export type arr<A> = A[];
+
+export type Arr<A> = Array<A>;
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Fn = Function;
 

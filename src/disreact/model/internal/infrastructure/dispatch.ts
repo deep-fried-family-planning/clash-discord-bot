@@ -1,9 +1,9 @@
 import {ASYNC, EFFECT, SYNC} from '#src/disreact/model/internal/core/constants.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
 import * as current from '#src/disreact/model/internal/infrastructure/current.ts';
-import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
+import * as FC from '#src/disreact/model/internal/core/fc.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
-import type * as Jsx from '#src/disreact/model/internal/core/jsx.ts';
+import type * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import type * as Node from '#src/disreact/model/internal/node.ts';
 import * as E from 'effect/Effect';
