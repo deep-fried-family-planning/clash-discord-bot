@@ -1,5 +1,5 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
-import * as FC from '#src/disreact/model/internal/core/fc.ts';
+import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';

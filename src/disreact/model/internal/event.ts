@@ -1,16 +1,17 @@
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
-import type * as FC from '#src/disreact/model/internal/core/fc.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/model/internal/core/constants.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import type * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
+import * as Pipeable from 'effect/Pipeable';
 import * as P from 'effect/Predicate';
 
 export const TypeId = Symbol.for('disreact/event');
 
-export interface Event {
+export interface Event extends Pipeable.Pipeable {
   [TypeId]?: typeof TypeId;
   id       : string;
   property : string;
@@ -32,6 +33,7 @@ const Prototype = proto.declare<Event>({
   node    : undefined,
   next    : () => {},
   close   : () => {},
+  ...Pipeable.Prototype,
 });
 
 export const make = () => {};
@@ -64,7 +66,10 @@ const HandlerPrototype = proto.declare<Handler>({
 export const handler = (handler: Handler): Handler =>
   proto.impure(HandlerPrototype, handler);
 
-export const invoke = (handler: Handler, event: Event): E.Effect<void> => {
+export const invoke = (event: Event, handler: Handler): E.Effect<void> => {
+  if (IS_DEV && (!isHandler(handler) || !isEvent(event))) {
+    throw new Error(INTERNAL_ERROR);
+  }
   if (type.isAsync(handler)) {
     return E.promise(() => handler(event));
   }

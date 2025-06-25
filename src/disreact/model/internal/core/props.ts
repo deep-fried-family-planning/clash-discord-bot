@@ -1,9 +1,9 @@
-import type {ARRAY} from '#src/disreact/model/internal/core/constants.ts';
-import {PROPS, type STRUCT} from '#src/disreact/model/internal/core/constants.ts';
+import {ARRAY, HANDLER, PROPS, STRUCT} from '#src/disreact/model/internal/core/constants.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
-import type * as Equal from 'effect/Equal';
-import type * as Hash from 'effect/Hash';
+import type * as E from 'effect/Effect';
+import * as Equal from 'effect/Equal';
+import * as Hash from 'effect/Hash';
 import * as MutableList from 'effect/MutableList';
 
 const TypeId = Symbol.for('disreact/props');
@@ -22,13 +22,40 @@ export interface PropsArray extends type.Arr<any> {
   [TypeId]: typeof ARRAY;
 };
 
+export interface EventHandler<A, E = any, R = any> extends type.Fn {
+  (event: A): | void
+              | Promise<void>
+              | E.Effect<void, E, R>;
+
+  [TypeId]?: typeof HANDLER;
+  [Hash.symbol]?(): number;
+  [Equal.symbol]?(that: EventHandler<any>): boolean;
+}
+
 const Prototype = proto.declare<Props>({
   [TypeId]: PROPS,
 });
 
-const StructPrototype = proto.declare<PropsStruct>({});
+const StructPrototype = proto.declare<PropsStruct>({
+  [TypeId]: STRUCT,
+});
 
-const ArrayPrototype = proto.declare<PropsArray>({});
+const ArrayPrototype = proto.declare<PropsArray>({
+  [TypeId]: ARRAY,
+});
+
+const EventHandlerPrototype = proto.declare<EventHandler<any>>({
+  [TypeId]: HANDLER,
+  [Hash.symbol]() {
+    return 1;
+  },
+  [Equal.symbol](that: EventHandler<any>) {
+    if (that[TypeId] === HANDLER) {
+      return true;
+    }
+    return false;
+  },
+});
 
 export const make = (p: Record<string, any>) => {
   const props = {} as Props;

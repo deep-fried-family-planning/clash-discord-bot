@@ -1,7 +1,10 @@
 import {FRAGMENT, INTERNAL_ERROR, INTRINSIC, IS_DEV, TEXT_NODE} from '#src/disreact/model/internal/core/constants.ts';
+import type * as Event from '#src/disreact/model/internal/event.ts';
 import * as Lateral from '#src/disreact/model/internal/core/lateral.ts';
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
+import type { UpdateError} from '#src/disreact/model/internal/infrastructure/dispatch.ts';
+import type {RenderError} from '#src/disreact/model/internal/infrastructure/dispatch.ts';
 import * as dispatch from '#src/disreact/model/internal/infrastructure/dispatch.ts';
 import * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
@@ -125,133 +128,153 @@ const convertChildren = (p: Node, cs: Jsx.Children): Node[] | undefined => {
   return convertChilds(p, cs);
 };
 
-const convertWithin = <A extends Node>(p: A): A => {
-  if (p.child) {
-    p.valence = [convertChild(p, p.child, p.d, 0)];
+const convertWithin = <A extends Node>(self: A): A => {
+  if (self.child) {
+    self.valence = [convertChild(self, self.child, self.d, 0)];
   }
-  else if (p.childs) {
-    p.valence = convertChilds(p, p.childs);
+  else if (self.childs) {
+    self.valence = convertChilds(self, self.childs);
   }
-  return p;
+  return self;
 };
 
-export const mount__ = (v: Node, d: Document.Document<Node>) => {
-  switch (v._tag) {
+export const valence = (self: Node): Node[] | undefined => self.valence;
+
+export const valenceR = (self: Node): Node[] | undefined => self.valence?.toReversed();
+
+export const render__ = (self: Node, d: Document.Document<Node>) => {
+  switch (self._tag) {
     case TEXT_NODE: {
       return E.succeed(undefined);
     }
     case FRAGMENT:
     case INTRINSIC: {
       return E.sync(() => {
-        convertWithin(v);
-        return v.valence;
+        convertWithin(self);
+        return self.valence;
       });
     }
   }
-  return pipe(
-    E.sync(() => {
-      v.polymer = Polymer.empty();
-    }),
-    E.andThen(dispatch.render(v, d)),
-    E.map((cs) => {
-      v.valence = convertChildren(v, cs);
-      return v.valence;
-    }),
-  );
+  return dispatch.render(self, d);
 };
+export const render = dual<(d: Document.Document<Node>) => (self: Node) => E.Effect<Node[] | undefined>, typeof render__>(2, render__);
 
-export const mount = dual<
-  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
-  typeof mount__
->(2, mount__);
-
-export const hydrate__ = (v: Node, d: Document.Document<Node>) => {
-  switch (v._tag) {
-    case TEXT_NODE: {
-      return E.succeed(undefined);
-    }
+export const update__ = (self: Node, d: Document.Document<Node>): E.Effect<Node, UpdateError> => {
+  switch (self._tag) {
+    case TEXT_NODE:
     case FRAGMENT:
     case INTRINSIC: {
-      return E.sync(() => {
-        convertWithin(v);
-        return v.valence;
-      });
+      return E.succeed(self);
     }
   }
-  return pipe(
-    E.sync(() => {
-      if (IS_DEV && !v.$trie) {
-        throw new Error();
-      }
-      if (IS_DEV && !v.polymer) {
-        throw new Error();
-      }
-      if (v.$trie! in d.trie) {
-        v.polymer = Polymer.rehydrate(d.trie[v.$trie!]);
-        delete d.trie[v.$trie!];
-      }
-      else {
-        v.polymer = Polymer.empty();
-      }
-    }),
-    E.andThen(dispatch.render(v, d)),
-    E.map((cs) => {
-      v.valence = convertChildren(v, cs);
-      return v.valence;
-    }),
-  );
-};
-
-export const hydrate = dual<
-  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
-  typeof hydrate__
->(2, hydrate__);
-
-export const rerender__ = (v: Node, d: Document.Document<Node>) => {
-
-};
-
-export const unmount__ = (v: Node, d: Document.Document<Node>) => E.suspend(() => {
-  if (isFunctional(v)) {
-    delete (v as any).polymer;
-    delete v.valence;
-    return E.void; // todo dismount fx
-  }
-  delete v.valence;
-  return E.void;
-});
-
-export const unmount = dual<
-  (d: Document.Document<Node>) => (n: Node) => E.Effect<void>,
-  typeof unmount__
->(2, unmount__);
-
-export const dehydrate__ = (v: Node, d: Document.Document<Node>) => {
-  if (isFunctional(v)) {
-    if (IS_DEV && !v.$trie) {
-      throw new Error(INTERNAL_ERROR);
-    }
-    if (IS_DEV && v.$trie! in d.trie) {
-      throw new Error(INTERNAL_ERROR);
-    }
-    if (IS_DEV && !v.polymer) {
-      throw new Error(INTERNAL_ERROR);
-    }
-    d.trie[v.$trie!] = v.polymer!.stack;
-  }
-  return v.valence;
-};
-
-export const dehydrate = dual<
-  (d: Document.Document<Node>) => (n: Node) => E.Effect<Node[] | undefined>,
-  typeof dehydrate__
->(2, dehydrate__);
-
-export const invoke = (v: Node, e: any) => {
-  if (IS_DEV && !isIntrinsic(v)) {
+  if (IS_DEV && !self.polymer) {
     throw new Error(INTERNAL_ERROR);
   }
+  return pipe(
+    dispatch.runAllFx(self.polymer!),
+    E.as(self),
+  );
+};
+export const update = dual<(d: Document.Document<Node>) => (self: Node) => E.Effect<Node, UpdateError>, typeof update__>(2, update__);
+
+export const mount__ = (self: Node, d: Document.Document<Node>): E.Effect<Node, RenderError | UpdateError> => {
+  switch (self._tag) {
+    case TEXT_NODE: {
+      return E.succeed(self);
+    }
+    case FRAGMENT:
+    case INTRINSIC: {
+      return E.sync(() => {
+        convertWithin(self);
+        return self;
+      });
+    }
+  }
+  return pipe(
+    E.sync(() => {
+      self.polymer = Polymer.empty();
+    }),
+    E.andThen(dispatch.render(self, d)),
+    E.map((cs) => {
+      self.valence = convertChildren(self, cs);
+      return self;
+    }),
+  );
+};
+export const mount = dual<(d: Document.Document<Node>) => (self: Node) => E.Effect<Node, RenderError | UpdateError>, typeof mount__>(2, mount__);
+
+export const hydrate__ = (self: Node, d: Document.Document<Node>): E.Effect<Node, RenderError> => {
+  switch (self._tag) {
+    case TEXT_NODE: {
+      return E.succeed(self);
+    }
+    case FRAGMENT:
+    case INTRINSIC: {
+      return E.sync(() => {
+        convertWithin(self);
+        return self;
+      });
+    }
+  }
+  return pipe(
+    E.sync(() => {
+      if (IS_DEV && !self.$trie) {
+        throw new Error();
+      }
+      if (IS_DEV && !self.polymer) {
+        throw new Error();
+      }
+      if (self.$trie! in d.trie) {
+        self.polymer = Polymer.rehydrate(d.trie[self.$trie!]);
+        delete d.trie[self.$trie!];
+      }
+      else {
+        self.polymer = Polymer.empty();
+      }
+    }),
+    E.andThen(dispatch.render(self, d)),
+    E.map((cs) => {
+      self.valence = convertChildren(self, cs);
+      return self;
+    }),
+  );
+};
+export const hydrate = dual<(d: Document.Document<Node>) => (self: Node) => E.Effect<Node, RenderError>, typeof hydrate__>(2, hydrate__);
+
+export const unmount__ = (self: Node, d: Document.Document<Node>): E.Effect<Node> => E.suspend(() => {
+  if (isFunctional(self)) {
+    delete (self as any).polymer;
+  }
+  delete self.valence;
+  return E.succeed(self);
+});
+export const unmount = dual<(d: Document.Document<Node>) => (self: Node) => E.Effect<Node>, typeof unmount__>(2, unmount__);
+
+export const dehydrate__ = (self: Node, d: Document.Document<Node>): Node[] | undefined => {
+  if (isFunctional(self)) {
+    if (IS_DEV && !self.$trie) {
+      throw new Error(INTERNAL_ERROR);
+    }
+    if (IS_DEV && self.$trie! in d.trie) {
+      throw new Error(INTERNAL_ERROR);
+    }
+    if (IS_DEV && !self.polymer) {
+      throw new Error(INTERNAL_ERROR);
+    }
+    d.trie[self.$trie!] = self.polymer!.stack;
+  }
+  return self.valence;
+};
+export const dehydrate = dual<(d: Document.Document<Node>) => (self: Node) => Node[] | undefined, typeof dehydrate__>(2, dehydrate__);
+
+export const invoke__ = (self: Node, event: Event.Event) => {
+  if (IS_DEV && !isIntrinsic(self)) {
+    throw new Error(INTERNAL_ERROR);
+  }
+  const intrinsic = self as Intrinsic;
+
   return E.suspend(() => {
     return E.void;
   });
 };
+export const invoke = dual<(event: Event.Event) => (self: Node) => E.Effect<void>, typeof invoke__>(2, invoke__);

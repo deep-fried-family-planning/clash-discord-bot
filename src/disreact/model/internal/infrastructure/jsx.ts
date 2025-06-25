@@ -1,5 +1,5 @@
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, JSX, JSXS, TEXT_NODE} from '#src/disreact/model/internal/core/constants.ts';
-import * as FC from '#src/disreact/model/internal/core/fc.ts';
+import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export const TypeId   = Symbol.for('disreact/jsx'),
@@ -94,8 +94,9 @@ export const text = (v: Value): Text =>
 export const jsx = (type: any, props: any): Jsx => {
   if (type === Fragment) {
     return proto.init(FragmentPrototype, {
-      props: props,
-      child: props.children,
+      component: Fragment,
+      props    : props,
+      child    : props.children,
     });
   }
   switch (typeof type) {
@@ -119,9 +120,10 @@ export const jsx = (type: any, props: any): Jsx => {
 export const jsxs = (type: any, props: any): Jsx => {
   if (type === Fragment) {
     return proto.init(FragmentPrototype, {
-      [TypeId]: JSXS,
-      props   : props,
-      childs  : props.children,
+      [TypeId] : JSXS,
+      component: Fragment,
+      props    : props,
+      childs   : props.children,
     });
   }
   switch (typeof type) {
@@ -151,4 +153,70 @@ export const jsxDEV = (type: any, props: any): Jsx => {
 
   self[DevId] = DevId;
   return self;
+};
+
+export interface Source extends Prototype {
+  id: string;
+};
+
+const isSource = (u: unknown): u is Source => isJsx(u) && 'id' in u && typeof u.id === 'string';
+
+const SourcePrototype = proto.declare<Source>({
+  id: '',
+});
+
+export type SourceInput = | FC.FC
+                          | Jsx;
+
+export const makeSource = (input: SourceInput): Source => {
+  if (FC.isFC(input)) {
+    const self = proto.init(SourcePrototype, jsxDEV(input, {}));
+    self.id = FC.name(input);
+    return self;
+  }
+  if (isSource(input)) {
+    throw new Error();
+  }
+  if (!input.props.source) {
+    if (!isFunctional(input)) {
+      throw new Error();
+    }
+    const self = proto.init(SourcePrototype, jsxDEV(input.component, structuredClone(input.props)));
+    self.id = FC.name(input.component);
+    return self;
+  }
+  if (typeof input.props.source !== 'string') {
+    throw new Error();
+  }
+  const self = proto.init(SourcePrototype, jsxDEV(input.props.source, structuredClone(input.props)));
+  self.id = self.props.source;
+  return self;
+};
+
+export type SourceLookup = | string
+                           | FC.FC
+                           | Jsx
+                           | Source;
+
+export const sourceIdFromLookup = (input: SourceLookup): string => {
+  if (typeof input === 'string') {
+    return input;
+  }
+  if (FC.isFC(input)) {
+    return FC.name(input);
+  }
+  if (isSource(input)) {
+    return input.id;
+  }
+  if (typeof input.props.source !== 'string') {
+    throw new Error();
+  }
+  return input.props.source;
+};
+
+export const fromSource = (source: Source): Jsx => {
+  if (!isSource(source)) {
+    throw new Error();
+  }
+  return jsxDEV(source.component, structuredClone(source.props));
 };

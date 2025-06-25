@@ -196,7 +196,7 @@ export const invoke2 = (rh: Rehydrant.Envelope, event: Element.Event) =>
           }
         }
 
-        Stack.pushNodesF(stack, node);
+        Stack.pushNodes__(stack, node);
       }
       if (!target) {
         throw new Error('Event target does not exist');
@@ -262,7 +262,7 @@ const dismount = <A extends Element.Element>(n0: A) => {
     const n = Stack.pop(stack)!;
     Element.trie(n);
 
-    if (!Stack.hasVisited(stack, n)) {
+    if (!Stack.visited(stack, n)) {
       Stack.visit(stack, n);
       Stack.push(stack, n);
       Stack.pushNodes(stack, n);

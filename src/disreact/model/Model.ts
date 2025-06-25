@@ -1,32 +1,17 @@
-import type * as Source from '#src/disreact/model/internal/source.ts';
+import {DocumentCodec} from '#src/disreact/model/DocumentCodec.ts';
+import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
+import * as Cause from 'effect/Cause';
 import {pipe} from 'effect/Function';
 import * as E from 'effect/Effect';
+import * as Data from 'effect/Data';
 
-export type Model = never;
+export class Model extends E.Service<Model>()('disreact/Model', {
+  effect: E.gen(function* () {
+    const codec = yield* DocumentCodec;
+    const rehydrator = yield* Rehydrator;
 
-export type SynthesizeInput = {
+    return {
 
-};
-
-export const synthesize = () =>
-  pipe(
-
-  );
-
-export type GenerateInput = {
-  data: any;
-};
-
-export const generate = (source: Source.Lookup) =>
-  pipe(
-
-  );
-
-export type InvokeInput = {
-  data: any;
-};
-
-export const invoke = () =>
-  pipe(
-
-  );
+    };
+  }),
+}) {}

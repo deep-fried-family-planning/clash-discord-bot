@@ -10,7 +10,16 @@ export let component = undefined as undefined | Element.Func,
            poly      = undefined as undefined | Polymer.Polymer,
            stack     = undefined as undefined | Stack.Stack<Node.Node>,
            vertex    = undefined as undefined | Node.Node,
-           document  = undefined as undefined | Document.Document<Node.Node>;
+           document  = undefined as undefined | Document.Document<Node.Node>,
+           release = () => {};
+
+export const setRelease = (f: () => void) => {
+  release = f;
+};
+
+export const runRelease = () => {
+  release();
+};
 
 export type Current = {
   node?    : Element.Func;
