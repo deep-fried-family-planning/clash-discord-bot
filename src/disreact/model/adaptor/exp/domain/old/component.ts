@@ -3,7 +3,7 @@ import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as Mutex from '#src/disreact/model/adaptor/mutex.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -29,7 +29,7 @@ export const hydrate = (n: Element.Element, rh: Rehydrant.Envelope) => {
   if (!n._n) {
     throw new Error(`${n.name} has no trie id`);
   }
-  n.polymer = Polymer.hydrate(rh.trie, n._n);
+  n.polymer = Polymer.hydrate2(rh.trie, n._n);
 
   return n;
 };
@@ -38,7 +38,7 @@ export const dehydrate = (n: Element.Func, rh: Rehydrant.Envelope) => {
   if (!n._n) {
     throw new Error(`${n.name} has no trie id`);
   }
-  Polymer.dehydrate(rh.trie, n._n, n.polymer!);
+  Polymer.dehydrate2(rh.trie, n._n, n.polymer!);
   return n.under;
 };
 
@@ -65,7 +65,7 @@ export const unmount = (n: Element.Element) => E.sync(() => {
 
 export const render = (n: Element.Func, rh: Rehydrant.Envelope) =>
   pipe(
-    Mutex.acquire(n, rh),
+    Mutex.acquire2(n, rh),
     E.andThen(() => {
       const p = n.props!;
       const f = n.type;
@@ -94,7 +94,7 @@ export const render = (n: Element.Func, rh: Rehydrant.Envelope) =>
       FC.cast(f, FC.SyncPrototype);
       return E.succeed(output);
     }),
-    Mutex.release(n, rh),
+    Mutex.release2(n, rh),
     E.map((rs) => {
       Polymer.commit(n.polymer!);
       return Element.trie(n, rs);

@@ -1,6 +1,6 @@
 import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
-import * as Globals from '#src/disreact/model/internal/infrastructure/current.ts';
+import * as current from '#src/disreact/model/adaptor/global.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import {globalValue} from 'effect/GlobalValue';
@@ -9,24 +9,24 @@ export type mutex = never;
 
 const mutex = globalValue(Symbol.for('disreact/mutex'), () => E.unsafeMakeSemaphore(1));
 
-const lock = mutex.take(1);
+export const lock = mutex.take(1);
 
 const unlock = pipe(
-  E.sync(Globals.reset),
+  E.sync(current.reset),
   E.andThen(mutex.release(1)),
 );
 
-const tap = E.tap(unlock);
+export const tap = E.tap(unlock);
 
-const tapDefect = E.tapDefect(() => unlock);
+export const tapDefect = E.tapDefect(() => unlock);
 
-export const acquire = (n: Element.Func, rh: Rehydrant.Envelope) =>
+export const acquire2 = (n: Element.Func, rh: Rehydrant.Envelope) =>
   E.map(lock, () => {
-    Globals.setV1(rh, n);
+    current.setV1(rh, n);
     return n;
   });
 
-export const release = <A, E, R>(n: Element.Func, rh: Rehydrant.Envelope) => (effect: E.Effect<A, E, R>) =>
+export const release2 = <A, E, R>(n: Element.Func, rh: Rehydrant.Envelope) => (effect: E.Effect<A, E, R>) =>
   effect.pipe(
     tap,
     tapDefect,

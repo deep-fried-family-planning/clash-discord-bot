@@ -26,7 +26,7 @@ export const getTail = (self: WeakKey) => ts.get(self);
 export const setHead = (self?: WeakKey, head?: WeakKey) => void (self && hs.set(self, head));
 export const setTail = (self?: WeakKey, tail?: WeakKey) => void (self && ts.set(self, tail));
 
-export const Prototype = proto.declare<Lateral>({
+export const Prototype = proto.type<Lateral>({
   [HeadId]: TailId,
   __head() {
     return getHead(this);

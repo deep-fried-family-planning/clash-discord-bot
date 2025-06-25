@@ -1,11 +1,12 @@
-import * as Notify from '#src/disreact/model/internal/core/notify.ts';
+import type {Page} from '#src/disreact/model/internal/domain/page.ts';
 import type * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
-import type * as Node from '#src/disreact/model/internal/node.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Data from 'effect/Data';
+import type * as Node from '#src/disreact/model/internal/domain/node.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
+import {dual, pipe} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Mailbox from 'effect/Mailbox';
+import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as Record from 'effect/Record';
 
@@ -22,8 +23,8 @@ export interface Document<A = Node.Node> extends Pipeable.Pipeable,
   _props: any;
   data  : any;
   flags : Set<A>;
+  page  : Page;
   hash? : string;
-  notify: Notify.Notify<A>;
   phase : string;
   queue : Mailbox.Mailbox<any>;
   root  : A;
@@ -36,7 +37,7 @@ export const isClose = <A>(self: Document<A>) => self._next === null;
 
 export const isSameSource = <A>(self: Document<A>) => self._id === self._next;
 
-const Prototype = proto.declare<Document>({
+const Prototype = proto.type<Document>({
   [Id]: Id,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
@@ -74,11 +75,30 @@ export const fork = <A>(self: Document<A>, source: Jsx.Source): Document<A> => {
   throw new Error();
 };
 
-export class HydrationError extends Data.TaggedError('HydrationError')<{}> {}
+export const hydratePolymer__ = <A>(self: Document<A>, key: string): Option.Option<Polymer.Polymer> =>
+  pipe(
+    self.trie[key],
+    Option.fromNullable,
+    Option.map((chain) => {
+      delete self.trie[key];
+      return Polymer.hydrate(chain);
+    }),
+  );
+export const hydratePolymer = dual<
+  <A>(key: string) => (self: Document<A>) => Option.Option<Polymer.Polymer>,
+  typeof hydratePolymer__
+>(2, hydratePolymer__);
 
-export class DehydrationError extends Data.TaggedError('DehydrationError')<{}> {}
-
-export const mergeNotify = <A>(self: Document<A>, notify: Notify.Notify<A>) => {
-  self.notify = Notify.merge(self.notify, notify);
-  return self;
-};
+export const dehydratePolymer__ = <A>(self: Document<A>, key: string, polymer: Polymer.Polymer): Document<A> =>
+  polymer.pipe(
+    Polymer.dehydrate,
+    Option.map((chain) => {
+      self.trie[key] = chain;
+      return self;
+    }),
+    Option.getOrElse(() => self),
+  );
+export const dehydratePolymer = dual<
+  <A>(key: string, polymer: Polymer.Polymer) => (self: Document<A>) => Document<A>,
+  typeof dehydratePolymer__
+>(3, dehydratePolymer__);

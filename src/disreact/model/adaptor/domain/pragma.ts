@@ -33,7 +33,7 @@ export type Childs = Child[];
 export type Children = | Child
                        | Childs;
 
-const Prototype = proto.declare<Pragma>({
+const Prototype = proto.type<Pragma>({
   [Type]   : Type,
   _tag     : REST,
   component: undefined as any,

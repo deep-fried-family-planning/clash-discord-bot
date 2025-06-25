@@ -36,7 +36,7 @@ export const isVertex = (u: unknown): u is Vertex =>
   && VertexId in u
   && u[VertexId] === VertexId;
 
-const Prototype = proto.declare<Vertex>({
+const Prototype = proto.type<Vertex>({
   [VertexId]: VertexId,
   coors     : [],
   valence   : undefined,

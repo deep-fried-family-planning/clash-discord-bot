@@ -62,7 +62,7 @@ export const isFunc = (u: Vertex): u is Func => u._tag === FUNC;
 
 export const isText = (u: Vertex): u is Text => u._tag === TEXT;
 
-export const Base = proto.declare<Base>({
+export const Base = proto.type<Base>({
   [TypeId]: PRAGMA,
   _tag    : undefined as any,
   ...Pipeable.Prototype,
@@ -70,17 +70,17 @@ export const Base = proto.declare<Base>({
   ...Lateral.Prototype,
 });
 
-export const Rest = proto.declare<Rest>({
+export const Rest = proto.type<Rest>({
   ...Base,
   _tag: REST,
 });
 
-export const Func = proto.declare<Func>({
+export const Func = proto.type<Func>({
   ...Base,
   _tag: FUNC,
 });
 
-export const Text = proto.declare<Text>({
+export const Text = proto.type<Text>({
   ...Base,
   [TypeId]: TypeId,
   _tag    : TEXT,
@@ -143,7 +143,7 @@ export const isJust = (u: Props): u is Props<typeof JUST> => u[PropsId] === JUST
 
 export const isMany = (u: Props): u is Props<typeof MANY> => u[PropsId] === MANY;
 
-export const Props = proto.declare<Props>({
+export const Props = proto.type<Props>({
   [PropsId]: NONE,
 });
 

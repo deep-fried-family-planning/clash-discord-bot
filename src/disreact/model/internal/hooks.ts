@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Globals from '#src/disreact/model/internal/infrastructure/current.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
+import * as Globals from '#src/disreact/model/adaptor/global.ts';
 import * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import * as Deps from '#src/disreact/codec/old/deps.ts';
 import type {Discord} from 'dfx';

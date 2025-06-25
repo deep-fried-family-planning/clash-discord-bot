@@ -1,12 +1,11 @@
 import {ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/model/internal/core/constants.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
 import * as current from '#src/disreact/model/internal/infrastructure/current.ts';
 import type * as Jsx from '#src/disreact/model/internal/infrastructure/jsx.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
-import type * as Node from '#src/disreact/model/internal/node.ts';
-import * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import * as Cause from 'effect/Cause';
+import type * as Node from '#src/disreact/model/internal/domain/node.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -15,15 +14,6 @@ import * as P from 'effect/Predicate';
 
 export type dispatch = never;
 
-const mutex = globalValue(
-  Symbol.for('disreact/mutex'),
-  () => E.unsafeMakeSemaphore(1),
-);
-
-current.setRelease(() =>
-  E.runSync(mutex.release(1)),
-);
-
 export class RenderError extends Data.TaggedError('RenderError')<{
   message?: string;
   document: Document.Document<Node.Node>;
@@ -31,30 +21,28 @@ export class RenderError extends Data.TaggedError('RenderError')<{
 }>
 {}
 
-export const render = (n: Node.Functional, d: Document.Document<Node.Node>) =>
-  pipe(
-    mutex.take(1),
-    E.andThen(() => {
-      current.set(n, d);
-      return runFC(n.component, n.props);
+export const mutex = globalValue(Symbol.for('disreact/mutex'), () => E.unsafeMakeSemaphore(1));
+export const acquire = mutex.take(1);
+export const release = mutex.release(1);
+
+current.setEarly(() => E.runSync(release));
+
+export const render = (node: Node.Functional) =>
+  acquire.pipe(
+    E.flatMap(() => {
+      current.set(node.polymer);
+      return runFC(node.component, node.props);
     }),
     E.tap(() => {
-      current.reset();
-      Polymer.commit(n.polymer!);
-      return mutex.release(1);
+      Polymer.commit(node.polymer!);
+      return release;
     }),
-    // E.tapDefect((cause) => {
-    //   current.reset();
-    //
-    //   return E.zipRight(
-    //     mutex.release(1),
-    //     new RenderError({
-    //       message : Cause.pretty(cause),
-    //       document: d,
-    //       node    : n,
-    //     }),
-    //   );
-    // }),
+    E.tapDefect((cause) => {
+      if (IS_DEV) {
+        console.error(cause);
+      }
+      return release;
+    }),
   );
 
 const runFC = (fc: FC.FC, props: any) => {
@@ -92,7 +80,7 @@ export class UpdateError extends Data.TaggedError('UpdateError')<{
 }>
 {}
 
-export const update = (n: Node.Functional, d: Document.Document<Node.Node>) => E.suspend(() => {
+export const update = (n: Node.Functional) => E.suspend(() => {
   if (IS_DEV && !n.polymer) {
     throw new Error(INTERNAL_ERROR);
   }
@@ -137,7 +125,7 @@ export class InvokeError extends Data.TaggedError('InvokeError')<{
 {}
 
 export const invoke = (n: Node.Intrinsic, d: Document.Document<Node.Node>, event: any) => E.suspend(() => {
-
+  return E.void;
 });
 
 const runEvent = (fn: any, event: any) => E.suspend(() => {

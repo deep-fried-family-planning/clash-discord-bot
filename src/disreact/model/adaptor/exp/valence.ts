@@ -18,7 +18,7 @@ export const isValence = <A>(u: unknown): u is Valence<A> =>
   && TypeId in u
   && u[TypeId] === TypeId;
 
-const Prototype = proto.declare<Valence>({
+const Prototype = proto.type<Valence>({
   [TypeId]: TypeId,
   ...Pipeable.Prototype,
   ...Lineage.Prototype,

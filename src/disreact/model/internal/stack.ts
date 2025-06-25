@@ -1,6 +1,6 @@
 import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';
 import * as iterable from 'effect/Iterable';
@@ -24,7 +24,7 @@ export interface Stack<A = any> extends Pipeable.Pipeable
 
 export const isStack = <A>(u: unknown): u is Stack<A> => typeof u === 'object' && u !== null && TypeId in u && u[TypeId] === TypeId;
 
-const Prototype = proto.declare<Stack>({
+const Prototype = proto.type<Stack>({
   [TypeId]: TypeId,
   document: undefined as any,
   done    : false,
@@ -83,13 +83,19 @@ export const pushAll__ = <A>(self: Stack<A>, as?: Iterable<A>): Stack<A> => {
 export const pushAll = dual<<A>(as: Iterable<A>) => (self: Stack<A>) => Stack<A>, typeof pushAll__>(2, pushAll__);
 
 export const pushInto__ = <A>(as: Iterable<A> | undefined, s: Stack<A>): Stack<A> => pushAll__(s, as);
-export const pushInto = dual<<A>(s: Stack<A>) => (as: Iterable<A> | undefined) => Stack<A>, typeof pushInto__>(2, pushInto__);
+export const pushInto = dual<
+  <A>(s: Stack<A>) => (as: Iterable<A> | undefined) => Stack<A>,
+  typeof pushInto__
+>(2, pushInto__);
 
 export const visit__ = <A>(self: Stack<A>, a: A): Stack<A> => {
   self.visited.add(a);
   return self;
 };
-export const visit = dual<<A>(a: A) => (self: Stack<A>) => Stack<A>, typeof visit__>(2, visit__);
+export const visit = dual<
+  <A>(a: A) => (self: Stack<A>) => Stack<A>,
+  typeof visit__
+>(2, visit__);
 
 export const visitPopped = <A>(self: Stack<A>) => {
   if (!self.popped) {
@@ -156,3 +162,5 @@ export const pushNodes = dual<(n: Element.Element) => (self: Stack) => Stack, ty
 
 export const pushNodesInto__ = (n: Element.Element, self: Stack) => pushNodes__(self, n);
 export const pushNodesInto = dual<(self: Stack) => (n: Element.Element) => Stack, typeof pushNodesInto__>(2, pushNodesInto__);
+
+export const document = <A>(self: Stack<A>): Document.Document<A> => self.document;

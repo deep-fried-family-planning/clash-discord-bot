@@ -41,36 +41,36 @@ export const isFC = (u: unknown): u is FC => typeof u === 'function';
 
 export const isKnown = (u: FC): u is Known => TypeId in u;
 
-export const Prototype = proto.declare<Known>({
+export const Prototype = proto.type<Known>({
   [TypeId]: ANONYMOUS,
 });
 
-export const SyncPrototype = proto.declare<Sync>({
+export const SyncPrototype = proto.type<Sync>({
   [CastId]: SYNC,
 });
 
-export const AsyncPrototype = proto.declare<Async>({
+export const AsyncPrototype = proto.type<Async>({
   [CastId]: ASYNC,
 });
 
-export const EffectPrototype = proto.declare<Effect>({
+export const EffectPrototype = proto.type<Effect>({
   [CastId]: EFFECT,
 });
 
-type Proto = | typeof SyncPrototype
-             | typeof AsyncPrototype
-             | typeof EffectPrototype;
+type Type = | typeof SyncPrototype
+            | typeof AsyncPrototype
+            | typeof EffectPrototype;
 
-export const isCasted = (fc: FC) => CastId in fc;
+export const isCasted = (self: FC) => CastId in self;
 
-export const cast = (fc: FC, p: Proto) => {
-  if (IS_DEV && isKnown(fc)) {
+export const cast = (self: FC, type: Type) => {
+  if (IS_DEV && isKnown(self)) {
     throw new Error(INTERNAL_ERROR);
   }
-  if (IS_DEV && isCasted(fc)) {
+  if (IS_DEV && isCasted(self)) {
     throw new Error(INTERNAL_ERROR);
   }
-  proto.impure(p, fc as any);
+  proto.impure(type, self as any);
 };
 
 export const register = (fn: FC): Known => {
@@ -95,10 +95,10 @@ export const register = (fn: FC): Known => {
   return fc;
 };
 
-export const isAnonymous = (fc: FC) => name(fc) === ANONYMOUS;
+export const isAnonymous = (self: FC) => name(self) === ANONYMOUS;
 
-export const overrideName = (fc: FC, name: string) => {
-  (fc as any)[TypeId] = name;
+export const overrideName = (self: FC, name: string) => {
+  (self as any)[TypeId] = name;
 };
 
 export const name = (maybe?: string | FC) => {

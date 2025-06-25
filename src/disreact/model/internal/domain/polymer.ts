@@ -1,14 +1,17 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/model/internal/core/constants.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import type * as Node from '#src/disreact/model/internal/domain/node.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
+import {dual} from 'effect/Function';
+import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 
 export namespace Monomer {
   export type None = typeof Declarations.Null.Type;
@@ -51,50 +54,139 @@ export const chain = (c: Chain = []) => Data.array(c) as Chain;
 
 export type Chain = Monomer[];
 
-export interface EffectFn extends Function {
+export interface EffectFn extends type.Fn {
   (): | void
       | Promise<void>
       | E.Effect<void>;
 }
 
-export interface Polymer extends Pipeable.Pipeable {
-  pc      : number;
-  rc      : number;
-  lk?     : number;
-  stack   : Monomer[];
-  saved   : Monomer[];
-  queue   : EffectFn[];
-  unmount : EffectFn[];
-  document: Document.Document;
+const TypeId = Symbol.for('disreact/polymer');
+
+export interface Polymer extends Pipeable.Pipeable
+{
+  [TypeId]    : typeof TypeId;
+  pc          : number;
+  rc          : number;
+  stack       : Monomer[];
+  saved       : Monomer[];
+  queue       : EffectFn[];
+  unmount     : EffectFn[];
+  strict?     : boolean;
+  refNode?    : undefined | WeakRef<Node.Node>;
+  refDocument?: undefined | WeakRef<Document.Document>;
 };
 
-const PolymerProto = proto.declare<Polymer>({
+export const isPolymer = (u: unknown): u is Polymer => typeof u === 'object' && u !== null && TypeId in u;
+
+export const isStrictViolation = (self: Polymer) => {
+  if (!self.strict) return false;
+  if (self.stack.length) return false;
+  if (self.unmount.length) return false;
+  return false;
+};
+
+export const isTerminal = (self: Polymer) => {
+  if (self.rc === 0) {
+    return false;
+  }
+  return self.pc === self.stack.length - 1;
+};
+
+const PolymerProto = proto.type<Polymer>({
+  [TypeId]   : TypeId,
+  pc         : 0,
+  rc         : 0,
+  refNode    : undefined,
+  refDocument: undefined,
   ...Pipeable.Prototype,
 });
 
 export const empty = (): Polymer =>
-  proto.init<Polymer>(PolymerProto, {
-    rc   : 0,
-    pc   : 0,
-    stack: chain(),
-    saved: chain(),
-    queue: [],
+  proto.init(PolymerProto, {
+    rc     : 0,
+    pc     : 0,
+    stack  : chain(),
+    saved  : chain(),
+    queue  : [],
+    unmount: [],
   });
 
-export const rehydrate = (encoded: Chain): Polymer =>
-  proto.init<Polymer>(PolymerProto, {
-    pc   : 0,
-    rc   : 1,
-    stack: chain(encoded),
-    saved: chain(structuredClone(encoded)),
-    queue: [],
+export const hydrate = (encoded: Chain): Polymer =>
+  proto.init(PolymerProto, {
+    pc     : 0,
+    rc     : 1,
+    stack  : chain(encoded),
+    saved  : chain(structuredClone(encoded)),
+    queue  : [],
+    unmount: [],
   });
 
-export const isTerminal = (p: Polymer) => {
-  if (p.rc === 0) {
-    return false;
+export const strictHydrate = (): Polymer =>
+  proto.init(PolymerProto, {
+    pc     : 0,
+    rc     : 1,
+    stack  : chain(),
+    saved  : chain(),
+    strict : true,
+    queue  : [],
+    unmount: [],
+  });
+
+export const dehydrate = (p: Polymer): Option.Option<Chain> =>
+  p.stack.length === 0
+  ? Option.none()
+  : Option.some(p.stack);
+
+export const node = (self: Polymer) => {
+  const n = self.refNode?.deref();
+  if (IS_DEV && !n) {
+    throw new Error(INTERNAL_ERROR);
   }
-  return p.pc === p.stack.length - 1;
+  return n;
+};
+
+export const document = (self: Polymer) => {
+  const d = self.refDocument?.deref();
+  if (IS_DEV && !d) {
+    throw new Error(INTERNAL_ERROR);
+  }
+  return d;
+};
+
+export const circular = dual<
+  (n: Node.Node, d: Document.Document) => (self: Polymer) => Polymer,
+  (self: Polymer, n: Node.Node, d: Document.Document) => Polymer
+>(
+  3, (self, n, d) => {
+    self.refNode = new WeakRef(n);
+    self.refDocument = new WeakRef(d);
+    return self;
+  },
+);
+
+export interface Polymerizes {
+  polymer?: Polymer;
+}
+
+export const polymer = <A extends Polymerizes>(a: A): Polymer => a.polymer!;
+
+export const polymerize = dual<
+  <A extends Polymerizes>(a: A) => (self: Polymer) => A,
+  <A extends Polymerizes>(self: Polymer, a: A) => A
+>(
+  2, (self, a) => {
+    a.polymer = self;
+    return a;
+  },
+);
+
+export const decompose = <A extends Polymerizes>(a: A): A => {
+  if (a.polymer) {
+    delete a.polymer?.refDocument;
+    delete a.polymer?.refNode;
+    delete a.polymer;
+  }
+  return a;
 };
 
 export const next = <A extends Monomer>(p: Polymer, predicate: (i: any) => i is A, lazy: () => A): A => {
@@ -119,7 +211,6 @@ export const advance = (p: Polymer, m: Monomer) => {
 };
 
 export const commit = (self: Polymer) => {
-  delete self.lk;
   self.saved = Data.array(structuredClone(self.stack)) as any[];
   self.pc = 0;
   self.rc++;
@@ -143,7 +234,7 @@ export type Bundle = Record<string, Monomer[]>;
 
 export const bundle = (): Bundle => ({});
 
-export const hydrate = (ps: Bundle, key: string): Polymer => {
+export const hydrate2 = (ps: Bundle, key: string): Polymer => {
   const encoded = ps[key];
 
   if (!encoded) {
@@ -162,7 +253,7 @@ export const hydrate = (ps: Bundle, key: string): Polymer => {
   return self;
 };
 
-export const dehydrate = (ps: Bundle, key: string, self: Polymer) => {
+export const dehydrate2 = (ps: Bundle, key: string, self: Polymer) => {
   if (!self.rc) {
     throw new Error(INTERNAL_ERROR);
   }

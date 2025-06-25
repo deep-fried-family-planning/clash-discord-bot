@@ -10,15 +10,15 @@ const assignProto = (p: any, o: any) =>
     p,
   );
 
-export const declare = <A>(p: Partial<A>): A =>
+export const type = <A>(p: Partial<A>): A =>
   p as A;
 
-export const declareTagged = <A>(_tag: A) =>
+export const tagged = <A>(_tag: A) =>
   ({
     _tag,
   });
 
-export const declares = <A>(...ps: Partial<A>[]): A =>
+export const types = <A>(...ps: Partial<A>[]): A =>
   Object.assign(
     {},
     ...ps,

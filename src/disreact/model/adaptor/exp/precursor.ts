@@ -31,7 +31,7 @@ export const isPrecursor = (u: unknown): u is Precursor =>
   && u !== null
   && TypeId in u;
 
-const Prototype = proto.declare<Precursor>({
+const Prototype = proto.type<Precursor>({
   [TypeId] : 0,
   _tag     : INTRINSIC,
   component: undefined,

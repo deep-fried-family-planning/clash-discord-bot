@@ -1,6 +1,6 @@
 import * as Deps from '#src/disreact/codec/old/deps.ts';
 import * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
+import type * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/infrastructure/proto.ts';
 import * as Array from 'effect/Array';
@@ -110,7 +110,7 @@ export const isPropsStruct = (u: Props): u is Props.Obj => isProps(u) && !Array.
 
 export const isPropsArray = (u: Props): u is Props.Arr => isProps(u) && Array.isArray(u);
 
-const Props = proto.declare<Props>({
+const Props = proto.type<Props>({
   [PropsTypeId]: PropsTypeId,
   ...Inspectable.BaseProto,
 });
@@ -277,7 +277,7 @@ export const isRest = (e: Element): e is Rest => e[TypeId] === REST;
 
 export const isText = (e: Element): e is Text => e[TypeId] === TEXT;
 
-const Base = proto.declares<Base>(
+const Base = proto.types<Base>(
   Pipeable.Prototype,
   Inspectable.BaseProto,
   {
@@ -287,17 +287,17 @@ const Base = proto.declares<Base>(
   },
 );
 
-const Func = proto.declare<Func>({
+const Func = proto.type<Func>({
   ...Base,
   [TypeId]: FUNC,
 });
 
-const Rest = proto.declare<Rest>({
+const Rest = proto.type<Rest>({
   ...Base,
   [TypeId]: REST,
 });
 
-const Text = proto.declare<Text>({
+const Text = proto.type<Text>({
   ...Base,
   [TypeId]: TEXT,
 });

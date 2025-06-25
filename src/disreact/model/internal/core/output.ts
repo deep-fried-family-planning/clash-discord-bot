@@ -30,19 +30,19 @@ export type Output = | Part
                      | Next
                      | Exit;
 
-const Part = proto.declare<Part>({
+const Part = proto.type<Part>({
   _tag: PART,
 });
 
-const Same = proto.declare<Same>({
+const Same = proto.type<Same>({
   _tag: SAME,
 });
 
-const Next = proto.declare<Next>({
+const Next = proto.type<Next>({
   _tag: NEXT,
 });
 
-const Exit = proto.declare<Exit>({
+const Exit = proto.type<Exit>({
   _tag: EXIT,
 });
 

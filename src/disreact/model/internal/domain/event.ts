@@ -25,7 +25,7 @@ export interface Event extends Pipeable.Pipeable {
 
 export const isEvent = (u: unknown): u is Event => typeof u === 'object' && u !== null && TypeId in u;
 
-const Prototype = proto.declare<Event>({
+const Prototype = proto.type<Event>({
   [TypeId]: TypeId,
   id      : '',
   property: '',
@@ -50,7 +50,7 @@ export interface Handler<E = any, R = any> extends type.Fn {
 
 export const isHandler = (u: unknown): u is Handler => typeof u === 'function' && TypeId in u;
 
-const HandlerPrototype = proto.declare<Handler>({
+const HandlerPrototype = proto.type<Handler>({
   [TypeId]: TypeId,
   [Hash.symbol]() {
     return 1;

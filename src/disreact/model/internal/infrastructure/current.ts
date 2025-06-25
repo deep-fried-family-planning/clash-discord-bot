@@ -1,67 +1,50 @@
-import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
-import type * as Document from '#src/disreact/model/internal/document.ts';
-import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
-import type * as Stack from '#src/disreact/model/internal/stack.ts';
-import type * as Node from '#src/disreact/model/internal/node.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/model/internal/core/constants.ts';
+import type * as Document from '#src/disreact/model/internal/domain/document.ts';
+import type * as Node from '#src/disreact/model/internal/domain/node.ts';
+import * as Polymer from '#src/disreact/model/internal/domain/polymer.ts';
 
-export let component = undefined as undefined | Element.Func,
-           env       = undefined as undefined | Rehydrant.Envelope,
-           poly      = undefined as undefined | Polymer.Polymer,
-           stack     = undefined as undefined | Stack.Stack<Node.Node>,
-           vertex    = undefined as undefined | Node.Node,
-           document  = undefined as undefined | Document.Document<Node.Node>,
-           release = () => {};
-
-export const setRelease = (f: () => void) => {
-  release = f;
-};
-
-export const runRelease = () => {
-  release();
-};
+export let node     = undefined as undefined | Node.Node,
+           polymer  = undefined as undefined | Polymer.Polymer,
+           document = undefined as undefined | Document.Document;
 
 export type Current = {
-  node?    : Element.Func;
-  root?    : Rehydrant.Envelope;
-  poly?    : Polymer.Polymer;
-  vertex?  : Node.Node;
-  document?: Document.Document<Node.Node>;
-  stack?   : Stack.Stack<Node.Node>;
+  node    : Node.Node;
+  polymer : Polymer.Polymer;
+  document: Document.Document;
 };
 
-export const set = (v: Node.Functional, d: Document.Document<Node.Node>) => {
-  vertex = v;
-  poly = v.polymer!;
-  document = d;
+export const get = () => {
+  if (!node || !polymer || !document) {
+    throw new Error('Hooks must be called within a component managed by Disreact.');
+  }
+  return {
+    node    : node,
+    polymer : polymer,
+    document: document,
+  } as Current;
 };
 
-export const setV1 = (rh: Rehydrant.Envelope, el: Element.Func) => {
-  env = rh;
-  component = el;
-  poly = el.polymer!;
+export const set = (p?: Polymer.Polymer) => {
+  if (IS_DEV && !p) {
+    throw new Error(INTERNAL_ERROR);
+  }
+  polymer = p;
+  node = Polymer.node(p!);
+  document = Polymer.document(p!);
 };
 
-export const reset = (_id?: number) => {
-  env = undefined;
-  component = undefined;
-  poly = undefined;
-  stack = undefined;
-  vertex = undefined;
+export const reset = () => {
+  node = undefined;
+  polymer = undefined;
   document = undefined;
 };
 
-export const get = (): Required<Current> => {
-  if (!component || !env || !poly) {
-    throw new Error('Hooks must be called within a component.');
-  }
+export let early = () => {};
 
-  return {
-    node    : component,
-    root    : env,
-    poly    : poly,
-    stack   : stack,
-    vertex  : vertex,
-    document: document,
-  } as Required<Current>;
+export const runEarly = () => {
+  early();
+};
+
+export const setEarly = (f: () => void) => {
+  early = f;
 };

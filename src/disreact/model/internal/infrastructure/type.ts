@@ -1,4 +1,5 @@
 import type * as E from 'effect/Effect';
+import {isEffect} from 'effect/Effect';
 
 export type IsEqual<A, B> = A extends B ? true : false;
 

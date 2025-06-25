@@ -4,6 +4,7 @@ import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 
 export const TypeId   = Symbol.for('disreact/jsx'),
              DevId    = Symbol.for('disreact/jsxDEV'),
+             FcType = Symbol.for('disreact/fc'),
              Fragment = Symbol.for('disreact/fragment');
 
 export type Value = | null
@@ -29,7 +30,8 @@ export interface Prototype {
   _tag      : any;
   component?: any;
   props?    : any;
-  child?    : Child | undefined;
+  c?        : Child | undefined;
+  cs?       : Child[] | undefined;
   childs?   : Child[] | undefined;
 }
 
@@ -62,26 +64,26 @@ export const isIntrinsic = (u: Jsx): u is Intrinsic => u._tag === INTRINSIC;
 
 export const isFunctional = (u: Jsx): u is Functional => u._tag === FUNCTIONAL;
 
-const BasePrototype = proto.declare<Prototype>({
+const BasePrototype = proto.type<Prototype>({
   [TypeId]: JSX,
 });
 
-const TextPrototype = proto.declare<Text>({
+const TextPrototype = proto.type<Text>({
   ...BasePrototype,
   _tag: TEXT_NODE,
 });
 
-const FragmentPrototype = proto.declare<Fragment>({
+const FragmentPrototype = proto.type<Fragment>({
   ...BasePrototype,
   _tag: FRAGMENT,
 });
 
-const IntrinsicPrototype = proto.declare<Intrinsic>({
+const IntrinsicPrototype = proto.type<Intrinsic>({
   ...BasePrototype,
   _tag: INTRINSIC,
 });
 
-const FunctionalPrototype = proto.declare<Functional>({
+const FunctionalPrototype = proto.type<Functional>({
   ...BasePrototype,
   _tag: FUNCTIONAL,
 });
@@ -96,7 +98,7 @@ export const jsx = (type: any, props: any): Jsx => {
     return proto.init(FragmentPrototype, {
       component: Fragment,
       props    : props,
-      child    : props.children,
+      childs   : props.children ? [props.children] : undefined,
     });
   }
   switch (typeof type) {
@@ -104,7 +106,7 @@ export const jsx = (type: any, props: any): Jsx => {
       return proto.init(IntrinsicPrototype, {
         component: type,
         props    : props,
-        child    : props.children,
+      childs   : props.children ? [props.children] : undefined,
       });
     }
     case 'function': {
@@ -161,7 +163,7 @@ export interface Source extends Prototype {
 
 const isSource = (u: unknown): u is Source => isJsx(u) && 'id' in u && typeof u.id === 'string';
 
-const SourcePrototype = proto.declare<Source>({
+const SourcePrototype = proto.type<Source>({
   id: '',
 });
 

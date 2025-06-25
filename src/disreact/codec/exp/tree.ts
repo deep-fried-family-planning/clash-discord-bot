@@ -77,17 +77,17 @@ export const Base = {
   ...Lateral.Prototype,
 };
 
-export const Rest = proto.declare<Rest>({
+export const Rest = proto.type<Rest>({
   ...Base,
   _tag: REST,
 });
 
-export const Func = proto.declare<Func>({
+export const Func = proto.type<Func>({
   ...Base,
   _tag: FUNC,
 });
 
-export const Text = proto.declare<Text>({
+export const Text = proto.type<Text>({
   ...Base,
   [TypeId]: TypeId,
   _tag    : TEXT,

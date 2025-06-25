@@ -32,19 +32,19 @@ export interface EventHandler<A, E = any, R = any> extends type.Fn {
   [Equal.symbol]?(that: EventHandler<any>): boolean;
 }
 
-const Prototype = proto.declare<Props>({
+const Prototype = proto.type<Props>({
   [TypeId]: PROPS,
 });
 
-const StructPrototype = proto.declare<PropsStruct>({
+const StructPrototype = proto.type<PropsStruct>({
   [TypeId]: STRUCT,
 });
 
-const ArrayPrototype = proto.declare<PropsArray>({
+const ArrayPrototype = proto.type<PropsArray>({
   [TypeId]: ARRAY,
 });
 
-const EventHandlerPrototype = proto.declare<EventHandler<any>>({
+const EventHandlerPrototype = proto.type<EventHandler<any>>({
   [TypeId]: HANDLER,
   [Hash.symbol]() {
     return 1;
