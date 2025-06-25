@@ -106,3 +106,11 @@ export const getChain = dual<
 >(2, getChain__);
 
 export const dehydrate = <A>(d: Document<A>) => {};
+
+export type Hydrator = {
+  hash? : string;
+  id    : string;
+  key   : string;
+  props?: any;
+  trie? : Record<string, Polymer.Chain>;
+};

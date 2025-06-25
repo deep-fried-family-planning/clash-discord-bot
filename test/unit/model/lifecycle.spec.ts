@@ -1,7 +1,7 @@
-import * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
-import * as Rehydrant from '#src/disreact/model/internal/adaptor/exp/domain/old/envelope.ts';
-import * as Lifecycle from '#src/disreact/model/internal/adaptor/exp/v1lifecycle.ts';
-import {Rehydrator} from '#src/disreact/model/internal/adaptor/exp/Rehydrator.ts';
+import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
+import * as Lifecycle from '#src/disreact/model/adaptor/exp/v1lifecycle.ts';
+import {Rehydrator} from '#src/disreact/model/adaptor/exp/Rehydrator.ts';
 import * as Declarations from '#src/disreact/codec/old/declarations.ts';
 import {MessageAsync} from '#unit/components/message-async.tsx';
 import {MessageEffect} from '#unit/components/message-effect.tsx';

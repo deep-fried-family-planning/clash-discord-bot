@@ -1,5 +1,5 @@
 import type * as Declarations from '#src/disreact/codec/old/declarations.ts';
-import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import {INTERNAL_ERROR} from '#src/disreact/model/internal/core/constants.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
@@ -78,6 +78,15 @@ export const empty = (): Polymer =>
     pc   : 0,
     stack: chain(),
     saved: chain(),
+    queue: [],
+  });
+
+export const rehydrate = (encoded: Chain): Polymer =>
+  proto.init<Polymer>(PolymerProto, {
+    pc   : 0,
+    rc   : 1,
+    stack: chain(encoded),
+    saved: chain(structuredClone(encoded)),
     queue: [],
   });
 

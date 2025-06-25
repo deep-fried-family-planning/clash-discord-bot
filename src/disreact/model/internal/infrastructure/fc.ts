@@ -1,15 +1,11 @@
 import {ANONYMOUS, ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/model/internal/core/constants.ts';
 import * as type from '#src/disreact/model/internal/infrastructure/type.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
+import type * as Jsx from '#src/disreact/model/internal/core/jsx.ts';
 import type * as E from 'effect/Effect';
 
 const TypeId = Symbol.for('disreact/fc'),
       CastId = Symbol.for('disreact/fc/kind');
-
-interface Base<P, O, E = any, R = any> extends type.Fn {
-  (props: P): O | Promise<O> | E.Effect<O, E, R>;
-  displayName?: string;
-}
 
 interface Internal {
   [TypeId]    : string;
@@ -17,26 +13,26 @@ interface Internal {
   displayName?: string;
 }
 
-export interface Known<A = any, B = any> extends type.Fn, Internal {
+export interface Known<A = any, B = Jsx.Children> extends type.Fn, Internal {
   (props: A): B | Promise<B> | E.Effect<B, any, any>;
 }
 
-export interface Sync<A = any, B = any> extends type.Fn, Internal {
+export interface Sync<A = any, B = Jsx.Children> extends type.Fn, Internal {
   [CastId]: typeof SYNC;
   (props: A): B;
 }
 
-export interface Async<A = any, B = any> extends type.Fn, Internal {
+export interface Async<A = any, B = Jsx.Children> extends type.Fn, Internal {
   [CastId]: typeof ASYNC;
   (props: A): Promise<B>;
 }
 
-export interface Effect<A = any, B = any> extends type.Fn, Internal {
+export interface Effect<A = any, B = Jsx.Children> extends type.Fn, Internal {
   [CastId]: typeof EFFECT;
   (props: A): E.Effect<B>;
 }
 
-export interface FC<P = any, O = any, E = any, R = any> extends type.Fn {
+export interface FC<P = any, O = Jsx.Children, E = any, R = any> extends type.Fn {
   (props: P): O | Promise<O> | E.Effect<O, E, R>;
   displayName?: string;
 }

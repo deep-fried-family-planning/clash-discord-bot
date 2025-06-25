@@ -1,5 +1,5 @@
-import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/adaptor/exp/domain/old/envelope.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import * as Globals from '#src/disreact/model/internal/infrastructure/current.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
@@ -22,7 +22,7 @@ const tapDefect = E.tapDefect(() => unlock);
 
 export const acquire = (n: Element.Func, rh: Rehydrant.Envelope) =>
   E.map(lock, () => {
-    Globals.set(rh, n);
+    Globals.setV1(rh, n);
     return n;
   });
 

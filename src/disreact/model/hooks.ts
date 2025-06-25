@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
-import type {FC} from '#src/disreact/codec/fc.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
 import * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import * as Globals from '#src/disreact/model/internal/infrastructure/current.ts';
-import * as Rehydrant from '#src/disreact/model/internal/adaptor/exp/domain/old/envelope.ts';
+import * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
 import * as Deps from '#src/disreact/codec/old/deps.ts';
 import type {Discord} from 'dfx';
 import * as E from 'effect/Effect';
@@ -167,7 +167,7 @@ export const $usePage = () => {
   // const monomer = Polymer.next(polymer, Polymer.isNone, () => Polymer.none());
   const root = getRoot();
   const node = getComp();
-  const next = Deps.fn('usePage', node, (next: FC, props: any = {}) => {
+  const next = Deps.fn('usePage', node, (next: FC.FC, props: any = {}) => {
     root.next.id = next.name;
     root.next.props = props;
   });

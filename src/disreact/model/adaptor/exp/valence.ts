@@ -1,5 +1,5 @@
 import * as Lineage from '#src/disreact/model/internal/core/lineage.ts';
-import type * as Vertex from '#src/disreact/model/internal/adaptor/exp/vertex.ts';
+import type * as Vertex from '#src/disreact/model/adaptor/exp/vertex.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';
 import * as Pipeable from 'effect/Pipeable';

@@ -1,4 +1,4 @@
-import * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
+import * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
 import type * as Document from '#src/disreact/model/internal/document.ts';
 import * as proto from '#src/disreact/model/internal/infrastructure/proto.ts';
 import {dual} from 'effect/Function';

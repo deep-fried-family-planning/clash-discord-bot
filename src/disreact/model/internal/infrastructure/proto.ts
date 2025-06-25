@@ -10,18 +10,19 @@ const assignProto = (p: any, o: any) =>
     p,
   );
 
-const setPrototype = (p: any, o: any) =>
-  Object.setPrototypeOf(
-    o,
-    p,
-  );
+export const declare = <A>(p: Partial<A>): A =>
+  p as A;
 
-export const declare = <A>(p: Partial<A>): A => p as A;
-
-export const declareTagged = <A>(_tag: A) => ({_tag});
+export const declareTagged = <A>(_tag: A) =>
+  ({
+    _tag,
+  });
 
 export const declares = <A>(...ps: Partial<A>[]): A =>
-  Object.assign({}, ...ps);
+  Object.assign(
+    {},
+    ...ps,
+  );
 
 export const declareArray = <A>(p: Partial<A>): A =>
   assignProto(

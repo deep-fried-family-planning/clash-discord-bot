@@ -1,40 +1,32 @@
-import type * as Element from '#src/disreact/model/internal/adaptor/exp/domain/old/element.ts';
-import type * as Rehydrant from '#src/disreact/model/internal/adaptor/exp/domain/old/envelope.ts';
+import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
+import type * as Rehydrant from '#src/disreact/model/adaptor/exp/domain/old/envelope.ts';
+import type * as Document from '#src/disreact/model/internal/document.ts';
 import type * as Polymer from '#src/disreact/model/internal/polymer.ts';
 import type * as Stack from '#src/disreact/model/internal/stack.ts';
+import type * as Node from '#src/disreact/model/internal/node.ts';
 
 export let component = undefined as undefined | Element.Func,
            env       = undefined as undefined | Rehydrant.Envelope,
            poly      = undefined as undefined | Polymer.Polymer,
-           stack     = undefined as undefined | Stack.Stack;
+           stack     = undefined as undefined | Stack.Stack,
+           vertex    = undefined as undefined | Node.Node,
+           document  = undefined as undefined | Document.Document<Node.Node>;
 
 export type Current = {
-  node?: Element.Func;
-  root?: Rehydrant.Envelope;
-  poly?: Polymer.Polymer;
+  node?    : Element.Func;
+  root?    : Rehydrant.Envelope;
+  poly?    : Polymer.Polymer;
+  vertex?  : Node.Node;
+  document?: Document.Document<Node.Node>;
 };
 
-let current = undefined as undefined | Current;
-
-export const get = (): Required<Current> => {
-  if (!component || !env || !poly) {
-    throw new Error('Hooks must be called within a component.');
-  }
-
-  if (!current) {
-    throw new Error('Hooks must be called within a component.');
-  }
-
-  return {
-    node : component,
-    root : env,
-    poly : poly,
-    stack: stack,
-  } as Required<Current>;
+export const set = (v: Node.Functional, d: Document.Document<Node.Node>) => {
+  vertex = v;
+  poly = v.polymer!;
+  document = d;
 };
 
-export const set = (rh: Rehydrant.Envelope, el: Element.Func) => {
-  current = undefined;
+export const setV1 = (rh: Rehydrant.Envelope, el: Element.Func) => {
   env = rh;
   component = el;
   poly = el.polymer!;
@@ -45,4 +37,20 @@ export const reset = (_id?: number) => {
   component = undefined;
   poly = undefined;
   stack = undefined;
+  vertex = undefined;
+  document = undefined;
+};
+
+export const get = (): Required<Current> => {
+  if (!component || !env || !poly) {
+    throw new Error('Hooks must be called within a component.');
+  }
+
+  return {
+    node    : component,
+    root    : env,
+    poly    : poly,
+    vertex  : vertex,
+    document: document,
+  } as Required<Current>;
 };
