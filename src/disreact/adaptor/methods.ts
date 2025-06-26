@@ -4,8 +4,8 @@ import type {Envelope} from '#src/disreact/codec/adaptor/exp/domain/old/envelope
 import * as Model from '#src/disreact/codec/adaptor/exp/ModelV1.ts';
 import {Relay} from '#src/disreact/codec/adaptor/exp/Relay.ts';
 import * as Progress from '#src/disreact/codec/old/progress2.ts';
-import {DiscordDOM} from '#src/disreact/adaptors/DiscordDOM.ts';
-import {DokenDefect, DokenState} from '#src/disreact/adaptors/DokenState.ts';
+import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
+import {DokenDefect, DokenState} from '#src/disreact/adaptor/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import * as DateTime from 'effect/DateTime';
 import * as Deferred from 'effect/Deferred';

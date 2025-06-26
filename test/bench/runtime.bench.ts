@@ -1,4 +1,4 @@
-import * as Methods from '#src/disreact/adaptors/methods.ts';
+import * as Methods from '#src/disreact/adaptor/methods.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {testmessage} from '#unit/runtime/methods.testdata.ts';
 import {makeTestRuntime} from '#unit/util.ts';

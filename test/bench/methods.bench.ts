@@ -1,6 +1,6 @@
-import {DiscordDOM} from '#src/disreact/adaptors/DiscordDOM.ts';
-import * as Methods from '#src/disreact/adaptors/methods.ts';
-import * as Runtime from '#src/disreact/adaptors/runtime.ts';
+import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
+import * as Methods from '#src/disreact/adaptor/methods.ts';
+import * as Runtime from '#src/disreact/adaptor/runtime.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {testmessage} from '#unit/runtime/methods.testdata.ts';
 import * as E from 'effect/Effect';

@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import {state} from '#src/disreact/core/polymer.ts';
+import {MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
 import type * as FC from '#src/disreact/runtime/fc.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import * as Globals from '#src/disreact/codec/adaptor/global.ts';
@@ -7,30 +9,33 @@ import * as Deps from '#src/disreact/codec/old/deps.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
+import {pipe} from 'effect/Function';
 import * as Hash from 'effect/Hash';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 
 let current = undefined as undefined | Polymer.Polymer,
-    release = () => {};
+    release = undefined as undefined | (() => void);
+
+export const setCurrent = (polymer?: Polymer.Polymer) => {
+  current = polymer;
+};
 
 export const setRelease = (fn: () => void) => {
   release = fn;
 };
 
-const earlyRelease = () => {
-  current = undefined;
-  release();
-};
-
-export const setCurrent = (polymer: Polymer.Polymer) => {
-  current = polymer;
-};
-
-const assertCurrent = () => {
+const assert = () => {
   if (!current) {
     throw new Error('Disreact hooks can only be called within a component.');
   }
   return current;
+};
+
+const earlyRelease = () => {
+  if (release) {
+    current = undefined;
+    release();
+  }
 };
 
 const getRoot = () => {
@@ -72,11 +77,33 @@ export interface Effect extends Function {
   (): void | Promise<void> | E.Effect<void>;
 }
 
+const UseStateMonomerPrototype = proto.type({
+  _tag : MONOMER_STATE,
+  state: undefined,
+  dispatch(next: any) {
+    if (typeof next === 'function') {
+      this.state = next(this.state);
+    }
+    else {
+      this.state = next;
+    }
+  },
+});
+
+export const ustate = (initial: any) =>
+  assert().pipe(
+
+  );
+
 export const $useState = <S>(initial: S): readonly [S, Hook.SetState<S>] => {
   const polymer = getPolymer();
   const monomer = Polymer.next(polymer, Polymer.isState, () => Polymer.state(initial));
   const root = getRoot();
   const node = getComp();
+
+  const mono = proto.init(UseStateMonomerPrototype, {
+    state: initial,
+  });
 
   const set: Hook.SetState<S> = Deps.fn('useState', node, (next) => {
     if (typeof next === 'function') {

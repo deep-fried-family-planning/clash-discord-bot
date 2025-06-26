@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
 import * as Doken from '#src/disreact/codec/doken.ts';
-import type {DokenCacheDefect} from '#src/disreact/adaptors/DokenCache.ts';
-import {DokenCache} from '#src/disreact/adaptors/DokenCache.ts';
+import type {DokenCacheDefect} from '#src/disreact/adaptor/DokenCache.ts';
+import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import type {TimeoutException} from 'effect/Cause';
 import * as Data from 'effect/Data';

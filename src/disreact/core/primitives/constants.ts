@@ -1,7 +1,7 @@
 export const IS_DEV         = (process.env.NODE_ENV === 'development') as true,
              INTERNAL_ERROR = 'Internal Error' as const;
 
-export const NO_OP = () => {};
+export const noop = () => {};
 
 export const isDev = (): true => (process.env.NODE_ENV === 'development') as true;
 

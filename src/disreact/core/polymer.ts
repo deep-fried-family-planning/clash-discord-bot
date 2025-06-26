@@ -4,24 +4,22 @@ import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
-import type { MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
-import type {MONOMER_NONE, MONOMER_EFFECT, MONOMER_REF, MONOMER_CONTEXT, MONOMER_MEMO} from '#src/disreact/core/primitives/constants.ts';
-import {INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
+import {INTERNAL_ERROR, MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
-import {dual} from 'effect/Function';
-import * as Option from 'effect/Option';
+import {dual, hole} from 'effect/Function';
+import type * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface NoneMonomer {
   _tag: typeof MONOMER_NONE;
 }
 
-export interface StateMonomer {
+export interface StateMonomer extends Lineage.Lineage<Polymer> {
   _tag    : typeof MONOMER_STATE;
   state   : any;
   dispatch: (next: any) => any;
@@ -30,7 +28,7 @@ export interface StateMonomer {
 export interface EffectMonomer {
   _tag  : typeof MONOMER_EFFECT;
   effect: () => any;
-  deps? : any[];
+  deps? : undefined | any[];
 }
 
 export interface RefMonomer {
@@ -41,7 +39,7 @@ export interface RefMonomer {
 
 export interface MemoMonomer {
   _tag : typeof MONOMER_MEMO;
-  deps?: any[];
+  deps?: undefined | any[];
 }
 
 export interface ContextMonomer {
@@ -49,11 +47,55 @@ export interface ContextMonomer {
 }
 
 export type Mono = | NoneMonomer
-                  | StateMonomer
-                  | EffectMonomer
-                  | RefMonomer
-                  | MemoMonomer
-                  | ContextMonomer;
+                   | StateMonomer
+                   | EffectMonomer
+                   | RefMonomer
+                   | MemoMonomer
+                   | ContextMonomer;
+
+const NonePrototype = proto.type<NoneMonomer>({
+  _tag: MONOMER_NONE,
+});
+
+const StatePrototype = proto.type<StateMonomer>({
+  _tag    : MONOMER_STATE,
+  state   : undefined,
+  dispatch: hole,
+});
+
+const EffectPrototype = proto.type<EffectMonomer>({
+  _tag  : MONOMER_EFFECT,
+  deps  : undefined,
+  effect: hole,
+});
+
+const RefPrototype = proto.type<RefMonomer>({
+  _tag    : MONOMER_REF,
+  reactive: false,
+  current : null,
+});
+
+const MemoPrototype = proto.type<MemoMonomer>({
+  _tag: MONOMER_MEMO,
+  deps: undefined,
+});
+
+const ContextPrototype = proto.type<ContextMonomer>({
+  _tag: MONOMER_CONTEXT,
+});
+
+export const no = (): NoneMonomer => NonePrototype;
+
+export const s = (initial: any): StateMonomer => {
+  const self = proto.init(StatePrototype, {
+    state: initial,
+  });
+  return self;
+};
+
+export const getNext = (self: Polymer): Option.Option<Monomer> => {
+
+};
 
 export namespace Monomer {
   export type None = typeof Declarations.Null.Type;
@@ -104,22 +146,28 @@ export interface EffectFn extends type.Fn {
 
 const TypeId = Symbol.for('disreact/polymer');
 
-export interface Polymer<A = Node.Node> extends Pipeable.Pipeable,
+export interface Polymer<A = Node.Node, B = any> extends Pipeable.Pipeable,
   Lineage.Lineage<Document.Document<A>>,
   Lateral.Lateral<A>
 {
-  [TypeId] : typeof TypeId;
-  pc       : number;
-  rc       : number;
-  stack    : Monomer[];
-  saved    : Monomer[];
-  queue    : EffectFn[];
+  readonly [TypeId] : typeof TypeId;
+  readonly lifecycle: 'initialize' | 'rehydrate' | 'stateless';
+
+  pc   : number;
+  rc   : number;
+  stack: Monomer[];
+  saved: Monomer[];
+  queue: EffectFn[];
+
+  out: B;
+
+  ready    : boolean;
   strict?  : boolean;
   node?    : undefined | WeakRef<object & A>;
   document?: undefined | WeakRef<Document.Document<A>>;
 };
 
-export const isPolymer = (u: unknown): u is Polymer => typeof u === 'object' && u !== null && TypeId in u;
+export const isPolymer = <A, B>(u: unknown): u is Polymer<A, B> => typeof u === 'object' && u !== null && TypeId in u;
 
 const PolymerProto = proto.type<Polymer>({
   [TypeId]: TypeId,
@@ -127,6 +175,7 @@ const PolymerProto = proto.type<Polymer>({
   rc      : 0,
   node    : undefined,
   document: undefined,
+  ready   : false,
   ...Pipeable.Prototype,
 });
 
@@ -139,13 +188,14 @@ export const empty = (): Polymer =>
     queue: [],
   });
 
-export const hydrate = (encoded: Chain): Polymer =>
+export const hydrate = (encoded?: Chain): Polymer =>
   proto.init(PolymerProto, {
-    pc   : 0,
-    rc   : 1,
-    stack: chain(encoded),
-    saved: chain(structuredClone(encoded)),
-    queue: [],
+    pc    : 0,
+    rc    : 1,
+    stack : chain(encoded),
+    saved : chain(structuredClone(encoded)),
+    strict: !encoded,
+    queue : [],
   });
 
 export const strictHydrate = (): Polymer =>
@@ -158,10 +208,10 @@ export const strictHydrate = (): Polymer =>
     queue : [],
   });
 
-export const dehydrate = (p: Polymer): Option.Option<Chain> =>
+export const dehydrate = (p: Polymer): Chain | undefined =>
   p.stack.length === 0
-  ? Option.none()
-  : Option.some(p.stack);
+  ? undefined
+  : p.stack;
 
 export const dispose = <A extends Polymerizes>(a: A): A => {
   if (a.polymer) {
@@ -185,11 +235,34 @@ export const isTerminal = (self: Polymer) => {
   return self.pc === self.stack.length - 1;
 };
 
-export const beginHook = (self?: Polymer): Polymer => {
-  if (!isPolymer(self)) {
-    throw new Error('Hooks must be called within a component.');
+export const begin = (self?: Polymer): Polymer => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (!isPolymer(self)) {
+      throw new Error('Hooks must be called within a component simulated by Disreact.');
+    }
+    if (self.lifecycle === 'stateless') {
+      throw new Error('Hooks cannot be called within a stateless component.');
+    }
+    if (!self.ready) {
+      throw new Error('Hooks cannot be called within a component that has not been initialized.');
+    }
   }
-  return self;
+  self!.ready = false;
+  return self!;
+};
+
+export const runHook = <A, B>(self?: Polymer<A, B>): B => {};
+
+export const retrieve = <A, B>(self: Polymer<A, B>): B => {};
+
+export const end = <A, B>(self: Polymer<A, B>): B => {
+  self.ready = true;
+  self;
+  return self.out;
+};
+
+export const endVoid = <A, B>(self: Polymer<A, B>): void => {
+  end(self);
 };
 
 export const toNode = (self: Polymer) => self.node!.deref()!;
@@ -245,6 +318,9 @@ export const advance = (p: Polymer, m: Monomer) => {
 };
 
 export const commit = (self: Polymer) => {
+  if (!self.ready) {
+    throw new Error('Cannot commit a component that has not been initialized.');
+  }
   self.saved = Data.array(structuredClone(self.stack)) as any[];
   self.pc = 0;
   self.rc++;

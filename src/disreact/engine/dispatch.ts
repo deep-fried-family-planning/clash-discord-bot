@@ -1,5 +1,4 @@
 import {ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
-import {early} from '#src/disreact/engine/current.ts';
 import * as FC from '#src/disreact/runtime/fc.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import * as current from '#src/disreact/engine/current.ts';
@@ -12,6 +11,7 @@ import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import {globalValue} from 'effect/GlobalValue';
 import * as P from 'effect/Predicate';
+import * as Hooks from '#src/disreact/runtime/hooks.ts';
 
 export type dispatch = never;
 
@@ -27,16 +27,14 @@ const mutex = globalValue(Symbol.for('disreact/mutex'), () => E.unsafeMakeSemaph
 const acquire = mutex.take(1);
 const release = mutex.release(1);
 
-current.setEarly(() => {
+Hooks.setRelease(() => {
   E.runSync(release);
 });
-
-
 
 export const render = (node: Node.Functional) =>
   acquire.pipe(
     E.flatMap(() => {
-      current.set(node.polymer);
+      Hooks.setCurrent(node.polymer);
       return runFC(node.component, node.props);
     }),
     E.tap(release),
