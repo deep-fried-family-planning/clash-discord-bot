@@ -1,7 +1,7 @@
 import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#src/disreact/codec/dapi/common.ts';
 import * as S from 'effect/Schema';
 import {PremiumTypes} from 'dfx/types';
-import {DAPIMessage} from './dapi-message';
+import {DAPIMessage} from '#src/disreact/codec/dapi/dapi-message.ts';
 
 export * as Ix from '#src/disreact/codec/dapi/ix.ts';
 export type Ix = never;

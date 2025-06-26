@@ -1,10 +1,10 @@
 import {Codec} from '#src/disreact/codec/Codec.ts';
-import type * as Element from '#src/disreact/model/adaptor/exp/domain/old/element.ts';
-import type * as FC from '#src/disreact/model/internal/infrastructure/fc.ts';
-import {Rehydrator} from '#src/disreact/model/adaptor/exp/Rehydrator.ts';
-import {DiscordDOM} from '#src/disreact/runtime/DiscordDOM.ts';
-import {DokenCache} from '#src/disreact/runtime/DokenCache.ts';
-import {makeRuntime} from '#src/disreact/runtime/runtime.ts';
+import type * as Element from '#src/disreact/codec/adaptor/exp/domain/old/element.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
+import {Rehydrator} from '#src/disreact/codec/adaptor/exp/Rehydrator.ts';
+import {DiscordDOM} from '#src/disreact/adaptors/DiscordDOM.ts';
+import {DokenCache} from '#src/disreact/adaptors/DokenCache.ts';
+import {makeRuntime} from '#src/disreact/adaptors/runtime.ts';
 import {type Mock, vi, expect as viexpect, chai} from '@effect/vitest';
 import {DiscordREST} from 'dfx';
 import * as LogLevel from 'effect/LogLevel';

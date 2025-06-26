@@ -1,7 +1,7 @@
 import * as S from 'effect/Schema';
-import {DAPIComponent} from './dapi-component.ts';
+import {DAPIComponent} from '#src/disreact/codec/dapi/dapi-component.ts';
 
-export * as DAPIModal from 'src/disreact/codec/dapi/modal.ts';
+export * as DAPIModal from '#src/disreact/codec/dapi/modal.ts';
 export type Modal = never;
 
 export const Open = S.Struct({
