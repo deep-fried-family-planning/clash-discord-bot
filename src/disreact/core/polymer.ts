@@ -145,8 +145,6 @@ export interface EffectFn extends type.Fn {
 
 const TypeId = Symbol.for('disreact/polymer');
 
-Data.TaggedError;
-
 export interface Polymer<A = Node.Node, B = any> extends Pipeable.Pipeable,
   Lineage.Lineage<Document.Document<A>>,
   Lateral.Lateral<A>
@@ -166,6 +164,10 @@ export interface Polymer<A = Node.Node, B = any> extends Pipeable.Pipeable,
   node?    : undefined | WeakRef<object & A>;
   document?: undefined | WeakRef<Document.Document<A>>;
 };
+
+export const toNode = (self: Polymer) => self.node!.deref()!;
+
+export const toDocument = (self: Polymer) => self.document!.deref()!;
 
 export const isPolymer = <A, B>(u: unknown): u is Polymer<A, B> => typeof u === 'object' && u !== null && TypeId in u;
 
@@ -238,10 +240,6 @@ export const isTerminal = (self: Polymer) => {
   }
   return self.pc === self.stack.length - 1;
 };
-
-export const toNode = (self: Polymer) => self.node!.deref()!;
-
-export const toDocument = (self: Polymer) => self.document!.deref()!;
 
 export const circular = dual<
   (n: Node.Node, d: Document.Document) => (self: Polymer) => Polymer,

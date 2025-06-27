@@ -1,14 +1,12 @@
 import type * as Hydrant from '#src/disreact/core/hydrant.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
-import {INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 import type {Page} from '#src/disreact/core/primitives/exp/page.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as Stack from '#src/disreact/model/engine/stack.ts';
 import * as FC from '#src/disreact/model/runtime/fc.ts';
 import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
 import {dual, pipe} from 'effect/Function';
-import type * as Inspectable from 'effect/Inspectable';
 import * as iterable from 'effect/Iterable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
@@ -53,7 +51,7 @@ const Prototype = proto.type<Document>({
   close() {
     this._next = null;
   },
-  next(node, props) {
+  next(node: any, props: any) {
     if (FC.isFC(node)) {
       if (!props) {
         throw new Error(`Function component source requires props: ${node}`);
@@ -96,7 +94,7 @@ export const make = (
     trie  : trie,
   });
 
-export const setPhase = dual<
+const setPhase = dual<
   <A>(phase: string) => (d: Document<A>) => Document<A>,
   <A>(d: Document<A>, phase: string) => Document<A>
 >(2, (d, phase) => {
@@ -137,11 +135,10 @@ export const recordNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
   <A>(d: Document<A>, n: A) => A
 >(2, (d, n) => {
-  if (containsNode(d, n)) {
-    throw new Error(INTERNAL_ERROR);
+  if (!containsNode(d, n)) {
+    d.size++;
+    d.known.add(n);
   }
-  d.size++;
-  d.known.add(n);
   return n;
 });
 
@@ -149,11 +146,7 @@ export const forgetNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
   <A>(d: Document<A>, n: A) => A
 >(2, (d, n) => {
-  if (!containsNode(d, n)) {
-    throw new Error(INTERNAL_ERROR);
-  }
-  d.size--;
-  d.known.delete(n);
+  if (d.known.delete(n)) d.size--;
   return n;
 });
 

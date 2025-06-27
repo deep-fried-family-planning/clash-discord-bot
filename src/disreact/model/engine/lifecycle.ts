@@ -8,9 +8,7 @@ import * as E from 'effect/Effect';
 import * as Match from 'effect/Match';
 import * as Option from 'effect/Option';
 
-export type Lifecycle = {
-
-};
+export type Lifecycle = {};
 
 const nodeInitialize = (node: Node.Node) =>
   node.pipe(
@@ -23,17 +21,13 @@ const nodeInitialize = (node: Node.Node) =>
 export const initializeSPS = (stack: Stack.Stack) =>
   stack.pipe(
     Stack.pop,
+
     Match.value,
     Match.when(Node.isFunctional, (node) =>
-      stack.pipe(
-        Document.fromStack,
-        Document.use((document) =>
-          Polymer.empty().pipe(
-            Polymer.circular(node, document),
-            Polymer.polymerize(node),
-          ),
-        ),
-        dispatch.render, // todo fx
+      Polymer.empty().pipe(
+        Polymer.circular(node, stack.document),
+        Polymer.polymerize(node),
+        dispatch.render,
       ),
     ),
     Match.orElse((node) => E.succeed(node)),
@@ -125,7 +119,7 @@ export const unmountSPS = (stack: Stack.Stack) =>
           Document.fromStack,
           Document.forgetNode(node),
           Polymer.dispose,
-          Node.decompose, // todo dismount fx?
+          Node.dispose, // todo dismount fx?
         ),
       ),
     ),

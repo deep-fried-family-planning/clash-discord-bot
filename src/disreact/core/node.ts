@@ -9,9 +9,10 @@ import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
 import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
-import * as E from 'effect/Effect';
-import {dual} from 'effect/Function';
+import {Iterable} from 'effect';
+import {dual, pipe} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
+import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
 
@@ -68,14 +69,7 @@ const Prototype = proto.type<Node>({
   ...Pipeable.Prototype,
 });
 
-export const decompose = <A extends Node>(self: A): undefined => {
-  delete self.valence;
-  delete self.childs;
-  delete self.z;
-  return undefined;
-};
-
-export const make = (j: Jsx.Child): Node => {
+export const of = (j: Jsx.Child): Node => {
   if (Jsx.isJsx(j)) {
     return proto.init(Prototype, j);
   }
@@ -86,17 +80,17 @@ export const make = (j: Jsx.Child): Node => {
 };
 
 export const makeRoot = (j: Jsx.Child): Node => {
-  const v = make(j);
+  const v = of(j);
   v.$trie = `0:0:0:${v.n}`;
   v.$step = `0:0:0:${v.n}`;
   return v;
 };
 
 export const makeNode = dual<
-  (c: Jsx.Child, d: number, i: number) => (parent: Node) => Node,
-  (parent: Node, c: Jsx.Child, d: number, i: number) => Node
->(4, (parent, c, d, i) => {
-  const v = make(c);
+  (j: Jsx.Child, d: number, i: number) => (parent: Node) => Node,
+  (parent: Node, j: Jsx.Child, d: number, i: number) => Node
+>(4, (parent, j, d, i) => {
+  const v = of(j);
   v.j = parent.i;
   v.i = i;
   v.d = d;
@@ -105,15 +99,15 @@ export const makeNode = dual<
 });
 
 export const makeValence = dual<
-  (cs: Jsx.Childs) => (parent: Node) => Node[],
-  (parent: Node, cs: Jsx.Childs) => Node[]
->(2, (parent, cs) => {
+  (js: Jsx.Childs) => (parent: Node) => Node[],
+  (parent: Node, js: Jsx.Childs) => Node[]
+>(2, (parent, js) => {
   const depth = parent.d + 1;
   const acc = [] as Node[];
   let idx = 0;
 
-  for (let i = 0; i < cs.length; i++) {
-    const c = cs[i];
+  for (let i = 0; i < js.length; i++) {
+    const c = js[i];
 
     if (!c) {
       continue;
@@ -159,19 +153,44 @@ export const mountValence = <A extends Node>(self: A): A => {
 
 export const toValence = (self: Node): Node[] | undefined => self.valence?.toReversed();
 
+export const dispose = <A extends Node>(self: A): undefined => {
+  delete self.valence;
+  delete self.childs;
+  delete self.z;
+  return undefined;
+};
+
 export const diff = dual<
   (other: Node) => (self: Node) => Diff.Diff<Node>,
   (self: Node, other: Node) => Diff.Diff<Node>
 >(2, (self, other) => {
-  return Diff.skip();
+  return Diff.skip(); // todo
 });
 
 export const diffs = dual<
   (rs: Node[]) => (self: Node) => Diffs.Diffs<Node>,
   (self: Node, rs: Node[]) => Diffs.Diffs<Node>
 >(2, (self, other) => {
-  return Diffs.skip();
+  return Diffs.skip(); // todo
 });
+
+// todo
+export const naiveLCA = (ns: Node[]): Option.Option<Functional> | undefined => {
+  const first = ns.at(0);
+
+  if (!first) {
+    return Option.none();
+  }
+  if (ns.length === 1) {
+    if (isFunctional(first)) {
+      return Option.some(first);
+    }
+    return pipe(
+      Lineage.adjacency(first),
+      Iterable.findFirst((a) => isFunctional(a)),
+    );
+  }
+};
 
 export const forEachValence = dual<
   <A>(f: (a: Node) => A) => (self: Node) => void,

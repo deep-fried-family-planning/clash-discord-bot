@@ -75,6 +75,10 @@ export const condition = <A>(self: Stack<A>) =>
   !self._internal.done
   && MutableList.length(self._internal.list) > 0;
 
+export const peek = <A>(self: Stack<A>) => {
+
+};
+
 export const pop = <A>(self: Stack<A>) => {
   if (IS_DEV && self._internal.done) {
     throw new Error(INTERNAL_ERROR);
@@ -93,11 +97,6 @@ export const popWith = dual<
   <A, B>(f: (a: A, s: Stack<A>) => B) => (s: Stack<A>) => B,
   <A, B>(s: Stack<A>, f: (a: A, s: Stack<A>) => B) => B
 >(2, (s, f) => f(pop(s), s));
-
-export const popSPS = dual<
-  <A, E, R>(f: (a: A, self: Stack<A>) => E.Effect<Stack<A>, E, R>) => (self: Stack<A>) => E.Effect<Stack<A>, E, R>,
-  <A, E, R>(self: Stack<A>, f: (a: A, self: Stack<A>) => E.Effect<Stack<A>, E, R>) => E.Effect<Stack<A>, E, R>
->(2, (self, f) => {});
 
 type PM<A, B, C> = {
   visited: (a: A) => type.UnifyM<[B, C]>;
@@ -163,23 +162,6 @@ export const forget = dual<
 });
 
 export const toDocument = <A>(self: Stack<A>): Document.Document<A> => self.document;
-
-export const map = dual<
-  <A, B>(f: (a: A) => B) => (selfA: Stack<A>) => Stack<B>,
-  <A, B>(selfA: Stack<A>, f: (a: A) => B) => Stack<B>
->(2, (selfA, f) => {
-  const selfB = empty<any>(selfA.root, selfA.document);
-
-  selfB._internal.list = pipe(
-    selfA._internal.list,
-    Array.fromIterable,
-    Array.map((a) => f(a)),
-    Array.reverse,
-    MutableList.fromIterable,
-  );
-
-  return selfB;
-});
 
 export const tap = dual<
   <A>(f: (s: Stack<A>) => void) => (self: Stack<A>) => Stack<A>,
