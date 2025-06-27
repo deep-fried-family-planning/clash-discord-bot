@@ -1,6 +1,6 @@
 import {DocumentCodec} from '#src/disreact/model/DocumentCodec.ts';
 import * as Node from '#src/disreact/core/node.ts';
-import * as Stack from '#src/disreact/engine/stack.ts';
+import * as Stack from '#src/disreact/model/engine/stack.ts';
 import {Rehydrator} from '#src/disreact/model/Rehydrator.ts';
 import * as Cause from 'effect/Cause';
 import {pipe} from 'effect/Function';

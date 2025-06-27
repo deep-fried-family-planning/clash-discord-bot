@@ -4,10 +4,11 @@ import type * as Polymer from '#src/disreact/core/polymer.ts';
 import {INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 import type {Page} from '#src/disreact/core/primitives/exp/page.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as Stack from '#src/disreact/engine/stack.ts';
-import type * as Jsx from '#src/disreact/runtime/jsx.ts';
+import type * as Stack from '#src/disreact/model/engine/stack.ts';
+import * as FC from '#src/disreact/model/runtime/fc.ts';
+import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
 import {dual, pipe} from 'effect/Function';
-import * as Inspectable from 'effect/Inspectable';
+import type * as Inspectable from 'effect/Inspectable';
 import * as iterable from 'effect/Iterable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
@@ -16,8 +17,7 @@ import type * as Record from 'effect/Record';
 
 const Id = Symbol.for('disreact/document');
 
-export interface Document<A = Node.Node> extends Pipeable.Pipeable,
-  Inspectable.Inspectable
+export interface Document<A = Node.Node> extends Pipeable.Pipeable
 {
   [Id]   : typeof Id;
   _hash  : string;
@@ -37,7 +37,8 @@ export interface Document<A = Node.Node> extends Pipeable.Pipeable,
   hydrant: Hydrant.Hydrant;
   size   : number;
   close(): void;
-  open(): void;
+  next<P>(fc: FC.FC<P>, props: P): void;
+  next(jsx: Jsx.Jsx, props?: undefined): void;
 }
 
 export const isDocument = <A>(u: unknown): u is Document<A> => typeof u === 'object' && u !== null && Id in u;
@@ -49,8 +50,26 @@ export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
 const Prototype = proto.type<Document>({
   [Id]: Id,
   size: 0,
+  close() {
+    this._next = null;
+  },
+  next(node, props) {
+    if (FC.isFC(node)) {
+      if (!props) {
+        throw new Error(`Function component source requires props: ${node}`);
+      }
+      if (!props.source) {
+
+      }
+    }
+    else if (Jsx.isJsx(node)) {
+
+    }
+    else {
+      throw new Error(`Invalid source: ${node}`);
+    }
+  },
   ...Pipeable.Prototype,
-  ...Inspectable.BaseProto,
 });
 
 export const make = (
@@ -76,14 +95,6 @@ export const make = (
     root  : root,
     trie  : trie,
   });
-
-export const init = <A>(): Document<A> => {
-  throw new Error();
-};
-
-export const fork = <A>(d: Document<A>, source: Jsx.Source): Document<A> => {
-  throw new Error();
-};
 
 export const setPhase = dual<
   <A>(phase: string) => (d: Document<A>) => Document<A>,

@@ -1,4 +1,5 @@
 import {IS_DEV} from '#src/disreact/core/primitives/constants.ts';
+import {Equivalence} from 'effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 

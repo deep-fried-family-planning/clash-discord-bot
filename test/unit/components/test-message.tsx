@@ -1,5 +1,5 @@
 import {useState} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/codec/fc.ts';
+import type {FC} from '#src/disreact/adaptor/codec/fc.ts';
 import * as E from 'effect/Effect';
 
 const Header = (props: {title: string; description: string}) => {

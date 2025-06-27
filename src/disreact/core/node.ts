@@ -8,7 +8,7 @@ import * as Diff from '#src/disreact/core/primitives/diff.ts';
 import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
-import * as Jsx from '#src/disreact/runtime/jsx.ts';
+import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
 import * as E from 'effect/Effect';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';

@@ -1,5 +1,5 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
-import {Rehydrator, type RehydratorConfig} from '#src/disreact/codec/adaptor/exp/Rehydrator.ts';
+import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
+import {Rehydrator, type RehydratorConfig} from '#src/disreact/adaptor/codec/adaptor/exp/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';
 import * as Methods from '#src/disreact/adaptor/methods.ts';

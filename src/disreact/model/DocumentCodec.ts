@@ -1,4 +1,4 @@
-import * as JsxDefault from '#src/disreact/codec/intrinsic/index.ts';
+import * as JsxDefault from '#src/disreact/adaptor/codec/intrinsic/index.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import * as Node from '#src/disreact/core/node.ts';
 import * as E from 'effect/Effect';
@@ -12,7 +12,8 @@ export type ModelCodecConfig = {
 
 export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCodec', {
   effect: E.fnUntraced(function* (config?: ModelCodecConfig) {
-    const primitive     = config?.primitive ?? JsxDefault.primitive,
+    const
+      primitive     = config?.primitive ?? JsxDefault.primitive,
           normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
           encoding      = config?.encoding ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
 
@@ -20,15 +21,17 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
       if (!d) {
         return null;
       }
-      const stack = MutableList.make<Node.Node>(d.root);
-      const args = new WeakMap();
-      const outs = new WeakMap();
-      const last = {} as any;
+      const
+        stack = MutableList.make<Node.Node>(d.root),
+       args = new WeakMap(),
+       outs = new WeakMap(),
+       last = {} as any;
       outs.set(d.root, last);
 
       while (MutableList.tail(stack)) {
-        const n = MutableList.pop(stack)!;
-        const out = outs.get(n);
+        const
+          n = MutableList.pop(stack)!,
+         out = outs.get(n);
 
         if (Node.isFunctional(n)) {
           const rs = Node.dehydrate__(n, d);

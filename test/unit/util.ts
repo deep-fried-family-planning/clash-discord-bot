@@ -1,7 +1,7 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
-import type * as Element from '#src/disreact/codec/adaptor/exp/domain/old/element.ts';
-import type * as FC from '#src/disreact/runtime/fc.ts';
-import {Rehydrator} from '#src/disreact/codec/adaptor/exp/Rehydrator.ts';
+import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
+import type * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
+import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import {Rehydrator} from '#src/disreact/adaptor/codec/adaptor/exp/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';
 import {makeRuntime} from '#src/disreact/adaptor/runtime.ts';

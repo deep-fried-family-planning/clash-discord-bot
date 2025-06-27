@@ -2,7 +2,7 @@ import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
 import * as Methods from '#src/disreact/adaptor/methods.ts';
 import * as Runtime from '#src/disreact/adaptor/runtime.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
-import {testmessage} from '#unit/runtime/methods.testdata.ts';
+import {testmessage} from '#unit/adaptor/methods.testdata.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';

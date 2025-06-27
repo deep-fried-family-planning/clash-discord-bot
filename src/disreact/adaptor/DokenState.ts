@@ -1,5 +1,5 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
-import * as Doken from '#src/disreact/codec/doken.ts';
+import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
+import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
 import type {DokenCacheDefect} from '#src/disreact/adaptor/DokenCache.ts';
 import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';

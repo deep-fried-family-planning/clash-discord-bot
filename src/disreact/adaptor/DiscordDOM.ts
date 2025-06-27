@@ -1,5 +1,5 @@
 import {DiscordRESTEnv} from '#config/external.ts';
-import * as Doken from '#src/disreact/codec/doken.ts';
+import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
 import {NodeHttpClient} from '@effect/platform-node';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import {Discord, DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';

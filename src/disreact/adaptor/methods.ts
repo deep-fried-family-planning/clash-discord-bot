@@ -1,9 +1,9 @@
-import {Codec} from '#src/disreact/codec/Codec.ts';
-import * as Doken from '#src/disreact/codec/doken.ts';
-import type {Envelope} from '#src/disreact/codec/adaptor/exp/domain/old/envelope.ts';
-import * as Model from '#src/disreact/codec/adaptor/exp/ModelV1.ts';
-import {Relay} from '#src/disreact/codec/adaptor/exp/Relay.ts';
-import * as Progress from '#src/disreact/codec/old/progress2.ts';
+import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
+import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
+import type {Envelope} from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
+import * as Model from '#src/disreact/adaptor/codec/adaptor/exp/ModelV1.ts';
+import {Relay} from '#src/disreact/adaptor/codec/adaptor/exp/Relay.ts';
+import * as Progress from '#src/disreact/adaptor/codec/old/progress2.ts';
 import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/adaptor/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';

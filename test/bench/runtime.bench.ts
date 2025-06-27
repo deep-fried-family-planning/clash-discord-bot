@@ -1,6 +1,6 @@
 import * as Methods from '#src/disreact/adaptor/methods.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
-import {testmessage} from '#unit/runtime/methods.testdata.ts';
+import {testmessage} from '#unit/adaptor/methods.testdata.ts';
 import {makeTestRuntime} from '#unit/util.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
