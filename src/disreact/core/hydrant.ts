@@ -1,24 +1,53 @@
+import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as Inspectable from 'effect/Inspectable';
 import {dual, pipe} from 'effect/Function';
 import * as Option from 'effect/Option';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Pipeable from 'effect/Pipeable';
 
-const TypeId = Symbol.for('disreact/hydrant');
-
-export interface Hydrant extends Pipeable.Pipeable {
-  [TypeId]: typeof TypeId;
-  id      : string;
-  props   : any;
-  trie    : Record<string, Polymer.Chain>;
+export interface Hydrant extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
+  Lineage.Lineage<Document.Document>
+{
+  hash? : string;
+  source: string;
+  props : any;
+  trie  : Record<string, Polymer.Chain>;
 };
 
-const Prototype = proto.type({
-  [TypeId]: TypeId,
+const Prototype = proto.type<Hydrant>({
+  ...Lineage.Prototype,
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id   : 'Hydrant',
+      hash  : this.hash,
+      source: this.source,
+      props : this.props,
+      trie  : this.trie,
+    });
+  },
 });
 
-export const make = (id: string, props: any) => {};
+export const make = (input: Partial<Hydrant>) => {
+  const
+    {
+      hash   = '',
+      source = '',
+      props  = {},
+      trie   = {},
+    } = input;
+
+  return proto.init(Prototype, {
+    hash  : hash,
+    source: source,
+    props : props,
+    trie  : trie,
+  });
+};
 
 export const fromDocument = (document: Document.Document) => document.hydrant;
 

@@ -2,7 +2,7 @@ import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as Precursor from '#src/disreact/adaptor/codec/adaptor/exp/precursor.ts';
 import type * as Valence from '#src/disreact/adaptor/codec/adaptor/exp/valence.ts';
-import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as types from '#src/disreact/core/primitives/type.ts';
 import {Match, type Predicate} from 'effect';

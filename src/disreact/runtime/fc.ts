@@ -1,16 +1,12 @@
-import {ANONYMOUS, ASYNC, EFFECT, type FCExecution, INTERNAL_ERROR, SYNC} from '#src/disreact/core/primitives/constants.ts';
+import type {EFFECT, SYNC} from '#src/disreact/core/primitives/constants.ts';
+import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as t from '#src/disreact/core/primitives/type.ts';
-import type * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
+import type * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import type * as E from 'effect/Effect';
-
-export const
-  TypeId = Symbol.for('disreact/fc'),
-  CastId = Symbol.for('disreact/fc/kind');
 
 interface Internal {
   _id?        : string;
-  [CastId]?   : number;
   _tag?       : FCExecution;
   displayName?: string;
 }
@@ -20,20 +16,17 @@ export interface Known<A = any, B = Jsx.Children> extends t.Fn, Internal {
 }
 
 export interface Sync<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  [CastId]: typeof SYNC;
-  _tag    : typeof SYNC;
+  _tag: typeof SYNC;
   (props: A): B;
 }
 
 export interface Async<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  [CastId]: typeof ASYNC;
-  _tag    : typeof ASYNC;
+  _tag: typeof ASYNC;
   (props: A): Promise<B>;
 }
 
 export interface Effect<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  [CastId]: typeof EFFECT;
-  _tag    : typeof EFFECT;
+  _tag: typeof EFFECT;
   (props: A): E.Effect<B>;
 }
 
@@ -44,27 +37,11 @@ export interface FC<P = any, O = Jsx.Children, E = any, R = any> extends t.Fn {
 
 export const isFC = (u: unknown): u is FC => typeof u === 'function';
 
-export const isKnown = (u: FC): u is Known => TypeId in u;
+export const isKnown = (u: FC): u is Known => !!(u as any)._tag;
 
-export const Prototype = proto.type<Known>({
+const Prototype = proto.type<Known>({
   _id: ANONYMOUS,
 });
-
-export const SyncPrototype = proto.type<Sync>({
-  [CastId]: SYNC,
-});
-
-export const AsyncPrototype = proto.type<Async>({
-  [CastId]: ASYNC,
-});
-
-export const EffectPrototype = proto.type<Effect>({
-  [CastId]: EFFECT,
-});
-
-type Type = | typeof SyncPrototype
-            | typeof AsyncPrototype
-            | typeof EffectPrototype;
 
 export const isCasted = (self: FC): self is Known => !!(self as Known)._tag;
 
@@ -77,15 +54,6 @@ export const register = (fn: FC): Known => {
   fc._id = fc.displayName ? fc.displayName :
            fc.name ? fc.name :
            ANONYMOUS;
-  if (fc.displayName) {
-    fc._id = fc.displayName;
-  }
-  else if (fc.name) {
-    fc._id = fc.name;
-  }
-  else {
-    fc._id = ANONYMOUS;
-  }
 
   return proto.isAsync(fc)
          ? cast(fc, ASYNC)

@@ -20,7 +20,15 @@
     "experimentalDecorators"      : true,
     "disableSizeLimit"            : true,
     "pretty"                      : true,
-    "plugins"                     : [{"name": "@effect/language-service"}],
+    "plugins"                     : [
+      {
+        "name"                   : "@effect/language-service",
+        "namespaceImportPackages": ["effect", "@effect/platform"],
+        "diagnosticSeverity"     : {
+          "importFromBarrel": "error"
+        }
+      }
+    ],
     "baseUrl"                     : "./",
     "paths"                       : {
       "#config/*"   : ["./config/*"],

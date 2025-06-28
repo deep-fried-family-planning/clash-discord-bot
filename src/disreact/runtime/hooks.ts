@@ -4,7 +4,7 @@ import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import {MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';

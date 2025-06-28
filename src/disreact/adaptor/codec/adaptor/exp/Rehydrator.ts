@@ -1,5 +1,5 @@
 import * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
-import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
 import * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';

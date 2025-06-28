@@ -3,10 +3,28 @@
   <component name="LanguageServerSettingsState">
     <state>
       <map>
+        <entry key="27622c53-f3b9-4252-9129-a894e43eea41">
+          <value>
+            <LanguageServerDefinitionSettings>
+              <option name="debugPort" value="" />
+              <option name="errorReportingKind" value="as_notification" />
+              <option name="serverTrace" value="off" />
+            </LanguageServerDefinitionSettings>
+          </value>
+        </entry>
         <entry key="761fc5cc-e1a9-49c2-8aec-7e5fce038a51">
           <value>
             <LanguageServerDefinitionSettings>
               <option name="errorReportingKind" value="as_notification" />
+              <option name="serverTrace" value="messages" />
+            </LanguageServerDefinitionSettings>
+          </value>
+        </entry>
+        <entry key="de94b89b-f12a-4e0e-ad40-638db7f8c352">
+          <value>
+            <LanguageServerDefinitionSettings>
+              <option name="debugPort" value="" />
+              <option name="errorReportingKind" value="in_log" />
               <option name="serverTrace" value="messages" />
             </LanguageServerDefinitionSettings>
           </value>

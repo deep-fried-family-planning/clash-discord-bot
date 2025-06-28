@@ -1,6 +1,6 @@
 import type {IntrinsicAttributesMap} from '#src/disreact/adaptor/codec/intrinsic/types.ts';
 import type * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
-import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
 import * as Jsx from '#src/disreact/adaptor/codec/adaptor/jsx.ts';
 
 export const Fragment = Jsx.Fragment,

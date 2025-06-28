@@ -3,16 +3,16 @@ import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
-import {IS_DEV, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, IS_DEV, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
 import * as Diff from '#src/disreact/core/primitives/diff.ts';
 import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
-import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
-import {Iterable} from 'effect';
-import * as Either from 'effect/Either';
+import * as Jsx from '#src/disreact/runtime/jsx.tsx';
+import * as Array from 'effect/Array';
 import {dual, pipe} from 'effect/Function';
-import type * as Inspectable from 'effect/Inspectable';
+import * as Inspectable from 'effect/Inspectable';
+import * as Iterable from 'effect/Iterable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
@@ -29,14 +29,14 @@ interface Base extends Pipeable.Pipeable,
   Diffable.Diffable<Node>,
   Polymer.Polymerizes
 {
-  $step?  : string;
-  $trie?  : string;
-  d       : number;
-  i       : number;
-  j       : number;
-  n       : string;
-  valence?: Node[] | undefined;
-  z?      : Document.Document<Node>;
+  $step?   : string;
+  $trie?   : string;
+  d        : number;
+  i        : number;
+  j        : number;
+  n        : string;
+  valence? : Node[] | undefined;
+  document?: Document.Document<Node>;
 }
 
 export interface Text extends Base, Jsx.Text {}
@@ -68,7 +68,46 @@ const Prototype = proto.type<Node>({
   ...Lineage.Prototype,
   ...Lateral.Prototype,
   ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    switch (this._tag) {
+      case TEXT_NODE: {
+        return Inspectable.format({
+          _id : 'Node',
+          _tag: 'Text',
+          text: this.component,
+        });
+      }
+      case FRAGMENT: {
+        return Inspectable.format({
+          _id   : 'Node',
+          _tag  : 'Fragment',
+          childs: [...Array.ensure(this.valence)],
+        });
+      }
+      case INTRINSIC: {
+        return Inspectable.format({
+          _id     : 'Node',
+          _tag    : 'Intrinsic',
+          name    : this.component,
+          props   : this.props,
+          children: [...Array.ensure(this.valence)],
+        });
+      }
+      case FUNCTIONAL: {
+        return Inspectable.format({
+          _id     : 'Node',
+          _tag    : 'Functional',
+          name    : FC.name(this.component),
+          props   : this.props,
+          children: [...Array.ensure(this.valence)],
+        });
+      }
+    }
+  },
 });
+
+import * as FC from '../runtime/fc.ts';
 
 export const of = (j: Jsx.Child): Node => {
   if (Jsx.isJsx(j)) {
@@ -157,7 +196,7 @@ export const toValence = (self: Node): Node[] | undefined => self.valence?.toRev
 export const dispose = <A extends Node>(self: A): undefined => {
   delete self.valence;
   delete self.childs;
-  delete self.z;
+  delete self.document;
   return undefined;
 };
 
@@ -165,7 +204,7 @@ export const attachDocument = dual<
   <A extends Node>(document: Document.Document) => (self: A) => A,
   <A extends Node>(self: A, document: Document.Document) => A
 >(2, (self, document) => {
-  self.z = document;
+  self.document = document;
   return self;
 });
 
@@ -296,15 +335,3 @@ export const matchFunctional = dual<
   }
   return m.else(self);
 });
-
-export const either = dual<
-  <A extends Node>(r: P.Refinement<Node, A>) => (self: Node) => Either.Either<A, Exclude<Node, A>>,
-  <A extends Node>(self: Node, r: P.Refinement<Node, A>) => Either.Either<A, Exclude<Node, A>>
->(2, <A extends Node>(self: Node, r: P.Refinement<Node, A>) => {
-    const thing = Either.liftPredicate(r, (a) => a as Exclude<Node, A>)(self);
-  },
-);
-
-export const {
-               stuff,
-             } = {stuff: 123};

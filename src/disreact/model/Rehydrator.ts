@@ -1,6 +1,6 @@
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
-import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
+import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import {Exit} from 'effect';
 import * as Cache from 'effect/Cache';
 import * as Duration from 'effect/Duration';

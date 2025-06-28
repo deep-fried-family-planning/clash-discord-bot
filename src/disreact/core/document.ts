@@ -1,47 +1,43 @@
-import type * as Hydrant from '#src/disreact/core/hydrant.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
+import {PHASE_INIT} from '#src/disreact/core/primitives/constants.ts';
 import type {Page} from '#src/disreact/core/primitives/exp/page.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as Stack from '#src/disreact/model/engine/stack.ts';
-import * as FC from '#src/disreact/model/runtime/fc.ts';
-import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
-import {SortedMap} from 'effect';
+import type * as Stack from '#src/disreact/engine/stack.ts';
+import * as FC from '#src/disreact/runtime/fc.ts';
+import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import {dual, pipe} from 'effect/Function';
-import * as iterable from 'effect/Iterable';
+import * as Iterable from 'effect/Iterable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
+import * as Inspectable from 'effect/Inspectable';
 import type * as Record from 'effect/Record';
 import type * as Trie from 'effect/Trie';
-import type * as Ordered from 'effect/SortedMap';
 
 const Id = Symbol.for('disreact/document');
 
-export interface Document<A = Node.Node> extends Pipeable.Pipeable
-{
-  [Id]   : typeof Id;
-  _hash  : string;
-  _id    : string;
-  _key   : string;
-  _next  : string | null;
-  _props : any;
-  data   : any;
-  flags  : Set<A>;
-  page   : Page;
-  hash?  : string;
-  phase  : string;
-  queue  : Mailbox.Mailbox<any>;
-  root   : Node.Node;
-  ptrie  : Record<string, Polymer.Chain>;
-  known  : WeakSet<any>;
-  hydrant: Hydrant.Hydrant;
-  size   : number;
-  triie  : Trie.Trie<Node.Node>;
+export interface Hydrant {
+  hash? : string;
+  source: string | null;
+  props : any;
+  trie  : Record<string, Polymer.Chain>;
+};
 
-  close(): void;
-  next<P>(fc: FC.FC<P>, props: P): void;
-  next(jsx: Jsx.Jsx, props?: undefined): void;
+export interface Document<A = Node.Node> extends Pipeable.Pipeable,
+  Inspectable.Inspectable
+{
+  [Id]     : typeof Id;
+  data     : any;
+  hydrantI : Hydrant;
+  hydrantO : Hydrant;
+  key      : string;
+  nodes    : WeakSet<any>;
+  outstream: Mailbox.Mailbox<any>;
+  phase    : number;
+  rerenders: Set<A>;
+  root     : Node.Node;
+  size     : number;
 }
 
 export const isDocument = <A>(u: unknown): u is Document<A> => typeof u === 'object' && u !== null && Id in u;
@@ -53,50 +49,33 @@ export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
 const Prototype = proto.type<Document>({
   [Id]: Id,
   size: 0,
-  close() {
-    this._next = null;
-  },
-  next(node: any, props: any) {
-    if (FC.isFC(node)) {
-      if (!props) {
-        throw new Error(`Function component source requires props: ${node}`);
-      }
-      if (!props.source) {
-
-      }
-    }
-    else if (Jsx.isJsx(node)) {
-
-    }
-    else {
-      throw new Error(`Invalid source: ${node}`);
-    }
-  },
   ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Document',
+      key  : this.key,
+      phase: this.phase,
+      size : this.size,
+      data : this.data,
+      root : this.root,
+    });
+  },
 });
 
 export const make = (
-  _id: string,
-  _key: string,
-  _hash: string,
+  key: string,
   data: any,
-  phase: string,
-  queue: Mailbox.Mailbox<any>,
   root: Node.Node,
-  trie: Record<string, Polymer.Chain> = {},
+  queue: Mailbox.Mailbox<any>,
 ) =>
   proto.init(Prototype, {
-    _id   : _id,
-    _key  : _key,
-    _hash : _hash,
-    _next : _id,
-    _props: {},
-    data  : proto.ensure({...data}),
-    flags : new Set(),
-    phase : phase,
-    queue : queue,
-    root  : root,
-    ptrie : trie,
+    data     : data,
+    key      : key,
+    phase    : PHASE_INIT,
+    outstream: queue,
+    rerenders: new Set(),
+    root     : root,
   });
 
 const setPhase = dual<
@@ -107,13 +86,13 @@ const setPhase = dual<
   return d;
 });
 
-export const isTrieEmpty = <A>(d: Document<A>) => Object.keys(d.ptrie).length === 0;
+export const isTrieEmpty = <A>(d: Document<A>) => Object.keys(d.trie).length === 0;
 
 export const addTrie = dual<
   <A>(id: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
   <A>(d: Document<A>, id: string, p: Polymer.Chain) => Document<A>
 >(3, (d, id, p) => {
-  d.ptrie[id] = p;
+  d.trie[id] = p;
   return d;
 });
 
@@ -122,10 +101,10 @@ export const getTrie = dual<
   <A>(d: Document<A>, id: string) => Option.Option<Polymer.Chain>
 >(2, (d, id) =>
   pipe(
-    d.ptrie[id],
+    d.trie[id],
     Option.fromNullable,
     Option.map((p) => {
-      delete d.ptrie[id];
+      delete d.trie[id];
       return p;
     }),
   ),
@@ -134,7 +113,7 @@ export const getTrie = dual<
 export const containsNode = dual<
   <A>(n: A) => (d: Document<A>) => boolean,
   <A>(d: Document<A>, n: A) => boolean
->(2, (d, n) => d.known.has(n));
+>(2, (d, n) => d.nodes.has(n));
 
 export const recordNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
@@ -142,7 +121,7 @@ export const recordNode = dual<
 >(2, (d, n) => {
   if (!containsNode(d, n)) {
     d.size++;
-    d.known.add(n);
+    d.nodes.add(n);
   }
   return n;
 });
@@ -151,20 +130,20 @@ export const forgetNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
   <A>(d: Document<A>, n: A) => A
 >(2, (d, n) => {
-  if (d.known.delete(n)) d.size--;
+  if (d.nodes.delete(n)) d.size--;
   return n;
 });
 
 export const isFlagged = dual<
   <A>(a: A) => (self: Document<A>) => boolean,
   <A>(self: Document<A>, a: A) => boolean
->(2, (self, a) => self.flags.has(a));
+>(2, (self, a) => self.rerenders.has(a));
 
 export const flag = dual<
   <A>(a: A) => (self: Document<A>) => Document<A>,
   <A>(self: Document<A>, a: A) => Document<A>
 >(2, (self, a) => {
-  self.flags.add(a);
+  self.rerenders.add(a);
   return self;
 });
 
@@ -172,14 +151,14 @@ export const flagAll = dual<
   <A>(as: Iterable<A>) => (self: Document<A>) => Document<A>,
   <A>(self: Document<A>, as: Iterable<A>) => Document<A>
 >(2, (self, as) =>
-  iterable.reduce(as, self, (z, a) => flag(z, a)),
+  Iterable.reduce(as, self, (z, a) => flag(z, a)),
 );
 
 export const unflag = dual<
   <A>(a: A) => (self: Document<A>) => Document<A>,
   <A>(self: Document<A>, a: A) => Document<A>
 >(2, (self, a) => {
-  self.flags.delete(a);
+  self.rerenders.delete(a);
   return self;
 });
 

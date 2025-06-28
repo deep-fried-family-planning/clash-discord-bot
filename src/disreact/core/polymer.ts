@@ -6,6 +6,7 @@ import type * as Node from '#src/disreact/core/node.ts';
 import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
+import { Inspectable } from 'effect';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
@@ -146,6 +147,7 @@ export interface EffectFn extends type.Fn {
 const TypeId = Symbol.for('disreact/polymer');
 
 export interface Polymer<A = Node.Node, B = any> extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
   Lineage.Lineage<Document.Document<A>>,
   Lateral.Lateral<A>
 {
@@ -180,6 +182,13 @@ const PolymerProto = proto.type<Polymer>({
   document: undefined,
   ready   : false,
   ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Polymer',
+      stack: [...this.stack!],
+    });
+  },
 });
 
 export const empty = (): Polymer =>

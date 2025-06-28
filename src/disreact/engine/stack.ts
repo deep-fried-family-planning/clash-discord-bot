@@ -2,35 +2,38 @@ import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import {Chunk} from 'effect';
 import * as Either from 'effect/Either';
 import {dual} from 'effect/Function';
-import * as Inspectable from 'effect/Inspectable';
-import * as iterable from 'effect/Iterable';
+import * as Iterable from 'effect/Iterable';
 import * as MutableList from 'effect/MutableList';
 import type * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
+import * as Inspectable from 'effect/Inspectable';
+import type * as Effectable from 'effect/Effectable';
+import type * as Types from 'effect/Types';
+import * as Array from 'effect/Array';
 
-const TypeId = Symbol.for('disreact/stack');
-
-export interface Stack<A = Node.Node> extends Pipeable.Pipeable
+export interface Stack<A = Node.Node> extends Pipeable.Pipeable,
+  Inspectable.Inspectable
 {
-  readonly [TypeId]: typeof TypeId;
   readonly document: Document.Document<A>;
   readonly root    : A;
 
-  contains: WeakMap<any, number>;
-  done?   : boolean;
-  list    : MutableList.MutableList<A>;
-  visited : WeakSet<any>;
-  popped  : A;
-};Inspectable.format;
-Chunk.empty;
-export const isStack = <A>(u: unknown): u is Stack<A> => typeof u === 'object' && u !== null && TypeId in u;
+  counts : WeakMap<any, number>;
+  done?  : boolean;
+  list   : MutableList.MutableList<A>;
+  visited: WeakSet<any>;
+};
 
 const Prototype = proto.type<Stack<any>>({
-  [TypeId]: TypeId,
   ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id   : 'Stack',
+      values: [...this.list!],
+    });
+  },
 });
 
 const empty = <A>(root: A, document: Document.Document<A>): Stack<A> =>
@@ -38,7 +41,7 @@ const empty = <A>(root: A, document: Document.Document<A>): Stack<A> =>
     document: document,
     root    : root,
     list    : MutableList.empty<any>(),
-    contains: new WeakMap<any, number>(),
+    counts  : new WeakMap<any, number>(),
     visited : new WeakSet<any>(),
   });
 
@@ -48,7 +51,7 @@ export const root = <A>(document: Document.Document<A>): Stack<A> => {
     root    : document.root,
     list    : MutableList.empty<any>(),
     visited : new WeakSet<any>(),
-    contains: new WeakMap<any, number>(),
+    counts  : new WeakMap<any, number>(),
   });
   return push(self, document.root);
 };
@@ -61,8 +64,9 @@ export const make = <A>(root: A): Stack<A> => {
 };
 
 export const terminate = <A>(self: Stack<A>) => {
-  self.done = true;
-  MutableList.reset(self.list);
+  (self as Types.DeepMutable<Stack<A>>).document = undefined as any;
+  (self as Types.DeepMutable<Stack<A>>).root     = undefined as any;
+  self.done                                      = true;
   return self;
 };
 
@@ -79,8 +83,7 @@ export const pop = <A>(self: Stack<A>) => {
     throw new Error(INTERNAL_ERROR);
   }
   const popped = MutableList.pop(self.list)!;
-  self.contains.delete(popped);
-  self.popped = popped;
+  self.counts.delete(popped);
   return popped;
 };
 
@@ -93,10 +96,10 @@ export const push = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, a: A) => Stack<A>
 >(2, (self, a) => {
-  if (IS_DEV && self.contains.has(a)) {
+  if (IS_DEV && self.counts.has(a)) {
     throw new Error(INTERNAL_ERROR);
   }
-  self.contains.set(a, 1);
+  self.counts.set(a, 1);
   MutableList.append(self.list, a);
   return self;
 });
@@ -108,7 +111,7 @@ export const pushAll = dual<
   if (!as) {
     return self;
   }
-  return iterable.reduce(as, self, (z, a) => push(z, a));
+  return Iterable.reduce(as, self, (z, a) => push(z, a));
 });
 
 export const pushAllInto = dual<
@@ -141,8 +144,6 @@ export const forget = dual<
   return self;
 });
 
-export const toDocument = <A>(self: Stack<A>): Document.Document<A> => self.document;
-
 export const tap = dual<
   <A>(f: (s: Stack<A>) => void) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, f: (s: Stack<A>) => void) => Stack<A>
@@ -155,6 +156,20 @@ export const use = dual<
   <A, B>(f: (s: Stack<A>) => B) => (self: Stack<A>) => B,
   <A, B>(self: Stack<A>, f: (s: Stack<A>) => B) => B
 >(2, (self, f) => f(self));
+
+export const syncPopWhile = dual<
+  <A, L, R>(f: (a: A, self: Stack<A>) => Either.Either<R, L>) => (self: Stack<A>) => Stack<A>,
+  <A, L, R>(self: Stack<A>, f: (a: A, self: Stack<A>) => Either.Either<R, L>) => Stack<A>
+>(2, (self, f) => {
+  while (condition(self)) {
+    const popped = pop(self);
+    const result = f(popped, self);
+    if (Either.isLeft(result)) {
+      return self;
+    }
+  }
+  return self;
+});
 
 // export const isFlagged = dual<
 //   <A>(a: A) => (self: Stack<A>) => boolean,
@@ -181,7 +196,3 @@ export const use = dual<
 //   self.flags.delete(a);
 //   return self;
 // });
-
-export const syncPopWhile = <A, B extends A>(self: Stack<A>, f: (a: A) => Option.Option<A[]>) => {
-
-};

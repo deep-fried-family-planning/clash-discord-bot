@@ -85,7 +85,7 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
         if (last[key]) {
           return {
             _tag    : key,
-            hydrator: d.ptrie,
+            hydrator: d.trie,
             data    : last[key][0],
           };
         }

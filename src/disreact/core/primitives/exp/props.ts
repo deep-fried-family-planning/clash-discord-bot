@@ -8,9 +8,9 @@ import * as MutableList from 'effect/MutableList';
 
 const TypeId = Symbol.for('disreact/props');
 
-export interface Props extends Equal.Equal, Hash.Hash {
+export interface Props {
   [TypeId]     : typeof PROPS;
-  children?    : any;
+  children?    : any | undefined;
   [key: string]: any;
 };
 
@@ -32,9 +32,9 @@ export interface EventHandler<A, E = any, R = any> extends type.Fn {
   [Equal.symbol]?(that: EventHandler<any>): boolean;
 }
 
-const Prototype = proto.type<Props>({
+const Prototype = proto.type({
   [TypeId]: PROPS,
-});
+} as Props);
 
 const StructPrototype = proto.type<PropsStruct>({
   [TypeId]: STRUCT,

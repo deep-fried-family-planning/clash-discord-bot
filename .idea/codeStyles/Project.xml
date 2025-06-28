@@ -58,7 +58,7 @@
       <option name="JSDOC_INCLUDE_TYPES" value="true" />
       <option name="FORCE_SEMICOLON_STYLE" value="true" />
       <option name="ALIGN_OBJECT_PROPERTIES" value="2" />
-      <option name="ALIGN_VAR_STATEMENTS" value="1" />
+      <option name="ALIGN_VAR_STATEMENTS" value="2" />
       <option name="REFORMAT_C_STYLE_COMMENTS" value="true" />
       <option name="USE_DOUBLE_QUOTES" value="false" />
       <option name="FORCE_QUOTE_STYlE" value="true" />
@@ -81,6 +81,9 @@
       <option name="XML_ATTRIBUTE_WRAP" value="4" />
       <option name="XML_TEXT_WRAP" value="0" />
     </XML>
+    <editorconfig>
+      <option name="ENABLED" value="false" />
+    </editorconfig>
     <yaml>
       <option name="ALIGN_VALUES_PROPERTIES" value="2" />
     </yaml>
@@ -179,7 +182,6 @@
       <option name="CALL_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
       <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
       <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="true" />
-      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
       <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
       <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />

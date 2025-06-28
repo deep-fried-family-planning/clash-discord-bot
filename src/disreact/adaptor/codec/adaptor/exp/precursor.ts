@@ -1,4 +1,4 @@
-import * as FC from '#src/disreact/model/runtime/fc.ts';
+import * as FC from '#src/disreact/runtime/fc.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 
 export type Primitive =

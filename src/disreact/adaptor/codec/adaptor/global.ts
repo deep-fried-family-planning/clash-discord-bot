@@ -2,7 +2,7 @@ import type * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/ol
 import type * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
-import type * as Stack from '#src/disreact/model/engine/stack.ts';
+import type * as Stack from '#src/disreact/engine/stack.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 
 export let component = undefined as undefined | Element.Func,

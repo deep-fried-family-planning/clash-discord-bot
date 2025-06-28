@@ -1,6 +1,6 @@
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as FC from '#src/disreact/model/runtime/fc.ts';
+import type * as FC from '#src/disreact/runtime/fc.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type {PrimitiveValue} from '@effect/platform/Template';
 import type * as Equal from 'effect/Equal';
