@@ -10,6 +10,7 @@ import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
 import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
 import {Iterable} from 'effect';
+import * as Either from 'effect/Either';
 import {dual, pipe} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -91,9 +92,9 @@ export const makeNode = dual<
   (parent: Node, j: Jsx.Child, d: number, i: number) => Node
 >(4, (parent, j, d, i) => {
   const v = of(j);
-  v.j = parent.i;
-  v.i = i;
-  v.d = d;
+  v.j     = parent.i;
+  v.i     = i;
+  v.d     = d;
   Lineage.set(v, parent);
   return v;
 });
@@ -103,8 +104,8 @@ export const makeValence = dual<
   (parent: Node, js: Jsx.Childs) => Node[]
 >(2, (parent, js) => {
   const depth = parent.d + 1;
-  const acc = [] as Node[];
-  let idx = 0;
+  const acc   = [] as Node[];
+  let idx     = 0;
 
   for (let i = 0; i < js.length; i++) {
     const c = js[i];
@@ -159,6 +160,22 @@ export const dispose = <A extends Node>(self: A): undefined => {
   delete self.z;
   return undefined;
 };
+
+export const attachDocument = dual<
+  <A extends Node>(document: Document.Document) => (self: A) => A,
+  <A extends Node>(self: A, document: Document.Document) => A
+>(2, (self, document) => {
+  self.z = document;
+  return self;
+});
+
+export const attachPolymer = dual<
+  <A extends Node>(polymer: Polymer.Polymer) => (self: A) => A,
+  <A extends Node>(self: A, polymer: Polymer.Polymer) => A
+>(2, (self, polymer) => {
+  self.polymer = polymer;
+  return self;
+});
 
 export const diff = dual<
   (other: Node) => (self: Node) => Diff.Diff<Node>,
@@ -254,11 +271,11 @@ export const use = dual<
 type MO<A extends Node, B, C> = {
   when: P.Refinement<Node, A>;
   then: (n: A) => B;
-  else: (n: Exclude<Node, A>) => C;
+  else: (n: Exclude<Node, A>) => B;
 };
-export const matchOnly = dual<
-  <A extends Node, B, C>(m: MO<A, B, C>) => (self: Node) => type.UnifyM<[B, C]>,
-  <A extends Node, B, C>(self: Node, m: MO<A, B, C>) => type.UnifyM<[B, C]>
+export const when = dual<
+  <A extends Node, B, C>(m: MO<A, B, C>) => (self: Node) => type.UnifyM<[B, B]>,
+  <A extends Node, B, C>(self: Node, m: MO<A, B, C>) => type.UnifyM<[B, B]>
 >(2, (self, m) => {
   if (m.when(self)) {
     return m.then(self) as any;
@@ -279,3 +296,15 @@ export const matchFunctional = dual<
   }
   return m.else(self);
 });
+
+export const either = dual<
+  <A extends Node>(r: P.Refinement<Node, A>) => (self: Node) => Either.Either<A, Exclude<Node, A>>,
+  <A extends Node>(self: Node, r: P.Refinement<Node, A>) => Either.Either<A, Exclude<Node, A>>
+>(2, <A extends Node>(self: Node, r: P.Refinement<Node, A>) => {
+    const thing = Either.liftPredicate(r, (a) => a as Exclude<Node, A>)(self);
+  },
+);
+
+export const {
+               stuff,
+             } = {stuff: 123};

@@ -2,7 +2,6 @@ import * as Deps from '#src/disreact/adaptor/codec/old/deps.ts';
 import * as FC from '#src/disreact/model/runtime/fc.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import {INTERNAL_ERROR} from '#src/disreact/core/primitives/proto.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';

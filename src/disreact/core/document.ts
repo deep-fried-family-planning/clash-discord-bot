@@ -6,12 +6,15 @@ import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as Stack from '#src/disreact/model/engine/stack.ts';
 import * as FC from '#src/disreact/model/runtime/fc.ts';
 import * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
+import {SortedMap} from 'effect';
 import {dual, pipe} from 'effect/Function';
 import * as iterable from 'effect/Iterable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as Record from 'effect/Record';
+import type * as Trie from 'effect/Trie';
+import type * as Ordered from 'effect/SortedMap';
 
 const Id = Symbol.for('disreact/document');
 
@@ -30,10 +33,12 @@ export interface Document<A = Node.Node> extends Pipeable.Pipeable
   phase  : string;
   queue  : Mailbox.Mailbox<any>;
   root   : Node.Node;
-  trie   : Record<string, Polymer.Chain>;
+  ptrie  : Record<string, Polymer.Chain>;
   known  : WeakSet<any>;
   hydrant: Hydrant.Hydrant;
   size   : number;
+  triie  : Trie.Trie<Node.Node>;
+
   close(): void;
   next<P>(fc: FC.FC<P>, props: P): void;
   next(jsx: Jsx.Jsx, props?: undefined): void;
@@ -91,7 +96,7 @@ export const make = (
     phase : phase,
     queue : queue,
     root  : root,
-    trie  : trie,
+    ptrie : trie,
   });
 
 const setPhase = dual<
@@ -102,13 +107,13 @@ const setPhase = dual<
   return d;
 });
 
-export const isTrieEmpty = <A>(d: Document<A>) => Object.keys(d.trie).length === 0;
+export const isTrieEmpty = <A>(d: Document<A>) => Object.keys(d.ptrie).length === 0;
 
 export const addTrie = dual<
   <A>(id: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
   <A>(d: Document<A>, id: string, p: Polymer.Chain) => Document<A>
 >(3, (d, id, p) => {
-  d.trie[id] = p;
+  d.ptrie[id] = p;
   return d;
 });
 
@@ -117,10 +122,10 @@ export const getTrie = dual<
   <A>(d: Document<A>, id: string) => Option.Option<Polymer.Chain>
 >(2, (d, id) =>
   pipe(
-    d.trie[id],
+    d.ptrie[id],
     Option.fromNullable,
     Option.map((p) => {
-      delete d.trie[id];
+      delete d.ptrie[id];
       return p;
     }),
   ),

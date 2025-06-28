@@ -1,9 +1,27 @@
-import {IS_DEV} from '#src/disreact/core/primitives/constants.ts';
-import {Equivalence} from 'effect';
+import {DEV_STUB, INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
+import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 
-export type proto = never;
+export type proto = DEV_STUB;
+export const proto = DEV_STUB;
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type Fn = Function;
+
+export type FnN<A extends any[], B> = (...p: A) => B;
+
+const async_constructor = (async () => {}).constructor;
+
+export const isAsync = <A extends any[], B>(u: FnN<A, B>): u is FnN<A, Extract<B, Promise<any>>> =>
+  u.constructor === async_constructor;
+
+export const LocalEffectTypeId = Symbol.for('effect/Effect');
+
+export const isEffect = <A, E, R>(u: unknown): u is E.Effect<A, E, R> =>
+  u !== null
+  && typeof u === 'object'
+  && (u as any)[LocalEffectTypeId];
 
 const assignProto = (p: any, o: any) =>
   Object.assign(

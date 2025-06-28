@@ -1,30 +1,62 @@
+import {props} from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
-import {ASYNC, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
+import {ASYNC, DEV_STUB, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
+import * as proto from '#src/disreact/core/primitives/proto.ts';
 import * as type from '#src/disreact/core/primitives/type.ts';
 import * as FC from '#src/disreact/model/runtime/fc.ts';
 import * as Hooks from '#src/disreact/model/runtime/hooks.ts';
 import type * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
+import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
+import {EffectTypeId} from 'effect/Effectable';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
-import * as Array from 'effect/Array';
 
-export type dispatch = never;
+export type dispatch = DEV_STUB;
+export const dispatch = DEV_STUB;
 
-const
-  mutex  = E.unsafeMakeSemaphore(1),
-  lock   = mutex.take(1),
-  unlock = mutex.release(1);
+
+const mutex  = E.unsafeMakeSemaphore(1),
+      lock   = mutex.take(1),
+      unlock = mutex.release(1);
+import * as Function from 'effect/Function';
+const callComponent = (node: Node.Functional) => {
+  const fc = node.component,
+        p  = node.props;
+
+  switch (fc._tag) {
+    case SYNC: {
+      return E.succeed(fc(p) as Jsx.Children);
+    }
+    case ASYNC: {
+      return E.promise(() => fc(p) as Promise<Jsx.Children>);
+    }
+    case EFFECT: {
+      return fc(props) as E.Effect<Jsx.Children>;
+    }
+  }
+  const output = fc(p);
+
+  if (P.isPromise(output)) {
+    return E.die('Async keyword required for async promises');
+  }
+  if (E.isEffect(output)) {
+    FC.cast(fc, EFFECT);
+    return output as E.Effect<Jsx.Children>;
+  }
+  FC.cast(fc, SYNC);
+  return E.succeed(output);
+};
 
 export const render = (node: Node.Functional) =>
   lock.pipe(
-    E.map(() => {
+    E.flatMap(() => {
       Hooks.active.polymer = node.polymer!;
+      return callComponent(node);
     }),
-    E.andThen(runFC(node.component, node.props)),
     E.tap(() => {
       Hooks.active.polymer = undefined;
       return unlock;
@@ -41,32 +73,9 @@ export const render = (node: Node.Functional) =>
     E.tapDefect(() => unlock),
   );
 
-const runFC = (fc: FC.FC, props: any) => {
-  switch (FC.kind(fc)) {
-    case SYNC: {
-      return E.sync(() => fc(props) as Jsx.Children);
-    }
-    case ASYNC: {
-      return E.promise(() => fc(props) as Promise<Jsx.Children>);
-    }
-    case EFFECT: {
-      return fc(props) as E.Effect<Jsx.Children>;
-    }
-  }
-  return E.suspend(() => {
-    const output = fc(props);
-
-    if (P.isPromise(output)) {
-      FC.cast(fc, FC.AsyncPrototype);
-      return E.promise(() => output);
-    }
-    if (E.isEffect(output)) {
-      FC.cast(fc, FC.EffectPrototype);
-      return output as E.Effect<Jsx.Children>;
-    }
-    FC.cast(fc, FC.SyncPrototype);
-    return E.succeed(output);
-  });
+const runFC = (node: Node.Functional) => {
+  const fc = node.component;
+  const props = node.props;
 };
 
 export class UpdateError extends Data.TaggedError('UpdateError')<{
@@ -98,7 +107,7 @@ export const update = (n: Node.Functional) => E.suspend(() => {
 });
 
 const runFx = (fx: Polymer.EffectFn) => E.suspend(() => {
-  if (type.isAsync(fx)) {
+  if (proto.isAsync(fx)) {
     return E.promise(fx);
   }
   const out = fx();
@@ -125,7 +134,7 @@ export const invoke = (n: Node.Intrinsic, d: Document.Document<Node.Node>, event
 });
 
 const runEvent = (fn: any, event: any) => E.suspend(() => {
-  if (type.isAsync(fn)) {
+  if (proto.isAsync(fn)) {
     return E.promise(() => fn(event));
   }
   const out = fn(event);
@@ -148,3 +157,9 @@ export const runAllFx = (p: Polymer.Polymer) => E.suspend(() => {
     E.asVoid,
   );
 });
+
+
+// @ts-expect-error library stuff
+if (proto.LocalEffectTypeId !== EffectTypeId) {
+  throw new Error(INTERNAL_ERROR);
+}

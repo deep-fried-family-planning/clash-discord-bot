@@ -1,4 +1,5 @@
 import * as Diff from '#src/disreact/core/primitives/diff.ts';
+import {proto} from '#src/disreact/core/primitives/proto.ts';
 import * as type from '#src/disreact/core/primitives/type.ts';
 import * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
 import * as FC from '#src/disreact/model/runtime/fc.ts';
@@ -109,7 +110,7 @@ export const runEffects = (n: Element.Func) => E.suspend(() => {
     n.polymer!,
     Polymer.flush,
     E.forEach((f) => {
-      if (type.isAsync(f)) {
+      if (proto.isAsync(f)) {
         return E.promise(f);
       }
       const out = f();

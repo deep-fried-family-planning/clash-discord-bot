@@ -2,6 +2,10 @@ export const
   IS_DEV         = (process.env.NODE_ENV === 'development') as true,
   INTERNAL_ERROR = 'Internal Error' as const;
 
+// DX to help auto import in IDE at dev time
+export type DEV_STUB = never;
+export declare const DEV_STUB: never;
+
 export const noop = () => {};
 
 export const isDev = (): true => (process.env.NODE_ENV === 'development') as true;
@@ -20,6 +24,11 @@ export const
   SYNC   = 1 as const,
   ASYNC  = 2 as const,
   EFFECT = 3 as const;
+
+export type FCExecution =
+  | typeof SYNC
+  | typeof ASYNC
+  | typeof EFFECT;
 
 export const ANONYMOUS = 'Anonymous' as const;
 

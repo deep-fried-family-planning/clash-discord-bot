@@ -17,7 +17,7 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
           normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
           encoding      = config?.encoding ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
 
-    const encodeDocument = (d?: Document.Document<Node.Node>) => {
+    const encodeDocument = (d?: Document.Document) => {
       if (!d) {
         return null;
       }
@@ -85,7 +85,7 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
         if (last[key]) {
           return {
             _tag    : key,
-            hydrator: d.trie,
+            hydrator: d.ptrie,
             data    : last[key][0],
           };
         }

@@ -81,9 +81,6 @@
       <option name="XML_ATTRIBUTE_WRAP" value="4" />
       <option name="XML_TEXT_WRAP" value="0" />
     </XML>
-    <editorconfig>
-      <option name="ENABLED" value="false" />
-    </editorconfig>
     <yaml>
       <option name="ALIGN_VALUES_PROPERTIES" value="2" />
     </yaml>

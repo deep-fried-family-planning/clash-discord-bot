@@ -1,32 +1,31 @@
-import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
 import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as type from '#src/disreact/core/primitives/type.ts';
-import * as Array from 'effect/Array';
-import * as E from 'effect/Effect';
-import {dual, pipe} from 'effect/Function';
+import {Chunk} from 'effect';
+import * as Either from 'effect/Either';
+import {dual} from 'effect/Function';
+import * as Inspectable from 'effect/Inspectable';
 import * as iterable from 'effect/Iterable';
 import * as MutableList from 'effect/MutableList';
+import type * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 
 const TypeId = Symbol.for('disreact/stack');
 
-export interface Stack<A = Node.Node> extends Pipeable.Pipeable,
-  Lineage.Lineage,
-  type.Internal<{
-    contains: WeakMap<any, number>;
-    done?   : boolean;
-    list    : MutableList.MutableList<A>;
-    visited : WeakSet<any>;
-  }>
+export interface Stack<A = Node.Node> extends Pipeable.Pipeable
 {
   readonly [TypeId]: typeof TypeId;
   readonly document: Document.Document<A>;
   readonly root    : A;
-};
 
+  contains: WeakMap<any, number>;
+  done?   : boolean;
+  list    : MutableList.MutableList<A>;
+  visited : WeakSet<any>;
+  popped  : A;
+};Inspectable.format;
+Chunk.empty;
 export const isStack = <A>(u: unknown): u is Stack<A> => typeof u === 'object' && u !== null && TypeId in u;
 
 const Prototype = proto.type<Stack<any>>({
@@ -36,24 +35,20 @@ const Prototype = proto.type<Stack<any>>({
 
 const empty = <A>(root: A, document: Document.Document<A>): Stack<A> =>
   proto.init(Prototype, {
-    document : document,
-    root     : root,
-    _internal: {
-      list    : MutableList.empty<any>(),
-      visited : new WeakSet<any>(),
-      contains: new WeakMap<any, number>(),
-    },
+    document: document,
+    root    : root,
+    list    : MutableList.empty<any>(),
+    contains: new WeakMap<any, number>(),
+    visited : new WeakSet<any>(),
   });
 
 export const root = <A>(document: Document.Document<A>): Stack<A> => {
   const self = proto.init(Prototype, {
-    document : document,
-    root     : document.root,
-    _internal: {
-      list    : MutableList.empty<any>(),
-      visited : new WeakSet<any>(),
-      contains: new WeakMap<any, number>(),
-    },
+    document: document,
+    root    : document.root,
+    list    : MutableList.empty<any>(),
+    visited : new WeakSet<any>(),
+    contains: new WeakMap<any, number>(),
   });
   return push(self, document.root);
 };
@@ -66,31 +61,27 @@ export const make = <A>(root: A): Stack<A> => {
 };
 
 export const terminate = <A>(self: Stack<A>) => {
-  self._internal.done = true;
-  MutableList.reset(self._internal.list);
+  self.done = true;
+  MutableList.reset(self.list);
   return self;
 };
 
 export const condition = <A>(self: Stack<A>) =>
-  !self._internal.done
-  && MutableList.length(self._internal.list) > 0;
+  !self.done
+  && MutableList.length(self.list) > 0;
 
 export const peek = <A>(self: Stack<A>) => {
 
 };
 
 export const pop = <A>(self: Stack<A>) => {
-  if (IS_DEV && self._internal.done) {
+  if (IS_DEV && self.done) {
     throw new Error(INTERNAL_ERROR);
   }
-  const a = MutableList.pop(self._internal.list)!;
-  const i = self._internal.contains.get(a);
-
-  if (IS_DEV && !i) {
-    throw new Error(INTERNAL_ERROR);
-  }
-  self._internal.contains.delete(a);
-  return a;
+  const popped = MutableList.pop(self.list)!;
+  self.contains.delete(popped);
+  self.popped = popped;
+  return popped;
 };
 
 export const popWith = dual<
@@ -98,30 +89,15 @@ export const popWith = dual<
   <A, B>(s: Stack<A>, f: (a: A, s: Stack<A>) => B) => B
 >(2, (s, f) => f(pop(s), s));
 
-type PM<A, B, C> = {
-  visited: (a: A) => type.UnifyM<[B, C]>;
-  unseen : (a: A) => type.UnifyM<[B, C]>;
-};
-export const popMatch = dual<
-  <A, B, C>(m: PM<A, B, C>) => (self: Stack<A>) => type.UnifyM<[B, C]>,
-  <A, B, C>(self: Stack<A>, m: PM<A, B, C>) => type.UnifyM<[B, C]>
->(2, (self, m) => {
-  const a = pop(self);
-  if (self._internal.visited.has(a)) {
-    return m.visited(a);
-  }
-  return m.unseen(a);
-});
-
 export const push = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, a: A) => Stack<A>
 >(2, (self, a) => {
-  if (IS_DEV && self._internal.contains.has(a)) {
+  if (IS_DEV && self.contains.has(a)) {
     throw new Error(INTERNAL_ERROR);
   }
-  self._internal.contains.set(a, 1);
-  MutableList.append(self._internal.list, a);
+  self.contains.set(a, 1);
+  MutableList.append(self.list, a);
   return self;
 });
 
@@ -141,15 +117,19 @@ export const pushAllInto = dual<
 >(2, (as, self) => pushAll(self, as));
 
 export const visited = dual<
-  <A>(a: A) => (s: Stack<A>) => boolean,
-  <A>(s: Stack<A>, a: A) => boolean
->(2, (self, a) => self._internal.visited.has(a));
+  <A>(a: A) => (s: Stack<A>) => Either.Either<A, A>,
+  <A>(s: Stack<A>, a: A) => Either.Either<A, A>
+>(2, (self, a) =>
+  self.visited.has(a)
+  ? Either.right(a)
+  : Either.left(a),
+);
 
 export const visit = dual<
   <A>(a: A) => (self: Stack<A>) => A,
   <A>(self: Stack<A>, a: A) => A
 >(2, (self, a) => {
-  self._internal.visited.add(a);
+  self.visited.add(a);
   return a;
 });
 
@@ -157,7 +137,7 @@ export const forget = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, a: A) => Stack<A>
 >(2, (self, a) => {
-  self._internal.visited.delete(a);
+  self.visited.delete(a);
   return self;
 });
 
@@ -201,3 +181,7 @@ export const use = dual<
 //   self.flags.delete(a);
 //   return self;
 // });
+
+export const syncPopWhile = <A, B extends A>(self: Stack<A>, f: (a: A) => Option.Option<A[]>) => {
+
+};

@@ -26,11 +26,3 @@ const __async = async () => {};
 
 export const isAsync = <A extends any[], B>(u: FnN<A, B>): u is FnN<A, Extract<B, Promise<any>>> =>
   u.constructor === __async.constructor;
-
-export const InternalId = Symbol.for('disreact/internal');
-
-export type Internal<A> = {
-  readonly _internal: A;
-};
-
-export const internal = <A, B extends Internal<A>>(self: B): A => self._internal;

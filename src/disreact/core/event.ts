@@ -2,7 +2,7 @@ import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts
 import type * as FC from '#src/disreact/model/runtime/fc.ts';
 import type * as Jsx from '#src/disreact/model/runtime/jsx.tsx';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import * as type from '#src/disreact/core/primitives/type.ts';
+import type * as type from '#src/disreact/core/primitives/type.ts';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -70,7 +70,7 @@ export const invoke = (event: Event, handler: Handler): E.Effect<void> => {
   if (IS_DEV && (!isHandler(handler) || !isEvent(event))) {
     throw new Error(INTERNAL_ERROR);
   }
-  if (type.isAsync(handler)) {
+  if (proto.isAsync(handler)) {
     return E.promise(() => handler(event));
   }
   return E.suspend(() => {

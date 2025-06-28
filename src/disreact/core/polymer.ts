@@ -3,7 +3,7 @@ import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/node.ts';
-import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, type MonomerTag, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
+import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
 import * as Array from 'effect/Array';
@@ -240,6 +240,22 @@ export const isTerminal = (self: Polymer) => {
   }
   return self.pc === self.stack.length - 1;
 };
+
+export const attachDocument = dual<
+  (d: Document.Document) => (self: Polymer) => Polymer,
+  (self: Polymer, d: Document.Document) => Polymer
+>(2, (self, d) => {
+  self.document = new WeakRef(d);
+  return self;
+});
+
+export const attachNode = dual<
+  (n: Node.Node) => (self: Polymer) => Polymer,
+  (self: Polymer, n: Node.Node) => Polymer
+>(2, (self, n) => {
+  self.node = new WeakRef(n);
+  return self;
+});
 
 export const circular = dual<
   (n: Node.Node, d: Document.Document) => (self: Polymer) => Polymer,

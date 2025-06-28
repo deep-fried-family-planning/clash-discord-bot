@@ -4,24 +4,63 @@ import * as Node from '#src/disreact/core/node.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import * as dispatch from '#src/disreact/model/engine/dispatch.ts';
 import * as Stack from '#src/disreact/model/engine/stack.ts';
+import {NodeRuntime} from '@effect/platform-node';
+import {Effectable, Trie} from 'effect';
 import * as E from 'effect/Effect';
+import * as Either from 'effect/Either';
+import {pipe} from 'effect/Function';
 import * as Match from 'effect/Match';
 import * as Option from 'effect/Option';
 
-export type Lifecycle = {};
+pipe(
+  E.log('ope'),
+  NodeRuntime.runMain({}),
+);
 
-const nodeInitialize = (node: Node.Node) =>
-  node.pipe(
+export type Lifecycle = {
+  document: Document.Document;
+  stack   : Stack.Stack;
+  node    : Node.Node;
+};
+
+import * as string from 'effect/String';
+import * as String from 'effect/String';
+
+Trie.get;
+
+const thing = Either.liftPredicate(Node.isFunctional, (n) => n);
+Effectable;
+type EitherLR<L, R> = Either.Either<R, L>;
+// : EitherLR<Node.Functional, Exclude<Node.Node, Node.Functional>>
+
+const spsSync = (stack: Stack.Stack) =>
+  stack.pipe(
+    Stack.pop,
+    Node.attachDocument(stack.document),
+    Node.tap((node) =>
+      stack.document.pipe(
+        Document.recordNode(node),
+      ),
+    ),
     Match.value,
-    Match.when(Node.isFunctional, (functional) => {
-
-    }),
+    Match.when(Node.isFunctional, (node) =>
+      pipe(
+        Polymer.empty(),
+        Polymer.attachDocument(stack.document),
+        Polymer.circular(node, stack.document),
+        Polymer.polymerize(node),
+      ),
+    ),
+    Match.either,
+    Either.map((n) =>
+      n.pipe(),
+    ),
   );
 
 export const initializeSPS = (stack: Stack.Stack) =>
   stack.pipe(
     Stack.pop,
-
+    Document,
     Match.value,
     Match.when(Node.isFunctional, (node) =>
       Polymer.empty().pipe(
