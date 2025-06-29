@@ -2,11 +2,11 @@ import type * as Declarations from '#src/disreact/adaptor/codec/old/declarations
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#src/disreact/core/document.ts';
-import type * as Node from '#src/disreact/core/node.ts';
+import type * as Node from '#src/disreact/core/nodev1.ts';
 import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
-import { Inspectable } from 'effect';
+import * as Inspectable from 'effect/Inspectable';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';
 import type * as E from 'effect/Effect';
@@ -93,10 +93,6 @@ export const s = (initial: any): StateMonomer => {
   return self;
 };
 
-export const getNext = (self: Polymer): Option.Option<Monomer> => {
-
-};
-
 export namespace Monomer {
   export type None = typeof Declarations.Null.Type;
   export type State = typeof Declarations.State.Type;
@@ -146,7 +142,7 @@ export interface EffectFn extends type.Fn {
 
 const TypeId = Symbol.for('disreact/polymer');
 
-export interface Polymer<A = Node.Node, B = any> extends Pipeable.Pipeable,
+export interface Polymer<A = Node.Nodev1, B = any> extends Pipeable.Pipeable,
   Inspectable.Inspectable,
   Lineage.Lineage<Document.Document<A>>,
   Lateral.Lateral<A>
@@ -259,16 +255,16 @@ export const attachDocument = dual<
 });
 
 export const attachNode = dual<
-  (n: Node.Node) => (self: Polymer) => Polymer,
-  (self: Polymer, n: Node.Node) => Polymer
+  (n: Node.Nodev1) => (self: Polymer) => Polymer,
+  (self: Polymer, n: Node.Nodev1) => Polymer
 >(2, (self, n) => {
   self.node = new WeakRef(n);
   return self;
 });
 
 export const circular = dual<
-  (n: Node.Node, d: Document.Document) => (self: Polymer) => Polymer,
-  (self: Polymer, n: Node.Node, d: Document.Document) => Polymer
+  (n: Node.Nodev1, d: Document.Document) => (self: Polymer) => Polymer,
+  (self: Polymer, n: Node.Nodev1, d: Document.Document) => Polymer
 >(
   3, (self, n, d) => {
     self.node = new WeakRef(n);

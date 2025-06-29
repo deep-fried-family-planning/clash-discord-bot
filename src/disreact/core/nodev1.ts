@@ -8,8 +8,10 @@ import * as Diff from '#src/disreact/core/primitives/diff.ts';
 import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as type from '#src/disreact/core/primitives/type.ts';
+import * as FC from '#src/disreact/runtime/fc.ts';
 import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import * as Array from 'effect/Array';
+import * as Equal from 'effect/Equal';
 import {dual, pipe} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
@@ -17,16 +19,16 @@ import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
 
-export type Node = | Text
-                   | Fragment
-                   | Intrinsic
-                   | Functional;
+export type Nodev1 = | Text
+                     | Fragment
+                     | Intrinsic
+                     | Functional;
 
 interface Base extends Pipeable.Pipeable,
   Inspectable.Inspectable,
-  Lineage.Lineage<Node>,
-  Lateral.Lateral<Node>,
-  Diffable.Diffable<Node>,
+  Lineage.Lineage<Nodev1>,
+  Lateral.Lateral<Nodev1>,
+  Diffable.Diffable<Nodev1>,
   Polymer.Polymerizes
 {
   $step?   : string;
@@ -35,8 +37,8 @@ interface Base extends Pipeable.Pipeable,
   i        : number;
   j        : number;
   n        : string;
-  valence? : Node[] | undefined;
-  document?: Document.Document<Node>;
+  valence? : Nodev1[] | undefined;
+  document?: Document.Document<Nodev1>;
 }
 
 export interface Text extends Base, Jsx.Text {}
@@ -47,17 +49,17 @@ export interface Intrinsic extends Base, Jsx.Intrinsic {}
 
 export interface Functional extends Base, Jsx.Functional {}
 
-export const isNode = (u: unknown): u is Node => Jsx.isJsx(u);
+export const isNode = (u: unknown): u is Nodev1 => Jsx.isJsx(u);
 
-export const isText = (u: Node): u is Text => Jsx.isText(u);
+export const isText = (u: Nodev1): u is Text => Jsx.isText(u);
 
-export const isFragment = (u: Node): u is Fragment => Jsx.isFragment(u);
+export const isFragment = (u: Nodev1): u is Fragment => Jsx.isFragment(u);
 
-export const isIntrinsic = (u: Node): u is Intrinsic => Jsx.isIntrinsic(u);
+export const isIntrinsic = (u: Nodev1): u is Intrinsic => Jsx.isIntrinsic(u);
 
-export const isFunctional = (u: Node): u is Functional => Jsx.isFunctional(u);
+export const isFunctional = (u: Nodev1): u is Functional => Jsx.isFunctional(u);
 
-const Prototype = proto.type<Node>({
+const Prototype = proto.type<Nodev1>({
   $step  : '',
   $trie  : '',
   d      : 0,
@@ -107,9 +109,7 @@ const Prototype = proto.type<Node>({
   },
 });
 
-import * as FC from '../runtime/fc.ts';
-
-export const of = (j: Jsx.Child): Node => {
+export const of = (j: Jsx.Child): Nodev1 => {
   if (Jsx.isJsx(j)) {
     return proto.init(Prototype, j);
   }
@@ -119,7 +119,7 @@ export const of = (j: Jsx.Child): Node => {
   });
 };
 
-export const makeRoot = (j: Jsx.Child): Node => {
+export const makeRoot = (j: Jsx.Child): Nodev1 => {
   const v = of(j);
   v.$trie = `0:0:0:${v.n}`;
   v.$step = `0:0:0:${v.n}`;
@@ -127,8 +127,8 @@ export const makeRoot = (j: Jsx.Child): Node => {
 };
 
 export const makeNode = dual<
-  (j: Jsx.Child, d: number, i: number) => (parent: Node) => Node,
-  (parent: Node, j: Jsx.Child, d: number, i: number) => Node
+  (j: Jsx.Child, d: number, i: number) => (parent: Nodev1) => Nodev1,
+  (parent: Nodev1, j: Jsx.Child, d: number, i: number) => Nodev1
 >(4, (parent, j, d, i) => {
   const v = of(j);
   v.j     = parent.i;
@@ -139,11 +139,11 @@ export const makeNode = dual<
 });
 
 export const makeValence = dual<
-  (js: Jsx.Childs) => (parent: Node) => Node[],
-  (parent: Node, js: Jsx.Childs) => Node[]
+  (js: Jsx.Childs) => (parent: Nodev1) => Nodev1[],
+  (parent: Nodev1, js: Jsx.Childs) => Nodev1[]
 >(2, (parent, js) => {
   const depth = parent.d + 1;
-  const acc   = [] as Node[];
+  const acc   = [] as Nodev1[];
   let idx     = 0;
 
   for (let i = 0; i < js.length; i++) {
@@ -169,8 +169,8 @@ export const makeValence = dual<
 });
 
 export const acceptJsxChildren = dual<
-  (self: Node) => (cs: Jsx.Children) => Node,
-  (cs: Jsx.Children, self: Node) => Node
+  (self: Nodev1) => (cs: Jsx.Children) => Nodev1,
+  (cs: Jsx.Children, self: Nodev1) => Nodev1
 >(2, (cs, self) => {
   if (!cs) {
     return self;
@@ -183,7 +183,7 @@ export const acceptJsxChildren = dual<
   return self;
 });
 
-export const mountValence = <A extends Node>(self: A): A => {
+export const mountValence = <A extends Nodev1>(self: A): A => {
   if (self.childs) {
     self.valence = makeValence(self, self.childs);
     delete self.childs;
@@ -191,9 +191,9 @@ export const mountValence = <A extends Node>(self: A): A => {
   return self;
 };
 
-export const toValence = (self: Node): Node[] | undefined => self.valence?.toReversed();
+export const toValence = (self: Nodev1): Nodev1[] | undefined => self.valence?.toReversed();
 
-export const dispose = <A extends Node>(self: A): undefined => {
+export const dispose = <A extends Nodev1>(self: A): undefined => {
   delete self.valence;
   delete self.childs;
   delete self.document;
@@ -201,37 +201,70 @@ export const dispose = <A extends Node>(self: A): undefined => {
 };
 
 export const attachDocument = dual<
-  <A extends Node>(document: Document.Document) => (self: A) => A,
-  <A extends Node>(self: A, document: Document.Document) => A
+  <A extends Nodev1>(document: Document.Document) => (self: A) => A,
+  <A extends Nodev1>(self: A, document: Document.Document) => A
 >(2, (self, document) => {
   self.document = document;
   return self;
 });
 
 export const attachPolymer = dual<
-  <A extends Node>(polymer: Polymer.Polymer) => (self: A) => A,
-  <A extends Node>(self: A, polymer: Polymer.Polymer) => A
+  <A extends Nodev1>(polymer: Polymer.Polymer) => (self: A) => A,
+  <A extends Nodev1>(self: A, polymer: Polymer.Polymer) => A
 >(2, (self, polymer) => {
   self.polymer = polymer;
   return self;
 });
 
 export const diff = dual<
-  (other: Node) => (self: Node) => Diff.Diff<Node>,
-  (self: Node, other: Node) => Diff.Diff<Node>
+  (other: Nodev1) => (self: Nodev1) => Diff.Diff<Nodev1>,
+  (self: Nodev1, other: Nodev1) => Diff.Diff<Nodev1>
 >(2, (self, other) => {
-  return Diff.skip(); // todo
+  if (self === other) {
+    return Diff.skip();
+  }
+  if (self._tag !== other._tag) {
+    return Diff.replace(other);
+  }
+  if (isText(self) || isText(other)) {
+    if (self.component !== other.component) {
+      return Diff.replace(other);
+    }
+    return Diff.skip();
+  }
+  if (isFragment(self) || isFragment(other)) {
+    return Diff.cont(other);
+  }
+  if (isIntrinsic(self) || isIntrinsic(other)) {
+    if (self.component !== other.component) {
+      return Diff.replace(other);
+    }
+    if (!Equal.equals(self.props, other.props)) {
+      return Diff.update(other);
+    }
+    return Diff.cont(other);
+  }
+  if (self.component !== other.component) {
+    return Diff.replace(other);
+  }
+  if (!Equal.equals(self.props, other.props)) {
+    return Diff.render(other.props);
+  }
+  if (!Equal.equals(self.polymer?.stack, self.polymer?.saved)) {
+    return Diff.render(self.props);
+  }
+  return Diff.skip();
 });
 
 export const diffs = dual<
-  (rs: Node[]) => (self: Node) => Diffs.Diffs<Node>,
-  (self: Node, rs: Node[]) => Diffs.Diffs<Node>
+  (rs: Nodev1[]) => (self: Nodev1) => Diffs.Diffs<Nodev1>,
+  (self: Nodev1, rs: Nodev1[]) => Diffs.Diffs<Nodev1>
 >(2, (self, other) => {
   return Diffs.skip(); // todo
 });
 
 // todo
-export const naiveLCA = (ns: Node[]): Option.Option<Functional> | undefined => {
+export const naiveLCA = (ns: Nodev1[]): Option.Option<Functional> => {
   const first = ns.at(0);
 
   if (!first) {
@@ -246,11 +279,13 @@ export const naiveLCA = (ns: Node[]): Option.Option<Functional> | undefined => {
       Iterable.findFirst((a) => isFunctional(a)),
     );
   }
+
+  throw new Error();
 };
 
 export const forEachValence = dual<
-  <A>(f: (a: Node) => A) => (self: Node) => void,
-  <A>(self: Node, f: (a: Node) => A) => void
+  <A>(f: (a: Nodev1) => A) => (self: Nodev1) => void,
+  <A>(self: Nodev1, f: (a: Nodev1) => A) => void
 >(2, (self, f) => {
   if (self.valence) {
     for (const v of self.valence) {
@@ -260,8 +295,8 @@ export const forEachValence = dual<
 });
 
 export const forEachValenceRight = dual<
-  <A>(f: (a: Node) => A) => (self: Node) => void,
-  <A>(self: Node, f: (a: Node) => A) => void
+  <A>(f: (a: Nodev1) => A) => (self: Nodev1) => void,
+  <A>(self: Nodev1, f: (a: Nodev1) => A) => void
 >(2, (self, f) => {
   if (self.valence) {
     for (const v of self.valence.toReversed()) {
@@ -271,8 +306,8 @@ export const forEachValenceRight = dual<
 });
 
 export const foldValence = dual<
-  <A>(z: A, f: (z: A, a: Node) => A) => (self: Node) => A,
-  <A>(self: Node, z: A, f: (z: A, a: Node) => A) => A
+  <A>(z: A, f: (z: A, a: Nodev1) => A) => (self: Nodev1) => A,
+  <A>(self: Nodev1, z: A, f: (z: A, a: Nodev1) => A) => A
 >(3, (self, z, f) => {
   if (self.valence) {
     for (const v of self.valence) {
@@ -283,8 +318,8 @@ export const foldValence = dual<
 });
 
 export const foldValenceRight = dual<
-  <A>(z: A, f: (z: A, a: Node) => A) => (self: Node) => A,
-  <A>(self: Node, z: A, f: (z: A, a: Node) => A) => A
+  <A>(z: A, f: (z: A, a: Nodev1) => A) => (self: Nodev1) => A,
+  <A>(self: Nodev1, z: A, f: (z: A, a: Nodev1) => A) => A
 >(3, (self, z, f) => {
   if (self.valence) {
     for (const v of self.valence.toReversed()) {
@@ -295,26 +330,26 @@ export const foldValenceRight = dual<
 });
 
 export const tap = dual<
-  (f: (a: Node) => void) => (self: Node) => Node,
-  (self: Node, f: (a: Node) => void) => Node
+  (f: (a: Nodev1) => void) => (self: Nodev1) => Nodev1,
+  (self: Nodev1, f: (a: Nodev1) => void) => Nodev1
 >(2, (self, f) => {
   f(self);
   return self;
 });
 
 export const use = dual<
-  <A>(f: (a: Node) => A) => (self: Node) => A,
-  <A>(self: Node, f: (a: Node) => A) => A
+  <A>(f: (a: Nodev1) => A) => (self: Nodev1) => A,
+  <A>(self: Nodev1, f: (a: Nodev1) => A) => A
 >(2, (self, f) => f(self));
 
-type MO<A extends Node, B, C> = {
-  when: P.Refinement<Node, A>;
+type MO<A extends Nodev1, B, C> = {
+  when: P.Refinement<Nodev1, A>;
   then: (n: A) => B;
-  else: (n: Exclude<Node, A>) => B;
+  else: (n: Exclude<Nodev1, A>) => B;
 };
 export const when = dual<
-  <A extends Node, B, C>(m: MO<A, B, C>) => (self: Node) => type.UnifyM<[B, B]>,
-  <A extends Node, B, C>(self: Node, m: MO<A, B, C>) => type.UnifyM<[B, B]>
+  <A extends Nodev1, B, C>(m: MO<A, B, C>) => (self: Nodev1) => type.UnifyM<[B, B]>,
+  <A extends Nodev1, B, C>(self: Nodev1, m: MO<A, B, C>) => type.UnifyM<[B, B]>
 >(2, (self, m) => {
   if (m.when(self)) {
     return m.then(self) as any;
@@ -324,11 +359,11 @@ export const when = dual<
 
 type MF<A, B> = {
   then: (n: Functional) => A;
-  else: (n: Exclude<Node, Functional>) => B;
+  else: (n: Exclude<Nodev1, Functional>) => B;
 };
 export const matchFunctional = dual<
-  <A, B>(m: MF<A, B>) => (self: Node) => type.UnifyM<[A, B]>,
-  <A, B>(self: Node, m: MF<A, B>) => type.UnifyM<[A, B]>
+  <A, B>(m: MF<A, B>) => (self: Nodev1) => type.UnifyM<[A, B]>,
+  <A, B>(self: Nodev1, m: MF<A, B>) => type.UnifyM<[A, B]>
 >(2, (self, m) => {
   if (isFunctional(self)) {
     return m.then(self) as any;

@@ -49,7 +49,7 @@ export const
   PHASE_UNMOUNT   = 7 as const,
   PHASE_DEHYDRATE = 8 as const;
 
-export type Phase =
+export type LifecyclePhase =
   | typeof PHASE_NONE
   | typeof PHASE_HYDRATE
   | typeof PHASE_INIT

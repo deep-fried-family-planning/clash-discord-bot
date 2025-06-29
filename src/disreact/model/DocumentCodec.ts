@@ -1,6 +1,6 @@
 import * as JsxDefault from '#src/disreact/adaptor/codec/intrinsic/index.ts';
 import type * as Document from '#src/disreact/core/document.ts';
-import * as Node from '#src/disreact/core/node.ts';
+import * as Node from '#src/disreact/core/nodev1.ts';
 import * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
 
@@ -22,7 +22,7 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
         return null;
       }
       const
-        stack = MutableList.make<Node.Node>(d.root),
+        stack = MutableList.make<Node.Nodev1>(d.root),
        args = new WeakMap(),
        outs = new WeakMap(),
        last = {} as any;

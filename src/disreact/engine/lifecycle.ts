@@ -1,5 +1,5 @@
 import * as Document from '#src/disreact/core/document.ts';
-import * as Node from '#src/disreact/core/node.ts';
+import * as Node from '#src/disreact/core/nodev1.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import * as dispatch from '#src/disreact/engine/dispatch.ts';
 import * as Stack from '#src/disreact/engine/stack.ts';
@@ -9,29 +9,13 @@ import {pipe} from 'effect/Function';
 import * as Match from 'effect/Match';
 import * as Option from 'effect/Option';
 
-const spsSync = (stack: Stack.Stack) =>
-  stack.pipe(
-    Stack.pop,
-    Node.attachDocument(stack.document),
-    Node.tap((node) =>
-      stack.document.pipe(
-        Document.recordNode(node),
-      ),
-    ),
-    Match.value,
-    Match.when(Node.isFunctional, (node) =>
-      pipe(
-        Polymer.empty(),
-        Polymer.attachDocument(stack.document),
-        Polymer.circular(node, stack.document),
-        Polymer.polymerize(node),
-      ),
-    ),
-    Match.either,
-    Either.map((n) =>
-      n.pipe(),
-    ),
-  );
+const eitherRenders = (node: Node.Functional, document: Document.Document) => {
+  node.document = document;
+  if (Node.isFunctional(node)) {
+    return Either.right(node);
+  }
+  return Either.left(node);
+};
 
 const initFunctional = (node: Node.Functional) =>
   pipe(
@@ -110,7 +94,7 @@ export const initializeSPS = (stack: Stack.Stack) =>
 const rehydrateFunctional = (node: Node.Functional) =>
   pipe(
     node.document!,
-    Document.getTrie(node.$trie!),
+    Document.hydrateChain(node.$trie!),
     Option.map(Polymer.hydrate),
     Option.getOrElse(Polymer.strictHydrate),
     Polymer.circular(node, node.document!),

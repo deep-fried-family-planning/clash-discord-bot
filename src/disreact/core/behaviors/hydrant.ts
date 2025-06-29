@@ -49,8 +49,6 @@ export const make = (input: Partial<Hydrant>) => {
   });
 };
 
-export const fromDocument = (document: Document.Document) => document.hydrant;
-
 export const addChain = dual<
   (key: string, chain: Polymer.Chain) => (self: Hydrant) => Hydrant,
   (self: Hydrant, key: string, chain: Polymer.Chain) => Hydrant

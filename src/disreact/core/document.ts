@@ -1,21 +1,15 @@
-import type * as Node from '#src/disreact/core/node.ts';
+import type * as Node from '#src/disreact/core/nodev1.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
-import {PHASE_INIT} from '#src/disreact/core/primitives/constants.ts';
-import type {Page} from '#src/disreact/core/primitives/exp/page.ts';
+import {type LifecyclePhase, PHASE_INIT} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import type * as Stack from '#src/disreact/engine/stack.ts';
-import * as FC from '#src/disreact/runtime/fc.ts';
-import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import {dual, pipe} from 'effect/Function';
+import * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
 import type * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
-import * as Inspectable from 'effect/Inspectable';
 import type * as Record from 'effect/Record';
-import type * as Trie from 'effect/Trie';
-
-const Id = Symbol.for('disreact/document');
 
 export interface Hydrant {
   hash? : string;
@@ -24,30 +18,30 @@ export interface Hydrant {
   trie  : Record<string, Polymer.Chain>;
 };
 
-export interface Document<A = Node.Node> extends Pipeable.Pipeable,
+export interface Event {
+  _tag  : string;
+  prop  : string;
+  target: any;
+  data  : any;
+}
+
+export interface Document<A = Node.Nodev1> extends Pipeable.Pipeable,
   Inspectable.Inspectable
 {
-  [Id]     : typeof Id;
   data     : any;
+  event?   : Event;
   hydrantI : Hydrant;
   hydrantO : Hydrant;
   key      : string;
   nodes    : WeakSet<any>;
   outstream: Mailbox.Mailbox<any>;
-  phase    : number;
+  phase    : LifecyclePhase;
   rerenders: Set<A>;
-  root     : Node.Node;
+  root     : Node.Nodev1;
   size     : number;
 }
 
-export const isDocument = <A>(u: unknown): u is Document<A> => typeof u === 'object' && u !== null && Id in u;
-
-export const isClose = <A>(d: Document<A>) => d._next === null;
-
-export const isSameSource = <A>(d: Document<A>) => d._id === d._next;
-
 const Prototype = proto.type<Document>({
-  [Id]: Id,
   size: 0,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
@@ -66,7 +60,7 @@ const Prototype = proto.type<Document>({
 export const make = (
   key: string,
   data: any,
-  root: Node.Node,
+  root: Node.Nodev1,
   queue: Mailbox.Mailbox<any>,
 ) =>
   proto.init(Prototype, {
@@ -78,53 +72,73 @@ export const make = (
     root     : root,
   });
 
+export const tap = dual<
+  <A>(f: (d: Document<A>) => void) => (d: Document<A>) => Document<A>,
+  <A>(d: Document<A>, f: (d: Document<A>) => void) => Document<A>
+>(2, (d, f) => {
+  f(d);
+  return d;
+});
+
+export const use = dual<
+  <A, B>(f: (a: Document<A>) => B) => (d: Document<A>) => B,
+  <A, B>(d: Document<A>, f: (a: Document<A>) => B) => B
+>(2, (d, f) => f(d));
+
 const setPhase = dual<
-  <A>(phase: string) => (d: Document<A>) => Document<A>,
-  <A>(d: Document<A>, phase: string) => Document<A>
+  <A>(phase: LifecyclePhase) => (d: Document<A>) => Document<A>,
+  <A>(d: Document<A>, phase: LifecyclePhase) => Document<A>
 >(2, (d, phase) => {
   d.phase = phase;
   return d;
 });
 
-export const isTrieEmpty = <A>(d: Document<A>) => Object.keys(d.trie).length === 0;
+export const isFullyHydrated = <A>(d: Document<A>) =>
+  Object.keys(d.hydrantI.trie).length === 0
+    ? true
+    : false;
 
-export const addTrie = dual<
-  <A>(id: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
-  <A>(d: Document<A>, id: string, p: Polymer.Chain) => Document<A>
->(3, (d, id, p) => {
-  d.trie[id] = p;
-  return d;
-});
-
-export const getTrie = dual<
+export const hydrateChain = dual<
   <A>(id: string) => (d: Document<A>) => Option.Option<Polymer.Chain>,
   <A>(d: Document<A>, id: string) => Option.Option<Polymer.Chain>
 >(2, (d, id) =>
-  pipe(
-    d.trie[id],
-    Option.fromNullable,
-    Option.map((p) => {
-      delete d.trie[id];
-      return p;
+  Option.fromNullable(d.hydrantI.trie[id]).pipe(
+    Option.map((chain) => {
+      delete d.hydrantI.trie[id];
+      return chain;
     }),
   ),
 );
 
-export const containsNode = dual<
-  <A>(n: A) => (d: Document<A>) => boolean,
-  <A>(d: Document<A>, n: A) => boolean
->(2, (d, n) => d.nodes.has(n));
+export const dehydrateChain = dual<
+  <A>(id: string, p: Polymer.Chain) => (d: Document<A>) => Document<A>,
+  <A>(d: Document<A>, id: string, p: Polymer.Chain) => Document<A>
+>(3, (d, id, chain) => {
+  d.hydrantO.trie[id] = chain;
+  return d;
+});
+
+export const containsNodeOption = dual<
+  <A>(n: A) => (d: Document<A>) => Option.Option<A>,
+  <A>(d: Document<A>, n: A) => Option.Option<A>
+>(2, (d, n) =>
+  d.nodes.has(n)
+    ? Option.some(n)
+    : Option.none(),
+);
 
 export const recordNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
   <A>(d: Document<A>, n: A) => A
->(2, (d, n) => {
-  if (!containsNode(d, n)) {
-    d.size++;
-    d.nodes.add(n);
-  }
-  return n;
-});
+>(2, (d, n) =>
+  containsNodeOption(d, n).pipe(
+    Option.getOrElse(() => {
+      d.nodes.add(n);
+      d.size++;
+      return n;
+    }),
+  ),
+);
 
 export const forgetNode = dual<
   <A>(n: A) => (d: Document<A>) => A,
@@ -162,14 +176,6 @@ export const unflag = dual<
   return self;
 });
 
-export const tap = dual<
-  <A>(f: (d: Document<A>) => void) => (d: Document<A>) => Document<A>,
-  <A>(d: Document<A>, f: (d: Document<A>) => void) => Document<A>
->(2, (d, f) => {
-  f(d);
-  return d;
-});
-
 export const fromStack = <A>(stack: Stack.Stack<A>) =>
   pipe(
     stack.document,
@@ -183,13 +189,3 @@ export const fromPolymer = <A>(polymer: Polymer.Polymer<A>): Document<A> =>
     Option.fromNullable,
     Option.getOrThrow,
   );
-
-export const use = dual<
-  <A, B>(f: (a: Document<A>) => B) => (d: Document<A>) => B,
-  <A, B>(d: Document<A>, f: (a: Document<A>) => B) => B
->(2, (d, f) => f(d));
-
-export const useFromStack = dual<
-  <A, B>(f: (a: Document<A>) => B) => (s: Stack.Stack<A>) => B,
-  <A, B>(s: Stack.Stack<A>, f: (a: Document<A>) => B) => B
->(2, (s, f) => f(s.document));

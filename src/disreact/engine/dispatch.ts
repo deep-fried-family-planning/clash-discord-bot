@@ -1,10 +1,9 @@
 import {props} from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
 import type * as Document from '#src/disreact/core/document.ts';
-import type * as Node from '#src/disreact/core/node.ts';
+import type * as Node from '#src/disreact/core/nodev1.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import {ASYNC, DEV_STUB, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
-import * as type from '#src/disreact/core/primitives/type.ts';
 import * as FC from '#src/disreact/runtime/fc.ts';
 import * as Hooks from '#src/disreact/runtime/hooks.ts';
 import type * as Jsx from '#src/disreact/runtime/jsx.tsx';
@@ -18,11 +17,10 @@ import * as P from 'effect/Predicate';
 export type dispatch = DEV_STUB;
 export const dispatch = DEV_STUB;
 
-
 const mutex  = E.unsafeMakeSemaphore(1),
       lock   = mutex.take(1),
       unlock = mutex.release(1);
-import * as Function from 'effect/Function';
+
 const callComponent = (node: Node.Functional) => {
   const fc = node.component,
         p  = node.props;
@@ -73,15 +71,10 @@ export const render = (node: Node.Functional) =>
     E.tapDefect(() => unlock),
   );
 
-const runFC = (node: Node.Functional) => {
-  const fc = node.component;
-  const props = node.props;
-};
-
 export class UpdateError extends Data.TaggedError('UpdateError')<{
   message?: string;
-  document: Document.Document<Node.Node>;
-  node    : Node.Node;
+  document: Document.Document<Node.Nodev1>;
+  node    : Node.Nodev1;
 }>
 {}
 
@@ -124,12 +117,12 @@ const runFx = (fx: Polymer.EffectFn) => E.suspend(() => {
 export class InvokeError extends Data.TaggedError('InvokeError')<{
   message?: string;
   event   : any;
-  document: Document.Document<Node.Node>;
-  node    : Node.Node;
+  document: Document.Document<Node.Nodev1>;
+  node    : Node.Nodev1;
 }>
 {}
 
-export const invoke = (n: Node.Intrinsic, d: Document.Document<Node.Node>, event: any) => E.suspend(() => {
+export const invoke = (n: Node.Intrinsic, d: Document.Document<Node.Nodev1>, event: any) => E.suspend(() => {
   return E.void;
 });
 
@@ -157,7 +150,6 @@ export const runAllFx = (p: Polymer.Polymer) => E.suspend(() => {
     E.asVoid,
   );
 });
-
 
 // @ts-expect-error library stuff
 if (proto.LocalEffectTypeId !== EffectTypeId) {

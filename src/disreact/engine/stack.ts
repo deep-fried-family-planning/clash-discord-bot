@@ -1,5 +1,5 @@
 import type * as Document from '#src/disreact/core/document.ts';
-import type * as Node from '#src/disreact/core/node.ts';
+import type * as Node from '#src/disreact/core/nodev1.ts';
 import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/primitives/proto.ts';
 import * as Either from 'effect/Either';
@@ -13,7 +13,7 @@ import type * as Effectable from 'effect/Effectable';
 import type * as Types from 'effect/Types';
 import * as Array from 'effect/Array';
 
-export interface Stack<A = Node.Node> extends Pipeable.Pipeable,
+export interface Stack<A = Node.Nodev1> extends Pipeable.Pipeable,
   Inspectable.Inspectable
 {
   readonly document: Document.Document<A>;
