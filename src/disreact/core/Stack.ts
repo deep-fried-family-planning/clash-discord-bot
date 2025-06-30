@@ -1,8 +1,37 @@
+import * as stack from '#disreact/core/primitives/stack.ts';
+import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
+import * as Iterable from 'effect/Iterable';
 import type * as Pipeable from 'effect/Pipeable';
 
-export interface Stack extends Pipeable.Pipeable, Inspectable.Inspectable {
+export interface Stack<A> extends Pipeable.Pipeable, Inspectable.Inspectable {
+  root  : A;
   values: A[];
 }
 
-export const empty = <A>(): Stack<A> => ({values: []});
+export const make = <A>(root: A): Stack<A> => stack.make(root);
+
+const while$ = <A>(self: Stack<A>) => stack.len(self) > 0;
+export {while$ as while};
+
+export const pop = <A>(self: Stack<A>): A => stack.pop(self)!;
+
+export const push = dual<
+  <A>(a: A) => (self: Stack<A>) => Stack<A>,
+  <A>(self: Stack<A>, a: A) => Stack<A>
+>(2, (self, a) => stack.push(self, a));
+
+export const pushAll = dual<
+  <A>(as: Iterable<A> | undefined) => (self: Stack<A>) => Stack<A>,
+  <A>(self: Stack<A>, as: Iterable<A> | undefined) => Stack<A>
+>(2, (self, as) => {
+  if (!as) {
+    return self;
+  }
+  return Iterable.reduce(as, self, (z, a) => push(z, a));
+});
+
+export const pushAllInto = dual<
+  <A>(s: Stack<A>) => (as: Iterable<A> | undefined) => Stack<A>,
+  <A>(as: Iterable<A> | undefined, s: Stack<A>) => Stack<A>
+>(2, (as, self) => pushAll(self, as));

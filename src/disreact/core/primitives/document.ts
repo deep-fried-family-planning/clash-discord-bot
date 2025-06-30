@@ -7,13 +7,27 @@ import * as Inspectable from 'effect/Inspectable';
 const Prototype = proto.type<Document.Document>({
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id : 'Document',
+      body: this.body,
+    });
+  },
 });
 
-export const make = () =>
+export const make = (root: Node.Node) =>
   proto.init(Prototype, {
-
+    body : root,
+    flags: new Set(),
   });
 
 export const flagNode = (self: Document.Document, node: Node.Node) => {
   self.flags.add(node);
+  return self;
+};
+
+export const getFlags = (self: Document.Document) => {
+  const flags = [...self.flags];
+  self.flags.clear();
+  return flags;
 };

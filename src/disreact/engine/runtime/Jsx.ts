@@ -1,6 +1,6 @@
+import type * as Node from '#disreact/core/Node.ts';
+import * as node from '#disreact/core/primitives/node.ts';
 import type * as FC from '#src/disreact/core/FC.ts';
-import type * as Node from '#src/disreact/core/Node.ts';
-import * as node from '#src/disreact/core/primitives/node.ts';
 
 export type Value = | undefined
                     | null
@@ -13,13 +13,25 @@ export type Type = | string
                    | Value
                    | FC.FC;
 
-export type Jsx = Node.Node;
-
 export type Fragment = typeof node.FragmentTag;
 
 export const Fragment = node.FragmentTag;
 
-export const jsx = (type: any, props: any): Jsx => {
+export type Jsx = Node.Node;
+
+const makeChild = (type: any): Jsx => {
+  if (!type || typeof type !== 'object') {
+    return node.text(type);
+  }
+  if (type._tag) {
+    return type;
+  }
+  return node.list(type);
+};
+
+export const jsx = (type: any, attributes: any): Jsx => {
+  const props = node.props(attributes);
+
   if (type === Fragment) {
     return node.frag(props.children);
   }
@@ -34,7 +46,9 @@ export const jsx = (type: any, props: any): Jsx => {
   throw new Error(`Invalid type: ${type}`);
 };
 
-export const jsxs = (type: any, props: any): Jsx => {
+export const jsxs = (type: any, attributes: any): Jsx => {
+  const props = node.props(attributes);
+
   if (type === Fragment) {
     return node.frag(props.children);
   }
@@ -49,10 +63,10 @@ export const jsxs = (type: any, props: any): Jsx => {
   throw new Error(`Invalid type: ${type}`);
 };
 
-export const jsxDEV = (type: any, props: any): Jsx => {
-  const self = Array.isArray(props.children)
-               ? jsxs(type, props)
-               : jsx(type, props);
+export const jsxDEV = (type: any, attributes: any): Jsx => {
+  const self = Array.isArray(attributes.children)
+               ? jsxs(type, attributes)
+               : jsx(type, attributes);
 
   return self;
 };

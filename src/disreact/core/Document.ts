@@ -14,3 +14,7 @@ export interface Document extends Pipeable.Pipeable, Inspectable.Inspectable {
   flags    : Set<Node.Node>;
   outstream: Mailbox.Mailbox<any>;
 }
+
+export const getFlags = (self: Document) => {
+
+};

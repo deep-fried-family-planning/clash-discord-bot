@@ -1,11 +1,12 @@
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import type * as FC from '#src/disreact/core/FC.ts';
 import type * as Node from '#src/disreact/core/Node.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
+import * as fc from '#src/disreact/core/primitives/fc.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-import type * as FC from '#src/disreact/core/FC.ts';
 
 const Prototype = proto.type<Node.Base>({
   ...Lineage.Prototype,
@@ -17,11 +18,23 @@ const Prototype = proto.type<Node.Base>({
 const TextPrototype = proto.type<Node.Text>({
   ...Prototype,
   _tag: TEXT_NODE,
+  toJSON() {
+    return Inspectable.format({
+      _id : 'Text',
+      text: this.component,
+    });
+  },
 });
 
 const ListPrototype = proto.type<Node.List>({
   ...Prototype,
   _tag: LIST_NODE,
+  toJSON() {
+    return Inspectable.format({
+      _id : 'List',
+      list: this.children,
+    });
+  },
 });
 
 export const FragmentTag = Symbol.for('disreact/fragment');
@@ -29,16 +42,36 @@ export const FragmentTag = Symbol.for('disreact/fragment');
 const FragmentPrototype = proto.type<Node.Frag>({
   ...Prototype,
   _tag: FRAGMENT,
+  toJSON() {
+    return Inspectable.format({
+      _id     : 'Fragment',
+      children: this.children,
+    });
+  },
 });
 
 const IntrinsicPrototype = proto.type<Node.Rest>({
   ...Prototype,
   _tag: INTRINSIC,
+  toJSON() {
+    return Inspectable.format({
+      _id      : 'Intrinsic',
+      component: this.component,
+      props    : this.props,
+    });
+  },
 });
 
 const FunctionalPrototype = proto.type<Node.Func>({
   ...Prototype,
   _tag: FUNCTIONAL,
+  toJSON() {
+    return Inspectable.format({
+      _id      : 'Functional',
+      component: this.component,
+      props    : this.props,
+    });
+  },
 });
 
 export const text = (value: string): Node.Text =>
@@ -66,9 +99,27 @@ export const rest = (component: string, props: any): Node.Rest =>
     props    : props,
   });
 
-export const func = (component: FC.FC, props: any): Node.Func =>
-  proto.init(FunctionalPrototype, {
+export const func = (component: FC.FC, props: any): Node.Func => {
+  const type = fc.register(component);
+
+  return proto.init(FunctionalPrototype, {
     _tag     : FUNCTIONAL,
-    component: component,
+    component: type,
     props    : props,
   });
+};
+
+const PropsPrototype = proto.type<Record<string, any>>({
+  ...Inspectable.BaseProto,
+  toJSON() {
+    const {children, ...rest} = this;
+
+    return Inspectable.format({
+      _id  : 'Props',
+      value: rest,
+    });
+  },
+});
+
+export const props = (input: Record<string, any>): Record<string, any> =>
+  proto.init(PropsPrototype, input);
