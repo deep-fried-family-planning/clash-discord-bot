@@ -1,5 +1,5 @@
-import {ModelV1} from '#src/disreact/adaptor/codec/adaptor/exp/ModelV1.ts';
-import {Relay} from '#src/disreact/adaptor/codec/adaptor/exp/Relay.ts';
+import {Model} from '#src/disreact/adaptor/adaptor/Model.ts';
+import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {sjson} from '#unit/model/.components/scenarios/util.ts';
 import {it} from '@effect/vitest';
@@ -9,7 +9,7 @@ import * as L from 'effect/Layer';
 import * as Logger from 'effect/Logger';
 
 const TestLayer = () => L.mergeAll(
-  ModelV1.layer({
+  Model.layer({
     sources: {
       TestMessage,
     },
@@ -21,7 +21,7 @@ const TestLayer = () => L.mergeAll(
 );
 
 it.effect('when rendered', E.fn(function* () {
-  const actual = yield* ModelV1.createRoot(TestMessage, {}, {});
+  const actual = yield* Model.createRoot(TestMessage, {}, {});
 
   expect(sjson(actual?._tag)).toMatchInlineSnapshot(`""message""`);
   expect(sjson(actual?.data)).toMatchInlineSnapshot(`
@@ -115,7 +115,7 @@ it.effect('when clicked', E.fn(function* () {
     id  : 'actions:0:button:0',
     data: {},
   };
-  const actual = yield* ModelV1.invokeRoot(hydrator, event, {});
+  const actual = yield* Model.invokeRoot(hydrator, event, {});
   expect(sjson(actual?._tag)).toMatchInlineSnapshot(`""message""`);
   // expect(sjson(actual?.data)).toMatchInlineSnapshot(`
   //   "{

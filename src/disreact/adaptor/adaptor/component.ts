@@ -1,20 +1,12 @@
-import * as Diff from '#src/disreact/core/primitives/diff.ts';
 import {proto} from '#src/disreact/core/primitives/proto.ts';
-import * as type from '#src/disreact/core/primitives/type.ts';
-import * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
+import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
 import * as FC from '#src/disreact/runtime/fc.ts';
-import type * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
+import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
-import * as Mutex from '#src/disreact/adaptor/codec/adaptor/mutex.ts';
+import * as Mutex from '#src/disreact/adaptor/adaptor/mutex.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';
-
-export const diff = (self: Element.Func, that: Element.Element): Diff.Diff<Element.Element> => {
-  if (!Element.isFunc(that)) {
-    return Diff.replace(that);
-  }
-};
 
 export const hydrate = (n: Element.Element, rh: Rehydrant.Envelope) => {
   if (!Element.isFunc(n)) {
@@ -125,7 +117,7 @@ export const runEffects = (n: Element.Func) => E.suspend(() => {
     }),
     E.as(n),
   );
-});
+}); s;
 
 export const didMount = (el: Element.Element) =>
   Element.isFunc(el)

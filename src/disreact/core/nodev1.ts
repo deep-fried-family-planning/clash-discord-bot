@@ -216,6 +216,14 @@ export const attachPolymer = dual<
   return self;
 });
 
+export const initialize = dual<
+  (self: Nodev1) => (document: Document.Document) => Nodev1,
+  (self: Nodev1, document: Document.Document) => Nodev1
+>(2, (self, document) => {
+  self.document = document;
+  return self;
+});
+
 export const diff = dual<
   (other: Nodev1) => (self: Nodev1) => Diff.Diff<Nodev1>,
   (self: Nodev1, other: Nodev1) => Diff.Diff<Nodev1>

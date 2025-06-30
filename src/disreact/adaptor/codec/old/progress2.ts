@@ -1,4 +1,4 @@
-import type * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
+import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 
 export namespace Progress {
   export type Done = {

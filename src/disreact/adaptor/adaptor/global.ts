@@ -1,5 +1,5 @@
-import type * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
-import type * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
+import type * as Element from '#src/disreact/adaptor/adaptor/element.ts';
+import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Polymer from '#src/disreact/core/polymer.ts';
 import type * as Stack from '#src/disreact/engine/stack.ts';

@@ -1,9 +1,9 @@
 import type * as Declarations from '#src/disreact/adaptor/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/adaptor/codec/fc.ts';
-import * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
+import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
 import * as Proto from '#src/disreact/core/primitives/proto.ts';
-import type {Relay} from '#src/disreact/adaptor/codec/adaptor/exp/Relay.ts';
+import type {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface Rehydrant {

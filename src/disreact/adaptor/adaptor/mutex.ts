@@ -1,6 +1,6 @@
-import type * as Element from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
-import type * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
-import * as current from '#src/disreact/adaptor/codec/adaptor/global.ts';
+import type * as Element from '#src/disreact/adaptor/adaptor/element.ts';
+import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
+import * as current from '#src/disreact/adaptor/adaptor/global.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import {globalValue} from 'effect/GlobalValue';

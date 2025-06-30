@@ -1,6 +1,6 @@
 import {useEffect, useState} from '#src/disreact/index.ts';
-import {ModelV1} from '#src/disreact/adaptor/codec/adaptor/exp/ModelV1.ts';
-import {Relay} from '#src/disreact/adaptor/codec/adaptor/exp/Relay.ts';
+import {Model} from '#src/disreact/adaptor/adaptor/Model.ts';
+import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import {sjson} from '#unit/model/.components/scenarios/util.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
@@ -82,7 +82,7 @@ const Nest2 = (props: Props) => E.gen(function* () {
 });
 
 const TestLayer = () => L.mergeAll(
-  ModelV1.layer({
+  Model.layer({
     sources: {
       Root,
     },
@@ -94,7 +94,7 @@ const TestLayer = () => L.mergeAll(
 );
 
 it.effect.skip('when rendered', E.fn(function* () {
-  const actual = yield* ModelV1.createRoot(Root, {}, {});
+  const actual = yield* Model.createRoot(Root, {}, {});
 
   // expect(root).toBeCalledTimes(1);
   // expect(nest1).toBeCalledTimes(0);
@@ -186,7 +186,7 @@ it.effect.skip('when nest1 clicked', E.fn(function* () {
     id  : 'actions:0:primary:0',
     data: {},
   };
-  const actual = yield* ModelV1.invokeRoot(hydrator, event, {});
+  const actual = yield* Model.invokeRoot(hydrator, event, {});
 
   expect(root).toBeCalledTimes(1);
   expect(nest1).toBeCalledTimes(0);

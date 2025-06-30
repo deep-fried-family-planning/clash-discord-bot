@@ -1,4 +1,4 @@
-import {props} from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
+import {props} from '#src/disreact/adaptor/adaptor/element.ts';
 import type * as Document from '#src/disreact/core/document.ts';
 import type * as Node from '#src/disreact/core/nodev1.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';

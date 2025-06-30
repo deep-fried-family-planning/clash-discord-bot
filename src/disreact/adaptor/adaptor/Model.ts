@@ -1,12 +1,12 @@
 import type * as FC from '#src/disreact/runtime/fc.ts';
-import * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
-import * as Lifecycle from '#src/disreact/adaptor/codec/adaptor/exp/v1lifecycle.ts';
-import {Rehydrator, type RehydratorConfig} from '#src/disreact/adaptor/codec/adaptor/exp/Rehydrator.ts';
-import {Relay} from '#src/disreact/adaptor/codec/adaptor/exp/Relay.ts';
+import * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
+import * as Lifecycle from '#src/disreact/adaptor/adaptor/lifecycle.ts';
+import {Rehydrator, type RehydratorConfig} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
+import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Progress from '#src/disreact/adaptor/codec/old/progress2.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
-import type * as El from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/element.ts';
+import type * as El from '#src/disreact/adaptor/adaptor/element.ts';
 import * as L from 'effect/Layer';
 
 export const synthesizeRoot = (source: FC.FC, props?: any, data?: any) =>
@@ -50,7 +50,7 @@ export const invokeRoot = (hydrator: Rehydrant.Hydrator, event: El.Event, data?:
     E.flatMap((root) => Lifecycle.encode(root)),
   );
 
-export class ModelV1 extends E.Service<ModelV1>()('disreact/Model', {
+export class Model extends E.Service<Model>()('disreact/Model', {
   effect: E.gen(function* () {
     const rehydrator = yield* Rehydrator;
 

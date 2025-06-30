@@ -1,4 +1,4 @@
-import * as Rehydrant from '#src/disreact/adaptor/codec/adaptor/exp/domain/old/envelope.ts';
+import * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import * as Deps from '#src/disreact/adaptor/codec/old/deps.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as Polymer from '#src/disreact/core/polymer.ts';
