@@ -1,5 +1,5 @@
 import * as Jsx from '#src/disreact/runtime/jsx.tsx';
-import type * as FC from '#src/disreact/runtime/fc.ts';
+import type * as FC from '#src/disreact/core/primitives/fc.ts';
 import {dual} from 'effect/Function';
 
 export type Page = {

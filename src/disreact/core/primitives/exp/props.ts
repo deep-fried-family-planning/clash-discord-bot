@@ -1,6 +1,6 @@
 import {ARRAY, HANDLER, PROPS, STRUCT} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as type from '#src/disreact/core/primitives/type.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import type * as type from '#src/disreact/core/behaviors/type.ts';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';

@@ -1,5 +1,5 @@
 import {noop} from '#src/disreact/core/primitives/constants.ts';
-import * as FC from '#src/disreact/runtime/fc.ts';
+import * as FC from '#src/disreact/core/primitives/fc.ts';
 import * as Hooks from '#src/disreact/runtime/hooks.ts';
 import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 

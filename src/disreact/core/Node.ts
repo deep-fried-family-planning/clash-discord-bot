@@ -1,6 +1,10 @@
+import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
+import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as Either from 'effect/Either';
+import type * as Inspectable from 'effect/Inspectable';
 import type * as Option from 'effect/Option';
-import type * as Document from './document.ts';
+import type * as Pipeable from 'effect/Pipeable';
+import type * as Document from 'src/disreact/core/primitives/document.ts';
 import type * as node from './primitives/node';
 
 export type Node = | node.Text
@@ -8,6 +12,30 @@ export type Node = | node.Text
                    | node.Frag
                    | node.Rest
                    | node.Func;
+
+interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage, Lateral.Lateral {
+
+}
+
+export interface Text extends Base {
+
+}
+
+export interface List extends Base  {
+
+}
+
+export interface Frag extends Base  {
+
+}
+
+export interface Rest extends Base  {
+
+}
+
+export interface Func extends Base  {
+
+}
 
 export type Element = | node.Text
                       | node.List

@@ -1,5 +1,5 @@
-import type * as Document from '#src/disreact/core/document.ts';
-import type * as Node from '#src/disreact/core/nodev1.ts';
+import type * as Document from '#src/disreact/core/primitives/document.ts';
+import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
 import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import {Exit} from 'effect';
 import * as Cache from 'effect/Cache';

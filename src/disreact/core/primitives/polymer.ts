@@ -1,11 +1,11 @@
 import type * as Declarations from '#src/disreact/adaptor/codec/old/declarations.ts';
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as Document from '#src/disreact/core/document.ts';
-import type * as Node from '#src/disreact/core/nodev1.ts';
+import type * as Document from '#src/disreact/core/primitives/document.ts';
+import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
 import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as type from '#src/disreact/core/primitives/type.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import type * as type from '#src/disreact/core/behaviors/type.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Array from 'effect/Array';
 import * as Data from 'effect/Data';

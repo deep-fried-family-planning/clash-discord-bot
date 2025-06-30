@@ -1,6 +1,6 @@
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 

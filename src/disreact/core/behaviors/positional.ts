@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as MutableRef from 'effect/MutableRef';
 import type * as Option from 'effect/Option';
 

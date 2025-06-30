@@ -1,7 +1,7 @@
-import type * as Node from '#src/disreact/core/nodev1.ts';
-import type * as Polymer from '#src/disreact/core/polymer.ts';
+import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import {type LifecyclePhase, PHASE_INIT} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as Stack from '#src/disreact/engine/stack.ts';
 import {dual, pipe} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';

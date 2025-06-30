@@ -1,6 +1,6 @@
-import * as Document from '#src/disreact/core/document.ts';
-import * as Node from '#src/disreact/core/nodev1.ts';
-import * as Polymer from '#src/disreact/core/polymer.ts';
+import * as Document from '#src/disreact/core/primitives/document.ts';
+import * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import * as dispatch from '#src/disreact/engine/dispatch.ts';
 import * as Stack from '#src/disreact/engine/stack.ts';
 import * as E from 'effect/Effect';

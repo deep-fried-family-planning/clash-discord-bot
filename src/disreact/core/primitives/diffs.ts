@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 
 export const SKIP    = 0,
              PREPEND = 1,

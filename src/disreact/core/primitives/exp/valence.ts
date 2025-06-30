@@ -1,5 +1,5 @@
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
 import * as Hash from 'effect/Hash';

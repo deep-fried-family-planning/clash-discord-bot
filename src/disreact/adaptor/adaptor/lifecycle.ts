@@ -2,7 +2,7 @@ import * as JsxDefault from '#src/disreact/adaptor/codec/intrinsic/index.ts';
 import * as Diff from '#src/disreact/adaptor/codec/old/diffs.ts';
 import * as Component from '#src/disreact/adaptor/adaptor/component.ts';
 import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
-import * as Polymer from '#src/disreact/core/polymer.ts';
+import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Mutex from '#src/disreact/adaptor/adaptor/mutex.ts';

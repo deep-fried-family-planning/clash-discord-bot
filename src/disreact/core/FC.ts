@@ -1,7 +1,7 @@
 import type {EFFECT, SYNC} from '#src/disreact/core/primitives/constants.ts';
 import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/primitives/proto.ts';
-import type * as t from '#src/disreact/core/primitives/type.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import type * as t from '#src/disreact/core/behaviors/type.ts';
 import type * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import type * as E from 'effect/Effect';
 

@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/core/primitives/proto.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import {globalValue} from 'effect/GlobalValue';
 
 export const symbol = Symbol.for('disreact/originates');
