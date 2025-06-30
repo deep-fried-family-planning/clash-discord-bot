@@ -1,6 +1,6 @@
 import type * as Node from '#disreact/core/Node.ts';
 import * as node from '#disreact/core/primitives/node.ts';
-import type * as FC from '#src/disreact/core/FC.ts';
+import type * as FC from '#disreact/core/FC.ts';
 
 export type Value = | undefined
                     | null

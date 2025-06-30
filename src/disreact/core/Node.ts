@@ -17,15 +17,9 @@ export type Node = | Text
                    | Rest
                    | Func;
 
-export type Element = | Text
-                      | List
-                      | Frag
-                      | Rest;
-
-export type Renders = | Func;
+export type Renderable = | Func;
 
 export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Document>, Lateral.Lateral<Node> {
-
   children?: Node[];
   document : Document.Document;
   polymer  : Polymer.Polymer;
@@ -57,7 +51,7 @@ export interface Func extends Base {
 
 export const isElement = (node: Node): node is Element => node._tag < FUNCTIONAL;
 
-export const isRenders = (node: Node): node is Renders => node._tag > INTRINSIC;
+export const isRenders = (node: Node): node is Renderable => node._tag > INTRINSIC;
 
 export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
   const right = Polymer.isChanged(self.polymer);
@@ -68,33 +62,42 @@ export const diffs = (self: Node, that: Node[]): Diffs.Diffs<Node> => {
   return Diffs.skip();
 };
 
-export const mount = (self: Node, document: Document.Document): Either.Either<Renders, Element> => {
+export const initialize = (self: Node, document: Document.Document) => {
+  self.document = document;
+  return self;
+};
+
+export const initializeEither = (self: Node, document: Document.Document): Either.Either<Renderable, Node> => {
   self.document = document;
   if (isElement(self)) {
     return Either.left(self);
   }
   return Either.right(self);
+};
+
+export const mount = (self: Func, document: Document.Document) => {
+  self.polymer = Polymer.mount(self);
+  return self;
 };
 
 export const unmount = (self: Node, document: Document.Document) => {
+  self.children = undefined;
+  (self as any).polymer = undefined;
+  (self as any).document = undefined;
+  return self;
+};
+
+export const hydrate = (self: Func, document: Document.Document) => {
 
 };
 
-export const hydrate = (self: Node, document: Document.Document): Either.Either<Renders, Element> => {
-  self.document = document;
-  if (isElement(self)) {
-    return Either.left(self);
-  }
-  return Either.right(self);
-};
-
-export const dehydrate = (self: Node, document: Document.Document): Either.Either<Option.Option<Node[]>, Element> => {
+export const dehydrate = (self: Func, document: Document.Document): Either.Either<Option.Option<Node[]>, Node> => {
   if (isElement(self)) {
     return Either.left(self);
   }
   return Either.right(Option.fromNullable(self.children));
 };
 
-export const lca = (ns: Node[]): Option.Option<Renders> => {
+export const lca = (ns: Node[]): Option.Option<Renderable> => {
   return Option.none();
 };

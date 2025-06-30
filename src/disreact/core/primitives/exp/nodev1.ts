@@ -9,7 +9,7 @@ import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as type from '#src/disreact/core/behaviors/type.ts';
 import * as FC from '#src/disreact/core/primitives/fc.ts';
-import * as Jsx from '#src/disreact/runtime/jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/jsx.tsx';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
 import {dual, pipe} from 'effect/Function';

@@ -1,6 +1,6 @@
 import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
 import type * as FC from '#src/disreact/core/primitives/fc.ts';
-import type * as Jsx from '#src/disreact/runtime/jsx.tsx';
+import type * as Jsx from '#disreact/model/runtime/jsx.tsx';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as type from '#src/disreact/core/behaviors/type.ts';
 import * as E from 'effect/Effect';

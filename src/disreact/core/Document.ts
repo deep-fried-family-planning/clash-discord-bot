@@ -1,6 +1,7 @@
-import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import type * as Event from '#disreact/core/Event.ts';
 import type * as Node from '#disreact/core/Node.ts';
+import * as document from '#disreact/core/primitives/document.ts';
+import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
@@ -15,6 +16,12 @@ export interface Document extends Pipeable.Pipeable, Inspectable.Inspectable {
   outstream: Mailbox.Mailbox<any>;
 }
 
-export const getFlags = (self: Document) => {
+const makeOutstream = Mailbox.make();
 
-};
+export const make = (body: Node.Node): E.Effect<Document> => E.map(makeOutstream, (outstream) => {
+  const self = document.make(body);
+  self.outstream = outstream;
+  return self;
+});
+
+export const getFlags = (self: Document) => document.getFlags(self);

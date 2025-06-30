@@ -1,3 +1,4 @@
+import type * as Document from '#disreact/core/Document.ts';
 import * as stack from '#disreact/core/primitives/stack.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
@@ -5,8 +6,9 @@ import * as Iterable from 'effect/Iterable';
 import type * as Pipeable from 'effect/Pipeable';
 
 export interface Stack<A> extends Pipeable.Pipeable, Inspectable.Inspectable {
-  root  : A;
-  values: A[];
+  document: Document.Document;
+  root    : A;
+  values  : A[];
 }
 
 export const make = <A>(root: A): Stack<A> => stack.make(root);

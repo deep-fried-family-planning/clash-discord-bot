@@ -9,6 +9,8 @@ import {pipe} from 'effect/Function';
 import * as Match from 'effect/Match';
 import * as Option from 'effect/Option';
 
+
+
 const eitherRenders = (node: Node.Functional, document: Document.Documentold) => {
   node.document = document;
   if (Node.isFunctional(node)) {

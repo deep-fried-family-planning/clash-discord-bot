@@ -26,6 +26,12 @@ const TextPrototype = proto.type<Node.Text>({
   },
 });
 
+export const text = (value: string): Node.Text =>
+  proto.init(TextPrototype, {
+    _tag     : TEXT_NODE,
+    component: value,
+  });
+
 const ListPrototype = proto.type<Node.List>({
   ...Prototype,
   _tag: LIST_NODE,
@@ -36,6 +42,12 @@ const ListPrototype = proto.type<Node.List>({
     });
   },
 });
+
+export const list = (children: Node.Node[]): Node.List =>
+  proto.init(ListPrototype, {
+    _tag    : LIST_NODE,
+    children: children,
+  });
 
 export const FragmentTag = Symbol.for('disreact/fragment');
 
@@ -50,6 +62,13 @@ const FragmentPrototype = proto.type<Node.Frag>({
   },
 });
 
+export const frag = (children: Node.Node[]): Node.Frag =>
+  proto.init(FragmentPrototype, {
+    _tag    : FRAGMENT,
+    children: children,
+  });
+
+
 const IntrinsicPrototype = proto.type<Node.Rest>({
   ...Prototype,
   _tag: INTRINSIC,
@@ -58,9 +77,17 @@ const IntrinsicPrototype = proto.type<Node.Rest>({
       _id      : 'Intrinsic',
       component: this.component,
       props    : this.props,
+      children : this.children,
     });
   },
 });
+
+export const rest = (component: string, props: any): Node.Rest =>
+  proto.init(IntrinsicPrototype, {
+    _tag     : INTRINSIC,
+    component: component,
+    props    : props,
+  });
 
 const FunctionalPrototype = proto.type<Node.Func>({
   ...Prototype,
@@ -70,34 +97,11 @@ const FunctionalPrototype = proto.type<Node.Func>({
       _id      : 'Functional',
       component: this.component,
       props    : this.props,
+      polymer  : this.polymer,
+      children : this.children,
     });
   },
 });
-
-export const text = (value: string): Node.Text =>
-  proto.init(TextPrototype, {
-    _tag     : TEXT_NODE,
-    component: value,
-  });
-
-export const list = (children: Node.Node[]): Node.List =>
-  proto.init(ListPrototype, {
-    _tag    : LIST_NODE,
-    children: children,
-  });
-
-export const frag = (children: Node.Node[]): Node.Frag =>
-  proto.init(FragmentPrototype, {
-    _tag    : FRAGMENT,
-    children: children,
-  });
-
-export const rest = (component: string, props: any): Node.Rest =>
-  proto.init(IntrinsicPrototype, {
-    _tag     : INTRINSIC,
-    component: component,
-    props    : props,
-  });
 
 export const func = (component: FC.FC, props: any): Node.Func => {
   const type = fc.register(component);
