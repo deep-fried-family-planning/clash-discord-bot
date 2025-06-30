@@ -1,15 +1,15 @@
-import * as Document from '#src/disreact/core/primitives/document.ts';
-import * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import * as Document from '#disreact/core/primitives/exp/documentold.ts';
+import * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
 import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import * as dispatch from '#src/disreact/engine/dispatch.ts';
-import * as Stack from '#src/disreact/engine/stack.ts';
+import * as Stack from '#disreact/core/primitives/exp/Stack.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
 import * as Match from 'effect/Match';
 import * as Option from 'effect/Option';
 
-const eitherRenders = (node: Node.Functional, document: Document.Document) => {
+const eitherRenders = (node: Node.Functional, document: Document.Documentold) => {
   node.document = document;
   if (Node.isFunctional(node)) {
     return Either.right(node);
@@ -54,7 +54,7 @@ const initWithContinuity = (stack: Stack.Stack) => {
   return initFunctional(node);
 };
 
-export const initializeDocument = (document: Document.Document) =>
+export const initializeDocument = (document: Document.Documentold) =>
   pipe(
     E.iterate(Stack.root(document), {
       while: Stack.condition,

@@ -1,6 +1,6 @@
 import * as JsxDefault from '#src/disreact/adaptor/codec/intrinsic/index.ts';
-import type * as Document from '#src/disreact/core/primitives/document.ts';
-import * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
+import * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
 import * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
 
@@ -17,7 +17,7 @@ export class DocumentCodec extends E.Service<DocumentCodec>()('disreact/ModelCod
           normalization = config?.normalization ?? JsxDefault.normalization as Record<string, string>,
           encoding      = config?.encoding ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
 
-    const encodeDocument = (d?: Document.Document) => {
+    const encodeDocument = (d?: Document.Documentold) => {
       if (!d) {
         return null;
       }

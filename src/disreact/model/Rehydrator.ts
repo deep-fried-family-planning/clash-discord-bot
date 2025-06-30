@@ -1,5 +1,5 @@
-import type * as Document from '#src/disreact/core/primitives/document.ts';
-import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
+import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
 import * as Jsx from '#src/disreact/runtime/jsx.tsx';
 import {Exit} from 'effect';
 import * as Cache from 'effect/Cache';
@@ -31,7 +31,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       capacity: config.capacity ?? 100,
 
       lookup: (key: string) =>
-        E.succeed(undefined as undefined | Document.Document<Node.Nodev1>),
+        E.succeed(undefined as undefined | Document.Documentold<Node.Nodev1>),
 
       timeToLive: (exit) =>
         Exit.isFailure(exit) ? Duration.zero :
@@ -50,7 +50,7 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
         }),
       );
 
-    const saveMemory = (d: Document.Document<Node.Nodev1>) =>
+    const saveMemory = (d: Document.Documentold<Node.Nodev1>) =>
       memory.set(d._key, d);
 
     return {

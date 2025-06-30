@@ -1,7 +1,7 @@
-import type * as Document from '#src/disreact/core/primitives/document.ts';
-import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
-import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
+import type * as Node from '#disreact/core/primitives/exp/nodev1.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#disreact/core/primitives/constants.ts';
+import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Either from 'effect/Either';
 import {dual} from 'effect/Function';
 import * as Iterable from 'effect/Iterable';
@@ -16,7 +16,7 @@ import * as Array from 'effect/Array';
 export interface Stack<A = Node.Nodev1> extends Pipeable.Pipeable,
   Inspectable.Inspectable
 {
-  readonly document: Document.Document<A>;
+  readonly document: Document.Documentold<A>;
   readonly root    : A;
 
   counts : WeakMap<any, number>;
@@ -36,7 +36,7 @@ const Prototype = proto.type<Stack<any>>({
   },
 });
 
-const empty = <A>(root: A, document: Document.Document<A>): Stack<A> =>
+const empty = <A>(root: A, document: Document.Documentold<A>): Stack<A> =>
   proto.init(Prototype, {
     document: document,
     root    : root,
@@ -45,7 +45,7 @@ const empty = <A>(root: A, document: Document.Document<A>): Stack<A> =>
     visited : new WeakSet<any>(),
   });
 
-export const root = <A>(document: Document.Document<A>): Stack<A> => {
+export const root = <A>(document: Document.Documentold<A>): Stack<A> => {
   const self = proto.init(Prototype, {
     document: document,
     root    : document.root,

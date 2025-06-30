@@ -1,10 +1,9 @@
-import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
-import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Polymer from '#src/disreact/core/Polymer.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import * as Inspectable from 'effect/Inspectable';
+import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
 import * as Pipeable from 'effect/Pipeable';
+import * as Inspectable from 'effect/Inspectable';
+
 const BasePrototype = proto.type<Polymer.BaseMonomer>({
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
@@ -74,22 +73,3 @@ export const context = (): Polymer.ContextMonomer =>
   proto.init(ContextPrototype, {
 
   });
-
-const Prototype = proto.type<Polymer.Polymer>({
-  pc: 0,
-  rc: 0,
-  ...Lineage.Prototype,
-  ...Lateral.Prototype,
-  ...Pipeable.Prototype,
-  ...Inspectable.BaseProto,
-});
-
-export const empty = () =>
-  proto.init(Prototype, {
-    stack: [],
-  });
-
-export const push = (self: Polymer.Polymer, monomer: Polymer.Monomer) => {
-  self.stack.push(monomer);
-  self.pc++;
-};

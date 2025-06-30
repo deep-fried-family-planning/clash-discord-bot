@@ -1,6 +1,6 @@
 import {props} from '#src/disreact/adaptor/adaptor/element.ts';
-import type * as Document from '#src/disreact/core/primitives/document.ts';
-import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
+import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
 import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import {ASYNC, DEV_STUB, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
@@ -73,7 +73,7 @@ export const render = (node: Node.Functional) =>
 
 export class UpdateError extends Data.TaggedError('UpdateError')<{
   message?: string;
-  document: Document.Document<Node.Nodev1>;
+  document: Document.Documentold<Node.Nodev1>;
   node    : Node.Nodev1;
 }>
 {}
@@ -117,12 +117,12 @@ const runFx = (fx: Polymer.EffectFn) => E.suspend(() => {
 export class InvokeError extends Data.TaggedError('InvokeError')<{
   message?: string;
   event   : any;
-  document: Document.Document<Node.Nodev1>;
+  document: Document.Documentold<Node.Nodev1>;
   node    : Node.Nodev1;
 }>
 {}
 
-export const invoke = (n: Node.Intrinsic, d: Document.Document<Node.Nodev1>, event: any) => E.suspend(() => {
+export const invoke = (n: Node.Intrinsic, d: Document.Documentold<Node.Nodev1>, event: any) => E.suspend(() => {
   return E.void;
 });
 

@@ -1,5 +1,5 @@
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as Document from '#src/disreact/core/primitives/document.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
 import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
@@ -9,7 +9,7 @@ import * as Pipeable from 'effect/Pipeable';
 
 export interface Hydrant extends Pipeable.Pipeable,
   Inspectable.Inspectable,
-  Lineage.Lineage<Document.Document>
+  Lineage.Lineage<Document.Documentold>
 {
   hash? : string;
   source: string;

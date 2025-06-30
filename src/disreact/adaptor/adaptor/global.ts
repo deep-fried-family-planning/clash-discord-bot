@@ -1,16 +1,16 @@
 import type * as Element from '#src/disreact/adaptor/adaptor/element.ts';
 import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
-import type * as Document from '#src/disreact/core/primitives/document.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
 import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
-import type * as Stack from '#src/disreact/engine/stack.ts';
-import type * as Node from '#src/disreact/core/primitives/nodev1.ts';
+import type * as Stack from '#disreact/core/primitives/exp/Stack.ts';
+import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
 
 export let component = undefined as undefined | Element.Func,
            env       = undefined as undefined | Rehydrant.Envelope,
            poly      = undefined as undefined | Polymer.Polymer,
            stack     = undefined as undefined | Stack.Stack<Node.Nodev1>,
            vertex    = undefined as undefined | Node.Nodev1,
-           document  = undefined as undefined | Document.Document<Node.Nodev1>,
+           document  = undefined as undefined | Document.Documentold<Node.Nodev1>,
            release = () => {};
 
 export const setRelease = (f: () => void) => {
@@ -26,11 +26,11 @@ export type Global = {
   root?    : Rehydrant.Envelope;
   poly?    : Polymer.Polymer;
   vertex?  : Node.Nodev1;
-  document?: Document.Document<Node.Nodev1>;
+  document?: Document.Documentold<Node.Nodev1>;
   stack?   : Stack.Stack<Node.Nodev1>;
 };
 
-export const set = (v: Node.Functional, d: Document.Document<Node.Nodev1>) => {
+export const set = (v: Node.Functional, d: Document.Documentold<Node.Nodev1>) => {
   vertex = v;
   poly = v.polymer!;
   document = d;

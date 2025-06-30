@@ -18,7 +18,7 @@ export const isAsync = <A extends any[], B>(u: FnN<A, B>): u is FnN<A, Extract<B
 
 export const LocalEffectTypeId = Symbol.for('effect/Effect');
 
-export const isEffect = <A, E, R>(u: unknown): u is E.Effect<A, E, R> =>
+export const isEffect = <A, E = never, R = never>(u: unknown): u is E.Effect<A, E, R> =>
   u !== null
   && typeof u === 'object'
   && (u as any)[LocalEffectTypeId];

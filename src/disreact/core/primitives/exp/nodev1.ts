@@ -1,7 +1,7 @@
 import type * as Diffable from '#src/disreact/core/behaviors/diffable.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as Document from '#src/disreact/core/primitives/document.ts';
+import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
 import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, IS_DEV, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
 import * as Diff from '#src/disreact/core/primitives/diff.ts';
@@ -38,7 +38,7 @@ interface Base extends Pipeable.Pipeable,
   j        : number;
   n        : string;
   valence? : Nodev1[] | undefined;
-  document?: Document.Document<Nodev1>;
+  document?: Document.Documentold<Nodev1>;
 }
 
 export interface Text extends Base, Jsx.Text {}
@@ -201,8 +201,8 @@ export const dispose = <A extends Nodev1>(self: A): undefined => {
 };
 
 export const attachDocument = dual<
-  <A extends Nodev1>(document: Document.Document) => (self: A) => A,
-  <A extends Nodev1>(self: A, document: Document.Document) => A
+  <A extends Nodev1>(document: Document.Documentold) => (self: A) => A,
+  <A extends Nodev1>(self: A, document: Document.Documentold) => A
 >(2, (self, document) => {
   self.document = document;
   return self;
@@ -217,8 +217,8 @@ export const attachPolymer = dual<
 });
 
 export const initialize = dual<
-  (self: Nodev1) => (document: Document.Document) => Nodev1,
-  (self: Nodev1, document: Document.Document) => Nodev1
+  (self: Nodev1) => (document: Document.Documentold) => Nodev1,
+  (self: Nodev1, document: Document.Documentold) => Nodev1
 >(2, (self, document) => {
   self.document = document;
   return self;

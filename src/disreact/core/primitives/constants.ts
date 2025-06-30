@@ -16,9 +16,10 @@ export const
 
 export const
   TEXT_NODE  = 0 as const,
-  FRAGMENT   = 1 as const,
-  INTRINSIC  = 2 as const,
-  FUNCTIONAL = 3 as const;
+  LIST_NODE  = 1 as const,
+  FRAGMENT   = 2 as const,
+  INTRINSIC  = 3 as const,
+  FUNCTIONAL = 4 as const;
 
 export const
   SYNC   = 1 as const,
@@ -99,3 +100,11 @@ export type MonomerTag =
   | typeof MONOMER_REF
   | typeof MONOMER_MEMO
   | typeof MONOMER_CONTEXT;
+
+export const
+  DOCUMENT_SYNTHESIZE = 1 as const,
+  DOCUMENT_REHYDRATE  = 2 as const;
+
+export type DocumentType =
+  | typeof DOCUMENT_SYNTHESIZE
+  | typeof DOCUMENT_REHYDRATE;

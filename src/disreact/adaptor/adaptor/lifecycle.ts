@@ -7,7 +7,7 @@ import * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Mutex from '#src/disreact/adaptor/adaptor/mutex.ts';
 import * as Progress from '#src/disreact/adaptor/codec/old/progress2.ts';
-import * as Stack from '#src/disreact/engine/stack.ts';
+import * as Stack from '#disreact/core/primitives/exp/Stack.ts';
 import * as Cause from 'effect/Cause';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';

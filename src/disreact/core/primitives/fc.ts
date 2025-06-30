@@ -1,51 +1,18 @@
-import type {EFFECT, SYNC} from '#src/disreact/core/primitives/constants.ts';
-import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import type * as t from '#src/disreact/core/behaviors/type.ts';
-import type * as Jsx from '#src/disreact/runtime/jsx.tsx';
-import type * as E from 'effect/Effect';
+import type * as FC from '#src/disreact/core/FC.ts';
+import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 
-interface Internal {
-  _id?        : string;
-  _tag?       : FCExecution;
-  displayName?: string;
-}
+export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
 
-export interface Known<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  (props: A): B | Promise<B> | E.Effect<B, any, any>;
-}
+export const isKnown = (u: FC.FC): u is FC.Known => !!(u as any)._tag;
 
-export interface Sync<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  _tag: typeof SYNC;
-  (props: A): B;
-}
-
-export interface Async<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  _tag: typeof ASYNC;
-  (props: A): Promise<B>;
-}
-
-export interface Effect<A = any, B = Jsx.Children> extends t.Fn, Internal {
-  _tag: typeof EFFECT;
-  (props: A): E.Effect<B>;
-}
-
-export interface FC<P = any, O = Jsx.Children, E = any, R = any> extends t.Fn {
-  (props: P): O | Promise<O> | E.Effect<O, E, R>;
-  displayName?: string;
-}
-
-export const isFC = (u: unknown): u is FC => typeof u === 'function';
-
-export const isKnown = (u: FC): u is Known => !!(u as any)._tag;
-
-const Prototype = proto.type<Known>({
+const Prototype = proto.type<FC.Known>({
   _id: ANONYMOUS,
 });
 
-export const isCasted = (self: FC): self is Known => !!(self as Known)._tag;
+export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
 
-export const register = (fn: FC): Known => {
+export const register = (fn: FC.FC): FC.Known => {
   if (isKnown(fn)) {
     return fn;
   }
@@ -60,7 +27,7 @@ export const register = (fn: FC): Known => {
          : fc;
 };
 
-export const cast = (self: FC, type: FCExecution) => {
+export const cast = (self: FC.FC, type: FCExecution) => {
   if (isCasted(self)) {
     throw new Error(`Cannot recast function component: ${name(self)}`);
   }
@@ -72,13 +39,13 @@ export const cast = (self: FC, type: FCExecution) => {
   });
 };
 
-export const isAnonymous = (self: FC) => name(self) === ANONYMOUS;
+export const isAnonymous = (self: FC.FC) => name(self) === ANONYMOUS;
 
-export const overrideName = (self: FC, name: string) => {
+export const overrideName = (self: FC.FC, name: string) => {
   (self as any)._id = name;
 };
 
-export const name = (maybe?: string | FC) => {
+export const name = (maybe?: string | FC.FC) => {
   if (!maybe) {
     return ANONYMOUS;
   }
@@ -91,4 +58,4 @@ export const name = (maybe?: string | FC) => {
   return (maybe as any)._id as string;
 };
 
-export const kind = (fc: FC): number | undefined => (fc as Known)._tag;
+export const kind = (fc: FC.FC): number | undefined => (fc as FC.Known)._tag;
