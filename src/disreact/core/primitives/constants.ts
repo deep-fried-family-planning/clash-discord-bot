@@ -21,6 +21,13 @@ export const
   INTRINSIC  = 3 as const,
   FUNCTIONAL = 4 as const;
 
+export type NodeTag =
+  | typeof TEXT_NODE
+  | typeof LIST_NODE
+  | typeof FRAGMENT
+  | typeof INTRINSIC
+  | typeof FUNCTIONAL;
+
 export const
   SYNC   = 1 as const,
   ASYNC  = 2 as const,

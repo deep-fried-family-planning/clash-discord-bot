@@ -1,6 +1,6 @@
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import {FUNCTIONAL, INTRINSIC, type FRAGMENT, type LIST_NODE, type TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
+import {FUNCTIONAL, INTRINSIC, type FRAGMENT, type LIST_NODE, type TEXT_NODE, type NodeTag} from '#src/disreact/core/primitives/constants.ts';
 import * as Polymer from '#src/disreact/core/Polymer.ts';
 import type * as Document from '#src/disreact/core/Document.ts';
 import * as Either from 'effect/Either';
@@ -20,7 +20,8 @@ export type Node = | Text
 export type Renderable = | Func;
 
 export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Document>, Lateral.Lateral<Node> {
-  children?: Node[];
+  _tag     : NodeTag;
+  children?: Node[] | undefined;
   document : Document.Document;
   polymer  : Polymer.Polymer;
   props    : any;
@@ -49,9 +50,9 @@ export interface Func extends Base {
   component: FC.Known;
 }
 
-export const isElement = (node: Node): node is Element => node._tag < FUNCTIONAL;
+export const isElement = (node: Node): node is Exclude<Node, Renderable> => node._tag < FUNCTIONAL;
 
-export const isRenders = (node: Node): node is Renderable => node._tag > INTRINSIC;
+export const isRenderable = (node: Node): node is Renderable => node._tag > INTRINSIC;
 
 export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
   const right = Polymer.isChanged(self.polymer);

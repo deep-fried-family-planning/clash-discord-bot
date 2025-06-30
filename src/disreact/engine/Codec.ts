@@ -1,11 +1,14 @@
 import * as E from 'effect/Effect';
+import type * as Node from '#disreact/core/Node.ts';
 
 export type CodecConfig = {
-  endpoints: [];
+  primitive: string;
+  encoders : Record<string, (self: Node.Rest, args: any) => any>;
+  normalize: Record<string, string>;
 };
 
 export class Codec extends E.Service<Codec>()('disreact/Codec', {
-  effect: () => E.gen(function* () {
+  effect: (config: CodecConfig) => E.gen(function* () {
     return {
 
     };

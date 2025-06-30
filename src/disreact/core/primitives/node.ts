@@ -7,6 +7,7 @@ import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#src/disrea
 import * as fc from '#src/disreact/core/primitives/fc.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
+import type * as Event from '#disreact/core/Event.ts';
 
 const Prototype = proto.type<Node.Base>({
   ...Lineage.Prototype,
@@ -112,6 +113,13 @@ export const func = (component: FC.FC, props: any): Node.Func => {
     props    : props,
   });
 };
+
+const HandlerPrototype = proto.type<Event.PropsHandler>({
+  ...Lineage.EqualPrototype,
+});
+
+export const handler = (fn: Event.Handler) =>
+  proto.init(HandlerPrototype, fn);
 
 const PropsPrototype = proto.type<Record<string, any>>({
   ...Inspectable.BaseProto,

@@ -11,7 +11,8 @@ export interface Stack<A> extends Pipeable.Pipeable, Inspectable.Inspectable {
   values  : A[];
 }
 
-export const make = <A>(root: A): Stack<A> => stack.make(root);
+export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
+  stack.make(document, root);
 
 const while$ = <A>(self: Stack<A>) => stack.len(self) > 0;
 export {while$ as while};

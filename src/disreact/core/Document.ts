@@ -1,16 +1,17 @@
 import type * as Event from '#disreact/core/Event.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import * as document from '#disreact/core/primitives/document.ts';
-import type * as E from 'effect/Effect';
+import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
-import type * as Mailbox from 'effect/Mailbox';
+import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
 
-export interface Document extends Pipeable.Pipeable, Inspectable.Inspectable {
+export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspectable {
   _id      : string;
   _key?    : string;
   _hash    : string;
   body     : Node.Node;
+  data     : A;
   event?   : Event.Event;
   flags    : Set<Node.Node>;
   outstream: Mailbox.Mailbox<any>;

@@ -2,22 +2,19 @@ import type * as Node from '#disreact/core/Node.ts';
 import * as node from '#disreact/core/primitives/node.ts';
 import type * as FC from '#disreact/core/FC.ts';
 
-export type Value = | undefined
-                    | null
-                    | boolean
-                    | number
-                    | bigint
-                    | string;
+export type Text = | undefined
+                   | null
+                   | boolean
+                   | number
+                   | bigint
+                   | string;
 
-export type Type = | string
-                   | Value
+export type Type = | keyof JSX.IntrinsicElements
+                   | Text
                    | FC.FC;
 
-export type Fragment = typeof node.FragmentTag;
-
-export const Fragment = node.FragmentTag;
-
 export type Jsx = Node.Node;
+
 
 const makeChild = (type: any): Jsx => {
   if (!type || typeof type !== 'object') {
@@ -28,6 +25,9 @@ const makeChild = (type: any): Jsx => {
   }
   return node.list(type);
 };
+
+
+export const Fragment = node.FragmentTag;
 
 export const jsx = (type: any, attributes: any): Jsx => {
   const props = node.props(attributes);

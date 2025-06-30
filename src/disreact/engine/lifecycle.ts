@@ -1,109 +1,73 @@
-import * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
-import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
-import * as dispatch from '#src/disreact/engine/dispatch.ts';
-import * as Stack from '#disreact/core/primitives/exp/Stack.ts';
+import * as Node from '#disreact/core/Node.ts';
+import {noop} from '#disreact/core/primitives/constants.ts';
+import * as Stack from '#disreact/core/Stack.ts';
+import type * as Document from '#src/disreact/core/Document.ts';
 import * as E from 'effect/Effect';
-import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
-import * as Match from 'effect/Match';
-import * as Option from 'effect/Option';
 
+export const initialize = (document: Document.Document) => {
+  const stack = Stack.make(document, document.body);
 
+  return E.whileLoop({
+    while: () => Stack.while(stack),
+    step : noop,
+    body : () => {
+      const node = Stack.pop(stack);
 
-const eitherRenders = (node: Node.Functional, document: Document.Documentold) => {
-  node.document = document;
-  if (Node.isFunctional(node)) {
-    return Either.right(node);
-  }
-  return Either.left(node);
-};
-
-const initFunctional = (node: Node.Functional) =>
-  pipe(
-    Polymer.empty(),
-    Polymer.attachNode(node),
-    Polymer.attachDocument(node.document!),
-    Polymer.polymerize(node),
-    dispatch.render,
-    E.tap(dispatch.update),
-    E.map(Node.mountValence),
-    E.map(Node.toValence),
-    E.map(Option.fromNullable),
-  );
-
-const initWithContinuity = (stack: Stack.Stack) => {
-  const node = pipe(
-    Stack.pop(stack),
-    Node.attachDocument(stack.document),
-  );
-
-  if (!Node.isFunctional(node)) {
-    Node.mountValence(node);
-    Stack.pushAll(stack, node.valence);
-
-    while (Stack.condition(stack)) {
-      const next = Stack.pop(stack);
-
-      if (Node.isFunctional(next)) {
-        return initFunctional(next);
+      if (!Node.isRenderable(node)) {
+        node.document = document;
+        Stack.pushAll(stack, node.children);
+        return E.void;
       }
-      Node.mountValence(node);
-      Stack.pushAll(node.valence);
-    }
-    return E.succeedNone;
-  }
-  return initFunctional(node);
+      return pipe(
+
+        E.void,
+      );
+    },
+  }).pipe(E.as(document));
 };
 
-export const initializeDocument = (document: Document.Documentold) =>
-  pipe(
-    E.iterate(Stack.root(document), {
-      while: Stack.condition,
-      body : (stack) =>
-        initWithContinuity(stack).pipe(
-          E.map(Option.getOrUndefined),
-          E.map(Stack.pushAllInto(stack)),
-        ),
-    }),
+export const hydrate = (document: Document.Document) => {
+  const stack = Stack.make(document);
+
+  return E.whileLoop({
+    while: () => Stack.while(stack),
+    step : noop,
+    body : () => {
+      const node = Stack.pop(stack);
+      return E.void;
+    },
+  }).pipe(E.as(document));
+};
+
+export const invoke = (document: Document.Document) => E.suspend(() => {
+  if (!document.event) {
+    throw new Error();
+  }
+  const stack = Stack.make(document);
+
+  while (Stack.while(stack)) {
+
+  }
+
+  return pipe(
+    E.void,
     E.as(document),
   );
+});
 
-export const initializeSPS = (stack: Stack.Stack) =>
-  stack.pipe(
-    Stack.pop,
-    Document,
-    Match.value,
-    Match.when(Node.isFunctional, (node) =>
-      Polymer.empty().pipe(
-        Polymer.circular(node, stack.document),
-        Polymer.polymerize(node),
-        dispatch.render,
-      ),
-    ),
-    Match.orElse((node) => E.succeed(node)),
-    E.map((node) =>
-      stack.pipe(
-        Document.fromStack,
-        Document.recordNode(node),
-        Node.mountValence,
-        Node.toValence,
-        Stack.pushAllInto(stack),
-      ),
-    ),
-  );
+export const unmount = (document: Document.Document, node: Node.Node) => {
 
-const rehydrateFunctional = (node: Node.Functional) =>
-  pipe(
-    node.document!,
-    Document.hydrateChain(node.$trie!),
-    Option.map(Polymer.hydrate),
-    Option.getOrElse(Polymer.strictHydrate),
-    Polymer.circular(node, node.document!),
-    Polymer.polymerize(node),
-    dispatch.render,
-    E.tap(dispatch.update),
-    E.map(Node.mountValence),
-    E.map(Node.toValence),
-    E.map(Option.fromNullable),
-  );
+};
+
+export const mount = (document: Document.Document, node: Node.Node) => {
+
+};
+
+export const rerender = (document: Document.Document) => {
+
+};
+
+export const dehydrate = (document: Document.Document) => {
+
+};
