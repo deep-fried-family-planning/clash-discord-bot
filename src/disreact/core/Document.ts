@@ -15,7 +15,7 @@ export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspec
   body       : Node.Node;
   interaction: A;
   event?     : Event.Event;
-  flags      : Set<Node.Node>;
+  flags      : Set<Node.Func>;
   outstream  : Mailbox.Mailbox<any>;
   endpoint   : Hydrant.Endpoint;
   hydrant    : Hydrant.Hydrant;

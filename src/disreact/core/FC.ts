@@ -52,11 +52,17 @@ export const isCasted = (u: FC): u is Known => fc.isCasted(u);
 
 export const isAnonymous = (u: FC): u is Known => fc.isAnonymous(u);
 
+export const endpoint = fc.endpoint;
+
 export const isStateless = (u: Known) => u.stateless;
 
 export const markStateless = (self: Known): Known => {
   self.stateless = true;
   return self;
+};
+
+export const renderStateless = (self: Known): E.Effect<any> => {
+
 };
 
 export const renderFirst = (self: Known, props: any): E.Effect<any> => {

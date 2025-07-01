@@ -11,6 +11,8 @@ export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Ins
   values  : A[];
 }
 
+export const toDocument = <A>(self: Stack<A>): Document.Document => self.document;
+
 export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
   stack.make(document, root as any);
 

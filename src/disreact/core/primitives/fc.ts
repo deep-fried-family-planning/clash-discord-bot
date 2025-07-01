@@ -23,8 +23,6 @@ const Prototype = proto.type<FC.Known>({
 
 export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
 
-export const endpoint = <P>(self: FC.FC<P>) => {};
-
 export const register = (fn: FC.FC): FC.Known => {
   if (isKnown(fn)) {
     return fn;
@@ -42,6 +40,10 @@ export const register = (fn: FC.FC): FC.Known => {
   return proto.isAsync(fc)
          ? cast(fc, ASYNC)
          : fc;
+};
+
+export const endpoint = <P>(id: string, self: FC.FC<P>): FC.Known<P> => {
+  return self as any; // todo
 };
 
 export const cast = (self: FC.Known, type: FCExecution) => {

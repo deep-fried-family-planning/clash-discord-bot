@@ -47,3 +47,21 @@ export const UseContext = (self: Polymer.Polymer) => (context: any) => {
 
   return monomer.value;
 };
+
+export const getHooks = (self: Polymer.Polymer) => {
+  return {
+    useInteraction: UseInteraction(self),
+    useState      : UseState(self),
+    useReducer    : UseReducer(self),
+    useEffect     : UseEffect(self),
+    useRef        : UseRef(self),
+    useMemo       : UseMemo(self),
+    useCallback   : UseCallback(self),
+    useContext    : UseContext(self),
+  };
+};
+
+export const active = {
+  polymer: undefined as undefined | Polymer.Polymer,
+  hooks  : undefined as unknown as ReturnType<typeof getHooks>,
+};

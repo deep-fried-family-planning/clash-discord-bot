@@ -22,56 +22,55 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
         return null;
       }
       const stack = MutableList.make<Node.Node>(d.body),
+            final  = {} as any,
             args  = new WeakMap(),
-            outs  = new WeakMap(),
-            last  = {} as any;
-      outs.set(d.body, last);
+            outs  = new WeakMap().set(d.body, final);
 
       while (MutableList.tail(stack)) {
-        const n   = MutableList.pop(stack)!,
-              out = outs.get(n);
+        const node   = MutableList.pop(stack)!,
+              out = outs.get(node);
 
-        switch (n._tag) {
+        switch (node._tag) {
           case TEXT_NODE: {
-            if (!n.text) {
+            if (!node.text) {
               continue;
             }
             out[primitive] ??= [];
-            out[primitive].push(n.text);
+            out[primitive].push(node.text);
             continue;
           }
           case LIST_NODE:
           case FRAGMENT:
           case FUNCTIONAL: {
-            if (!n.children) {
+            if (!node.children) {
               continue;
             }
-            for (const c of n.children.toReversed()) {
+            for (const c of node.children.toReversed()) {
               outs.set(c, out);
               MutableList.append(stack, c);
             }
-            if (n._tag === FUNCTIONAL) {
+            if (node._tag === FUNCTIONAL) {
 
             }
             continue;
           }
           case INTRINSIC: {
-            if (args.has(n)) {
-              const norm = normalization[n.component];
+            if (args.has(node)) {
+              const norm = normalization[node.component];
               out[norm] ??= [];
-              out[norm].push((encoding[n.component](n, args.get(n)!)));
+              out[norm].push((encoding[node.component](node, args.get(node)!)));
             }
-            else if (!n.children || n.children.length === 0) {
-              const norm = normalization[n.component];
+            else if (!node.children || node.children.length === 0) {
+              const norm = normalization[node.component];
               out[norm] ??= [];
-              out[norm].push((encoding[n.component](n, {})));
+              out[norm].push((encoding[node.component](node, {})));
             }
             else {
               const arg = {};
-              args.set(n, arg);
-              MutableList.append(stack, n);
+              args.set(node, arg);
+              MutableList.append(stack, node);
 
-              for (const c of n.children.toReversed()) {
+              for (const c of node.children.toReversed()) {
                 outs.set(c, arg);
                 MutableList.append(stack, c);
               }
@@ -79,12 +78,12 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
           }
         }
       }
-      for (const key of Object.keys(last)) {
-        if (last[key]) {
+      for (const key of Object.keys(final)) {
+        if (final[key]) {
           return {
             _tag    : key,
             hydrator: d.trie,
-            data    : last[key][0],
+            data    : final[key][0],
           };
         }
       }

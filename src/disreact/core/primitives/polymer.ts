@@ -155,3 +155,5 @@ export const push = (self: Polymer.Polymer, monomer: Polymer.Monomer) => {
   self.stack.push(monomer);
   self.pc++;
 };
+
+export const defineHook = () => {};

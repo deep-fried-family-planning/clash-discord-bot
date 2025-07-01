@@ -21,7 +21,7 @@ export const make = (root: Node.Node) =>
     flags: new Set(),
   });
 
-export const flagNode = (self: Document.Document, node: Node.Node) => {
+export const flagNode = (self: Document.Document, node: Node.Func) => {
   self.flags.add(node);
   return self;
 };
