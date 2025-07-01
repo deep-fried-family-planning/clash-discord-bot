@@ -1,3 +1,4 @@
+import {register} from '#disreact/core/internal/fc.ts';
 import * as E from 'effect/Effect';
 //
 // type EffectFn<F, E, R> =
@@ -62,3 +63,5 @@ declare global {
     export interface IntrinsicElements {}
   }
 }
+
+register(() => {});

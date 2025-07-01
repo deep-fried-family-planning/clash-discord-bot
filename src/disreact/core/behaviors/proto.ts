@@ -1,10 +1,7 @@
-import {DEV_STUB, INTERNAL_ERROR, IS_DEV} from '#disreact/core/immutable/constants.ts';
+import {IS_DEV} from '#disreact/core/immutable/constants.ts';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
-
-export type proto = DEV_STUB;
-export const proto = DEV_STUB;
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Fn = Function;

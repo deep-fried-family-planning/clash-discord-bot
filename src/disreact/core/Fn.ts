@@ -8,8 +8,7 @@ import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
-import React from 'react';
-React.Fragment;
+
 export interface Endpoint {
   id       : string;
   component: any;
@@ -171,12 +170,6 @@ export interface EventInternal<D = any, T = any> extends EventInput<D, T>, Event
   };
 }
 
-export const event = internal.event;
-
-export const isCloseEvent = (event: EventInternal) => event.compare.endpoint === null;
-
-export const isOpenEvent = (event: EventInternal) => event.compare.endpoint !== event.endpoint;
-
 export interface Handler<D = any, T = any, E = never, R = never> extends Function {
   (event: Event<D, T>): | void
                         | Promise<void>
@@ -186,6 +179,12 @@ export interface Handler<D = any, T = any, E = never, R = never> extends Functio
 export interface EventHandler<D = any, T = any, E = never, R = never> extends Handler<D, T, E, R>, Inspectable.Inspectable, Hash.Hash, Equal.Equal {
   [internal.HandlerId]: typeof internal.HandlerId;
 }
+
+export const event = internal.event;
+
+export const isCloseEvent = (event: EventInternal) => event.compare.endpoint === null;
+
+export const isOpenEvent = (event: EventInternal) => event.compare.endpoint !== event.endpoint;
 
 export const handler = internal.handler;
 

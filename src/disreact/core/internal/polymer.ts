@@ -2,7 +2,7 @@ import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Monomer from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
-import type * as Document from '#disreact/core/Simulation.ts';
+import type * as Document from '#disreact/core/Document.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
@@ -21,7 +21,7 @@ const Prototype = proto.type<Polymer.Polymer>({
   },
 });
 
-export const empty = (node: Node.Func, document: Document.Simulation): Polymer.Polymer =>
+export const empty = (node: Node.Func, document: Document.Document): Polymer.Polymer =>
   proto.init(Prototype, {
     document: document,
     node    : node,

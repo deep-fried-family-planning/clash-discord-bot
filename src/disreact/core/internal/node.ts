@@ -18,12 +18,12 @@ const Prototype = proto.type<Node.Node>({
   props    : undefined as any,
   children : undefined as any,
   polymer  : undefined as any,
-  t        : '',
-  s        : '',
-  i        : 0,
-  p        : 0,
-  d        : 0,
-  n        : '',
+  trie     : '',
+  step     : '',
+  idx      : 0,
+  pdx      : 0,
+  depth    : 0,
+  name     : '',
   ...Lineage.Prototype,
   ...Lateral.Prototype,
   ...Pipeable.Prototype,
@@ -73,14 +73,14 @@ export const text = (value: string): Node.Text =>
   proto.init(Prototype, {
     _tag: TEXT_NODE,
     text: value,
-    n   : 't',
+    name: 't',
   }) as Node.Text;
 
 export const list = (children: Node.Node[]): Node.List =>
   proto.init(Prototype, {
     _tag    : LIST_NODE,
     children: children,
-    n       : 'l',
+    name    : 'l',
   }) as Node.List;
 
 export const FragmentTag = Symbol.for('disreact/fragment');
@@ -89,7 +89,7 @@ export const frag = (children: Node.Node[]): Node.Frag =>
   proto.init(Prototype, {
     _tag    : FRAGMENT,
     children: children,
-    n       : 'f',
+    name    : 'f',
   }) as Node.Frag;
 
 export const rest = (type: string, props: any): Node.Rest => {
@@ -97,7 +97,7 @@ export const rest = (type: string, props: any): Node.Rest => {
     _tag     : INTRINSIC,
     component: type,
     props    : propsIntrinsic(props),
-    n        : type,
+    name     : type,
   });
   return self as Node.Rest;
 };
@@ -109,13 +109,21 @@ export const func = (type: FC.FC, props: any): Node.Func => {
     _tag     : FUNCTIONAL,
     component: component,
     props    : makeProps(props),
-    n        : component._id!,
+    name     : component._id!,
   }) as Node.Func;
 };
 
-export const trie = (self: Node.Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
+export const dispose = (self: Node.Node) => {
+  if (self._tag === FUNCTIONAL) {
+    (self.polymer as any) = undefined;
+  }
+  self.children = undefined;
+  self.props = undefined;
+};
 
-export const step = (self: Node.Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
+export const trie = (self: Node.Node) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
+
+export const step = (self: Node.Node) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
 
 export const connectSingleRendered = (self: Node.Node, child: any): Node.Node[] => {
   if (!child._tag) {
@@ -124,15 +132,15 @@ export const connectSingleRendered = (self: Node.Node, child: any): Node.Node[] 
     }
   }
   Lineage.set(child, self);
-  (child as Node.Node).d = self.d + 1;
-  (child as Node.Node).p = self.p;
-  (child as Node.Node).t = `${self.t}:${trie(child)}`;
-  (child as Node.Node).s = `${self.s}:${step(child)}`;
+  (child as Node.Node).depth = self.depth + 1;
+  (child as Node.Node).pdx = self.pdx;
+  (child as Node.Node).trie = `${self.trie}:${trie(child)}`;
+  (child as Node.Node).step = `${self.step}:${step(child)}`;
   return [child];
 };
 
 export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[] => {
-  const depth = self.d + 1;
+  const depth = self.depth + 1;
   const name = step(self);
 
   for (let i = 0; i < children.length; i++) {
@@ -150,11 +158,11 @@ export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[
       Lateral.setTail(child, children[i - 1]);
       Lateral.setHead(children[i - 1], child);
     }
-    child.d = depth;
-    child.i = i;
-    child.p = self.p;
-    child.t = `${self.t}:${trie(child)}`;
-    child.s = `${name}:${step(child)}`;
+    child.depth = depth;
+    child.idx = i;
+    child.pdx = self.pdx;
+    child.trie = `${self.trie}:${trie(child)}`;
+    child.step = `${name}:${step(child)}`;
   }
   return children;
 };

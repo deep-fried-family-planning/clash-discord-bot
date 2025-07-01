@@ -1,4 +1,4 @@
-import * as Document from '#disreact/core/Simulation.ts';
+import * as Document from '#disreact/core/Document.ts';
 import * as FC from '#disreact/core/FC.ts';
 import {INTRINSIC, noop} from '#disreact/core/immutable/constants.ts';
 import * as Node from '#disreact/core/Node.ts';
@@ -12,7 +12,7 @@ const mutex  = E.unsafeMakeSemaphore(1),
       lock   = mutex.take(1),
       unlock = mutex.release(1);
 
-const render = (node: Node.Func) => {
+ const render = (node: Node.Func) => {
   const component = node.component;
   const props = node.props;
   const polymer = node.polymer;
@@ -44,31 +44,55 @@ const render = (node: Node.Func) => {
   );
 };
 
-const initializeNode = (node: Node.Func, document: Document.Simulation) => {
+const initializeNode = (node: Node.Func, document: Document.Document) => {
   node.polymer = Polymer.empty(node, document);
 
   return render(node).pipe(
-    E.map((rendered) => Node.connectRendered(node, rendered)),
+    E.map((rendered) => Node.rendered(node, rendered)),
     E.tap(Polymer.invoke(node.polymer)),
     E.as(node),
   );
 };
 
-const hydrateNode = (node: Node.Func, document: Document.Simulation) => {
-  const encoding = Document.getEncoding(document, node.t);
+const hydrateNode = (node: Node.Func, document: Document.Document) => {
+  const encoding = Document.getEncoding(document, node.trie);
   if (!encoding) {
     return initializeNode(node, document);
   }
   node.polymer = Polymer.hydrate(node, document, encoding);
 
   return render(node).pipe(
-    E.map((rendered) => Node.connectRendered(node, rendered)),
+    E.map((rendered) => Node.rendered(node, rendered)),
     E.tap(Polymer.invoke(node.polymer)),
     E.as(node),
   );
 };
+import * as Either from 'effect/Either';
+import * as Option from 'effect/Option';
+import * as Stream from 'effect/Stream';
 
-export const initialize = (document: Document.Simulation) => {
+const initializeSPS = (stack: Stack.Stack) =>
+  stack.pipe(
+    Stack.pop,
+    Node.connect,
+    Node.toEither,
+    Either.map((node) =>
+      render(node).pipe(
+        E.map((rendered) => Node.rendered(node, rendered)),
+        E.tap(Polymer.invoke(node.polymer)),
+      ),
+    ),
+    Either.mapLeft((node) =>
+      node.pipe(
+        Node.toChildrenReverse,
+        Stack.pushAllInto(stack),
+        E.succeed,
+      ),
+    ),
+    Either.merge,
+  );
+
+export const initialize = (document: Document.Document) => {
   const stack = Stack.make(document, document.body);
 
   return E.whileLoop({
@@ -93,7 +117,7 @@ export const initialize = (document: Document.Simulation) => {
   }).pipe(E.as(document));
 };
 
-export const hydrate = (document: Document.Simulation) => {
+export const hydrate = (document: Document.Document) => {
   const stack = Stack.make(document, document.body);
 
   return E.whileLoop({
@@ -118,7 +142,7 @@ export const hydrate = (document: Document.Simulation) => {
   }).pipe(E.as(document));
 };
 
-export const invoke = (document: Document.Simulation) => E.suspend(() => {
+export const invoke = (document: Document.Document) => E.suspend(() => {
   if (!document.event) {
     throw new Error();
   }
@@ -132,7 +156,7 @@ export const invoke = (document: Document.Simulation) => E.suspend(() => {
 
     if (
       node._tag === INTRINSIC &&
-      (node.s === event.id || node.props[event.lookup] === event.id) &&
+      (node.step === event.id || node.props[event.lookup] === event.id) &&
       node.props[event.handler]
     ) {
       target = node;
@@ -150,7 +174,7 @@ export const invoke = (document: Document.Simulation) => E.suspend(() => {
   );
 });
 
-export const unmount = (node: Node.Node, document: Document.Simulation) => {
+export const unmount = (node: Node.Node, document: Document.Document) => {
   const visited = new WeakSet();
   const stack = Stack.make(document, node);
 
@@ -169,7 +193,7 @@ export const unmount = (node: Node.Node, document: Document.Simulation) => {
   return node;
 };
 
-export const mount = (node: Node.Node, document: Document.Simulation) => {
+export const mount = (node: Node.Node, document: Document.Document) => {
   const stack = Stack.make(document, node);
 
   return E.whileLoop({
@@ -189,10 +213,10 @@ export const mount = (node: Node.Node, document: Document.Simulation) => {
   }).pipe(E.as(node));
 };
 
-export const rerender = (document: Document.Simulation) => {
+export const rerender = (document: Document.Document) => {
 
 };
 
-export const dehydrate = (document: Document.Simulation) => {
+export const dehydrate = (document: Document.Document) => {
 
 };

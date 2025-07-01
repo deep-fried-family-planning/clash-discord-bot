@@ -1,7 +1,7 @@
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/core/Simulation.ts';
+import type * as Document from '#disreact/core/Document.ts';
 import * as Monomer from '#disreact/core/Monomer.ts';
 import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
@@ -26,7 +26,7 @@ export type Effect = | EffectFn
                      | E.Effect<void>;
 
 export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage, Lateral.Lateral {
-  document: Document.Simulation;
+  document: Document.Document;
   node    : Node.Func;
   pc      : number;
   rc      : number;
@@ -34,7 +34,7 @@ export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lin
   queue   : Monomer.Effectful[];
 }
 
-export const empty = (node: Node.Func, document: Document.Simulation): Polymer => internal.empty(node, document);
+export const empty = (node: Node.Func, document: Document.Document): Polymer => internal.empty(node, document);
 
 export const isStateless = internal.isStateless;
 
@@ -49,7 +49,7 @@ export const isChanged = (self: Polymer) => {
   return false;
 };
 
-export const hydrate = (node: Node.Func, document: Document.Simulation, stack?: Monomer.Encoded[]): Polymer => {
+export const hydrate = (node: Node.Func, document: Document.Document, stack?: Monomer.Encoded[]): Polymer => {
   const self = empty(node, document);
   if (!stack) {
     return self;
@@ -93,9 +93,9 @@ export const invoke = (self: Polymer): E.Effect<Polymer> => {
     return E.succeed(self);
   }
   return E.iterate(self, {
-    while: (p) => p.queue.length > 0,
+    while: internal.hasEffects,
     body : (p) => {
-      const monomer = p.queue.shift()!;
+      const monomer = internal.dequeue(p);
       const effect = monomer.fn!;
 
       if (proto.isAsync(effect)) {

@@ -42,7 +42,15 @@ export interface FC<P = any, E = any, R = any> extends Function {
   props?      : boolean;
 }
 
+export const isFC = internal.isFC;
+
+export const register = internal.register;
+
 export const endpoint = internal.endpoint;
+
+export const isKnown = internal.isKnown;
+
+export const isCasted = internal.isCasted;
 
 export const isStateless = (u: Known) => !u.state;
 
@@ -50,6 +58,8 @@ export const markStateless = (self: Known): Known => {
   self.state = false;
   return self;
 };
+
+export const name = internal.name;
 
 export const renderProps = (self: Known, props: any): E.Effect<any> => {
   switch (self._tag) {

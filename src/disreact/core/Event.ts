@@ -1,43 +1,109 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as node from '#disreact/core/internal/node.ts';
+import * as FC from '#disreact/core/FC.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import * as E from 'effect/Effect';
-import type * as Equal from 'effect/Equal';
-import type * as Hash from 'effect/Hash';
-import type * as Inspectable from 'effect/Inspectable';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Equal from 'effect/Equal';
+import * as Hash from 'effect/Hash';
+import * as Inspectable from 'effect/Inspectable';
 
-export interface Event<T = any> extends Pipeable.Pipeable, Inspectable.Inspectable {
+export interface EventInput<D = any, T = any> {
   endpoint: string;
   id      : string;
   lookup  : string;
   handler : string;
-  target  : any;
-  data    : any;
+  target  : T;
+  data    : D;
+}
+
+export interface Event<D = any, T = any> {
+  target: T;
+  data  : D;
+
+  close(): void;
+  open(node: Node.Node): void;
+  openFC<P>(component: FC.FC<P>, props: P): void;
+}
+
+export interface EventInternal<D = any, T = any> extends EventInput<D, T>, Event<D, T>, Inspectable.Inspectable {
   compare: {
     endpoint: string | null;
     props   : any;
   };
-  close(): void;
-  open(fc: any, props: any): void;
-  open(node: any): void;
-};
-
-export const isClose = (event: Event) => event.compare.endpoint === null;
-
-export const isChanged = (event: Event) => event.compare.endpoint !== event.endpoint;
-
-export interface Handler<T = any> extends Function {
-  (event?: Event<T>): | void
-                      | Promise<void>
-                      | E.Effect<void>;
 }
 
-type HandlerId = typeof node.HandlerId;
+const EventPrototype = proto.type<EventInternal>({
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id: 'Event',
+    });
+  },
+  close() {
+    this.compare!.endpoint = null;
+  },
+  openFC<P>(component: FC.FC<P>, props: P) {
+    if (!props) {
+      throw new Error();
+    }
+    this.compare!.endpoint = FC.name(component);
+    this.compare!.props = props;
+  },
+  open(node) {
+    if (!node.source) {
+      throw new Error();
+    }
+    this.compare!.endpoint = node.source;
+    this.compare!.props = node.props;
+  },
+});
 
-export interface PropsHandler<T = any> extends Handler<T>, Inspectable.Inspectable, Hash.Hash, Equal.Equal {
-  [HandlerId]: HandlerId;
+export const event = (input: EventInput) =>
+  proto.init(EventPrototype, {
+    ...input,
+    compare: {
+      endpoint: input.endpoint,
+      props   : {},
+    },
+  });
+
+export const isClose = (event: EventInternal) => event.compare.endpoint === null;
+
+export const isChanged = (event: EventInternal) => event.compare.endpoint !== event.endpoint;
+
+export interface Handler<D = any, T = any, E = never, R = never> extends Function {
+  (event: Event<D, T>): | void
+                        | Promise<void>
+                        | E.Effect<void, E, R>;
 }
+
+export const HandlerId = Symbol.for('disreact/handler');
+
+export interface EventHandler<D = any, T = any, E = never, R = never> extends Handler<D, T, E, R>,
+  Inspectable.Inspectable,
+  Hash.Hash,
+  Equal.Equal
+{
+  [HandlerId]: typeof HandlerId;
+}
+
+const HandlerPrototype = proto.type<EventHandler>({
+  [HandlerId]: HandlerId,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id: 'EventHandler',
+    });
+  },
+  [Hash.symbol]() {
+    return 1;
+  },
+  [Equal.symbol](that: EventHandler) {
+    return that[HandlerId] === HandlerId;
+  },
+});
+
+export const handler = (fn: Handler) => proto.init(HandlerPrototype, fn);
 
 export const invoke = (event: Event, handler: Handler): E.Effect<void> => {
   if (proto.isAsync(handler)) {

@@ -1,63 +1,91 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 
-export const PART = 1,
-             SAME = 2,
-             NEXT = 3,
-             EXIT = 4;
+export const PARTIAL_NODE  = 1,
+             SAME_ENDPOINT = 2,
+             NEXT_ENDPOINT = 3,
+             EXIT_ENDPOINT = 4,
+             CHECKPOINT    = 5;
 
 export type Part = {
-  _tag : typeof PART;
-  id   : string;
-  type : string;
-  props: any;
+  _tag    : typeof PARTIAL_NODE;
+  endpoint: string;
+  type    : string;
+  props   : any;
 };
 
 export type Same = {
-  _tag: typeof SAME;
+  _tag    : typeof SAME_ENDPOINT;
+  endpoint: string;
 };
 
 export type Next = {
-  _tag: typeof NEXT;
-  id  : string;
+  _tag    : typeof NEXT_ENDPOINT;
+  endpoint: string;
 };
 
 export type Exit = {
-  _tag: typeof EXIT;
+  _tag    : typeof EXIT_ENDPOINT;
+  endpoint: string;
+};
+
+export type Checkpoint<D = any> = {
+  _tag    : typeof CHECKPOINT;
+  endpoint: string;
+  props   : any;
+  state   : any;
+  data    : D;
 };
 
 export type Output = | Part
                      | Same
                      | Next
-                     | Exit;
+                     | Exit
+                     | Checkpoint;
 
 const Part = proto.type<Part>({
-  _tag: PART,
+  _tag: PARTIAL_NODE,
 });
 
 const Same = proto.type<Same>({
-  _tag: SAME,
+  _tag: SAME_ENDPOINT,
 });
 
 const Next = proto.type<Next>({
-  _tag: NEXT,
+  _tag: NEXT_ENDPOINT,
 });
 
 const Exit = proto.type<Exit>({
-  _tag: EXIT,
+  _tag: EXIT_ENDPOINT,
 });
 
-export const part = (id: string, type: string, props: any): Part =>
+const Checkpoint = proto.type<Checkpoint>({
+  _tag: CHECKPOINT,
+});
+
+export const part = (endpoint: string, type: string, props: any): Part =>
   proto.init(Part, {
-    id   : id,
-    type : type,
-    props: props,
+    endpoint: endpoint,
+    type    : type,
+    props   : props,
   });
 
-export const same = (): Same => Same;
+export const same = (endpoint: string): Same =>
+  proto.init(Same, {
+    endpoint: endpoint,
+  });
 
-export const next = (id: string): Next =>
+export const next = (endpoint: string): Next =>
   proto.init(Next, {
-    id: id,
+    endpoint: endpoint,
   });
 
-export const exit = (): Exit => Exit;
+export const exit = (endpoint: string): Exit =>
+  proto.init(Exit, {
+    endpoint: endpoint,
+  });
+
+export const checkpoint = <D>(endpoint: string, data: D): Checkpoint<D> =>
+  proto.init(Checkpoint, {
+    endpoint: endpoint,
+    data    : data,
+  });

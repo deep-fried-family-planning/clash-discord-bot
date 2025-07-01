@@ -1,4 +1,4 @@
-import type * as Document from '#disreact/core/Simulation.ts';
+import type * as Document from '#disreact/core/Document.ts';
 import * as internal from '#disreact/core/internal/stack.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
@@ -6,14 +6,14 @@ import * as Iterable from 'effect/Iterable';
 import type * as Pipeable from 'effect/Pipeable';
 import type * as Node from '#disreact/core/Node.ts';
 export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
-  document: Document.Simulation;
+  document: Document.Document;
   root    : A;
   values  : A[];
 }
 
-export const toDocument = <A>(self: Stack<A>): Document.Simulation => self.document;
+export const toDocument = <A>(self: Stack<A>): Document.Document => self.document;
 
-export const make = <A>(document: Document.Simulation, root?: A): Stack<A> =>
+export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
   internal.make(document, root as any);
 
 const while$ = <A>(self: Stack<A>) => internal.len(self) > 0;

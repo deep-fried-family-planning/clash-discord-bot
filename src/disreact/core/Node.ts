@@ -1,13 +1,14 @@
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
-import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import type * as Document from '#disreact/core/Simulation.ts';
+import * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as internal from '#disreact/core/internal/node.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
+import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
+import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
@@ -18,20 +19,18 @@ export type Node = | Text
                    | Rest
                    | Func;
 
-export type Renderable = | Func;
-
-export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Simulation>, Lateral.Lateral<Node> {
+export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node>, Lateral.Lateral<Node> {
   _tag     : NodeTag;
   source?  : string;
   children?: Node[] | undefined;
   rendered?: FC.Out;
   props    : any;
-  t        : string;
-  s        : string;
-  i        : number;
-  p        : number;
-  d        : number;
-  n        : string;
+  trie     : string;
+  step     : string;
+  idx      : number;
+  pdx      : number;
+  depth    : number;
+  name     : string;
 }
 
 export interface Text extends Base {
@@ -58,23 +57,34 @@ export interface Func extends Base {
   polymer  : Polymer.Polymer;
 }
 
-export const isElement = (node: Node): node is Exclude<Node, Renderable> => node._tag < FUNCTIONAL;
+export const isElement = (node: Node): node is Exclude<Node, Func> => node._tag < FUNCTIONAL;
 
-export const isRenderable = (node: Node): node is Renderable => node._tag > INTRINSIC;
+export const isRenderable = (node: Node): node is Func => node._tag > INTRINSIC;
 
-export const connectSelf = internal.connect;
-
-export const connectRendered = internal.connectRendered;
-
-export const dispose = (self: Node) => {
-  if (self._tag === FUNCTIONAL) {
-    (self.polymer as any) = undefined;
+export const toEither = (self: Node): Either.Either<Func, Exclude<Node, Func>> => {
+  if (isRenderable(self)) {
+    return Either.right(self);
   }
-  self.children = undefined;
-  self.props = undefined;
+  return Either.left(self);
 };
 
-export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
+export const connect = internal.connect;
+
+export const renderedF = internal.connectRendered;
+
+export const rendered = dual<
+  (rendered: any) => (self: Node) => Node[],
+  (self: Node, rendered: any) => Node[]
+>(2, renderedF);
+
+export const initializeF = (self: Func, polymer: Polymer.Polymer): Func => {
+  self.polymer = polymer;
+  return self;
+};
+
+export const dispose = internal.dispose;
+
+export const diffF = (self: Node, that: Node): Diff.Diff<Node> => {
   switch (self._tag) {
     case TEXT_NODE: {
       if (that._tag !== TEXT_NODE) {
@@ -127,7 +137,12 @@ export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
   }
 };
 
-export const diffs = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
+export const diff = dual<
+  (that: Node) => (self: Node) => Diff.Diff<Node>,
+  (self: Node, that: Node) => Diff.Diff<Node>
+>(2, diffF);
+
+export const diffsF = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
   const acc = [] as Diffs.Diffs<Node>[];
 
   if (!self.children && !that) {
@@ -149,7 +164,12 @@ export const diffs = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
   return acc;
 };
 
-export const lca = (ns: Renderable[]): Option.Option<Renderable> => {
+export const diffs = dual<
+  (that: Node[]) => (self: Node) => Diff.Diff<Node>[],
+  (self: Node, that: Node[]) => Diffs.Diffs<Node>[]
+>(2, diffsF);
+
+export const lca = (ns: Func[]): Option.Option<Func> => {
   if (ns.length === 0) {
     return Option.none();
   }
@@ -161,3 +181,41 @@ export const lca = (ns: Renderable[]): Option.Option<Renderable> => {
 };
 
 export const toChildrenReverse = (self: Node) => self.children?.toReversed();
+
+export const findWithinF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
+  const stack = [self] as Node[];
+
+  while (stack.length) {
+    const node = stack.pop()!;
+
+    if (p(node)) {
+      return Option.some(node);
+    }
+    if (node.children) {
+      stack.push(...node.children.toReversed());
+    }
+  }
+  return Option.none();
+};
+
+export const findWithin = dual<
+  <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
+  <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
+>(2, (self, p) => findWithinF(self, p));
+
+export const findAboveF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
+  let node = self;
+
+  while (node) {
+    if (p(node)) {
+      return Option.some(node);
+    }
+    node = Lineage.get(node);
+  }
+  return Option.none();
+};
+
+export const findAbove = dual<
+  <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
+  <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
+>(2, (self, p) => findAboveF(self, p));

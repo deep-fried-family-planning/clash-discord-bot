@@ -7,11 +7,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
 import * as Equal from 'effect/Equal';
 
-export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
-
-export const isKnown = (u: FC.FC): u is FC.Known => !!(u as any)._tag;
-
-const Prototype = proto.type<FC.Known>({
+const FunctionComponentPrototype = proto.type<FC.Known>({
   _id  : ANONYMOUS,
   state: true,
   props: true,
@@ -27,13 +23,15 @@ const Prototype = proto.type<FC.Known>({
   },
 });
 
-export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
+export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
+
 
 export const register = (fn: FC.FC): FC.Known => {
   if (isKnown(fn)) {
     return fn;
   }
-  const fc = proto.impure(Prototype, fn);
+
+  const fc = proto.impure(FunctionComponentPrototype, fn);
 
   if (fn.length === 0) {
     fc.props = false;
@@ -48,11 +46,9 @@ export const register = (fn: FC.FC): FC.Known => {
          : fc;
 };
 
-export const stateless = (self: FC.FC) => {
-  self.state = false;
-};
+export const isKnown = (u: FC.FC): u is FC.Known => !!(u as any)._tag;
 
-export const isStateless = (self: FC.FC) => !self.state;
+export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
 
 export const cast = (self: FC.Known, type: FCExecution) => {
   if (isCasted(self)) {
@@ -84,8 +80,6 @@ export const name = (maybe?: string | FC.FC) => {
   }
   return (maybe as any)._id as string;
 };
-
-export const kind = (fc: FC.FC): number | undefined => (fc as FC.Known)._tag;
 
 const endpoints = globalValue(Symbol.for('disreact/endpoints'), () => new Map<string, FC.Known>());
 

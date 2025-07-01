@@ -7,10 +7,11 @@ import * as Inspectable from 'effect/Inspectable';
 import type * as Monomer from '#disreact/core/Monomer.ts';
 
 export interface Hydrant extends Inspectable.Inspectable {
-  _tag  : 'Hydrant';
-  source: string;
-  props : any;
-  state : Record<string, Monomer.Encoded[]>;
+  _tag    : 'Hydrant';
+  endpoint: string;
+  props   : any;
+  state   : Record<string, Monomer.Encoded[]>;
+  data?   : any;
 };
 
 const Prototype = proto.type<Hydrant>({
@@ -19,7 +20,7 @@ const Prototype = proto.type<Hydrant>({
   toJSON() {
     return Inspectable.format({
       _id   : 'Hydrant',
-      source: this.source,
+      source: this.endpoint,
       props : this.props,
       state : this.state,
     });
@@ -28,13 +29,15 @@ const Prototype = proto.type<Hydrant>({
 
 export const empty = (source: string, props: any): Hydrant => {
   return proto.init(Prototype, {
-    source: source,
-    props : props,
-    state : {},
+    endpoint: source,
+    props   : props,
+    state   : {},
   });
 };
 
-export const add = (self: Hydrant, id: string, encoded: Monomer.Encoded[]): Hydrant => {
+export const hasEncodings = (self: Hydrant) => Object.keys(self.state).length > 0;
+
+export const addEncoding = (self: Hydrant, id: string, encoded: Monomer.Encoded[]): Hydrant => {
   if (id in self.state) {
     throw new Error();
   }
@@ -42,7 +45,7 @@ export const add = (self: Hydrant, id: string, encoded: Monomer.Encoded[]): Hydr
   return self;
 };
 
-export const get = (self: Hydrant, id: string): Monomer.Encoded[] | undefined => {
+export const getEncoding = (self: Hydrant, id: string): Monomer.Encoded[] | undefined => {
   if (id in self.state) {
     const encoded = self.state[id];
     delete self.state[id];
@@ -50,6 +53,11 @@ export const get = (self: Hydrant, id: string): Monomer.Encoded[] | undefined =>
   }
   return undefined;
 };
+
+export const clearEncoding = (self: Hydrant) => {
+  self.state = {};
+};
+
 
 export interface Endpoint extends Inspectable.Inspectable {
   _tag  : 'Endpoint';
@@ -72,6 +80,7 @@ const Endpoint = proto.type<Endpoint>({
 });
 
 export const endpoint = (type: FC.FC | Node.Node, id?: string): Endpoint => {
+  // todo clone
   if (typeof type === 'function') {
     const source = node.func(type, {});
 
