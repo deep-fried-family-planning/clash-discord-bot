@@ -1,4 +1,4 @@
-import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
+import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
@@ -85,7 +85,7 @@ const MemoPrototype = proto.type<Polymer.MemoMonomer>({
 
 const ContextPrototype = proto.type<Polymer.ContextMonomer>({
   ...BasePrototype,
-  _tag: MONOMER_CONTEXT,
+  _tag: MONOMER_CONTEXTUAL,
   toJSON() {
     return Inspectable.format({
       _id: 'Context',

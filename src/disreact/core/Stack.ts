@@ -4,15 +4,15 @@ import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
 import type * as Pipeable from 'effect/Pipeable';
-
-export interface Stack<A> extends Pipeable.Pipeable, Inspectable.Inspectable {
+import type * as Node from '#disreact/core/Node.ts';
+export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
   document: Document.Document;
   root    : A;
   values  : A[];
 }
 
 export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
-  stack.make(document, root);
+  stack.make(document, root as any);
 
 const while$ = <A>(self: Stack<A>) => stack.len(self) > 0;
 export {while$ as while};

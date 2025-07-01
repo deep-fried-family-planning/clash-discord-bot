@@ -93,13 +93,13 @@ export type PolymerState =
   | typeof POLYMER_STATE_COMMIT;
 
 export const
-  MONOMER_NONE    = 0 as const,
-  MONOMER_STATE   = 1 as const,
-  MONOMER_REDUCER   = 2 as const,
-  MONOMER_EFFECT  = 3 as const,
-  MONOMER_REF     = 4 as const,
-  MONOMER_MEMO    = 5 as const,
-  MONOMER_CONTEXT = 6 as const;
+  MONOMER_NONE       = 0 as const,
+  MONOMER_STATE      = 1 as const,
+  MONOMER_REDUCER    = 2 as const,
+  MONOMER_EFFECT     = 3 as const,
+  MONOMER_REF        = 4 as const,
+  MONOMER_MEMO       = 5 as const,
+  MONOMER_CONTEXTUAL = 6 as const;
 
 export type MonomerTag =
   | typeof MONOMER_NONE
@@ -108,7 +108,7 @@ export type MonomerTag =
   | typeof MONOMER_EFFECT
   | typeof MONOMER_REF
   | typeof MONOMER_MEMO
-  | typeof MONOMER_CONTEXT;
+  | typeof MONOMER_CONTEXTUAL;
 
 export const
   DOCUMENT_SYNTHESIZE = 1 as const,

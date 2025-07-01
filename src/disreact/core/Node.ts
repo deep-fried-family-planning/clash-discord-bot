@@ -22,14 +22,12 @@ export type Renderable = | Func;
 export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Document>, Lateral.Lateral<Node> {
   _tag     : NodeTag;
   children?: Node[] | undefined;
-  document : Document.Document;
-  polymer  : Polymer.Polymer;
   props    : any;
 }
 
 export interface Text extends Base {
-  _tag     : typeof TEXT_NODE;
-  component: string;
+  _tag: typeof TEXT_NODE;
+  text: string;
 }
 
 export interface List extends Base {
@@ -48,11 +46,22 @@ export interface Rest extends Base {
 export interface Func extends Base {
   _tag     : typeof FUNCTIONAL;
   component: FC.Known;
+  polymer  : Polymer.Polymer;
 }
 
 export const isElement = (node: Node): node is Exclude<Node, Renderable> => node._tag < FUNCTIONAL;
 
 export const isRenderable = (node: Node): node is Renderable => node._tag > INTRINSIC;
+
+export const make = (type: any, props: any): Node => {
+  const self = type.make(props);
+  self.props = props;
+  return self;
+};
+
+export const clone = (self: Node): Node => {
+  return self;
+};
 
 export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
   const right = Polymer.isChanged(self.polymer);
@@ -64,12 +73,10 @@ export const diffs = (self: Node, that: Node[]): Diffs.Diffs<Node> => {
 };
 
 export const initialize = (self: Node, document: Document.Document) => {
-  self.document = document;
   return self;
 };
 
 export const initializeEither = (self: Node, document: Document.Document): Either.Either<Renderable, Node> => {
-  self.document = document;
   if (isElement(self)) {
     return Either.left(self);
   }

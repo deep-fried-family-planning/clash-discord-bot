@@ -3,7 +3,7 @@ import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
 import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
-import {MONOMER_CONTEXT, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
+import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REF, MONOMER_STATE, POLYMER_STATE_MAKE, POLYMER_STRATEGY_INITIALIZE, POLYMER_STRATEGY_REHYDRATE, POLYMER_STRATEGY_STATELESS, type PolymerState, type PolymerStrategy} from '#src/disreact/core/primitives/constants.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as type from '#src/disreact/core/behaviors/type.ts';
 import * as Inspectable from 'effect/Inspectable';
@@ -43,7 +43,7 @@ export interface MemoMonomer {
 }
 
 export interface ContextMonomer {
-  _tag: typeof MONOMER_CONTEXT;
+  _tag: typeof MONOMER_CONTEXTUAL;
 }
 
 export type Mono = | NoneMonomer
@@ -81,7 +81,7 @@ const MemoPrototype = proto.type<MemoMonomer>({
 });
 
 const ContextPrototype = proto.type<ContextMonomer>({
-  _tag: MONOMER_CONTEXT,
+  _tag: MONOMER_CONTEXTUAL,
 });
 
 export const no = (): NoneMonomer => NonePrototype;

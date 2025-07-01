@@ -13,6 +13,7 @@ interface Base  {
 }
 
 export interface Known<A = any, B = Jsx.Children> extends Function, Base {
+  stateless: boolean;
   (props?: A): B | Promise<B> | E.Effect<B, any, any>;
 }
 

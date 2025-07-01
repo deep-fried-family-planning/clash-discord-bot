@@ -1,10 +1,10 @@
-import {props} from '#src/disreact/adaptor/adaptor/element.ts';
+import {props} from '#disreact/adaptor/adaptor/element.ts';
 import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
-import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
-import {ASYNC, DEV_STUB, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#src/disreact/core/primitives/constants.ts';
-import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import * as FC from '#src/disreact/core/primitives/fc.ts';
+import type * as Node from '#disreact/core/primitives/exp/nodev1.ts';
+import * as Polymer from '#disreact/core/primitives/polymer.ts';
+import {ASYNC, DEV_STUB, EFFECT, INTERNAL_ERROR, IS_DEV, SYNC} from '#disreact/core/primitives/constants.ts';
+import * as proto from '#disreact/core/behaviors/proto.ts';
+import * as FC from '#disreact/core/primitives/fc.ts';
 import * as Hooks from '#disreact/model/runtime/hooks.ts';
 import type * as Jsx from '#disreact/model/runtime/jsx.tsx';
 import * as Array from 'effect/Array';

@@ -5,7 +5,7 @@ import * as polymer from '#disreact/core/primitives/polymer.ts';
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import type { MONOMER_REDUCER} from '#src/disreact/core/primitives/constants.ts';
-import {type MONOMER_CONTEXT, type MONOMER_EFFECT, type MONOMER_MEMO, type MONOMER_NONE, type MONOMER_REF, MONOMER_STATE, type MonomerTag} from '#src/disreact/core/primitives/constants.ts';
+import {type MONOMER_CONTEXTUAL, type MONOMER_EFFECT, type MONOMER_MEMO, type MONOMER_NONE, type MONOMER_REF, MONOMER_STATE, type MonomerTag} from '#src/disreact/core/primitives/constants.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -70,10 +70,10 @@ export interface MemoMonomer extends BaseMonomer {
 export type MemoEncoded = [typeof MONOMER_MEMO, any[] | undefined];
 
 export interface ContextMonomer extends BaseMonomer {
-  _tag: typeof MONOMER_CONTEXT;
+  _tag: typeof MONOMER_CONTEXTUAL;
 }
 
-export type ContextEncoded = [typeof MONOMER_CONTEXT];
+export type ContextEncoded = [typeof MONOMER_CONTEXTUAL];
 
 export type Monomer = | NoneMonomer
                       | StateMonomer
@@ -144,6 +144,10 @@ export const isChanged = (self: Polymer): boolean => {
     }
   }
   return false; // todo
+};
+
+export const render = (self: Polymer): Polymer => {
+  return self;
 };
 
 export const invoke = (self: Polymer): E.Effect<Polymer> => {

@@ -5,6 +5,14 @@ import type * as Document from '#src/disreact/core/Document.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 
+const initializeNode = (node: Node.Node, document: Document.Document) => {
+  node.document = document;
+};
+
+const hydrateNode = (node: Node.Node, document: Document.Document) => {
+
+};
+
 export const initialize = (document: Document.Document) => {
   const stack = Stack.make(document, document.body);
 

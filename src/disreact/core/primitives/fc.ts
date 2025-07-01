@@ -7,7 +7,8 @@ export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
 export const isKnown = (u: FC.FC): u is FC.Known => !!(u as any)._tag;
 
 const Prototype = proto.type<FC.Known>({
-  _id: ANONYMOUS,
+  _id      : ANONYMOUS,
+  stateless: false,
 });
 
 export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
@@ -27,7 +28,7 @@ export const register = (fn: FC.FC): FC.Known => {
          : fc;
 };
 
-export const cast = (self: FC.FC, type: FCExecution) => {
+export const cast = (self: FC.Known, type: FCExecution) => {
   if (isCasted(self)) {
     throw new Error(`Cannot recast function component: ${name(self)}`);
   }

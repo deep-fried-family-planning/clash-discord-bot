@@ -22,15 +22,15 @@ const TextPrototype = proto.type<Node.Text>({
   toJSON() {
     return Inspectable.format({
       _id : 'Text',
-      text: this.component,
+      text: this.text,
     });
   },
 });
 
 export const text = (value: string): Node.Text =>
   proto.init(TextPrototype, {
-    _tag     : TEXT_NODE,
-    component: value,
+    _tag: TEXT_NODE,
+    text: value,
   });
 
 const ListPrototype = proto.type<Node.List>({
@@ -112,6 +112,17 @@ export const func = (component: FC.FC, props: any): Node.Func => {
     component: type,
     props    : props,
   });
+};
+
+export const make = (type: any, props: any): Node.Node => {
+  switch (typeof type) {
+    case 'object': {
+      return rest(type, props);
+    }
+    case 'function': {
+      return func(type, props);
+    }
+  }
 };
 
 const HandlerPrototype = proto.type<Event.PropsHandler>({

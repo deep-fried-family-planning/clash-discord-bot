@@ -5,6 +5,7 @@ import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
+import * as Deferred from 'effect/Deferred';
 
 export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspectable {
   _id      : string;
@@ -17,12 +18,11 @@ export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspec
   outstream: Mailbox.Mailbox<any>;
 }
 
-const makeOutstream = Mailbox.make();
-
-export const make = (body: Node.Node): E.Effect<Document> => E.map(makeOutstream, (outstream) => {
-  const self = document.make(body);
-  self.outstream = outstream;
-  return self;
-});
+export const make = (body: Node.Node): E.Effect<Document> =>
+  E.map(Mailbox.make(), (outstream) => {
+    const self = document.make(body);
+    self.outstream = outstream;
+    return self;
+  });
 
 export const getFlags = (self: Document) => document.getFlags(self);
