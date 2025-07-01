@@ -5,14 +5,62 @@ import type * as Document from '#src/disreact/core/Document.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as Polymer from '#disreact/core/Polymer.ts';
+import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
+import * as FC from '#disreact/core/FC.ts';
+
+const mutex  = E.unsafeMakeSemaphore(1),
+      lock   = mutex.take(1),
+      unlock = mutex.release(1);
+
+const render = (node: Node.Func) => {
+  const component = node.component;
+  const props = node.props;
+
+  if (component.stateless) {
+    return FC.renderStateless(component);
+  }
+  return lock.pipe(
+    E.tap(() => {
+      Hooks.active.polymer = node.polymer;
+    }),
+    E.andThen(FC.render(component, props)),
+    E.tap(() => {
+      Polymer.commit(node.polymer);
+      Hooks.active.polymer = undefined;
+      return unlock;
+    }),
+  );
+};
+
+const renderIntoSelf = (node: Node.Func) => {
+  const component = node.component;
+  const props = node.props;
+
+  if (component.stateless) {
+    return FC.renderStateless(component);
+  }
+  return lock.pipe(
+    E.tap(() => {
+      Hooks.active.polymer = node.polymer;
+    }),
+    E.andThen(FC.render(component, props)),
+    E.tap(() => {
+      Polymer.commit(node.polymer);
+      Hooks.active.polymer = undefined;
+      return unlock;
+    }),
+  );
+};
 
 const initializeNode = (node: Node.Func, document: Document.Document) => {
   node.polymer = Polymer.mount(node, document);
-  return node;
+  return pipe(
+
+  );
 };
 
 const hydrateNode = (node: Node.Func, document: Document.Document) => {
-
+  return render(node);
 };
 
 export const initialize = (document: Document.Document) => {
@@ -28,9 +76,9 @@ export const initialize = (document: Document.Document) => {
         Stack.pushAll(stack, node.children?.toReversed());
         return E.void;
       }
+      node.polymer = Polymer.mount(node, document);
       return pipe(
-
-        E.void,
+        render(node),
       );
     },
   }).pipe(E.as(document));

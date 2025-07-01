@@ -2,53 +2,57 @@ import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as document from '#disreact/core/primitives/document.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
 
-export const UseInteraction = (self: Polymer.Polymer) => (interaction: any) => {
-  const monomer = polymer.none();
-
-  return self.document.interaction;
+type ActivePolymer = {
+  polymer: Polymer.Polymer;
 };
 
-export const UseState = (self: Polymer.Polymer) => (initial: any) => {
+export const UseInteraction = (self: ActivePolymer) => (interaction: any) => {
+  const monomer = polymer.none();
+
+  return self.polymer.document.interaction;
+};
+
+export const UseState = (self: ActivePolymer) => (initial: any) => {
   const monomer = polymer.state(initial);
 
   return [monomer.state, monomer.updater];
 };
 
-export const UseReducer = (self: Polymer.Polymer) => (initial: any, reducer: any) => {
+export const UseReducer = (self: ActivePolymer) => (initial: any, reducer: any) => {
   const monomer = polymer.reducer(initial, reducer);
 
   return [monomer.state, monomer.reducer];
 };
 
-export const UseEffect = (self: Polymer.Polymer) => (effect: any, deps?: any[]) => {
+export const UseEffect = (self: ActivePolymer) => (effect: any, deps?: any[]) => {
   const monomer = polymer.effect(effect, deps);
 };
 
-export const UseRef = (self: Polymer.Polymer) => (initial: any) => {
+export const UseRef = (self: ActivePolymer) => (initial: any) => {
   const monomer = polymer.ref(initial);
 
   return monomer;
 };
 
-export const UseMemo = (self: Polymer.Polymer) => (fn:() => any, deps?: any[]) => {
+export const UseMemo = (self: ActivePolymer) => (fn:() => any, deps?: any[]) => {
   const monomer = polymer.memo(fn(), deps);
 
   return monomer.value;
 };
 
-export const UseCallback = (self: Polymer.Polymer) => (fn: () => any, deps?: any[]) => {
+export const UseCallback = (self: ActivePolymer) => (fn: () => any, deps?: any[]) => {
   const monomer = polymer.memo(fn, deps);
 
   return monomer.value;
 };
 
-export const UseContext = (self: Polymer.Polymer) => (context: any) => {
+export const UseContext = (self:ActivePolymer) => (context: any) => {
   const monomer = polymer.context();
 
   return monomer.value;
 };
 
-export const getHooks = (self: Polymer.Polymer) => {
+export const getHooks = (self: ActivePolymer) => {
   return {
     useInteraction: UseInteraction(self),
     useState      : UseState(self),
@@ -63,5 +67,6 @@ export const getHooks = (self: Polymer.Polymer) => {
 
 export const active = {
   polymer: undefined as undefined | Polymer.Polymer,
-  hooks  : undefined as unknown as ReturnType<typeof getHooks>,
 };
+
+export const hooks = getHooks(active as ActivePolymer);

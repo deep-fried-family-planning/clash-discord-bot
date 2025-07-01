@@ -64,7 +64,7 @@ export const clone = (self: Node): Node => {
   return self;
 };
 
-export const connectRendered = (self: Node) => {
+export const connectRendered = (self: Node, children: any) => {
   if (!self.children) {
 
   }

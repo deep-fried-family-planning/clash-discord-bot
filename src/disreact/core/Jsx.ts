@@ -1,5 +1,5 @@
 import type * as Node from '#disreact/core/Node.ts';
-import * as node from '#disreact/core/primitives/node.ts';
+import * as internal from '#disreact/core/primitives/node.ts';
 import type * as FC from '#disreact/core/FC.ts';
 
 export type Text = | undefined
@@ -18,46 +18,42 @@ export type Jsx = Node.Node;
 
 const makeChild = (type: any): Jsx => {
   if (!type || typeof type !== 'object') {
-    return node.text(type);
+    return internal.text(type);
   }
   if (type._tag) {
     return type;
   }
-  return node.list(type);
+  return internal.list(type);
 };
 
 
-export const Fragment = node.FragmentTag;
+export const Fragment = internal.FragmentTag;
 
-export const jsx = (type: any, attributes: any): Jsx => {
-  const props = node.props(attributes);
-
+export const jsx = (type: any, props: any): Jsx => {
   if (type === Fragment) {
-    return node.frag(props.children);
+    return internal.frag(props.children);
   }
   switch (typeof type) {
     case 'string': {
-      return node.rest(type, props);
+      return internal.rest(type, props);
     }
     case 'function': {
-      return node.func(type, props);
+      return internal.func(type, props);
     }
   }
   throw new Error(`Invalid type: ${type}`);
 };
 
-export const jsxs = (type: any, attributes: any): Jsx => {
-  const props = node.props(attributes);
-
+export const jsxs = (type: any, props: any): Jsx => {
   if (type === Fragment) {
-    return node.frag(props.children);
+    return internal.frag(props.children);
   }
   switch (typeof type) {
     case 'string': {
-      return node.rest(type, props);
+      return internal.rest(type, props);
     }
     case 'function': {
-      return node.func(type, props);
+      return internal.func(type, props);
     }
   }
   throw new Error(`Invalid type: ${type}`);

@@ -1,124 +1,62 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
+import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
+import * as Monomer from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import { MONOMER_REDUCER} from '#src/disreact/core/primitives/constants.ts';
-import {type MONOMER_CONTEXTUAL, type MONOMER_EFFECT, type MONOMER_MEMO, type MONOMER_NONE, type MONOMER_REF, MONOMER_STATE, type MonomerTag} from '#src/disreact/core/primitives/constants.ts';
+import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
 import * as P from 'effect/Predicate';
 
-export interface BaseMonomer extends Pipeable.Pipeable, Inspectable.Inspectable {
-  _tag    : MonomerTag;
-  hydrate?: boolean;
-  changed?: boolean;
-  state?  : any;
-  deps?   : any[] | undefined;
-  effect? : EffectFn;
-  current?: any;
-  value?  : any;
-}
-
-export interface NoneMonomer extends BaseMonomer {
-  _tag: typeof MONOMER_NONE;
-}
-
-export type NoneEncoded = [typeof MONOMER_NONE];
-
-export interface StateMonomer extends BaseMonomer {
-  _tag   : typeof MONOMER_STATE;
-  changed: boolean;
-  state  : any;
-  updater(next: any): void;
-}
-
-export type StateEncoded = [typeof MONOMER_STATE, any];
-
-export interface ReducerMonomer extends BaseMonomer {
-  _tag   : typeof MONOMER_REDUCER;
-  changed: boolean;
-  state  : any;
-  reducer(state: any, action: any): any;
-}
-
-export type ReducerEncoded = [typeof MONOMER_STATE, any];
-
-export interface EffectMonomer extends BaseMonomer {
-  _tag: typeof MONOMER_EFFECT;
-  deps: any[] | undefined;
-  effect(): EffectOutput;
-}
-
-export type EffectEncoded = [typeof MONOMER_EFFECT, any[] | undefined];
-
-export interface RefMonomer extends BaseMonomer {
-  _tag   : typeof MONOMER_REF;
-  current: any;
-}
-
-export type RefEncoded = [typeof MONOMER_REF, any];
-
-export interface MemoMonomer extends BaseMonomer {
-  _tag : typeof MONOMER_MEMO;
-  value: any;
-  deps : any[] | undefined;
-}
-
-export type MemoEncoded = [typeof MONOMER_MEMO, any[] | undefined];
-
-export interface ContextMonomer extends BaseMonomer {
-  _tag: typeof MONOMER_CONTEXTUAL;
-}
-
-export type ContextEncoded = [typeof MONOMER_CONTEXTUAL];
-
-export type Monomer = | NoneMonomer
-                      | StateMonomer
-                      | ReducerMonomer
-                      | EffectMonomer
-                      | RefMonomer
-                      | MemoMonomer
-                      | ContextMonomer;
-
-export type Encoded = | NoneEncoded
-                      | StateEncoded
-                      | ReducerEncoded
-                      | EffectEncoded
-                      | RefEncoded
-                      | MemoEncoded
-                      | ContextEncoded;
-
 export type EffectOutput = | void
                            | Promise<void>
                            | E.Effect<void>;
 
-export type EffectFn = () => EffectOutput;
+export type Effectful = E.Effect<void>;
+
+export interface EffectFn {
+  (): EffectOutput;
+}
+
+export type Effect = | EffectFn
+                     | E.Effect<void>;
 
 export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage, Lateral.Lateral {
   document: Document.Document;
   node    : Node.Func;
   pc      : number;
   rc      : number;
-  stack   : Monomer[];
-  queue   : EffectMonomer[];
+  stack   : Monomer.Monomer[];
+  queue   : Monomer.Effect[];
 }
 
 export const mount = (node: Node.Func, document: Document.Document): Polymer => {
-  const self    = polymer.empty();
-  self.node     = node;
+  const self = polymer.empty();
+  self.node = node;
   self.document = document;
   return self;
 };
 
-export const hydrate = (node: Node.Node, stack: Encoded[]): Polymer => {
+export const hydrate = (node: Node.Node, stack: Monomer.Encoded[]): Polymer => {
+  const monomers = [] as Monomer.Monomer[];
+  for (let i = 0; i < stack.length; i++) {
+    const monomer = Monomer.hydrateMonomer(stack[i]);
+    monomers.push(monomer);
+  }
   return polymer.empty();
 };
 
-export const dehydrate = (self: Polymer): Encoded[] => {
-  return [];
+export const dehydrate = (self: Polymer): Monomer.Encoded[] => {
+  const encoded = [] as Monomer.Encoded[];
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+    encoded.push(dehydrateMonomer(monomer));
+  }
+  return encoded;
 };
 
 export const dispose = (self: Polymer) => {
@@ -126,7 +64,7 @@ export const dispose = (self: Polymer) => {
     throw new Error();
   }
   (self as any).document = undefined;
-  (self as any).node     = undefined;
+  (self as any).node = undefined;
 };
 
 export const commit = (self: Polymer): Polymer => {
@@ -140,14 +78,8 @@ export const commit = (self: Polymer): Polymer => {
 
 export const isChanged = (self: Polymer): boolean => {
   for (let i = 0; i < self.stack.length; i++) {
-    const monomer = self.stack[i];
-    switch (monomer._tag) {
-      case MONOMER_STATE:
-      case MONOMER_REDUCER: {
-        if (monomer.changed) {
-          return true;
-        }
-      }
+    if (Monomer.isChanged(self.stack[i])) {
+      return true;
     }
   }
   return false; // todo
@@ -165,7 +97,7 @@ export const invoke = (self: Polymer): E.Effect<Polymer> => {
     while: (p) => p.queue.length > 0,
     body : (p) => {
       const monomer = p.queue.shift()!;
-      const effect  = monomer.effect;
+      const effect = monomer.fn!;
 
       if (proto.isAsync(effect)) {
         return E.promise(() => effect()).pipe(E.as(p));

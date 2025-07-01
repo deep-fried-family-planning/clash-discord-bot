@@ -61,11 +61,7 @@ export const markStateless = (self: Known): Known => {
   return self;
 };
 
-export const renderStateless = (self: Known): E.Effect<any> => {
-
-};
-
-export const renderFirst = (self: Known, props: any): E.Effect<any> => {
+export const render = (self: Known, props: any): E.Effect<any> => {
   switch (self._tag) {
     case SYNC: {
       return E.sync(() => self(props));
@@ -74,7 +70,7 @@ export const renderFirst = (self: Known, props: any): E.Effect<any> => {
       return E.promise(() => self(props) as Promise<any>);
     }
     case EFFECT: {
-      return self(props) as E.Effect<any>;
+      return E.suspend(() => self(props) as E.Effect<any>);
     }
   }
   return E.suspend(() => {
@@ -93,7 +89,54 @@ export const renderFirst = (self: Known, props: any): E.Effect<any> => {
   });
 };
 
-export const render = dual<
-  (props: any) => (self: Known) => E.Effect<any>,
-  typeof renderFirst
->(2, renderFirst);
+export const renderStateless = (self: Known): E.Effect<any> => {
+  switch (self._tag) {
+    case SYNC: {
+      return E.sync(self);
+    }
+    case ASYNC: {
+      return E.promise(self as () => Promise<any>);
+    }
+    case EFFECT: {
+      return E.suspend(self) as E.Effect<any>;
+    }
+  }
+  return E.sync(self).pipe(E.flatMap((out) => {
+    if (P.isPromise(out)) {
+      self._tag = ASYNC;
+      return E.promise(() => out);
+    }
+    if (E.isEffect(out)) {
+      self._tag = EFFECT;
+      return out as E.Effect<any>;
+    }
+    self._tag = SYNC;
+    return E.succeed(out);
+  }));
+};
+
+export const renderUsing = (self: Known, props: any, hooks: any) => {
+    switch (self._tag) {
+    case SYNC: {
+      return E.sync(self);
+    }
+    case ASYNC: {
+      return E.promise(self as () => Promise<any>);
+    }
+    case EFFECT: {
+      return E.suspend(self) as E.Effect<any>;
+    }
+  }
+  return E.sync(self).pipe(E.flatMap((out) => {
+    if (P.isPromise(out)) {
+      self._tag = ASYNC;
+      return E.promise(() => out);
+    }
+    if (E.isEffect(out)) {
+      self._tag = EFFECT;
+      return out as E.Effect<any>;
+    }
+    self._tag = SYNC;
+    return E.succeed(out);
+  }));
+};

@@ -1,17 +1,17 @@
 import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
 
-export const useInteraction = Hooks.active.hooks.useInteraction;
+export const useInteraction = Hooks.hooks.useInteraction;
 
-export const useState = Hooks.active.hooks.useState;
+export const useState = Hooks.hooks.useState;
 
-export const useReducer = Hooks.active.hooks.useReducer;
+export const useReducer = Hooks.hooks.useReducer;
 
-export const useEffect = Hooks.active.hooks.useEffect;
+export const useEffect = Hooks.hooks.useEffect;
 
-export const useRef = Hooks.active.hooks.useRef;
+export const useRef = Hooks.hooks.useRef;
 
-export const useMemo = Hooks.active.hooks.useMemo;
+export const useMemo = Hooks.hooks.useMemo;
 
-export const useCallback = Hooks.active.hooks.useCallback;
+export const useCallback = Hooks.hooks.useCallback;
 
-export const useContext = Hooks.active.hooks.useContext;
+export const useContext = Hooks.hooks.useContext;
