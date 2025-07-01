@@ -15,7 +15,9 @@ const Prototype = proto.type<Document.Document>({
   },
 });
 
-export const make = (root: Node.Node) =>
+export const make = (
+  root: Node.Node,
+) =>
   proto.init(Prototype, {
     body : root,
     flags: new Set(),

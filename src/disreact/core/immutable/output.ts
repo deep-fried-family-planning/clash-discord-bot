@@ -1,4 +1,4 @@
-import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import * as proto from '#disreact/core/behaviors/proto.ts';
 
 export const PART = 1,
              SAME = 2,

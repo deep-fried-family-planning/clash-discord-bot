@@ -1,6 +1,6 @@
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as FC from '#disreact/core/FC.ts';
-import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
+import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
 import * as Inspectable from 'effect/Inspectable';
 
 export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';

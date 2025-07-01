@@ -1,7 +1,7 @@
 import * as FC from '#disreact/core/FC.ts';
 import * as Node from '#disreact/core/Node.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
-import {noop} from '#disreact/core/primitives/constants.ts';
+import {noop} from '#disreact/core/immutable/constants.ts';
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 import type * as Document from '#disreact/core/Document.ts';

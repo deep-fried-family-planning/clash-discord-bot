@@ -1,6 +1,6 @@
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
+import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
+import type * as Polymer from '#disreact/core/internal/polymer.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import {dual, pipe} from 'effect/Function';

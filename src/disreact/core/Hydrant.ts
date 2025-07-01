@@ -2,8 +2,8 @@ import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
-import * as fc from '#disreact/core/primitives/fc.ts';
-import * as node from '#disreact/core/primitives/node.ts';
+import * as fc from '#disreact/core/internal/fc.ts';
+import * as node from '#disreact/core/internal/node.ts';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Monomer from '#disreact/core/Monomer.ts';
 

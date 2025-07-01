@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
 import type * as Element from '#src/disreact/adaptor/adaptor/element.ts';
-import type * as FC from '#src/disreact/core/primitives/fc.ts';
+import type * as FC from '#disreact/core/internal/fc.ts';
 import {Rehydrator} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
 import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
 import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';

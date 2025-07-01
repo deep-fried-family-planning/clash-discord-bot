@@ -1,6 +1,6 @@
-import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import type * as Node from '#disreact/core/primitives/exp/nodev1.ts';
-import {INTERNAL_ERROR, IS_DEV} from '#disreact/core/primitives/constants.ts';
+import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
+import type * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#disreact/core/immutable/constants.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Either from 'effect/Either';
 import {dual} from 'effect/Function';

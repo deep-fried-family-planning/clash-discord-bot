@@ -1,12 +1,12 @@
+import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
+import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
-import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
 import * as Monomer from '#disreact/core/Monomer.ts';
+import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
-import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
-import * as polymer from '#disreact/core/primitives/polymer.ts';
-import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
+import {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
+import * as polymer from '#disreact/core/internal/polymer.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -34,12 +34,7 @@ export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lin
   queue   : Monomer.Effectful[];
 }
 
-export const empty = (node: Node.Func, document: Document.Document): Polymer => {
-  const self = polymer.empty();
-  self.node = node;
-  self.document = document;
-  return self;
-};
+export const empty = (node: Node.Func, document: Document.Document): Polymer => polymer.empty(node, document);
 
 export const hydrate = (node: Node.Func, document: Document.Document, stack?: Monomer.Encoded[]): Polymer => {
   const self = empty(node, document);
@@ -65,8 +60,10 @@ export const dispose = (self: Polymer) => {
   if (self.queue.length) {
     throw new Error();
   }
-  (self as any).document = undefined;
-  (self as any).node = undefined;
+  (self.document as any) = undefined;
+  (self.node as any) = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
 };
 
 export const commit = (self: Polymer): Polymer => {

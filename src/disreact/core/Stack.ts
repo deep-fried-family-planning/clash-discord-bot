@@ -1,5 +1,5 @@
 import type * as Document from '#disreact/core/Document.ts';
-import * as stack from '#disreact/core/primitives/stack.ts';
+import * as stack from '#disreact/core/internal/stack.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';

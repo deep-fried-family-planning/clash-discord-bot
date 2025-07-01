@@ -1,5 +1,5 @@
-import {INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
-import type * as Diff from '#src/disreact/core/primitives/diff.ts';
+import {INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
+import type * as Diff from '#disreact/core/immutable/diff.ts';
 
 export const symbol = Symbol.for('disreact/Diffable');
 

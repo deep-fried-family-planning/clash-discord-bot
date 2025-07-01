@@ -1,6 +1,6 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as node from '#disreact/core/primitives/node.ts';
-import type {HandlerId} from '#disreact/core/primitives/node.ts';
+import type * as node from '#disreact/core/internal/node.ts';
+import type {HandlerId} from '#disreact/core/internal/node.ts';
 import * as E from 'effect/Effect';
 import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';

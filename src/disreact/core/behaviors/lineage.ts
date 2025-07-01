@@ -1,4 +1,4 @@
-import {INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
+import {INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as type from '#src/disreact/core/behaviors/type.ts';
 import * as Eq from 'effect/Equal';

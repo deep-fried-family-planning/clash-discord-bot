@@ -1,5 +1,5 @@
-import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import type * as Node from '#disreact/core/primitives/exp/nodev1.ts';
+import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
+import type * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
 import * as Jsx from '#disreact/adaptor/model/runtime/jsx.tsx';
 import * as Cache from 'effect/Cache';
 import * as Duration from 'effect/Duration';

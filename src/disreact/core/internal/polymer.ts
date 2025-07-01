@@ -38,3 +38,12 @@ export const push = (self: Polymer.Polymer, monomer: Monomer.Monomer) => {
 export const pull = (self: Polymer.Polymer): Monomer.Monomer | undefined => {
   return self.stack.at(self.pc);
 };
+
+export const advance = (self: Polymer.Polymer): Polymer.Polymer => {
+  self.pc++;
+  return self;
+};
+
+export const pop = (self: Polymer.Polymer): Monomer.Effectful => {
+  return self.queue.shift()!;
+};

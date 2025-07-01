@@ -1,7 +1,7 @@
-import {INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
-import type * as Document from '#disreact/core/primitives/exp/documentold.ts';
-import type * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
-import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
+import {INTERNAL_ERROR, IS_DEV} from '#disreact/core/immutable/constants.ts';
+import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
+import type * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
+import * as Polymer from '#disreact/core/internal/polymer.ts';
 
 export let node     = undefined as undefined | Node.Nodev1,
            polymer  = undefined as undefined | Polymer.Polymer,

@@ -1,7 +1,7 @@
 import type * as Declarations from '#src/disreact/adaptor/codec/old/declarations.ts';
 import type * as FC from '#src/disreact/adaptor/codec/fc.ts';
 import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
-import * as Polymer from '#src/disreact/core/primitives/polymer.ts';
+import * as Polymer from '#disreact/core/internal/polymer.ts';
 import * as Proto from '#src/disreact/core/behaviors/proto.ts';
 import type {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Pipeable from 'effect/Pipeable';

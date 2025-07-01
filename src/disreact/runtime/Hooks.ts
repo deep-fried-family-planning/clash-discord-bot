@@ -1,6 +1,6 @@
 import type * as Polymer from '#disreact/core/Polymer.ts';
-import * as document from '#disreact/core/primitives/document.ts';
-import * as polymer from '#disreact/core/primitives/polymer.ts';
+import * as document from '#disreact/core/internal/document.ts';
+import * as polymer from '#disreact/core/internal/polymer.ts';
 
 type ActivePolymer = {
   polymer: Polymer.Polymer;

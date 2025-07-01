@@ -1,6 +1,6 @@
 import * as Deps from '#src/disreact/adaptor/codec/old/deps.ts';
-import * as FC from '#src/disreact/core/primitives/fc.ts';
-import type * as Polymer from '#src/disreact/core/primitives/polymer.ts';
+import * as FC from '#disreact/core/internal/fc.ts';
+import type * as Polymer from '#disreact/core/internal/polymer.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Array from 'effect/Array';
 import type * as E from 'effect/Effect';

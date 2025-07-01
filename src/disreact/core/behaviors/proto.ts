@@ -1,4 +1,4 @@
-import {DEV_STUB, INTERNAL_ERROR, IS_DEV} from '#src/disreact/core/primitives/constants.ts';
+import {DEV_STUB, INTERNAL_ERROR, IS_DEV} from '#disreact/core/immutable/constants.ts';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
