@@ -1,10 +1,10 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/engine/entity/Document.ts';
-import {dehydrateMonomer} from '#disreact/engine/entity/Monomer.ts';
-import * as Monomer from '#disreact/engine/entity/Monomer.ts';
-import type * as Node from '#disreact/engine/entity/Node.ts';
-import * as polymer from '#disreact/core/primitives/polymer.ts';
+import type * as Document from '#disreact/core/Document.ts';
+import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
+import * as Monomer from '#disreact/core/Monomer.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
+import * as polymer from '#disreact/core/primitives/polymer.ts';
 import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
 import * as E from 'effect/Effect';

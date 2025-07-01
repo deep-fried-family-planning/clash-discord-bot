@@ -1,6 +1,6 @@
-import type * as Node from '#disreact/engine/entity/Node.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import * as internal from '#disreact/core/primitives/node.ts';
-import type * as FC from '#disreact/engine/entity/FC.ts';
+import type * as FC from '#disreact/core/FC.ts';
 
 export type Text = | undefined
                    | null

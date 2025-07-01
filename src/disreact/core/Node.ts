@@ -1,8 +1,8 @@
 import * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import type * as Document from '#disreact/engine/entity/Document.ts';
-import type * as FC from '#disreact/engine/entity/FC.ts';
-import * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import type * as Document from '#disreact/core/Document.ts';
+import type * as FC from '#disreact/core/FC.ts';
+import * as Polymer from '#disreact/core/Polymer.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#disreact/core/primitives/constants.ts';
 import * as Diff from '#disreact/core/primitives/diff.ts';
 import * as Diffs from '#disreact/core/primitives/diffs.ts';

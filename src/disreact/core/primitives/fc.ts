@@ -1,5 +1,5 @@
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import type * as FC from '#disreact/engine/entity/FC.ts';
+import type * as FC from '#disreact/core/FC.ts';
 import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
 import * as Inspectable from 'effect/Inspectable';
 

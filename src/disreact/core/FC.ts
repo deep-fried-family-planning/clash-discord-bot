@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/primitives/constants.ts';
 import * as internal from '#disreact/core/primitives/fc.ts';
-import type {FCA} from 'disreact';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';

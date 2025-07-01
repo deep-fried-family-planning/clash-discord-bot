@@ -1,16 +1,17 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as FC from '#disreact/engine/entity/FC.ts';
-import type * as Node from '#disreact/engine/entity/Node.ts';
-import type * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import type * as FC from '#disreact/core/FC.ts';
+import type * as Node from '#disreact/core/Node.ts';
+import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as fc from '#disreact/core/primitives/fc.ts';
 import * as node from '#disreact/core/primitives/node.ts';
 import * as Inspectable from 'effect/Inspectable';
+import type * as Monomer from '#disreact/core/Monomer.ts';
 
 export interface Hydrant extends Inspectable.Inspectable {
   _tag  : 'Hydrant';
   source: string;
   props : any;
-  state : Record<string, Polymer.Encoded[]>;
+  state : Record<string, Monomer.Encoded[]>;
 };
 
 const Prototype = proto.type<Hydrant>({
@@ -34,7 +35,7 @@ export const empty = (source: string, props: any): Hydrant => {
   });
 };
 
-export const add = (self: Hydrant, id: string, encoded: Polymer.Encoded[]): Hydrant => {
+export const add = (self: Hydrant, id: string, encoded: Monomer.Encoded[]): Hydrant => {
   if (id in self.state) {
     throw new Error();
   }
@@ -42,7 +43,7 @@ export const add = (self: Hydrant, id: string, encoded: Polymer.Encoded[]): Hydr
   return self;
 };
 
-export const get = (self: Hydrant, id: string): Polymer.Encoded[] | undefined => {
+export const get = (self: Hydrant, id: string): Monomer.Encoded[] | undefined => {
   if (id in self.state) {
     const encoded = self.state[id];
     delete self.state[id];

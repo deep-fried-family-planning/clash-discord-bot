@@ -1,10 +1,10 @@
-import * as FC from '#disreact/engine/entity/FC.ts';
-import * as Node from '#disreact/engine/entity/Node.ts';
-import * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import * as FC from '#disreact/core/FC.ts';
+import * as Node from '#disreact/core/Node.ts';
+import * as Polymer from '#disreact/core/Polymer.ts';
 import {noop} from '#disreact/core/primitives/constants.ts';
-import * as Stack from '#disreact/engine/Stack.ts';
+import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
-import type * as Document from '#disreact/engine/entity/Document.ts';
+import type * as Document from '#disreact/core/Document.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 

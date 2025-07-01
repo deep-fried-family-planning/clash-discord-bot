@@ -1,9 +1,9 @@
-import type * as Event from '#disreact/engine/entity/Event.ts';
+import type * as Event from '#disreact/core/Event.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import type * as FC from '#disreact/engine/entity/FC.ts';
-import type * as Node from '#disreact/engine/entity/Node.ts';
+import type * as FC from '#disreact/core/FC.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
 import * as fc from '#src/disreact/core/primitives/fc.ts';
 import * as Equal from 'effect/Equal';
