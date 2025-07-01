@@ -1,7 +1,5 @@
 import * as S from 'effect/Schema';
 
-
-
 export const Hydrant = S.Struct({
   _tag : S.tag('Hydrant'),
   id   : S.String,

@@ -1,7 +1,7 @@
 import {Codec} from '#disreact/engine/Codec.ts';
 import {Rehydrator} from '#disreact/engine/Rehydrator.ts';
 import * as E from 'effect/Effect';
-import * as Hydrant from '#disreact/core/Hydrant.ts';
+import * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
 
 export class Engine extends E.Service<Engine>()('disreact/Engine', {
   effect: E.gen(function* () {

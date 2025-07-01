@@ -1,5 +1,5 @@
-import {DocumentCodec} from '#src/disreact/model/DocumentCodec.ts';
-import * as Node from '#src/disreact/core/primitives/exp/nodev1.ts';
+import {DocumentCodec} from '#disreact/adaptor/model/DocumentCodec.ts';
+import * as Node from '#disreact/core/primitives/exp/nodev1.ts';
 import * as Stack from '#disreact/core/primitives/exp/Stack.ts';
 import {Rehydrator} from '#disreact/engine/Rehydrator.ts';
 import * as Cause from 'effect/Cause';

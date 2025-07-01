@@ -1,11 +1,12 @@
-import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
-import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type * as Document from '#src/disreact/core/Document.ts';
-import type * as FC from '#src/disreact/core/FC.ts';
-import * as Polymer from '#src/disreact/core/Polymer.ts';
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
-import * as Diff from '#src/disreact/core/primitives/diff.ts';
-import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
+import * as Lateral from '#disreact/core/behaviors/lateral.ts';
+import * as Lineage from '#disreact/core/behaviors/lineage.ts';
+import type * as Document from '#disreact/engine/entity/Document.ts';
+import type * as FC from '#disreact/engine/entity/FC.ts';
+import * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#disreact/core/primitives/constants.ts';
+import * as Diff from '#disreact/core/primitives/diff.ts';
+import * as Diffs from '#disreact/core/primitives/diffs.ts';
+import * as internal from '#disreact/core/primitives/node.ts';
 import * as Equal from 'effect/Equal';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -24,6 +25,12 @@ export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineag
   source?  : string;
   children?: Node[] | undefined;
   props    : any;
+  t        : string;
+  s        : string;
+  i        : number;
+  p        : number;
+  d        : number;
+  n        : string;
 }
 
 export interface Text extends Base {
@@ -64,19 +71,57 @@ export const clone = (self: Node): Node => {
   return self;
 };
 
-export const connectRendered = (self: Node, children: any) => {
-  if (!self.children) {
+export const trie = (self: Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
 
+export const step = (self: Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
+
+export const connectSingleRendered = (self: Node, child: any): Node[] => {
+  if (!child._tag) {
+    if (typeof child !== 'object') {
+      child = internal.text(child);
+    }
   }
+  Lineage.set(child, self);
+  (child as Node).d = self.d + 1;
+  (child as Node).p = self.p;
+  (child as Node).t = `${self.t}:${trie(child)}`;
+  (child as Node).s = `${self.s}:${step(child)}`;
+  return [child];
+};
+
+export const connectAllRendered = (self: Node, children: any[]): Node[] => {
+  const depth = self.d + 1;
+  const name = step(self);
+
+  for (let i = 0; i < children.length; i++) {
+    if (!children[i]._tag) {
+      if (typeof children[i] !== 'object') {
+        children[i] = internal.text(children[i]);
+      }
+      else {
+        children[i] = internal.list(children[i]);
+      }
+    }
+    const child = children[i] as Node;
+    Lineage.set(child, self);
+    if (children[i - 1]) {
+      Lateral.setTail(child, children[i - 1]);
+      Lateral.setHead(children[i - 1], child);
+    }
+    child.d = depth;
+    child.i = i;
+    child.p = self.p;
+    child.t = `${self.t}:${trie(child)}`;
+    child.s = `${name}:${step(child)}`;
+  }
+  return children;
 };
 
 export const connect = (self: Node) => {
   if (!self.children) {
     return self;
   }
-  for (let i = 0; i < self.children.length; i++) {
-
-  }
+  self.children = connectAllRendered(self, self.children);
   return self;
 };
 
@@ -172,8 +217,4 @@ export const lca = (ns: Renderable[]): Option.Option<Renderable> => {
   }
 
   return Option.none();
-};
-
-export const invoke = (self: Rest, event: Document.Document) => {
-
 };

@@ -1,4 +1,4 @@
-import type * as Polymer from '#disreact/core/Polymer.ts';
+import type * as Polymer from '#disreact/engine/entity/Polymer.ts';
 import * as document from '#disreact/core/primitives/document.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
 

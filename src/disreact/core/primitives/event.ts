@@ -1,4 +1,4 @@
-import type * as Event from '#disreact/core/Event.ts';
+import type * as Event from '#disreact/engine/entity/Event.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';

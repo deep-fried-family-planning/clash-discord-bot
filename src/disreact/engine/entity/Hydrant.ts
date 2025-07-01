@@ -1,9 +1,9 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as FC from '#src/disreact/core/FC.ts';
-import type * as Node from '#src/disreact/core/Node.ts';
-import type * as Polymer from '#src/disreact/core/Polymer.ts';
-import * as fc from '#src/disreact/core/primitives/fc.ts';
-import * as node from '#src/disreact/core/primitives/node.ts';
+import type * as FC from '#disreact/engine/entity/FC.ts';
+import type * as Node from '#disreact/engine/entity/Node.ts';
+import type * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import * as fc from '#disreact/core/primitives/fc.ts';
+import * as node from '#disreact/core/primitives/node.ts';
 import * as Inspectable from 'effect/Inspectable';
 
 export interface Hydrant extends Inspectable.Inspectable {

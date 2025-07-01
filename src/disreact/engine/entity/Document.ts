@@ -1,12 +1,12 @@
-import type * as Event from '#disreact/core/Event.ts';
-import type * as Hydrant from '#disreact/core/Hydrant.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Event from '#disreact/engine/entity/Event.ts';
+import type * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
+import type * as Node from '#disreact/engine/entity/Node.ts';
 import * as document from '#disreact/core/primitives/document.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
-import * as Deferred from 'effect/Deferred';
+import type * as Deferred from 'effect/Deferred';
 
 export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspectable {
   _id        : string;
@@ -19,6 +19,7 @@ export interface Document<A = any> extends Pipeable.Pipeable, Inspectable.Inspec
   outstream  : Mailbox.Mailbox<any>;
   endpoint   : Hydrant.Endpoint;
   hydrant    : Hydrant.Hydrant;
+  deferred   : Deferred.Deferred<any>;
 }
 
 export const make = (body: Node.Node): E.Effect<Document> =>

@@ -1,12 +1,12 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/core/Document.ts';
-import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
-import * as Monomer from '#disreact/core/Monomer.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Document from '#disreact/engine/entity/Document.ts';
+import {dehydrateMonomer} from '#disreact/engine/entity/Monomer.ts';
+import * as Monomer from '#disreact/engine/entity/Monomer.ts';
+import type * as Node from '#disreact/engine/entity/Node.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
-import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
-import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#src/disreact/core/primitives/constants.ts';
+import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
+import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
+import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/primitives/constants.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -31,23 +31,25 @@ export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lin
   pc      : number;
   rc      : number;
   stack   : Monomer.Monomer[];
-  queue   : Monomer.Effect[];
+  queue   : Monomer.Effectful[];
 }
 
-export const mount = (node: Node.Func, document: Document.Document): Polymer => {
+export const empty = (node: Node.Func, document: Document.Document): Polymer => {
   const self = polymer.empty();
   self.node = node;
   self.document = document;
   return self;
 };
 
-export const hydrate = (node: Node.Node, stack: Monomer.Encoded[]): Polymer => {
-  const monomers = [] as Monomer.Monomer[];
-  for (let i = 0; i < stack.length; i++) {
-    const monomer = Monomer.hydrateMonomer(stack[i]);
-    monomers.push(monomer);
+export const hydrate = (node: Node.Func, document: Document.Document, stack?: Monomer.Encoded[]): Polymer => {
+  const self = empty(node, document);
+  if (!stack) {
+    return self;
   }
-  return polymer.empty();
+  for (let i = 0; i < stack.length; i++) {
+    self.stack.push(Monomer.hydrateMonomer(stack[i]));
+  }
+  return self;
 };
 
 export const dehydrate = (self: Polymer): Monomer.Encoded[] => {

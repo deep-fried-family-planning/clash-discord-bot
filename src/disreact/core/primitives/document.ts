@@ -1,6 +1,6 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/core/Document.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Document from '#disreact/engine/entity/Document.ts';
+import type * as Node from '#disreact/engine/entity/Node.ts';
 import * as Pipeable from 'effect/Pipeable';
 import * as Inspectable from 'effect/Inspectable';
 

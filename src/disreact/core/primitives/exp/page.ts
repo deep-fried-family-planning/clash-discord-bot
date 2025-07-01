@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/model/runtime/jsx.tsx';
+import * as Jsx from '#disreact/adaptor/model/runtime/jsx.tsx';
 import type * as FC from '#src/disreact/core/primitives/fc.ts';
 import {dual} from 'effect/Function';
 

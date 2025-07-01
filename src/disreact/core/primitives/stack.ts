@@ -1,8 +1,8 @@
-import type * as Stack from '#disreact/core/Stack.ts';
+import type * as Stack from '#disreact/engine/Stack.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Document from '#disreact/engine/entity/Document.ts';
 
 const Prototype = proto.type<Stack.Stack<any>>({
   ...Pipeable.Prototype,

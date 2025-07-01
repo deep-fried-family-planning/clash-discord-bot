@@ -1,4 +1,4 @@
-import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
+import * as Hooks from '#disreact/runtime/Hooks.ts';
 
 export const useInteraction = Hooks.hooks.useInteraction;
 
@@ -15,3 +15,5 @@ export const useMemo = Hooks.hooks.useMemo;
 export const useCallback = Hooks.hooks.useCallback;
 
 export const useContext = Hooks.hooks.useContext;
+
+export const endpoint = {};
