@@ -1,6 +1,7 @@
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as FC from '#src/disreact/core/FC.ts';
 import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#src/disreact/core/primitives/constants.ts';
+import * as Inspectable from 'effect/Inspectable';
 
 export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
 
@@ -9,15 +10,30 @@ export const isKnown = (u: FC.FC): u is FC.Known => !!(u as any)._tag;
 const Prototype = proto.type<FC.Known>({
   _id      : ANONYMOUS,
   stateless: false,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id      : 'FunctionComponent',
+      name     : this._id,
+      stateless: this.stateless,
+      cast     : this._tag,
+    });
+  },
 });
 
 export const isCasted = (self: FC.FC): self is FC.Known => !!(self as FC.Known)._tag;
+
+export const endpoint = <P>(self: FC.FC<P>) => {};
 
 export const register = (fn: FC.FC): FC.Known => {
   if (isKnown(fn)) {
     return fn;
   }
   const fc = proto.impure(Prototype, fn);
+
+  if (fn.length === 0) {
+    fc.stateless = true;
+  }
 
   fc._id = fc.displayName ? fc.displayName :
            fc.name ? fc.name :

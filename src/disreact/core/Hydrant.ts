@@ -26,6 +26,31 @@ const Prototype = proto.type<Hydrant>({
   },
 });
 
+export const empty = (source: string, props: any): Hydrant => {
+  return proto.init(Prototype, {
+    source: source,
+    props : props,
+    state : {},
+  });
+};
+
+export const add = (self: Hydrant, id: string, encoded: Polymer.Encoded[]): Hydrant => {
+  if (id in self.state) {
+    throw new Error();
+  }
+  self.state[id] = encoded;
+  return self;
+};
+
+export const get = (self: Hydrant, id: string): Polymer.Encoded[] | undefined => {
+  if (id in self.state) {
+    const encoded = self.state[id];
+    delete self.state[id];
+    return encoded;
+  }
+  return undefined;
+};
+
 export interface Endpoint extends Inspectable.Inspectable {
   _tag  : 'Endpoint';
   id    : string;
@@ -60,7 +85,7 @@ export const endpoint = (type: FC.FC | Node.Node, id?: string): Endpoint => {
     });
   }
   return proto.init(Endpoint, {
-    id    : id ?? type.source,
+    id    : id ?? type.source!,
     source: type,
   });
 };

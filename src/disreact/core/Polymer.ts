@@ -4,7 +4,7 @@ import type * as Node from '#disreact/core/Node.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import type { MONOMER_REDUCER} from '#src/disreact/core/primitives/constants.ts';
+import { MONOMER_REDUCER} from '#src/disreact/core/primitives/constants.ts';
 import {type MONOMER_CONTEXTUAL, type MONOMER_EFFECT, type MONOMER_MEMO, type MONOMER_NONE, type MONOMER_REF, MONOMER_STATE, type MonomerTag} from '#src/disreact/core/primitives/constants.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
@@ -106,24 +106,27 @@ export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lin
   queue   : EffectMonomer[];
 }
 
-export const mount = (node: Node.Func): Polymer => {
+export const mount = (node: Node.Func, document: Document.Document): Polymer => {
   const self    = polymer.empty();
   self.node     = node;
-  self.document = node.document;
+  self.document = document;
   return self;
 };
 
-export const unmount = (self: Polymer) => {
-  (self as any).document = undefined;
-  (self as any).node     = undefined;
-};
-
-export const hydrate = (node: Node.Node, stack: Monomer[]): Polymer => {
+export const hydrate = (node: Node.Node, stack: Encoded[]): Polymer => {
   return polymer.empty();
 };
 
-export const dehydrate = (self: Polymer): Monomer[] => {
+export const dehydrate = (self: Polymer): Encoded[] => {
   return [];
+};
+
+export const dispose = (self: Polymer) => {
+  if (self.queue.length) {
+    throw new Error();
+  }
+  (self as any).document = undefined;
+  (self as any).node     = undefined;
 };
 
 export const commit = (self: Polymer): Polymer => {
@@ -137,9 +140,13 @@ export const commit = (self: Polymer): Polymer => {
 
 export const isChanged = (self: Polymer): boolean => {
   for (let i = 0; i < self.stack.length; i++) {
-    if (self.stack[i]._tag === MONOMER_STATE) {
-      if (self.stack[i].changed) {
-        return true;
+    const monomer = self.stack[i];
+    switch (monomer._tag) {
+      case MONOMER_STATE:
+      case MONOMER_REDUCER: {
+        if (monomer.changed) {
+          return true;
+        }
       }
     }
   }

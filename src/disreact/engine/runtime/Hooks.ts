@@ -2,6 +2,12 @@ import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as document from '#disreact/core/primitives/document.ts';
 import * as polymer from '#disreact/core/primitives/polymer.ts';
 
+export const UseInteraction = (self: Polymer.Polymer) => (interaction: any) => {
+  const monomer = polymer.none();
+
+  return self.document.interaction;
+};
+
 export const UseState = (self: Polymer.Polymer) => (initial: any) => {
   const monomer = polymer.state(initial);
 

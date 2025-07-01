@@ -1,15 +1,15 @@
 import type * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
-import {FUNCTIONAL, INTRINSIC, type FRAGMENT, type LIST_NODE, type TEXT_NODE, type NodeTag} from '#src/disreact/core/primitives/constants.ts';
-import * as Polymer from '#src/disreact/core/Polymer.ts';
 import type * as Document from '#src/disreact/core/Document.ts';
-import * as Either from 'effect/Either';
+import type * as FC from '#src/disreact/core/FC.ts';
+import * as Polymer from '#src/disreact/core/Polymer.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#src/disreact/core/primitives/constants.ts';
+import * as Diff from '#src/disreact/core/primitives/diff.ts';
+import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
+import * as Equal from 'effect/Equal';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
-import type * as FC from '#src/disreact/core/FC.ts';
-import * as Diff from '#src/disreact/core/primitives/diff.ts';
-import * as Diffs from '#src/disreact/core/primitives/diffs.ts';
 
 export type Node = | Text
                    | List
@@ -21,6 +21,7 @@ export type Renderable = | Func;
 
 export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Document>, Lateral.Lateral<Node> {
   _tag     : NodeTag;
+  source?  : string;
   children?: Node[] | undefined;
   props    : any;
 }
@@ -63,49 +64,116 @@ export const clone = (self: Node): Node => {
   return self;
 };
 
+export const connectRendered = (self: Node) => {
+  if (!self.children) {
+
+  }
+};
+
+export const connect = (self: Node) => {
+  if (!self.children) {
+    return self;
+  }
+  for (let i = 0; i < self.children.length; i++) {
+
+  }
+  return self;
+};
+
+export const dispose = (self: Node) => {
+  if (self._tag === FUNCTIONAL) {
+    (self as any).polymer = undefined;
+  }
+  (self as any).children = undefined;
+  (self as any).props = undefined;
+};
+
 export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
-  const right = Polymer.isChanged(self.polymer);
-  return Diff.skip();
-};
-
-export const diffs = (self: Node, that: Node[]): Diffs.Diffs<Node> => {
-  return Diffs.skip();
-};
-
-export const initialize = (self: Node, document: Document.Document) => {
-  return self;
-};
-
-export const initializeEither = (self: Node, document: Document.Document): Either.Either<Renderable, Node> => {
-  if (isElement(self)) {
-    return Either.left(self);
+  switch (self._tag) {
+    case TEXT_NODE: {
+      if (that._tag !== TEXT_NODE) {
+        return Diff.replace(that);
+      }
+      if (self.text !== that.text) {
+        return Diff.replace(that);
+      }
+      return Diff.skip();
+    }
+    case LIST_NODE: {
+      if (that._tag !== LIST_NODE) {
+        return Diff.replace(that);
+      }
+      return Diff.cont(that);
+    }
+    case FRAGMENT: {
+      if (that._tag !== FRAGMENT) {
+        return Diff.replace(that);
+      }
+      return Diff.cont(that);
+    }
+    case INTRINSIC: {
+      if (that._tag !== INTRINSIC) {
+        return Diff.replace(that);
+      }
+      if (self.component !== that.component) {
+        return Diff.replace(that);
+      }
+      if (!Equal.equals(self.props, that.props)) {
+        return Diff.update(that);
+      }
+      return Diff.cont(that);
+    }
+    case FUNCTIONAL: {
+      if (that._tag !== FUNCTIONAL) {
+        return Diff.replace(that);
+      }
+      if (self.component !== that.component) {
+        return Diff.replace(that);
+      }
+      if (!Equal.equals(self.props, that.props)) {
+        return Diff.render(that.props);
+      }
+      if (Polymer.isChanged(self.polymer)) {
+        return Diff.render(self.props);
+      }
+      return Diff.skip();
+    }
   }
-  return Either.right(self);
 };
 
-export const mount = (self: Func, document: Document.Document) => {
-  self.polymer = Polymer.mount(self);
-  return self;
-};
+export const diffs = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
+  const acc = [] as Diffs.Diffs<Node>[];
 
-export const unmount = (self: Node, document: Document.Document) => {
-  self.children = undefined;
-  (self as any).polymer = undefined;
-  (self as any).document = undefined;
-  return self;
-};
-
-export const hydrate = (self: Func, document: Document.Document) => {
-
-};
-
-export const dehydrate = (self: Func, document: Document.Document): Either.Either<Option.Option<Node[]>, Node> => {
-  if (isElement(self)) {
-    return Either.left(self);
+  if (!self.children && !that) {
+    return [];
   }
-  return Either.right(Option.fromNullable(self.children));
+  if (!self.children && that) {
+    for (let i = 0; i < that.length; i++) {
+      acc.push(Diffs.insert(that[i]));
+    }
+    return acc;
+  }
+  if (self.children && !that) {
+    for (let i = 0; i < self.children.length; i++) {
+      acc.push(Diffs.remove(self.children[i]));
+    }
+    return acc;
+  }
+  // todo
+  return acc;
 };
 
-export const lca = (ns: Node[]): Option.Option<Renderable> => {
+export const lca = (ns: Renderable[]): Option.Option<Renderable> => {
+  if (ns.length === 0) {
+    return Option.none();
+  }
+  if (ns.length === 1) {
+    return Option.some(ns[0]);
+  }
+
   return Option.none();
+};
+
+export const invoke = (self: Rest, event: Document.Document) => {
+
 };

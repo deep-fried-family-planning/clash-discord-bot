@@ -4,12 +4,14 @@ import * as Stack from '#disreact/core/Stack.ts';
 import type * as Document from '#src/disreact/core/Document.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
+import * as Polymer from '#disreact/core/Polymer.ts';
 
-const initializeNode = (node: Node.Node, document: Document.Document) => {
-  node.document = document;
+const initializeNode = (node: Node.Func, document: Document.Document) => {
+  node.polymer = Polymer.mount(node, document);
+  return node;
 };
 
-const hydrateNode = (node: Node.Node, document: Document.Document) => {
+const hydrateNode = (node: Node.Func, document: Document.Document) => {
 
 };
 
@@ -23,8 +25,7 @@ export const initialize = (document: Document.Document) => {
       const node = Stack.pop(stack);
 
       if (!Node.isRenderable(node)) {
-        node.document = document;
-        Stack.pushAll(stack, node.children);
+        Stack.pushAll(stack, node.children?.toReversed());
         return E.void;
       }
       return pipe(
