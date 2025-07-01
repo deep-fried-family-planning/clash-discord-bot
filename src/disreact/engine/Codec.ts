@@ -1,5 +1,5 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as E from 'effect/Effect';
@@ -17,7 +17,7 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
           normalization = config?.normalize ?? JsxDefault.normalization as Record<string, string>,
           encoding      = config?.encoders ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
 
-    const encodeDocument = (d?: Document.Document) => {
+    const encodeDocument = (d?: Document.Simulation) => {
       if (!d) {
         return null;
       }

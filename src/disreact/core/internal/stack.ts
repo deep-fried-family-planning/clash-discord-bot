@@ -2,7 +2,7 @@ import type * as Stack from '#disreact/core/Stack.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
 
 const Prototype = proto.type<Stack.Stack<any>>({
   ...Pipeable.Prototype,
@@ -15,7 +15,7 @@ const Prototype = proto.type<Stack.Stack<any>>({
   },
 });
 
-export const make = (document: Document.Document, root = document.body): Stack.Stack<any> =>
+export const make = (document: Document.Simulation, root = document.body): Stack.Stack<any> =>
   proto.init(Prototype, {
     document: document,
     values  : [root],

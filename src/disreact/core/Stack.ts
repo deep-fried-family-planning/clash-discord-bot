@@ -1,30 +1,30 @@
-import type * as Document from '#disreact/core/Document.ts';
-import * as stack from '#disreact/core/internal/stack.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
+import * as internal from '#disreact/core/internal/stack.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
 import type * as Pipeable from 'effect/Pipeable';
 import type * as Node from '#disreact/core/Node.ts';
 export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
-  document: Document.Document;
+  document: Document.Simulation;
   root    : A;
   values  : A[];
 }
 
-export const toDocument = <A>(self: Stack<A>): Document.Document => self.document;
+export const toDocument = <A>(self: Stack<A>): Document.Simulation => self.document;
 
-export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
-  stack.make(document, root as any);
+export const make = <A>(document: Document.Simulation, root?: A): Stack<A> =>
+  internal.make(document, root as any);
 
-const while$ = <A>(self: Stack<A>) => stack.len(self) > 0;
+const while$ = <A>(self: Stack<A>) => internal.len(self) > 0;
 export {while$ as while};
 
-export const pop = <A>(self: Stack<A>): A => stack.pop(self)!;
+export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
 
 export const push = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, a: A) => Stack<A>
->(2, (self, a) => stack.push(self, a));
+>(2, (self, a) => internal.push(self, a));
 
 export const pushAll = dual<
   <A>(as: Iterable<A> | undefined) => (self: Stack<A>) => Stack<A>,

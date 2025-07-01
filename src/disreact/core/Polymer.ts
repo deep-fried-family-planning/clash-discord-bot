@@ -1,12 +1,12 @@
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
 import * as Monomer from '#disreact/core/Monomer.ts';
 import {dehydrateMonomer} from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
-import * as polymer from '#disreact/core/internal/polymer.ts';
+import * as internal from '#disreact/core/internal/polymer.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -26,7 +26,7 @@ export type Effect = | EffectFn
                      | E.Effect<void>;
 
 export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage, Lateral.Lateral {
-  document: Document.Document;
+  document: Document.Simulation;
   node    : Node.Func;
   pc      : number;
   rc      : number;
@@ -34,9 +34,22 @@ export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lin
   queue   : Monomer.Effectful[];
 }
 
-export const empty = (node: Node.Func, document: Document.Document): Polymer => polymer.empty(node, document);
+export const empty = (node: Node.Func, document: Document.Simulation): Polymer => internal.empty(node, document);
 
-export const hydrate = (node: Node.Func, document: Document.Document, stack?: Monomer.Encoded[]): Polymer => {
+export const isStateless = internal.isStateless;
+
+export const hasEffects = internal.hasEffects;
+
+export const isChanged = (self: Polymer) => {
+  for (let i = 0; i < self.stack.length; i++) {
+    if (Monomer.isChanged(self.stack[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const hydrate = (node: Node.Func, document: Document.Simulation, stack?: Monomer.Encoded[]): Polymer => {
   const self = empty(node, document);
   if (!stack) {
     return self;
@@ -72,19 +85,6 @@ export const commit = (self: Polymer): Polymer => {
       self.stack[i].changed = false;
     }
   }
-  return self;
-};
-
-export const isChanged = (self: Polymer): boolean => {
-  for (let i = 0; i < self.stack.length; i++) {
-    if (Monomer.isChanged(self.stack[i])) {
-      return true;
-    }
-  }
-  return false; // todo
-};
-
-export const render = (self: Polymer): Polymer => {
   return self;
 };
 

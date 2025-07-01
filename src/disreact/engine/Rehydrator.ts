@@ -2,7 +2,7 @@ import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
 import type * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
 import * as Jsx from '#disreact/adaptor/model/runtime/jsx.tsx';
 import * as Cache from 'effect/Cache';
-import * as Duration from 'effect/Duration';
+import type * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';
 import * as Exit from 'effect/Exit';
 import {pipe} from 'effect/Function';
@@ -25,37 +25,8 @@ export class Rehydrator extends E.Service<Rehydrator>()('disreact/Rehydrator', {
       sources.set(source.id, source);
     }
 
-    const ttl = config.ttl ?? Duration.minutes(5);
-
-    const memory = yield* Cache.makeWith({
-      capacity: config.capacity ?? 100,
-
-      lookup: (key: string) =>
-        E.succeed(undefined as undefined | Document.Documentold<Node.Nodev1>),
-
-      timeToLive: (exit) =>
-        Exit.isFailure(exit) ? Duration.zero :
-        !exit.value ? Duration.zero :
-        ttl,
-    });
-
-    const loadMemory = (key: string, hash: string) =>
-      pipe(
-        memory.get(key),
-        E.map((d) => {
-          if (!d) {
-            return undefined;
-          }
-          return d; // todo verify hash
-        }),
-      );
-
-    const saveMemory = (d: Document.Documentold<Node.Nodev1>) =>
-      memory.set(d._key, d);
-
     return {
-      loadMemory,
-      saveMemory,
+
     };
   }),
   accessors: true,

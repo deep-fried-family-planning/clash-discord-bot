@@ -1,9 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import * as proto from '#disreact/core/behaviors/proto.ts';
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/fc.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import * as E from 'effect/Effect';
+import type * as Equal from 'effect/Equal';
+import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
+import React from 'react';
+React.Fragment;
+export interface Endpoint {
+  id       : string;
+  component: any;
+}
 
 export type Out = JSX.Element;
 
@@ -103,4 +113,95 @@ export const renderSelf = (self: Known): E.Effect<any> => {
     self._tag = SYNC;
     return E.succeed(out);
   }));
+};
+
+export type VoidEffect<E = never, R = never> = E.Effect<void, E, R>;
+
+export interface EffectFn<E = never, R = never> extends Function {
+  (): | void
+      | Promise<void>
+      | E.Effect<void, E, R>;
+}
+
+export type Fx<E = never, R = never> = | EffectFn<E, R>
+                                       | VoidEffect<E, R>;
+
+export const fx = (self: Fx) => {
+  if (proto.isEffect(self)) {
+    return self;
+  }
+  if (proto.isAsync(self)) {
+    return E.promise(self);
+  }
+  return E.suspend(() => {
+    const out = self();
+
+    if (P.isPromise(out)) {
+      return E.promise(() => out);
+    }
+    if (proto.isEffect(out)) {
+      return out;
+    }
+    return E.void;
+  });
+};
+
+export interface EventInput<D = any, T = any> {
+  endpoint: string;
+  id      : string;
+  lookup  : string;
+  handler : string;
+  target  : T;
+  data    : D;
+}
+
+export interface Event<D = any, T = any> {
+  target: T;
+  data  : D;
+
+  close(): void;
+  open(node: Node.Node): void;
+  openFC<P>(component: FC<P>, props: P): void;
+}
+
+export interface EventInternal<D = any, T = any> extends EventInput<D, T>, Event<D, T>, Inspectable.Inspectable {
+  compare: {
+    endpoint: string | null;
+    props   : any;
+  };
+}
+
+export const event = internal.event;
+
+export const isCloseEvent = (event: EventInternal) => event.compare.endpoint === null;
+
+export const isOpenEvent = (event: EventInternal) => event.compare.endpoint !== event.endpoint;
+
+export interface Handler<D = any, T = any, E = never, R = never> extends Function {
+  (event: Event<D, T>): | void
+                        | Promise<void>
+                        | E.Effect<void, E, R>;
+}
+
+export interface EventHandler<D = any, T = any, E = never, R = never> extends Handler<D, T, E, R>, Inspectable.Inspectable, Hash.Hash, Equal.Equal {
+  [internal.HandlerId]: typeof internal.HandlerId;
+}
+
+export const handler = internal.handler;
+
+export const invoke = (self: Handler, event: EventInternal) => {
+  if (proto.isAsync(self)) {
+    return E.promise(() => self(event));
+  }
+  return E.suspend(() => {
+    const out = self(event);
+
+    if (P.isPromise(out)) {
+      return E.promise(() => out);
+    }
+    if (proto.isEffect<void>(out)) {
+      return out;
+    }
+    return E.void;
+  });
 };

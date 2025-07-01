@@ -1,70 +1,15 @@
 import type * as Event from '#disreact/core/Event.ts';
+import type * as FC from '#disreact/core/FC.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
+import * as fc from '#disreact/core/internal/fc.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import type * as FC from '#disreact/core/FC.ts';
-import type * as Node from '#disreact/core/Node.ts';
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as fc from '#disreact/core/internal/fc.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-
-export const HandlerId = Symbol.for('disreact/handler');
-
-const HandlerPrototype = proto.type<Event.PropsHandler>({
-  [HandlerId]: HandlerId,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return Inspectable.format({
-      _id: 'PropsHandler',
-    });
-  },
-  [Hash.symbol]() {
-    return 1;
-  },
-  [Equal.symbol](that: Event.PropsHandler) {
-    return that[HandlerId] === HandlerId;
-  },
-});
-
-export const handler = (fn: Event.Handler) => proto.init(HandlerPrototype, fn);
-
-const PropsPrototype = proto.type<Record<string, any>>({
-  ...Inspectable.BaseProto,
-  toJSON() {
-    const {children, ...rest} = this;
-
-    return Inspectable.format({
-      _id  : 'Props',
-      value: rest,
-    });
-  },
-  [Hash.symbol]() {
-    return proto.structHash(this);
-  },
-  [Equal.symbol](that: Record<string, any>) {
-    return proto.structEquals(this, that);
-  },
-});
-
-export const makeProps = (input: any): Record<string, any> =>
-  proto.init(PropsPrototype, input);
-
-export const propsIntrinsic = (input: any) => {
-  const self = makeProps(input);
-  if (self.onclick) {
-    self.onclick = handler(self.onclick);
-  }
-  if (self.onselect) {
-    self.onselect = handler(self.onselect);
-  }
-  if (self.onsubmit) {
-    self.onsubmit = handler(self.onsubmit);
-  }
-  return self;
-};
 
 const Prototype = proto.type<Node.Node>({
   _tag     : undefined as any,
@@ -166,4 +111,106 @@ export const func = (type: FC.FC, props: any): Node.Func => {
     props    : makeProps(props),
     n        : component._id!,
   }) as Node.Func;
+};
+
+export const trie = (self: Node.Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
+
+export const step = (self: Node.Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
+
+export const connectSingleRendered = (self: Node.Node, child: any): Node.Node[] => {
+  if (!child._tag) {
+    if (typeof child !== 'object') {
+      child = text(child);
+    }
+  }
+  Lineage.set(child, self);
+  (child as Node.Node).d = self.d + 1;
+  (child as Node.Node).p = self.p;
+  (child as Node.Node).t = `${self.t}:${trie(child)}`;
+  (child as Node.Node).s = `${self.s}:${step(child)}`;
+  return [child];
+};
+
+export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[] => {
+  const depth = self.d + 1;
+  const name = step(self);
+
+  for (let i = 0; i < children.length; i++) {
+    if (!children[i]._tag) {
+      if (typeof children[i] !== 'object') {
+        children[i] = text(children[i]);
+      }
+      else {
+        children[i] = list(children[i]);
+      }
+    }
+    const child = children[i] as Node.Node;
+    Lineage.set(child, self);
+    if (children[i - 1]) {
+      Lateral.setTail(child, children[i - 1]);
+      Lateral.setHead(children[i - 1], child);
+    }
+    child.d = depth;
+    child.i = i;
+    child.p = self.p;
+    child.t = `${self.t}:${trie(child)}`;
+    child.s = `${name}:${step(child)}`;
+  }
+  return children;
+};
+
+export const connectRendered = (self: Node.Node, children?: any[]): Node.Node[] => {
+  if (!children) {
+    return [];
+  }
+  if (children.length === 0) {
+    return [];
+  }
+  if (children.length === 1) {
+    return connectSingleRendered(self, children[0]);
+  }
+  return connectAllRendered(self, children);
+};
+
+export const connect = (self: Node.Node) => {
+  if (!self.children) {
+    return self;
+  }
+  self.children = connectAllRendered(self, self.children);
+  return self;
+};
+
+const PropsPrototype = proto.type<Record<string, any>>({
+  ...Inspectable.BaseProto,
+  toJSON() {
+    const {children, ...rest} = this;
+
+    return Inspectable.format({
+      _id  : 'Props',
+      value: rest,
+    });
+  },
+  [Hash.symbol]() {
+    return proto.structHash(this);
+  },
+  [Equal.symbol](that: Record<string, any>) {
+    return proto.structEquals(this, that);
+  },
+});
+
+export const makeProps = (input: any): Record<string, any> =>
+  proto.init(PropsPrototype, input);
+
+export const propsIntrinsic = (input: any) => {
+  const self = makeProps(input);
+  if (self.onclick) {
+    self.onclick = fc.handler(self.onclick);
+  }
+  if (self.onselect) {
+    self.onselect = fc.handler(self.onselect);
+  }
+  if (self.onsubmit) {
+    self.onsubmit = fc.handler(self.onsubmit);
+  }
+  return self;
 };

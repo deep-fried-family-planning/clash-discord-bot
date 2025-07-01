@@ -1,12 +1,12 @@
-import * as Lateral from '#disreact/core/behaviors/lateral.ts';
-import * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
+import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
 import type * as FC from '#disreact/core/FC.ts';
-import * as Polymer from '#disreact/core/Polymer.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as internal from '#disreact/core/internal/node.ts';
+import * as Polymer from '#disreact/core/Polymer.ts';
 import * as Equal from 'effect/Equal';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -20,10 +20,11 @@ export type Node = | Text
 
 export type Renderable = | Func;
 
-export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Document>, Lateral.Lateral<Node> {
+export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node | Document.Simulation>, Lateral.Lateral<Node> {
   _tag     : NodeTag;
   source?  : string;
   children?: Node[] | undefined;
+  rendered?: FC.Out;
   props    : any;
   t        : string;
   s        : string;
@@ -61,76 +62,16 @@ export const isElement = (node: Node): node is Exclude<Node, Renderable> => node
 
 export const isRenderable = (node: Node): node is Renderable => node._tag > INTRINSIC;
 
-export const make = (type: any, props: any): Node => {
-  const self = type.make(props);
-  self.props = props;
-  return self;
-};
+export const connectSelf = internal.connect;
 
-export const clone = (self: Node): Node => {
-  return self;
-};
-
-export const trie = (self: Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
-
-export const step = (self: Node) => `${self.d}:${self.p}:${self.i}:${self.n}`;
-
-export const connectSingleRendered = (self: Node, child: any): Node[] => {
-  if (!child._tag) {
-    if (typeof child !== 'object') {
-      child = internal.text(child);
-    }
-  }
-  Lineage.set(child, self);
-  (child as Node).d = self.d + 1;
-  (child as Node).p = self.p;
-  (child as Node).t = `${self.t}:${trie(child)}`;
-  (child as Node).s = `${self.s}:${step(child)}`;
-  return [child];
-};
-
-export const connectAllRendered = (self: Node, children: any[]): Node[] => {
-  const depth = self.d + 1;
-  const name = step(self);
-
-  for (let i = 0; i < children.length; i++) {
-    if (!children[i]._tag) {
-      if (typeof children[i] !== 'object') {
-        children[i] = internal.text(children[i]);
-      }
-      else {
-        children[i] = internal.list(children[i]);
-      }
-    }
-    const child = children[i] as Node;
-    Lineage.set(child, self);
-    if (children[i - 1]) {
-      Lateral.setTail(child, children[i - 1]);
-      Lateral.setHead(children[i - 1], child);
-    }
-    child.d = depth;
-    child.i = i;
-    child.p = self.p;
-    child.t = `${self.t}:${trie(child)}`;
-    child.s = `${name}:${step(child)}`;
-  }
-  return children;
-};
-
-export const connect = (self: Node) => {
-  if (!self.children) {
-    return self;
-  }
-  self.children = connectAllRendered(self, self.children);
-  return self;
-};
+export const connectRendered = internal.connectRendered;
 
 export const dispose = (self: Node) => {
   if (self._tag === FUNCTIONAL) {
-    (self as any).polymer = undefined;
+    (self.polymer as any) = undefined;
   }
-  (self as any).children = undefined;
-  (self as any).props = undefined;
+  self.children = undefined;
+  self.props = undefined;
 };
 
 export const diff = (self: Node, that: Node): Diff.Diff<Node> => {
@@ -218,3 +159,5 @@ export const lca = (ns: Renderable[]): Option.Option<Renderable> => {
 
   return Option.none();
 };
+
+export const toChildrenReverse = (self: Node) => self.children?.toReversed();

@@ -1,10 +1,10 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as Document from '#disreact/core/Document.ts';
+import type * as Monomer from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
+import type * as Document from '#disreact/core/Simulation.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-import type * as Monomer from '#disreact/core/Monomer.ts';
 
 const Prototype = proto.type<Polymer.Polymer>({
   rc: 0,
@@ -21,7 +21,7 @@ const Prototype = proto.type<Polymer.Polymer>({
   },
 });
 
-export const empty = (node: Node.Func, document: Document.Document): Polymer.Polymer =>
+export const empty = (node: Node.Func, document: Document.Simulation): Polymer.Polymer =>
   proto.init(Prototype, {
     document: document,
     node    : node,
@@ -29,21 +29,28 @@ export const empty = (node: Node.Func, document: Document.Document): Polymer.Pol
     queue   : [],
   });
 
+export const isStateless = (self: Polymer.Polymer) => self.stack.length === 0;
+
 export const push = (self: Polymer.Polymer, monomer: Monomer.Monomer) => {
   self.stack.push(monomer);
   self.pc++;
-  return self;
 };
 
 export const pull = (self: Polymer.Polymer): Monomer.Monomer | undefined => {
-  return self.stack.at(self.pc);
-};
-
-export const advance = (self: Polymer.Polymer): Polymer.Polymer => {
+  const monomer = self.stack.at(self.pc);
+  if (!monomer) {
+    return undefined;
+  }
   self.pc++;
-  return self;
+  return monomer;
 };
 
-export const pop = (self: Polymer.Polymer): Monomer.Effectful => {
+export const hasEffects = (self: Polymer.Polymer) => self.queue.length > 0;
+
+export const enqueue = (self: Polymer.Polymer, monomer: Monomer.Effectful) => {
+  self.queue.push(monomer);
+};
+
+export const dequeue = (self: Polymer.Polymer): Monomer.Effectful => {
   return self.queue.shift()!;
 };

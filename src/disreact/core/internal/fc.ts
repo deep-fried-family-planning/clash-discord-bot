@@ -1,7 +1,11 @@
-import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import type * as FC from '#disreact/core/FC.ts';
+import type * as Fn from '#disreact/core/Fn.ts';
 import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
+import * as proto from '#src/disreact/core/behaviors/proto.ts';
+import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
+import * as Hash from 'effect/Hash';
+import * as Equal from 'effect/Equal';
 
 export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
 
@@ -44,9 +48,11 @@ export const register = (fn: FC.FC): FC.Known => {
          : fc;
 };
 
-export const endpoint = <P>(id: string, self: FC.FC<P>): FC.Known<P> => {
-  return self as any; // todo
+export const stateless = (self: FC.FC) => {
+  self.state = false;
 };
+
+export const isStateless = (self: FC.FC) => !self.state;
 
 export const cast = (self: FC.Known, type: FCExecution) => {
   if (isCasted(self)) {
@@ -80,3 +86,68 @@ export const name = (maybe?: string | FC.FC) => {
 };
 
 export const kind = (fc: FC.FC): number | undefined => (fc as FC.Known)._tag;
+
+const endpoints = globalValue(Symbol.for('disreact/endpoints'), () => new Map<string, FC.Known>());
+
+export const endpoint = <P>(id: string, self: FC.FC<P>): FC.Known<P> => {
+  if (endpoints.has(id)) {
+    throw new Error(`Endpoint ${id} already exists`);
+  }
+  endpoints.set(id, self as any);
+  return self as any;
+};
+
+const EventPrototype = proto.type<Fn.EventInternal>({
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id: 'Event',
+    });
+  },
+  close() {
+    this.compare!.endpoint = null;
+  },
+  openFC<P>(component: FC.FC<P>, props: P) {
+    if (!props) {
+      throw new Error();
+    }
+    this.compare!.endpoint = name(component);
+    this.compare!.props = props;
+  },
+  open(node) {
+    if (!node.source) {
+      throw new Error();
+    }
+    this.compare!.endpoint = node.source;
+    this.compare!.props = node.props;
+  },
+});
+
+export const event = (input: Fn.EventInput) =>
+  proto.init(EventPrototype, {
+    ...input,
+    compare: {
+      endpoint: input.endpoint,
+      props   : {},
+    },
+  });
+
+export const HandlerId = Symbol.for('disreact/handler');
+
+const HandlerPrototype = proto.type<Fn.EventHandler>({
+  [HandlerId]: HandlerId,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id: 'EventHandler',
+    });
+  },
+  [Hash.symbol]() {
+    return 1;
+  },
+  [Equal.symbol](that: Fn.EventHandler) {
+    return that[HandlerId] === HandlerId;
+  },
+});
+
+export const handler = (fn: Fn.Handler) => proto.init(HandlerPrototype, fn);
