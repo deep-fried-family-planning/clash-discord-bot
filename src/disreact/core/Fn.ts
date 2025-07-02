@@ -53,14 +53,14 @@ export interface FC<P = any, E = any, R = any> extends Function {
 
 export const endpoint = internal.endpoint;
 
-export const isStateless = (u: Known) => !u.state;
+export const isStatelessFC = (u: Known) => !u.state;
 
 export const markStateless = (self: Known): Known => {
   self.state = false;
   return self;
 };
 
-export const renderProps = (self: Known, props: any): E.Effect<any> => {
+export const render = (self: Known, props: any): E.Effect<any> => {
   switch (self._tag) {
     case SYNC: {
       return E.sync(() => self(props));
@@ -88,10 +88,10 @@ export const renderProps = (self: Known, props: any): E.Effect<any> => {
   });
 };
 
-export const renderSelf = (self: Known): E.Effect<any> => {
+export const renderStateless = (self: Known): E.Effect<any> => {
   switch (self._tag) {
     case SYNC: {
-      return E.sync(self);
+      return E.succeed(self());
     }
     case ASYNC: {
       return E.promise(self as any);
@@ -100,18 +100,18 @@ export const renderSelf = (self: Known): E.Effect<any> => {
       return E.suspend(self as any) as E.Effect<any>;
     }
   }
-  return E.sync(self).pipe(E.flatMap((out) => {
-    if (P.isPromise(out)) {
-      self._tag = ASYNC;
-      return E.promise(() => out);
-    }
-    if (E.isEffect(out)) {
-      self._tag = EFFECT;
-      return out as E.Effect<any>;
-    }
-    self._tag = SYNC;
-    return E.succeed(out);
-  }));
+  const out = self();
+
+  if (P.isPromise(out)) {
+    self._tag = ASYNC;
+    return E.promise(() => out);
+  }
+  if (E.isEffect(out)) {
+    self._tag = EFFECT;
+    return out as E.Effect<any>;
+  }
+  self._tag = SYNC;
+  return E.succeed(out);
 };
 
 export type VoidEffect<E = never, R = never> = E.Effect<void, E, R>;
@@ -125,7 +125,7 @@ export interface EffectFn<E = never, R = never> extends Function {
 export type Fx<E = never, R = never> = | EffectFn<E, R>
                                        | VoidEffect<E, R>;
 
-export const fx = (self: Fx) => {
+export const flush = (self: Fx) => {
   if (proto.isEffect(self)) {
     return self;
   }

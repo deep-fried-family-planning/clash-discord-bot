@@ -15,7 +15,7 @@ const Prototype = proto.type<Document.Document>({
   },
 });
 
-export const make = (input: Document.Input) =>
+export const make = (input: Document.AdaptorDocument) =>
   proto.init(Prototype, {
     ...input,
     flags: new Set(),

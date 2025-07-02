@@ -1,7 +1,7 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
 import type * as Document from '#disreact/core/Document.ts';
-import type * as Node from '#disreact/core/Node.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
 
@@ -11,7 +11,7 @@ export type CodecConfig = {
   normalize: Record<string, string>;
 };
 
-export class Codec extends E.Service<Codec>()('disreact/Codec', {
+export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
   effect: (config: CodecConfig) => E.gen(function* () {
     const primitive     = config?.primitive ?? JsxDefault.primitive,
           normalization = config?.normalize ?? JsxDefault.normalization as Record<string, string>,
@@ -22,13 +22,13 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
         return null;
       }
       const stack = MutableList.make<Node.Node>(d.body),
-            final  = {} as any,
+            final = {} as any,
             args  = new WeakMap(),
             outs  = new WeakMap().set(d.body, final);
 
       while (MutableList.tail(stack)) {
-        const node   = MutableList.pop(stack)!,
-              out = outs.get(node);
+        const node = MutableList.pop(stack)!,
+              out  = outs.get(node);
 
         switch (node._tag) {
           case TEXT_NODE: {
@@ -50,7 +50,7 @@ export class Codec extends E.Service<Codec>()('disreact/Codec', {
               MutableList.append(stack, c);
             }
             if (node._tag === FUNCTIONAL) {
-// todo
+              // todo
             }
             continue;
           }

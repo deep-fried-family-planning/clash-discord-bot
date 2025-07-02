@@ -1,13 +1,9 @@
 import * as Document from '#disreact/core/Document.ts';
-import * as FC from '#disreact/core/FC.ts';
-import {INTRINSIC, noop} from '#disreact/core/immutable/constants.ts';
 import * as Node from '#disreact/core/Node.ts';
-import * as Polymer from '#disreact/core/Polymer.ts';
 import * as Stack from '#disreact/core/Stack.ts';
-import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
+import * as Hooks from '#disreact/runtime/Hooks.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
-import {pipe} from 'effect/Function';
 import * as Option from 'effect/Option';
 
 const mutex  = E.unsafeMakeSemaphore(1),
@@ -123,26 +119,28 @@ export const invoke = (document: Document.Document) =>
     E.as(document),
   );
 
-const mount = (node: Node.Node, document: Document.Document) =>
-  E.iterate(Stack.make(document, node), {
+const mount = (root: Node.Node, document: Document.Document) =>
+  E.iterate(Stack.make(document, root), {
     while: Stack.while,
     body : initializeSPS,
   });
 
-const unmount = (node: Node.Node, document: Document.Document) =>
-  E.iterate(Stack.make(document, node), {
-    while: Stack.while,
-    body : (stack) =>
-      stack.pipe(
-        Stack.pop,
-        Node.eitherRenderable,
-        Either.map((node) =>
-          node.pipe(
-            Node.dispose,
-          ),
-        ),
-      ),
-  });
+const unmount = (root: Node.Node, document: Document.Document) => {
+  const stack = Stack.make(document, root);
+  const visited = new WeakSet<Node.Node>();
+
+  while (Stack.while(stack)) {
+    const node = Stack.pop(stack);
+
+    if (!visited.has(node)) {
+      Stack.pushAll(stack, Node.toReversed(node));
+      visited.add(node);
+      continue;
+    }
+    Node.dispose(node, document);
+  }
+  return root;
+};
 
 export const rerender = (document: Document.Document) =>
   document.pipe(
@@ -151,7 +149,6 @@ export const rerender = (document: Document.Document) =>
     Option.map(),
     Option.getOrElse(() => document),
   );
-
 
 export const dehydrate = (document: Document.Document) => {
 

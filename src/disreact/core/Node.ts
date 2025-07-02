@@ -283,43 +283,21 @@ export const dispose = dual<
   (self: Node, document: Document.Document) => Node
 >(2, disposeF);
 
+import * as Fn from '#disreact/core/Fn.ts';
+
 export const render = (self: Func) => {
-  const fc = self.component;
-  const props = self.props;
-
-  switch (fc._tag) {
-    case SYNC: {
-      return E.sync(() => fc(props));
-    }
-    case ASYNC: {
-      return E.promise(() => fc(props) as Promise<any>);
-    }
-    case EFFECT: {
-      return E.suspend(() => fc(props) as E.Effect<any>);
-    }
+  if (Fn.isStatelessFC(self.component)) {
+    return Fn.renderStateless(self.component);
   }
-  return E.suspend(() => {
-    const out = fc(props);
-
-    if (P.isPromise(out)) {
-      fc._tag = ASYNC;
-      return E.promise(() => out);
-    }
-    if (proto.isEffect<any>(out)) {
-      fc._tag = EFFECT;
-      return out;
-    }
-    fc._tag = SYNC;
-    return E.succeed(out);
-  });
+  return Fn.render(self.component, self.props);
 };
 
 export const flush = (self: Func) => {
-  return E.fail('').pipe(E.as(self));
+  return E.die('').pipe(E.as(self));
 };
 
 export const invokeDF = (self: Rest, event: any) => {
-  return E.fail('').pipe(E.as(self));
+  return E.die('').pipe(E.as(self));
 };
 
 export const invoke = dual<
