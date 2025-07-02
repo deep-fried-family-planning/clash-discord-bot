@@ -6,85 +6,52 @@ import * as Polymer from '#disreact/core/Polymer.ts';
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
 import * as E from 'effect/Effect';
+import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
+import * as Option from 'effect/Option';
 
 const mutex  = E.unsafeMakeSemaphore(1),
       lock   = mutex.take(1),
       unlock = mutex.release(1);
 
- const render = (node: Node.Func) => {
-  const component = node.component;
-  const props = node.props;
-  const polymer = node.polymer;
-
-  const renderer = component.length === 0
-                   ? FC.renderSelf(component)
-                   : FC.renderProps(component, props);
-
-  if (FC.isStateless(component)) {
-    return renderer;
-  }
-  return lock.pipe(
-    E.tap(() => {
-      Hooks.active.polymer = polymer;
+const acquireMutex = (node: Node.Func) =>
+  lock.pipe(
+    E.map(() => {
+      Hooks.active.polymer = node.polymer;
+      return node;
     }),
-    E.andThen(renderer),
+  );
+
+const releaseMutex = <A, E, R>(effect: E.Effect<A, E, R>) =>
+  effect.pipe(
     E.tap(() => {
       Hooks.active.polymer = undefined;
       return unlock;
     }),
-    E.map((rendered) => {
-      if (Polymer.isStateless(polymer)) {
-        FC.markStateless(component);
-        return rendered;
-      }
-      Polymer.commit(polymer);
-      return rendered;
-    }),
+    E.tapDefect(() => unlock),
   );
-};
-
-const initializeNode = (node: Node.Func, document: Document.Document) => {
-  node.polymer = Polymer.empty(node, document);
-
-  return render(node).pipe(
-    E.map((rendered) => Node.rendered(node, rendered)),
-    E.tap(Polymer.invoke(node.polymer)),
-    E.as(node),
-  );
-};
-
-const hydrateNode = (node: Node.Func, document: Document.Document) => {
-  const encoding = Document.getEncoding(document, node.trie);
-  if (!encoding) {
-    return initializeNode(node, document);
-  }
-  node.polymer = Polymer.hydrate(node, document, encoding);
-
-  return render(node).pipe(
-    E.map((rendered) => Node.rendered(node, rendered)),
-    E.tap(Polymer.invoke(node.polymer)),
-    E.as(node),
-  );
-};
-import * as Either from 'effect/Either';
-import * as Option from 'effect/Option';
-import * as Stream from 'effect/Stream';
 
 const initializeSPS = (stack: Stack.Stack) =>
   stack.pipe(
     Stack.pop,
-    Node.connect,
-    Node.toEither,
+    Node.eitherRenderable,
     Either.map((node) =>
-      render(node).pipe(
-        E.map((rendered) => Node.rendered(node, rendered)),
-        E.tap(Polymer.invoke(node.polymer)),
+      node.pipe(
+        Node.initialize(stack.document),
+        acquireMutex,
+        E.andThen(Node.render),
+        releaseMutex,
+        E.map(Node.commit(node)),
+        E.map(Node.accept),
+        E.map(Node.toReversed),
+        E.map(Stack.pushAllInto(stack)),
+        E.tap(Node.flush(node)),
       ),
     ),
     Either.mapLeft((node) =>
       node.pipe(
-        Node.toChildrenReverse,
+        Node.connect,
+        Node.toReversed,
         Stack.pushAllInto(stack),
         E.succeed,
       ),
@@ -92,130 +59,99 @@ const initializeSPS = (stack: Stack.Stack) =>
     Either.merge,
   );
 
-export const initialize = (document: Document.Document) => {
-  const stack = Stack.make(document, document.body);
+const hydrateSPS = (stack: Stack.Stack) =>
+  stack.pipe(
+    Stack.pop,
+    Node.eitherRenderable,
+    Either.map((node) =>
+      node.pipe(
+        Node.hydrate(stack.document),
+        acquireMutex,
+        E.andThen(Node.render),
+        releaseMutex,
+        E.map(Node.commit(node)),
+        E.map(Node.accept),
+        E.map(Node.toReversed),
+        E.map(Stack.pushAllInto(stack)),
+      ),
+    ),
+    Either.mapLeft((node) =>
+      node.pipe(
+        Node.connect,
+        Node.toReversed,
+        Stack.pushAllInto(stack),
+        E.succeed,
+      ),
+    ),
+    Either.merge,
+  );
 
-  return E.whileLoop({
-    while: () => Stack.while(stack),
-    step : noop,
-    body : () => {
-      const node = Stack.pop(stack);
-      Node.connect(node);
-
-      if (!Node.isRenderable(node)) {
-        Stack.pushAll(stack, node.children?.toReversed());
-        return E.void;
-      }
-
-      return pipe(
-        initializeNode(node, document),
-        E.map(() => {
-          Stack.pushAll(stack, node.children?.toReversed());
-        }),
-      );
-    },
-  }).pipe(E.as(document));
-};
-
-export const hydrate = (document: Document.Document) => {
-  const stack = Stack.make(document, document.body);
-
-  return E.whileLoop({
-    while: () => Stack.while(stack),
-    step : noop,
-    body : () => {
-      const node = Stack.pop(stack);
-      Node.connect(node);
-
-      if (!Node.isRenderable(node)) {
-        Stack.pushAll(stack, node.children?.toReversed());
-        return E.void;
-      }
-
-      return pipe(
-        hydrateNode(node, document),
-        E.map(() => {
-          Stack.pushAll(stack, node.children?.toReversed());
-        }),
-      );
-    },
-  }).pipe(E.as(document));
-};
-
-export const invoke = (document: Document.Document) => E.suspend(() => {
-  if (!document.event) {
-    throw new Error();
-  }
-  const event = document.event;
-  const stack = Stack.make(document, document.body);
-
-  let target: Node.Rest | undefined;
-
-  while (Stack.while(stack)) {
-    const node = Stack.pop(stack);
-
-    if (
-      node._tag === INTRINSIC &&
-      (node.step === event.id || node.props[event.lookup] === event.id) &&
-      node.props[event.handler]
-    ) {
-      target = node;
-      break;
-    }
-    Stack.pushAll(stack, node.children?.toReversed());
-  }
-  if (!target) {
-    throw new Error();
-  }
-
-  return pipe(
-    Node.invoke(event, target.props[event.handler]),
+export const initialize = (document: Document.Document) =>
+  E.iterate(Stack.make(document, document.body), {
+    while: Stack.while,
+    body : initializeSPS,
+  }).pipe(
     E.as(document),
   );
-});
 
-export const unmount = (node: Node.Node, document: Document.Document) => {
-  const visited = new WeakSet();
-  const stack = Stack.make(document, node);
+export const hydrate = (document: Document.Document) =>
+  E.iterate(Stack.make(document, document.body), {
+    while: Stack.while,
+    body : hydrateSPS,
+  }).pipe(
+    E.as(document),
+  );
 
-  while (Stack.while(stack)) {
-    const node = Stack.pop(stack);
-
-    if (visited.has(node)) {
-      Node.dispose(node);
-      continue;
-    }
-
-    visited.add(node);
-    Stack.pushAll(stack, node.children?.toReversed());
-  }
-
-  return node;
-};
-
-export const mount = (node: Node.Node, document: Document.Document) => {
-  const stack = Stack.make(document, node);
-
-  return E.whileLoop({
-    while: () => Stack.while(stack),
-    step : noop,
-    body : () => {
-      const node = Stack.pop(stack);
-
-      if (Node.isRenderable(node)) {
-        return initializeNode(node, document).pipe(
-          E.map(() => Stack.pushAll(stack, node.children?.toReversed())),
-        );
+export const invoke = (document: Document.Document) =>
+  document.body.pipe(
+    Node.findWithin((node): node is Node.Rest => {
+      if (Node.isInvokable(node)) {
+        if (!node.props[document.event!.lookup]) {
+          return false;
+        }
+        if (document.event!.id === node.step) {
+          return true;
+        }
+        if (node.props[document.event!.lookup] === document.event!.id) {
+          return true;
+        }
       }
-      Stack.pushAll(stack, node.children?.toReversed());
-      return E.void;
-    },
-  }).pipe(E.as(node));
-};
+      return false;
+    }),
+    Option.getOrThrow,
+    Node.invoke(document.event),
+    E.as(document),
+  );
 
-export const rerender = (document: Document.Document) => {
+const mount = (node: Node.Node, document: Document.Document) =>
+  E.iterate(Stack.make(document, node), {
+    while: Stack.while,
+    body : initializeSPS,
+  });
 
-};
+const unmount = (node: Node.Node, document: Document.Document) =>
+  E.iterate(Stack.make(document, node), {
+    while: Stack.while,
+    body : (stack) =>
+      stack.pipe(
+        Stack.pop,
+        Node.eitherRenderable,
+        Either.map((node) =>
+          node.pipe(
+            Node.dispose,
+          ),
+        ),
+      ),
+  });
+
+export const rerender = (document: Document.Document) =>
+  document.pipe(
+    Document.getFlags,
+    Node.lca,
+    Option.map(),
+    Option.getOrElse(() => document),
+  );
+
 
 export const dehydrate = (document: Document.Document) => {
 

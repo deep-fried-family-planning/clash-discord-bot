@@ -10,7 +10,9 @@ export class Engine extends E.Service<Engine>()('disreact/Engine', {
     const rehydrator = yield* Rehydrator;
 
     return {
+      fabricate : () => {},
       synthesize: () => {},
+      simulate  : () => {},
     };
   }),
   accessors: true,

@@ -6,6 +6,7 @@ import type * as Monomer from '#disreact/core/Monomer.ts';
 import type * as Node from '#disreact/core/Node.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
+import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
@@ -22,7 +23,7 @@ export interface Input<A = any> {
 export interface Document<A = any> extends Input<A>, Pipeable.Pipeable, Inspectable.Inspectable {
   flags    : Set<Node.Func>;
   outstream: Mailbox.Mailbox<Output.Output>;
-  finalized: Deferred.Deferred<Output.Checkpoint>;
+  final    : Deferred.Deferred<Output.Checkpoint>;
   prev?    : Document<A> | undefined;
   next?    : Document<A> | undefined;
 }
@@ -37,7 +38,7 @@ export const make = (input: Input): E.Effect<Document> =>
     E.map(([outstream, finalized]) => {
       const self = internal.make(input);
       self.outstream = outstream;
-      self.finalized = finalized;
+      self.final = finalized;
       return self;
     }),
   );
@@ -50,27 +51,66 @@ export const getFlags = (self: Document) => internal.getFlags(self);
 
 export const hasEncodings = (self: Document) => internal.hasEncodings(self);
 
-export const addEncoding = (self: Document, id: string, encoded: Monomer.Encoded[]) => internal.addEncoding(self, id, encoded);
+export const addEncodingDF = (self: Document, id: string, encoded: Monomer.Encoded[]) => {
+  internal.addEncoding(self, id, encoded);
+  return self;
+};
 
-export const getEncoding = (self: Document, id: string) => internal.getEncoding(self, id);
+export const addEncoding = dual<
+  <A>(id: string, encoded: Monomer.Encoded[]) => (self: Document<A>) => Document<A>,
+  <A>(self: Document<A>, id: string, encoded: Monomer.Encoded[]) => Document<A>
+>(3, addEncodingDF);
 
-export const streamOfferAll = (self: Document, output: Output.Output[]) =>
+export const getEncodingF = (self: Document, id: string) => internal.getEncoding(self, id);
+
+export const getEncoding = dual<
+  <A>(id: string) => (self: Document<A>) => Monomer.Encoded[] | undefined,
+  <A>(self: Document<A>, id: string) => Monomer.Encoded[] | undefined
+>(2, getEncodingF);
+
+export const offerAllDF = (self: Document, output: Output.Output[]) =>
   self.outstream.offerAll(output).pipe(E.asVoid);
 
-export const streamTakeAll = (self: Document) =>
+export const offerAll = dual<
+  <A>(output: Output.Output[]) => (self: Document<A>) => E.Effect<void>,
+  <A>(self: Document<A>, output: Output.Output[]) => E.Effect<void>
+>(2, offerAllDF);
+
+export const takeAll = (self: Document) =>
   self.outstream.takeAll;
 
-export const streamFail = (self: Document, error: any) =>
-  self.outstream.fail(error as never);
+export const failDF = (self: Document, error: any) =>
+  self.final.pipe(
+    Deferred.fail(error as never),
+    E.andThen(self.outstream.fail(error as never)),
+  );
+
+export const fail = dual<
+  <A>(error: any) => (self: Document<A>) => E.Effect<void>,
+  <A>(self: Document<A>, error: any) => E.Effect<void>
+>(2, failDF);
 
 export const streamEnd = (self: Document) =>
   self.outstream.end;
 
-export const streamAwait = (self: Document) =>
-  self.outstream.await;
+export const join = (self: Document) =>
+  self.final.pipe(
+    Deferred.await,
+    E.andThen(self.outstream.end),
+  );
 
-export const finalize = (self: Document, final: Output.Checkpoint) =>
-  Deferred.succeed(self.finalized, final).pipe(
+export const finalDF = (self: Document, final: Output.Checkpoint) =>
+  self.final.pipe(
+    Deferred.succeed(final),
     E.andThen(self.outstream.offer(final)),
     E.andThen(self.outstream.end),
   );
+
+export const final = dual<
+  <A>(final: Output.Checkpoint) => (self: Document<A>) => E.Effect<void>,
+  <A>(self: Document<A>, final: Output.Checkpoint) => E.Effect<void>
+>(2, finalDF);
+
+export const dispose = (self: Document) => {
+
+};

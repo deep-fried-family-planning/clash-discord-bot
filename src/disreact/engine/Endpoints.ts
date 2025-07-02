@@ -7,7 +7,8 @@ export type EndpointsConfig = Hydrant.Endpoint[];
 export class Endpoints extends E.Service<Endpoints>()('disreact/Endpoints', {
   effect: E.fnUntraced(function* (config: EndpointsConfig) {
     return {
-
+      synthesize: () => {},
+      rehydrate : () => {},
     };
   }),
   accessors: true,

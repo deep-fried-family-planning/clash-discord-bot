@@ -180,12 +180,16 @@ export const connectRendered = (self: Node.Node, children?: any[]): Node.Node[] 
   return connectAllRendered(self, children);
 };
 
-export const connect = (self: Node.Node) => {
+export const connect = <A extends Node.Node>(self: A): A => {
   if (!self.children) {
     return self;
   }
   self.children = connectAllRendered(self, self.children);
   return self;
+};
+
+export const accept = <A extends Node.Node>(self: A): A => {
+
 };
 
 const PropsPrototype = proto.type<Record<string, any>>({
