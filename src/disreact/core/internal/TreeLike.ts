@@ -1,8 +1,12 @@
+export interface Root<A> {
+  root: A | undefined;
+}
+
 export interface Ancestor<A extends Ancestor<any>> {
   ancestor: A | undefined;
 }
 
-export const root = <A extends Ancestor<any>>(node: A): A | undefined => {
+export const rootAncestor = <A extends Ancestor<any>>(node: A): A | undefined => {
   let a = node.ancestor;
   while (a) {
     if (a.parent) {

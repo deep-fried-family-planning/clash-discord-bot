@@ -1,7 +1,7 @@
-import type * as FC from '#disreact/core/FC.ts';
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as fc from '#disreact/core/internal/fc.ts';
 import type * as Element from '#disreact/core/Element.ts';
+import type * as FC from '#disreact/core/FC.ts';
+import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
+import * as fc from '#disreact/core/internal/fc.ts';
 import type * as Jsx from '#disreact/runtime/Jsx.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
@@ -16,12 +16,6 @@ import * as Pipeable from 'effect/Pipeable';
 export const TypeId = Symbol.for('disreact/node');
 
 export const FragmentSymbol = Symbol.for('disreact/fragment');
-
-export const TEXT = 1,
-             LIST = 2,
-             FRAG = 3,
-             REST = 4,
-             FUNC = 5;
 
 const Prototype = proto.type<Element.Element>({
   [TypeId] : TypeId,
@@ -59,28 +53,28 @@ export const isNodeNonPrimitive = (u: {}): u is Element.Element => TypeId in u;
 
 export const text = (text: any): Element.Text =>
   proto.init(Prototype, {
-    _tag: TEXT,
+    _tag: ELEMENT_TEXT,
     text: text,
     name: '{}',
   }) as Element.Text;
 
 export const list = (children: Element.Element[]): Element.List =>
   proto.init(Prototype, {
-    _tag    : LIST,
+    _tag    : ELEMENT_LIST,
     children: children,
     name    : '[]',
   }) as Element.List;
 
 export const frag = (children: Element.Element[]): Element.Frag =>
   proto.init(Prototype, {
-    _tag    : FRAG,
+    _tag    : ELEMENT_FRAGMENT,
     children: children,
     name    : '</>',
   }) as Element.Frag;
 
 export const rest = (type: string, props: any): Element.Rest => {
   const self = proto.init(Prototype, {
-    _tag     : REST,
+    _tag     : ELEMENT_INTRINSIC,
     component: type,
     props    : propsIntrinsic(props),
     name     : type,
@@ -92,7 +86,7 @@ export const func = (type: FC.FC, props: any): Element.Func => {
   const component = fc.register(type);
 
   return proto.init(Prototype, {
-    _tag     : FUNC,
+    _tag     : ELEMENT_FUNCTIONAL,
     component: component,
     props    : makeProps(props),
     name     : component._id!,
@@ -108,19 +102,19 @@ export const clone = <A extends Element.Element>(self: A | unknown): A => {
     throw new Error(`[Node.clone]: unknown type ${self}`);
   }
   switch (self._tag) {
-    case TEXT_NODE: {
+    case ELEMENT_TEXT: {
       return text(self.text) as A;
     }
-    case LIST_NODE: {
+    case ELEMENT_LIST: {
       return list(self.children?.map(clone) ?? []) as A; // todo
     }
-    case FRAGMENT: {
+    case ELEMENT_FRAGMENT: {
       return frag(self.children?.map(clone) ?? []) as A;
     }
-    case INTRINSIC: {
+    case ELEMENT_INTRINSIC: {
       return rest(self.component, self.props) as A;
     }
-    case FUNCTIONAL: {
+    case ELEMENT_FUNCTIONAL: {
       return func(self.component, self.props) as A;
     }
   }
@@ -279,28 +273,28 @@ export const propsIntrinsic = (input: any) => {
 
 function toJSON(this: Element.Element) {
   switch (this._tag) {
-    case TEXT_NODE: {
+    case ELEMENT_TEXT: {
       return Inspectable.format({
         _id : 'Node',
         _tag: 'Text',
         text: this.text,
       });
     }
-    case LIST_NODE: {
+    case ELEMENT_LIST: {
       return Inspectable.format({
         _id     : 'Node',
         _tag    : 'List',
         children: this.children,
       });
     }
-    case FRAGMENT: {
+    case ELEMENT_FRAGMENT: {
       return Inspectable.format({
         _id     : 'Node',
         _tag    : 'Fragment',
         children: this.children,
       });
     }
-    case INTRINSIC: {
+    case ELEMENT_INTRINSIC: {
       return Inspectable.format({
         _id      : 'Node',
         _tag     : 'REST',
@@ -309,7 +303,7 @@ function toJSON(this: Element.Element) {
         children : this.children,
       });
     }
-    case FUNCTIONAL: {
+    case ELEMENT_FUNCTIONAL: {
       return Inspectable.format({
         _id      : 'Node',
         _tag     : 'Function',
@@ -331,22 +325,22 @@ function toString(this: Element.Element) {
     const node = stack.pop()!;
 
     if (close.has(node)) {
-      if (node._tag === TEXT_NODE) {
+      if (node._tag === ELEMENT_TEXT) {
         continue;
       }
       const i = ' '.repeat(node.depth * 2);
 
       switch (node._tag) {
-        case LIST_NODE: {
+        case ELEMENT_LIST: {
           acc.push(`${i}]`);
           continue;
         }
-        case FRAGMENT: {
+        case ELEMENT_FRAGMENT: {
           acc.push(`${i}</>`);
           continue;
         }
-        case INTRINSIC:
-        case FUNCTIONAL: {
+        case ELEMENT_INTRINSIC:
+        case ELEMENT_FUNCTIONAL: {
           acc.push(`${i}</${node.name}>`);
           continue;
         }
@@ -354,16 +348,16 @@ function toString(this: Element.Element) {
     }
     const i = ' '.repeat(node.depth * 2);
 
-    if (node._tag === TEXT_NODE) {
+    if (node._tag === ELEMENT_TEXT) {
       acc.push(`${i}"${node.text}"`);
       continue;
     }
 
     if (!node.children || !node.children.length) {
-      if (node._tag === LIST_NODE) {
+      if (node._tag === ELEMENT_LIST) {
         acc.push(`${i}[]`);
       }
-      else if (node._tag === FRAGMENT) {
+      else if (node._tag === ELEMENT_FRAGMENT) {
         acc.push(`${i}</>`);
       }
       else if (Object.keys(node.props).length === 0) {
@@ -405,11 +399,11 @@ function toString(this: Element.Element) {
     stack.push(...node.children);
 
     switch (node._tag) {
-      case LIST_NODE: {
+      case ELEMENT_LIST: {
         acc.push(`${i}[`);
         continue;
       }
-      case FRAGMENT: {
+      case ELEMENT_FRAGMENT: {
         acc.push(`${i}<>`);
         continue;
       }

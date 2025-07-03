@@ -22,6 +22,13 @@ export const
   INTRINSIC  = 3 as const,
   FUNCTIONAL = 4 as const;
 
+export const
+  ELEMENT_TEXT       = 1 as const,
+  ELEMENT_LIST       = 2 as const,
+  ELEMENT_FRAGMENT   = 3 as const,
+  ELEMENT_INTRINSIC  = 4 as const,
+  ELEMENT_FUNCTIONAL = 5 as const;
+
 export type NodeTag =
   | typeof TEXT_NODE
   | typeof LIST_NODE

@@ -1,12 +1,12 @@
-import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as Document from '#disreact/core/Document.ts';
 import * as FC from '#disreact/core/FC.ts';
 import * as Fn from '#disreact/core/Fn.ts';
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, PRODUCTION, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
+import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, FUNCTIONAL, INTRINSIC} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as internal from '#disreact/core/internal/element.ts';
+import type * as TreeLike from '#disreact/core/internal/TreeLike.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -16,7 +16,6 @@ import {globalValue} from 'effect/GlobalValue';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
-import type * as TreeLike from '#disreact/core/internal/TreeLike.ts';
 
 export type Element = | Text
                       | List
@@ -25,12 +24,7 @@ export type Element = | Text
                       | Func;
 
 export interface Base extends Pipeable.Pipeable,
-  Inspectable.Inspectable,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
-  TreeLike.Sibling<Element>
+  Inspectable.Inspectable
 {
   readonly [internal.TypeId]: typeof internal.TypeId;
 
@@ -52,28 +46,59 @@ export interface Base extends Pipeable.Pipeable,
   diff?    : Diff.Diff<Element>;
   diffs?   : Diffs.Diffs<Element>[];
   parent?  : Element | undefined;
+  ancestor : Element | undefined;
 }
 
-export interface Text extends Base {
-  _tag: typeof internal.TEXT;
+export interface Text extends Base,
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
+{
+  _tag: typeof ELEMENT_TEXT;
   text: string;
 }
 
-export interface List extends Base {
-  _tag: typeof internal.LIST;
+export interface List extends Base,
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
+{
+  _tag: typeof ELEMENT_LIST;
 }
 
-export interface Frag extends Base {
-  _tag: typeof internal.FRAG;
+export interface Frag extends Base,
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
+{
+  _tag: typeof ELEMENT_FRAGMENT;
 }
 
-export interface Rest extends Base {
-  _tag     : typeof internal.REST;
+export interface Rest extends Base,
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
+{
+  _tag     : typeof ELEMENT_INTRINSIC;
   component: string;
 }
 
-export interface Func extends Base {
-  _tag     : typeof internal.FUNC;
+export interface Func extends Base,
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
+{
+  _tag     : typeof ELEMENT_FUNCTIONAL;
   component: FC.Known;
   polymer  : Polymer.Polymer;
 }
@@ -104,8 +129,8 @@ export const connectRendered = dual<
 
 export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
   switch (self._tag) {
-    case internal.TEXT: {
-      if (that._tag !== internal.TEXT) {
+    case ELEMENT_TEXT: {
+      if (that._tag !== ELEMENT_TEXT) {
         return Diff.replace(that);
       }
       if (self.text !== that.text) {
@@ -113,20 +138,20 @@ export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
       }
       return Diff.skip();
     }
-    case internal.LIST: {
-      if (that._tag !== internal.LIST) {
+    case ELEMENT_LIST: {
+      if (that._tag !== ELEMENT_LIST) {
         return Diff.replace(that);
       }
       return Diff.cont(that);
     }
-    case internal.FRAG: {
-      if (that._tag !== internal.FRAG) {
+    case ELEMENT_FRAGMENT: {
+      if (that._tag !== ELEMENT_FRAGMENT) {
         return Diff.replace(that);
       }
       return Diff.cont(that);
     }
-    case internal.REST: {
-      if (that._tag !== internal.REST) {
+    case ELEMENT_INTRINSIC: {
+      if (that._tag !== ELEMENT_INTRINSIC) {
         return Diff.replace(that);
       }
       if (self.component !== that.component) {
@@ -137,8 +162,8 @@ export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
       }
       return Diff.cont(that);
     }
-    case internal.FUNC: {
-      if (that._tag !== internal.FUNC) {
+    case ELEMENT_FUNCTIONAL: {
+      if (that._tag !== ELEMENT_FUNCTIONAL) {
         return Diff.replace(that);
       }
       if (self.component !== that.component) {
@@ -194,21 +219,21 @@ export const updateDF = <A extends Element>(self: A, that: Element): A => {
     }
   }
   switch (self._tag) {
-    case internal.TEXT: {
+    case ELEMENT_TEXT: {
       self.text = (that as Text).text;
       return self;
     }
-    case internal.LIST: {
+    case ELEMENT_LIST: {
       return self;
     }
-    case internal.FRAG: {
+    case ELEMENT_FRAGMENT: {
       return self;
     }
-    case internal.REST: {
+    case ELEMENT_INTRINSIC: {
       self.props = (that as Rest).props;
       return self;
     }
-    case internal.FUNC: {
+    case ELEMENT_FUNCTIONAL: {
       self.props = (that as Func).props;
       return self;
     }
