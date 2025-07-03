@@ -93,13 +93,20 @@ export interface EffectFn {
 export type Effect = | EffectFn
                      | E.Effect<void>;
 
-export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable {
-  document: Document.Document;
-  node    : Node.Func;
-  pc      : number;
-  rc      : number;
-  stack   : Monomer[];
-  queue   : Effectful[];
+import type * as TreeLike from '#disreact/core/TreeLike.ts';
+
+export interface Polymer extends
+  Pipeable.Pipeable,
+  Inspectable.Inspectable,
+  TreeLike.Root<Document.Document>,
+  TreeLike.Ancestor<Node.Func>
+{
+  source?: any;
+  self?  : any;
+  pc     : number;
+  rc     : number;
+  stack  : Monomer[];
+  queue  : Effectful[];
 }
 
 export const empty = (node: Node.Func, document: Document.Document): Polymer => internal.empty(node, document);

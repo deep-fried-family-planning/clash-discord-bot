@@ -93,6 +93,20 @@ export const func = (type: FC.FC, props: any): Element.Func => {
   }) as Element.Func;
 };
 
+export const make = (type: any, config: any, key?: string) => {
+  if (type === FragmentSymbol) {
+    return frag();
+  }
+  switch (typeof type) {
+    case 'string': {
+      return rest(type, config);
+    }
+    case 'function': {
+      return func(type, config);
+    }
+  }
+};
+
 export const trie = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
 
 export const step = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
@@ -236,7 +250,7 @@ export const accept = <A extends Element.Element>(self: A): A => {
 
 };
 
-const PropsPrototype = proto.type<Record<string, any>>({
+const PropsPrototype = proto.type<Element.Props>({
   ...Inspectable.BaseProto,
   toJSON() {
     const {children, ...rest} = this;
@@ -254,10 +268,10 @@ const PropsPrototype = proto.type<Record<string, any>>({
   },
 });
 
-export const makeProps = (input: any): Record<string, any> =>
+export const makeProps = (input: any): Element.Props =>
   proto.init(PropsPrototype, input);
 
-export const propsIntrinsic = (input: any) => {
+export const propsIntrinsic = (input: any): Element.Props => {
   const self = makeProps(input);
   if (self.onclick) {
     self.onclick = fc.handler(self.onclick);

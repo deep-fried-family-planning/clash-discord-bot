@@ -5,14 +5,15 @@ import * as Fn from '#disreact/core/Fn.ts';
 import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, FUNCTIONAL, INTRINSIC} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
-import * as internal from '#disreact/core/internal/element.ts';
-import type * as TreeLike from '#disreact/core/internal/TreeLike.ts';
+import * as element from '#disreact/core/internal/element.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
+import type * as TreeLike from '#disreact/core/TreeLike.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
 import {globalValue} from 'effect/GlobalValue';
+import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
@@ -23,83 +24,52 @@ export type Element = | Text
                       | Rest
                       | Func;
 
-export interface Base extends Pipeable.Pipeable,
-  Inspectable.Inspectable
-{
-  readonly [internal.TypeId]: typeof internal.TypeId;
-
-  _tag     : number;
-  source?  : string;
-  component: any;
-  props    : any;
-  trie     : string;
-  step     : string;
-  idx      : number;
-  pdx      : number;
-  depth    : number;
-  height   : number;
-  name     : string;
-  jsxIndex : number;
-  jsxHeight: number;
-  jsxDepth : number;
-  text?    : any;
-  diff?    : Diff.Diff<Element>;
-  diffs?   : Diffs.Diffs<Element>[];
-  parent?  : Element | undefined;
-  ancestor : Element | undefined;
-}
-
-export interface Text extends Base,
+export interface ElementBase extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
+  Equal.Equal,
+  Hash.Hash,
+  TreeLike.Meta,
+  TreeLike.Root<Document.Document>,
   TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Descendent<Element>,
   TreeLike.Sibling<Element>
 {
+  readonly [element.TypeId]: typeof element.TypeId;
+  readonly _tag            : number;
+  readonly component       : any;
+  readonly endpoint?       : string;
+  readonly key             : string;
+
+  props: undefined | Props;
+  text : undefined | any;
+  merge: undefined | boolean;
+  diff : undefined | Diff.Diff<Element>;
+  diffs: undefined | Diffs.Diffs<Element>[];
+}
+
+export interface Text extends ElementBase {
   _tag: typeof ELEMENT_TEXT;
   text: string;
 }
 
-export interface List extends Base,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
-  TreeLike.Sibling<Element>
-{
+export interface List extends ElementBase {
   _tag: typeof ELEMENT_LIST;
 }
 
-export interface Frag extends Base,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
-  TreeLike.Sibling<Element>
-{
+export interface Frag extends ElementBase {
   _tag: typeof ELEMENT_FRAGMENT;
 }
 
-export interface Rest extends Base,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
-  TreeLike.Sibling<Element>
-{
+export interface Rest extends ElementBase {
   _tag     : typeof ELEMENT_INTRINSIC;
   component: string;
+  props    : Props;
 }
 
-export interface Func extends Base,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element, 'children'>,
-  TreeLike.Descendent<Element, 'rendered'>,
-  TreeLike.Descendent<Element, 'runtime'>,
-  TreeLike.Sibling<Element>
-{
+export interface Func extends ElementBase {
   _tag     : typeof ELEMENT_FUNCTIONAL;
   component: FC.Known;
+  props    : Props;
   polymer  : Polymer.Polymer;
 }
 
@@ -108,6 +78,13 @@ export const isElement = (node: Element): node is Exclude<Element, Func> => node
 export const isInvokable = (node: Element): node is Rest => node._tag === INTRINSIC;
 
 export const isRenderable = (node: Element): node is Func => node._tag > INTRINSIC;
+
+export interface Props extends Inspectable.Inspectable,
+  Equal.Equal,
+  Hash.Hash,
+  Record<'onclick' | 'onselect' | 'onsubmit', () => void>,
+  Record<string, any>
+{}
 
 export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Element, Func>> => {
   if (isRenderable(self)) {
@@ -118,9 +95,9 @@ export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Ele
 
 export const toReversed = (self: Element) => self.children?.toReversed();
 
-export const connect = internal.connect;
+export const connect = element.connect;
 
-export const connectRenderedF = internal.connectRendered;
+export const connectRenderedF = element.connectRendered;
 
 export const connectRendered = dual<
   <A extends Element>(rendered: any) => (self: A) => Element[],
@@ -285,7 +262,7 @@ export const insertChild = dual<
   <A extends Element>(self: A, that: Element) => A
 >(2, (self, that) => {
   if (self.children) {
-    self.children.splice(self.idx, 0, that);
+    self.children.splice(self.index, 0, that);
   }
   else {
     self.children = [that];
@@ -403,11 +380,11 @@ export const disposeF = (self: Element, document: Document.Document) => {
     (self.polymer as any) = Polymer.dispose(self.polymer);
   }
   (self.props as any) = undefined;
-  (self.children as any) = undefined;
-  (self.rendered as any) = undefined;
   (self.diff as any) = undefined;
   (self.diffs as any) = undefined;
-  self.parent = undefined;
+  self.ancestor = undefined;
+  self.head = undefined;
+  self.tail = undefined;
   return self;
 };
 

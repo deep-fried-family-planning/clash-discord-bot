@@ -1,5 +1,5 @@
 import type * as Node from '#disreact/core/Element.ts';
-import * as internal from '#disreact/core/internal/element.ts';
+import * as element from '#disreact/core/internal/element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 
 export type Text = | undefined
@@ -15,52 +15,34 @@ export type Type = | keyof JSX.IntrinsicElements
 
 export type Jsx = Node.Element;
 
-const makeChild = (type: any): Jsx => {
-  if (!type || typeof type !== 'object') {
-    return internal.text(type);
-  }
-  if (type._tag) {
-    return type;
-  }
-  return internal.list(type);
-};
+export const Fragment = element.FragmentSymbol;
 
-export const Fragment = internal.FragmentSymbol;
-
-export const jsx = (type: any, props: any): Jsx => {
+export const jsx = (type: any, config: any, key?: string): Jsx => {
   if (type === Fragment) {
-    return internal.frag(props.children);
+    return element.frag(config.children);
   }
   switch (typeof type) {
     case 'string': {
-      return internal.rest(type, props);
+      return element.rest(type, config);
     }
     case 'function': {
-      return internal.func(type, props);
+      return element.func(type, config);
     }
   }
   throw new Error(`Invalid type: ${type}`);
 };
 
-export const jsxs = (type: any, props: any): Jsx => {
+export const jsxs = (type: any, props: any, key?: string): Jsx => {
   if (type === Fragment) {
-    return internal.frag(props.children);
+    return element.frag(props.children);
   }
   switch (typeof type) {
     case 'string': {
-      return internal.rest(type, props);
+      return element.rest(type, props);
     }
     case 'function': {
-      return internal.func(type, props);
+      return element.func(type, props);
     }
   }
   throw new Error(`Invalid type: ${type}`);
-};
-
-export const jsxDEV = (type: any, attributes: any): Jsx => {
-  const self = Array.isArray(attributes.children)
-               ? jsxs(type, attributes)
-               : jsx(type, attributes);
-
-  return self;
 };
