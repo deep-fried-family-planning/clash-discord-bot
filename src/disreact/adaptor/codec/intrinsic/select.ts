@@ -169,10 +169,10 @@ export const encodeUsers = (self: any, arg: any) => {
   };
 };
 
-export type OptionAttributes = typeof OptionAttributes;
-export type SelectAttributes = typeof SelectAttributes;
-export type DefaultAttributes = typeof DefaultAttributes;
-export type ChannelsAttributes = typeof ChannelsAttributes;
-export type MentionsAttributes = typeof MentionsAttributes;
-export type RolesAttributes = typeof RolesAttributes;
-export type UsersAttributes = typeof UsersAttributes;
+export type OptionAttributes = typeof OptionAttributes.Type;
+export type SelectAttributes = typeof SelectAttributes.Type;
+export type DefaultAttributes = typeof DefaultAttributes.Type;
+export type ChannelsAttributes = typeof ChannelsAttributes.Type;
+export type MentionsAttributes = typeof MentionsAttributes.Type;
+export type RolesAttributes = typeof RolesAttributes.Type;
+export type UsersAttributes = typeof UsersAttributes.Type;

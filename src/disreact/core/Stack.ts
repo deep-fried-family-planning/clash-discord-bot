@@ -1,17 +1,21 @@
 import type * as Document from '#disreact/core/Document.ts';
 import * as internal from '#disreact/core/internal/stack.ts';
+import type * as Node from '#disreact/core/Node.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
+import type * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
-import type * as Node from '#disreact/core/Node.ts';
-export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
-  document: Document.Document;
-  root    : A;
-  values  : A[];
-}
+import type * as P from 'effect/Predicate';
 
-export const toDocument = <A>(self: Stack<A>): Document.Document => self.document;
+export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
+  document : Document.Document<A>;
+  root     : A;
+  values   : A[];
+  push     : A[];
+  pop      : A[];
+  traversed: A[];
+}
 
 export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
   internal.make(document, root as any);
@@ -20,6 +24,16 @@ const while$ = <A>(self: Stack<A>) => internal.len(self) > 0;
 export {while$ as while};
 
 export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
+
+export const popUntil = <A, B extends A>(self: Stack<A>, f: P.Refinement<A, B> | P.Predicate<A>): Option.Option<B[]> => {
+  while (while$(self)) {
+    if (!f(internal.peek(self))) {
+      break;
+    }
+    internal.pop(self);
+  }
+  return internal.popped(self) as any;
+};
 
 export const push = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,

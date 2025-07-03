@@ -1,6 +1,7 @@
 export const
   IS_DEV         = (process.env.NODE_ENV === 'development') as true,
-  INTERNAL_ERROR = 'Internal Error' as const;
+  INTERNAL_ERROR = 'Internal Error' as const,
+  PRODUCTION     = 'production' as const;
 
 // DX to help auto import in IDE at dev time
 export type DEV_STUB = never;

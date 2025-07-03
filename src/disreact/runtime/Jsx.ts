@@ -15,7 +15,6 @@ export type Type = | keyof JSX.IntrinsicElements
 
 export type Jsx = Node.Node;
 
-
 const makeChild = (type: any): Jsx => {
   if (!type || typeof type !== 'object') {
     return internal.text(type);
@@ -26,8 +25,7 @@ const makeChild = (type: any): Jsx => {
   return internal.list(type);
 };
 
-
-export const Fragment = internal.FragmentTag;
+export const Fragment = internal.FragmentSymbol;
 
 export const jsx = (type: any, props: any): Jsx => {
   if (type === Fragment) {

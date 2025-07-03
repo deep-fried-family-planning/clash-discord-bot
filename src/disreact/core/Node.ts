@@ -1,9 +1,9 @@
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import * as proto from '#disreact/core/behaviors/proto.ts';
 import * as Document from '#disreact/core/Document.ts';
 import * as FC from '#disreact/core/FC.ts';
-import {ASYNC, EFFECT, FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, SYNC, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
+import * as Fn from '#disreact/core/Fn.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, PRODUCTION, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as internal from '#disreact/core/internal/node.ts';
@@ -12,10 +12,11 @@ import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
-import * as P from 'effect/Predicate';
+import type * as TreeLike from '#disreact/core/internal/TreeLike.ts';
 
 export type Node = | Text
                    | List
@@ -23,20 +24,36 @@ export type Node = | Text
                    | Rest
                    | Func;
 
-export interface Base extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage<Node>, Lateral.Lateral<Node> {
+export interface Base extends Pipeable.Pipeable,
+  Inspectable.Inspectable,
+  Lineage.Lineage<Node>,
+  Lateral.Lateral<Node>,
+  TreeLike.Ancestor<Node>,
+  TreeLike.Descendent<Node, 'children'>,
+  TreeLike.Descendent<Node, 'rendered'>,
+  TreeLike.Descendent<Node, 'runtime'>,
+  TreeLike.Sibling<Node>
+{
+  readonly [internal.TypeId]: typeof internal.TypeId;
+
   _tag     : NodeTag;
   source?  : string;
-  children?: Node[] | undefined;
-  rendered?: FC.Out;
+  component: any;
   props    : any;
   trie     : string;
   step     : string;
   idx      : number;
   pdx      : number;
   depth    : number;
+  height   : number;
   name     : string;
+  jsxIndex : number;
+  jsxHeight: number;
+  jsxDepth : number;
+  text?    : any;
   diff?    : Diff.Diff<Node>;
   diffs?   : Diffs.Diffs<Node>[];
+  parent?  : Node | undefined;
 }
 
 export interface Text extends Base {
@@ -172,6 +189,102 @@ export const diffs = dual<
   (self: Node, that: Node[]) => Diffs.Diffs<Node>[]
 >(2, diffsF);
 
+export const updateDF = <A extends Node>(self: A, that: Node): A => {
+  if (process.env.NODE_ENV !== 'production') {
+    if (self._tag !== that._tag) {
+      throw new Error();
+    }
+  }
+  switch (self._tag) {
+    case TEXT_NODE: {
+      self.text = (that as Text).text;
+      return self;
+    }
+    case LIST_NODE: {
+      return self;
+    }
+    case FRAGMENT: {
+      return self;
+    }
+    case INTRINSIC: {
+      self.props = (that as Rest).props;
+      return self;
+    }
+    case FUNCTIONAL: {
+      self.props = (that as Func).props;
+      return self;
+    }
+  }
+};
+
+export const update = dual<
+  <A extends Node>(that: A) => (self: A) => A,
+  <A extends Node>(self: A, that: A) => A
+>(2, updateDF);
+
+export const replaceDF = <A extends Node>(self: Node, that: A): A => {
+  const parent = self.__lineage()!;
+  parent.children![self.idx] = that;
+  return that;
+};
+
+export const replace = dual<
+  <A extends Node>(that: A) => (self: Node) => A,
+  <A extends Node>(self: Node, that: A) => A
+>(2, replaceDF);
+
+export const prependChild = dual<
+  <A extends Node>(that: A) => (self: A) => A,
+  <A extends Node>(self: A, that: A) => A
+>(2, (self, that) => {
+  if (self.children) {
+    self.children.unshift(that);
+  }
+  else {
+    self.children = [that];
+  }
+  return self;
+});
+
+export const appendChild = dual<
+  <A extends Node>(that: Node) => (self: A) => A,
+  <A extends Node>(self: A, that: A) => A
+>(2, (self, that) => {
+  if (self.children) {
+    self.children.push(that);
+  }
+  else {
+    self.children = [that];
+  }
+  return self;
+});
+
+export const insertChild = dual<
+  <A extends Node>(that: Node) => (self: A) => A,
+  <A extends Node>(self: A, that: Node) => A
+>(2, (self, that) => {
+  if (self.children) {
+    self.children.splice(self.idx, 0, that);
+  }
+  else {
+    self.children = [that];
+  }
+  return self;
+});
+
+export const removeChild = dual<
+  <A extends Node>(that: Node) => (self: A) => A,
+  <A extends Node>(self: A, that: Node) => A
+>(2, (self, that) => {
+  if (self.children) {
+    const idx = self.children.indexOf(that);
+    if (idx !== -1) {
+      self.children.splice(idx, 1);
+    }
+  }
+  return self;
+});
+
 export const lca = (ns: Func[]): Option.Option<Func> => {
   if (ns.length === 0) {
     return Option.none();
@@ -179,11 +292,10 @@ export const lca = (ns: Func[]): Option.Option<Func> => {
   if (ns.length === 1) {
     return Option.some(ns[0]);
   }
-
-  return Option.none();
+  return Option.none(); // todo
 };
 
-export const findWithinF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
+export const findWithinDF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
   const stack = [self] as Node[];
 
   while (stack.length) {
@@ -202,9 +314,9 @@ export const findWithinF = <A extends Node>(self: Node, p: (n: Node) => n is A):
 export const findWithin = dual<
   <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
   <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
->(2, (self, p) => findWithinF(self, p));
+>(2, (self, p) => findWithinDF(self, p));
 
-export const findAboveF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
+export const findAboveDF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
   let node = self;
 
   while (node) {
@@ -219,9 +331,9 @@ export const findAboveF = <A extends Node>(self: Node, p: (n: Node) => n is A): 
 export const findAbove = dual<
   <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
   <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
->(2, (self, p) => findAboveF(self, p));
+>(2, (self, p) => findAboveDF(self, p));
 
-export const initializeF = (self: Func, document: Document.Document): Func => {
+export const initializeDF = (self: Func, document: Document.Document): Func => {
   self.polymer = Polymer.empty(self, document);
   return self;
 };
@@ -229,9 +341,9 @@ export const initializeF = (self: Func, document: Document.Document): Func => {
 export const initialize = dual<
   (document: Document.Document) => (self: Func) => Func,
   (self: Func, document: Document.Document) => Func
->(2, initializeF);
+>(2, initializeDF);
 
-export const hydrateF = (self: Func, document: Document.Document): Func => {
+const hydrateDF = (self: Func, document: Document.Document): Func => {
   self.polymer = document.pipe(
     Document.getEncoding(self.trie),
     Option.fromNullable,
@@ -244,7 +356,7 @@ export const hydrateF = (self: Func, document: Document.Document): Func => {
 export const hydrate = dual<
   (document: Document.Document) => (self: Func) => Func,
   (self: Func, document: Document.Document) => Func
->(2, hydrateF);
+>(2, hydrateDF);
 
 export const commitF = (output: any, self: Func): Func => {
   Polymer.commit(self.polymer);
@@ -267,14 +379,14 @@ export const accept = (self: Node) => {
 
 export const disposeF = (self: Node, document: Document.Document) => {
   if (isRenderable(self)) {
-    Polymer.dispose(self.polymer);
-    (self.polymer as any) = undefined;
+    (self.polymer as any) = Polymer.dispose(self.polymer);
   }
   (self.props as any) = undefined;
   (self.children as any) = undefined;
   (self.rendered as any) = undefined;
   (self.diff as any) = undefined;
   (self.diffs as any) = undefined;
+  self.parent = undefined;
   return self;
 };
 
@@ -282,8 +394,6 @@ export const dispose = dual<
   (document: Document.Document) => (self: Node) => Node,
   (self: Node, document: Document.Document) => Node
 >(2, disposeF);
-
-import * as Fn from '#disreact/core/Fn.ts';
 
 export const render = (self: Func) => {
   if (Fn.isStatelessFC(self.component)) {
@@ -296,11 +406,22 @@ export const flush = (self: Func) => {
   return E.die('').pipe(E.as(self));
 };
 
-export const invokeDF = (self: Rest, event: any) => {
+export const invokeDF = (self: Rest, event?: any) => {
+  if (!event) {
+    return E.die('');
+  }
   return E.die('').pipe(E.as(self));
 };
 
 export const invoke = dual<
-  (event: any) => (self: Rest) => E.Effect<Rest>,
-  (self: Rest, event: any) => E.Effect<Rest>
+  (event?: any) => (self: Rest) => E.Effect<Rest>,
+  (self: Rest, event?: any) => E.Effect<Rest>
 >(2, invokeDF);
+
+export const encode = (self: Node) => {
+
+};
+
+export const MutexId = Symbol.for('disreact/mutex');
+
+export const mutex = globalValue(MutexId, () => E.unsafeMakeSemaphore(1));

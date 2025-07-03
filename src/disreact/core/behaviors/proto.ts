@@ -3,6 +3,26 @@ import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 
+type DevErrorContext = {
+
+};
+
+export class DevError extends Error {
+  _tag = 'DevError' as const;
+  constructor(message: string) {
+    super(message);
+    this.name = 'DevError';
+  }
+}
+
+export class FatalError extends Error {
+  _tag = 'FatalError' as const;
+  constructor(message: string) {
+    super(message);
+    this.name = 'FatalError';
+  }
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Fn = Function;
 
@@ -10,15 +30,15 @@ export type FnN<A extends any[], B> = (...p: A) => B;
 
 const async_constructor = (async () => {}).constructor;
 
-export const isAsync = <A extends any[], B>(u: FnN<A, B>): u is FnN<A, Extract<B, Promise<any>>> =>
-  u.constructor === async_constructor;
-
 export const LocalEffectTypeId = Symbol.for('effect/Effect');
 
 export const isEffect = <A, E = never, R = never>(u: unknown): u is E.Effect<A, E, R> =>
   u !== null
   && typeof u === 'object'
   && (u as any)[LocalEffectTypeId];
+
+export const isAsync = <A extends any[], B>(u: FnN<A, B>): u is FnN<A, Extract<B, Promise<any>>> =>
+  u.constructor === async_constructor;
 
 const assignProto = (p: any, o: any) =>
   Object.assign(

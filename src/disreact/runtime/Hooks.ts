@@ -13,7 +13,7 @@ export const UseInteraction = (self: ActivePolymer) => (interaction: any) => {
 };
 
 export const UseState = (self: ActivePolymer) => (initial: any) => {
-  const monomer = polymer.state(initial);
+  const monomer = polymer.stateful(initial);
 
   return [monomer.state, monomer.updater];
 };
@@ -25,29 +25,29 @@ export const UseReducer = (self: ActivePolymer) => (initial: any, reducer: any) 
 };
 
 export const UseEffect = (self: ActivePolymer) => (effect: any, deps?: any[]) => {
-  const monomer = polymer.effect(effect, deps);
+  const monomer = polymer.effectful(effect, deps);
 };
 
 export const UseRef = (self: ActivePolymer) => (initial: any) => {
-  const monomer = polymer.ref(initial);
+  const monomer = polymer.reference(initial);
 
   return monomer;
 };
 
 export const UseMemo = (self: ActivePolymer) => (fn:() => any, deps?: any[]) => {
-  const monomer = polymer.memo(fn(), deps);
+  const monomer = polymer.memoize(fn(), deps);
 
   return monomer.value;
 };
 
 export const UseCallback = (self: ActivePolymer) => (fn: () => any, deps?: any[]) => {
-  const monomer = polymer.memo(fn, deps);
+  const monomer = polymer.memoize(fn, deps);
 
   return monomer.value;
 };
 
 export const UseContext = (self:ActivePolymer) => (context: any) => {
-  const monomer = polymer.context();
+  const monomer = polymer.contextual();
 
   return monomer.value;
 };

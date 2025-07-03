@@ -63,5 +63,3 @@ declare global {
     export interface IntrinsicElements {}
   }
 }
-
-register(() => {});

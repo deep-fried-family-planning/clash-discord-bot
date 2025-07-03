@@ -238,3 +238,21 @@ export const dehydrateMonomer = (self: Polymer.Monomer): Polymer.Encoded => {
     }
   }
 };
+
+export const dispose = (self: Polymer.Polymer) => {
+  for (const monomer of self.stack) {
+    switch (monomer._tag) {
+      case MONOMER_STATE: {
+        continue;
+      }
+    }
+  }
+  if (self.queue.length) {
+    throw new Error();
+  }
+  (self.document as any) = undefined;
+  (self.node as any) = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  return self;
+};

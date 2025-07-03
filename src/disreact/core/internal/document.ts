@@ -1,6 +1,7 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
 import type * as Node from '#disreact/core/Node.ts';
+import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
@@ -9,9 +10,13 @@ const Prototype = proto.type<Document.Document>({
   ...Inspectable.BaseProto,
   toJSON() {
     return Inspectable.format({
-      _id : 'Document',
-      body: this.body,
+      _id  : 'Document',
+      event: this.event,
+      body : this.body,
     });
+  },
+  toString() {
+    return `Document: ${this.body?.toString()}`;
   },
 });
 

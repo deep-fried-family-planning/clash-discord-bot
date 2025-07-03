@@ -1,15 +1,22 @@
 import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
 import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
 import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/polymer.ts';
 import type * as Node from '#disreact/core/Node.ts';
-import * as E from 'effect/Effect';
+import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
-import * as P from 'effect/Predicate';
+
+export type Monomer =
+  | None
+  | Stateful
+  | Reducer
+  | Effectful
+  | Reference
+  | Memoize
+  | Contextual;
 
 export interface BaseMonomer extends Inspectable.Inspectable {
   _tag    : MonomerTag;
@@ -63,24 +70,17 @@ export interface Contextual extends BaseMonomer {
   _tag: typeof MONOMER_CONTEXTUAL;
 }
 
-export type Monomer = | None
-                      | Stateful
-                      | Reducer
-                      | Effectful
-                      | Reference
-                      | Memoize
-                      | Contextual;
-
-export type Encoded = | typeof MONOMER_NONE
-                      | [typeof MONOMER_STATE, any]
-                      | [typeof MONOMER_REDUCER, any]
-                      | typeof MONOMER_EFFECT
-                      | [typeof MONOMER_EFFECT, any[]]
-                      | typeof MONOMER_REF
-                      | [typeof MONOMER_REF, any]
-                      | typeof MONOMER_MEMO
-                      | [typeof MONOMER_MEMO, any[]]
-                      | [typeof MONOMER_CONTEXTUAL];
+export type Encoded =
+  | typeof MONOMER_NONE
+  | [typeof MONOMER_STATE, any]
+  | [typeof MONOMER_REDUCER, any]
+  | typeof MONOMER_EFFECT
+  | [typeof MONOMER_EFFECT, any[]]
+  | typeof MONOMER_REF
+  | [typeof MONOMER_REF, any]
+  | typeof MONOMER_MEMO
+  | [typeof MONOMER_MEMO, any[]]
+  | [typeof MONOMER_CONTEXTUAL];
 
 export type EffectOutput = | void
                            | Promise<void>
@@ -93,7 +93,7 @@ export interface EffectFn {
 export type Effect = | EffectFn
                      | E.Effect<void>;
 
-export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable, Lineage.Lineage, Lateral.Lateral {
+export interface Polymer extends Pipeable.Pipeable, Inspectable.Inspectable {
   document: Document.Document;
   node    : Node.Func;
   pc      : number;
@@ -128,6 +128,15 @@ export const hydrate = (node: Node.Func, document: Document.Document, stack?: En
   return self;
 };
 
+export const commit = (self: Polymer): Polymer => {
+  for (let i = 0; i < self.stack.length; i++) {
+    if (self.stack[i]._tag === MONOMER_STATE) {
+      self.stack[i].changed = false;
+    }
+  }
+  return self;
+};
+
 export const dehydrate = (self: Polymer): Encoded[] => {
   const encoded = [] as Encoded[];
   for (let i = 0; i < self.stack.length; i++) {
@@ -145,39 +154,7 @@ export const dispose = (self: Polymer) => {
   (self.node as any) = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
+  return undefined;
 };
 
-export const commit = (self: Polymer): Polymer => {
-  for (let i = 0; i < self.stack.length; i++) {
-    if (self.stack[i]._tag === MONOMER_STATE) {
-      self.stack[i].changed = false;
-    }
-  }
-  return self;
-};
-
-export const invoke = (self: Polymer): E.Effect<Polymer> => {
-  if (!self.queue.length) {
-    return E.succeed(self);
-  }
-  return E.iterate(self, {
-    while: internal.hasEffects,
-    body : (p) => {
-      const monomer = internal.dequeue(p);
-      const effect = monomer.fn!;
-
-      if (proto.isAsync(effect)) {
-        return E.promise(() => effect()).pipe(E.as(p));
-      }
-      const out = effect();
-
-      if (P.isPromise(out)) {
-        return E.promise(() => out as Promise<void>).pipe(E.as(p));
-      }
-      if (proto.isEffect(out)) {
-        return out.pipe(E.as(p));
-      }
-      return E.succeed(p);
-    },
-  });
-};
+export const dequeue = internal.dequeue;

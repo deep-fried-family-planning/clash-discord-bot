@@ -1,9 +1,12 @@
 import * as Document from '#disreact/core/Document.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Node from '#disreact/core/Node.ts';
 import * as Stack from '#disreact/core/Stack.ts';
+import {Encoder} from '#disreact/model/Encoder.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
+import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
 
 const mutex  = E.unsafeMakeSemaphore(1),
@@ -153,3 +156,74 @@ export const rerender = (document: Document.Document) =>
 export const dehydrate = (document: Document.Document) => {
 
 };
+
+export type Encoding = Record<string, any[]>;
+
+export const encodeDocument = (d?: Document.Document) => Encoder.use(({encodeText, encodeRest}) => {
+  if (!d) {
+    return null;
+  }
+  const s = Stack.make(d, d.body);
+  const stack = MutableList.make<Node.Node>(d.body),
+        final = {} as any,
+        args  = new WeakMap(),
+        outs  = new WeakMap().set(d.body, final);
+
+  while (MutableList.tail(stack)) {
+    const node = MutableList.pop(stack)!,
+          out  = outs.get(node);
+
+    switch (node._tag) {
+      case TEXT_NODE: {
+        if (!node.text) {
+          continue;
+        }
+        encodeText(node, out);
+        continue;
+      }
+      case LIST_NODE:
+      case FRAGMENT:
+      case FUNCTIONAL: {
+        if (!node.children) {
+          continue;
+        }
+        for (const c of node.children.toReversed()) {
+          outs.set(c, out);
+          MutableList.append(stack, c);
+        }
+        if (node._tag === FUNCTIONAL) {
+          // todo
+        }
+        continue;
+      }
+      case INTRINSIC: {
+        if (args.has(node)) {
+          encodeRest(node, out, args.get(node)!);
+          continue;
+        }
+        if (!node.children || node.children.length === 0) {
+          encodeRest(node, out, {});
+          continue;
+        }
+        const arg = {};
+        args.set(node, arg);
+        MutableList.append(stack, node);
+
+        for (const c of node.children.toReversed()) {
+          outs.set(c, arg);
+          MutableList.append(stack, c);
+        }
+      }
+    }
+  }
+  for (const key of Object.keys(final)) {
+    if (final[key]) {
+      return {
+        _tag    : key,
+        hydrator: d.trie,
+        data    : final[key][0],
+      };
+    }
+  }
+  return null;
+});

@@ -4,7 +4,7 @@ export const SKIP    = 0,
              UPDATE  = 1,
              REPLACE = 2,
              CONT    = 3,
-             RENDER = 4;
+             RENDER  = 4;
 
 export type Skip = {
   _tag: typeof SKIP;
@@ -35,7 +35,7 @@ export type Diff<A> = | Skip
                       | Update<A>
                       | Replace<A>
                       | Cont<A>
-| Render;
+                      | Render;
 
 const Skip = proto.type<Skip>({
   _tag: SKIP,

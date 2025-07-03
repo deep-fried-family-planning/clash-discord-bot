@@ -1,9 +1,8 @@
-import type * as Fn from '#disreact/core/Fn.ts';
 import type {FC} from '#disreact/core/Fn.ts';
 import type * as Output from '#disreact/core/immutable/output.ts';
 import * as internal from '#disreact/core/internal/document.ts';
-import type * as Polymer from '#disreact/core/Polymer.ts';
 import type * as Node from '#disreact/core/Node.ts';
+import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import {dual} from 'effect/Function';
@@ -27,22 +26,29 @@ export interface Event<D = any, T = any> {
   openFC<P>(component: FC<P>, props: P): void;
 }
 
-export interface InternalEvent<D = any, T = any> extends AdaptorEvent<D>, Event<D, T>, Inspectable.Inspectable {
-  compare: {
-    endpoint: string | null;
-    props   : any;
-  };
+interface InternalEvent<D = any, T = any> extends AdaptorEvent<D>, Event<D, T>, Inspectable.Inspectable {
+
 }
 
 export interface AdaptorDocument<A = any> {
   endpoint   : string;
   body       : Node.Node;
   interaction: A;
-  event?     : Fn.EventInput;
+  event?     : AdaptorEvent;
   trie       : Record<string, Polymer.Encoded[]>;
 }
 
+export const TypeId = Symbol.for('disreact/Document');
+
 export interface Document<A = any> extends AdaptorDocument<A>, Pipeable.Pipeable, Inspectable.Inspectable {
+  readonly [TypeId]: typeof TypeId;
+
+  endpoint: string;
+  adaptor: {
+    endpoint: string;
+
+  };
+  stage    : string;
   flags    : Set<Node.Func>;
   outstream: Mailbox.Mailbox<Output.Output>;
   final    : Deferred.Deferred<Output.Checkpoint>;
@@ -56,8 +62,8 @@ const effects = E.all([
   Deferred.make<Output.Checkpoint>(),
 ]);
 
-export const make = (input: AdaptorDocument): E.Effect<Document> =>
-  effects.pipe(
+export const make = (input: AdaptorDocument): E.Effect<Document> => {
+  return effects.pipe(
     E.map(([outstream, finalized]) => {
       const self = internal.make(input);
       self.outstream = outstream;
@@ -65,9 +71,10 @@ export const make = (input: AdaptorDocument): E.Effect<Document> =>
       return self;
     }),
   );
+};
 
 export const fork = (self: Document) => {
-  Deferred.await;
+  return fork;
 };
 
 export const getFlags = (self: Document) => internal.getFlags(self);
