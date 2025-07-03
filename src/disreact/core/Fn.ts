@@ -2,7 +2,7 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/fc.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import * as E from 'effect/Effect';
 import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
@@ -159,7 +159,7 @@ export interface Event<D = any, T = any> {
   data  : D;
 
   close(): void;
-  open(node: Node.Node): void;
+  open(node: Node.Element): void;
   openFC<P>(component: FC<P>, props: P): void;
 }
 

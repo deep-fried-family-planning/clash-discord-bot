@@ -1,6 +1,6 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
 import type * as Document from '#disreact/core/Document.ts';
 import * as Inspectable from 'effect/Inspectable';

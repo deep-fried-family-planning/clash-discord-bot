@@ -1,7 +1,7 @@
 import type {FC} from '#disreact/core/Fn.ts';
 import type * as Output from '#disreact/core/immutable/output.ts';
 import * as internal from '#disreact/core/internal/document.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
@@ -22,7 +22,7 @@ export interface Event<D = any, T = any> {
   target: T;
   data  : D;
   close(): void;
-  open(node: Node.Node): void;
+  open(node: Node.Element): void;
   openFC<P>(component: FC<P>, props: P): void;
 }
 
@@ -32,7 +32,7 @@ interface InternalEvent<D = any, T = any> extends AdaptorEvent<D>, Event<D, T>, 
 
 export interface AdaptorDocument<A = any> {
   endpoint   : string;
-  body       : Node.Node;
+  body       : Node.Element;
   interaction: A;
   event?     : AdaptorEvent;
   trie       : Record<string, Polymer.Encoded[]>;

@@ -4,7 +4,7 @@ import type * as Document from '#disreact/core/Document.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
 import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/polymer.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';

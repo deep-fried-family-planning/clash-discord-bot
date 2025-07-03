@@ -6,7 +6,7 @@ import * as Fn from '#disreact/core/Fn.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, type NodeTag, PRODUCTION, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
-import * as internal from '#disreact/core/internal/node.ts';
+import * as internal from '#disreact/core/internal/element.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -18,25 +18,23 @@ import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
 import type * as TreeLike from '#disreact/core/internal/TreeLike.ts';
 
-export type Node = | Text
-                   | List
-                   | Frag
-                   | Rest
-                   | Func;
+export type Element = | Text
+                      | List
+                      | Frag
+                      | Rest
+                      | Func;
 
 export interface Base extends Pipeable.Pipeable,
   Inspectable.Inspectable,
-  Lineage.Lineage<Node>,
-  Lateral.Lateral<Node>,
-  TreeLike.Ancestor<Node>,
-  TreeLike.Descendent<Node, 'children'>,
-  TreeLike.Descendent<Node, 'rendered'>,
-  TreeLike.Descendent<Node, 'runtime'>,
-  TreeLike.Sibling<Node>
+  TreeLike.Ancestor<Element>,
+  TreeLike.Descendent<Element, 'children'>,
+  TreeLike.Descendent<Element, 'rendered'>,
+  TreeLike.Descendent<Element, 'runtime'>,
+  TreeLike.Sibling<Element>
 {
   readonly [internal.TypeId]: typeof internal.TypeId;
 
-  _tag     : NodeTag;
+  _tag     : number;
   source?  : string;
   component: any;
   props    : any;
@@ -51,63 +49,63 @@ export interface Base extends Pipeable.Pipeable,
   jsxHeight: number;
   jsxDepth : number;
   text?    : any;
-  diff?    : Diff.Diff<Node>;
-  diffs?   : Diffs.Diffs<Node>[];
-  parent?  : Node | undefined;
+  diff?    : Diff.Diff<Element>;
+  diffs?   : Diffs.Diffs<Element>[];
+  parent?  : Element | undefined;
 }
 
 export interface Text extends Base {
-  _tag: typeof TEXT_NODE;
+  _tag: typeof internal.TEXT;
   text: string;
 }
 
 export interface List extends Base {
-  _tag: typeof LIST_NODE;
+  _tag: typeof internal.LIST;
 }
 
 export interface Frag extends Base {
-  _tag: typeof FRAGMENT;
+  _tag: typeof internal.FRAG;
 }
 
 export interface Rest extends Base {
-  _tag     : typeof INTRINSIC;
+  _tag     : typeof internal.REST;
   component: string;
 }
 
 export interface Func extends Base {
-  _tag     : typeof FUNCTIONAL;
+  _tag     : typeof internal.FUNC;
   component: FC.Known;
   polymer  : Polymer.Polymer;
 }
 
-export const isElement = (node: Node): node is Exclude<Node, Func> => node._tag < FUNCTIONAL;
+export const isElement = (node: Element): node is Exclude<Element, Func> => node._tag < FUNCTIONAL;
 
-export const isInvokable = (node: Node): node is Rest => node._tag === INTRINSIC;
+export const isInvokable = (node: Element): node is Rest => node._tag === INTRINSIC;
 
-export const isRenderable = (node: Node): node is Func => node._tag > INTRINSIC;
+export const isRenderable = (node: Element): node is Func => node._tag > INTRINSIC;
 
-export const eitherRenderable = (self: Node): Either.Either<Func, Exclude<Node, Func>> => {
+export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Element, Func>> => {
   if (isRenderable(self)) {
     return Either.right(self);
   }
   return Either.left(self);
 };
 
-export const toReversed = (self: Node) => self.children?.toReversed();
+export const toReversed = (self: Element) => self.children?.toReversed();
 
 export const connect = internal.connect;
 
 export const connectRenderedF = internal.connectRendered;
 
 export const connectRendered = dual<
-  <A extends Node>(rendered: any) => (self: A) => Node[],
-  <A extends Node>(self: A, rendered: any) => Node[]
+  <A extends Element>(rendered: any) => (self: A) => Element[],
+  <A extends Element>(self: A, rendered: any) => Element[]
 >(2, connectRenderedF);
 
-export const diffF = (self: Node, that: Node): Diff.Diff<Node> => {
+export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
   switch (self._tag) {
-    case TEXT_NODE: {
-      if (that._tag !== TEXT_NODE) {
+    case internal.TEXT: {
+      if (that._tag !== internal.TEXT) {
         return Diff.replace(that);
       }
       if (self.text !== that.text) {
@@ -115,20 +113,20 @@ export const diffF = (self: Node, that: Node): Diff.Diff<Node> => {
       }
       return Diff.skip();
     }
-    case LIST_NODE: {
-      if (that._tag !== LIST_NODE) {
+    case internal.LIST: {
+      if (that._tag !== internal.LIST) {
         return Diff.replace(that);
       }
       return Diff.cont(that);
     }
-    case FRAGMENT: {
-      if (that._tag !== FRAGMENT) {
+    case internal.FRAG: {
+      if (that._tag !== internal.FRAG) {
         return Diff.replace(that);
       }
       return Diff.cont(that);
     }
-    case INTRINSIC: {
-      if (that._tag !== INTRINSIC) {
+    case internal.REST: {
+      if (that._tag !== internal.REST) {
         return Diff.replace(that);
       }
       if (self.component !== that.component) {
@@ -139,8 +137,8 @@ export const diffF = (self: Node, that: Node): Diff.Diff<Node> => {
       }
       return Diff.cont(that);
     }
-    case FUNCTIONAL: {
-      if (that._tag !== FUNCTIONAL) {
+    case internal.FUNC: {
+      if (that._tag !== internal.FUNC) {
         return Diff.replace(that);
       }
       if (self.component !== that.component) {
@@ -158,12 +156,12 @@ export const diffF = (self: Node, that: Node): Diff.Diff<Node> => {
 };
 
 export const diff = dual<
-  (that: Node) => (self: Node) => Diff.Diff<Node>,
-  (self: Node, that: Node) => Diff.Diff<Node>
+  (that: Element) => (self: Element) => Diff.Diff<Element>,
+  (self: Element, that: Element) => Diff.Diff<Element>
 >(2, diffF);
 
-export const diffsF = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
-  const acc = [] as Diffs.Diffs<Node>[];
+export const diffsF = (self: Element, that?: Element[]): Diffs.Diffs<Element>[] => {
+  const acc = [] as Diffs.Diffs<Element>[];
 
   if (!self.children && !that) {
     return [];
@@ -185,32 +183,32 @@ export const diffsF = (self: Node, that?: Node[]): Diffs.Diffs<Node>[] => {
 };
 
 export const diffs = dual<
-  (that: Node[]) => (self: Node) => Diff.Diff<Node>[],
-  (self: Node, that: Node[]) => Diffs.Diffs<Node>[]
+  (that: Element[]) => (self: Element) => Diff.Diff<Element>[],
+  (self: Element, that: Element[]) => Diffs.Diffs<Element>[]
 >(2, diffsF);
 
-export const updateDF = <A extends Node>(self: A, that: Node): A => {
+export const updateDF = <A extends Element>(self: A, that: Element): A => {
   if (process.env.NODE_ENV !== 'production') {
     if (self._tag !== that._tag) {
       throw new Error();
     }
   }
   switch (self._tag) {
-    case TEXT_NODE: {
+    case internal.TEXT: {
       self.text = (that as Text).text;
       return self;
     }
-    case LIST_NODE: {
+    case internal.LIST: {
       return self;
     }
-    case FRAGMENT: {
+    case internal.FRAG: {
       return self;
     }
-    case INTRINSIC: {
+    case internal.REST: {
       self.props = (that as Rest).props;
       return self;
     }
-    case FUNCTIONAL: {
+    case internal.FUNC: {
       self.props = (that as Func).props;
       return self;
     }
@@ -218,24 +216,22 @@ export const updateDF = <A extends Node>(self: A, that: Node): A => {
 };
 
 export const update = dual<
-  <A extends Node>(that: A) => (self: A) => A,
-  <A extends Node>(self: A, that: A) => A
+  <A extends Element>(that: A) => (self: A) => A,
+  <A extends Element>(self: A, that: A) => A
 >(2, updateDF);
 
-export const replaceDF = <A extends Node>(self: Node, that: A): A => {
-  const parent = self.__lineage()!;
-  parent.children![self.idx] = that;
+export const replaceDF = <A extends Element>(self: Element, that: A): A => {
   return that;
 };
 
 export const replace = dual<
-  <A extends Node>(that: A) => (self: Node) => A,
-  <A extends Node>(self: Node, that: A) => A
+  <A extends Element>(that: A) => (self: Element) => A,
+  <A extends Element>(self: Element, that: A) => A
 >(2, replaceDF);
 
 export const prependChild = dual<
-  <A extends Node>(that: A) => (self: A) => A,
-  <A extends Node>(self: A, that: A) => A
+  <A extends Element>(that: A) => (self: A) => A,
+  <A extends Element>(self: A, that: A) => A
 >(2, (self, that) => {
   if (self.children) {
     self.children.unshift(that);
@@ -247,8 +243,8 @@ export const prependChild = dual<
 });
 
 export const appendChild = dual<
-  <A extends Node>(that: Node) => (self: A) => A,
-  <A extends Node>(self: A, that: A) => A
+  <A extends Element>(that: Element) => (self: A) => A,
+  <A extends Element>(self: A, that: A) => A
 >(2, (self, that) => {
   if (self.children) {
     self.children.push(that);
@@ -260,8 +256,8 @@ export const appendChild = dual<
 });
 
 export const insertChild = dual<
-  <A extends Node>(that: Node) => (self: A) => A,
-  <A extends Node>(self: A, that: Node) => A
+  <A extends Element>(that: Element) => (self: A) => A,
+  <A extends Element>(self: A, that: Element) => A
 >(2, (self, that) => {
   if (self.children) {
     self.children.splice(self.idx, 0, that);
@@ -273,8 +269,8 @@ export const insertChild = dual<
 });
 
 export const removeChild = dual<
-  <A extends Node>(that: Node) => (self: A) => A,
-  <A extends Node>(self: A, that: Node) => A
+  <A extends Element>(that: Element) => (self: A) => A,
+  <A extends Element>(self: A, that: Element) => A
 >(2, (self, that) => {
   if (self.children) {
     const idx = self.children.indexOf(that);
@@ -295,8 +291,8 @@ export const lca = (ns: Func[]): Option.Option<Func> => {
   return Option.none(); // todo
 };
 
-export const findWithinDF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
-  const stack = [self] as Node[];
+export const findWithinDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
+  const stack = [self] as Element[];
 
   while (stack.length) {
     const node = stack.pop()!;
@@ -312,11 +308,11 @@ export const findWithinDF = <A extends Node>(self: Node, p: (n: Node) => n is A)
 };
 
 export const findWithin = dual<
-  <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
-  <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
+  <A extends Element>(p: (n: Element) => n is A) => (self: Element) => Option.Option<A>,
+  <A extends Element>(self: Element, p: (n: Element) => n is A) => Option.Option<A>
 >(2, (self, p) => findWithinDF(self, p));
 
-export const findAboveDF = <A extends Node>(self: Node, p: (n: Node) => n is A): Option.Option<A> => {
+export const findAboveDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
   let node = self;
 
   while (node) {
@@ -329,8 +325,8 @@ export const findAboveDF = <A extends Node>(self: Node, p: (n: Node) => n is A):
 };
 
 export const findAbove = dual<
-  <A extends Node>(p: (n: Node) => n is A) => (self: Node) => Option.Option<A>,
-  <A extends Node>(self: Node, p: (n: Node) => n is A) => Option.Option<A>
+  <A extends Element>(p: (n: Element) => n is A) => (self: Element) => Option.Option<A>,
+  <A extends Element>(self: Element, p: (n: Element) => n is A) => Option.Option<A>
 >(2, (self, p) => findAboveDF(self, p));
 
 export const initializeDF = (self: Func, document: Document.Document): Func => {
@@ -372,12 +368,12 @@ export const commit = dual<
   (output: any, self: Func) => Func
 >(2, commitF);
 
-export const accept = (self: Node) => {
+export const accept = (self: Element) => {
   self.children = connectRendered(self, self.children);
   return self;
 };
 
-export const disposeF = (self: Node, document: Document.Document) => {
+export const disposeF = (self: Element, document: Document.Document) => {
   if (isRenderable(self)) {
     (self.polymer as any) = Polymer.dispose(self.polymer);
   }
@@ -391,8 +387,8 @@ export const disposeF = (self: Node, document: Document.Document) => {
 };
 
 export const dispose = dual<
-  (document: Document.Document) => (self: Node) => Node,
-  (self: Node, document: Document.Document) => Node
+  (document: Document.Document) => (self: Element) => Element,
+  (self: Element, document: Document.Document) => Element
 >(2, disposeF);
 
 export const render = (self: Func) => {
@@ -418,7 +414,7 @@ export const invoke = dual<
   (self: Rest, event?: any) => E.Effect<Rest>
 >(2, invokeDF);
 
-export const encode = (self: Node) => {
+export const encode = (self: Element) => {
 
 };
 

@@ -1,5 +1,5 @@
-import type * as Node from '#disreact/core/Node.ts';
-import * as internal from '#disreact/core/internal/node.ts';
+import type * as Node from '#disreact/core/Element.ts';
+import * as internal from '#disreact/core/internal/element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 
 export type Text = | undefined
@@ -13,7 +13,7 @@ export type Type = | keyof JSX.IntrinsicElements
                    | Text
                    | FC.FC;
 
-export type Jsx = Node.Node;
+export type Jsx = Node.Element;
 
 const makeChild = (type: any): Jsx => {
   if (!type || typeof type !== 'object') {

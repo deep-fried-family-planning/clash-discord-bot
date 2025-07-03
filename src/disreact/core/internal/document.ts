@@ -1,6 +1,6 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Element from '#disreact/core/Element.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
@@ -26,7 +26,7 @@ export const make = (input: Document.AdaptorDocument) =>
     flags: new Set(),
   });
 
-export const flagNode = (self: Document.Document, node: Node.Func) => {
+export const flagNode = (self: Document.Document, node: Element.Func) => {
   self.flags.add(node);
   return self;
 };

@@ -1,6 +1,6 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
 import {PRODUCTION} from '#disreact/core/immutable/constants.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import type * as Lifecycle from '#disreact/model/Lifecycle.ts';
 import * as E from 'effect/Effect';
 

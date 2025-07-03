@@ -1,6 +1,6 @@
 import type * as Document from '#disreact/core/Document.ts';
 import * as internal from '#disreact/core/internal/stack.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
@@ -8,7 +8,7 @@ import type * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
 
-export interface Stack<A = Node.Node> extends Pipeable.Pipeable, Inspectable.Inspectable {
+export interface Stack<A = Node.Element> extends Pipeable.Pipeable, Inspectable.Inspectable {
   document : Document.Document<A>;
   root     : A;
   values   : A[];

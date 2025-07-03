@@ -1,7 +1,7 @@
 import type * as FC from '#disreact/core/FC.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as fc from '#disreact/core/internal/fc.ts';
-import type * as Node from '#disreact/core/Node.ts';
+import type * as Element from '#disreact/core/Element.ts';
 import type * as Jsx from '#disreact/runtime/Jsx.ts';
 import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
 import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
@@ -17,7 +17,13 @@ export const TypeId = Symbol.for('disreact/node');
 
 export const FragmentSymbol = Symbol.for('disreact/fragment');
 
-const Prototype = proto.type<Node.Node>({
+export const TEXT = 1,
+             LIST = 2,
+             FRAG = 3,
+             REST = 4,
+             FUNC = 5;
+
+const Prototype = proto.type<Element.Element>({
   [TypeId] : TypeId,
   _tag     : undefined as any,
   component: undefined as any,
@@ -47,57 +53,57 @@ const Prototype = proto.type<Node.Node>({
 
 export const isValue = (u: unknown): u is Jsx.Text => !u || typeof u !== 'object';
 
-export const isNode = (u: unknown): u is Node.Node => !!u && typeof u === 'object' && TypeId in u;
+export const isNode = (u: unknown): u is Element.Element => !!u && typeof u === 'object' && TypeId in u;
 
-export const isNodeNonPrimitive = (u: {}): u is Node.Node => TypeId in u;
+export const isNodeNonPrimitive = (u: {}): u is Element.Element => TypeId in u;
 
-export const text = (text: any): Node.Text =>
+export const text = (text: any): Element.Text =>
   proto.init(Prototype, {
-    _tag: TEXT_NODE,
+    _tag: TEXT,
     text: text,
     name: '{}',
-  }) as Node.Text;
+  }) as Element.Text;
 
-export const list = (children: Node.Node[]): Node.List =>
+export const list = (children: Element.Element[]): Element.List =>
   proto.init(Prototype, {
-    _tag    : LIST_NODE,
+    _tag    : LIST,
     children: children,
     name    : '[]',
-  }) as Node.List;
+  }) as Element.List;
 
-export const frag = (children: Node.Node[]): Node.Frag =>
+export const frag = (children: Element.Element[]): Element.Frag =>
   proto.init(Prototype, {
-    _tag    : FRAGMENT,
+    _tag    : FRAG,
     children: children,
     name    : '</>',
-  }) as Node.Frag;
+  }) as Element.Frag;
 
-export const rest = (type: string, props: any): Node.Rest => {
+export const rest = (type: string, props: any): Element.Rest => {
   const self = proto.init(Prototype, {
-    _tag     : INTRINSIC,
+    _tag     : REST,
     component: type,
     props    : propsIntrinsic(props),
     name     : type,
   });
-  return self as Node.Rest;
+  return self as Element.Rest;
 };
 
-export const func = (type: FC.FC, props: any): Node.Func => {
+export const func = (type: FC.FC, props: any): Element.Func => {
   const component = fc.register(type);
 
   return proto.init(Prototype, {
-    _tag     : FUNCTIONAL,
+    _tag     : FUNC,
     component: component,
     props    : makeProps(props),
     name     : component._id!,
-  }) as Node.Func;
+  }) as Element.Func;
 };
 
-export const trie = (self: Node.Node) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
+export const trie = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
 
-export const step = (self: Node.Node) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
+export const step = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
 
-export const clone = <A extends Node.Node>(self: A | unknown): A => {
+export const clone = <A extends Element.Element>(self: A | unknown): A => {
   if (!isNode(self)) {
     throw new Error(`[Node.clone]: unknown type ${self}`);
   }
@@ -120,7 +126,7 @@ export const clone = <A extends Node.Node>(self: A | unknown): A => {
   }
 };
 
-export const liftChild = (child: unknown | unknown[]): Node.Node => {
+export const liftChild = (child: unknown | unknown[]): Element.Element => {
   if (isValue(child)) {
     return text(child);
   }
@@ -133,15 +139,15 @@ export const liftChild = (child: unknown | unknown[]): Node.Node => {
   throw new Error();
 };
 
-export const liftChildrenJsx = (children: unknown, parent: Node.Node): Node.Node[] => {
+export const liftChildrenJsx = (children: unknown, parent: Element.Element): Element.Element[] => {
   const self = liftChild(children);
   parent.jsxHeight = self.jsxHeight + 1;
   self.parent = parent;
   return [self];
 };
 
-export const liftChildrenJsxs = (children: unknown[], parent: Node.Node): Node.Node[] => {
-  const acc = Array.fromIterable(children) as Node.Node[];
+export const liftChildrenJsxs = (children: unknown[], parent: Element.Element): Element.Element[] => {
+  const acc = Array.fromIterable(children) as Element.Element[];
   let h = 0;
   for (let i = 0; i < children.length; i++) {
     const self = liftChild(children[i]);
@@ -154,7 +160,7 @@ export const liftChildrenJsxs = (children: unknown[], parent: Node.Node): Node.N
   return acc;
 };
 
-export const liftChildrenRendered = (children: unknown | unknown[], parent: Node.Node): Node.Node[] => {
+export const liftChildrenRendered = (children: unknown | unknown[], parent: Element.Element): Element.Element[] => {
   if (!children || typeof children !== 'object') {
     return [text(children)];
   }
@@ -170,7 +176,7 @@ export const liftChildrenRendered = (children: unknown | unknown[], parent: Node
   throw new Error();
 };
 
-export const connectSingleRendered = (self: Node.Node, child: any): Node.Node[] => {
+export const connectSingleRendered = (self: Element.Element, child: any): Element.Element[] => {
   if (!child || typeof child !== 'object') {
     child = text(child);
   }
@@ -178,14 +184,14 @@ export const connectSingleRendered = (self: Node.Node, child: any): Node.Node[] 
     child = list(child);
   }
   Lineage.set(child, self);
-  (child as Node.Node).depth = self.depth + 1;
-  (child as Node.Node).pdx = self.pdx;
-  (child as Node.Node).trie = `${self.trie}:${trie(child)}`;
-  (child as Node.Node).step = `${self.step}:${step(child)}`;
+  (child as Element.Element).depth = self.depth + 1;
+  (child as Element.Element).pdx = self.pdx;
+  (child as Element.Element).trie = `${self.trie}:${trie(child)}`;
+  (child as Element.Element).step = `${self.step}:${step(child)}`;
   return [child];
 };
 
-export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[] => {
+export const connectAllRendered = (self: Element.Element, children: any[]): Element.Element[] => {
   const depth = self.depth + 1;
   const name = step(self);
 
@@ -196,7 +202,7 @@ export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[
     if (!children[i]._tag) {
       children[i] = list(children[i]);
     }
-    const child = children[i] as Node.Node;
+    const child = children[i] as Element.Element;
     Lineage.set(child, self);
     if (children[i - 1]) {
       Lateral.setTail(child, children[i - 1]);
@@ -211,7 +217,7 @@ export const connectAllRendered = (self: Node.Node, children: any[]): Node.Node[
   return children;
 };
 
-export const connectRendered = (self: Node.Node, children?: any[]): Node.Node[] => {
+export const connectRendered = (self: Element.Element, children?: any[]): Element.Element[] => {
   if (!children) {
     return [];
   }
@@ -224,7 +230,7 @@ export const connectRendered = (self: Node.Node, children?: any[]): Node.Node[] 
   return connectAllRendered(self, children);
 };
 
-export const connect = <A extends Node.Node>(self: A): A => {
+export const connect = <A extends Element.Element>(self: A): A => {
   if (!self.children) {
     return self;
   }
@@ -232,7 +238,7 @@ export const connect = <A extends Node.Node>(self: A): A => {
   return self;
 };
 
-export const accept = <A extends Node.Node>(self: A): A => {
+export const accept = <A extends Element.Element>(self: A): A => {
 
 };
 
@@ -271,7 +277,7 @@ export const propsIntrinsic = (input: any) => {
   return self;
 };
 
-function toJSON(this: Node.Node) {
+function toJSON(this: Element.Element) {
   switch (this._tag) {
     case TEXT_NODE: {
       return Inspectable.format({
@@ -316,9 +322,9 @@ function toJSON(this: Node.Node) {
   }
 }
 
-function toString(this: Node.Node) {
+function toString(this: Element.Element) {
   const stack = [this];
-  const close = new WeakSet<Node.Node>();
+  const close = new WeakSet<Element.Element>();
   const acc = [] as string[];
 
   while (stack.length > 0) {

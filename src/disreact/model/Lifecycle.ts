@@ -1,6 +1,6 @@
 import * as Document from '#disreact/core/Document.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as Node from '#disreact/core/Node.ts';
+import * as Node from '#disreact/core/Element.ts';
 import * as Stack from '#disreact/core/Stack.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
@@ -122,15 +122,15 @@ export const invoke = (document: Document.Document) =>
     E.as(document),
   );
 
-const mount = (root: Node.Node, document: Document.Document) =>
+const mount = (root: Node.Element, document: Document.Document) =>
   E.iterate(Stack.make(document, root), {
     while: Stack.while,
     body : initializeSPS,
   });
 
-const unmount = (root: Node.Node, document: Document.Document) => {
+const unmount = (root: Node.Element, document: Document.Document) => {
   const stack = Stack.make(document, root);
-  const visited = new WeakSet<Node.Node>();
+  const visited = new WeakSet<Node.Element>();
 
   while (Stack.while(stack)) {
     const node = Stack.pop(stack);
@@ -164,7 +164,7 @@ export const encodeDocument = (d?: Document.Document) => Encoder.use(({encodeTex
     return null;
   }
   const s = Stack.make(d, d.body);
-  const stack = MutableList.make<Node.Node>(d.body),
+  const stack = MutableList.make<Node.Element>(d.body),
         final = {} as any,
         args  = new WeakMap(),
         outs  = new WeakMap().set(d.body, final);
