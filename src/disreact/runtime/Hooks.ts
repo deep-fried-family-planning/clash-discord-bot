@@ -9,11 +9,11 @@ type ActivePolymer = {
 export const UseInteraction = (self: ActivePolymer) => (interaction: any) => {
   const monomer = polymer.none();
 
-  return self.polymer.document.interaction;
+  return self.polymer.origin!.interaction;
 };
 
 export const UseState = (self: ActivePolymer) => (initial: any) => {
-  const monomer = polymer.stateful(initial);
+  const monomer = polymer.stateful(false, initial);
 
   return [monomer.state, monomer.updater];
 };

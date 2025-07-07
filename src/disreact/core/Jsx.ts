@@ -117,13 +117,3 @@ export const makeDEV = (
   elem.ctx = ctx;
   return elem;
 };
-
-export interface Endpoint extends Inspectable.Inspectable {
-  id       : string;
-  component: FC.FC;
-}
-
-export const endpoint = (id: string, component: FC.FC): Endpoint => ({
-  id,
-  component,
-});

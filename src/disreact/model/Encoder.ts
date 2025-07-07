@@ -10,9 +10,10 @@ export type EncoderConfig = {
   normalize: Record<string, string>;
 };
 
-const purgeUndefinedKeys = (obj: Record<string, any>) => {
-
-};
+const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
+  Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined),
+  ) as A;
 
 export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
   effect: (config: EncoderConfig) => E.gen(function* () {
@@ -24,11 +25,6 @@ export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
       encodeText: (node: Node.Text, acc: Lifecycle.Encoding) => {
         if (!node.text) {
           return acc;
-        }
-        if (process.env.NODE_ENV !== PRODUCTION) {
-          switch (typeof node.text) {
-
-          }
         }
         acc[primitive] ??= [];
         acc[primitive].push(node.text);
@@ -45,7 +41,7 @@ export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
         const encoded = encoder(node, arg);
 
         acc[key] ??= [];
-        acc[key].push(encoded);
+        acc[key].push(purgeUndefinedKeys(encoded));
         return acc;
       },
     };

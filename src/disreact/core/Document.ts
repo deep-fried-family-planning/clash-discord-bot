@@ -10,30 +10,7 @@ import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
-
-export interface Hydrant {
-  version?: string;
-  key?    : string;
-  hash?   : string;
-  endpoint: string;
-  props   : Record<string, any>;
-  state   : Record<string, Polymer.Encoded[]>;
-}
-
-export const hydrant = (
-  endpoint: string,
-  props: Record<string, any>,
-  state: Record<string, Polymer.Encoded[]>,
-) => ({
-  endpoint,
-  props,
-  state,
-});
-
-export interface Endpoint extends Inspectable.Inspectable {
-  id       : string;
-  component: FC.FC;
-}
+import * as Hydrant from '#disreact/core/Hydrant.ts';
 
 export interface AdaptorEvent<D = any> {
   endpoint: string;

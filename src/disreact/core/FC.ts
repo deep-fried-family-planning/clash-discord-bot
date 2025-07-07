@@ -5,7 +5,7 @@ import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
 
-export type Out = JSX.Element;
+export type Out = JSX.Element<any, any>;
 
 interface Base extends Inspectable.Inspectable {
   _id?        : string;

@@ -9,11 +9,6 @@ import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
 
-export interface Endpoint {
-  id       : string;
-  component: any;
-}
-
 export type Out = JSX.Element;
 
 interface Base extends Inspectable.Inspectable {

@@ -59,13 +59,11 @@ export const lowestCommonAncestor = <A extends Ancestor<any>>(nodes?: A[]): A | 
   return lca;
 };
 
-// export type Descendent<A extends Descendent<any, B>, B extends string = 'children'> = {
-//   [k in B]: A[] | undefined;
-// };
-
 export type Descendent<A extends Descendent<any>> = {
   children: undefined | A[];
 };
+
+export const forEachDescendent = <A extends Descendent<any>>(self: A, f: (self: A) => void) => {};
 
 export const dfsPreOrder = <A extends Descendent<any>>(start: A): A[] => {
   const ts = [start];
