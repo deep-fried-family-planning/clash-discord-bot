@@ -7,7 +7,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
 import * as Equal from 'effect/Equal';
 
-const FunctionComponentPrototype = proto.type<FC.Known>({
+const FCPrototype = proto.type<FC.Known>({
   _id  : ANONYMOUS,
   state: true,
   props: true,
@@ -25,13 +25,12 @@ const FunctionComponentPrototype = proto.type<FC.Known>({
 
 export const isFC = (u: unknown): u is FC.FC => typeof u === 'function';
 
-
 export const register = (fn: FC.FC): FC.Known => {
   if (isKnown(fn)) {
     return fn;
   }
 
-  const fc = proto.impure(FunctionComponentPrototype, fn);
+  const fc = proto.impure(FCPrototype, fn);
 
   if (fn.length === 0) {
     fc.props = false;
@@ -109,10 +108,10 @@ const EventPrototype = proto.type<Fn.EventInternal>({
     this.compare!.props = props;
   },
   open(node) {
-    if (!node.source) {
+    if (!node.src) {
       throw new Error();
     }
-    this.compare!.endpoint = node.source;
+    this.compare!.endpoint = node.endpoint;
     this.compare!.props = node.props;
   },
 });

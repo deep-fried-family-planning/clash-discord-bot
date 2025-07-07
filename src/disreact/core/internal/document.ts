@@ -1,7 +1,6 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as Document from '#disreact/core/Document.ts';
 import type * as Element from '#disreact/core/Element.ts';
-import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
@@ -53,4 +52,10 @@ export const addEncoding = (self: Document.Document, id: string, encoded: any) =
     throw new Error();
   }
   self.trie[id] = encoded;
+};
+
+export const dispose = (self: Document.Document) => {
+  (self.body as any) = undefined;
+  (self.trie as any) = undefined;
+  (self.flags as any) = undefined;
 };

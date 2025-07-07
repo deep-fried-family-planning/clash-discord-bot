@@ -1,10 +1,18 @@
-export interface Root<A> {
-  root: A | undefined;
+export interface Origin<A> {
+  origin: A | undefined;
 }
+
+export const setOrigin = <A extends Origin<any>>(self: A, root: A) => {
+  self.origin = root.origin;
+};
 
 export interface Ancestor<A extends Ancestor<any>> {
   ancestor: A | undefined;
 }
+
+export const setAncestor = <A extends Ancestor<any>>(self: A, ancestor: A) => {
+  self.ancestor = ancestor;
+};
 
 export const ancestryRoot = <A extends Ancestor<any>>(node: A): A | undefined => {
   let a = node.ancestor;
@@ -119,6 +127,11 @@ export interface Sibling<A extends Sibling<any>> {
   tail: A | undefined;
 }
 
+export const setSiblings = <A extends Sibling<any>>(head: A, tail: A) => {
+  head.tail = tail;
+  tail.head = head;
+};
+
 export const adjacencyList = <A extends Sibling<any>>(node: A): A[] => {
   const as = [node];
   let current = node.head;
@@ -135,13 +148,11 @@ export const adjacencyList = <A extends Sibling<any>>(node: A): A[] => {
 };
 
 export const replace = <A extends Sibling<any>>(node: A, replacement: A): A => {
-
+  throw new Error();
 };
 
 export const remove = <A extends Sibling<any>>(node: A): A => {
-  if (!node.head) {
-    return node;
-  }
+  throw new Error();
 };
 
 export const insertAfter = <A extends Sibling<any>>(node: A, after: A): A => {
@@ -154,6 +165,7 @@ export const insertAfter = <A extends Sibling<any>>(node: A, after: A): A => {
   node.tail = after;
   after.head = node;
   tail.tail = after;
+  throw new Error();
 };
 
 export const insertBefore = <A extends Sibling<any>>(node: A, before: A): A => {
@@ -164,6 +176,7 @@ export const insertBefore = <A extends Sibling<any>>(node: A, before: A): A => {
   }
   const head = node.head;
   node.head = before;
+  throw new Error();
 };
 
 export interface Meta {
@@ -173,10 +186,13 @@ export interface Meta {
   height : number;
   depth  : number;
   valence: number;
-  source?: any;
-  self?  : any;
 }
 
 export const trie = <A extends Meta>(self: A) => `${self.trie}`;
 
 export const step = <A extends Meta>(self: A) => `${self.step}`;
+
+export interface DEV {
+  src?: any;
+  ctx?: any;
+}

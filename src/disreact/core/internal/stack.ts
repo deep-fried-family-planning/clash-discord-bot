@@ -17,7 +17,8 @@ const Prototype = proto.type<Stack.Stack<any>>({
 
 export const make = (document: Document.Document, root = document.body): Stack.Stack<any> =>
   proto.init(Prototype, {
-    document : document,
+    origin   : document,
+    root     : root,
     values   : [root],
     pop      : [],
     push     : [root],

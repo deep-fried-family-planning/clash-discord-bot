@@ -1,17 +1,14 @@
 import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
-import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as fc from '#disreact/core/internal/fc.ts';
-import type * as Jsx from '#disreact/runtime/Jsx.ts';
-import * as Lateral from '#src/disreact/core/behaviors/lateral.ts';
-import * as Lineage from '#src/disreact/core/behaviors/lineage.ts';
+import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT} from '#disreact/core/immutable/constants.ts';
+import * as fc from '#disreact/core/internal/fn.ts';
+import * as TreeLike from '#disreact/core/Traversal.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
-import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
-import * as MutableRef from 'effect/MutableRef';
 import * as Pipeable from 'effect/Pipeable';
+import type {Mutable} from 'effect/Types';
 
 export const TypeId = Symbol.for('disreact/node');
 
@@ -19,242 +16,202 @@ export const FragmentSymbol = Symbol.for('disreact/fragment');
 
 const Prototype = proto.type<Element.Element>({
   [TypeId] : TypeId,
-  _tag     : undefined as any,
+  _tag     : ELEMENT_INTRINSIC as any,
   component: undefined as any,
-  text     : undefined as any,
+  polymer  : undefined as any,
   props    : undefined as any,
   children : undefined as any,
-  rendered : undefined as any,
-  polymer  : undefined as any,
-  trie     : undefined as any,
-  step     : undefined as any,
-  idx      : 0,
-  pdx      : 0,
+  key      : '',
+  ref      : undefined,
+  text     : undefined as any,
+  merge    : false,
+  diff     : undefined,
+  diffs    : undefined,
+  trie     : '',
+  step     : '',
+  index    : 0,
   depth    : 0,
+  valence  : 0,
   height   : 0,
-  jsxIndex : 0,
-  jsxHeight: 0,
-  jsxDepth : 0,
-  name     : undefined as any,
-  parent   : undefined,
-  ...Lineage.Prototype,
-  ...Lateral.Prototype,
+  head     : undefined,
+  tail     : undefined,
+  ancestor : undefined,
+  origin   : undefined,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON,
   toString,
 });
 
-export const isValue = (u: unknown): u is Jsx.Text => !u || typeof u !== 'object';
-
-export const isNode = (u: unknown): u is Element.Element => !!u && typeof u === 'object' && TypeId in u;
+export const isElement = (u: unknown): u is Element.Element => !!u && typeof u === 'object' && TypeId in u;
 
 export const isNodeNonPrimitive = (u: {}): u is Element.Element => TypeId in u;
 
 export const text = (text: any): Element.Text =>
-  proto.init(Prototype, {
-    _tag: ELEMENT_TEXT,
-    text: text,
-    name: '{}',
-  }) as Element.Text;
+  proto.init(
+    Prototype,
+    {
+      _tag     : ELEMENT_TEXT,
+      component: undefined,
+      text     : text,
+    },
+  ) as Element.Text;
 
-export const list = (children: Element.Element[]): Element.List =>
-  proto.init(Prototype, {
-    _tag    : ELEMENT_LIST,
-    children: children,
-    name    : '[]',
-  }) as Element.List;
+export const list = (children: unknown[]): Element.List =>
+  proto.init(
+    Prototype,
+    {
+      _tag     : ELEMENT_LIST,
+      component: children.length,
+      children : children.map(makeChild),
+    },
+  ) as Element.List;
 
-export const frag = (children: Element.Element[]): Element.Frag =>
-  proto.init(Prototype, {
-    _tag    : ELEMENT_FRAGMENT,
-    children: children,
-    name    : '</>',
-  }) as Element.Frag;
+export const frag = (props: any, key?: string): Element.Frag =>
+  proto.init(
+    Prototype,
+    {
+      _tag     : ELEMENT_FRAGMENT,
+      component: FragmentSymbol,
+      key      : key ?? props.key ?? '',
+      props    : makeHandlerProps(props),
+    },
+  ) as Element.Frag;
 
-export const rest = (type: string, props: any): Element.Rest => {
-  const self = proto.init(Prototype, {
-    _tag     : ELEMENT_INTRINSIC,
-    component: type,
-    props    : propsIntrinsic(props),
-    name     : type,
-  });
-  return self as Element.Rest;
-};
+export const rest = (type: string, props: any, key?: string): Element.Rest =>
+  proto.init(
+    Prototype,
+    {
+      key      : key ?? props.key ?? '',
+      _tag     : ELEMENT_INTRINSIC,
+      component: type,
+      props    : makeHandlerProps(props),
+    },
+  ) as Element.Rest;
 
-export const func = (type: FC.FC, props: any): Element.Func => {
-  const component = fc.register(type);
+export const func = (type: FC.FC, props: any, key?: string): Element.Func =>
+  proto.init(
+    Prototype,
+    {
+      key      : key ?? props.key ?? '',
+      _tag     : ELEMENT_FUNCTIONAL,
+      component: fc.register(type),
+      props    : makeProps(props),
+    },
+  ) as Element.Func;
 
-  return proto.init(Prototype, {
-    _tag     : ELEMENT_FUNCTIONAL,
-    component: component,
-    props    : makeProps(props),
-    name     : component._id!,
-  }) as Element.Func;
-};
-
-export const make = (type: any, config: any, key?: string) => {
-  if (type === FragmentSymbol) {
-    return frag();
-  }
-  switch (typeof type) {
-    case 'string': {
-      return rest(type, config);
-    }
-    case 'function': {
-      return func(type, config);
-    }
-  }
-};
-
-export const trie = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
-
-export const step = (self: Element.Element) => `${self.depth}:${self.pdx}:${self.idx}:${self.name}`;
+export const create = () => proto.create(Prototype) as Mutable<Element.Element>;
 
 export const clone = <A extends Element.Element>(self: A | unknown): A => {
-  if (!isNode(self)) {
+  if (!isElement(self)) {
     throw new Error(`[Node.clone]: unknown type ${self}`);
   }
-  switch (self._tag) {
-    case ELEMENT_TEXT: {
-      return text(self.text) as A;
-    }
-    case ELEMENT_LIST: {
-      return list(self.children?.map(clone) ?? []) as A; // todo
-    }
-    case ELEMENT_FRAGMENT: {
-      return frag(self.children?.map(clone) ?? []) as A;
-    }
-    case ELEMENT_INTRINSIC: {
-      return rest(self.component, self.props) as A;
-    }
-    case ELEMENT_FUNCTIONAL: {
-      return func(self.component, self.props) as A;
-    }
+  const element = create();
+  element._tag = self._tag;
+  element.component = self.component;
+  element.key = self.key;
+  element.ref = self.ref;
+  element.depth = self.depth;
+  if (element._tag === ELEMENT_TEXT) {
+    element.text = self.text;
+    return element as A;
   }
+  if (element._tag === ELEMENT_LIST) {
+    element.children = self.children?.map(clone) ?? [];
+    return element as A;
+  }
+  if (element._tag === ELEMENT_FRAGMENT) {
+    element.component = self.component;
+    element.children = self.children?.map(clone) ?? [];
+    return element as A;
+  }
+  if (element._tag === ELEMENT_INTRINSIC) {
+    element.component = self.component;
+    element.props = makeProps({...self.props});
+    return element as A;
+  }
+  element;
+  return element as A;
 };
 
-export const liftChild = (child: unknown | unknown[]): Element.Element => {
-  if (isValue(child)) {
-    return text(child);
+export const makeChild = (type: unknown): Element.Element => {
+  if (!type || typeof type !== 'object') {
+    const element = create();
+    element._tag = ELEMENT_TEXT;
+    element.text = type;
+    return element;
   }
-  if (isNodeNonPrimitive(child)) {
-    return clone(child);
+  if (Array.isArray(type)) {
+    const element = create();
+    element._tag = ELEMENT_LIST;
+    element.props = makeProps({children: type});
+    return element;
   }
-  if (Array.isArray(child)) {
-    return list(child.map(liftChild));
+  if (isElement(type)) {
+    return type; // todo clone
   }
-  throw new Error();
+  throw new Error(`Unknown child type: ${type}`);
 };
 
-export const liftChildrenJsx = (children: unknown, parent: Element.Element): Element.Element[] => {
-  const self = liftChild(children);
-  parent.jsxHeight = self.jsxHeight + 1;
-  self.parent = parent;
-  return [self];
+export const makeChildClone = (type: unknown): Element.Element => {
+  if (!type || typeof type !== 'object') {
+    return text(type);
+  }
+  if (Array.isArray(type)) {
+    return list(type);
+  }
+  return;
 };
 
-export const liftChildrenJsxs = (children: unknown[], parent: Element.Element): Element.Element[] => {
-  const acc = Array.fromIterable(children) as Element.Element[];
-  let h = 0;
-  for (let i = 0; i < children.length; i++) {
-    const self = liftChild(children[i]);
-    if (self.jsxHeight > h) {
-      h = self.jsxHeight;
-    }
-    self.parent = parent;
+export const makeChilds = (type: unknown[]): Element.Element[] => {
+  const childs = [] as Element.Element[];
+
+  for (let i = 0; i < type.length; i++) {
+    const element = makeChild(type[i]);
+    childs.push(element);
   }
-  parent.jsxHeight = h + 1;
-  return acc;
+  return childs;
 };
 
-export const liftChildrenRendered = (children: unknown | unknown[], parent: Element.Element): Element.Element[] => {
-  if (!children || typeof children !== 'object') {
-    return [text(children)];
-  }
-  if (isNodeNonPrimitive(children)) {
-    return [clone(children)];
-  }
+export const connectChild = (parent: Element.Element, type: unknown) => {
+  const child = makeChild(type);
+  TreeLike.setOrigin(child, parent);
+  TreeLike.setAncestor(child, parent);
+  return child;
+};
+
+export const connectChildren = (parent: Element.Element, children: unknown | unknown[]) => {
   if (Array.isArray(children)) {
+    const acc = [] as Element.Element[];
     for (let i = 0; i < children.length; i++) {
-      const self = liftChild(children[i]);
-      self.parent = parent;
+      const child = makeChild(children[i]);
+      child.index = i;
+      TreeLike.setOrigin(child, parent);
+      TreeLike.setAncestor(child, parent);
+      TreeLike.setSiblings(acc[i - 1], child);
+      acc.push(child);
     }
+    return acc;
   }
-  throw new Error();
+  const element = makeChild(children);
+  TreeLike.setOrigin(element, parent);
+  TreeLike.setAncestor(element, parent);
+  return parent;
 };
 
-export const connectSingleRendered = (self: Element.Element, child: any): Element.Element[] => {
-  if (!child || typeof child !== 'object') {
-    child = text(child);
-  }
-  if (!child._tag) {
-    child = list(child);
-  }
-  Lineage.set(child, self);
-  (child as Element.Element).depth = self.depth + 1;
-  (child as Element.Element).pdx = self.pdx;
-  (child as Element.Element).trie = `${self.trie}:${trie(child)}`;
-  (child as Element.Element).step = `${self.step}:${step(child)}`;
-  return [child];
-};
-
-export const connectAllRendered = (self: Element.Element, children: any[]): Element.Element[] => {
-  const depth = self.depth + 1;
-  const name = step(self);
-
-  for (let i = 0; i < children.length; i++) {
-    if (typeof children[i] !== 'object') {
-      children[i] = text(children[i]);
-    }
-    if (!children[i]._tag) {
-      children[i] = list(children[i]);
-    }
-    const child = children[i] as Element.Element;
-    Lineage.set(child, self);
-    if (children[i - 1]) {
-      Lateral.setTail(child, children[i - 1]);
-      Lateral.setHead(children[i - 1], child);
-    }
-    child.depth = depth;
-    child.idx = i;
-    child.pdx = self.pdx;
-    child.trie = `${self.trie}:${trie(child)}`;
-    child.step = `${name}:${step(child)}`;
-  }
-  return children;
-};
-
-export const connectRendered = (self: Element.Element, children?: any[]): Element.Element[] => {
-  if (!children) {
-    return [];
-  }
-  if (children.length === 0) {
-    return [];
-  }
-  if (children.length === 1) {
-    return connectSingleRendered(self, children[0]);
-  }
-  return connectAllRendered(self, children);
-};
-
-export const connect = <A extends Element.Element>(self: A): A => {
-  if (!self.children) {
+export const liftPropsChildren = (self: Element.Element) => {
+  if (self._tag === ELEMENT_TEXT) {
     return self;
   }
-  self.children = connectAllRendered(self, self.children);
-  return self;
-};
-
-export const accept = <A extends Element.Element>(self: A): A => {
-
+  if (self._tag === ELEMENT_LIST) {
+    return self;
+  }
 };
 
 const PropsPrototype = proto.type<Element.Props>({
   ...Inspectable.BaseProto,
   toJSON() {
     const {children, ...rest} = this;
-
     return Inspectable.format({
       _id  : 'Props',
       value: rest,
@@ -264,14 +221,13 @@ const PropsPrototype = proto.type<Element.Props>({
     return proto.structHash(this);
   },
   [Equal.symbol](that: Record<string, any>) {
-    return proto.structEquals(this, that);
+    return proto.structEquals(this, that); // todo ignore children? ignore ref?
   },
 });
 
-export const makeProps = (input: any): Element.Props =>
-  proto.init(PropsPrototype, input);
+export const makeProps = proto.initDL(PropsPrototype);
 
-export const propsIntrinsic = (input: any): Element.Props => {
+export const makeHandlerProps = (input: any): Element.Props => {
   const self = makeProps(input);
   if (self.onclick) {
     self.onclick = fc.handler(self.onclick);
@@ -339,26 +295,11 @@ function toString(this: Element.Element) {
     const node = stack.pop()!;
 
     if (close.has(node)) {
-      if (node._tag === ELEMENT_TEXT) {
-        continue;
+      const c = toStringClose(node);
+      if (c) {
+        acc.push(c);
       }
-      const i = ' '.repeat(node.depth * 2);
-
-      switch (node._tag) {
-        case ELEMENT_LIST: {
-          acc.push(`${i}]`);
-          continue;
-        }
-        case ELEMENT_FRAGMENT: {
-          acc.push(`${i}</>`);
-          continue;
-        }
-        case ELEMENT_INTRINSIC:
-        case ELEMENT_FUNCTIONAL: {
-          acc.push(`${i}</${node.name}>`);
-          continue;
-        }
-      }
+      continue;
     }
     const i = ' '.repeat(node.depth * 2);
 
@@ -375,10 +316,10 @@ function toString(this: Element.Element) {
         acc.push(`${i}</>`);
       }
       else if (Object.keys(node.props).length === 0) {
-        acc.push(`${i}<${node.name}/>`);
+        acc.push(`${i}<${node.component}/>`);
       }
       else {
-        acc.push(`${i}<${node.name}`);
+        acc.push(`${i}<${node.component}`);
 
         for (const [k, v] of Object.entries(node.props)) {
           if (!v) {
@@ -410,23 +351,22 @@ function toString(this: Element.Element) {
 
     close.add(node);
     stack.push(node);
-    stack.push(...node.children);
+    stack.push(...node.children.toReversed());
 
-    switch (node._tag) {
-      case ELEMENT_LIST: {
-        acc.push(`${i}[`);
-        continue;
-      }
-      case ELEMENT_FRAGMENT: {
-        acc.push(`${i}<>`);
-        continue;
-      }
-    }
-    if (Object.keys(node.props).length === 0) {
-      acc.push(`${i}<${node.name}>`);
+    if (node._tag === ELEMENT_LIST) {
+      acc.push(`${i}[`);
       continue;
     }
-    acc.push(`${i}<${node.name}`);
+    if (node._tag === ELEMENT_FRAGMENT) {
+      acc.push(`${i}<>`);
+      continue;
+    }
+    if (Object.keys(node.props).length === 0) {
+      acc.push(`${i}<${node.component}>`);
+      continue;
+    }
+
+    acc.push(`${i}<${node.component}`);
 
     for (const [k, v] of Object.entries(node.props)) {
       if (!v) {
@@ -456,4 +396,73 @@ function toString(this: Element.Element) {
   return acc.join('\n');
 };
 
-const n1 = MutableRef.get;
+function toStringClose(node: Element.Element) {
+  if (node._tag === ELEMENT_TEXT) {
+    return undefined;
+  }
+  const i = ' '.repeat(node.depth * 2);
+
+  if (node._tag === ELEMENT_LIST) {
+    return `${i}]`;
+  }
+  if (node._tag === ELEMENT_FRAGMENT) {
+    return `${i}</>`;
+  }
+  if (node._tag === ELEMENT_INTRINSIC) {
+    return `${i}</${node.component}>`;
+  }
+  return `${i}</${node.component.name}>`;
+}
+
+function toStringSelfClose(node: Element.Element) {
+  if (node._tag === ELEMENT_TEXT) {
+    return undefined;
+  }
+  const i = ' '.repeat(node.depth * 2);
+  if (node._tag === ELEMENT_LIST) {
+    return `${i}[]`;
+  }
+  if (node._tag === ELEMENT_FRAGMENT) {
+    return `${i}</>`;
+  }
+  if (node._tag === ELEMENT_INTRINSIC) {
+    return `${i}</${node.component}>`;
+  }
+  return `${i}</${node.component.name}>`;
+}
+
+function toStringProps(node: Element.Element) {
+
+}
+
+// todo object.create
+//
+// const ITERATIONS = 10_000_000;
+// const ITERATIONS = 10;
+//
+// console.time('object-create');
+// for (let i = 0; i < ITERATIONS; i++) {
+//   if (Prototype.component === 'div') {
+//     throw new Error();
+//   }
+//   const el = Object.create(Prototype);
+//   el.component = 'div';
+//   el.props = {};
+//   console.log(el.component);
+//   console.log(el.props);
+//   console.log(Prototype.component);
+//   console.log(Prototype.props);
+// }
+// console.timeEnd('object-create');
+//
+// console.time('object-literal');
+// for (let i = 0; i < ITERATIONS; i++) {
+//   const el = { ...Prototype, type: 'div', props: {} };
+// }
+// console.timeEnd('object-literal');
+//
+// console.time('object-assign');
+// for (let i = 0; i < ITERATIONS; i++) {
+//   const el = Object.assign({}, Prototype, { type: 'div', props: {} });
+// }
+// console.timeEnd('object-assign');

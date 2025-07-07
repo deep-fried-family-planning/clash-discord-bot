@@ -1,4 +1,4 @@
-import {register} from '#disreact/core/internal/fc.ts';
+import {register} from '#disreact/core/internal/fn.ts';
 import * as E from 'effect/Effect';
 //
 // type EffectFn<F, E, R> =
@@ -54,11 +54,11 @@ export namespace Core {
 
 declare global {
   namespace JSX {
-    export type ElementType<E, R> = | keyof IntrinsicElements
-                                    | Core.FC<any, E, R>;
-
-    export type Element = | string
-                          | Core.Element;
+    // export type ElementType<E, R> = | keyof IntrinsicElements
+    //                                 | Core.FC<any, E, R>;
+    //
+    // export type Element = | string
+    //                       | Core.Element;
 
     export interface IntrinsicElements {}
   }

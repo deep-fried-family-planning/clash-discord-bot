@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/immutable/constants.ts';
-import * as internal from '#disreact/core/internal/fc.ts';
+import * as internal from '#disreact/core/internal/fn.ts';
 import type * as Node from '#disreact/core/Element.ts';
 import * as E from 'effect/Effect';
 import type * as Equal from 'effect/Equal';

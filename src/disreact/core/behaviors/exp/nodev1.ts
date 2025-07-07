@@ -8,7 +8,7 @@ import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as proto from '#disreact/core/behaviors/proto.ts';
 import type * as type from '#disreact/core/behaviors/type.ts';
-import * as FC from '#disreact/core/internal/fc.ts';
+import * as FC from '#disreact/core/internal/fn.ts';
 import * as Jsx from '#disreact/adaptor/model/runtime/jsx.tsx';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';

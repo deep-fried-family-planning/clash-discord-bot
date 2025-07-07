@@ -1,6 +1,6 @@
 import {proto} from '#src/disreact/core/behaviors/proto.ts';
 import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
-import * as FC from '#disreact/core/internal/fc.ts';
+import * as FC from '#disreact/core/internal/fn.ts';
 import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
 import * as Polymer from '#disreact/core/internal/polymer.ts';
 import * as Mutex from '#src/disreact/adaptor/adaptor/mutex.ts';

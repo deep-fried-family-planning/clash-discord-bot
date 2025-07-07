@@ -1,10 +1,10 @@
-import type * as Lateral from '#disreact/core/behaviors/lateral.ts';
-import type * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import type * as Document from '#disreact/core/Document.ts';
+import type * as Node from '#disreact/core/Element.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
 import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
-import * as internal from '#disreact/core/internal/polymer.ts';
-import type * as Node from '#disreact/core/Element.ts';
+import * as poly from '#disreact/core/internal/polymer.ts';
+import type * as Jsx from '#disreact/core/Jsx.ts';
+import type * as TreeLike from '#disreact/core/Traversal.ts';
 import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -93,31 +93,28 @@ export interface EffectFn {
 export type Effect = | EffectFn
                      | E.Effect<void>;
 
-import type * as TreeLike from '#disreact/core/TreeLike.ts';
-
-export interface Polymer extends
-  Pipeable.Pipeable,
+export interface Polymer extends Pipeable.Pipeable,
   Inspectable.Inspectable,
-  TreeLike.Root<Document.Document>,
+  TreeLike.Origin<Document.Document>,
   TreeLike.Ancestor<Node.Func>
 {
-  source?: any;
-  self?  : any;
-  pc     : number;
-  rc     : number;
-  stack  : Monomer[];
-  queue  : Effectful[];
+  pc   : number;
+  rc   : number;
+  stack: Monomer[];
+  queue: Effectful[];
+  src? : Jsx.DevSource;
+  ctx? : Jsx.DevContext;
 }
 
-export const empty = (node: Node.Func, document: Document.Document): Polymer => internal.empty(node, document);
+export const empty = (node: Node.Func, document: Document.Document): Polymer => poly.empty(node, document);
 
-export const isStateless = internal.isStateless;
+export const isStateless = poly.isStateless;
 
-export const hasEffects = internal.hasEffects;
+export const hasEffects = poly.hasEffects;
 
 export const isChanged = (self: Polymer) => {
   for (let i = 0; i < self.stack.length; i++) {
-    if (internal.isChanged(self.stack[i])) {
+    if (poly.isChanged(self.stack[i])) {
       return true;
     }
   }
@@ -130,7 +127,7 @@ export const hydrate = (node: Node.Func, document: Document.Document, stack?: En
     return self;
   }
   for (let i = 0; i < stack.length; i++) {
-    self.stack.push(internal.hydrateMonomer(stack[i]));
+    self.stack.push(poly.hydrateMonomer(stack[i]));
   }
   return self;
 };
@@ -146,9 +143,11 @@ export const commit = (self: Polymer): Polymer => {
 
 export const dehydrate = (self: Polymer): Encoded[] => {
   const encoded = [] as Encoded[];
+
   for (let i = 0; i < self.stack.length; i++) {
     const monomer = self.stack[i];
-    encoded.push(internal.dehydrateMonomer(monomer));
+
+    encoded.push(poly.dehydrateMonomer(monomer));
   }
   return encoded;
 };
@@ -157,11 +156,10 @@ export const dispose = (self: Polymer) => {
   if (self.queue.length) {
     throw new Error();
   }
-  (self.document as any) = undefined;
-  (self.node as any) = undefined;
+  self.origin = undefined;
+  self.ancestor = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
-  return undefined;
 };
 
-export const dequeue = internal.dequeue;
+export const dequeue = poly.dequeue;

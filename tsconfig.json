@@ -3,7 +3,7 @@
     "target"                      : "esnext",
     "lib"                         : ["esnext"],
     "types"                       : ["node"],
-    "jsx"                         : "react-jsx",
+    "jsx"                         : "react-jsxdev",
     "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",
     "moduleResolution"            : "bundler",
@@ -23,7 +23,7 @@
     "plugins"                     : [
       {
         "name"                   : "@effect/language-service",
-        "namespaceImportPackages": ["effect", "@effect/platform"],
+        "namespaceImportPackages": ["effect", "@effect/platform", "@effect/platform", ],
         "diagnosticSeverity"     : {
           "importFromBarrel": "error"
         }

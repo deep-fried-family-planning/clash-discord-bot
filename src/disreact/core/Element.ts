@@ -5,9 +5,9 @@ import * as Fn from '#disreact/core/Fn.ts';
 import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, FUNCTIONAL, INTRINSIC} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
-import * as element from '#disreact/core/internal/element.ts';
+import * as elem from '#disreact/core/internal/element.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
-import type * as TreeLike from '#disreact/core/TreeLike.ts';
+import type * as Traversal from '#disreact/core/Traversal.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
@@ -17,60 +17,77 @@ import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
+import type * as Jsx from '#disreact/core/Jsx.ts';
 
-export type Element = | Text
-                      | List
-                      | Frag
-                      | Rest
-                      | Func;
+export type Element =
+  | Text
+  | List
+  | Frag
+  | Rest
+  | Func;
 
-export interface ElementBase extends Pipeable.Pipeable,
+export interface Base extends Pipeable.Pipeable,
   Inspectable.Inspectable,
   Equal.Equal,
   Hash.Hash,
-  TreeLike.Meta,
-  TreeLike.Root<Document.Document>,
-  TreeLike.Ancestor<Element>,
-  TreeLike.Descendent<Element>,
-  TreeLike.Sibling<Element>
+  Traversal.Origin<Document.Document>,
+  Traversal.Ancestor<Element>,
+  Traversal.Descendent<Element>,
+  Traversal.Sibling<Element>,
+  Traversal.Meta
 {
-  readonly [element.TypeId]: typeof element.TypeId;
-  readonly _tag            : number;
-  readonly component       : any;
-  readonly endpoint?       : string;
-  readonly key             : string;
+  readonly [elem.TypeId]: typeof elem.TypeId;
+  readonly _tag         : number;
+  readonly component    : any;
+  readonly endpoint?    : string;
+  readonly key          : string;
 
   props: undefined | Props;
+  ref  : undefined | any;
   text : undefined | any;
   merge: undefined | boolean;
   diff : undefined | Diff.Diff<Element>;
   diffs: undefined | Diffs.Diffs<Element>[];
+
+  src?: any;
+  ctx?: any;
 }
 
-export interface Text extends ElementBase {
+export interface Text extends Base {
   _tag: typeof ELEMENT_TEXT;
-  text: string;
+  text: any;
 }
 
-export interface List extends ElementBase {
+export interface List extends Base {
   _tag: typeof ELEMENT_LIST;
 }
 
-export interface Frag extends ElementBase {
-  _tag: typeof ELEMENT_FRAGMENT;
+export interface Frag extends Base {
+  _tag     : typeof ELEMENT_FRAGMENT;
+  component: typeof elem.FragmentSymbol;
+  props    : Props;
 }
 
-export interface Rest extends ElementBase {
+export interface Rest extends Base {
   _tag     : typeof ELEMENT_INTRINSIC;
   component: string;
   props    : Props;
 }
 
-export interface Func extends ElementBase {
+export interface Func extends Base {
   _tag     : typeof ELEMENT_FUNCTIONAL;
   component: FC.Known;
   props    : Props;
   polymer  : Polymer.Polymer;
+}
+
+export interface Props extends Inspectable.Inspectable,
+  Equal.Equal,
+  Hash.Hash,
+  Record<'onclick' | 'onselect' | 'onsubmit', Fn.EventHandler>,
+  Record<string, any>
+{
+  readonly children?: Jsx.Children;
 }
 
 export const isElement = (node: Element): node is Exclude<Element, Func> => node._tag < FUNCTIONAL;
@@ -79,13 +96,6 @@ export const isInvokable = (node: Element): node is Rest => node._tag === INTRIN
 
 export const isRenderable = (node: Element): node is Func => node._tag > INTRINSIC;
 
-export interface Props extends Inspectable.Inspectable,
-  Equal.Equal,
-  Hash.Hash,
-  Record<'onclick' | 'onselect' | 'onsubmit', () => void>,
-  Record<string, any>
-{}
-
 export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Element, Func>> => {
   if (isRenderable(self)) {
     return Either.right(self);
@@ -93,11 +103,34 @@ export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Ele
   return Either.left(self);
 };
 
+export const liftPropsChildren = <A extends Element>(self: A): A => {
+  if (!self.props?.children) {
+    return self;
+  }
+  const children = self.props.children;
+
+  if (!children || typeof children !== 'object') {
+    const child = elem.text(children);
+    child.merge = true;
+    child.ancestor = self;
+    child.origin = self.origin;
+    self.children = [child];
+    return self;
+  }
+  if (elem.isElement(children)) {
+    const child = elem.clone(children);
+  }
+  if (Array.isArray(children)) {
+
+  }
+  return self;
+};
+
 export const toReversed = (self: Element) => self.children?.toReversed();
 
-export const connect = element.connect;
+export const connect = elem.connect;
 
-export const connectRenderedF = element.connectRendered;
+export const connectRenderedF = elem.connectRendered;
 
 export const connectRendered = dual<
   <A extends Element>(rendered: any) => (self: A) => Element[],
@@ -361,7 +394,6 @@ export const commitF = (output: any, self: Func): Func => {
   if (Polymer.isStateless(self.polymer)) {
     FC.markStateless(self.component);
   }
-  self.rendered = output;
   return self;
 };
 

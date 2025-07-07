@@ -1,8 +1,8 @@
 import * as proto from '#disreact/core/behaviors/proto.ts';
-import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
-import type * as Node from '#disreact/core/Element.ts';
-import type * as Polymer from '#disreact/core/Polymer.ts';
 import type * as Document from '#disreact/core/Document.ts';
+import type * as Node from '#disreact/core/Element.ts';
+import {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
+import type * as Polymer from '#disreact/core/Polymer.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
@@ -23,8 +23,8 @@ const Prototype = proto.type<Polymer.Polymer>({
 
 export const empty = (node: Node.Func, document: Document.Document): Polymer.Polymer =>
   proto.init(Prototype, {
-    document: document,
-    node    : node,
+    origin  : document,
+    ancestor: node,
     stack   : [],
     queue   : [],
   });
@@ -65,50 +65,7 @@ const MonomerPrototype = proto.type<Polymer.Monomer>({
   fx     : undefined as any,
   value  : undefined as any,
   ...Inspectable.BaseProto,
-  toJSON() {
-    switch (this._tag) {
-      case MONOMER_NONE: {
-        return Inspectable.format({
-          _id: 'None',
-        });
-      }
-      case MONOMER_STATE: {
-        return Inspectable.format({
-          _id  : 'State',
-          state: this.state,
-        });
-      }
-      case MONOMER_REDUCER: {
-        return Inspectable.format({
-          _id  : 'Reducer',
-          state: this.state,
-        });
-      }
-      case MONOMER_EFFECT: {
-        return Inspectable.format({
-          _id : 'Effect',
-          deps: this.deps,
-        });
-      }
-      case MONOMER_REF: {
-        return Inspectable.format({
-          _id    : 'Ref',
-          current: this.current,
-        });
-      }
-      case MONOMER_MEMO: {
-        return Inspectable.format({
-          _id : 'Memo',
-          deps: this.deps,
-        });
-      }
-      case MONOMER_CONTEXTUAL: {
-        return Inspectable.format({
-          _id: 'Context',
-        });
-      }
-    }
-  },
+  toJSON,
 });
 
 export const none = (): Polymer.None =>
@@ -250,9 +207,54 @@ export const dispose = (self: Polymer.Polymer) => {
   if (self.queue.length) {
     throw new Error();
   }
-  (self.document as any) = undefined;
-  (self.node as any) = undefined;
+  self.origin = undefined;
+  self.ancestor = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
   return self;
 };
+
+function toJSON(this: Polymer.Monomer) {
+  switch (this._tag) {
+    case MONOMER_NONE: {
+      return Inspectable.format({
+        _id: 'None',
+      });
+    }
+    case MONOMER_STATE: {
+      return Inspectable.format({
+        _id  : 'State',
+        state: this.state,
+      });
+    }
+    case MONOMER_REDUCER: {
+      return Inspectable.format({
+        _id  : 'Reducer',
+        state: this.state,
+      });
+    }
+    case MONOMER_EFFECT: {
+      return Inspectable.format({
+        _id : 'Effect',
+        deps: this.deps,
+      });
+    }
+    case MONOMER_REF: {
+      return Inspectable.format({
+        _id    : 'Ref',
+        current: this.current,
+      });
+    }
+    case MONOMER_MEMO: {
+      return Inspectable.format({
+        _id : 'Memo',
+        deps: this.deps,
+      });
+    }
+    case MONOMER_CONTEXTUAL: {
+      return Inspectable.format({
+        _id: 'Context',
+      });
+    }
+  }
+}

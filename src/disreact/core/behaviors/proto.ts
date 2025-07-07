@@ -1,27 +1,7 @@
-import {IS_DEV} from '#disreact/core/immutable/constants.ts';
+import {PRODUCTION} from '#disreact/core/immutable/constants.ts';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
-
-type DevErrorContext = {
-
-};
-
-export class DevError extends Error {
-  _tag = 'DevError' as const;
-  constructor(message: string) {
-    super(message);
-    this.name = 'DevError';
-  }
-}
-
-export class FatalError extends Error {
-  _tag = 'FatalError' as const;
-  constructor(message: string) {
-    super(message);
-    this.name = 'FatalError';
-  }
-}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type Fn = Function;
@@ -69,19 +49,24 @@ export const declareArray = <A>(p: Partial<A>): A =>
 export const init = <A>(p: A, o: Partial<A>): A =>
   Object.assign({}, p, o);
 
+export const initDL = <A>(p: A) => (o: Partial<A>): A => init(p, o);
+
+export const create = <A extends object>(p: A): A =>
+  Object.create(p);
+
 export const impure = <A>(p: A, o: Partial<A>): A =>
   Object.assign(o, p);
 
 export const pure = <A>(p: any, o: Partial<A>): A => {
   const inst = impure(p, o);
 
-  return IS_DEV
+  return process.env.NODE_ENV === PRODUCTION
          ? Object.freeze(inst)
          : inst;
 };
 
 export const ensure = <A>(p: A): A => {
-  if (IS_DEV) {
+  if (process.env.NODE_ENV === PRODUCTION) {
     if (typeof p !== 'object') {
       return p;
     }
