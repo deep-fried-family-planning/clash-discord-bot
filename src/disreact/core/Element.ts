@@ -1,7 +1,6 @@
 import * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as Document from '#disreact/core/Document.ts';
 import * as FC from '#disreact/core/FC.ts';
-import * as Fn from '#disreact/core/Fn.ts';
 import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, INTRINSIC} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
@@ -35,11 +34,12 @@ export interface Base extends Pipeable.Pipeable,
   Traversal.Sibling<Element>,
   Traversal.Meta
 {
-  readonly [elem.TypeId]: typeof elem.TypeId;
-  readonly _tag         : number;
-  readonly component    : any;
-  readonly endpoint?    : string;
-  readonly key          : string;
+  readonly [elem.ElementId]: typeof elem.ElementId;
+
+  readonly _tag     : number;
+  readonly component: any;
+  readonly endpoint?: string;
+  readonly key      : string;
 
   props: undefined | Props;
   ref  : undefined | any;
@@ -84,7 +84,7 @@ export interface Func extends Base {
 export interface Props extends Inspectable.Inspectable,
   Equal.Equal,
   Hash.Hash,
-  Record<'onclick' | 'onselect' | 'onsubmit', Fn.EventHandler>,
+  Record<'onclick' | 'onselect' | 'onsubmit', EventHandler>,
   Record<string, any>
 {
   readonly children?: Jsx.Children;
@@ -96,17 +96,7 @@ export const isInvokable = (node: Element): node is Rest => node._tag === INTRIN
 
 export const isRenderable = (node: Element): node is Func => node._tag > INTRINSIC;
 
-export const fromChild = (type: any): Element => {
-  if (!type || typeof type !== 'object') {
-    return elem.text(type);
-  }
-  if (Array.isArray(type)) {
-    return elem.list(type);
-  }
-  return elem.clone(type);
-};
-
-export const liftProps = <A extends Element>(self: A): A => {
+export const liftPropsChildren = <A extends Element>(self: A): A => {
   if (!self.props?.children) {
     return self;
   }
@@ -114,59 +104,28 @@ export const liftProps = <A extends Element>(self: A): A => {
     return self;
   }
   if (self.jsxs) {
-    const propsChildren = self.props.children as Jsx.Child[];
-    const children = [] as Element[];
+    const children = self.props.children as Jsx.Child[];
+    const elements = [] as Element[];
 
-    for (let i = 0; i < propsChildren.length; i++) {
-      const head = children[i - 1];
-      const child = fromChild(propsChildren[i]);
-      child.origin = self.origin;
-      child.ancestor = self;
-
-      if (head) {
-        head.tail = child;
-        child.head = head;
-      }
-      children.push(child);
+    for (let i = 0; i < children.length; i++) {
+      elements[i] = elem.makeChildElement(children[i]);
+      elem.connectChildElement(self, elements[i]);
     }
-    self.children = children;
+    self.children = elements;
     return self;
   }
-  const child = fromChild(self.props.children);
-  child.origin = self.origin;
-  child.ancestor = self;
+  const child = elem.makeChildElement(self.props.children);
+  elem.connectChildElement(self, child);
   self.children = [child];
   return self;
 };
 
-export const liftRendered = (self: Element, rendered: Jsx.Children): Element[] | undefined => {
+export const liftRenderedChildren = (self: Element, rendered: Jsx.Children): Element[] | undefined => {
   if (!rendered) {
     return undefined;
   }
-  if (typeof rendered !== 'object') {
-    const child = elem.text(rendered);
-    child.origin = self.origin;
-    child.ancestor = self;
-    return [child];
-  }
-  if (Array.isArray(rendered)) {
-    const children = [] as Element[];
-    for (let i = 0; i < rendered.length; i++) {
-      const head = children[i - 1];
-      const child = fromChild(rendered[i]);
-      child.origin = self.origin;
-      child.ancestor = self;
-      if (head) {
-        head.tail = child;
-        child.head = head;
-      }
-      children.push(child);
-    }
-    return children;
-  }
-  const child = fromChild(rendered);
-  child.origin = self.origin;
-  child.ancestor = self;
+  const child = elem.makeChildElement(rendered);
+  elem.connectChildElement(self, child);
   return [child];
 };
 
@@ -179,7 +138,7 @@ export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Ele
 
 export const toReversed = (self: Element) => self.children?.toReversed();
 
-export const clone = <A extends Element>(self: A): A => elem.clone(self);
+export const clone = <A extends Element>(self: A): A => elem.cloneElement(self);
 
 export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
   switch (self._tag) {
@@ -347,6 +306,10 @@ export const dispose = dual<
   (self: Element, document: Document.Document) => Element
 >(2, disposeF);
 
+export const render = (self: Func): E.Effect<Jsx.Children> => {
+  throw new Error();
+};
+
 export const commitF = (output: any, self: Func): Func => {
   Polymer.commit(self.polymer);
   if (Polymer.isStateless(self.polymer)) {
@@ -360,16 +323,9 @@ export const commit = dual<
   (output: any, self: Func) => Func
 >(2, commitF);
 
-export const render = (self: Func) => {
-  if (Fn.isStatelessFC(self.component)) {
-    return Fn.renderStateless(self.component);
-  }
-  return Fn.render(self.component, self.props);
-};
-
-export const flush = (self: Func) => {
+export const flush = (self: Func): E.Effect<Func> => E.suspend(() => {
   return E.die('').pipe(E.as(self));
-};
+});
 
 export interface Event<T = any> extends Inspectable.Inspectable {
   id     : string;
@@ -379,6 +335,12 @@ export interface Event<T = any> extends Inspectable.Inspectable {
   close(): void;
   open(element: Element): void;
   open<A>(fc: FC.FC<A>, props: A): void;
+}
+
+export interface EventHandler<A = any, E = never, R = never> {
+  (event: Event<A>): | void
+                     | Promise<void>
+                     | E.Effect<void, E, R>;
 }
 
 export const event = elem.event;
@@ -394,6 +356,8 @@ export const invoke = dual<
   (event?: any) => (self: Rest) => E.Effect<Rest>,
   (self: Rest, event?: any) => E.Effect<Rest>
 >(2, invokeDF);
+
+
 
 export const updateDF = <A extends Element>(self: A, that: Element): A => {
   if (process.env.NODE_ENV !== 'production') {

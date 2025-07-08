@@ -1,4 +1,3 @@
-import {register} from '#disreact/core/internal/fn.ts';
 import * as E from 'effect/Effect';
 //
 // type EffectFn<F, E, R> =

@@ -1,9 +1,8 @@
 import type * as Element from '#disreact/core/Element.ts';
-import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL} from '#disreact/core/immutable/constants.ts';
 import type * as FC from '#disreact/core/FC.ts';
+import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL} from '#disreact/core/immutable/constants.ts';
 import * as elem from '#disreact/core/internal/element.ts';
 import * as fc from '#disreact/core/internal/fn.ts';
-import type * as Inspectable from 'effect/Inspectable';
 
 export type Jsx = Element.Element;
 
@@ -57,19 +56,18 @@ export const make = (type: Type, attrs: Attributes, key?: Key): Jsx => {
       el._tag = ELEMENT_FUNCTIONAL;
       el.component = fc.register(type);
       el.props = elem.makeProps(attrs);
-      break;
-    }
-    default: {
-      el._tag = ELEMENT_FRAGMENT; // todo iterate children?
-      el.component = type;
-      el.props = elem.makeProps(attrs);
+      return el;
     }
   }
+  el._tag = ELEMENT_FRAGMENT; // todo iterate children?
+  el.component = type;
+  el.props = elem.makeProps(attrs);
   return el;
 };
 
 export const multi = (type: Type, attrs: Attributes, key?: Key): Jsx => {
   const el = elem.create();
+  el.jsxs = true;
   el.key = key ?? attrs.key ?? '';
 
   if (attrs.ref) {
@@ -87,14 +85,12 @@ export const multi = (type: Type, attrs: Attributes, key?: Key): Jsx => {
       el._tag = ELEMENT_FUNCTIONAL;
       el.component = fc.register(type);
       el.props = elem.makeProps(attrs);
-      break;
-    }
-    default: {
-      el._tag = ELEMENT_FRAGMENT; // todo iterate children?
-      el.component = type;
-      el.props = elem.makeProps(attrs);
+      return el;
     }
   }
+  el._tag = ELEMENT_FRAGMENT; // todo iterate children?
+  el.component = type;
+  el.props = elem.makeProps(attrs);
   return el;
 };
 

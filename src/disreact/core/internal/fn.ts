@@ -1,5 +1,4 @@
 import type * as FC from '#disreact/core/FC.ts';
-import type * as Fn from '#disreact/core/Fn.ts';
 import {ANONYMOUS, ASYNC, type FCExecution, INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import {globalValue} from 'effect/GlobalValue';
@@ -111,7 +110,7 @@ const EventPrototype = proto.type<Fn.EventInternal>({
     if (!node.src) {
       throw new Error();
     }
-    this.compare!.endpoint = node.endpoint;
+    this.compare!.endpoint = node.endpoint!;
     this.compare!.props = node.props;
   },
 });

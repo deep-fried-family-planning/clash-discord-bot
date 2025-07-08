@@ -63,6 +63,8 @@ export type Descendent<A extends Descendent<any>> = {
   children: undefined | A[];
 };
 
+export const toDescendentsReverse = <A extends Descendent<any>>(self: A): A[] | undefined => self.children?.toReversed();
+
 export const forEachDescendent = <A extends Descendent<any>>(self: A, f: (self: A) => void) => {};
 
 export const dfsPreOrder = <A extends Descendent<any>>(start: A): A[] => {
@@ -125,9 +127,12 @@ export interface Sibling<A extends Sibling<any>> {
   tail: A | undefined;
 }
 
-export const setSiblings = <A extends Sibling<any>>(head: A, tail: A) => {
-  head.tail = tail;
-  tail.head = head;
+export const setSiblings = <A extends Sibling<any>>(tail: A, head?: A) => {
+  if (head) {
+    head.tail = tail;
+    tail.head = head;
+  }
+  return tail;
 };
 
 export const adjacencyList = <A extends Sibling<any>>(node: A): A[] => {

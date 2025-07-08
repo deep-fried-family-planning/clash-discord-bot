@@ -76,7 +76,7 @@ const hydrateSPS = (stack: Stack.Stack) =>
     ),
     Either.mapLeft((node) =>
       node.pipe(
-        Element.connect,
+        Element.liftPropsChildren,
         Element.toReversed,
         Stack.pushAllInto(stack),
         E.succeed,
@@ -89,9 +89,7 @@ export const initialize = (document: Document.Document) =>
   E.iterate(Stack.make(document, document.body), {
     while: Stack.condition,
     body : initializeSPS,
-  }).pipe(
-    E.as(document),
-  );
+  });
 
 export const hydrate = (document: Document.Document) =>
   E.iterate(Stack.make(document, document.body), {
