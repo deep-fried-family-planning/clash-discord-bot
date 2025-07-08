@@ -1,4 +1,7 @@
+import * as FC from '#disreact/core/FC.ts';
 import type * as Polymer from '#disreact/core/Polymer.ts';
+
+export type State = Record<string, Polymer.Encoded[]>;
 
 export interface Hydrant {
   version?: string;
@@ -6,13 +9,13 @@ export interface Hydrant {
   hash?   : string;
   endpoint: string;
   props   : Record<string, any>;
-  state   : Record<string, Polymer.Encoded[]>;
+  state   : State;
 }
 
 export const hydrant = (
   endpoint: string,
   props: Record<string, any>,
-  state: Record<string, Polymer.Encoded[]>,
+  state: State,
 ): Hydrant =>
   ({
     endpoint,
@@ -25,7 +28,8 @@ export interface Endpoint {
   component: any;
 }
 
-export const endpoint = (id: string, component: any): Endpoint => {
+export const endpoint = (id: string, component: FC.FC): Endpoint => {
+  const fc = FC.register(component);
   return {
     id       : id,
     component: component,

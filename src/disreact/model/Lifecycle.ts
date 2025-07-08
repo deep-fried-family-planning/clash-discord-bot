@@ -1,6 +1,6 @@
 import * as Document from '#disreact/core/Document.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as Node from '#disreact/core/Element.ts';
+import * as Element from '#disreact/core/Element.ts';
 import * as Stack from '#disreact/core/Stack.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
@@ -13,7 +13,7 @@ const mutex  = E.unsafeMakeSemaphore(1),
       lock   = mutex.take(1),
       unlock = mutex.release(1);
 
-const acquireMutex = (node: Node.Func) =>
+const acquireMutex = (node: Element.Func) =>
   lock.pipe(
     E.map(() => {
       Hooks.active.polymer = node.polymer;
@@ -33,24 +33,24 @@ const releaseMutex = <A, E, R>(effect: E.Effect<A, E, R>) =>
 const initializeSPS = (stack: Stack.Stack) =>
   stack.pipe(
     Stack.pop,
-    Node.eitherRenderable,
+    Element.eitherRenderable,
     Either.map((node) =>
       node.pipe(
-        Node.initialize(stack.document),
+        Element.initialize(stack.origin!),
         acquireMutex,
-        E.andThen(Node.render),
+        E.andThen(Element.render),
         releaseMutex,
-        E.map(Node.commit(node)),
-        E.map(Node.accept),
-        E.map(Node.toReversed),
+        E.map(Element.commit(node)),
+        E.map(Element.accept),
+        E.map(Element.toReversed),
         E.map(Stack.pushAllInto(stack)),
-        E.tap(Node.flush(node)),
+        E.tap(Element.flush(node)),
       ),
     ),
     Either.mapLeft((node) =>
       node.pipe(
-        Node.connect,
-        Node.toReversed,
+        Element.connect,
+        Element.toReversed,
         Stack.pushAllInto(stack),
         E.succeed,
       ),
@@ -61,23 +61,23 @@ const initializeSPS = (stack: Stack.Stack) =>
 const hydrateSPS = (stack: Stack.Stack) =>
   stack.pipe(
     Stack.pop,
-    Node.eitherRenderable,
-    Either.map((node) =>
-      node.pipe(
-        Node.hydrate(stack.document),
+    Element.eitherRenderable,
+    Either.map((element) =>
+      element.pipe(
+        Element.hydrate(stack.origin!),
         acquireMutex,
-        E.andThen(Node.render),
+        E.andThen(Element.render),
         releaseMutex,
-        E.map(Node.commit(node)),
-        E.map(Node.accept),
-        E.map(Node.toReversed),
+        E.map(Element.commit(element)),
+        E.map(Element.accept),
+        E.map(Element.toReversed),
         E.map(Stack.pushAllInto(stack)),
       ),
     ),
     Either.mapLeft((node) =>
       node.pipe(
-        Node.connect,
-        Node.toReversed,
+        Element.connect,
+        Element.toReversed,
         Stack.pushAllInto(stack),
         E.succeed,
       ),
@@ -87,7 +87,7 @@ const hydrateSPS = (stack: Stack.Stack) =>
 
 export const initialize = (document: Document.Document) =>
   E.iterate(Stack.make(document, document.body), {
-    while: Stack.while,
+    while: Stack.condition,
     body : initializeSPS,
   }).pipe(
     E.as(document),
@@ -95,7 +95,7 @@ export const initialize = (document: Document.Document) =>
 
 export const hydrate = (document: Document.Document) =>
   E.iterate(Stack.make(document, document.body), {
-    while: Stack.while,
+    while: Stack.condition,
     body : hydrateSPS,
   }).pipe(
     E.as(document),
@@ -103,8 +103,8 @@ export const hydrate = (document: Document.Document) =>
 
 export const invoke = (document: Document.Document) =>
   document.body.pipe(
-    Node.findWithin((node): node is Node.Rest => {
-      if (Node.isInvokable(node)) {
+    Element.findWithin((node): node is Element.Rest => {
+      if (Element.isInvokable(node)) {
         if (!node.props[document.event!.lookup]) {
           return false;
         }
@@ -118,37 +118,38 @@ export const invoke = (document: Document.Document) =>
       return false;
     }),
     Option.getOrThrow,
-    Node.invoke(document.event),
+    Element.invoke(document.event),
     E.as(document),
   );
 
-const mount = (root: Node.Element, document: Document.Document) =>
+const mount = (root: Element.Element, document: Document.Document) =>
   E.iterate(Stack.make(document, root), {
-    while: Stack.while,
+    while: Stack.condition,
     body : initializeSPS,
   });
 
-const unmount = (root: Node.Element, document: Document.Document) => {
+const unmount = (root: Element.Element, document: Document.Document) => {
   const stack = Stack.make(document, root);
-  const visited = new WeakSet<Node.Element>();
+  const visited = new WeakSet<Element.Element>();
 
-  while (Stack.while(stack)) {
+  while (Stack.condition(stack)) {
     const node = Stack.pop(stack);
 
     if (!visited.has(node)) {
-      Stack.pushAll(stack, Node.toReversed(node));
+      Stack.pushAll(stack, Element.toReversed(node));
       visited.add(node);
       continue;
     }
-    Node.dispose(node, document);
+    Element.dispose(node, document);
   }
   return root;
 };
-
+import * as Traversal from '#disreact/core/Traversal.ts';
 export const rerender = (document: Document.Document) =>
   document.pipe(
     Document.getFlags,
-    Node.lca,
+    Traversal.lowestCommonAncestor,
+    Option.fromNullable,
     Option.map(),
     Option.getOrElse(() => document),
   );
@@ -164,7 +165,7 @@ export const encodeDocument = (d?: Document.Document) => Encoder.use(({encodeTex
     return null;
   }
   const s = Stack.make(d, d.body);
-  const stack = MutableList.make<Node.Element>(d.body),
+  const stack = MutableList.make<Element.Element>(d.body),
         final = {} as any,
         args  = new WeakMap(),
         outs  = new WeakMap().set(d.body, final);

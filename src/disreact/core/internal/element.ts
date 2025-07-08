@@ -2,7 +2,7 @@ import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT} from '#disreact/core/immutable/constants.ts';
 import * as fc from '#disreact/core/internal/fn.ts';
-import * as TreeLike from '#disreact/core/Traversal.ts';
+import * as Traversal from '#disreact/core/Traversal.ts';
 import * as proto from '#src/disreact/core/behaviors/proto.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -10,7 +10,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 import type {Mutable} from 'effect/Types';
 
-export const TypeId = Symbol.for('disreact/node');
+export const TypeId = Symbol.for('disreact/element');
 
 export const FragmentSymbol = Symbol.for('disreact/fragment');
 
@@ -27,6 +27,7 @@ const Prototype = proto.type<Element.Element>({
   merge    : false,
   diff     : undefined,
   diffs    : undefined,
+  jsxs     : false,
   trie     : '',
   step     : '',
   index    : 0,
@@ -102,6 +103,18 @@ export const func = (type: FC.FC, props: any, key?: string): Element.Func =>
 
 export const create = () => proto.create(Prototype) as Mutable<Element.Element>;
 
+export const connect = (parent: Element.Element, child: Element.Element, head?: Element.Element) => {
+  child.depth = parent.depth + 1;
+
+  Traversal.setOrigin(child, parent);
+  Traversal.setAncestor(child, parent);
+  if (head) {
+    Traversal.setSiblings(head, child);
+    child.index = head.index + 1;
+  }
+  return child;
+};
+
 export const clone = <A extends Element.Element>(self: A | unknown): A => {
   if (!isElement(self)) {
     throw new Error(`[Node.clone]: unknown type ${self}`);
@@ -175,8 +188,8 @@ export const makeChilds = (type: unknown[]): Element.Element[] => {
 
 export const connectChild = (parent: Element.Element, type: unknown) => {
   const child = makeChild(type);
-  TreeLike.setOrigin(child, parent);
-  TreeLike.setAncestor(child, parent);
+  Traversal.setOrigin(child, parent);
+  Traversal.setAncestor(child, parent);
   return child;
 };
 
@@ -186,16 +199,16 @@ export const connectChildren = (parent: Element.Element, children: unknown | unk
     for (let i = 0; i < children.length; i++) {
       const child = makeChild(children[i]);
       child.index = i;
-      TreeLike.setOrigin(child, parent);
-      TreeLike.setAncestor(child, parent);
-      TreeLike.setSiblings(acc[i - 1], child);
+      Traversal.setOrigin(child, parent);
+      Traversal.setAncestor(child, parent);
+      Traversal.setSiblings(acc[i - 1], child);
       acc.push(child);
     }
     return acc;
   }
   const element = makeChild(children);
-  TreeLike.setOrigin(element, parent);
-  TreeLike.setAncestor(element, parent);
+  Traversal.setOrigin(element, parent);
+  Traversal.setAncestor(element, parent);
   return parent;
 };
 
@@ -466,3 +479,21 @@ function toStringProps(node: Element.Element) {
 //   const el = Object.assign({}, Prototype, { type: 'div', props: {} });
 // }
 // console.timeEnd('object-assign');
+
+const EventPrototype = proto.type<Element.Event>({
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Event',
+      value: this,
+    });
+  },
+});
+
+export const event = (
+  id: string,
+  lookup: string,
+  event: string,
+  data: any,
+  target: Element.Element,
+): Element.Event => {};

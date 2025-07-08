@@ -25,13 +25,13 @@ export interface Stack<A = Node.Element> extends Pipeable.Pipeable,
 export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
   internal.make(document, root as any);
 
-const while$ = <A>(self: Stack<A>) => internal.len(self) > 0;
-export {while$ as while};
+export const condition = <A>(self: Stack<A>) => internal.len(self) > 0;
+export {condition as while};
 
 export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
 
 export const popUntil = <A, B extends A>(self: Stack<A>, f: P.Refinement<A, B> | P.Predicate<A>): Option.Option<B[]> => {
-  while (while$(self)) {
+  while (condition(self)) {
     if (!f(internal.peek(self))) {
       break;
     }

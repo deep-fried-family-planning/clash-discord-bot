@@ -48,10 +48,18 @@ export interface Document<A = any> extends Pipeable.Pipeable,
   endpoint   : string;
   stage      : string;
   flags      : Set<Element.Element>;
-  outstream  : Mailbox.Mailbox<Output.Output>;
-  final      : Deferred.Deferred<Output.Checkpoint>;
-  done       : Deferred.Deferred<Output.Checkpoint>;
+  next: {
+    endpoint: string | null;
+    props   : any;
+  };
+  outstream: Mailbox.Mailbox<Output.Output>;
+  final    : Deferred.Deferred<Output.Checkpoint>;
+  done     : Deferred.Deferred<Output.Checkpoint>;
 }
+
+export const isClose = (self: Document) => self.endpoint === null;
+
+export const isSame = (self: Document) => self.endpoint === self.next.endpoint;
 
 const effects = E.all([
   Mailbox.make<Output.Output>(),
@@ -99,6 +107,13 @@ export const reset = (self: Document): E.Effect<Document> =>
       return last;
     }),
   );
+
+export const bindEvent = (self: Document): Element.Event => {
+  if (!self.event) {
+    throw new Error('Document has no event');
+  }
+  return self.event;
+};
 
 export const getFlags = (self: Document) => document.getFlags(self);
 
