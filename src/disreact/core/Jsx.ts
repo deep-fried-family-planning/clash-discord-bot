@@ -66,7 +66,7 @@ export const make = (type: Type, attrs: Attributes, key?: Key): Jsx => {
   return el;
 };
 
-export const multi = (type: Type, attrs: Attributes, key?: Key): Jsx => {
+export const makeMulti = (type: Type, attrs: Attributes, key?: Key): Jsx => {
   const el = elem.create();
   el.jsxs = true;
   el.key = key ?? attrs.key ?? '';
@@ -108,7 +108,7 @@ export const makeDEV = (
   ctx: DevContext,
 ): Jsx => {
   const elem = Array.isArray(attr.children)
-               ? multi(type, attr, key)
+               ? makeMulti(type, attr, key)
                : make(type, attr, key);
 
   elem.src = src;

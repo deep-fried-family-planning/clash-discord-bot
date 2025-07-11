@@ -5,7 +5,7 @@ import * as Markup from '#disreact/core/Jsx.ts';
 
 export const Fragment = Markup.Fragment,
              jsx      = Markup.make,
-             jsxs     = Markup.multi;
+             jsxs     = Markup.makeMulti;
 
 export type JsxElementType =
   | keyof IntrinsicAttributesMap
