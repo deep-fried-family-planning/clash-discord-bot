@@ -10,6 +10,8 @@ export interface Ancestor<A extends Ancestor<any>> {
   ancestor: A | undefined;
 }
 
+export const getAncestor = <A extends Ancestor<any>>(self: A): A | undefined => self.ancestor;
+
 export const setAncestor = <A extends Ancestor<any>>(self: A, ancestor: A) => {
   self.ancestor = ancestor;
 };

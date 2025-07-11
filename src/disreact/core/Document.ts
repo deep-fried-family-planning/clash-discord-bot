@@ -10,7 +10,6 @@ import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
-import * as Hydrant from '#disreact/core/Hydrant.ts';
 
 export interface AdaptorEvent<D = any> {
   endpoint: string;
@@ -107,13 +106,6 @@ export const reset = (self: Document): E.Effect<Document> =>
       return last;
     }),
   );
-
-export const bindEvent = (self: Document): Element.Event => {
-  if (!self.event) {
-    throw new Error('Document has no event');
-  }
-  return self.event;
-};
 
 export const getFlags = (self: Document) => document.getFlags(self);
 

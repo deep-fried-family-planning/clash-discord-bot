@@ -16,6 +16,7 @@ const FCPrototype = proto.type<FC.Known>({
   state: true,
   props: true,
   ...Inspectable.BaseProto,
+  ...Pipeable.Prototype,
   toJSON() {
     return Inspectable.format({
       _id  : 'FunctionComponent',
@@ -46,6 +47,7 @@ export const registerFC = (fn: FC.FC): FC.Known => {
     }
     case 2: {
       fc.props = true;
+      fc.state = true;
     }
     default: {
       throw new Error(`register(${fn.name}): unknown function length ${fn.length}`);
@@ -515,23 +517,3 @@ function toStringProps(node: Element.Element) {
 //   const el = Object.assign({}, Prototype, { type: 'div', props: {} });
 // }
 // console.timeEnd('object-assign');
-
-const EventPrototype = proto.type<Element.Event>({
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return Inspectable.format({
-      _id  : 'Event',
-      value: this,
-    });
-  },
-});
-
-export const event = (
-  id: string,
-  lookup: string,
-  event: string,
-  data: any,
-  target: Element.Element,
-): Element.Event => {
-  throw new Error();
-};

@@ -54,8 +54,9 @@ export const make = (type: Type, attrs: Attributes, key?: Key): Jsx => {
     }
     case 'function': {
       el._tag = ELEMENT_FUNCTIONAL;
-      el.component = fc.register(type);
+      el.component = elem.registerFC(type);
       el.props = elem.makeProps(attrs);
+      el.endpoint = el.component.endpoint;
       return el;
     }
   }
@@ -85,6 +86,7 @@ export const multi = (type: Type, attrs: Attributes, key?: Key): Jsx => {
       el._tag = ELEMENT_FUNCTIONAL;
       el.component = fc.register(type);
       el.props = elem.makeProps(attrs);
+      el.endpoint = el.component.endpoint;
       return el;
     }
   }

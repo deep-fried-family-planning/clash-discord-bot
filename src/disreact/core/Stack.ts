@@ -26,7 +26,6 @@ export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
   internal.make(document, root as any);
 
 export const condition = <A>(self: Stack<A>) => internal.len(self) > 0;
-export {condition as while};
 
 export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
 

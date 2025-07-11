@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/fn.ts';
+import type * as Jsx from '#disreact/core/Jsx.ts';
 import * as E from 'effect/Effect';
+import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
+import type * as Pipeable from 'effect/Pipeable';
 
-export type Out = JSX.Element<any, any>;
+export type Out = Jsx.Children;
 
 interface Base extends Inspectable.Inspectable {
   _id?        : string;
@@ -13,9 +16,10 @@ interface Base extends Inspectable.Inspectable {
   displayName?: string;
 }
 
-export interface Known<A = any> extends Function, Base {
-  state: boolean;
-  props: boolean;
+export interface Known<A = any> extends Function, Base, Pipeable.Pipeable {
+  state    : boolean;
+  props    : boolean;
+  endpoint?: string;
   (props?: A, use?: any): Out | Promise<Out> | E.Effect<Out, any, any>;
 }
 
@@ -61,19 +65,19 @@ export const markStateless = (self: Known): Known => {
 
 export const name = internal.name;
 
-export const renderProps = (self: Known, props: any): E.Effect<any> => {
+export const toRenderable = (self: Known) => {
   switch (self._tag) {
     case SYNC: {
-      return E.sync(() => self(props));
+      return (props: any) => E.sync(() => self(props));
     }
     case ASYNC: {
-      return E.promise(() => self(props) as Promise<any>);
+      return (props: any) => E.promise(() => self(props) as Promise<any>);
     }
     case EFFECT: {
-      return E.suspend(() => self(props) as E.Effect<any>);
+      return (props: any) => E.suspend(() => self(props) as E.Effect<any>);
     }
   }
-  return E.suspend(() => {
+  return (props: any) => E.suspend(() => {
     const out = self(props);
 
     if (P.isPromise(out)) {
@@ -89,16 +93,16 @@ export const renderProps = (self: Known, props: any): E.Effect<any> => {
   });
 };
 
-export const renderSelf = (self: Known): E.Effect<any> => {
+export const renderSelf = (self: Known): E.Effect<Jsx.Children> => {
   switch (self._tag) {
     case SYNC: {
-      return E.sync(self);
+      return E.sync(self as any);
     }
     case ASYNC: {
       return E.promise(self as any);
     }
     case EFFECT: {
-      return E.suspend(self as any) as E.Effect<any>;
+      return E.suspend(self as any) as E.Effect<Jsx.Children>;
     }
   }
   return E.sync(self).pipe(E.flatMap((out) => {
@@ -108,9 +112,75 @@ export const renderSelf = (self: Known): E.Effect<any> => {
     }
     if (E.isEffect(out)) {
       self._tag = EFFECT;
-      return out as E.Effect<any>;
+      return out as E.Effect<Jsx.Children>;
+    }
+    self._tag = SYNC;
+    return E.succeed(out as Jsx.Children);
+  }));
+};
+
+export const renderPropsDF = (self: Known, props: any): E.Effect<Jsx.Children> => {
+  switch (self._tag) {
+    case SYNC: {
+      return E.sync(() => self(props) as Jsx.Children);
+    }
+    case ASYNC: {
+      return E.promise(() => self(props) as Promise<Jsx.Children>);
+    }
+    case EFFECT: {
+      return E.suspend(() => self(props) as E.Effect<Jsx.Children>);
+    }
+  }
+  return E.suspend(() => {
+    const out = self(props);
+
+    if (P.isPromise(out)) {
+      self._tag = ASYNC;
+      return E.promise(() => out);
+    }
+    if (E.isEffect(out)) {
+      self._tag = EFFECT;
+      return out as E.Effect<Jsx.Children>;
     }
     self._tag = SYNC;
     return E.succeed(out);
-  }));
+  });
 };
+
+export const renderProps = dual<
+  (props: any) => (self: Known) => E.Effect<Jsx.Children>,
+  (self: Known, props: any) => E.Effect<Jsx.Children>
+>(2, (self, props) => renderPropsDF(self, props));
+
+export const renderUsingDF = (self: Known, props: any, use: any): E.Effect<Jsx.Children> => {
+  switch (self._tag) {
+    case SYNC: {
+      return E.sync(() => self(props, use) as Jsx.Children);
+    }
+    case ASYNC: {
+      return E.promise(() => self(props, use) as Promise<Jsx.Children>);
+    }
+    case EFFECT: {
+      return E.suspend(() => self(props, use) as E.Effect<Jsx.Children>);
+    }
+  }
+  return E.suspend(() => {
+    const out = self(props, use);
+
+    if (P.isPromise(out)) {
+      self._tag = ASYNC;
+      return E.promise(() => out);
+    }
+    if (E.isEffect(out)) {
+      self._tag = EFFECT;
+      return out as E.Effect<Jsx.Children>;
+    }
+    self._tag = SYNC;
+    return E.succeed(out as Jsx.Children);
+  });
+};
+
+export const renderUsing = dual<
+  (props: any, use: any) => (self: Known) => E.Effect<Jsx.Children>,
+  (self: Known, props: any, use: any) => E.Effect<Jsx.Children>
+>(3, (self, props, use) => renderUsingDF(self, props, use));

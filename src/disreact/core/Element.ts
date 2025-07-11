@@ -1,5 +1,5 @@
-import * as Lineage from '#disreact/core/behaviors/lineage.ts';
 import * as Document from '#disreact/core/Document.ts';
+import * as Event from '#disreact/core/Event.ts';
 import * as FC from '#disreact/core/FC.ts';
 import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, INTRINSIC} from '#disreact/core/immutable/constants.ts';
 import * as Diff from '#disreact/core/immutable/diff.ts';
@@ -7,11 +7,12 @@ import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as elem from '#disreact/core/internal/element.ts';
 import type * as Jsx from '#disreact/core/Jsx.ts';
 import * as Polymer from '#disreact/core/Polymer.ts';
-import type * as Traversal from '#disreact/core/Traversal.ts';
+import * as Traversal from '#disreact/core/Traversal.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import type * as Hash from 'effect/Hash';
 import type * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -40,17 +41,16 @@ export interface Base extends Pipeable.Pipeable,
   readonly component: any;
   readonly endpoint?: string;
   readonly key      : string;
-
-  props: undefined | Props;
-  ref  : undefined | any;
-  text : undefined | any;
-  merge: undefined | boolean;
-  diff : undefined | Diff.Diff<Element>;
-  diffs: undefined | Diffs.Diffs<Element>[];
-  jsxs : boolean;
-
-  src?: any;
-  ctx?: any;
+  props             : undefined | Props;
+  ref               : undefined | any;
+  text              : undefined | any;
+  merge             : undefined | boolean;
+  diff              : undefined | Diff.Diff<Element>;
+  diffs             : undefined | Diffs.Diffs<Element>[];
+  jsxs              : boolean;
+  rendered?         : Jsx.Children;
+  src?              : any;
+  ctx?              : any;
 }
 
 export interface Text extends Base {
@@ -84,7 +84,7 @@ export interface Func extends Base {
 export interface Props extends Inspectable.Inspectable,
   Equal.Equal,
   Hash.Hash,
-  Record<'onclick' | 'onselect' | 'onsubmit', EventHandler>,
+  Record<'onclick' | 'onselect' | 'onsubmit', any>,
   Record<string, any>
 {
   readonly children?: Jsx.Children;
@@ -136,96 +136,11 @@ export const eitherRenderable = (self: Element): Either.Either<Func, Exclude<Ele
   return Either.left(self);
 };
 
-export const toReversed = (self: Element) => self.children?.toReversed();
+export const toReversedDescendents = (self: Element) => self.children?.toReversed();
 
 export const clone = <A extends Element>(self: A): A => elem.cloneElement(self);
 
-export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
-  switch (self._tag) {
-    case ELEMENT_TEXT: {
-      if (that._tag !== ELEMENT_TEXT) {
-        return Diff.replace(that);
-      }
-      if (self.text !== that.text) {
-        return Diff.replace(that);
-      }
-      return Diff.skip();
-    }
-    case ELEMENT_LIST: {
-      if (that._tag !== ELEMENT_LIST) {
-        return Diff.replace(that);
-      }
-      return Diff.cont(that);
-    }
-    case ELEMENT_FRAGMENT: {
-      if (that._tag !== ELEMENT_FRAGMENT) {
-        return Diff.replace(that);
-      }
-      return Diff.cont(that);
-    }
-    case ELEMENT_INTRINSIC: {
-      if (that._tag !== ELEMENT_INTRINSIC) {
-        return Diff.replace(that);
-      }
-      if (self.component !== that.component) {
-        return Diff.replace(that);
-      }
-      if (!Equal.equals(self.props, that.props)) {
-        return Diff.update(that);
-      }
-      return Diff.cont(that);
-    }
-    case ELEMENT_FUNCTIONAL: {
-      if (that._tag !== ELEMENT_FUNCTIONAL) {
-        return Diff.replace(that);
-      }
-      if (self.component !== that.component) {
-        return Diff.replace(that);
-      }
-      if (!Equal.equals(self.props, that.props)) {
-        return Diff.render(that.props);
-      }
-      if (Polymer.isChanged(self.polymer)) {
-        return Diff.render(self.props);
-      }
-      return Diff.skip();
-    }
-  }
-};
-
-export const diff = dual<
-  (that: Element) => (self: Element) => Diff.Diff<Element>,
-  (self: Element, that: Element) => Diff.Diff<Element>
->(2, diffF);
-
-export const diffsF = (self: Element, that?: Element[]): Diffs.Diffs<Element>[] => {
-  const acc = [] as Diffs.Diffs<Element>[];
-
-  if (!self.children && !that) {
-    return [];
-  }
-  if (!self.children && that) {
-    for (let i = 0; i < that.length; i++) {
-      acc.push(Diffs.insert(that[i]));
-    }
-    return acc;
-  }
-  if (self.children && !that) {
-    for (let i = 0; i < self.children.length; i++) {
-      acc.push(Diffs.remove(self.children[i]));
-    }
-    return acc;
-  }
-  // todo
-  return acc;
-};
-
-export const diffs = dual<
-  (that: Element[]) => (self: Element) => Diff.Diff<Element>[],
-  (self: Element, that: Element[]) => Diffs.Diffs<Element>[]
->(2, diffsF);
-
-export const findWithinDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
+export const findDescendentDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
   const stack = [self] as Element[];
 
   while (stack.length) {
@@ -241,27 +156,27 @@ export const findWithinDF = <A extends Element>(self: Element, p: (n: Element) =
   return Option.none();
 };
 
-export const findWithin = dual<
+export const findDescendent = dual<
   <A extends Element>(p: (n: Element) => n is A) => (self: Element) => Option.Option<A>,
   <A extends Element>(self: Element, p: (n: Element) => n is A) => Option.Option<A>
->(2, (self, p) => findWithinDF(self, p));
+>(2, (self, p) => findDescendentDF(self, p));
 
-export const findAboveDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
-  let node = self;
+export const findAncestorDF = <A extends Element>(self: Element, p: (n: Element) => n is A): Option.Option<A> => {
+  let node = self as Element | undefined;
 
   while (node) {
     if (p(node)) {
       return Option.some(node);
     }
-    node = Lineage.get(node);
+    node = Traversal.getAncestor(node);
   }
   return Option.none();
 };
 
-export const findAbove = dual<
+export const findAncestor = dual<
   <A extends Element>(p: (n: Element) => n is A) => (self: Element) => Option.Option<A>,
   <A extends Element>(self: Element, p: (n: Element) => n is A) => Option.Option<A>
->(2, (self, p) => findAboveDF(self, p));
+>(2, (self, p) => findAncestorDF(self, p));
 
 export const initializeDF = (self: Func, document: Document.Document): Func => {
   self.polymer = Polymer.empty(self, document);
@@ -306,58 +221,158 @@ export const dispose = dual<
   (self: Element, document: Document.Document) => Element
 >(2, disposeF);
 
-export const render = (self: Func): E.Effect<Jsx.Children> => {
-  throw new Error();
-};
-
-export const commitF = (output: any, self: Func): Func => {
+export const commitF = (output: Jsx.Children, self: Func): Func => {
   Polymer.commit(self.polymer);
   if (Polymer.isStateless(self.polymer)) {
     FC.markStateless(self.component);
   }
+  self.rendered = output;
   return self;
 };
 
 export const commit = dual<
-  (self: Func) => (output: any) => Func,
-  (output: any, self: Func) => Func
+  (self: Func) => (output: Jsx.Children) => Func,
+  (output: Jsx.Children, self: Func) => Func
 >(2, commitF);
 
+export const accept = (self: Func): Func => {
+  self.children = liftRenderedChildren(self, self.rendered);
+  delete self.rendered;
+  return self;
+};
+
+const mutex = globalValue(Symbol.for('disreact/mutex'), () => E.unsafeMakeSemaphore(1));
+
+export const render = (self: Func): E.Effect<Jsx.Children> => {
+  const component = self.component;
+
+  if (!component.state) {
+    if (!component.props) {
+      return FC.renderSelf(component);
+    }
+    return FC.renderProps(component, self.props);
+  }
+  if (!component.props) {
+    return mutex.take(1).pipe(
+      E.andThen(FC.renderSelf(component)),
+      E.tap(mutex.release(1)),
+      E.tapDefect(() => mutex.release(1)),
+    );
+  }
+  return mutex.take(1).pipe(
+    E.andThen(FC.renderProps(component, self.props)),
+    E.tap(mutex.release(1)),
+    E.tapDefect(() => mutex.release(1)),
+  );
+};
+
 export const flush = (self: Func): E.Effect<Func> => E.suspend(() => {
+  if (!Polymer.hasEffects(self.polymer)) {
+    return E.succeed(self);
+  }
   return E.die('').pipe(E.as(self));
 });
 
-export interface Event<T = any> extends Inspectable.Inspectable {
-  id     : string;
-  lookup : string;
-  handler: string;
-  target : T;
-  close(): void;
-  open(element: Element): void;
-  open<A>(fc: FC.FC<A>, props: A): void;
-}
+export const dehydrate = (self: Func): Element[] | undefined => {
+  return self.children;
+};
 
-export interface EventHandler<A = any, E = never, R = never> {
-  (event: Event<A>): | void
-                     | Promise<void>
-                     | E.Effect<void, E, R>;
-}
+export const invokeDF = (self: Rest, event: Event.Event) => {
+  if (event.type in self.props) {
+    const handler = self.props[event.type];
 
-export const event = elem.event;
-
-export const invokeDF = (self: Rest, event?: any) => {
-  if (!event) {
-    return E.die('');
+    return Event.invoke(event, handler);
   }
-  return E.die('').pipe(E.as(self));
+  return E.succeed(event);
 };
 
 export const invoke = dual<
-  (event?: any) => (self: Rest) => E.Effect<Rest>,
-  (self: Rest, event?: any) => E.Effect<Rest>
+  (event: Event.Event) => (self: Rest) => E.Effect<Event.Event>,
+  (self: Rest, event: Event.Event) => E.Effect<Event.Event>
 >(2, invokeDF);
 
+export const diffF = (self: Element, that: Element): Diff.Diff<Element> => {
+  switch (self._tag) {
+    case ELEMENT_TEXT: {
+      if (that._tag !== ELEMENT_TEXT) {
+        return Diff.replace(that);
+      }
+      if (self.text !== that.text) {
+        return Diff.replace(that);
+      }
+      return Diff.skip();
+    }
+    case ELEMENT_LIST: {
+      if (that._tag !== ELEMENT_LIST) {
+        return Diff.replace(that);
+      }
+      return Diff.cont(that);
+    }
+    case ELEMENT_FRAGMENT: {
+      if (that._tag !== ELEMENT_FRAGMENT) {
+        return Diff.replace(that);
+      }
+      return Diff.cont(that);
+    }
+    case ELEMENT_INTRINSIC: {
+      if (that._tag !== ELEMENT_INTRINSIC) {
+        return Diff.replace(that);
+      }
+      if (self.component !== that.component) {
+        return Diff.replace(that);
+      }
+      if (!Equal.equals(self.props, that.props)) {
+        return Diff.update(that);
+      }
+      return Diff.cont(that);
+    }
+  }
+  if (that._tag !== ELEMENT_FUNCTIONAL) {
+    return Diff.replace(that);
+  }
+  if (self.component !== that.component) {
+    return Diff.replace(that);
+  }
+  if (!Equal.equals(self.props, that.props)) {
+    return Diff.render(that.props);
+  }
+  if (Polymer.isChanged(self.polymer)) {
+    return Diff.render(self.props);
+  }
+  return Diff.skip();
+};
 
+export const diff = dual<
+  (that: Element) => (self: Element) => Diff.Diff<Element>,
+  (self: Element, that: Element) => Diff.Diff<Element>
+>(2, diffF);
+
+export const diffsF = (self: Element, that?: Element[]): Diffs.Diffs<Element>[] => {
+  const acc = [] as Diffs.Diffs<Element>[];
+
+  if (!self.children && !that) {
+    return [];
+  }
+  if (!self.children && that) {
+    for (let i = 0; i < that.length; i++) {
+      acc.push(Diffs.insert(that[i]));
+    }
+    return acc;
+  }
+  if (self.children && !that) {
+    for (let i = 0; i < self.children.length; i++) {
+      acc.push(Diffs.remove(self.children[i]));
+    }
+    return acc;
+  }
+  // todo
+  return acc;
+};
+
+export const diffs = dual<
+  (that: Element[]) => (self: Element) => Diff.Diff<Element>[],
+  (self: Element, that: Element[]) => Diffs.Diffs<Element>[]
+>(2, diffsF);
 
 export const updateDF = <A extends Element>(self: A, that: Element): A => {
   if (process.env.NODE_ENV !== 'production') {

@@ -1,7 +1,8 @@
 import * as Document from '#disreact/core/Document.ts';
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Element from '#disreact/core/Element.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Stack from '#disreact/core/Stack.ts';
+import * as Traversal from '#disreact/core/Traversal.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 import * as E from 'effect/Effect';
@@ -37,20 +38,18 @@ const initializeSPS = (stack: Stack.Stack) =>
     Either.map((node) =>
       node.pipe(
         Element.initialize(stack.origin!),
-        acquireMutex,
-        E.andThen(Element.render),
-        releaseMutex,
+        Element.render,
         E.map(Element.commit(node)),
         E.map(Element.accept),
-        E.map(Element.toReversed),
+        E.map(Element.toReversedDescendents),
         E.map(Stack.pushAllInto(stack)),
         E.tap(Element.flush(node)),
       ),
     ),
     Either.mapLeft((node) =>
       node.pipe(
-        Element.connect,
-        Element.toReversed,
+        Element.liftPropsChildren,
+        Element.toReversedDescendents,
         Stack.pushAllInto(stack),
         E.succeed,
       ),
@@ -65,19 +64,17 @@ const hydrateSPS = (stack: Stack.Stack) =>
     Either.map((element) =>
       element.pipe(
         Element.hydrate(stack.origin!),
-        acquireMutex,
-        E.andThen(Element.render),
-        releaseMutex,
+        Element.render,
         E.map(Element.commit(element)),
         E.map(Element.accept),
-        E.map(Element.toReversed),
+        E.map(Element.toReversedDescendents),
         E.map(Stack.pushAllInto(stack)),
       ),
     ),
     Either.mapLeft((node) =>
       node.pipe(
         Element.liftPropsChildren,
-        Element.toReversed,
+        Element.toReversedDescendents,
         Stack.pushAllInto(stack),
         E.succeed,
       ),
@@ -101,7 +98,7 @@ export const hydrate = (document: Document.Document) =>
 
 export const invoke = (document: Document.Document) =>
   document.body.pipe(
-    Element.findWithin((node): node is Element.Rest => {
+    Element.findDescendent((node): node is Element.Rest => {
       if (Element.isInvokable(node)) {
         if (!node.props[document.event!.lookup]) {
           return false;
@@ -134,7 +131,7 @@ const unmount = (root: Element.Element, document: Document.Document) => {
     const node = Stack.pop(stack);
 
     if (!visited.has(node)) {
-      Stack.pushAll(stack, Element.toReversed(node));
+      Stack.pushAll(stack, Element.toReversedDescendents(node));
       visited.add(node);
       continue;
     }
@@ -142,7 +139,7 @@ const unmount = (root: Element.Element, document: Document.Document) => {
   }
   return root;
 };
-import * as Traversal from '#disreact/core/Traversal.ts';
+
 export const rerender = (document: Document.Document) =>
   document.pipe(
     Document.getFlags,
