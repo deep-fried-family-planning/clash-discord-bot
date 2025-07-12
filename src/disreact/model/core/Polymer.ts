@@ -3,8 +3,8 @@ import type * as Node from '#disreact/core/Element.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
 import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
-import type * as Jsx from '#disreact/core/Jsx.ts';
-import type * as TreeLike from '#disreact/core/Traversal.ts';
+import type * as Jsx from '#disreact/model/Jsx.ts';
+import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -95,15 +95,16 @@ export type Effect = | EffectFn
 
 export interface Polymer extends Pipeable.Pipeable,
   Inspectable.Inspectable,
-  TreeLike.Origin<Document.Document>,
-  TreeLike.Ancestor<Node.Func>
+  Traversable.Origin<Document.Document>,
+  Traversable.Ancestor<Node.Func>
 {
   pc   : number;
   rc   : number;
   stack: Monomer[];
   queue: Effectful[];
-  src? : Jsx.DevSource;
-  ctx? : Jsx.DevContext;
+  src? : Jsx.DevSrc;
+  ctx? : Jsx.DevCtx;
+  flags: Set<any>;
 }
 
 export const empty = (node: Node.Func, document: Document.Document): Polymer => poly.empty(node, document);
@@ -163,3 +164,32 @@ export const dispose = (self: Polymer) => {
 };
 
 export const dequeue = poly.dequeue;
+
+export interface Hydrant extends Inspectable.Inspectable {
+  id   : string;
+  props: any;
+  state: Record<string, Encoded[]>;
+}
+
+export const hydrant = (id: string, props: any) => {
+  return {
+    id   : id,
+    props: structuredClone(props),
+    state: {},
+  };
+};
+
+export const fromHydrant = (hydrant: Hydrant, id: string): Polymer => {
+
+};
+
+export const intoHydrant = (self: Polymer, hydrant: Hydrant): Hydrant => {
+  const encoded = [] as Encoded[];
+
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+    encoded.push(poly.dehydrateMonomer(monomer));
+  }
+
+  return encoded;
+};

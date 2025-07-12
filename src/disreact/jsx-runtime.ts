@@ -1,7 +1,7 @@
 import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import type {IntrinsicAttributesMap} from '#src/disreact/adaptor/codec/intrinsic/types.ts';
-import * as Markup from '#disreact/core/Jsx.ts';
+import * as Markup from '#disreact/model/Jsx.ts';
 
 export const Fragment = Markup.Fragment,
              jsx      = Markup.make,
@@ -9,7 +9,6 @@ export const Fragment = Markup.Fragment,
 
 export type JsxElementType =
   | keyof IntrinsicAttributesMap
-  | Markup.Primitive
   | FC.FC;
 
 export type JsxElement = Element.Element;

@@ -5,9 +5,9 @@ import {ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, E
 import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as elem from '#disreact/core/internal/element.ts';
-import type * as Jsx from '#disreact/core/Jsx.ts';
-import * as Polymer from '#disreact/core/Polymer.ts';
-import * as Traversal from '#disreact/core/Traversal.ts';
+import type * as Jsx from '#disreact/model/Jsx.ts';
+import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Traversal from '#disreact/model/core/Traversable.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';

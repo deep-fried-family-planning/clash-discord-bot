@@ -1,5 +1,5 @@
 import * as FC from '#disreact/core/FC.ts';
-import type * as Polymer from '#disreact/core/Polymer.ts';
+import type * as Polymer from '#disreact/model/core/Polymer.ts';
 
 export type State = Record<string, Polymer.Encoded[]>;
 

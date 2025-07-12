@@ -62,7 +62,7 @@ export const lowestCommonAncestor = <A extends Ancestor<any>>(nodes?: A[]): A | 
 };
 
 export type Descendent<A extends Descendent<any>> = {
-  children: undefined | A[];
+  children?: undefined | A[];
 };
 
 export const toDescendentsReverse = <A extends Descendent<any>>(self: A): A[] | undefined => self.children?.toReversed();
@@ -70,42 +70,42 @@ export const toDescendentsReverse = <A extends Descendent<any>>(self: A): A[] | 
 export const forEachDescendent = <A extends Descendent<any>>(self: A, f: (self: A) => void) => {};
 
 export const dfsPreOrder = <A extends Descendent<any>>(start: A): A[] => {
-  const ts = [start];
+  const stack = [start];
   const ds = [] as A[];
 
-  while (ts.length > 0) {
-    const n = ts.pop()!;
+  while (stack.length > 0) {
+    const n = stack.pop()!;
     ds.push(n);
 
     if (!n.children) {
       continue;
     }
     for (let i = n.children.length - 1; i >= 0; i--) {
-      ts.push(n.children[i]);
+      stack.push(n.children[i]);
     }
   }
   return ds;
 };
 
 export const dfsPostOrder = <A extends Descendent<any>>(start: A): A[] => {
-  const ts = [start];
+  const stack = [start];
   const vs = new WeakSet();
   const ds = [] as A[];
 
-  while (ts.length > 0) {
-    const n = ts.pop()!;
+  while (stack.length > 0) {
+    const n = stack.pop()!;
 
     if (vs.has(n)) {
       ds.push(n);
       continue;
     }
     vs.add(n);
-    ts.push(n);
+    stack.push(n);
     if (!n.children) {
       continue;
     }
     for (let i = n.children.length - 1; i >= 0; i--) {
-      ts.push(n.children[i]);
+      stack.push(n.children[i]);
     }
   }
   return ds;
