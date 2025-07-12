@@ -4,7 +4,7 @@ import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MON
 import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
 import type * as Jsx from '#disreact/model/Jsx.ts';
-import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -82,6 +82,8 @@ export type Encoded =
   | [typeof MONOMER_MEMO, any[]]
   | [typeof MONOMER_CONTEXTUAL];
 
+
+
 export type EffectOutput = | void
                            | Promise<void>
                            | E.Effect<void>;
@@ -92,11 +94,11 @@ export interface EffectFn {
 
 export type Effect = | EffectFn
                      | E.Effect<void>;
-
+import type * as Elem from '#disreact/model/core/Elem.ts';
 export interface Polymer extends Pipeable.Pipeable,
   Inspectable.Inspectable,
   Traversable.Origin<Document.Document>,
-  Traversable.Ancestor<Node.Func>
+  Traversable.Ancestor<Elem.Elem>
 {
   pc   : number;
   rc   : number;
@@ -180,7 +182,7 @@ export const hydrant = (id: string, props: any) => {
 };
 
 export const fromHydrant = (hydrant: Hydrant, id: string): Polymer => {
-
+  throw new Error();
 };
 
 export const intoHydrant = (self: Polymer, hydrant: Hydrant): Hydrant => {
@@ -190,6 +192,12 @@ export const intoHydrant = (self: Polymer, hydrant: Hydrant): Hydrant => {
     const monomer = self.stack[i];
     encoded.push(poly.dehydrateMonomer(monomer));
   }
+  hydrant.state[self.ancestor!.id] = encoded;
+  return hydrant;
+};
 
-  return encoded;
+export const next = (self: Polymer): Monomer => self.stack[self.pc];
+
+export const advance = (self: Polymer) => {
+  self.pc++;
 };

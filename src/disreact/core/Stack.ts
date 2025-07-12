@@ -7,7 +7,7 @@ import * as Iterable from 'effect/Iterable';
 import type * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
-import type * as Traversal from '#disreact/model/core/Traversable.ts';
+import type * as Traversal from '#disreact/core/Traversable.ts';
 
 export interface Stack<A = Node.Element> extends Pipeable.Pipeable,
   Inspectable.Inspectable,

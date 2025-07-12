@@ -1,6 +1,6 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Traversable from '#disreact/core/Traversable.ts';
 import * as Jsx from '#disreact/model/Jsx.ts';
 import * as Equal from 'effect/Equal';
 import * as Differ from 'effect/Differ';
@@ -8,23 +8,18 @@ import type * as E from 'effect/Effect';
 import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-
-export type Type = any;
+import type * as Hash from 'effect/Hash';
+import type * as Envelope from '#disreact/model/core/Envelope.ts';
 
 export interface Elem extends Inspectable.Inspectable,
   Pipeable.Pipeable,
+  Equal.Equal,
+  Hash.Hash,
+  Traversable.Meta,
   Traversable.Ancestor<Elem>,
   Traversable.Descendent<Elem>
 {
-  _apex: {
-    entrypoint: Jsx.Entrypoint;
-    root      : Elem;
-    roots     : Elem[];
-    flags     : Set<Elem>;
-    mount     : Set<Elem>;
-    update    : Set<Elem>;
-    dismount  : Set<Elem>;
-  };
+  _env      : Envelope.Envelope;
   key?      : string | undefined;
   component?: string | any | undefined;
   props?    : any;
@@ -36,22 +31,25 @@ export interface Elem extends Inspectable.Inspectable,
   render?   : E.Effect<Jsx.Children> | undefined;
 }
 
+export const isElem = (u: any): u is Elem => u._tag === 'Elem';
+
 const makeKey = (self: Elem) =>
   self.key ? self.key :
   self.id;
 
 const Proto: Elem = {
-  _apex    : undefined as any,
+  _env     : undefined as any,
   component: undefined,
   key      : undefined,
   text     : undefined,
   ancestor : undefined,
   children : undefined,
-  ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
+  ...Pipeable.Prototype,
   toJSON() {
     return Inspectable.format({
-      _id: 'Elem',
+      _id      : 'Elem',
+      component: this.component ?? '',
     });
   },
 };
@@ -62,7 +60,7 @@ const connect = (self: Elem, that: Elem) => {
 
 export const fromJsx = (self: Elem, jsx: Jsx.Jsx): Elem => {
   const elem = Object.create(Proto) as Elem;
-  elem._apex = self._apex;
+  elem._env = self._env;
   elem.key = jsx.key;
   elem.component = jsx.type;
   elem.props = jsx.props;
@@ -79,7 +77,7 @@ export const fromJsx = (self: Elem, jsx: Jsx.Jsx): Elem => {
 export const fromJsxChild = (self: Elem, child: Jsx.Child): Elem => {
   if (Jsx.isValue(child)) {
     const elem = Object.create(Proto) as Elem;
-    elem._apex = self._apex;
+    elem._env = self._env;
     elem.text = child;
     return elem;
   }
@@ -101,6 +99,16 @@ export const fromJsxChildren = (self: Elem, children: Jsx.Children): Elem[] => {
   return [fromJsxChild(self, children)];
 };
 
+export const fromRoot = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
+  const elem = Object.create(Proto) as Elem;
+  elem._env = env;
+  elem.key = jsx.key;
+  elem.component = jsx.type;
+  elem.props = jsx.props;
+  elem.children = fromJsxChildren(elem, jsx.childs ?? jsx.childs);
+  return elem;
+};
+
 export const fromEntrypoint = (entrypoint: Jsx.Entrypoint, props: any): Elem => {
   const self = Object.create(Proto) as Elem;
   self._apex = {
@@ -118,6 +126,14 @@ export const fromEntrypoint = (entrypoint: Jsx.Entrypoint, props: any): Elem => 
                   undefined;
 
   return self;
+};
+
+export const dispose = (self: Elem) => {
+  (self._env as any) = undefined;
+  (self.props as any) = undefined;
+  (self.polymer as any) = undefined;
+  self.ancestor = undefined;
+  self.children = undefined;
 };
 
 export const update = (self: Elem, that: Elem): Elem => {

@@ -36,17 +36,6 @@ export interface Jsx<T extends Type = Type> {
 
 export const isValue = (u: Children): u is Exclude<Child, Jsx> => typeof u !== 'object' || !u;
 
-const Proto: Jsx = {
-  ref   : undefined,
-  key   : undefined,
-  type  : Fragment,
-  props : {},
-  child : undefined,
-  childs: [undefined],
-  src   : undefined,
-  ctx   : undefined,
-};
-
 export const make = (type: Type, setup: Setup, key?: string): Jsx => {
   return {
     key  : key,

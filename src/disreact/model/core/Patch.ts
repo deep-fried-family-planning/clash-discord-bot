@@ -3,6 +3,16 @@ export type Skip = {
   cont?: boolean | undefined;
 };
 
+export type Cont = {
+  _tag: 'Cont';
+};
+
+export type AndThen<A> = {
+  _tag: 'AndThen';
+  and : Patch<A>;
+  then: Patch<A>;
+};
+
 export type Update<A> = {
   _tag : 'Update';
   that : A;
@@ -26,9 +36,12 @@ export type Remove<A> = {
   these: number;
 };
 
-export type Patch<A> = | Skip
-                       | Update<A>
-                       | Replace<A>;
+export type Patch<A> =
+  | Skip
+  | Cont
+  | AndThen<A>
+  | Update<A>
+  | Replace<A>;
 
 export type Patches<A> = | Skip
                          | Update<A>
@@ -42,6 +55,8 @@ const Proto: Patch<any> | Patches<any> = {
   at   : undefined,
   these: undefined,
   cont : undefined,
+  and  : undefined,
+  then : undefined,
 } as Patch<any> | Patches<any>;
 
 export const skip = (cont?: boolean): Skip => {

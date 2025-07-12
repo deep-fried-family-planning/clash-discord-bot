@@ -7,7 +7,7 @@ import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as elem from '#disreact/core/internal/element.ts';
 import type * as Jsx from '#disreact/model/Jsx.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import * as Traversal from '#disreact/model/core/Traversable.ts';
+import * as Traversal from '#disreact/core/Traversable.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
