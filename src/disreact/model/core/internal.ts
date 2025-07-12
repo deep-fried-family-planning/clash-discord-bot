@@ -27,3 +27,7 @@ export const makeProps = (props: any): Record<string, any> => {
 export const makeRestProps = (props: any): Record<string, any> => {
   return props;
 };
+
+const ElementPrototype = {
+
+};
