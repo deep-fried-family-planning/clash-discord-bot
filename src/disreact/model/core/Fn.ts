@@ -1,6 +1,7 @@
 import type * as Jsx from '#disreact/model/Jsx.ts';
 import * as E from 'effect/Effect';
 import * as P from 'effect/Predicate';
+import type * as Inspectable from 'effect/Inspectable';
 
 export type Fn = never;
 
@@ -9,11 +10,12 @@ export type FCKind = | 'Sync'
                      | 'Effect'
                      | undefined;
 
-export interface JsxFC<K extends FCKind = FCKind> {
+export interface JsxFC<K extends FCKind = FCKind> extends Inspectable.Inspectable {
   _tag        : K;
   _id         : string;
   _state      : boolean;
-  entrypoint? : string;
+  _props      : boolean;
+  entrypoint? : string | undefined;
   displayName?: string;
 
   <P = any, E = never, R = never>(props?: P):

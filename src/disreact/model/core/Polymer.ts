@@ -94,7 +94,7 @@ export interface EffectFn {
 
 export type Effect = | EffectFn
                      | E.Effect<void>;
-import type * as Elem from '#disreact/model/core/Elem.ts';
+import type * as Elem from '#disreact/model/Elem.ts';
 export interface Polymer extends Pipeable.Pipeable,
   Inspectable.Inspectable,
   Traversable.Origin<Document.Document>,

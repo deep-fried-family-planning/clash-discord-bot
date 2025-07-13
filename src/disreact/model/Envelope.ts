@@ -1,4 +1,4 @@
-import * as Elem from '#disreact/model/core/Elem.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import type * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
@@ -51,7 +51,7 @@ export const fromFC = (fc: Fn.JsxFC, props: any, data: any) =>
   makeEffects.pipe(
     E.map((self) => {
       self.data = data;
-      self.root = Elem.fromRoot(Jsx.make(fc, props), self);
+      self.root = Elem.fromJsxEnv(Jsx.make(fc, props), self);
       return self;
     }),
   );

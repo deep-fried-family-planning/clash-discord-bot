@@ -1,15 +1,26 @@
+import type * as Traversable from '#disreact/core/Traversable.ts';
+import type * as Fn from '#disreact/model/core/Fn.ts';
+import * as Internal from '#disreact/model/core/internal.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Traversable from '#disreact/core/Traversable.ts';
+import type * as Envelope from '#disreact/model/Envelope.ts';
 import * as Jsx from '#disreact/model/Jsx.ts';
-import * as Equal from 'effect/Equal';
 import * as Differ from 'effect/Differ';
 import type * as E from 'effect/Effect';
-import * as HashMap from 'effect/HashMap';
-import * as Inspectable from 'effect/Inspectable';
-import * as Pipeable from 'effect/Pipeable';
+import * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
-import type * as Envelope from '#disreact/model/core/Envelope.ts';
+import * as HashMap from 'effect/HashMap';
+import type * as Inspectable from 'effect/Inspectable';
+import type * as Pipeable from 'effect/Pipeable';
+
+export interface Props extends Inspectable.Inspectable,
+  Equal.Equal,
+  Hash.Hash,
+  Record<'onclick' | 'onselect' | 'onsubmit', any>,
+  Record<string, any>
+{
+  readonly children?: Jsx.Children;
+}
 
 export interface Elem extends Inspectable.Inspectable,
   Pipeable.Pipeable,
@@ -21,111 +32,71 @@ export interface Elem extends Inspectable.Inspectable,
 {
   _env      : Envelope.Envelope;
   key?      : string | undefined;
-  component?: string | any | undefined;
-  props?    : any;
+  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
+  props?    : Props;
   polymer?  : Polymer.Polymer;
   text?     : any;
-  depth     : number;
-  idx       : number;
-  id        : string;
   render?   : E.Effect<Jsx.Children> | undefined;
 }
-
-export const isElem = (u: any): u is Elem => u._tag === 'Elem';
-
-const makeKey = (self: Elem) =>
-  self.key ? self.key :
-  self.id;
-
-const Proto: Elem = {
-  _env     : undefined as any,
-  component: undefined,
-  key      : undefined,
-  text     : undefined,
-  ancestor : undefined,
-  children : undefined,
-  ...Inspectable.BaseProto,
-  ...Pipeable.Prototype,
-  toJSON() {
-    return Inspectable.format({
-      _id      : 'Elem',
-      component: this.component ?? '',
-    });
-  },
-};
 
 const connect = (self: Elem, that: Elem) => {
 
 };
 
-export const fromJsx = (self: Elem, jsx: Jsx.Jsx): Elem => {
-  const elem = Object.create(Proto) as Elem;
+const fromJsx = (self: Elem, jsx: Jsx.Jsx): Elem => {
+  const elem = Internal.makeElement(jsx);
   elem._env = self._env;
-  elem.key = jsx.key;
-  elem.component = jsx.type;
-  elem.props = jsx.props;
   elem.ancestor = self;
   elem.depth = self.depth + 1;
-
-  elem.children = jsx.child ? [fromJsxChild(elem, jsx.child)] :
-                  jsx.childs ? fromJsxChilds(elem, jsx.childs) :
-                  undefined;
-
+  elem.children = fromJsxChildren(elem, jsx.childs ?? jsx.childs);
   return elem;
 };
 
-export const fromJsxChild = (self: Elem, child: Jsx.Child): Elem => {
+const fromJsxChild = (self: Elem, child: Jsx.Child): Elem => {
   if (Jsx.isValue(child)) {
-    const elem = Object.create(Proto) as Elem;
+    const elem = Internal.makeTextElement(child);
     elem._env = self._env;
-    elem.text = child;
+    elem.ancestor = self;
+    elem.depth = self.depth + 1;
     return elem;
   }
   return fromJsx(self, child);
 };
 
-export const fromJsxChilds = (self: Elem, childs: Jsx.Child[]): Elem[] => {
-  return childs.map((child, idx) => {
-    const elem = fromJsxChild(self, child);
-    elem.idx = idx;
-    return elem;
-  });
+const fromJsxChilds = (self: Elem, childs: Jsx.Child[]): Elem[] => {
+  const children = [] as Elem[];
+
+  for (let i = 0; i < childs.length; i++) {
+    const child = fromJsxChild(self, childs[i]);
+    child.index = i;
+    children[i] = child;
+  }
+
+  return children;
 };
 
-export const fromJsxChildren = (self: Elem, children: Jsx.Children): Elem[] => {
+export const fromJsxChildren = (self: Elem, children: Jsx.Children): Elem[] | undefined => {
+  if (!children) {
+    return undefined;
+  }
   if (Array.isArray(children)) {
     return fromJsxChilds(self, children);
   }
   return [fromJsxChild(self, children)];
 };
 
-export const fromRoot = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
-  const elem = Object.create(Proto) as Elem;
-  elem._env = env;
-  elem.key = jsx.key;
-  elem.component = jsx.type;
-  elem.props = jsx.props;
-  elem.children = fromJsxChildren(elem, jsx.childs ?? jsx.childs);
-  return elem;
+export const fromJsxEnv = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
+  const root = Internal.makeElement(jsx);
+  root._env = env;
+  root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
+  return root;
 };
 
-export const fromEntrypoint = (entrypoint: Jsx.Entrypoint, props: any): Elem => {
-  const self = Object.create(Proto) as Elem;
-  self._apex = {
-    entrypoint,
-    root : self,
-    roots: [],
-    flags: new Set(),
-  };
-  self.key = entrypoint.component.key;
-  self.component = entrypoint.component.type;
-  self.props = props;
+export const fromEntrypoint = (
+  entrypoint: Jsx.Entrypoint,
+  props: any,
+): Elem => {
 
-  self.children = entrypoint.component.child ? [fromJsxChild(self, entrypoint.component.child)] :
-                  entrypoint.component.childs ? fromJsxChilds(self, entrypoint.component.childs) :
-                  undefined;
-
-  return self;
 };
 
 export const dispose = (self: Elem) => {
@@ -134,6 +105,27 @@ export const dispose = (self: Elem) => {
   (self.polymer as any) = undefined;
   self.ancestor = undefined;
   self.children = undefined;
+};
+
+export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
+  if (self === that) {
+    return Patch.skip();
+  }
+  if (self.text !== that.text) {
+    return Patch.replace(that);
+  }
+  if (self.component !== that.component) {
+    return Patch.replace(that);
+  }
+  if (!Equal.equals(self.props, that.props)) {
+    return Patch.update(that, true);
+  }
+  if (self.polymer) {
+    if (Polymer.isChanged(self.polymer)) {
+      return Patch.skip(true);
+    }
+  }
+  return Patch.skip();
 };
 
 export const update = (self: Elem, that: Elem): Elem => {
@@ -157,10 +149,6 @@ export const insert = (self: Elem, at: number, that: Elem[]): Elem => {
   }
   self.children.splice(at, 0, ...that);
   return self;
-};
-
-export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
-  throw new Error();
 };
 
 export const diffs = (self: Elem, that: Elem): Patch.Patches<Elem>[] => {
