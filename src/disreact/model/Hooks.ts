@@ -9,7 +9,7 @@ export const $useState = (initial: any) => {
   if (!active.polymer) {
     throw new Error('Invalid Hook');
   }
-  const monomer = Polymer.next(active.polymer) ?? Polymer.;
+  const monomer = Polymer.next(active.polymer);
 
   if (!monomer) {
     Polymer.advance;
@@ -23,4 +23,4 @@ export const $useState = (initial: any) => {
 
 export const $useEffect = (effect: any, deps?: any[]) => {
 
-}
+};

@@ -8,6 +8,8 @@ import * as Pipeable from 'effect/Pipeable';
 
 export type Internal = never;
 
+export const asyncFnConstructor = (async () => {}).constructor;
+
 const FunctionComponentPrototype: Fn.JsxFC = {
   _tag       : undefined,
   _id        : '',
@@ -38,7 +40,7 @@ export const makeFunctionComponent = (fn: (props?: any) => any): Fn.JsxFC => {
   if (fn.length === 0) {
     self._props = false;
   }
-  if (fn.constructor.name === 'AsyncFunction') {
+  if (fn.constructor === asyncFnConstructor) {
     self._tag = 'Async';
   }
   return self;
