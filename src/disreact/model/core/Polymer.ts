@@ -192,7 +192,7 @@ export const intoHydrant = (self: Polymer, hydrant: Hydrant): Hydrant => {
     const monomer = self.stack[i];
     encoded.push(poly.dehydrateMonomer(monomer));
   }
-  hydrant.state[self.ancestor!.id] = encoded;
+  hydrant.state[self.ancestor!.trie] = encoded;
   return hydrant;
 };
 

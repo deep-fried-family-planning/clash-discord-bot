@@ -1,6 +1,6 @@
 import * as Elem from '#disreact/model/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
 import * as Jsx from '#disreact/model/Jsx.ts';
 import * as Deferred from 'effect/Deferred';
@@ -16,9 +16,9 @@ export interface Envelope<A = any> extends Inspectable.Inspectable {
   entrypoint: Option.Option<Jsx.Entrypoint>;
   root      : Elem.Elem;
   roots     : Elem.Elem[];
-  stream    : Mailbox.Mailbox<Progress.Progress>;
-  final     : Deferred.Deferred<Progress.Checkpoint>;
   flags     : Set<Elem.Elem>;
+  final     : Deferred.Deferred<Progress.Checkpoint>;
+  stream    : Mailbox.Mailbox<Progress.Progress>;
 }
 
 const Proto: Envelope = {
@@ -51,6 +51,7 @@ export const fromFC = (fc: Fn.JsxFC, props: any, data: any) =>
   makeEffects.pipe(
     E.map((self) => {
       self.data = data;
+      self.hydrant = Polymer.hydrant('', {});
       self.root = Elem.fromJsxEnv(Jsx.make(fc, props), self);
       return self;
     }),

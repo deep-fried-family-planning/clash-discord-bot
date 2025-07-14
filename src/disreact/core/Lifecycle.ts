@@ -1,7 +1,7 @@
 import * as Document from '#disreact/core/Document.ts';
 import * as Element from '#disreact/core/Element.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as Stack from '#disreact/core/Stack.ts';
+import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Traversal from '#disreact/core/Traversal.ts';
 import {Encoder} from '#disreact/core/Encoder.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';

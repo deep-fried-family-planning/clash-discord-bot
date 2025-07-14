@@ -33,7 +33,7 @@ export interface Elem extends Inspectable.Inspectable,
   _env      : Envelope.Envelope;
   key?      : string | undefined;
   component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
-  props?    : Props;
+  props?    : Props | undefined;
   polymer?  : Polymer.Polymer;
   text?     : any;
   render?   : E.Effect<Jsx.Children> | undefined;
@@ -43,36 +43,36 @@ const connect = (self: Elem, that: Elem) => {
 
 };
 
-const fromJsx = (self: Elem, jsx: Jsx.Jsx): Elem => {
-  const elem = Internal.makeElement(jsx);
-  elem._env = self._env;
-  elem.ancestor = self;
-  elem.depth = self.depth + 1;
-  elem.children = fromJsxChildren(elem, jsx.childs ?? jsx.childs);
-  return elem;
+const fromJsx = (cur: Elem, jsx: Jsx.Jsx): Elem => {
+  const self = Internal.makeElement(jsx);
+  self._env = cur._env;
+  self.ancestor = cur;
+  self.depth = cur.depth + 1;
+  self.children = fromJsxChildren(self, jsx.childs ?? jsx.childs);
+  return self;
 };
 
-const fromJsxChild = (self: Elem, child: Jsx.Child): Elem => {
+const fromJsxChild = (cur: Elem, child: Jsx.Child): Elem => {
   if (Jsx.isValue(child)) {
-    const elem = Internal.makeTextElement(child);
-    elem._env = self._env;
-    elem.ancestor = self;
-    elem.depth = self.depth + 1;
-    return elem;
+    const self = Internal.makeTextElement(child);
+    self._env = cur._env;
+    self.ancestor = cur;
+    self.depth = cur.depth + 1;
+    return self;
   }
-  return fromJsx(self, child);
+  return fromJsx(cur, child);
 };
 
-const fromJsxChilds = (self: Elem, childs: Jsx.Child[]): Elem[] => {
-  const children = [] as Elem[];
+const fromJsxChilds = (cur: Elem, childs: Jsx.Child[]): Elem[] => {
+  const self = [] as Elem[];
 
   for (let i = 0; i < childs.length; i++) {
-    const child = fromJsxChild(self, childs[i]);
+    const child = fromJsxChild(cur, childs[i]);
     child.index = i;
-    children[i] = child;
+    self[i] = child;
   }
 
-  return children;
+  return self;
 };
 
 export const fromJsxChildren = (self: Elem, children: Jsx.Children): Elem[] | undefined => {
@@ -92,11 +92,13 @@ export const fromJsxEnv = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
   return root;
 };
 
-export const fromEntrypoint = (
-  entrypoint: Jsx.Entrypoint,
-  props: any,
-): Elem => {
-
+export const fromEntrypoint = (entrypoint: Jsx.Entrypoint, props: any, env: Envelope.Envelope): Elem => {
+  const jsx = Jsx.clone(entrypoint.component);
+  jsx.props = props;
+  const self = Internal.makeElement(jsx);
+  self._env = env;
+  self.children = fromJsxChildren(self, jsx.childs ?? jsx.childs);
+  return self;
 };
 
 export const dispose = (self: Elem) => {
@@ -200,23 +202,12 @@ export const differ = Differ.make({
       case 'Update': {
         self.props = patch.that.props;
         self.text = patch.that.text;
-        if (self.polymer) {
-          self._apex.update.add(self);
-        }
         return self;
       }
       case 'Replace': {
-        self._apex.dismount.add(self);
-        self._apex.mount.add(patch.that);
         return patch.that;
       }
     }
+    return self;
   },
 });
-
-export const differs = Differ.readonlyArray(differ);
-
-const thing = Differ.zip(
-  differ,
-  differs,
-);

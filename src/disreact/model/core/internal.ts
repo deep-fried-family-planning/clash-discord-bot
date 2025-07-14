@@ -45,6 +45,9 @@ export const makeFunctionComponent = (fn: (props?: any) => any): Fn.JsxFC => {
 };
 
 const PropsPrototype: Elem.Props = {
+  onclick : undefined,
+  onselect: undefined,
+  onsubmit: undefined,
   [Hash.symbol]() {
     return Hash.structure(this);
   },
@@ -62,10 +65,8 @@ const PropsPrototype: Elem.Props = {
 
 export const makeProps = (props: any): Elem.Props => {
   return Object.assign(
-    {
-      ...props,
-    },
-    PropsPrototype,
+    Object.create(PropsPrototype),
+    props,
   );
 };
 

@@ -1,5 +1,5 @@
-import * as Elem from '#disreact/model/Elem.ts';
 import * as Fn from '#disreact/model/core/Fn.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import * as Hooks from '#disreact/model/Hooks.ts';
 import * as E from 'effect/Effect';
 
@@ -41,8 +41,10 @@ export const initialize = (self: Elem.Elem) => {
         E.map((children) => {
           cur.children = Elem.fromJsxChildren(cur, children);
 
-          for (const child of cur.children.toReversed()) {
-            stack.push(child);
+          if (cur.children) {
+            for (const child of cur.children.toReversed()) {
+              stack.push(child);
+            }
           }
         }),
       );

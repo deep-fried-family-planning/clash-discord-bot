@@ -1,5 +1,6 @@
-import type * as FC from '#disreact/core/FC.ts';
 import * as elem from '#disreact/core/internal/element.ts';
+import type * as Fn from '#disreact/model/core/Fn.ts';
+import * as Internal from '#disreact/model/core/internal.ts';
 import {globalValue} from 'effect/GlobalValue';
 
 export interface Setup extends Record<string, any> {
@@ -19,7 +20,7 @@ export type Children =
 export type Type =
   | string
   | typeof Fragment
-  | FC.FC;
+  | Fn.JsxFC;
 
 export const Fragment = elem.FragmentSymbol;
 
@@ -67,12 +68,20 @@ export interface Entrypoint {
 
 const entries = globalValue(Fragment, () => new Map<string, Entrypoint>());
 
-export const makeEntrypoint = (id: string, type: FC.FC | Jsx): Entrypoint => {
+export const makeEntrypoint = (id: string, type: Fn.JsxFC | Jsx): Entrypoint => {
   if (entries.has(id)) {
     throw new Error(`Duplicate entrypoint: ${id}`);
   }
   if (typeof type === 'function') {
+    const fc = Internal.makeFunctionComponent(type);
+    fc.entrypoint = id;
 
+    return entries
+      .set(id, {
+        id       : id,
+        component: make(fc, {}),
+      })
+      .get(id)!;
   }
   return entries
     .set(id, {
@@ -82,8 +91,15 @@ export const makeEntrypoint = (id: string, type: FC.FC | Jsx): Entrypoint => {
     .get(id)!;
 };
 
-export const findEntrypoint = (id: string | FC.FC): Entrypoint | undefined =>
-  entries.get(id);
+export const findEntrypoint = (id: string | Fn.JsxFC): Entrypoint | undefined => {
+  if (typeof id === 'function') {
+    if (!id.entrypoint) {
+      return undefined;
+    }
+    return entries.get(id.entrypoint);
+  }
+  return entries.get(id);
+};
 
 export type DevSrc = {};
 
