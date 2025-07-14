@@ -1,4 +1,4 @@
-import * as Elem from '#disreact/model/Elem.ts';
+import * as Elem from '#disreact/model/core/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';

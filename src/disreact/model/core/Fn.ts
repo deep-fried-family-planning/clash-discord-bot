@@ -6,8 +6,6 @@ import * as P from 'effect/Predicate';
 
 export type Fn = never;
 
-const asyncFn = (async () => {}).constructor;
-
 export type FCKind = | 'Sync'
                      | 'Async'
                      | 'Effect'

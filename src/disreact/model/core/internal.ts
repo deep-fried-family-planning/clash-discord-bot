@@ -1,5 +1,5 @@
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Elem from '#disreact/model/core/Elem.ts';
 import type * as Jsx from '#disreact/model/Jsx.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';

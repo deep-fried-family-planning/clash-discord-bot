@@ -3,7 +3,7 @@ import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Internal from '#disreact/model/core/internal.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Envelope from '#disreact/model/Envelope.ts';
+import type * as Envelope from '#disreact/model/core/Envelope.ts';
 import * as Jsx from '#disreact/model/Jsx.ts';
 import * as Differ from 'effect/Differ';
 import type * as E from 'effect/Effect';
@@ -13,19 +13,14 @@ import * as HashMap from 'effect/HashMap';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
 
-export interface Props extends Inspectable.Inspectable,
-  Equal.Equal,
-  Hash.Hash,
+export interface Props extends Inspectable.Inspectable, Equal.Equal, Hash.Hash,
   Record<'onclick' | 'onselect' | 'onsubmit', any>,
   Record<string, any>
 {
   readonly children?: Jsx.Children;
 }
 
-export interface Elem extends Inspectable.Inspectable,
-  Pipeable.Pipeable,
-  Equal.Equal,
-  Hash.Hash,
+export interface Elem extends Inspectable.Inspectable, Pipeable.Pipeable, Equal.Equal, Hash.Hash,
   Traversable.Meta,
   Traversable.Ancestor<Elem>,
   Traversable.Descendent<Elem>
@@ -39,66 +34,51 @@ export interface Elem extends Inspectable.Inspectable,
   render?   : E.Effect<Jsx.Children> | undefined;
 }
 
-const connect = (self: Elem, that: Elem) => {
-
-};
-
-const fromJsx = (cur: Elem, jsx: Jsx.Jsx): Elem => {
-  const self = Internal.makeElement(jsx);
-  self._env = cur._env;
-  self.ancestor = cur;
-  self.depth = cur.depth + 1;
-  self.children = fromJsxChildren(self, jsx.childs ?? jsx.childs);
-  return self;
-};
-
-const fromJsxChild = (cur: Elem, child: Jsx.Child): Elem => {
-  if (Jsx.isValue(child)) {
-    const self = Internal.makeTextElement(child);
-    self._env = cur._env;
-    self.ancestor = cur;
-    self.depth = cur.depth + 1;
-    return self;
+const fromJsxChild = (cur: Elem, c: Jsx.Child): Elem => {
+  if (Jsx.isValue(c)) {
+    const child = Internal.makeTextElement(c);
+    child._env = cur._env;
+    child.ancestor = cur;
+    child.depth = cur.depth + 1;
+    return child;
   }
-  return fromJsx(cur, child);
+  const child = Internal.makeElement(Jsx.clone(c));
+  child._env = cur._env;
+  child.ancestor = cur;
+  child.depth = cur.depth + 1;
+  child.children = fromJsxChildren(child, c.childs ?? c.childs);
+  return child;
 };
 
-const fromJsxChilds = (cur: Elem, childs: Jsx.Child[]): Elem[] => {
-  const self = [] as Elem[];
-
-  for (let i = 0; i < childs.length; i++) {
-    const child = fromJsxChild(cur, childs[i]);
-    child.index = i;
-    self[i] = child;
-  }
-
-  return self;
-};
-
-export const fromJsxChildren = (self: Elem, children: Jsx.Children): Elem[] | undefined => {
-  if (!children) {
+export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined => {
+  if (!cs) {
     return undefined;
   }
-  if (Array.isArray(children)) {
-    return fromJsxChilds(self, children);
+  if (!Array.isArray(cs)) {
+    return [fromJsxChild(cur, cs)];
   }
-  return [fromJsxChild(self, children)];
+  const children = [] as Elem[];
+
+  for (let i = 0; i < cs.length; i++) {
+    const child = fromJsxChild(cur, cs[i]);
+    child.index = i;
+    children[i] = child;
+  }
+  return children;
 };
 
-export const fromJsxEnv = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
-  const root = Internal.makeElement(jsx);
+export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
+  const root = Internal.makeElement(Jsx.clone(jsx));
   root._env = env;
   root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
   return root;
 };
 
-export const fromEntrypoint = (entrypoint: Jsx.Entrypoint, props: any, env: Envelope.Envelope): Elem => {
-  const jsx = Jsx.clone(entrypoint.component);
-  jsx.props = props;
-  const self = Internal.makeElement(jsx);
-  self._env = env;
-  self.children = fromJsxChildren(self, jsx.childs ?? jsx.childs);
-  return self;
+export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Envelope): Elem => {
+  const root = Internal.makeElement(Jsx.clone(entrypoint.component));
+  root._env = env;
+  root.children = fromJsxChildren(root, entrypoint.component.childs ?? entrypoint.component.childs);
+  return root;
 };
 
 export const dispose = (self: Elem) => {

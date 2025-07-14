@@ -9,11 +9,7 @@ import type * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
 import type * as Traversal from '#disreact/core/Traversable.ts';
 
-export interface Stack<A = Node.Element> extends Pipeable.Pipeable,
-  Inspectable.Inspectable,
-  Traversal.Origin<Document.Document>,
-  Traversal.Ancestor<Stack<A>>,
-  Traversal.Descendent<Stack<A>>
+export interface Stack<A = Node.Element> extends Pipeable.Pipeable, Inspectable.Inspectable
 {
   root     : A;
   values   : A[];

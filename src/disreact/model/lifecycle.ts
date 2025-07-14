@@ -1,5 +1,5 @@
 import * as Fn from '#disreact/model/core/Fn.ts';
-import * as Elem from '#disreact/model/Elem.ts';
+import * as Elem from '#disreact/model/core/Elem.ts';
 import * as Hooks from '#disreact/model/Hooks.ts';
 import * as E from 'effect/Effect';
 
