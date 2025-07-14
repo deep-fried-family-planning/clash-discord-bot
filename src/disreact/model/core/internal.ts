@@ -1,5 +1,6 @@
-import type * as Fn from '#disreact/model/core/Fn.ts';
 import type * as Elem from '#disreact/model/core/Elem.ts';
+import type * as Fn from '#disreact/model/core/Fn.ts';
+import type * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Jsx from '#disreact/model/Jsx.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -117,5 +118,48 @@ export const makeElement = (jsx: Jsx.Jsx): Elem.Elem => {
   self.key = jsx.key;
   self.component = jsx.type as any;
   self.props = makeProps(jsx.props);
+  return self;
+};
+
+const MonomerPrototype: Polymer.Monomer = {
+  _tag       : 0,
+  _state     : true,
+  _props     : true,
+  entrypoint : undefined,
+  displayName: '',
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({});
+  },
+} as Polymer.Monomer;
+
+export const makeMonomer = (): Polymer.Monomer => {
+  const self = Object.create(MonomerPrototype);
+  self;
+  return self;
+};
+
+const PolymerPrototype: Polymer.Polymer = {
+  origin: undefined,
+  pc    : 0,
+  rc    : 0,
+  stack : undefined as any,
+  queue : undefined as any,
+  flags : undefined as any,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Polymer',
+      stack: this.stack,
+    });
+  },
+} as Polymer.Polymer;
+
+export const makePolymer = (elem: Elem.Elem): Polymer.Polymer => {
+  const self = Object.create(PolymerPrototype) as Polymer.Polymer;
+  self.origin = elem;
+  self.stack = [];
+  self.queue = [];
+  self.flags = elem._env.flags;
   return self;
 };

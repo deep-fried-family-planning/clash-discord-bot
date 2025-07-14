@@ -35,7 +35,7 @@ export interface Elem extends Inspectable.Inspectable, Pipeable.Pipeable, Equal.
 }
 
 const fromJsxChild = (cur: Elem, c: Jsx.Child): Elem => {
-  if (Jsx.isValue(c)) {
+  if (!c || typeof c !== 'object') {
     const child = Internal.makeTextElement(c);
     child._env = cur._env;
     child.ancestor = cur;

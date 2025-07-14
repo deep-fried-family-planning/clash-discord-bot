@@ -58,6 +58,7 @@ export const makeMulti = (type: Type, setup: Setup, key?: string): Jsx => {
 export const clone = <A extends Jsx>(self: A): A => {
   return {
     ...self,
+    props: {...self.props},
   };
 };
 

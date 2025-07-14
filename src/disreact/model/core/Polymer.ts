@@ -8,6 +8,7 @@ import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
+import type * as Fn from '#disreact/model/core/Fn.ts';
 
 export type Monomer =
   | None
@@ -30,43 +31,44 @@ export interface BaseMonomer extends Inspectable.Inspectable {
   value?  : any;
 }
 
-export interface None extends BaseMonomer {
+export interface None extends Inspectable.Inspectable {
   _tag: typeof MONOMER_NONE;
 }
 
-export interface Stateful extends BaseMonomer {
+export interface Stateful extends Inspectable.Inspectable {
   _tag   : typeof MONOMER_STATE;
   changed: boolean;
   state  : any;
   updater(next: any): void;
 }
 
-export interface Reducer extends BaseMonomer {
+export interface Reducer extends Inspectable.Inspectable {
   _tag   : typeof MONOMER_REDUCER;
   changed: boolean;
   state  : any;
   reducer(state: any, action: any): any;
 }
 
-export interface Effectful extends BaseMonomer {
-  _tag: typeof MONOMER_EFFECT;
-  deps: any[] | undefined;
+export interface Effectful extends Inspectable.Inspectable {
+  _tag    : typeof MONOMER_EFFECT;
+  deps    : any[] | undefined;
+  effector: Fn.Effector;
   fn?(): EffectOutput;
-  fx? : Effect;
+  fx?     : Effect;
 }
 
-export interface Reference extends BaseMonomer {
+export interface Reference extends Inspectable.Inspectable {
   _tag   : typeof MONOMER_REF;
   current: any;
 }
 
-export interface Memoize extends BaseMonomer {
+export interface Memoize extends Inspectable.Inspectable {
   _tag : typeof MONOMER_MEMO;
   value: any;
   deps : any[] | undefined;
 }
 
-export interface Contextual extends BaseMonomer {
+export interface Contextual extends Inspectable.Inspectable {
   _tag: typeof MONOMER_CONTEXTUAL;
 }
 
@@ -95,10 +97,9 @@ export interface EffectFn {
 export type Effect = | EffectFn
                      | E.Effect<void>;
 import type * as Elem from '#disreact/model/core/Elem.ts';
-export interface Polymer extends Pipeable.Pipeable,
-  Inspectable.Inspectable,
-  Traversable.Origin<Document.Document>,
-  Traversable.Ancestor<Elem.Elem>
+export interface Polymer extends Inspectable.Inspectable,
+  Pipeable.Pipeable,
+  Traversable.Origin<Elem.Elem>
 {
   pc   : number;
   rc   : number;
@@ -108,7 +109,7 @@ export interface Polymer extends Pipeable.Pipeable,
   ctx? : Jsx.DevCtx;
   flags: Set<any>;
 }
-
+import * as Internal from '#disreact/model/core/internal.ts';
 export const empty = (node: Node.Func, document: Document.Document): Polymer => poly.empty(node, document);
 
 export const isStateless = poly.isStateless;
