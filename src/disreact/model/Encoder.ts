@@ -1,5 +1,5 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
-import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Elem from '#disreact/model/core/Elem.ts';
 import * as E from 'effect/Effect';
 
 export type EncoderConfig = {

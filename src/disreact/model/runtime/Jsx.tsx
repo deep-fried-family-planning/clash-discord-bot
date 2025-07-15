@@ -1,48 +1,51 @@
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Internal from '#disreact/model/runtime/internal.ts';
-import * as Inspectable from 'effect/Inspectable';
 import {globalValue} from 'effect/GlobalValue';
+import * as Inspectable from 'effect/Inspectable';
 
 export type Type =
   | string
   | typeof Fragment
-  | Fn.JsxFC;
+  | Fn.FC;
 
 export const Fragment = Symbol.for('disreact/Fragment');
 
 export const TypeId = Symbol.for('disreact/Jsx');
 
 export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable {
-  readonly [TypeId]: typeof TypeId;
-  readonly ref?    : any | undefined;
-  readonly key     : string | undefined;
-  readonly type    : T;
-  readonly props   : P;
-  readonly child?  : Child;
-  readonly childs? : Child[];
-  readonly src?    : any | undefined;
-  readonly ctx?    : any | undefined;
+  readonly [TypeId]   : typeof TypeId;
+  readonly entrypoint?: string | undefined;
+  readonly key        : string | undefined;
+  readonly type       : T;
+  readonly props      : P;
+  readonly ref?       : any | undefined;
+  readonly child?     : Child;
+  readonly childs?    : Child[];
+  readonly src?       : any | undefined;
+  readonly ctx?       : any | undefined;
 };
 
 const JsxProto: Jsx = {
-  [TypeId]: TypeId,
-  ref     : undefined,
-  key     : undefined,
-  type    : Fragment,
-  props   : undefined,
-  child   : undefined,
-  childs  : undefined as any,
+  [TypeId]  : TypeId,
+  entrypoint: undefined,
+  key       : undefined,
+  type      : Fragment,
+  props     : undefined,
+  ref       : undefined,
+  child     : undefined,
+  childs    : undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
     const props = {...this.props};
     delete props.children;
 
     return {
-      _id     : 'Jsx',
-      key     : this.key,
-      type    : this.type === Fragment ? 'Fragment' : this.type,
-      props   : props,
-      children: this.child ?? this.childs,
+      _id       : 'Jsx',
+      entrypoint: this.entrypoint,
+      key       : this.key,
+      type      : this.type === Fragment ? 'Fragment' : this.type,
+      props     : props,
+      children  : this.child ?? this.childs,
     };
   },
 };
@@ -68,6 +71,7 @@ export interface Setup extends Record<string, any> {
 
 export const make = (type: Type, setup: Setup, key?: string): Jsx => {
   const self = Object.create(JsxProto) as Jsx;
+  (self.entrypoint as any) = setup.entrypoint;
   (self.key as any) = key;
   (self.type as any) = typeof type === 'function' ? Internal.makeFC(type) : type;
   (self.props as any) = setup;
@@ -77,6 +81,7 @@ export const make = (type: Type, setup: Setup, key?: string): Jsx => {
 
 export const makeMulti = (type: Type, setup: Setup, key?: string): Jsx => {
   const self = Object.create(JsxProto) as Jsx;
+  (self.entrypoint as any) = setup.entrypoint;
   (self.key as any) = key;
   (self.type as any) = typeof type === 'function' ? Internal.makeFC(type) : type;
   (self.props as any) = setup;
@@ -91,29 +96,6 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
-export interface Hydrant {
-  id   : string;
-  props: Record<string, any>;
-  state: Record<string, any>;
-}
-
-export const hydrant = (id: string, props: any) =>
-  ({
-    id,
-    props,
-    state: {},
-  });
-
-export interface Encoded<A = any> {
-  hydrant: Hydrant;
-  type   : string;
-  data   : A;
-}
-
-export interface Event {
-  id: string;
-}
-
 export interface Entrypoint {
   id       : string;
   component: Jsx;
@@ -121,7 +103,7 @@ export interface Entrypoint {
 
 const entries = globalValue(Fragment, () => new Map<string, Entrypoint>());
 
-export const makeEntrypoint = (id: string, type: Fn.JsxFC | Jsx): Entrypoint => {
+export const makeEntrypoint = (id: string, type: Fn.FC | Jsx): Entrypoint => {
   if (entries.has(id)) {
     throw new Error(`Duplicate entrypoint: ${id}`);
   }
@@ -144,7 +126,7 @@ export const makeEntrypoint = (id: string, type: Fn.JsxFC | Jsx): Entrypoint => 
     .get(id)!;
 };
 
-export const findEntrypoint = (id: string | Fn.JsxFC): Entrypoint | undefined => {
+export const findEntrypoint = (id: string | Fn.FC): Entrypoint | undefined => {
   if (typeof id === 'function') {
     if (!id.entrypoint) {
       return undefined;
@@ -152,4 +134,17 @@ export const findEntrypoint = (id: string | Fn.JsxFC): Entrypoint | undefined =>
     return entries.get(id.entrypoint);
   }
   return entries.get(id);
+};
+
+export type Encoding = {
+  primitive : string;
+  normalizer: Record<string, string>;
+  encoders  : Record<string, (self: any, acc: any) => any>;
+};
+
+export const encode = (self: Jsx, encoder: Encoding): any => {
+  const stack = [self];
+  const acc   = {};
+
+  return {};
 };

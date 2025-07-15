@@ -1,8 +1,8 @@
-import type * as Polymer from '#disreact/model/core/Polymer.ts';
+import type * as Polymer from '#disreact/model/Polymer.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {pipe} from 'effect/Function';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Event from '#disreact/model/Event.ts';
+import type * as Event from '#disreact/model/core/Event.ts';
 export const synthesizeHydrantFC = (
   hydrant: Polymer.Hydrant,
   props: any,

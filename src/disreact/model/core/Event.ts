@@ -49,12 +49,12 @@ const EventProto: EventInternal = {
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
-    return Inspectable.format({
+    return {
       _id   : 'Event',
       id    : this.id,
       type  : this.type,
       target: this.target,
-    });
+    };
   },
 };
 

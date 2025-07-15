@@ -1,10 +1,10 @@
 import {FUNCTIONAL, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Fn from '#disreact/model/core/Fn.ts';
-import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
-import * as Elem from '#disreact/model/Elem.ts';
+import * as Elem from '#disreact/model/core/Elem.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 
 import * as Data from 'effect/Data';
@@ -86,16 +86,22 @@ export const initialize = (root: Elem.Elem) =>
     body : initializeFromStack,
   });
 
-export const hydrateEntrypoint = (
-  type: Jsx.Entrypoint | Fn.JsxFC | Jsx.Jsx | string,
-  ) => {
+export const hydrateEntrypoint = (type: Jsx.Entrypoint | Fn.FC | Jsx.Jsx | string) => E.suspend(() => {
   const id = typeof type === 'string' ? type :
              typeof type === 'function' ? type.entrypoint :
-             type.entrypoint ??
-  if (typeof type === 'string') {
-    return E.succeed(Jsx);
+             Jsx.isJsx(type) ? type.entrypoint :
+             type.id;
+
+  if (!id) {
+    return E.fail(new HydrateError());
   }
-};
+  const entrypoint = Jsx.findEntrypoint(id);
+
+  if (!entrypoint) {
+    return E.fail(new HydrateError());
+  }
+  return E.succeed(entrypoint);
+});
 
 const hydrateComponent = (elem: Elem.Component) =>
   acquire.pipe(
@@ -202,7 +208,7 @@ export const encode = (root: Elem.Elem) => Encoder.use(({encodeText, encodeRest}
   }
   return null;
 });
-import type * as Event from '#disreact/model/Event.ts';
+import type * as Event from '#disreact/model/core/Event.ts';
 export const invokeIntrinsicElement = (elem: Elem.Elem, event: Event.Event) => {
 
 };

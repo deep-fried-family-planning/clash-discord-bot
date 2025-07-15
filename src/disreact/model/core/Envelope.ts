@@ -1,14 +1,34 @@
-import * as Elem from '#disreact/model/Elem.ts';
+import * as Elem from '#disreact/model/core/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
-import * as Option from 'effect/Option';
-import type * as Event from '#disreact/model/Event.ts';
+import type * as Option from 'effect/Option';
+import type * as Event from '#disreact/model/core/Event.ts';
+
+export interface Hydrant {
+  entrypoint: string;
+  props     : Record<string, any>;
+  state     : Record<string, any>;
+}
+
+export interface Simulant<A = any> {
+  data    : A;
+  hydrant?: Hydrant;
+  event?  : Event.EventInput;
+}
+
+export interface Simulated<T extends string, P = any> {
+  type      : T;
+  encoded   : P;
+  entrypoint: Option.Option<string>;
+  props     : Record<string, any>;
+  state     : Record<string, any>;
+}
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
@@ -30,13 +50,13 @@ const Proto: Envelope = {
   flags     : undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
-    return Inspectable.format({
+    return {
       _id       : 'Envelope',
       entrypoint: this.entrypoint,
       hydrant   : this.hydrant,
       root      : this.root,
       data      : this.data,
-    });
+    };
   },
 };
 
@@ -54,7 +74,7 @@ const makeEffects = E.all([
 );
 
 export const fromFC = (
-  fc: Fn.JsxFC,
+  fc: Fn.FC,
   props: any,
   data: any,
 ) =>
@@ -84,33 +104,29 @@ export const fromJsx = (
     }),
   );
 
-export const fromElement = (
-  root: Elem.Elem,
+export const fromSimulation = (
+  entrypoint: Jsx.Entrypoint,
+  hydrant: Polymer.Hydrant,
   data: any,
-  event?: any,
-  entrypoint?: Jsx.Entrypoint,
 ) =>
   makeEffects.pipe(
     E.map((self) => {
-      self.event = Option.fromNullable(event);
-      self.entrypoint = Option.fromNullable(entrypoint);
-      self.root = root;
+      self.entrypoint = entrypoint.id;
+      self.hydrant = hydrant;
       self.data = data;
+      self.root = Elem.fromJsx(entrypoint.component, self);
       return self;
     }),
   );
 
-export const fromSimulation = (
-  hydrant: Polymer.Hydrant,
-  data: any,
-  event?: any,
-) =>
-  makeEffects.pipe(
-    E.map((self) => {
-      self.hydrant = hydrant;
-      self.data = data;
-      self.event = Option.fromNullable(event);
-      self.root = Elem.fromEntrypoint();
-      return self;
-    }),
-  );
+export const forkFromEntrypoint = (self: Envelope, entrypoint: Jsx.Entrypoint) => {
+  const forked = Object.create(Proto) as Envelope;
+  forked.entrypoint = entrypoint.id;
+  forked.data = self.data;
+  forked.hydrant = Polymer.hydrant(entrypoint.id);
+  forked.root = Elem.fromJsx(entrypoint.component, self);
+  forked.stream = self.stream;
+  forked.final = self.final;
+  forked.flags = new Set();
+  return forked;
+};

@@ -5,7 +5,7 @@ import type {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Elem from '#disreact/model/core/Elem.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import type * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
@@ -204,13 +204,20 @@ const PolymerProto: Polymer = {
   },
 } as Polymer;
 
-export const make = (origin: Elem.Component): Polymer => {
+ const make = (origin: Elem.Component): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
   self.origin = origin;
   self.stack = [];
   self.queue = [];
   self.flags = origin._env.flags;
   return self;
+};
+
+export const mount = (origin: Elem.Component, encoded?: Encoded[]): Polymer => {
+  if (!encoded) {
+    return make(origin);
+  }
+  return make(origin);
 };
 
 export const isStateless = (self: Polymer) => self.stack.length === 0;
@@ -271,7 +278,10 @@ export const dehydrate = (self: Polymer): Encoded[] => {
   return encoded;
 };
 
-export const dispose = (self: Polymer) => {
+export const unmount = (self?: Polymer) => {
+  if (!self) {
+    return self;
+  }
   if (self.queue.length) {
     throw new Error('ope');
   }
@@ -279,6 +289,7 @@ export const dispose = (self: Polymer) => {
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
   (self.flags as any) = undefined;
+  return undefined;
 };
 
 

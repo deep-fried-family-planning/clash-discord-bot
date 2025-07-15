@@ -6,7 +6,7 @@ import * as Diff from '#disreact/core/immutable/diff.ts';
 import * as Diffs from '#disreact/core/immutable/diffs.ts';
 import * as elem from '#disreact/core/internal/element.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 import * as Traversal from '#disreact/model/core/Traversable.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -205,7 +205,7 @@ export const hydrate = dual<
 
 const disposeF = (self: Element, document: Document.Document) => {
   if (isRenderable(self)) {
-    (self.polymer as any) = Polymer.dispose(self.polymer);
+    (self.polymer as any) = Polymer.unmount(self.polymer);
   }
   (self.props as any) = undefined;
   (self.diff as any) = undefined;

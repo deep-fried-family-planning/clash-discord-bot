@@ -3,7 +3,6 @@ import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
-import * as Internal from '#disreact/model/runtime/internal.ts';
 
 export type Fn = never;
 
@@ -12,7 +11,7 @@ export type FCKind = | 'Sync'
                      | 'Effect'
                      | undefined;
 
-export interface JsxFC<K extends FCKind = FCKind> extends Inspectable.Inspectable {
+export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable {
   _tag        : K;
   _id         : string;
   _state      : boolean;
@@ -30,40 +29,7 @@ export interface JsxFC<K extends FCKind = FCKind> extends Inspectable.Inspectabl
     | E.Effect<Jsx.Children, E, R>;
 }
 
-export const statelessFC = (fc: JsxFC) => {
-  fc._state = false;
-  return fc;
-};
-
-export const normalizeZeroFC = (fc: JsxFC): E.Effect<Jsx.Children> => {
-  switch (fc._tag) {
-    case 'Sync': {
-      return E.sync(fc as JsxFC<'Sync'>);
-    }
-    case 'Async': {
-      return E.promise(fc as JsxFC<'Async'>);
-    }
-    case 'Effect': {
-      return E.suspend(fc as JsxFC<'Effect'>);
-    }
-  }
-  return E.suspend(() => {
-    const output = fc();
-
-    if (P.isPromise(output)) {
-      fc._tag = 'Async';
-      return E.promise(() => output);
-    }
-    if (E.isEffect(output)) {
-      fc._tag = 'Effect';
-      return output as E.Effect<Jsx.Children>;
-    }
-    fc._tag = 'Sync';
-    return E.succeed(output);
-  });
-};
-
-export const normalizePropsFC = (fc: JsxFC, props: any): E.Effect<Jsx.Children> => {
+export const normalizePropsFC = (fc: FC, props: any): E.Effect<Jsx.Children> => {
   switch (fc._tag) {
     case 'Sync': {
       return E.sync(() => fc(props) as Jsx.Children);
@@ -90,8 +56,6 @@ export const normalizePropsFC = (fc: JsxFC, props: any): E.Effect<Jsx.Children> 
     return E.succeed(output);
   });
 };
-
- const asyncFnConstructor = (async () => {}).constructor;
 
 export type Effector<E = never, R = never> =
   | EffectFn
@@ -131,7 +95,7 @@ export interface EventFn {
     | E.Effect<void, E, R>;
 }
 
-export const normalizeEventFn = (fn: EventFn, event: any): E.Effect<void> => {
+export const normalizeEventHandler = (fn: EventFn, event: any): E.Effect<void> => {
   if (fn.constructor === ASYNC_CONSTRUCTOR) {
     return E.promise(() => fn(event) as Promise<void>);
   }

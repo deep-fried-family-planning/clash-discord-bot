@@ -1,11 +1,14 @@
+import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
 import * as Fn from '#disreact/model/core/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
-import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 import * as Progress from '#disreact/model/core/Progress.ts';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
-import type * as Envelope from '#disreact/model/Envelope.ts';
+import type * as Envelope from '#disreact/model/core/Envelope.ts';
+import * as Event from '#disreact/model/core/Event.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
+import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
@@ -29,7 +32,7 @@ export interface Elem extends Inspectable.Inspectable,
   _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
   _env      : Envelope.Envelope;
   key?      : string | undefined;
-  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
+  component?: string | Fn.FC | typeof Jsx.Fragment | undefined;
   props?    : Props | undefined;
   polymer?  : Polymer.Polymer;
   text?     : any;
@@ -130,7 +133,7 @@ export interface Intrinsic extends Elem {
 
 export interface Component extends Elem {
   _tag     : typeof COMPONENT;
-  component: Fn.JsxFC;
+  component: Fn.FC;
   props    : Props;
   polymer  : Polymer.Polymer;
 }
@@ -187,7 +190,7 @@ const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
     case 'function': {
       const self = Object.create(ComponentProto) as Component;
       self.key = jsx.key;
-      self.component = jsx.type as Fn.JsxFC;
+      self.component = jsx.type as Fn.FC;
       self.props = makeProps(jsx.props);
       return self;
     }
@@ -253,35 +256,7 @@ export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Enve
   return root;
 };
 
-export const dispose = (self: Elem) => {
-  (self._env as any) = undefined;
-  (self.props as any) = undefined;
-  (self.polymer as any) = undefined;
-  self.ancestor = undefined;
-  self.children = undefined;
-};
 
-export const toStackPush = (self: Elem): Elem[]  => self.children ?? [];
-
-export const toProgress = (self: Elem): Progress.Partial => {
-  return Progress.partial(self._env.entrypoint as any, self);
-};
-
-export const encode = (self: Elem): Elem => {
-
-};
-import type * as E from 'effect/Effect';
-export const render = (self: Component): E.Effect<Jsx.Children> => {
-  return Fn.normalizePropsFC(self.component, self.props);
-};
-
-export const acceptRender = (self: Component, rendered: Jsx.Children): Elem[] | undefined => {
-  Polymer.commit(self.polymer);
-};
-
-export const normalizeRender = (self: Component, rendered: Jsx.Children): Elem[] | undefined => {
-  Polymer.commit(self.polymer);
-};
 
 export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
   if (self === that) {
@@ -305,6 +280,83 @@ export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
     }
   }
   return Patch.skip();
+};
+
+export const toStackPush = (self: Elem): Elem[] => self.children ?? [];
+
+export const toProgress = (self: Elem): Progress.Partial => {
+  return Progress.partial(self._env.entrypoint as any, self);
+};
+
+export const mount = (self: Component) => {
+  self.polymer = Polymer.mount(self);
+  return self;
+};
+
+export const unmount = (self: Elem) => {
+  (self._env as any) = undefined;
+  (self.props as any) = undefined;
+  (self.polymer as any) = Polymer.unmount(self.polymer);
+  self.ancestor = undefined;
+  self.children = undefined;
+};
+
+export const hydrate = (self: Component) => {
+    const encoded = self._env.hydrant.state[self.trie];
+
+  if (encoded) {
+    self.polymer = Polymer.mount(self, encoded);
+    delete self._env.hydrant.state[self.trie];
+    return self;
+  }
+  return self;
+};
+
+export const render = (self: Component): E.Effect<Jsx.Children> => {
+  return Fn.normalizePropsFC(self.component, self.props);
+};
+
+export const acceptRender = (self: Component, rendered: Jsx.Children): Component => {
+  Polymer.commit(self.polymer);
+  const children = fromJsxChildren(self, rendered);
+  self.children = children;
+  return self;
+};
+
+export const normalizeRender = (self: Component, rendered: Jsx.Children): Component => {
+  Polymer.commit(self.polymer);
+  const children = fromJsxChildren(self, rendered);
+  self.rendered = children;
+  return self;
+};
+
+export const flush = (self: Component) =>
+  E.iterate(self, {
+    while: (c) => Polymer.isQueued(c.polymer),
+    body : (c) => {
+      const effector = Polymer.dequeue(c.polymer)!;
+      if (effector.constructor === ASYNC_CONSTRUCTOR) {
+
+      }
+      return Fn.normalizeEffector(effector).pipe(
+        E.as(c),
+      );
+    },
+  });
+
+const EventProto = {
+
+};
+
+export const invoke = (self: Intrinsic, event: Event.EventInternal) => {
+  const handler = self.props[event.type];
+  return Event.invokeWith(event, handler);
+};
+
+export const encode = (
+  self: Elem,
+) => {
+
 };
 
 export const update = (self: Elem, that: Elem): Elem => {

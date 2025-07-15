@@ -1,12 +1,12 @@
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Polymer from '#disreact/model/core/Polymer.ts';
+import type * as Polymer from '#disreact/model/Polymer.ts';
 import * as Inspectable from 'effect/Inspectable';
 
 export type Internal = never;
 
 export const asyncFnConstructor = (async () => {}).constructor;
 
-const FCProto: Fn.JsxFC = {
+const FCProto: Fn.FC = {
   _tag       : undefined,
   _id        : undefined as any,
   _state     : true,
@@ -32,13 +32,13 @@ const FCProto: Fn.JsxFC = {
     }
     return this._id;
   },
-} as Fn.JsxFC;
+} as Fn.FC;
 
-export const makeFC = (fn: (props?: any) => any): Fn.JsxFC => {
+export const makeFC = (fn: (props?: any) => any): Fn.FC => {
   if ('_tag' in fn) {
-    return fn as Fn.JsxFC;
+    return fn as Fn.FC;
   }
-  const self = Object.assign(Object.create(FCProto), fn) as Fn.JsxFC;
+  const self = Object.assign(Object.create(FCProto), fn) as Fn.FC;
   self.source = fn.toString();
 
   if (fn.constructor === asyncFnConstructor) {
