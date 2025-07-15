@@ -3,7 +3,7 @@ import * as Element from '#disreact/core/Element.ts';
 import {FRAGMENT, FUNCTIONAL, INTRINSIC, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Traversal from '#disreact/core/Traversal.ts';
-import {Encoder} from '#disreact/model/Encoder.ts';
+import {ModelCodec} from '#disreact/model/ModelCodec.ts';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -155,7 +155,7 @@ export const dehydrate = (document: Document.Document) => {
 
 export type Encoding = Record<string, any[]>;
 
-export const encodeDocument = (d?: Document.Document) => Encoder.use(({encodeText, encodeRest}) => {
+export const encodeDocument = (d?: Document.Document) => ModelCodec.use(({encodeText, encodeRest}) => {
   if (!d) {
     return null;
   }

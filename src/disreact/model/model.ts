@@ -1,8 +1,10 @@
-import type * as Polymer from '#disreact/model/Polymer.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {pipe} from 'effect/Function';
-import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Event from '#disreact/model/core/Event.ts';
+import type * as Fn from '#disreact/model/entity/Fn.ts';
+import type * as Event from '#disreact/model/entity/Event.ts';
+import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+
 export const synthesizeHydrantFC = (
   hydrant: Polymer.Hydrant,
   props: any,
@@ -15,11 +17,7 @@ export const synthesizeHydrantJsx = (
   jsx: Jsx.Jsx,
 ) => {};
 
-export const simulateHydrantEvent = (
-  hydrant: Polymer.Hydrant,
-  event: Event.EventInput,
-
-) => {
+export const simulate = (sim: Envelope.Simulant) => {
   const entrypoint = Jsx.findEntrypoint(hydrant.id);
 
   if (!entrypoint) {

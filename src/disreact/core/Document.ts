@@ -2,7 +2,7 @@ import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import type * as Output from '#disreact/core/immutable/output.ts';
 import * as document from '#disreact/core/internal/document.ts';
-import type * as Polymer from '#disreact/model/Polymer.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Traversal from '#disreact/model/core/Traversable.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';

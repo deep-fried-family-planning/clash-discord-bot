@@ -1,6 +1,6 @@
-import * as Elem from '#disreact/model/core/Elem.ts';
-import type * as Fn from '#disreact/model/core/Fn.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
+import * as Elem from '#disreact/model/entity/Element.ts';
+import type * as Fn from '#disreact/model/entity/Fn.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Deferred from 'effect/Deferred';
@@ -8,7 +8,7 @@ import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Option from 'effect/Option';
-import type * as Event from '#disreact/model/core/Event.ts';
+import type * as Event from '#disreact/model/entity/Event.ts';
 
 export interface Hydrant {
   entrypoint: string;
@@ -34,8 +34,8 @@ export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
   hydrant   : Polymer.Hydrant;
   entrypoint: string | typeof Jsx.Fragment;
-  root      : Elem.Elem;
-  flags     : Set<Elem.Elem>;
+  root      : Elem.Element;
+  flags     : Set<Elem.Element>;
   final     : Deferred.Deferred<Progress.Checkpoint>;
   stream    : Mailbox.Mailbox<Progress.Progress>;
 }

@@ -1,5 +1,5 @@
-import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Polymer from '#disreact/model/Polymer.ts';
+import type * as Fn from '#disreact/model/entity/Fn.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Inspectable from 'effect/Inspectable';
 
 export type Internal = never;

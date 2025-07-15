@@ -1,5 +1,5 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
-import type * as Elem from '#disreact/model/core/Elem.ts';
+import type * as Elem from '#disreact/model/entity/Element.ts';
 import * as E from 'effect/Effect';
 
 export type EncoderConfig = {
@@ -13,7 +13,7 @@ const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
     Object.entries(obj).filter(([_, v]) => v !== undefined),
   ) as A;
 
-export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
+export class ModelCodec extends E.Service<ModelCodec>()('disreact/Encoder', {
   effect: (config: EncoderConfig) => E.gen(function* () {
     const primitive = config?.primitive ?? JsxDefault.primitive,
           normalize = config?.normalize ?? JsxDefault.normalization as Record<string, string>,

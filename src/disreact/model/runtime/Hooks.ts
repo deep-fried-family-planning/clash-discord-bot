@@ -1,5 +1,5 @@
 import {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 
 export const active = {
   polymer: undefined as undefined | Polymer.Polymer,

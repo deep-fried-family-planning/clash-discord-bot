@@ -1,9 +1,9 @@
 import {FUNCTIONAL, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
-import * as Fn from '#disreact/model/core/Fn.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
+import * as Fn from '#disreact/model/entity/Fn.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
-import * as Elem from '#disreact/model/core/Elem.ts';
-import {Encoder} from '#disreact/model/Encoder.ts';
+import * as Elem from '#disreact/model/entity/Element.ts';
+import {ModelCodec} from '#disreact/model/ModelCodec.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 
@@ -61,7 +61,7 @@ const initializeComponent = (elem: Elem.Component) =>
     E.tap(flushComponent(elem)),
   );
 
-const initializeFromStack = (stack: Stack.Stack<Elem.Elem>) =>
+const initializeFromStack = (stack: Stack.Stack<Elem.Element>) =>
   stack.pipe(
     Stack.pop,
     Elem.toEither,
@@ -80,7 +80,7 @@ const initializeFromStack = (stack: Stack.Stack<Elem.Elem>) =>
     Either.merge,
   );
 
-export const initialize = (root: Elem.Elem) =>
+export const initialize = (root: Elem.Element) =>
   E.iterate(Stack.make(root), {
     while: Stack.condition,
     body : initializeFromStack,
@@ -124,7 +124,7 @@ const hydrateComponent = (elem: Elem.Component) =>
     E.tap(() => {}),
   );
 
-const hydrateFromStack = (stack: Stack.Stack<Elem.Elem>) =>
+const hydrateFromStack = (stack: Stack.Stack<Elem.Element>) =>
   stack.pipe(
     Stack.pop,
     Elem.toEither,
@@ -143,13 +143,13 @@ const hydrateFromStack = (stack: Stack.Stack<Elem.Elem>) =>
     Either.merge,
   );
 
-export const hydrate = (root: Elem.Elem) =>
+export const hydrate = (root: Elem.Element) =>
   E.iterate(Stack.make(root), {
     while: Stack.condition,
     body : hydrateFromStack,
   });
 
-export const encode = (root: Elem.Elem) => Encoder.use(({encodeText, encodeRest}) => {
+export const encode = (root: Elem.Element) => ModelCodec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
         final = {} as any,
         args  = new WeakMap(),
@@ -208,7 +208,7 @@ export const encode = (root: Elem.Elem) => Encoder.use(({encodeText, encodeRest}
   }
   return null;
 });
-import type * as Event from '#disreact/model/core/Event.ts';
-export const invokeIntrinsicElement = (elem: Elem.Elem, event: Event.Event) => {
+import type * as Event from '#disreact/model/entity/Event.ts';
+export const invokeIntrinsicElement = (elem: Elem.Element, event: Event.Event) => {
 
 };

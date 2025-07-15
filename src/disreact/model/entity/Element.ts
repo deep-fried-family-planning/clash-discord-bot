@@ -1,11 +1,11 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
-import * as Fn from '#disreact/model/core/Fn.ts';
+import * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Progress from '#disreact/model/core/Progress.ts';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
-import type * as Envelope from '#disreact/model/core/Envelope.ts';
-import * as Event from '#disreact/model/core/Event.ts';
+import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+import * as Event from '#disreact/model/entity/Event.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
 import * as E from 'effect/Effect';
@@ -16,18 +16,19 @@ import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
+
 export const TEXT      = 'Text',
              FRAGMENT  = 'Fragment',
              INTRINSIC = 'Intrinsic',
              COMPONENT = 'Component';
 
-export interface Elem extends Inspectable.Inspectable,
+export interface Element extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Equal.Equal,
   Hash.Hash,
   Traversable.Meta,
-  Traversable.Ancestor<Elem>,
-  Traversable.Descendent<Elem>
+  Traversable.Ancestor<Element>,
+  Traversable.Descendent<Element>
 {
   _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
   _env      : Envelope.Envelope;
@@ -36,10 +37,10 @@ export interface Elem extends Inspectable.Inspectable,
   props?    : Props | undefined;
   polymer?  : Polymer.Polymer;
   text?     : any;
-  rendered? : Elem[] | undefined;
+  rendered? : Element[] | undefined;
 }
 
-const ElementPrototype: Elem = {
+const ElementPrototype: Element = {
   _tag     : INTRINSIC,
   _env     : undefined as any,
   component: undefined,
@@ -72,6 +73,53 @@ const ElementPrototype: Elem = {
   },
 };
 
+
+
+export type Type = | Text
+                   | Fragment
+                   | Intrinsic
+                   | Component;
+
+export interface Text extends Element {
+  _tag: typeof TEXT;
+  text: any;
+}
+
+export interface Fragment extends Element {
+  _tag     : typeof FRAGMENT;
+  component: typeof Jsx.Fragment;
+}
+
+export interface Intrinsic extends Element {
+  _tag     : typeof INTRINSIC;
+  component: string;
+  props    : Props;
+}
+
+export interface Component extends Element {
+  _tag     : typeof COMPONENT;
+  component: Fn.FC;
+  props    : Props;
+  polymer  : Polymer.Polymer;
+}
+
+const TextProto: Text = Object.assign(Object.create(ElementPrototype), {
+  _tag: TEXT,
+});
+
+const FragmentProto: Fragment = Object.assign(Object.create(ElementPrototype), {
+  _tag: FRAGMENT,
+});
+
+const IntrinsicProto: Intrinsic = Object.assign(Object.create(ElementPrototype), {
+  _tag: INTRINSIC,
+});
+
+const ComponentProto: Component = Object.assign(Object.create(ElementPrototype), {
+  _tag: COMPONENT,
+});
+
+
 export interface Props extends Inspectable.Inspectable,
   Equal.Equal,
   Hash.Hash,
@@ -102,75 +150,29 @@ const PropsProto: Props = {
   },
 } as Props;
 
-export const makeProps = (props: any): Props => {
+ const makeProps = (props: any): Props => {
   return Object.assign(
     Object.create(PropsProto),
     props,
   );
 };
 
-export const makeRestProps = (props: any): Props => {
+ const makeRestProps = (props: any): Props => {
   return makeProps(props);
 };
 
-export interface Text extends Elem {
-  _tag     : typeof TEXT;
-  component: undefined;
-  props    : undefined;
-  text     : any;
-}
-
-export interface Fragment extends Elem {
-  _tag     : typeof FRAGMENT;
-  component: typeof Jsx.Fragment;
-}
-
-export interface Intrinsic extends Elem {
-  _tag     : typeof INTRINSIC;
-  component: string;
-  props    : Props;
-}
-
-export interface Component extends Elem {
-  _tag     : typeof COMPONENT;
-  component: Fn.FC;
-  props    : Props;
-  polymer  : Polymer.Polymer;
-}
-
-const TextProto: Text = Object.assign(Object.create(ElementPrototype), {
-  _tag: TEXT,
-});
-
-const FragmentProto: Fragment = Object.assign(Object.create(ElementPrototype), {
-  _tag: FRAGMENT,
-});
-
-const IntrinsicProto: Intrinsic = Object.assign(Object.create(ElementPrototype), {
-  _tag: INTRINSIC,
-});
-
-const ComponentProto: Component = Object.assign(Object.create(ElementPrototype), {
-  _tag: COMPONENT,
-});
-
-export type Type = | Text
-                   | Fragment
-                   | Intrinsic
-                   | Component;
-
-export const isComponent = (self: Elem): self is Component =>
+export const isComponent = (self: Element): self is Component =>
   self._tag === 'Component';
 
-export const toEither = (self: Elem): Either.Either<Component, Elem> =>
+export const toEither = (self: Element): Either.Either<Component, Element> =>
   isComponent(self)
   ? Either.right(self)
   : Either.left(self);
 
-const step = (self: Elem) => `${self.depth}:${self.index}`;
-const stepId = (self: Elem) => `${step(self.ancestor!)}:${step(self)}`;
-const trieId = (self: Elem) => `${self.ancestor!.trie}:${step(self)}`;
-const keyId = (self: Elem) => self.key ?? self.trie;
+const step = (self: Element) => `${self.depth}:${self.index}`;
+const stepId = (self: Element) => `${step(self.ancestor!)}:${step(self)}`;
+const trieId = (self: Element) => `${self.ancestor!.trie}:${step(self)}`;
+const keyId = (self: Element) => self.key ?? self.trie;
 
 const makeText = (text: any): Text => {
   const self = Object.create(TextProto) as Text;
@@ -202,7 +204,7 @@ const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   return self;
 };
 
-const connect = <A extends Elem>(self: Elem, that: A, index: number): A => {
+const connect = <A extends Element>(self: Element, that: A, index: number): A => {
   that._env = self._env;
   that.ancestor = self;
   that.depth = self.depth + 1;
@@ -212,7 +214,7 @@ const connect = <A extends Elem>(self: Elem, that: A, index: number): A => {
   return that;
 };
 
-const fromJsxChild = (cur: Elem, c: Jsx.Child, index: number): Elem => {
+const fromJsxChild = (cur: Element, c: Jsx.Child, index: number): Element => {
   if (!c || typeof c !== 'object') {
     const child = makeText(c);
     return connect(cur, child, index);
@@ -222,12 +224,12 @@ const fromJsxChild = (cur: Elem, c: Jsx.Child, index: number): Elem => {
   return connect(cur, child, index);
 };
 
-export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined => {
+export const fromJsxChildren = (cur: Element, cs: Jsx.Children): Element[] | undefined => {
   if (!cs) {
     return undefined;
   }
   if (Array.isArray(cs)) {
-    const children = [] as Elem[];
+    const children = [] as Element[];
 
     for (let i = 0; i < cs.length; i++) {
       const child = fromJsxChild(cur, cs[i], i);
@@ -238,7 +240,7 @@ export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined
   return [fromJsxChild(cur, cs as Jsx.Child, 0)];
 };
 
-export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
+export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
   const root = make(Jsx.clone(jsx));
   root._env = env;
   root.trie = step(root);
@@ -247,7 +249,7 @@ export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
   return root;
 };
 
-export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Envelope): Elem => {
+export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Envelope): Element => {
   const root = make(Jsx.clone(entrypoint.component));
   root._env = env;
   root.trie = step(root);
@@ -256,9 +258,7 @@ export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Enve
   return root;
 };
 
-
-
-export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
+export const diff = (self: Element, that: Element): Patch.Patch<Element> => {
   if (self === that) {
     return Patch.skip();
   }
@@ -282,9 +282,9 @@ export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
   return Patch.skip();
 };
 
-export const toStackPush = (self: Elem): Elem[] => self.children ?? [];
+export const toStackPush = (self: Element): Element[] => self.children ?? [];
 
-export const toProgress = (self: Elem): Progress.Partial => {
+export const toProgress = (self: Element): Progress.Partial => {
   return Progress.partial(self._env.entrypoint as any, self);
 };
 
@@ -293,7 +293,7 @@ export const mount = (self: Component) => {
   return self;
 };
 
-export const unmount = (self: Elem) => {
+export const unmount = (self: Element) => {
   (self._env as any) = undefined;
   (self.props as any) = undefined;
   (self.polymer as any) = Polymer.unmount(self.polymer);
@@ -344,36 +344,33 @@ export const flush = (self: Component) =>
     },
   });
 
-const EventProto = {
-
-};
-
 export const invoke = (self: Intrinsic, event: Event.EventInternal) => {
   const handler = self.props[event.type];
   return Event.invokeWith(event, handler);
 };
 
 export const encode = (
-  self: Elem,
+  self: Element,
+  encoding: Jsx.Encoding,
 ) => {
-
+  return {} as any;
 };
 
-export const update = (self: Elem, that: Elem): Elem => {
+export const update = (self: Element, that: Element): Element => {
   self.props = that.props;
   self.text = that.text;
   throw new Error();
 };
 
-export const replace = (self: Elem, at: number, that: Elem): Elem => {
+export const replace = (self: Element, at: number, that: Element): Element => {
   return self.children!.splice(at, 1, that)[0];
 };
 
-export const remove = (self: Elem, at: number, to: number): Elem[] => {
+export const remove = (self: Element, at: number, to: number): Element[] => {
   return self.children!.splice(at, to - at);
 };
 
-export const insert = (self: Elem, at: number, that: Elem[]): Elem => {
+export const insert = (self: Element, at: number, that: Element[]): Element => {
   if (!self.children) {
     self.children = that;
     return self;
@@ -382,18 +379,18 @@ export const insert = (self: Elem, at: number, that: Elem[]): Elem => {
   return self;
 };
 
-export const diffs = (self: Elem, that: Elem): Patch.Patches<Elem>[] => {
+export const diffs = (self: Element, that: Element): Patch.Patches<Element>[] => {
   throw new Error();
 };
 
-const childMap = (cs?: Elem[]) => {
+const childMap = (cs?: Element[]) => {
   if (!cs) {
     return HashMap.empty();
   }
   return HashMap.make(...cs.map((child) => [(child.key ?? child.component) as string, child] as const));
 };
 
-const mapChild = (cs: HashMap.HashMap<string, Elem>) => {
+const mapChild = (cs: HashMap.HashMap<string, Element>) => {
   if (HashMap.isEmpty(cs)) {
     return undefined;
   }
@@ -401,9 +398,9 @@ const mapChild = (cs: HashMap.HashMap<string, Elem>) => {
 };
 
 export const differ = Differ.make({
-  empty  : Patch.skip() as Patch.Patch<Elem>,
+  empty  : Patch.skip() as Patch.Patch<Element>,
   combine: (a, b) => b,
-  diff   : (self: Elem, that) => {
+  diff   : (self: Element, that) => {
     if (self === that) {
       return Patch.skip();
     }

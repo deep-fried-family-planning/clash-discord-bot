@@ -1,13 +1,10 @@
 import type * as Document from '#disreact/core/Document.ts';
 import type * as Node from '#disreact/core/Element.ts';
-import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
-import type {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
+import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
-import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Elem from '#disreact/model/core/Elem.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import type * as E from 'effect/Effect';
+import type * as Elem from '#disreact/model/entity/Element.ts';
+import type * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
 
@@ -26,74 +23,10 @@ export type Monomer =
   | Memo
   | Contextual;
 
-const MonomerProto: Monomer = {
-  _tag   : undefined as any,
-  hydrate: false,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    switch (this._tag) {
-      case NONE: {
-        return Inspectable.format({
-          _id : 'Monomer',
-          _tag: this._tag,
-        });
-      }
-      case REDUCER: {
-        return Inspectable.format({
-          _id     : 'Monomer',
-          _tag    : this._tag,
-          hydrate : this.hydrate,
-          changed : this.changed,
-          state   : this.state,
-          dispatch: this.dispatch,
-        });
-      }
-      case EFFECTOR: {
-        return Inspectable.format({
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-        });
-      }
-      case REF: {
-        return Inspectable.format({
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-          current: this.current,
-        });
-      }
-      case MEMO: {
-        return Inspectable.format({
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-          state  : this.state,
-          deps   : this.deps,
-        });
-      }
-      case CONTEXT: {
-        return Inspectable.format({
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-        });
-      }
-    }
-  },
-} as Monomer;
-
 export interface None extends Inspectable.Inspectable {
   _tag   : typeof NONE;
   hydrate: boolean;
 }
-
-export const NoneProto: None = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: NONE,
-  },
-);
 
 export interface Reducer extends Inspectable.Inspectable {
   _tag    : typeof REDUCER;
@@ -103,13 +36,6 @@ export interface Reducer extends Inspectable.Inspectable {
   dispatch: (action: any) => void;
 }
 
-export const ReducerProto: None = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: REDUCER,
-  },
-);
-
 export interface Effect extends Inspectable.Inspectable {
   _tag    : typeof EFFECTOR;
   hydrate : boolean;
@@ -117,25 +43,11 @@ export interface Effect extends Inspectable.Inspectable {
   deps    : any[] | undefined;
 }
 
-export const EffectProto: Effect = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: EFFECTOR,
-  },
-);
-
 export interface Reference extends Inspectable.Inspectable {
   _tag   : typeof REF;
   hydrate: boolean;
   current: any;
 }
-
-export const ReferenceProto: Reference = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: REF,
-  },
-);
 
 export interface Memo extends Inspectable.Inspectable {
   _tag   : typeof MEMO;
@@ -144,24 +56,91 @@ export interface Memo extends Inspectable.Inspectable {
   deps   : any[] | undefined;
 }
 
-export const MemoProto: Memo = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: MEMO,
-  },
-);
-
 export interface Contextual extends Inspectable.Inspectable {
   _tag   : typeof CONTEXT;
   hydrate: boolean;
 }
 
-export const ContextProto: Contextual = Object.assign(
-  Object.create(MonomerProto),
-  {
-    _tag: CONTEXT,
+const MonomerProto: Monomer = {
+  _tag   : undefined as any,
+  hydrate: false,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    switch (this._tag) {
+      case NONE: {
+        return {
+          _id : 'Monomer',
+          _tag: this._tag,
+        };
+      }
+      case REDUCER: {
+        return {
+          _id     : 'Monomer',
+          _tag    : this._tag,
+          hydrate : this.hydrate,
+          changed : this.changed,
+          state   : this.state,
+          dispatch: this.dispatch,
+        };
+      }
+      case EFFECTOR: {
+        return {
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+        };
+      }
+      case REF: {
+        return {
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+          current: this.current,
+        };
+      }
+      case MEMO: {
+        return {
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+          state  : this.state,
+          deps   : this.deps,
+        };
+      }
+      case CONTEXT: {
+        return {
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+        };
+      }
+    }
   },
-);
+} as Monomer;
+
+export const NoneProto: None = Object.assign(Object.create(MonomerProto), {
+  _tag: NONE,
+});
+
+export const ReducerProto: None = Object.assign(Object.create(MonomerProto), {
+  _tag: REDUCER,
+});
+
+export const EffectProto: Effect = Object.assign(Object.create(MonomerProto), {
+  _tag: EFFECTOR,
+});
+
+export const ReferenceProto: Reference = Object.assign(Object.create(MonomerProto), {
+  _tag: REF,
+});
+
+export const MemoProto: Memo = Object.assign(Object.create(MonomerProto), {
+  _tag: MEMO,
+});
+
+export const ContextProto: Contextual = Object.assign(Object.create(MonomerProto), {
+  _tag: CONTEXT,
+});
 
 export type Encoded =
   | typeof MONOMER_NONE
@@ -174,6 +153,8 @@ export type Encoded =
   | typeof MONOMER_MEMO
   | [typeof MONOMER_MEMO, any[]]
   | [typeof MONOMER_CONTEXTUAL];
+
+export type Bundle = Record<string, Encoded[]>;
 
 export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
@@ -204,7 +185,7 @@ const PolymerProto: Polymer = {
   },
 } as Polymer;
 
- const make = (origin: Elem.Component): Polymer => {
+const make = (origin: Elem.Component): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
   self.origin = origin;
   self.stack = [];
@@ -218,6 +199,17 @@ export const mount = (origin: Elem.Component, encoded?: Encoded[]): Polymer => {
     return make(origin);
   }
   return make(origin);
+};
+
+export const moun = (comp: Elem.Component, bundle: Bundle) => {
+  if (!bundle) {
+    return make(comp);
+  }
+  const encoded = bundle[comp.trie];
+  if (!encoded) {
+    return make(comp);
+  }
+  return make(comp);
 };
 
 export const isStateless = (self: Polymer) => self.stack.length === 0;
@@ -292,8 +284,6 @@ export const unmount = (self?: Polymer) => {
   return undefined;
 };
 
-
-
 export interface Hydrant extends Inspectable.Inspectable {
   id   : string;
   props: any;
@@ -317,7 +307,7 @@ const HydrantProto: Hydrant = {
 
 export const hydrant = (id: string, props: any = {}, state: any = {}) => {
   const self = Object.create(HydrantProto) as Hydrant;
-  self.id   = id;
+  self.id = id;
   self.props = props;
   self.state = state ?? {};
   return self;

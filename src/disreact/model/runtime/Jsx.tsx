@@ -1,18 +1,19 @@
-import type * as Fn from '#disreact/model/core/Fn.ts';
+import type * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Internal from '#disreact/model/runtime/internal.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
+
+const TypeId = Symbol.for('disreact/Jsx');
+
+export const Fragment = Symbol.for('disreact/Fragment');
 
 export type Type =
   | string
   | typeof Fragment
   | Fn.FC;
 
-export const Fragment = Symbol.for('disreact/Fragment');
-
-export const TypeId = Symbol.for('disreact/Jsx');
-
-export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable {
+export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable
+{
   readonly [TypeId]   : typeof TypeId;
   readonly entrypoint?: string | undefined;
   readonly key        : string | undefined;
@@ -21,9 +22,21 @@ export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspect
   readonly ref?       : any | undefined;
   readonly child?     : Child;
   readonly childs?    : Child[];
-  readonly src?       : any | undefined;
-  readonly ctx?       : any | undefined;
 };
+
+export type Child =
+  | undefined | null
+  | boolean | number | bigint | string
+  | Jsx;
+
+export type Children =
+  | Child
+  | readonly Child[];
+
+export const isJsx = (u: Children): u is Jsx =>
+  u != null &&
+  typeof u === 'object' &&
+  TypeId in u;
 
 const JsxProto: Jsx = {
   [TypeId]  : TypeId,
@@ -50,26 +63,14 @@ const JsxProto: Jsx = {
   },
 };
 
-export const isJsx = (u: unknown): u is Jsx =>
-  u != null &&
-  typeof u === 'object' &&
-  TypeId in u;
-
-export type Child =
-  | undefined | null
-  | boolean | number | bigint | string
-  | Jsx;
-
-export type Children =
-  | Child
-  | readonly Child[];
+export type Key = string | undefined;
 
 export interface Setup extends Record<string, any> {
   key?: string;
   ref?: any;
 };
 
-export const make = (type: Type, setup: Setup, key?: string): Jsx => {
+export const make = (type: Type, setup: Setup, key?: Key): Jsx => {
   const self = Object.create(JsxProto) as Jsx;
   (self.entrypoint as any) = setup.entrypoint;
   (self.key as any) = key;
@@ -79,7 +80,7 @@ export const make = (type: Type, setup: Setup, key?: string): Jsx => {
   return self;
 };
 
-export const makeMulti = (type: Type, setup: Setup, key?: string): Jsx => {
+export const makeMulti = (type: Type, setup: Setup, key?: Key): Jsx => {
   const self = Object.create(JsxProto) as Jsx;
   (self.entrypoint as any) = setup.entrypoint;
   (self.key as any) = key;
@@ -137,14 +138,14 @@ export const findEntrypoint = (id: string | Fn.FC): Entrypoint | undefined => {
 };
 
 export type Encoding = {
-  primitive : string;
-  normalizer: Record<string, string>;
-  encoders  : Record<string, (self: any, acc: any) => any>;
+  primitive: string;
+  normalize: Record<string, string>;
+  transform: Record<string, (self: any, acc: any) => any>;
 };
 
-export const encode = (self: Jsx, encoder: Encoding): any => {
+export const encode = (self: Jsx, encoding: Encoding): any => {
   const stack = [self];
-  const acc   = {};
+  const acc = {};
 
   return {};
 };

@@ -1,4 +1,4 @@
-import {Encoder} from '#disreact/model/Encoder.ts';
+import {ModelCodec} from '#disreact/model/ModelCodec.ts';
 import {Rehydrator} from '#disreact/model/Rehydrator.ts';
 import * as E from 'effect/Effect';
 import * as Hydrant from '#disreact/core/Hydrant.ts';
@@ -13,7 +13,7 @@ export interface ModelService {
 
 export class Model extends E.Service<Model>()('disreact/Model', {
   effect: E.gen(function* () {
-    const codec = yield* Encoder;
+    const codec = yield* ModelCodec;
 
     return {
       fabricateFC: () => {},
