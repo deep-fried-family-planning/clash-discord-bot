@@ -1,6 +1,6 @@
 import type {IntrinsicAttributesMap} from '#disreact/adaptor/codec/intrinsic/types.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import * as JsxDEV from '#disreact/model/runtime/JsxDEV.tsx';
+import * as Jsx from '#disreact/model/runtime/JsxRuntime.tsx';
+import * as JsxDEV from '#disreact/model/runtime/JsxRuntimeDEV.tsx';
 import type * as JsxRuntime from '#disreact/jsx-runtime.ts';
 import type {Effect} from 'effect/Effect';
 

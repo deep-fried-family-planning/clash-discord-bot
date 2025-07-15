@@ -8,7 +8,7 @@ export const $useState = (self?: Polymer.Polymer) => (initial: any) => {
   const polymer = Polymer.assert(self);
   const monomer = Polymer.hook(
     polymer,
-    Polymer.REDUCER,
+    Polymer.STATE,
     () => {
       const m = Polymer.reducer(initial);
       m.dispatch = (next: any) => {

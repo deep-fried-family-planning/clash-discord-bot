@@ -2,7 +2,7 @@ import * as Elem from '#disreact/model/entity/Element.ts';
 import type * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import type * as Progress from '#disreact/core/Progress.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
@@ -32,8 +32,7 @@ export interface Simulated<T extends string, P = any> {
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
-  hydrant   : Polymer.Hydrant;
-  entrypoint: string | typeof Jsx.Fragment;
+  entrypoint: string | typeof JsxRuntime.Fragment;
   root      : Elem.Element;
   flags     : Set<Elem.Element>;
   final     : Deferred.Deferred<Progress.Checkpoint>;
@@ -43,7 +42,7 @@ export interface Envelope<A = any> extends Inspectable.Inspectable {
 const Proto: Envelope = {
   data      : undefined as any,
   hydrant   : undefined as any,
-  entrypoint: Jsx.Fragment,
+  entrypoint: JsxRuntime.Fragment,
   root      : undefined as any,
   stream    : undefined as any,
   final     : undefined as any,
@@ -80,9 +79,9 @@ export const fromFC = (
 ) =>
   makeEffects.pipe(
     E.map((self) => {
-      const jsx = Jsx.makeJsx(fc, props);
+      const jsx = JsxRuntime.makeJsx(fc, props);
 
-      self.entrypoint = fc.entrypoint ?? Jsx.Fragment;
+      self.entrypoint = fc.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('', props);
       self.root = Elem.fromJsx(jsx, self);
@@ -91,12 +90,12 @@ export const fromFC = (
   );
 
 export const fromJsx = (
-  jsx: Jsx.Jsx,
+  jsx: JsxRuntime.Jsx,
   data: any,
 ) =>
   makeEffects.pipe(
     E.map((self) => {
-      self.entrypoint = jsx.entrypoint ?? Jsx.Fragment;
+      self.entrypoint = jsx.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('');
       self.root = Elem.fromJsx(jsx, self);
@@ -105,7 +104,7 @@ export const fromJsx = (
   );
 
 export const fromSimulation = (
-  entrypoint: Jsx.Entrypoint,
+  entrypoint: JsxRuntime.Entrypoint,
   hydrant: Polymer.Hydrant,
   data: any,
 ) =>
@@ -119,7 +118,7 @@ export const fromSimulation = (
     }),
   );
 
-export const forkFromEntrypoint = (self: Envelope, entrypoint: Jsx.Entrypoint) => {
+export const forkFromEntrypoint = (self: Envelope, entrypoint: JsxRuntime.Entrypoint) => {
   const forked = Object.create(Proto) as Envelope;
   forked.entrypoint = entrypoint.id;
   forked.data = self.data;

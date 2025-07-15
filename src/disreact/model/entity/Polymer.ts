@@ -2,12 +2,38 @@ import {poly} from '#disreact/adaptor/adaptor/global.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
 import type * as Fn from '#disreact/model/entity/Fn.ts';
+import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
 
+export type UpdaterSync = {
+  _tag: 'Sync';
+  run : () => void;
+};
+
+export type StateUpdater = {
+  _tag: 'State';
+  run : () => void;
+};
+
+export type EffectUpdater = {
+  _tag: 'Effect';
+  run : () => void;
+};
+
+export type Updater = {};
+
 export type Bundle = Record<string, Encoded[]>;
 
-export interface Polymer extends Inspectable.Inspectable,
+type Tag = Monomer['_tag'];
+type Mono<T extends Tag = Tag> = Extract<Monomer, {_tag: T}>;
+
+type HookFn = (...args: any) => any;
+
+export interface Polymer<
+  T extends Tag = Tag,
+  O = any,
+> extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Origin<Element.Component>
 {
@@ -17,14 +43,21 @@ export interface Polymer extends Inspectable.Inspectable,
   stack: Monomer[];
   queue: Effector[];
   flags: Set<any>;
+
+  assert: T;
+  lazy(this: ThisType<Polymer>): Mono<T>;
+  output: O;
 }
 
 const PolymerProto: Polymer = {
-  pc   : 0,
-  rc   : 0,
-  stack: undefined as any,
-  queue: undefined as any,
-  flags: undefined as any,
+  pc    : 0,
+  rc    : 0,
+  stack : undefined as any,
+  queue : undefined as any,
+  flags : undefined as any,
+  assert: undefined as any,
+  lazy  : undefined as any,
+  output: undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
     return Inspectable.format({
@@ -70,13 +103,27 @@ export const isChanged = (self: Polymer) => {
   for (let i = 0; i < self.stack.length; i++) {
     const monomer = self.stack[i];
 
-    if (monomer._tag === REDUCER) {
+    if (monomer._tag === STATE) {
       if (monomer.changed) {
         return true;
       }
     }
   }
   return false;
+};
+
+export const dispose = (self?: Polymer) => {
+  if (!self) {
+    return self;
+  }
+  if (self.queue.length) {
+    throw new Error('ope');
+  }
+  self.origin = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  (self.flags as any) = undefined;
+  return undefined;
 };
 
 export const isQueued = (self: Polymer) => self.queue.length === 0;
@@ -93,7 +140,7 @@ export const commit = (self: Polymer): Polymer => {
   for (let i = 0; i < self.stack.length; i++) {
     const monomer = self.stack[i];
 
-    if (monomer._tag === REDUCER) {
+    if (monomer._tag === STATE) {
       monomer.changed = false;
     }
   }
@@ -113,27 +160,70 @@ export const dehydrate = (self: Polymer): Encoded[] => {
   return encoded;
 };
 
-export const unmount = (self?: Polymer) => {
-  if (!self) {
-    return self;
-  }
-  if (self.queue.length) {
-    throw new Error('ope');
-  }
-  self.origin = undefined;
-  (self.stack as any) = undefined;
-  (self.queue as any) = undefined;
-  (self.flags as any) = undefined;
-  return undefined;
-};
+export const kind = dual<
+  <T extends Tag>(tag: T) => (self: Polymer<Tag>) => Polymer<T>,
+  <T extends Tag>(self: Polymer<Tag>, tag: T) => Polymer<T>
+>(2, (self, tag) => {
+  self.assert = tag;
+  return self as unknown as Polymer<typeof tag>;
+});
 
-export interface Hook<M extends Monomer> {
+export const lazy = dual<
+  <T extends Tag>(lazy: (p: Polymer) => Mono<T>) => (self: Polymer<T>) => Polymer<T>,
+  <T extends Tag>(self: Polymer<T>, lazy: (p: Polymer) => Mono<T>) => Polymer<T>
+>(2, (self, lazy) => {
+  self.lazy = lazy;
+  return self;
+});
+
+export interface Hook<T extends Tag> {
   hydrate: boolean;
-  monomer: M;
+  monomer: Mono<T>;
   flags  : Set<Element.Component>;
   element: Element.Component;
   queue  : Effector[];
 }
+
+export const define = dual<
+  <T extends Tag, O>(impl: (hook: Hook<T>) => O) => (self: Polymer<T>) => Polymer<T>,
+  <T extends Tag, O>(self: Polymer<T>, impl: (arg: Hook<T>) => O) => Polymer<T>
+>(2, (self, impl) => {
+  const monomer = self.stack[self.pc];
+
+  if (!monomer) {
+
+  }
+  if (monomer._tag !== self.assert) {
+    throw new Error('Hooks must be called in the same order as they are defined.');
+  }
+
+  const hook = {
+    hydrate: false,
+    monomer: undefined as any,
+    flags  : new Set(),
+    element: undefined as any,
+    queue  : [],
+  };
+});
+
+export const release = <T extends Tag, M extends Mono<T>, O>(self: Polymer<T, M, O>): O => {
+  const output = self.output;
+  (self.output as any) = undefined;
+  (self.lazy as any) = undefined;
+  (self.assert as any) = undefined;
+  return output;
+};
+
+const thing: Polymer;
+
+const ope = () =>
+  thing.pipe(
+    kind(NONE),
+    lazy(() => none()),
+    define((hook) => {
+      hook.flags;
+    }),
+  );
 
 export const assert = (self?: Polymer) => {
   if (!self) {
@@ -161,125 +251,79 @@ export const hook = <A extends Monomer>(
   throw new Error('Hooks must be called in the same order as they are defined.');
 };
 
-export type Monomer =
-  | None
-  | Reducer
-  | Effector
-  | Reference
-  | Memo
-  | Contextual;
-
 export const
-  NONE     = 1,
-  REDUCER  = 2,
-  EFFECTOR = 3,
-  REF      = 3,
-  MEMO     = 4,
-  CONTEXT  = 5;
+  STATE   = 1 as const,
+  EFFECT  = 2 as const,
+  REF     = 3 as const,
+  MEMO    = 4 as const,
+  CONTEXT = 5 as const;
+
+export namespace Monomer {
+  export type StateEncoded = [typeof STATE, any];
+
+  export interface State extends Inspectable.Inspectable {
+    _tag    : typeof STATE;
+    state   : any;
+    init(): any;
+    update(action: any): void;
+    encoded?: StateEncoded;
+  }
+
+  export type EffectEncoded = | typeof EFFECT
+                              | [typeof EFFECT, any[]];
+
+  export interface Effect extends Inspectable.Inspectable {
+    _tag    : typeof EFFECT;
+    effect  : Fn.Effector;
+    deps    : any[] | undefined;
+    encoded?: EffectEncoded;
+  }
+
+  export type RefEncoded = | typeof REF
+                           | [typeof REF, any];
+
+  export interface Ref extends Inspectable.Inspectable {
+    _tag    : typeof REF;
+    current : any;
+    encoded?: RefEncoded;
+  }
+
+  export type MemoEncoded = | typeof MEMO
+                            | [typeof MEMO, any[]];
+
+  export interface Memo extends Inspectable.Inspectable {
+    _tag    : typeof MEMO;
+    deps    : any[] | undefined;
+    encoded?: MemoEncoded;
+  }
+
+  export type ContextEncoded = typeof CONTEXT;
+
+  export interface Context extends Inspectable.Inspectable {
+    _tag    : typeof CONTEXT;
+    encoded?: ContextEncoded;
+  }
+
+  export type Encoded = | StateEncoded
+                        | EffectEncoded
+                        | RefEncoded
+                        | MemoEncoded
+                        | ContextEncoded;
+}
+
+export type Monomer = | Monomer.State
+                      | Monomer.Effect
+                      | Monomer.Ref
+                      | Monomer.Memo
+                      | Monomer.Context;
 
 const MonomerProto: Monomer = {
-  _tag   : NONE as any,
+  _tag   : STATE as any,
   hydrate: false,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    switch (this._tag) {
-      case NONE: {
-        return {
-          _id : 'Monomer',
-          _tag: this._tag,
-        };
-      }
-      case REDUCER: {
-        return {
-          _id     : 'Monomer',
-          _tag    : this._tag,
-          hydrate : this.hydrate,
-          changed : this.changed,
-          state   : this.state,
-          dispatch: this.dispatch,
-        };
-      }
-      case EFFECTOR: {
-        return {
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-        };
-      }
-      case REF: {
-        return {
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-          current: this.current,
-        };
-      }
-      case MEMO: {
-        return {
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-          state  : this.state,
-          deps   : this.deps,
-        };
-      }
-      case CONTEXT: {
-        return {
-          _id    : 'Monomer',
-          _tag   : this._tag,
-          hydrate: this.hydrate,
-        };
-      }
-    }
-  },
 } as Monomer;
 
-export interface None extends Inspectable.Inspectable {
-  _tag   : typeof NONE;
-  hydrate: boolean;
-}
-
-export interface Reducer extends Inspectable.Inspectable {
-  _tag    : typeof REDUCER;
-  hydrate : boolean;
-  changed : boolean;
-  state   : any;
-  dispatch: (action: any) => void;
-}
-
-export interface Effector extends Inspectable.Inspectable {
-  _tag    : typeof EFFECTOR;
-  hydrate : boolean;
-  dispatch: Fn.Effector;
-  deps    : any[] | undefined;
-}
-
-export interface Reference extends Inspectable.Inspectable {
-  _tag   : typeof REF;
-  hydrate: boolean;
-  current: any;
-}
-
-export interface Memo extends Inspectable.Inspectable {
-  _tag   : typeof MEMO;
-  hydrate: boolean;
-  state  : any;
-  deps   : any[] | undefined;
-}
-
-export interface Contextual extends Inspectable.Inspectable {
-  _tag   : typeof CONTEXT;
-  hydrate: boolean;
-}
-
-const NoneProto: None = Object.assign(Object.create(MonomerProto), {
-  _tag: NONE,
-});
-
-export const none = () => NoneProto;
-
-const ReducerProto: None = Object.assign(Object.create(MonomerProto), {
-  _tag: REDUCER,
+const ReducerProto: Monomer.State = Object.assign(Object.create(MonomerProto), {
+  _tag: STATE,
 });
 
 export const reducer = (state: any) => {
@@ -288,8 +332,8 @@ export const reducer = (state: any) => {
   return self;
 };
 
-const EffectProto: Effector = Object.assign(Object.create(MonomerProto), {
-  _tag: EFFECTOR,
+const EffectProto: Monomer.Effect = Object.assign(Object.create(MonomerProto), {
+  _tag: EFFECT,
 });
 
 export const effector = (dispatch: any, deps?: any[]) => {
@@ -299,7 +343,7 @@ export const effector = (dispatch: any, deps?: any[]) => {
   return self;
 };
 
-const ReferenceProto: Reference = Object.assign(Object.create(MonomerProto), {
+const ReferenceProto: Monomer.Ref = Object.assign(Object.create(MonomerProto), {
   _tag: REF,
 });
 
@@ -309,7 +353,7 @@ export const reference = (current: any) => {
   return self;
 };
 
-const MemoProto: Memo = Object.assign(Object.create(MonomerProto), {
+const MemoProto: Monomer.Memo = Object.assign(Object.create(MonomerProto), {
   _tag: MEMO,
 });
 
@@ -320,19 +364,72 @@ export const memoize = (state: any, deps?: any[]) => {
   return self;
 };
 
-const ContextProto: Contextual = Object.assign(Object.create(MonomerProto), {
+const ContextProto: Monomer.Context = Object.assign(Object.create(MonomerProto), {
   _tag: CONTEXT,
 });
 
 export const contextual = () => ContextProto;
 
-export type Encoded =
-  | typeof NONE
-  | [typeof REDUCER, any]
-  | typeof EFFECTOR
-  | [typeof EFFECTOR, any[]]
-  | typeof REF
-  | [typeof REF, any]
-  | typeof MEMO
-  | [typeof MEMO, any[]]
-  | [typeof CONTEXT];
+
+
+const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
+  switch (monomer._tag) {
+    case STATE: {
+      return [STATE, monomer.state];
+    }
+    case EFFECT: {
+      if (!monomer.deps) {
+        return EFFECT;
+      }
+      return [EFFECT, monomer.deps];
+    }
+    case REF: {
+      if (typeof monomer.current === 'function') {
+        return REF;
+      }
+      return [REF, monomer.current];
+    }
+    case MEMO: {
+      if (!monomer.deps) {
+        return MEMO;
+      }
+      return [MEMO, monomer.deps];
+    }
+    case CONTEXT: {
+      return CONTEXT;
+    }
+  }
+};
+
+const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
+  const self = Object.create(MonomerProto);
+
+  if (!Array.isArray(encoded)) {
+    switch (encoded) {
+      case EFFECT: {
+        self._tag = EFFECT;
+        return self;
+      }
+      case REF: {
+        return self;
+      }
+      case MEMO: {
+        return self;
+      }
+      case CONTEXT: {
+        return self;
+      }
+    }
+  }
+  switch (encoded[0]) {
+    case STATE: {
+      return reducer(encoded[1]);
+    }
+    case EFFECT: {
+      return effector(encoded[1]);
+    }
+    case REF: {
+      return reference(encoded[1]);
+    }
+  }
+};
