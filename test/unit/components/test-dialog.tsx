@@ -1,7 +1,5 @@
-import {useState} from '#src/disreact/index.ts';
-
 export const TestDialog = () => {
-  const [num, setNum] = useState(0);
+  // const [num, setNum] = useState(0);
 
   return (
     <modal

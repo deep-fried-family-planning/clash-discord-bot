@@ -5,7 +5,7 @@ import type * as Event from '#disreact/model/entity/Event.ts';
 import * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import {ModelCodec} from '#disreact/model/ModelCodec.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';

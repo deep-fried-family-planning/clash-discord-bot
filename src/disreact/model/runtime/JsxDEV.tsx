@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 
 export const Fragment = Jsx.Fragment;
 
@@ -17,10 +17,10 @@ export const makeDEV = (
   let elem: Jsx.Jsx;
 
   if (Array.isArray(setup.children)) {
-    elem = Jsx.makeMulti(type, setup, key);
+    elem = Jsx.makeJsxs(type, setup, key);
   }
   else {
-    elem = Jsx.make(type, setup, key);
+    elem = Jsx.makeJsx(type, setup, key);
   }
   (elem as JsxDEV).src = src;
   (elem as JsxDEV).ctx = ctx;

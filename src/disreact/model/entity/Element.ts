@@ -6,7 +6,7 @@ import * as Progress from '#disreact/core/Progress.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Event from '#disreact/model/entity/Event.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';

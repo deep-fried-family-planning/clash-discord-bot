@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 
 const json = (actual: any) => JSON.stringify(actual, null, 2);
@@ -70,6 +70,7 @@ it('when transpiling function component', () => {
       "_id": "Jsx",
       "type": {
         "_id": "FunctionComponent",
+        "name": "Anonymous",
         "props": false,
         "state": true
       },
