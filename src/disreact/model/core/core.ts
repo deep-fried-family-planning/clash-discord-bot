@@ -1,7 +1,7 @@
 import type * as Elem from '#disreact/model/entity/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import type * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';

@@ -185,12 +185,10 @@ export const insertBefore = <A extends Sibling<any>>(node: A, before: A): A => {
 };
 
 export interface Meta {
-  trie   : string;
-  step   : string;
-  index  : number;
-  height : number;
-  depth  : number;
-  valence: number;
+  trie : string;
+  step : string;
+  index: number;
+  depth: number;
 }
 
 export const trie = <A extends Meta>(self: A) => `${self.trie}`;

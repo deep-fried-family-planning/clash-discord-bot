@@ -4,7 +4,7 @@ import * as Polymer from '#disreact/model/core/Polymer.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Elem from '#disreact/model/entity/Elem.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
 
 import * as Data from 'effect/Data';

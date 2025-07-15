@@ -1,6 +1,6 @@
 import {props} from '#disreact/adaptor/adaptor/element.ts';
 import * as Core from '#disreact/model/core/core.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';

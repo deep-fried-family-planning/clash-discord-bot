@@ -1,4 +1,3 @@
-import * as elem from '#disreact/core/internal/element.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Internal from '#disreact/model/runtime/internal.ts';
 import {globalValue} from 'effect/GlobalValue';
@@ -34,8 +33,6 @@ export interface Jsx<T extends Type = Type> {
   src?   : DevSrc | undefined;
   ctx?   : DevCtx | undefined;
 };
-
-export const isValue = (u: Children): u is Exclude<Child, Jsx> => typeof u !== 'object' || !u;
 
 export const make = (type: Type, setup: Setup, key?: string): Jsx => {
   return {
@@ -143,7 +140,5 @@ export const makeDEV = (
   else {
     elem = make(type, setup, key);
   }
-  elem.src = src;
-  elem.ctx = ctx;
   return elem;
 };

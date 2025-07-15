@@ -4,7 +4,7 @@ import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
 import type * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -70,7 +70,6 @@ export interface Elem extends Inspectable.Inspectable,
   props?    : Props | undefined;
   polymer?  : Polymer.Polymer;
   text?     : any;
-  render?   : E.Effect<Jsx.Children> | undefined;
   rendered? : Elem[] | undefined;
 }
 
@@ -83,12 +82,10 @@ const ElementPrototype: Elem = {
   ancestor : undefined,
   children : undefined,
   rendered : undefined,
-  depth    : 0,
-  index    : 0,
-  height   : 0,
-  valence  : 0,
   trie     : '',
   step     : '',
+  depth    : 0,
+  index    : 0,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   [Hash.symbol]() {
@@ -237,7 +234,7 @@ export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined
 };
 
 export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
-  const root = Core.makeElement(Jsx.clone(jsx));
+  const root = make(Jsx.clone(jsx));
   root._env = env;
   root.trie = step(root);
   root.step = step(root);
@@ -246,7 +243,7 @@ export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
 };
 
 export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Envelope): Elem => {
-  const root = Core.makeElement(Jsx.clone(entrypoint.component));
+  const root = make(Jsx.clone(entrypoint.component));
   root._env = env;
   root.trie = step(root);
   root.step = step(root);

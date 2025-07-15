@@ -1,5 +1,5 @@
 import type * as Polymer from '#disreact/model/core/Polymer.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {pipe} from 'effect/Function';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 
