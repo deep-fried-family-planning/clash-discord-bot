@@ -3,28 +3,116 @@ import * as Core from '#disreact/model/core/core.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Envelope from '#disreact/model/Envelope.ts';
-import * as Hooks from '#disreact/model/runtime/Hooks.ts';
+import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import * as Differ from 'effect/Differ';
 import type * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
-import {globalValue} from 'effect/GlobalValue';
-import type * as Hash from 'effect/Hash';
+import * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
-import type * as Inspectable from 'effect/Inspectable';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Inspectable from 'effect/Inspectable';
+import * as Pipeable from 'effect/Pipeable';
+
+export interface Props extends Inspectable.Inspectable,
+  Equal.Equal,
+  Hash.Hash,
+  Record<string, any>
+{
+  onclick?          : any | undefined;
+  onselect?         : any | undefined;
+  onsubmit?         : any | undefined;
+  readonly children?: Jsx.Children;
+}
+
+const PropsProto: Props = {
+  onclick : undefined,
+  onselect: undefined,
+  onsubmit: undefined,
+  [Hash.symbol]() {
+    return Hash.structure(this);
+  },
+  [Equal.symbol]() {
+    throw new Error();
+  },
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Props',
+      value: this,
+    });
+  },
+} as Props;
+
+export const makeProps = (props: any): Props => {
+  return Object.assign(
+    Object.create(PropsProto),
+    props,
+  );
+};
+
+export const makeRestProps = (props: any): Props => {
+  return makeProps(props);
+};
+
+export interface Elem extends Inspectable.Inspectable,
+  Pipeable.Pipeable,
+  Equal.Equal,
+  Hash.Hash,
+  Traversable.Meta,
+  Traversable.Ancestor<Elem>,
+  Traversable.Descendent<Elem>
+{
+  _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
+  _env      : Envelope.Envelope;
+  key?      : string | undefined;
+  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
+  props?    : Props | undefined;
+  polymer?  : Polymer.Polymer;
+  text?     : any;
+  render?   : E.Effect<Jsx.Children> | undefined;
+  rendered? : Elem[] | undefined;
+}
+
+const ElementPrototype: Elem = {
+  _tag     : 'Intrinsic',
+  _env     : undefined as any,
+  component: undefined,
+  key      : undefined,
+  text     : undefined,
+  ancestor : undefined,
+  children : undefined,
+  rendered : undefined,
+  depth    : 0,
+  index    : 0,
+  height   : 0,
+  valence  : 0,
+  trie     : '',
+  step     : '',
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  [Hash.symbol]() {
+    return Hash.structure(this);
+  },
+  [Equal.symbol]() {
+    throw new Error();
+  },
+  toJSON() {
+    return Inspectable.format({
+      _id     : 'Element',
+      _tag    : this._tag,
+      key     : this.key,
+      props   : this.props,
+      polymer : this.polymer,
+      children: this.children,
+    });
+  },
+};
 
 export const TEXT      = 'Text',
              FRAGMENT  = 'Fragment',
              INTRINSIC = 'Intrinsic',
              COMPONENT = 'Component';
-
-export type Type = | Text
-                   | Fragment
-                   | Intrinsic
-                   | Component;
 
 export interface Text extends Elem {
   _tag     : typeof TEXT;
@@ -51,35 +139,26 @@ export interface Component extends Elem {
   polymer  : Polymer.Polymer;
 }
 
-export interface Elem extends Inspectable.Inspectable,
-  Pipeable.Pipeable,
-  Equal.Equal,
-  Hash.Hash,
-  Traversable.Meta,
-  Traversable.Ancestor<Elem>,
-  Traversable.Descendent<Elem>
-{
-  _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
-  _env      : Envelope.Envelope;
-  key?      : string | undefined;
-  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
-  props?    : Props | undefined;
-  polymer?  : Polymer.Polymer;
-  text?     : any;
-  render?   : E.Effect<Jsx.Children> | undefined;
-  rendered? : Elem[] | undefined;
-}
+const TextProto: Text = Object.assign(Object.create(ElementPrototype), {
+    _tag: TEXT,
+  });
 
-export interface Props extends Inspectable.Inspectable,
-  Equal.Equal,
-  Hash.Hash,
-  Record<string, any>
-{
-  onclick?          : any | undefined;
-  onselect?         : any | undefined;
-  onsubmit?         : any | undefined;
-  readonly children?: Jsx.Children;
-}
+const FragmentProto: Fragment = Object.assign(Object.create(ElementPrototype), {
+    _tag: FRAGMENT,
+  });
+
+const IntrinsicProto: Intrinsic = Object.assign(Object.create(ElementPrototype), {
+    _tag: INTRINSIC,
+  });
+
+const ComponentProto: Component = Object.assign(Object.create(ElementPrototype), {
+    _tag: COMPONENT,
+  });
+
+export type Type = | Text
+                   | Fragment
+                   | Intrinsic
+                   | Component;
 
 export const isComponent = (self: Elem): self is Component =>
   self._tag === 'Component';
@@ -94,25 +173,50 @@ const stepId = (self: Elem) => `${step(self.ancestor!)}:${step(self)}`;
 const trieId = (self: Elem) => `${self.ancestor!.trie}:${step(self)}`;
 const keyId = (self: Elem) => self.key ?? self.trie;
 
-const fromJsxChild = (cur: Elem, c: Jsx.Child, index = 0): Elem => {
-  if (!c || typeof c !== 'object') {
-    const child = Core.makeTextElement(c);
-    child._env = cur._env;
-    child.ancestor = cur;
-    child.depth = cur.depth + 1;
-    child.index = index;
-    child.step = stepId(child);
-    child.trie = trieId(child);
-    return child;
+const makeText = (text: any): Text => {
+  const self = Object.create(TextProto) as Text;
+  self.text = text;
+  return self;
+};
+
+const make = (jsx?: Jsx.Child): Elem => {
+  if (!jsx || typeof jsx !== 'object') {
+    const self = Object.create(TextProto) as Text;
+    self.text = jsx;
+    return self;
   }
-  const child = Core.makeElement(Jsx.clone(c));
+  switch (typeof jsx.type) {
+    case 'string': {
+      const self = Object.create(IntrinsicProto) as Intrinsic;
+      self.key = jsx.key;
+      self.component = jsx.type as string;
+      self.props = makeRestProps(jsx.props);
+      return self;
+    }
+    case 'function': {
+      const self = Object.create(ComponentProto) as Component;
+      self.key = jsx.key;
+      self.component = jsx.type as Fn.JsxFC;
+      self.props = makeProps(jsx.props);
+      return self;
+    }
+  }
+  const self = Object.create(FragmentProto) as Fragment;
+  self.key = jsx.key;
+  self.component = Jsx.Fragment;
+  self.props = makeProps(jsx.props);
+  return self;
+};
+
+const fromJsxChild = (cur: Elem, c: Jsx.Child, index: number): Elem => {
+  const child = make(c);
   child._env = cur._env;
   child.ancestor = cur;
   child.depth = cur.depth + 1;
   child.index = index;
   child.trie = trieId(child);
   child.step = stepId(child);
-  child.children = fromJsxChildren(child, c.childs ?? c.childs);
+  child.children = fromJsxChildren(child, child.props?.children);
   return child;
 };
 
@@ -121,7 +225,7 @@ export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined
     return undefined;
   }
   if (!Array.isArray(cs)) {
-    return [fromJsxChild(cur, cs as Jsx.Child)];
+    return [fromJsxChild(cur, cs as Jsx.Child, 0)];
   }
   const children = [] as Elem[];
 
@@ -180,15 +284,6 @@ export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
     }
   }
   return Patch.skip();
-};
-
-export const initialize = (self: Component) => {
-  self.polymer = Polymer.make(self);
-  return renderGlobal(self).pipe();
-};
-
-export const invoke = (self: Elem) => {
-
 };
 
 export const update = (self: Elem, that: Elem): Elem => {

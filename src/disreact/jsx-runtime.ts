@@ -1,11 +1,11 @@
 import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import type {IntrinsicAttributesMap} from '#src/disreact/adaptor/codec/intrinsic/types.ts';
-import * as Markup from '#disreact/model/runtime/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 
-export const Fragment = Markup.Fragment,
-             jsx      = Markup.make,
-             jsxs     = Markup.makeMulti;
+export const Fragment = Jsx.Fragment,
+             jsx      = Jsx.make,
+             jsxs     = Jsx.makeMulti;
 
 export type JsxElementType =
   | keyof IntrinsicAttributesMap
@@ -28,17 +28,3 @@ export type JsxIntrinsicAttributes = {
 export type JsxIntrinsicClassAttributes = {};
 
 export interface JsxIntrinsicElements extends IntrinsicAttributesMap {}
-
-// export declare namespace JSX {
-//   export type ElementType<E, R> = | keyof IntrinsicElements
-//                                   | FC.FC<any, E, R>;
-//
-//   export type Element = | string
-//                         | Element.Element;
-//
-//   export interface ElementAttributesProperty extends JsxElementAttributesProperty {}
-//   export interface ElementChildrenAttribute extends JsxElementChildrenAttribute {}
-//   export interface IntrinsicAttributes extends JsxIntrinsicAttributes {}
-//   export interface IntrinsicClassAttributes extends JsxIntrinsicClassAttributes {}
-//   export interface IntrinsicElements extends JsxIntrinsicElements {}
-// }

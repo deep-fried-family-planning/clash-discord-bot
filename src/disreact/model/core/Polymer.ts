@@ -5,7 +5,7 @@ import type {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Elem from '#disreact/model/entity/Elem.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import type * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';

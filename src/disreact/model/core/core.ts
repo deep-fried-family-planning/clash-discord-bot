@@ -1,4 +1,4 @@
-import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Elem from '#disreact/model/entity/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import type * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
@@ -134,67 +134,5 @@ export const makeElement = (jsx: Jsx.Jsx): Elem.Elem => {
     }
   }
   self._tag = 'Fragment';
-  return self;
-};
-import type * as Envelope from '#disreact/model/Envelope.ts';
-const EnvelopeProto: Envelope.Envelope = {
-  data      : undefined as any,
-  hydrant   : undefined as any,
-  event     : undefined as any,
-  entrypoint: undefined as any,
-  root      : undefined as any,
-  roots     : undefined as any,
-  flags     : undefined as any,
-  final     : undefined as any,
-  stream    : undefined as any,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return Inspectable.format({
-      _id : 'Envelope',
-      data: this.data,
-    });
-  },
-} as Envelope.Envelope;
-
-const MonomerPrototype: Polymer.Monomer = {
-  _tag       : 0,
-  _state     : true,
-  _props     : true,
-  entrypoint : undefined,
-  displayName: '',
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return Inspectable.format({});
-  },
-} as Polymer.Monomer;
-
-export const makeMonomer = (): Polymer.Monomer => {
-  const self = Object.create(MonomerPrototype);
-  self;
-  return self;
-};
-
-const PolymerPrototype: Polymer.Polymer = {
-  origin: undefined,
-  pc    : 0,
-  rc    : 0,
-  stack : undefined as any,
-  queue : undefined as any,
-  flags : undefined as any,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return Inspectable.format({
-      _id  : 'Polymer',
-      stack: this.stack,
-    });
-  },
-} as Polymer.Polymer;
-
-export const makePolymer = (elem: Elem.Elem): Polymer.Polymer => {
-  const self = Object.create(PolymerPrototype) as Polymer.Polymer;
-  self.origin = elem;
-  self.stack = [];
-  self.queue = [];
-  self.flags = elem._env.flags;
   return self;
 };

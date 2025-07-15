@@ -1,12 +1,10 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
-import {PRODUCTION} from '#disreact/core/immutable/constants.ts';
-import type * as Node from '#disreact/core/Element.ts';
-import type * as Lifecycle from '#disreact/core/Lifecycle.ts';
+import type * as Elem from '#disreact/model/entity/Elem.ts';
 import * as E from 'effect/Effect';
 
 export type EncoderConfig = {
   primitive: string;
-  encoders : Record<string, (self: Node.Rest, args: any) => any>;
+  encoders : Record<string, (self: Elem.Intrinsic, args: any) => any>;
   normalize: Record<string, string>;
 };
 
@@ -22,7 +20,7 @@ export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
           encoders  = config?.encoders ?? JsxDefault.encoding as Record<string, (self: any, acc: any) => any>;
 
     return {
-      encodeText: (node: Node.Text, acc: Lifecycle.Encoding) => {
+      encodeText: (node: Elem.Text, acc: any) => {
         if (!node.text) {
           return acc;
         }
@@ -30,7 +28,7 @@ export class Encoder extends E.Service<Encoder>()('disreact/Encoder', {
         acc[primitive].push(node.text);
         return acc;
       },
-      encodeRest: (node: Node.Rest, acc: Lifecycle.Encoding, arg: Lifecycle.Encoding) => {
+      encodeRest: (node: Elem.Intrinsic, acc: any, arg: any) => {
         const key = normalize[node.component];
         const encoder = encoders[node.component];
 

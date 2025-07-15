@@ -1,4 +1,4 @@
-import {Encoder} from '#disreact/core/Encoder.ts';
+import {Encoder} from '#disreact/model/Encoder.ts';
 import {Rehydrator} from '#disreact/model/Rehydrator.ts';
 import * as E from 'effect/Effect';
 import * as Hydrant from '#disreact/core/Hydrant.ts';

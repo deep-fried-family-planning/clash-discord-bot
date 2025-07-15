@@ -62,6 +62,17 @@ export default defineConfig(({mode}) => ({
       {
         extends: true,
         test   : {
+          name              : 'scratch',
+          include           : ['./src/scratch/**/*.spec.ts', './src/scratch/**/*.spec.tsx'],
+          restoreMocks      : true,
+          unstubEnvs        : true,
+          unstubGlobals     : true,
+          expandSnapshotDiff: true,
+        },
+      },
+      {
+        extends: true,
+        test   : {
           name              : 'unit',
           include           : ['./test/unit/**/*.spec.ts', './test/unit/**/*.spec.tsx'],
           restoreMocks      : true,
@@ -74,9 +85,10 @@ export default defineConfig(({mode}) => ({
       {
         extends: true,
         test   : {
-          name       : 'fullstack',
-          include    : ['./test/fullstack/**/*.spec.ts', './test/fullstack/**/*.spec.tsx'],
-          testTimeout: 3000,
+          name              : 'fullstack',
+          include           : ['./test/fullstack/**/*.spec.ts', './test/fullstack/**/*.spec.tsx'],
+          testTimeout       : 3000,
+          expandSnapshotDiff: true,
         },
       },
     ],

@@ -1,10 +1,10 @@
 import type {IntrinsicAttributesMap} from '#disreact/adaptor/codec/intrinsic/types.ts';
-import * as Markup from '#disreact/model/runtime/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import type * as JsxRuntime from '#disreact/jsx-runtime.ts';
 import type {Effect} from 'effect/Effect';
 
-export const Fragment = Markup.Fragment,
-             jsxDEV   = Markup.makeDEV;
+export const Fragment = Jsx.Fragment,
+             jsxDEV   = Jsx.makeDEV;
 
 declare global {
   export namespace JSX {

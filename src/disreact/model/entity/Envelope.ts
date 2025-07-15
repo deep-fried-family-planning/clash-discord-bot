@@ -1,4 +1,4 @@
-import * as Elem from '#disreact/model/Elem.ts';
+import * as Elem from '#disreact/model/entity/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
@@ -8,15 +8,12 @@ import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
-
-export interface Event {
-
-}
+import type * as Event from '#disreact/model/entity/Event.ts';
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
   hydrant   : Polymer.Hydrant;
-  event     : Option.Option<any>;
+  event     : Option.Option<Event.Event>;
   entrypoint: Option.Option<Jsx.Entrypoint>;
   root      : Elem.Elem;
   roots     : Elem.Elem[];
@@ -51,12 +48,26 @@ const makeEffects = E.all([
   }),
 );
 
-export const fromFC = (fc: Fn.JsxFC, props: any, data: any) =>
+export const make = (
+
+) =>
+  makeEffects.pipe(
+    E.map((self) => {
+      self.hydrant = Polymer.hydrant('', {});
+      self.root = Elem.fromEntrypoint();
+    }),
+  );
+
+export const fromFC = (
+  fc: Fn.JsxFC,
+  props: any,
+  data: any,
+) =>
   makeEffects.pipe(
     E.map((self) => {
       self.data = data;
       self.hydrant = Polymer.hydrant('', {});
-      self.root = Elem.fromJsxEnv(Jsx.make(fc, props), self);
+      self.root = Elem.fromJsx(Jsx.make(fc, props), self);
       return self;
     }),
   );
