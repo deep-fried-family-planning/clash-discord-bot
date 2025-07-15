@@ -3,7 +3,7 @@ import type * as Element from '#disreact/core/Element.ts';
 import type * as FC from '#disreact/core/FC.ts';
 import {ANONYMOUS, ASYNC, ELEMENT_FRAGMENT, ELEMENT_FUNCTIONAL, ELEMENT_INTRINSIC, ELEMENT_LIST, ELEMENT_TEXT, type FCExecution, INTERNAL_ERROR} from '#disreact/core/immutable/constants.ts';
 import * as fc from '#disreact/core/internal/fn.ts';
-import type * as Jsx from '#disreact/model/Jsx.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import * as Traversal from '#disreact/core/Traversable.ts';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';

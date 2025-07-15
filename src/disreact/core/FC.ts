@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import {ASYNC, EFFECT, type FCExecution, SYNC} from '#disreact/core/immutable/constants.ts';
 import * as internal from '#disreact/core/internal/fn.ts';
-import type * as Jsx from '#disreact/model/Jsx.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import * as E from 'effect/Effect';
 import {dual} from 'effect/Function';
 import type * as Inspectable from 'effect/Inspectable';

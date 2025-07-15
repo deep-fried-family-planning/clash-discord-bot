@@ -1,5 +1,5 @@
 import type * as Polymer from '#disreact/model/core/Polymer.ts';
-import * as Jsx from '#disreact/model/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import {pipe} from 'effect/Function';
 
 export const generate = (

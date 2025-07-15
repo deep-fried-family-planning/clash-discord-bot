@@ -1,8 +1,8 @@
-import * as Elem from '#disreact/model/core/Elem.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
-import * as Jsx from '#disreact/model/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
@@ -10,6 +10,7 @@ import * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
+  in        : {};
   data      : A;
   hydrant   : Polymer.Hydrant;
   event     : Option.Option<any>;

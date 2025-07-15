@@ -9,7 +9,8 @@ import type * as Pipeable from 'effect/Pipeable';
 import type * as P from 'effect/Predicate';
 import type * as Traversal from '#disreact/core/Traversable.ts';
 
-export interface Stack<A = Node.Element> extends Pipeable.Pipeable, Inspectable.Inspectable
+export interface Stack<A = Node.Element> extends Inspectable.Inspectable,
+  Pipeable.Pipeable
 {
   root     : A;
   values   : A[];
@@ -18,10 +19,25 @@ export interface Stack<A = Node.Element> extends Pipeable.Pipeable, Inspectable.
   traversed: A[];
 }
 
-export const make = <A>(document: Document.Document, root?: A): Stack<A> =>
-  internal.make(document, root as any);
+const StackProto: Stack<any> = {
+  root     : undefined as any,
+  values   : undefined as any,
+  push     : undefined as any,
+  pop      : undefined as any,
+  traversed: undefined as any,
+} as Stack<any>;
 
-export const condition = <A>(self: Stack<A>) => internal.len(self) > 0;
+export const make = <A>(root: A): Stack<A> => {
+  const self = Object.create(StackProto);
+  self.root = root;
+  self.values = [root];
+  self.push = [];
+  self.pop = [];
+  self.traversed = [];
+  return self;
+};
+
+export const condition = <A>(self: Stack<A>) => self.values.length > 0;
 
 export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
 

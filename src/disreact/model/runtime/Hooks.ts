@@ -5,7 +5,7 @@ export const active = {
   polymer: undefined as undefined | Polymer.Polymer,
 };
 
-export const $useState = (initial: any) => {
+export const $useState = (self: Polymer.Polymer) => (initial: any) => {
   if (!active.polymer) {
     throw new Error('Invalid Hook');
   }

@@ -1,6 +1,6 @@
 import * as elem from '#disreact/core/internal/element.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import * as Internal from '#disreact/model/core/internal.ts';
+import * as Internal from '#disreact/model/runtime/internal.ts';
 import {globalValue} from 'effect/GlobalValue';
 
 export interface Setup extends Record<string, any> {
@@ -15,14 +15,14 @@ export type Child =
 
 export type Children =
   | Child
-  | Child[];
+  | readonly Child[];
 
 export type Type =
   | string
   | typeof Fragment
   | Fn.JsxFC;
 
-export const Fragment = elem.FragmentSymbol;
+export const Fragment = Symbol.for('disreact/Fragment');
 
 export interface Jsx<T extends Type = Type> {
   ref?   : any | undefined;
@@ -74,7 +74,7 @@ export const makeEntrypoint = (id: string, type: Fn.JsxFC | Jsx): Entrypoint => 
     throw new Error(`Duplicate entrypoint: ${id}`);
   }
   if (typeof type === 'function') {
-    const fc = Internal.makeFunctionComponent(type);
+    const fc = Internal.makeFC(type);
     fc.entrypoint = id;
 
     return entries

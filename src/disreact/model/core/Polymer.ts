@@ -1,75 +1,86 @@
 import type * as Document from '#disreact/core/Document.ts';
 import type * as Node from '#disreact/core/Element.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
-import {MONOMER_STATE, type MonomerTag} from '#disreact/core/immutable/constants.ts';
+import type {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
-import type * as Jsx from '#disreact/model/Jsx.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
-import type * as E from 'effect/Effect';
-import type * as Inspectable from 'effect/Inspectable';
-import type * as Pipeable from 'effect/Pipeable';
 import type * as Fn from '#disreact/model/core/Fn.ts';
+import type * as Elem from '#disreact/model/Elem.ts';
+import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import type {Types} from 'effect';
+import type * as E from 'effect/Effect';
+import * as Inspectable from 'effect/Inspectable';
+import type * as Pipeable from 'effect/Pipeable';
+
+export const NONE     = 1,
+             REDUCER  = 2,
+             EFFECTOR = 3,
+             REF      = 3,
+             MEMO     = 4,
+             CONTEXT  = 5;
 
 export type Monomer =
   | None
-  | Stateful
   | Reducer
   | Effectful
   | Reference
   | Memoize
   | Contextual;
 
-export interface BaseMonomer extends Inspectable.Inspectable {
-  _tag    : MonomerTag;
-  hydrate?: boolean;
-  changed?: boolean;
-  state?  : any;
-  deps?   : any[] | undefined;
-  fn?     : EffectFn;
-  fx?     : Effect;
-  current?: any;
-  value?  : any;
-}
+const MonomerProto: Monomer = {
+  _tag   : undefined as any,
+  hydrate: false,
+  ...Inspectable.BaseProto,
+  toJSON(this: any) {
+    return Inspectable.format({
+      _id     : 'Monomer',
+      _tag    : this._tag,
+      hydrate : this.hydrate,
+      changed : this.changed,
+      state   : this.state,
+      dispatch: this.dispatch,
+      deps    : this.deps,
+      current : this.current,
+    });
+  },
+} as Monomer;
 
 export interface None extends Inspectable.Inspectable {
-  _tag: typeof MONOMER_NONE;
-}
-
-export interface Stateful extends Inspectable.Inspectable {
-  _tag   : typeof MONOMER_STATE;
-  changed: boolean;
-  state  : any;
-  updater(next: any): void;
+  _tag   : typeof NONE;
+  hydrate: boolean;
 }
 
 export interface Reducer extends Inspectable.Inspectable {
-  _tag   : typeof MONOMER_REDUCER;
-  changed: boolean;
-  state  : any;
-  reducer(state: any, action: any): any;
+  _tag    : typeof REDUCER;
+  hydrate : boolean;
+  changed : boolean;
+  state   : any;
+  dispatch: (action: any) => void;
 }
 
 export interface Effectful extends Inspectable.Inspectable {
-  _tag    : typeof MONOMER_EFFECT;
+  _tag    : typeof EFFECTOR;
+  hydrate : boolean;
+  dispatch: Fn.Effector;
   deps    : any[] | undefined;
-  effector: Fn.Effector;
-  fn?(): EffectOutput;
-  fx?     : Effect;
 }
 
 export interface Reference extends Inspectable.Inspectable {
-  _tag   : typeof MONOMER_REF;
+  _tag   : typeof REF;
+  hydrate: boolean;
   current: any;
 }
 
 export interface Memoize extends Inspectable.Inspectable {
-  _tag : typeof MONOMER_MEMO;
-  value: any;
-  deps : any[] | undefined;
+  _tag   : typeof MEMO;
+  hydrate: boolean;
+  state  : any;
+  deps   : any[] | undefined;
 }
 
 export interface Contextual extends Inspectable.Inspectable {
-  _tag: typeof MONOMER_CONTEXTUAL;
+  _tag   : typeof CONTEXT;
+  hydrate: boolean;
 }
 
 export type Encoded =
@@ -84,46 +95,64 @@ export type Encoded =
   | [typeof MONOMER_MEMO, any[]]
   | [typeof MONOMER_CONTEXTUAL];
 
-
-
-export type EffectOutput = | void
-                           | Promise<void>
-                           | E.Effect<void>;
-
-export interface EffectFn {
-  (): EffectOutput;
-}
-
-export type Effect = | EffectFn
-                     | E.Effect<void>;
-import type * as Elem from '#disreact/model/core/Elem.ts';
 export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Elem.Elem>
+  Traversable.Origin<Elem.Component>
 {
   pc   : number;
   rc   : number;
   stack: Monomer[];
   queue: Effectful[];
-  src? : Jsx.DevSrc;
-  ctx? : Jsx.DevCtx;
   flags: Set<any>;
 }
-import * as Internal from '#disreact/model/core/internal.ts';
-export const empty = (node: Node.Func, document: Document.Document): Polymer => poly.empty(node, document);
 
-export const isStateless = poly.isStateless;
+const PolymerProto: Polymer = {
+  pc   : 0,
+  rc   : 0,
+  stack: undefined as any,
+  queue: undefined as any,
+  flags: undefined as any,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Polymer',
+      pc   : this.pc,
+      rc   : this.rc,
+      stack: this.stack,
+      queue: this.queue,
+    });
+  },
+} as Polymer;
 
-export const hasEffects = poly.hasEffects;
+export const make = (origin: Elem.Component): Polymer => {
+  const self = Object.create(PolymerProto) as Polymer;
+  self.origin = origin;
+  self.stack = [];
+  self.queue = [];
+  self.flags = origin._env.flags;
+  return self;
+};
+
+export const isStateless = (self: Polymer) => self.stack.length === 0;
 
 export const isChanged = (self: Polymer) => {
   for (let i = 0; i < self.stack.length; i++) {
-    if (poly.isChanged(self.stack[i])) {
-      return true;
+    const monomer = self.stack[i];
+
+    if (monomer._tag === REDUCER) {
+      if (monomer.changed) {
+        return true;
+      }
     }
   }
   return false;
 };
+
+export const isQueueEmpty = (self: Polymer) => self.queue.length === 0;
+
+export const enqueue = (self: Polymer, monomer: Effectful) => self.queue.push(monomer);
+
+export const dequeue = (self: Polymer) => self.queue.shift();
 
 export const hydrate = (node: Node.Func, document: Document.Document, stack?: Encoded[]): Polymer => {
   const self = empty(node, document);
@@ -137,9 +166,15 @@ export const hydrate = (node: Node.Func, document: Document.Document, stack?: En
 };
 
 export const commit = (self: Polymer): Polymer => {
+  if (!self.stack.length) {
+    self.origin!.component._state = false;
+    return self;
+  }
   for (let i = 0; i < self.stack.length; i++) {
-    if (self.stack[i]._tag === MONOMER_STATE) {
-      self.stack[i].changed = false;
+    const monomer = self.stack[i];
+
+    if (monomer._tag === REDUCER) {
+      monomer.changed = false;
     }
   }
   return self;
@@ -158,15 +193,15 @@ export const dehydrate = (self: Polymer): Encoded[] => {
 
 export const dispose = (self: Polymer) => {
   if (self.queue.length) {
-    throw new Error();
+    throw new Error('ope');
   }
   self.origin = undefined;
-  self.ancestor = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
+  (self.flags as any) = undefined;
 };
 
-export const dequeue = poly.dequeue;
+
 
 export interface Hydrant extends Inspectable.Inspectable {
   id   : string;
@@ -174,12 +209,26 @@ export interface Hydrant extends Inspectable.Inspectable {
   state: Record<string, Encoded[]>;
 }
 
+const HydrantProto: Hydrant = {
+  id   : '',
+  props: undefined as any,
+  state: undefined as any,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id  : 'Hydrant',
+      id   : this.id,
+      props: this.props,
+      state: this.state,
+    });
+  },
+};
+
 export const hydrant = (id: string, props: any) => {
-  return {
-    id   : id,
-    props: structuredClone(props),
-    state: {},
-  };
+  const self = Object.create(HydrantProto) as Hydrant;
+  self.id   = id;
+  self.props = props;
+  return self;
 };
 
 export const fromHydrant = (hydrant: Hydrant, id: string): Polymer => {

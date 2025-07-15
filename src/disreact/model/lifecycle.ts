@@ -1,64 +1,60 @@
-import * as Fn from '#disreact/model/core/Fn.ts';
-import * as Elem from '#disreact/model/core/Elem.ts';
-import * as Hooks from '#disreact/model/Hooks.ts';
+import * as Polymer from '#disreact/model/core/Polymer.ts';
+import * as Stack from '#disreact/model/core/Stack.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import * as E from 'effect/Effect';
+import * as Either from 'effect/Either';
 
-const mutex = E.unsafeMakeSemaphore(1);
-const acquire = mutex.take(1);
-const release = mutex.release(1);
+const mutex = E.unsafeMakeSemaphore(1),
+      lock  = mutex.take(1),
+      unlock = mutex.release(1);
 
-export const initialize = (self: Elem.Elem) => {
-  const stack = [self._env.root];
+const elementInitialize = (elem: Elem.Elem) => {
 
-  return E.whileLoop({
-    while: () => !!stack.length,
-    step : () => {},
-    body : () => {
-      const cur = stack.pop()!;
+};
 
-      if (!cur.component) {
-        return E.void;
-      }
-      if (typeof cur.component !== 'function') {
-        if (cur.children) {
-          for (const child of cur.children.toReversed()) {
-            stack.push(child);
-          }
-        }
-        return E.void;
-      }
-      return acquire.pipe(
-        E.tap(() => {
-          Hooks.active.polymer = cur.polymer;
-          return E.void;
-        }),
-        E.andThen(Fn.normalizeFC(cur.component, cur.props)),
-        E.tap(() => {
-          Hooks.active.polymer = undefined;
-          return release;
-        }),
-        E.tapDefect(() => release),
-        E.map((children) => {
-          cur.children = Elem.fromJsxChildren(cur, children);
+const elementHydrate = (elem: Elem.Elem) => {
 
-          if (cur.children) {
-            for (const child of cur.children.toReversed()) {
-              stack.push(child);
-            }
-          }
-        }),
+};
+
+const elementRerender = (elem: Elem.Elem) => {
+
+};
+
+const stackInitialize = (stack: Stack.Stack<Elem.Elem>) =>
+  stack.pipe(
+    Stack.pop,
+    Elem.toEither,
+    Either.map((elem) => {
+      elem.polymer = Polymer.make(elem);
+
+      return elem.pipe(
+        Elem.renderGlobal,
+        E.tap(Elem.flush),
+        E.map(Elem.acceptRender),
+        E.map(Stack.pushAllInto(stack)),
       );
-    },
-  });
-};
+    }),
+    Either.mapLeft((elem) =>
+      E.succeed(Stack.pushAll(stack, elem.children)),
+    ),
+    Either.merge,
+  );
 
-export const hydrate = (self: Elem.Elem) => {
-  const stack = [self._env.root];
+const stackHydrate = (stack: Stack.Stack<Elem.Elem>) =>
+  stack.pipe(
+    Stack.pop,
+    Elem.toEither,
+    Either.map((elem) => {
+      elem.polymer = Polymer.make(elem);
 
-  return E.whileLoop({
-    while: () => !!stack.length,
-    body : () => {
-      const cur = stack.pop()!;
-    },
-  });
-};
+      return elem.pipe(
+        Elem.renderGlobal,
+        E.map(Elem.acceptRender),
+        E.map(Stack.pushAllInto(stack)),
+      );
+    }),
+    Either.mapLeft((elem) =>
+      E.succeed(Stack.pushAll(stack, elem.children)),
+    ),
+    Either.merge,
+  );
