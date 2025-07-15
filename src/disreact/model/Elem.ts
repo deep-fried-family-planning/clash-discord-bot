@@ -1,13 +1,13 @@
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import * as Core from '#disreact/model/core/core.ts';
-import * as Fn from '#disreact/model/core/Fn.ts';
+import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Envelope from '#disreact/model/Envelope.ts';
 import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.ts';
 import * as Differ from 'effect/Differ';
-import * as E from 'effect/Effect';
+import type * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {globalValue} from 'effect/GlobalValue';
@@ -116,7 +116,7 @@ const fromJsxChild = (cur: Elem, c: Jsx.Child, index = 0): Elem => {
   return child;
 };
 
-const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined => {
+export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined => {
   if (!cs) {
     return undefined;
   }
@@ -180,74 +180,6 @@ export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {
     }
   }
   return Patch.skip();
-};
-
-const GlobalMutex = globalValue(Symbol.for('disreact/GlobalMutex'), () => E.unsafeMakeSemaphore(1));
-const GlobalAcquire = GlobalMutex.take(1);
-const GlobalRelease = GlobalMutex.release(1);
-
-export const renderGlobal = (self: Elem) => {
-  const elem = self as Component;
-  const component = elem.component;
-  const polymer = elem.polymer;
-
-  if (!component._state) {
-    return Fn.normalizePropsFC(component, self.props).pipe(
-      E.map((children) => {
-        Polymer.commit(polymer);
-
-        if (Polymer.isStateless(polymer!)) {
-          component._state = false;
-        }
-        self.rendered = fromJsxChildren(self, children);
-        return self;
-      }),
-    );
-  }
-
-  return GlobalAcquire.pipe(
-    E.flatMap(() => {
-      Hooks.active.polymer = polymer;
-      return Fn.normalizePropsFC(component, self.props);
-    }),
-    E.tap(() => {
-      Hooks.active.polymer = undefined;
-      return GlobalRelease;
-    }),
-    E.map((children) => {
-      Polymer.commit(polymer);
-
-      if (Polymer.isStateless(polymer!)) {
-        component._state = false;
-      }
-      self.rendered = fromJsxChildren(self, children);
-      return self;
-    }),
-    E.tapDefect(() => GlobalRelease),
-  );
-};
-
-export const renderLocal = (self: Elem) =>
-  renderGlobal(self);
-
-export const acceptRender = (self: Elem) => {
-  self.children = self.rendered;
-  self.rendered = undefined;
-  return self.children;
-};
-
-export const flush = (self: Elem) => {
-  const polymer = self.polymer!;
-
-  return E.whileLoop({
-    while: () => polymer.queue.length > 0,
-    step : () => {},
-    body : () => {
-      const fx = polymer.queue.shift()!;
-
-      return Fn.normalizeEffector(fx.effector);
-    },
-  });
 };
 
 export const initialize = (self: Component) => {

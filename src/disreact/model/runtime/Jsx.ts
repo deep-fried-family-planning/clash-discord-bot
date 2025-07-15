@@ -62,6 +62,29 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
+export interface Hydrant {
+  id   : string;
+  props: Record<string, any>;
+  state: Record<string, any>;
+}
+
+export const hydrant = (id: string, props: any) =>
+  ({
+    id,
+    props,
+    state: {},
+  });
+
+export interface Encoded<A = any> {
+  hydrant: Hydrant;
+  type   : string;
+  data   : A;
+}
+
+export interface Event {
+  id: string;
+}
+
 export interface Entrypoint {
   id       : string;
   component: Jsx;

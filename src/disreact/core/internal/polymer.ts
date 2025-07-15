@@ -47,11 +47,11 @@ export const pull = (self: Polymer.Polymer): Polymer.Monomer | undefined => {
 
 export const hasEffects = (self: Polymer.Polymer) => self.queue.length > 0;
 
-export const enqueue = (self: Polymer.Polymer, monomer: Polymer.Effectful) => {
+export const enqueue = (self: Polymer.Polymer, monomer: Polymer.Effect) => {
   self.queue.push(monomer);
 };
 
-export const dequeue = (self: Polymer.Polymer): Polymer.Effectful => {
+export const dequeue = (self: Polymer.Polymer): Polymer.Effect => {
   return self.queue.shift()!;
 };
 
@@ -87,12 +87,12 @@ export const reducer = (hydrate: boolean, state: any): Polymer.Reducer =>
     state  : state,
   }) as Polymer.Reducer;
 
-export const effectful = (hydrate: boolean, deps?: any[] | undefined): Polymer.Effectful =>
+export const effectful = (hydrate: boolean, deps?: any[] | undefined): Polymer.Effect =>
   proto.init(MonomerPrototype, {
     _tag   : MONOMER_EFFECT,
     hydrate: hydrate,
     deps,
-  }) as Polymer.Effectful;
+  }) as Polymer.Effect;
 
 export const reference = (hydrate: boolean, current?: any): Polymer.Reference =>
   proto.init(MonomerPrototype, {
@@ -101,12 +101,12 @@ export const reference = (hydrate: boolean, current?: any): Polymer.Reference =>
     current: current,
   }) as Polymer.Reference;
 
-export const memoize = (hydrate: boolean, deps?: any[] | undefined): Polymer.Memoize =>
+export const memoize = (hydrate: boolean, deps?: any[] | undefined): Polymer.Memo =>
   proto.init(MonomerPrototype, {
     _tag   : MONOMER_MEMO,
     hydrate: hydrate,
     deps   : deps,
-  }) as Polymer.Memoize;
+  }) as Polymer.Memo;
 
 export const contextual = (hydrate: boolean): Polymer.Contextual =>
   proto.init(MonomerPrototype, {

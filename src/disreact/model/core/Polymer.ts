@@ -7,7 +7,6 @@ import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import type * as Elem from '#disreact/model/Elem.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.ts';
-import type {Types} from 'effect';
 import type * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';
@@ -22,9 +21,9 @@ export const NONE     = 1,
 export type Monomer =
   | None
   | Reducer
-  | Effectful
+  | Effect
   | Reference
-  | Memoize
+  | Memo
   | Contextual;
 
 const MonomerProto: Monomer = {
@@ -50,6 +49,13 @@ export interface None extends Inspectable.Inspectable {
   hydrate: boolean;
 }
 
+export const NoneProto: None = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: NONE,
+  },
+);
+
 export interface Reducer extends Inspectable.Inspectable {
   _tag    : typeof REDUCER;
   hydrate : boolean;
@@ -58,12 +64,26 @@ export interface Reducer extends Inspectable.Inspectable {
   dispatch: (action: any) => void;
 }
 
-export interface Effectful extends Inspectable.Inspectable {
+export const ReducerProto: None = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: REDUCER,
+  },
+);
+
+export interface Effect extends Inspectable.Inspectable {
   _tag    : typeof EFFECTOR;
   hydrate : boolean;
   dispatch: Fn.Effector;
   deps    : any[] | undefined;
 }
+
+export const EffectProto: Effect = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: EFFECTOR,
+  },
+);
 
 export interface Reference extends Inspectable.Inspectable {
   _tag   : typeof REF;
@@ -71,17 +91,38 @@ export interface Reference extends Inspectable.Inspectable {
   current: any;
 }
 
-export interface Memoize extends Inspectable.Inspectable {
+export const ReferenceProto: Reference = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: REF,
+  },
+);
+
+export interface Memo extends Inspectable.Inspectable {
   _tag   : typeof MEMO;
   hydrate: boolean;
   state  : any;
   deps   : any[] | undefined;
 }
 
+export const MemoProto: Memo = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: MEMO,
+  },
+);
+
 export interface Contextual extends Inspectable.Inspectable {
   _tag   : typeof CONTEXT;
   hydrate: boolean;
 }
+
+export const ContextProto: Contextual = Object.assign(
+  Object.create(MonomerProto),
+  {
+    _tag: CONTEXT,
+  },
+);
 
 export type Encoded =
   | typeof MONOMER_NONE
@@ -102,7 +143,7 @@ export interface Polymer extends Inspectable.Inspectable,
   pc   : number;
   rc   : number;
   stack: Monomer[];
-  queue: Effectful[];
+  queue: Effect[];
   flags: Set<any>;
 }
 
@@ -148,11 +189,11 @@ export const isChanged = (self: Polymer) => {
   return false;
 };
 
-export const isQueueEmpty = (self: Polymer) => self.queue.length === 0;
+export const isQueued = (self: Polymer) => self.queue.length === 0;
 
-export const enqueue = (self: Polymer, monomer: Effectful) => self.queue.push(monomer);
+export const enqueue = (self: Polymer, monomer: Effect) => self.queue.push(monomer);
 
-export const dequeue = (self: Polymer) => self.queue.shift();
+export const dequeue = (self: Polymer) => self.queue.shift()?.dispatch;
 
 export const hydrate = (node: Node.Func, document: Document.Document, stack?: Encoded[]): Polymer => {
   const self = empty(node, document);
@@ -224,10 +265,11 @@ const HydrantProto: Hydrant = {
   },
 };
 
-export const hydrant = (id: string, props: any) => {
+export const hydrant = (id: string, props: any, state?: any) => {
   const self = Object.create(HydrantProto) as Hydrant;
   self.id   = id;
   self.props = props;
+  self.state = state ?? {};
   return self;
 };
 

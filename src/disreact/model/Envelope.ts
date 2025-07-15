@@ -9,8 +9,11 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
 
+export interface Event {
+
+}
+
 export interface Envelope<A = any> extends Inspectable.Inspectable {
-  in        : {};
   data      : A;
   hydrant   : Polymer.Hydrant;
   event     : Option.Option<any>;

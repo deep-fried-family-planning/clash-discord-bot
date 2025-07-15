@@ -12,6 +12,8 @@ export const synthesize = () => {};
 
 export const simulate = (
   hydrant: Polymer.Hydrant,
+  event: Jsx.Event,
+
 ) => {
   const entrypoint = Jsx.findEntrypoint(hydrant.id);
 

@@ -39,34 +39,27 @@ export const make = <A>(root: A): Stack<A> => {
 
 export const condition = <A>(self: Stack<A>) => self.values.length > 0;
 
-export const pop = <A>(self: Stack<A>): A => internal.pop(self)!;
-
-export const popUntil = <A, B extends A>(self: Stack<A>, f: P.Refinement<A, B> | P.Predicate<A>): Option.Option<B[]> => {
-  while (condition(self)) {
-    if (!f(internal.peek(self))) {
-      break;
-    }
-    internal.pop(self);
-  }
-  return internal.popped(self) as any;
-};
+export const pop = <A>(self: Stack<A>): A => self.values.pop()!;
 
 export const push = dual<
   <A>(a: A) => (self: Stack<A>) => Stack<A>,
   <A>(self: Stack<A>, a: A) => Stack<A>
->(2, (self, a) => internal.push(self, a));
+>(2, (self, a) => {
+  self.values.push(a);
+  return self;
+});
 
 export const pushAll = dual<
-  <A>(as: Iterable<A> | undefined) => (self: Stack<A>) => Stack<A>,
-  <A>(self: Stack<A>, as: Iterable<A> | undefined) => Stack<A>
+  <A>(as: A[] | undefined) => (self: Stack<A>) => Stack<A>,
+  <A>(self: Stack<A>, as: A[] | undefined) => Stack<A>
 >(2, (self, as) => {
   if (!as) {
     return self;
   }
-  return Iterable.reduce(as, self, (z, a) => push(z, a));
+  return Iterable.reduce(as.toReversed(), self, (z, a) => push(z, a));
 });
 
 export const pushAllInto = dual<
-  <A>(s: Stack<A>) => (as: Iterable<A> | undefined) => Stack<A>,
-  <A>(as: Iterable<A> | undefined, s: Stack<A>) => Stack<A>
+  <A>(s: Stack<A>) => (as: A[] | undefined) => Stack<A>,
+  <A>(as: A[] | undefined, s: Stack<A>) => Stack<A>
 >(2, (as, self) => pushAll(self, as));
