@@ -84,3 +84,7 @@ export const done = (): Done => {
   const self = Object.create(DoneProto) as Done;
   return self;
 };
+
+export const isClose = (change: Change) => change.next === null;
+
+export const isOpen = (change: Change) => change.next !== change.entrypoint;

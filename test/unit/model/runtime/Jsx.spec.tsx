@@ -1,18 +1,81 @@
-// import * as Jsx from '#disreact/model/runtime/Jsx.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 
-it('when transpiling fragment', () => {
-  const jsx = <></>;
+const json = (actual: any) => JSON.stringify(actual, null, 2);
 
-  expect(jsx).toMatchInlineSnapshot();
+it('when transpiling fragment shorthand', () => {
+  const jsx = (
+    <>
+      {'jsx'}
+    </>
+  );
+
+  expect(json(jsx)).toMatchInlineSnapshot(`
+    "{
+      "_id": "Jsx",
+      "type": "Fragment",
+      "props": {},
+      "children": "jsx"
+    }"
+  `);
+});
+
+it('when transpiling fragment', () => {
+  const jsx = (
+    <Jsx.Fragment key={'key'}>
+      {'jsx'}
+    </Jsx.Fragment>
+  );
+
+  expect(json(jsx)).toMatchInlineSnapshot(`
+    "{
+      "_id": "Jsx",
+      "key": "key",
+      "type": "Fragment",
+      "props": {},
+      "children": "jsx"
+    }"
+  `);
 });
 
 it('when transpiling intrinsic', () => {
+  const jsx = (
+    <button>
+      {'text'}
+    </button>
+  );
 
+  expect(json(jsx)).toMatchInlineSnapshot(`
+    "{
+      "_id": "Jsx",
+      "type": "button",
+      "props": {},
+      "children": "text"
+    }"
+  `);
 });
 
 it('when transpiling function component', () => {
+  const FC = () =>
+    (
+      <button>
+        {'text'}
+      </button>
+    );
 
+  const jsx = <FC/>;
+
+  expect(json(jsx)).toMatchInlineSnapshot(`
+    "{
+      "_id": "Jsx",
+      "type": {
+        "_id": "FunctionComponent",
+        "props": false,
+        "state": true
+      },
+      "props": {}
+    }"
+  `);
 });
 
 describe('given fragment with nested intrinsics', () => {
@@ -39,16 +102,19 @@ describe('given TestDialog', () => {
   it('when transpiled', () => {
     expect(<TestDialog/>).toMatchInlineSnapshot(`
       {
-        "child": undefined,
-        "ctx": {
-          "columnNumber": 12,
-          "fileName": "/Users/ryan/repos/deep-fried-family-planning/clash-discord-bot/test/unit/model/runtime/Jsx.spec.tsx",
-          "lineNumber": 6,
-        },
+        "_id": "Jsx",
+        "children": undefined,
         "key": undefined,
         "props": {},
-        "src": false,
-        "type": [Function],
+        "type": {
+          "_id": "FunctionComponent",
+          "_tag": undefined,
+          "displayName": undefined,
+          "entrypoint": undefined,
+          "name": undefined,
+          "props": false,
+          "state": true,
+        },
       }
     `);
   });

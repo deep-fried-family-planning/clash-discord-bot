@@ -1,9 +1,9 @@
-import {props} from '#disreact/adaptor/adaptor/element.ts';
-import * as Core from '#disreact/model/core/core.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
+import * as Internal from '#disreact/model/runtime/internal.ts';
 
 export type Fn = never;
 
@@ -19,6 +19,7 @@ export interface JsxFC<K extends FCKind = FCKind> extends Inspectable.Inspectabl
   _props      : boolean;
   entrypoint? : string | undefined;
   displayName?: string;
+  source      : string;
 
   <P = any, E = never, R = never>(props?: P):
     K extends 'Sync' ? Jsx.Children :
@@ -47,7 +48,7 @@ export const normalizeZeroFC = (fc: JsxFC): E.Effect<Jsx.Children> => {
     }
   }
   return E.suspend(() => {
-    const output = fc(props);
+    const output = fc();
 
     if (P.isPromise(output)) {
       fc._tag = 'Async';
@@ -90,6 +91,8 @@ export const normalizePropsFC = (fc: JsxFC, props: any): E.Effect<Jsx.Children> 
   });
 };
 
+ const asyncFnConstructor = (async () => {}).constructor;
+
 export type Effector<E = never, R = never> =
   | EffectFn
   | E.Effect<void, E, R>;
@@ -105,7 +108,7 @@ export const normalizeEffector = (effector: Effector): E.Effect<void> => {
   if (typeof effector === 'object') {
     return effector;
   }
-  if (effector.constructor === Core.asyncFnConstructor) {
+  if (effector.constructor === ASYNC_CONSTRUCTOR) {
     return E.promise(() => effector() as Promise<void>);
   }
   return E.suspend(() => {
@@ -129,7 +132,7 @@ export interface EventFn {
 }
 
 export const normalizeEventFn = (fn: EventFn, event: any): E.Effect<void> => {
-  if (fn.constructor === Core.asyncFnConstructor) {
+  if (fn.constructor === ASYNC_CONSTRUCTOR) {
     return E.promise(() => fn(event) as Promise<void>);
   }
   return E.suspend(() => {

@@ -1,4 +1,4 @@
-import * as Elem from '#disreact/model/entity/Elem.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import type * as Progress from '#disreact/model/core/Progress.ts';
@@ -8,15 +8,13 @@ import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import * as Option from 'effect/Option';
-import type * as Event from '#disreact/model/entity/Event.ts';
+import type * as Event from '#disreact/model/Event.ts';
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
   hydrant   : Polymer.Hydrant;
-  event     : Option.Option<Event.Event>;
-  entrypoint: Option.Option<Jsx.Entrypoint>;
+  entrypoint: string | typeof Jsx.Fragment;
   root      : Elem.Elem;
-  roots     : Elem.Elem[];
   flags     : Set<Elem.Elem>;
   final     : Deferred.Deferred<Progress.Checkpoint>;
   stream    : Mailbox.Mailbox<Progress.Progress>;
@@ -25,14 +23,21 @@ export interface Envelope<A = any> extends Inspectable.Inspectable {
 const Proto: Envelope = {
   data      : undefined as any,
   hydrant   : undefined as any,
-  event     : Option.none(),
-  entrypoint: Option.none(),
+  entrypoint: Jsx.Fragment,
   root      : undefined as any,
-  roots     : undefined as any,
   stream    : undefined as any,
   final     : undefined as any,
   flags     : undefined as any,
   ...Inspectable.BaseProto,
+  toJSON() {
+    return Inspectable.format({
+      _id       : 'Envelope',
+      entrypoint: this.entrypoint,
+      hydrant   : this.hydrant,
+      root      : this.root,
+      data      : this.data,
+    });
+  },
 };
 
 const makeEffects = E.all([
@@ -48,16 +53,6 @@ const makeEffects = E.all([
   }),
 );
 
-export const make = (
-
-) =>
-  makeEffects.pipe(
-    E.map((self) => {
-      self.hydrant = Polymer.hydrant('', {});
-      self.root = Elem.fromEntrypoint();
-    }),
-  );
-
 export const fromFC = (
   fc: Fn.JsxFC,
   props: any,
@@ -65,9 +60,26 @@ export const fromFC = (
 ) =>
   makeEffects.pipe(
     E.map((self) => {
+      const jsx = Jsx.make(fc, props);
+
+      self.entrypoint = fc.entrypoint ?? Jsx.Fragment;
       self.data = data;
-      self.hydrant = Polymer.hydrant('', {});
-      self.root = Elem.fromJsx(Jsx.make(fc, props), self);
+      self.hydrant = Polymer.hydrant('', props);
+      self.root = Elem.fromJsx(jsx, self);
+      return self;
+    }),
+  );
+
+export const fromJsx = (
+  jsx: Jsx.Jsx,
+  data: any,
+) =>
+  makeEffects.pipe(
+    E.map((self) => {
+      self.entrypoint = jsx.entrypoint ?? Jsx.Fragment;
+      self.data = data;
+      self.hydrant = Polymer.hydrant('');
+      self.root = Elem.fromJsx(jsx, self);
       return self;
     }),
   );

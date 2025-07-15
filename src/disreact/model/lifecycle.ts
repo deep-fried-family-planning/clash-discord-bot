@@ -2,7 +2,7 @@ import {FUNCTIONAL, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constan
 import * as Fn from '#disreact/model/core/Fn.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
-import * as Elem from '#disreact/model/entity/Elem.ts';
+import * as Elem from '#disreact/model/Elem.ts';
 import {Encoder} from '#disreact/model/Encoder.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/runtime/Hooks.ts';
@@ -13,7 +13,15 @@ import * as Either from 'effect/Either';
 import * as MutableList from 'effect/MutableList';
 import type {Element} from 'effect/Schema';
 
-export class EffectError extends Data.TaggedError('EffectError')<{}> {}
+export class RenderError extends Data.TaggedError('RenderError')<{}> {}
+
+export class FlushError extends Data.TaggedError('EffectError')<{}> {}
+
+export class InvokeError extends Data.TaggedError('InvokeError')<{}> {}
+
+export class HydrateError extends Data.TaggedError('HydrateError')<{}> {}
+
+export class DehydrateError extends Data.TaggedError('EncodeError')<{}> {}
 
 const flushComponent = (self: Elem.Component) =>
   E.iterate(self, {
@@ -77,6 +85,17 @@ export const initialize = (root: Elem.Elem) =>
     while: Stack.condition,
     body : initializeFromStack,
   });
+
+export const hydrateEntrypoint = (
+  type: Jsx.Entrypoint | Fn.JsxFC | Jsx.Jsx | string,
+  ) => {
+  const id = typeof type === 'string' ? type :
+             typeof type === 'function' ? type.entrypoint :
+             type.entrypoint ??
+  if (typeof type === 'string') {
+    return E.succeed(Jsx);
+  }
+};
 
 const hydrateComponent = (elem: Elem.Component) =>
   acquire.pipe(
@@ -183,7 +202,7 @@ export const encode = (root: Elem.Elem) => Encoder.use(({encodeText, encodeRest}
   }
   return null;
 });
-
-export const invoke = (root: Elem.Elem, event: Jsx.Event) => {
+import type * as Event from '#disreact/model/Event.ts';
+export const invokeIntrinsicElement = (elem: Elem.Elem, event: Event.Event) => {
 
 };

@@ -1,5 +1,10 @@
+import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
+import * as Progress from '#disreact/model/core/Progress.ts';
+import * as E from 'effect/Effect';
+import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
+import * as P from 'effect/Predicate';
 
 export interface Event<T = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable
@@ -60,3 +65,36 @@ export const make = (input: EventInput): EventInternal => {
   self.target = input.target;
   return self;
 };
+
+export const toProgress = (event: EventInternal): Progress.Change =>
+  Progress.change(
+    event._state.origin,
+    event._state.entrypoint,
+  );
+
+export interface Handler<T = any> {
+  <E = never, R = never>(event: Event<T>):
+    | void
+    | Promise<void>
+    | E.Effect<void, E, R>;
+}
+
+export const invokeWith = dual<
+  (handler: Handler) => (self: EventInternal) => E.Effect<EventInternal>,
+  (self: EventInternal, handler: Handler) => E.Effect<EventInternal>
+>(2, (self, handler) => {
+  if (handler.constructor === ASYNC_CONSTRUCTOR) {
+    return E.promise(() => handler(self) as Promise<void>).pipe(E.as(self));
+  }
+  return E.suspend(() => {
+    const output = handler(self);
+
+    if (P.isPromise(output)) {
+      return E.promise(() => output).pipe(E.as(self));
+    }
+    if (E.isEffect(output)) {
+      return output.pipe(E.as(self));
+    }
+    return E.succeed(self);
+  });
+});

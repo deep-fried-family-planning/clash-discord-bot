@@ -1,18 +1,73 @@
-import type * as Traversable from '#disreact/core/Traversable.ts';
-import * as Core from '#disreact/model/core/core.ts';
-import type * as Fn from '#disreact/model/core/Fn.ts';
+import * as Fn from '#disreact/model/core/Fn.ts';
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Polymer from '#disreact/model/core/Polymer.ts';
-import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+import * as Progress from '#disreact/model/core/Progress.ts';
+import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Envelope from '#disreact/model/Envelope.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
-import type * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
+
+export const TEXT      = 'Text',
+             FRAGMENT  = 'Fragment',
+             INTRINSIC = 'Intrinsic',
+             COMPONENT = 'Component';
+
+export interface Elem extends Inspectable.Inspectable,
+  Pipeable.Pipeable,
+  Equal.Equal,
+  Hash.Hash,
+  Traversable.Meta,
+  Traversable.Ancestor<Elem>,
+  Traversable.Descendent<Elem>
+{
+  _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
+  _env      : Envelope.Envelope;
+  key?      : string | undefined;
+  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
+  props?    : Props | undefined;
+  polymer?  : Polymer.Polymer;
+  text?     : any;
+  rendered? : Elem[] | undefined;
+}
+
+const ElementPrototype: Elem = {
+  _tag     : INTRINSIC,
+  _env     : undefined as any,
+  component: undefined,
+  key      : undefined,
+  text     : undefined,
+  ancestor : undefined,
+  children : undefined,
+  rendered : undefined,
+  trie     : '',
+  step     : '',
+  depth    : 0,
+  index    : 0,
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  [Hash.symbol]() {
+    return Hash.structure(this);
+  },
+  [Equal.symbol]() {
+    throw new Error();
+  },
+  toJSON() {
+    return {
+      _id     : 'Element',
+      _tag    : this._tag,
+      key     : this.key,
+      props   : this.props,
+      polymer : this.polymer,
+      children: this.children,
+    };
+  },
+};
 
 export interface Props extends Inspectable.Inspectable,
   Equal.Equal,
@@ -37,10 +92,10 @@ const PropsProto: Props = {
   },
   ...Inspectable.BaseProto,
   toJSON() {
-    return Inspectable.format({
+    return {
       _id  : 'Props',
-      value: this,
-    });
+      value: {...this},
+    };
   },
 } as Props;
 
@@ -54,62 +109,6 @@ export const makeProps = (props: any): Props => {
 export const makeRestProps = (props: any): Props => {
   return makeProps(props);
 };
-
-export interface Elem extends Inspectable.Inspectable,
-  Pipeable.Pipeable,
-  Equal.Equal,
-  Hash.Hash,
-  Traversable.Meta,
-  Traversable.Ancestor<Elem>,
-  Traversable.Descendent<Elem>
-{
-  _tag      : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
-  _env      : Envelope.Envelope;
-  key?      : string | undefined;
-  component?: string | Fn.JsxFC | typeof Jsx.Fragment | undefined;
-  props?    : Props | undefined;
-  polymer?  : Polymer.Polymer;
-  text?     : any;
-  rendered? : Elem[] | undefined;
-}
-
-const ElementPrototype: Elem = {
-  _tag     : 'Intrinsic',
-  _env     : undefined as any,
-  component: undefined,
-  key      : undefined,
-  text     : undefined,
-  ancestor : undefined,
-  children : undefined,
-  rendered : undefined,
-  trie     : '',
-  step     : '',
-  depth    : 0,
-  index    : 0,
-  ...Pipeable.Prototype,
-  ...Inspectable.BaseProto,
-  [Hash.symbol]() {
-    return Hash.structure(this);
-  },
-  [Equal.symbol]() {
-    throw new Error();
-  },
-  toJSON() {
-    return Inspectable.format({
-      _id     : 'Element',
-      _tag    : this._tag,
-      key     : this.key,
-      props   : this.props,
-      polymer : this.polymer,
-      children: this.children,
-    });
-  },
-};
-
-export const TEXT      = 'Text',
-             FRAGMENT  = 'Fragment',
-             INTRINSIC = 'Intrinsic',
-             COMPONENT = 'Component';
 
 export interface Text extends Elem {
   _tag     : typeof TEXT;
@@ -137,20 +136,20 @@ export interface Component extends Elem {
 }
 
 const TextProto: Text = Object.assign(Object.create(ElementPrototype), {
-    _tag: TEXT,
-  });
+  _tag: TEXT,
+});
 
 const FragmentProto: Fragment = Object.assign(Object.create(ElementPrototype), {
-    _tag: FRAGMENT,
-  });
+  _tag: FRAGMENT,
+});
 
 const IntrinsicProto: Intrinsic = Object.assign(Object.create(ElementPrototype), {
-    _tag: INTRINSIC,
-  });
+  _tag: INTRINSIC,
+});
 
 const ComponentProto: Component = Object.assign(Object.create(ElementPrototype), {
-    _tag: COMPONENT,
-  });
+  _tag: COMPONENT,
+});
 
 export type Type = | Text
                    | Fragment
@@ -176,12 +175,7 @@ const makeText = (text: any): Text => {
   return self;
 };
 
-const make = (jsx?: Jsx.Child): Elem => {
-  if (!jsx || typeof jsx !== 'object') {
-    const self = Object.create(TextProto) as Text;
-    self.text = jsx;
-    return self;
-  }
+const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
     case 'string': {
       const self = Object.create(IntrinsicProto) as Intrinsic;
@@ -205,32 +199,40 @@ const make = (jsx?: Jsx.Child): Elem => {
   return self;
 };
 
+const connect = <A extends Elem>(self: Elem, that: A, index: number): A => {
+  that._env = self._env;
+  that.ancestor = self;
+  that.depth = self.depth + 1;
+  that.index = index;
+  that.trie = trieId(that);
+  that.step = stepId(that);
+  return that;
+};
+
 const fromJsxChild = (cur: Elem, c: Jsx.Child, index: number): Elem => {
+  if (!c || typeof c !== 'object') {
+    const child = makeText(c);
+    return connect(cur, child, index);
+  }
   const child = make(c);
-  child._env = cur._env;
-  child.ancestor = cur;
-  child.depth = cur.depth + 1;
-  child.index = index;
-  child.trie = trieId(child);
-  child.step = stepId(child);
   child.children = fromJsxChildren(child, child.props?.children);
-  return child;
+  return connect(cur, child, index);
 };
 
 export const fromJsxChildren = (cur: Elem, cs: Jsx.Children): Elem[] | undefined => {
   if (!cs) {
     return undefined;
   }
-  if (!Array.isArray(cs)) {
-    return [fromJsxChild(cur, cs as Jsx.Child, 0)];
-  }
-  const children = [] as Elem[];
+  if (Array.isArray(cs)) {
+    const children = [] as Elem[];
 
-  for (let i = 0; i < cs.length; i++) {
-    const child = fromJsxChild(cur, cs[i], i);
-    children[i] = child;
+    for (let i = 0; i < cs.length; i++) {
+      const child = fromJsxChild(cur, cs[i], i);
+      children[i] = child;
+    }
+    return children;
   }
-  return children;
+  return [fromJsxChild(cur, cs as Jsx.Child, 0)];
 };
 
 export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Elem => {
@@ -257,6 +259,28 @@ export const dispose = (self: Elem) => {
   (self.polymer as any) = undefined;
   self.ancestor = undefined;
   self.children = undefined;
+};
+
+export const toStackPush = (self: Elem): Elem[]  => self.children ?? [];
+
+export const toProgress = (self: Elem): Progress.Partial => {
+  return Progress.partial(self._env.entrypoint as any, self);
+};
+
+export const encode = (self: Elem): Elem => {
+
+};
+import type * as E from 'effect/Effect';
+export const render = (self: Component): E.Effect<Jsx.Children> => {
+  return Fn.normalizePropsFC(self.component, self.props);
+};
+
+export const acceptRender = (self: Component, rendered: Jsx.Children): Elem[] | undefined => {
+  Polymer.commit(self.polymer);
+};
+
+export const normalizeRender = (self: Component, rendered: Jsx.Children): Elem[] | undefined => {
+  Polymer.commit(self.polymer);
 };
 
 export const diff = (self: Elem, that: Elem): Patch.Patch<Elem> => {

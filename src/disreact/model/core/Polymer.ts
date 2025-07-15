@@ -3,9 +3,9 @@ import type * as Node from '#disreact/core/Element.ts';
 import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF} from '#disreact/core/immutable/constants.ts';
 import type {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
-import type * as Traversable from '#disreact/core/Traversable.ts';
+import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Fn from '#disreact/model/core/Fn.ts';
-import type * as Elem from '#disreact/model/entity/Elem.ts';
+import type * as Elem from '#disreact/model/Elem.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import type * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
@@ -30,17 +30,56 @@ const MonomerProto: Monomer = {
   _tag   : undefined as any,
   hydrate: false,
   ...Inspectable.BaseProto,
-  toJSON(this: any) {
-    return Inspectable.format({
-      _id     : 'Monomer',
-      _tag    : this._tag,
-      hydrate : this.hydrate,
-      changed : this.changed,
-      state   : this.state,
-      dispatch: this.dispatch,
-      deps    : this.deps,
-      current : this.current,
-    });
+  toJSON() {
+    switch (this._tag) {
+      case NONE: {
+        return Inspectable.format({
+          _id : 'Monomer',
+          _tag: this._tag,
+        });
+      }
+      case REDUCER: {
+        return Inspectable.format({
+          _id     : 'Monomer',
+          _tag    : this._tag,
+          hydrate : this.hydrate,
+          changed : this.changed,
+          state   : this.state,
+          dispatch: this.dispatch,
+        });
+      }
+      case EFFECTOR: {
+        return Inspectable.format({
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+        });
+      }
+      case REF: {
+        return Inspectable.format({
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+          current: this.current,
+        });
+      }
+      case MEMO: {
+        return Inspectable.format({
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+          state  : this.state,
+          deps   : this.deps,
+        });
+      }
+      case CONTEXT: {
+        return Inspectable.format({
+          _id    : 'Monomer',
+          _tag   : this._tag,
+          hydrate: this.hydrate,
+        });
+      }
+    }
   },
 } as Monomer;
 
@@ -256,16 +295,16 @@ const HydrantProto: Hydrant = {
   state: undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
-    return Inspectable.format({
+    return {
       _id  : 'Hydrant',
       id   : this.id,
       props: this.props,
       state: this.state,
-    });
+    };
   },
 };
 
-export const hydrant = (id: string, props: any, state?: any) => {
+export const hydrant = (id: string, props: any = {}, state: any = {}) => {
   const self = Object.create(HydrantProto) as Hydrant;
   self.id   = id;
   self.props = props;
@@ -292,4 +331,16 @@ export const next = (self: Polymer): Monomer => self.stack[self.pc];
 
 export const advance = (self: Polymer) => {
   self.pc++;
+};
+
+export const defineHook = <
+  A extends any[],
+  O,
+  M extends Monomer,
+>(
+  self: Polymer,
+  name: string,
+  fn: (...args: A) => readonly [M, O],
+): O => {
+
 };
