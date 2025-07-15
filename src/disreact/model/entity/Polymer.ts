@@ -1,8 +1,7 @@
 import type * as Document from '#disreact/core/Document.ts';
 import type * as Node from '#disreact/core/Element.ts';
-import type {MONOMER_CONTEXTUAL, MONOMER_EFFECT, MONOMER_MEMO, MONOMER_NONE, MONOMER_REDUCER, MONOMER_REF, MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
 import * as poly from '#disreact/core/internal/polymer.ts';
-import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Elem from '#disreact/model/entity/Element.ts';
 import type * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Inspectable from 'effect/Inspectable';
@@ -62,7 +61,7 @@ export interface Contextual extends Inspectable.Inspectable {
 }
 
 const MonomerProto: Monomer = {
-  _tag   : undefined as any,
+  _tag   : NONE,
   hydrate: false,
   ...Inspectable.BaseProto,
   toJSON() {
@@ -143,16 +142,15 @@ export const ContextProto: Contextual = Object.assign(Object.create(MonomerProto
 });
 
 export type Encoded =
-  | typeof MONOMER_NONE
-  | [typeof MONOMER_STATE, any]
-  | [typeof MONOMER_REDUCER, any]
-  | typeof MONOMER_EFFECT
-  | [typeof MONOMER_EFFECT, any[]]
-  | typeof MONOMER_REF
-  | [typeof MONOMER_REF, any]
-  | typeof MONOMER_MEMO
-  | [typeof MONOMER_MEMO, any[]]
-  | [typeof MONOMER_CONTEXTUAL];
+  | typeof NONE
+  | [typeof REDUCER, any]
+  | typeof EFFECTOR
+  | [typeof EFFECTOR, any[]]
+  | typeof REF
+  | [typeof REF, any]
+  | typeof MEMO
+  | [typeof MEMO, any[]]
+  | [typeof CONTEXT];
 
 export type Bundle = Record<string, Encoded[]>;
 

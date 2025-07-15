@@ -1,5 +1,5 @@
 import type * as Fn from '#disreact/model/entity/Fn.ts';
-import * as Internal from '#disreact/model/runtime/internal.ts';
+import * as Internal from '#disreact/runtime/internal.ts';
 import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 

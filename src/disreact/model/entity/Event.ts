@@ -1,5 +1,5 @@
-import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
-import * as Progress from '#disreact/model/core/Progress.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
+import * as Progress from '#disreact/core/Progress.ts';
 import * as E from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
@@ -24,6 +24,7 @@ export interface EventInternal<T = any> extends Event<T>, EventInput<T> {
   id    : string;
   type  : string;
   _state: {
+    done      : boolean;
     origin    : string;
     entrypoint: string | null;
     props     : any;
@@ -40,11 +41,19 @@ const EventProto: EventInternal = {
   _state: undefined as any,
   target: undefined as any,
   close() {
+    if (this._state.done) {
+      throw new Error('Event already done');
+    }
     this._state.entrypoint = null;
+    this._state.done = true;
   },
   open(type, props) {
+    if (this._state.done) {
+      throw new Error('Event already done');
+    }
     this._state.entrypoint = type;
     this._state.props = props ?? {};
+    this._state.done = true;
   },
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,

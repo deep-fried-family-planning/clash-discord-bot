@@ -1,4 +1,4 @@
-import * as Hooks from '#disreact/runtime/Hooks.ts';
+import * as Hooks from '#disreact/Hooks.ts';
 
 export const useInteraction = Hooks.hooks.useInteraction;
 

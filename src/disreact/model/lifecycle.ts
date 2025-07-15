@@ -1,17 +1,13 @@
-import {FUNCTIONAL, LIST_NODE, TEXT_NODE} from '#disreact/core/immutable/constants.ts';
 import * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Stack from '#disreact/model/core/Stack.ts';
-import * as Elem from '#disreact/model/entity/Element.ts';
+import * as Stack from '#disreact/core/Stack.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
 import {ModelCodec} from '#disreact/model/ModelCodec.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import * as Hooks from '#disreact/runtime/Hooks.ts';
-
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Hooks from '#disreact/Hooks.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
-import * as MutableList from 'effect/MutableList';
-import type {Element} from 'effect/Schema';
 
 export class RenderError extends Data.TaggedError('RenderError')<{}> {}
 
@@ -23,7 +19,7 @@ export class HydrateError extends Data.TaggedError('HydrateError')<{}> {}
 
 export class DehydrateError extends Data.TaggedError('EncodeError')<{}> {}
 
-const flushComponent = (self: Elem.Component) =>
+const flushComponent = (self: Element.Component) =>
   E.iterate(self, {
     while: (c) => Polymer.isQueued(c.polymer),
     body : (c) => {
@@ -40,7 +36,7 @@ const
   acquire = mutex.take(1),
   release = mutex.release(1);
 
-const initializeComponent = (elem: Elem.Component) =>
+const initializeComponent = (elem: Element.Component) =>
   acquire.pipe(
     E.flatMap(() => {
       elem.polymer = Polymer.make(elem);
@@ -55,16 +51,16 @@ const initializeComponent = (elem: Elem.Component) =>
     E.tapDefect(() => release),
     E.map((children) => {
       Polymer.commit(elem.polymer);
-      elem.children = Elem.fromJsxChildren(elem, children);
+      elem.children = Element.fromJsxChildren(elem, children);
       return elem.children;
     }),
     E.tap(flushComponent(elem)),
   );
 
-const initializeFromStack = (stack: Stack.Stack<Elem.Element>) =>
+const initializeFromStack = (stack: Stack.Stack<Element.Element>) =>
   stack.pipe(
     Stack.pop,
-    Elem.toEither,
+    Element.toEither,
     Either.map((elem) =>
       elem.pipe(
         initializeComponent,
@@ -80,7 +76,7 @@ const initializeFromStack = (stack: Stack.Stack<Elem.Element>) =>
     Either.merge,
   );
 
-export const initialize = (root: Elem.Element) =>
+export const initialize = (root: Element.Element) =>
   E.iterate(Stack.make(root), {
     while: Stack.condition,
     body : initializeFromStack,
@@ -103,7 +99,7 @@ export const hydrateEntrypoint = (type: Jsx.Entrypoint | Fn.FC | Jsx.Jsx | strin
   return E.succeed(entrypoint);
 });
 
-const hydrateComponent = (elem: Elem.Component) =>
+const hydrateComponent = (elem: Element.Component) =>
   acquire.pipe(
     E.flatMap(() => {
       elem.polymer = Polymer.make(elem);
@@ -118,16 +114,16 @@ const hydrateComponent = (elem: Elem.Component) =>
     E.tapDefect(() => release),
     E.map((children) => {
       Polymer.commit(elem.polymer);
-      elem.children = Elem.fromJsxChildren(elem, children);
+      elem.children = Element.fromJsxChildren(elem, children);
       return elem.children;
     }),
     E.tap(() => {}),
   );
 
-const hydrateFromStack = (stack: Stack.Stack<Elem.Element>) =>
+const hydrateFromStack = (stack: Stack.Stack<Element.Element>) =>
   stack.pipe(
     Stack.pop,
-    Elem.toEither,
+    Element.toEither,
     Either.map((elem) =>
       elem.pipe(
         hydrateComponent,
@@ -143,13 +139,13 @@ const hydrateFromStack = (stack: Stack.Stack<Elem.Element>) =>
     Either.merge,
   );
 
-export const hydrate = (root: Elem.Element) =>
+export const hydrate = (root: Element.Element) =>
   E.iterate(Stack.make(root), {
     while: Stack.condition,
     body : hydrateFromStack,
   });
 
-export const encode = (root: Elem.Element) => ModelCodec.use(({encodeText, encodeRest}) => {
+export const encode = (root: Element.Element) => ModelCodec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
         final = {} as any,
         args  = new WeakMap(),
@@ -160,15 +156,15 @@ export const encode = (root: Elem.Element) => ModelCodec.use(({encodeText, encod
           out  = outs.get(node);
 
     switch (node._tag) {
-      case Elem.TEXT: {
+      case Element.TEXT: {
         if (!node.text) {
           continue;
         }
-        encodeText(node as Elem.Text, out);
+        encodeText(node as Element.Text, out);
         continue;
       }
-      case Elem.FRAGMENT:
-      case Elem.COMPONENT: {
+      case Element.FRAGMENT:
+      case Element.COMPONENT: {
         if (!node.children) {
           continue;
         }
@@ -177,13 +173,13 @@ export const encode = (root: Elem.Element) => ModelCodec.use(({encodeText, encod
           stack.push(c);
         }
       }
-      case Elem.INTRINSIC: {
+      case Element.INTRINSIC: {
         if (args.has(node)) {
-          encodeRest(node as Elem.Intrinsic, out, args.get(node)!);
+          encodeRest(node as Element.Intrinsic, out, args.get(node)!);
           continue;
         }
         if (!node.children || node.children.length === 0) {
-          encodeRest(node as Elem.Intrinsic, out, {});
+          encodeRest(node as Element.Intrinsic, out, {});
           continue;
         }
         const arg = {};
@@ -209,6 +205,7 @@ export const encode = (root: Elem.Element) => ModelCodec.use(({encodeText, encod
   return null;
 });
 import type * as Event from '#disreact/model/entity/Event.ts';
-export const invokeIntrinsicElement = (elem: Elem.Element, event: Event.Event) => {
+
+export const invokeIntrinsicElement = (elem: Element.Element, event: Event.Event) => {
 
 };

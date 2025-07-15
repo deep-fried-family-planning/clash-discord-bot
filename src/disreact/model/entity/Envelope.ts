@@ -1,8 +1,8 @@
 import * as Elem from '#disreact/model/entity/Element.ts';
 import type * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import type * as Progress from '#disreact/model/core/Progress.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import type * as Progress from '#disreact/core/Progress.ts';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';

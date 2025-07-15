@@ -1,12 +1,12 @@
-import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
 import * as Fn from '#disreact/model/entity/Fn.ts';
-import * as Patch from '#disreact/model/core/Patch.ts';
+import * as Patch from '#disreact/core/Patch.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Progress from '#disreact/model/core/Progress.ts';
-import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import * as Progress from '#disreact/core/Progress.ts';
+import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Event from '#disreact/model/entity/Event.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import * as Differ from 'effect/Differ';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
