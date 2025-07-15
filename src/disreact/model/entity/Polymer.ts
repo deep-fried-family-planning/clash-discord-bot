@@ -158,6 +158,7 @@ export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Origin<Elem.Component>
 {
+  id   : string;
   pc   : number;
   rc   : number;
   stack: Monomer[];

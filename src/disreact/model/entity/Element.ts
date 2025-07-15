@@ -16,7 +16,6 @@ import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
-
 export const TEXT      = 'Text',
              FRAGMENT  = 'Fragment',
              INTRINSIC = 'Intrinsic',
@@ -72,8 +71,6 @@ const ElementPrototype: Element = {
     };
   },
 };
-
-
 
 export type Type = | Text
                    | Fragment
@@ -282,12 +279,6 @@ export const diff = (self: Element, that: Element): Patch.Patch<Element> => {
   return Patch.skip();
 };
 
-export const toStackPush = (self: Element): Element[] => self.children ?? [];
-
-export const toProgress = (self: Element): Progress.Partial => {
-  return Progress.partial(self._env.entrypoint as any, self);
-};
-
 export const mount = (self: Component) => {
   self.polymer = Polymer.mount(self);
   return self;
@@ -315,6 +306,28 @@ export const hydrate = (self: Component) => {
 export const render = (self: Component): E.Effect<Jsx.Children> => {
   return Fn.normalizePropsFC(self.component, self.props);
 };
+
+export const renderWith = (
+  self: Component,
+  acquire: E.Effect<any>,
+  onAcquire: () => void,
+  release: E.Effect<any>,
+  onRelease: () => void,
+) =>
+  acquire.pipe(
+    E.flatMap(() => {
+      onAcquire();
+      return render(self);
+    }),
+    E.tap(() => {
+      onRelease();
+      return release;
+    }),
+    E.tapDefect(() => {
+      onRelease();
+      return release;
+    }),
+  );
 
 export const acceptRender = (self: Component, rendered: Jsx.Children): Component => {
   Polymer.commit(self.polymer);
@@ -437,3 +450,9 @@ export const differ = Differ.make({
     return self;
   },
 });
+
+export const toStackPush = (self: Element): Element[] => self.children?.toReversed() ?? [];
+
+export const toProgress = (self: Element): Progress.Partial => {
+  return Progress.partial(self._env.entrypoint as any, self);
+};

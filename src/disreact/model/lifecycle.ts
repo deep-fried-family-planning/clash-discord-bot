@@ -1,10 +1,11 @@
+import * as Stack from '#disreact/core/Stack.ts';
+import * as Hooks from '#disreact/Hooks.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
+import type * as Event from '#disreact/model/entity/Event.ts';
 import * as Fn from '#disreact/model/entity/Fn.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Stack from '#disreact/core/Stack.ts';
-import * as Element from '#disreact/model/entity/Element.ts';
 import {ModelCodec} from '#disreact/model/ModelCodec.ts';
 import * as Jsx from '#disreact/runtime/Jsx.tsx';
-import * as Hooks from '#disreact/Hooks.ts';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -38,23 +39,20 @@ const
 
 const initializeComponent = (elem: Element.Component) =>
   acquire.pipe(
-    E.flatMap(() => {
-      elem.polymer = Polymer.make(elem);
+    E.tap(() => {
+      Element.mount(elem);
       Hooks.active.polymer = elem.polymer;
-
-      return Fn.normalizePropsFC(elem.component, elem.props);
     }),
+    E.andThen(
+      Element.render(elem),
+    ),
     E.tap(() => {
       Hooks.active.polymer = undefined;
       return release;
     }),
     E.tapDefect(() => release),
-    E.map((children) => {
-      Polymer.commit(elem.polymer);
-      elem.children = Element.fromJsxChildren(elem, children);
-      return elem.children;
-    }),
-    E.tap(flushComponent(elem)),
+    E.map((children) => Element.acceptRender(elem, children)),
+    E.tap(Element.flush(elem)),
   );
 
 const initializeFromStack = (stack: Stack.Stack<Element.Element>) =>
@@ -204,8 +202,66 @@ export const encode = (root: Element.Element) => ModelCodec.use(({encodeText, en
   }
   return null;
 });
-import type * as Event from '#disreact/model/entity/Event.ts';
 
 export const invokeIntrinsicElement = (elem: Element.Element, event: Event.Event) => {
 
+};
+
+const mountFromStack = (stack: Stack.Stack<Element.Element>) =>
+  stack.pipe(
+    Stack.pop,
+    Element.toEither,
+    Either.map((elem) =>
+      elem.pipe(
+        Element.mount,
+
+        E.map(Stack.pushAllInto(stack)),
+      ),
+    ),
+  );
+
+const unmountFromStack = (stack: Stack.Stack<Element.Element>) =>
+  stack.pipe(
+    Stack.pop,
+    Element.toEither,
+    Either.map((elem) =>
+      elem.pipe(
+        Element.unmount,
+        E.map(Stack.pushAllInto(stack)),
+      ),
+    ),
+  );
+
+export const mount = (root: Element.Element) =>
+  E.iterate(Stack.make(root), {
+    while: Stack.condition,
+    body : (stack) =>
+      stack.pipe(
+        Stack.pop,
+        Element.toEither,
+        Either.map((elem) =>
+          elem.pipe(
+            Element.mount,
+          ),
+        ),
+      ),
+  });
+
+const unmount = (elem: Element.Element) =>
+  E.iterate(Stack.make(elem), {
+    while: Stack.condition,
+    body : (stack) =>
+      stack.pipe(
+        Stack.pop,
+        Element.toEither,
+        Either.map((elem) =>
+          elem.pipe(
+            Element.unmount,
+          ),
+        ),
+      ),
+  });
+
+export const rerender = (root: Element.Element) => {
+  const lca = root;
 };
