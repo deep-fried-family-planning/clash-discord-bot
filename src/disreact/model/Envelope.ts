@@ -1,14 +1,14 @@
-import * as Elem from '#disreact/entity/Element.ts';
-import type * as Fn from '#disreact/entity/Fn.ts';
-import * as Polymer from '#disreact/entity/Polymer.ts';
+import * as Elem from '#disreact/model/Element.ts';
+import type * as Fn from '#disreact/model/Fn.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 import type * as Progress from '#disreact/core/Progress.ts';
-import * as JsxRuntime from '#disreact/runtime/JsxRuntime.tsx';
+import * as JsxRuntime from '#disreact/model/runtime/Jsx.tsx';
 import * as Deferred from 'effect/Deferred';
-import * as E from 'effect/Effect';
+import * as Effect from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Option from 'effect/Option';
-import type * as Event from '#disreact/entity/Event.ts';
+import type * as Event from '#disreact/model/Event.ts';
 
 export interface Hydrant {
   entrypoint: string;
@@ -17,9 +17,12 @@ export interface Hydrant {
 }
 
 export interface Simulant<A = any> {
-  data    : A;
-  hydrant?: Hydrant;
-  event?  : Event.EventInput;
+  data      : A;
+  entrypoint: string;
+  props     : Record<string, any>;
+  state     : Record<string, any>;
+  hydrant?  : Hydrant;
+  event?    : Event.EventInput;
 }
 
 export interface Simulated<T extends string, P = any> {
@@ -52,18 +55,17 @@ const Proto: Envelope = {
     return {
       _id       : 'Envelope',
       entrypoint: this.entrypoint,
-      hydrant   : this.hydrant,
       root      : this.root,
       data      : this.data,
     };
   },
 };
 
-const makeEffects = E.all([
+const makeEffects = Effect.all([
   Deferred.make<Progress.Checkpoint>(),
   Mailbox.make<Progress.Progress>(),
 ]).pipe(
-  E.map(([final, stream]) => {
+  Effect.map(([final, stream]) => {
     const self = Object.create(Proto) as Envelope;
     self.stream = stream;
     self.final = final;
@@ -78,13 +80,13 @@ export const fromFC = (
   data: any,
 ) =>
   makeEffects.pipe(
-    E.map((self) => {
+    Effect.map((self) => {
       const jsx = JsxRuntime.makeJsx(fc, props);
 
       self.entrypoint = fc.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('', props);
-      self.root = Elem.fromJsx(jsx, self);
+      self.root = Elem.makeRoot(jsx, self);
       return self;
     }),
   );
@@ -94,11 +96,11 @@ export const fromJsx = (
   data: any,
 ) =>
   makeEffects.pipe(
-    E.map((self) => {
+    Effect.map((self) => {
       self.entrypoint = jsx.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('');
-      self.root = Elem.fromJsx(jsx, self);
+      self.root = Elem.makeRoot(jsx, self);
       return self;
     }),
   );
@@ -109,11 +111,11 @@ export const fromSimulation = (
   data: any,
 ) =>
   makeEffects.pipe(
-    E.map((self) => {
+    Effect.map((self) => {
       self.entrypoint = entrypoint.id;
       self.hydrant = hydrant;
       self.data = data;
-      self.root = Elem.fromJsx(entrypoint.component, self);
+      self.root = Elem.makeRoot(entrypoint.component, self);
       return self;
     }),
   );
@@ -123,9 +125,14 @@ export const forkFromEntrypoint = (self: Envelope, entrypoint: JsxRuntime.Entryp
   forked.entrypoint = entrypoint.id;
   forked.data = self.data;
   forked.hydrant = Polymer.hydrant(entrypoint.id);
-  forked.root = Elem.fromJsx(entrypoint.component, self);
+  forked.root = Elem.makeRoot(entrypoint.component, self);
   forked.stream = self.stream;
   forked.final = self.final;
   forked.flags = new Set();
   return forked;
 };
+
+export const dispose = (self: Envelope) =>
+  Effect.asVoid(
+    Effect.die('Not Implemented'),
+  );

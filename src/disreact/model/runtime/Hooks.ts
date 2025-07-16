@@ -1,4 +1,4 @@
-import * as Polymer from '#disreact/entity/Polymer.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
 
 export const active = {
   polymer: undefined as undefined | Polymer.Polymer,

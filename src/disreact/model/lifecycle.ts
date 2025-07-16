@@ -1,11 +1,11 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/Hooks.ts';
-import * as Element from '#disreact/entity/Element.ts';
-import type * as Event from '#disreact/entity/Event.ts';
-import * as Fn from '#disreact/entity/Fn.ts';
-import * as Polymer from '#disreact/entity/Polymer.ts';
-import {ModelCodec} from '#disreact/model/ModelCodec.ts';
-import * as Jsx from '#disreact/runtime/JsxRuntime.tsx';
+import * as Element from '#disreact/model/Element.ts';
+import type * as Event from '#disreact/model/Event.ts';
+import * as Fn from '#disreact/model/Fn.ts';
+import * as Polymer from '#disreact/model/Polymer.ts';
+import {ModelEncoder} from '#disreact/model/ModelEncoder.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -103,7 +103,7 @@ const hydrateComponent = (elem: Element.Component) =>
       elem.polymer = Polymer.make(elem);
       Hooks.active.polymer = elem.polymer;
 
-      return Fn.normalizePropsFC(elem.component, elem.props);
+      return Fn.normalizePropsFC(elem.type, elem.props);
     }),
     E.tap(() => {
       Hooks.active.polymer = undefined;
@@ -143,7 +143,7 @@ export const hydrate = (root: Element.Element) =>
     body : hydrateFromStack,
   });
 
-export const encode = (root: Element.Element) => ModelCodec.use(({encodeText, encodeRest}) => {
+export const encode = (root: Element.Element) => ModelEncoder.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
         final = {} as any,
         args  = new WeakMap(),

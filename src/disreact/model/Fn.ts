@@ -1,5 +1,5 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
-import type * as Jsx from '#disreact/runtime/JsxRuntime.tsx';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 import * as P from 'effect/Predicate';
