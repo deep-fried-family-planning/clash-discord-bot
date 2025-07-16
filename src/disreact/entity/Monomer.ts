@@ -1,4 +1,4 @@
-import type {EffectFn} from '#disreact/model/entity/Fn.ts';
+import type {EffectFn} from '#disreact/entity/Fn.ts';
 import * as E from 'effect/Effect';
 import type * as Inspectable from 'effect/Inspectable';
 

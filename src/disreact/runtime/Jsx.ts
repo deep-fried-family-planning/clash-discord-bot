@@ -1,6 +1,6 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
-import type * as Fn from '#disreact/model/entity/Fn.ts';
-import type * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
+import type * as Fn from '#disreact/entity/Fn.ts';
+import type * as JsxRuntime from '#disreact/runtime/JsxRuntime.tsx';
 import * as Inspectable from 'effect/Inspectable';
 
 export const symbol = Symbol('disreact/Jsx');

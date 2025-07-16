@@ -1,9 +1,9 @@
-import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Jsx from '#disreact/model/runtime/JsxRuntime.tsx';
+import type * as Polymer from '#disreact/entity/Polymer.ts';
+import * as Jsx from '#disreact/runtime/JsxRuntime.tsx';
 import {pipe} from 'effect/Function';
-import type * as Fn from '#disreact/model/entity/Fn.ts';
-import type * as Event from '#disreact/model/entity/Event.ts';
-import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+import type * as Fn from '#disreact/entity/Fn.ts';
+import type * as Event from '#disreact/entity/Event.ts';
+import type * as Envelope from '#disreact/entity/Envelope.ts';
 
 export const synthesizeHydrantFC = (
   hydrant: Polymer.Hydrant,

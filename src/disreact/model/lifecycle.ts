@@ -1,11 +1,11 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/Hooks.ts';
-import * as Element from '#disreact/model/entity/Element.ts';
-import type * as Event from '#disreact/model/entity/Event.ts';
-import * as Fn from '#disreact/model/entity/Fn.ts';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as Element from '#disreact/entity/Element.ts';
+import type * as Event from '#disreact/entity/Event.ts';
+import * as Fn from '#disreact/entity/Fn.ts';
+import * as Polymer from '#disreact/entity/Polymer.ts';
 import {ModelCodec} from '#disreact/model/ModelCodec.ts';
-import * as Jsx from '#disreact/model/runtime/JsxRuntime.tsx';
+import * as Jsx from '#disreact/runtime/JsxRuntime.tsx';
 import * as Data from 'effect/Data';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';

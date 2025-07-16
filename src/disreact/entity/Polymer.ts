@@ -1,7 +1,7 @@
 import {poly} from '#disreact/adaptor/adaptor/global.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Element from '#disreact/model/entity/Element.ts';
-import type * as Fn from '#disreact/model/entity/Fn.ts';
+import type * as Element from '#disreact/entity/Element.ts';
+import type * as Fn from '#disreact/entity/Fn.ts';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import type * as Pipeable from 'effect/Pipeable';

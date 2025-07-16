@@ -1,14 +1,14 @@
-import * as Elem from '#disreact/model/entity/Element.ts';
-import type * as Fn from '#disreact/model/entity/Fn.ts';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as Elem from '#disreact/entity/Element.ts';
+import type * as Fn from '#disreact/entity/Fn.ts';
+import * as Polymer from '#disreact/entity/Polymer.ts';
 import type * as Progress from '#disreact/core/Progress.ts';
-import * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
+import * as JsxRuntime from '#disreact/runtime/JsxRuntime.tsx';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
 import type * as Option from 'effect/Option';
-import type * as Event from '#disreact/model/entity/Event.ts';
+import type * as Event from '#disreact/entity/Event.ts';
 
 export interface Hydrant {
   entrypoint: string;

@@ -1,21 +1,16 @@
-import * as jsx from '#disreact/model/runtime/Jsx.ts';
+import {fragment, symbol} from '#disreact/runtime/Jsx.ts';
+import * as jsx from '#disreact/runtime/Jsx.ts';
 import * as E from 'effect/Effect';
 import {globalValue} from 'effect/GlobalValue';
-import type * as Inspectable from 'effect/Inspectable';
+import * as Inspectable from 'effect/Inspectable';
 
-export interface FC<P = any> {
-  displayName?: string;
-  <E = never, R = never>(props: P):
-    | Children
-    | Promise<Children>
-    | E.Effect<Children, E, R>;
-}
+const TypeId: typeof jsx.symbol = jsx.symbol;
+
+export const Fragment = jsx.fragment;
 
 export type Type = | keyof JSX.IntrinsicElements
                    | typeof Fragment
                    | FC;
-
-const TypeId: typeof jsx.symbol = jsx.symbol;
 
 export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable
 {
@@ -48,7 +43,31 @@ export const isJsx = (u: Children): u is Jsx =>
   typeof u === 'object' &&
   TypeId in u;
 
-export const Fragment = jsx.fragment;
+const Proto: Jsx = {
+  [symbol]  : symbol,
+  jsx       : true,
+  entrypoint: undefined,
+  key       : undefined,
+  type      : fragment,
+  props     : undefined,
+  ref       : undefined,
+  child     : undefined,
+  childs    : undefined as any,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    const props = {...this.props};
+    delete props.children;
+
+    return {
+      _id       : 'Jsx',
+      entrypoint: this.entrypoint,
+      key       : this.key,
+      type      : this.type === fragment ? 'Fragment' : this.type,
+      props     : props,
+      children  : this.child ?? this.childs,
+    };
+  },
+};
 
 export type Key = | string
                   | undefined;
@@ -77,6 +96,14 @@ export const clone = <A extends Jsx>(self: A): A => {
     props: {...self.props},
   };
 };
+
+export interface FC<P = any> {
+  displayName?: string;
+  <E = never, R = never>(props: P):
+    | Children
+    | Promise<Children>
+    | E.Effect<Children, E, R>;
+}
 
 export interface Entrypoint {
   id       : string;

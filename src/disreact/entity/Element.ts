@@ -1,12 +1,13 @@
+/* eslint-disable no-case-declarations */
 import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
 import * as Patch from '#disreact/core/Patch.ts';
 import * as Progress from '#disreact/core/Progress.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Envelope from '#disreact/model/entity/Envelope.ts';
-import * as Event from '#disreact/model/entity/Event.ts';
-import * as Fn from '#disreact/model/entity/Fn.ts';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Jsx from '#disreact/model/runtime/JsxRuntime.tsx';
+import type * as Envelope from '#disreact/entity/Envelope.ts';
+import * as Event from '#disreact/entity/Event.ts';
+import * as Fn from '#disreact/entity/Fn.ts';
+import * as Polymer from '#disreact/entity/Polymer.ts';
+import * as Jsx from '#disreact/runtime/JsxRuntime.tsx';
 import * as Differ from 'effect/Differ';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -15,7 +16,6 @@ import * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
-import * as MutableRef from 'effect/MutableRef';
 
 export interface Props extends Inspectable.Inspectable, Equal.Equal, Hash.Hash, Record<string, any>
 {
@@ -83,6 +83,11 @@ export interface Element extends Inspectable.Inspectable,
   rendered? : Element[] | undefined;
 }
 
+export const isElement = (u: unknown): u is Element =>
+  !!u &&
+  typeof u === 'object' &&
+  '_tag' in u;
+
 const ElementProto: Element = {
   _tag     : INTRINSIC,
   _env     : undefined as any,
@@ -121,18 +126,6 @@ export interface Text extends Element {
   text: any;
 }
 
-export const isText = (self: Element): self is Text => self._tag === 'Text';
-
-const TextProto: Text = Object.assign(Object.create(ElementProto), {
-  _tag: TEXT,
-});
-
-const makeText = (text: any): Text => {
-  const self = Object.create(TextProto) as Text;
-  self.text = text;
-  return self;
-};
-
 export interface Fragment extends Element {
   _tag     : typeof FRAGMENT;
   component: typeof Jsx.Fragment;
@@ -151,11 +144,17 @@ export interface Component extends Element {
   polymer  : Polymer.Polymer;
 }
 
+export const isText = (self: Element): self is Text => self._tag === 'Text';
+
 export const isFragment = (self: Element): self is Fragment => self._tag === 'Fragment';
 
 export const isIntrinsic = (self: Element): self is Intrinsic => self._tag === 'Intrinsic';
 
 export const isComponent = (self: Element): self is Component => self._tag === 'Component';
+
+const TextProto: Text = Object.assign(Object.create(ElementProto), {
+  _tag: TEXT,
+});
 
 const FragmentProto: Fragment = Object.assign(Object.create(ElementProto), {
   _tag: FRAGMENT,
@@ -169,22 +168,27 @@ const ComponentProto: Component = Object.assign(Object.create(ElementProto), {
   _tag: COMPONENT,
 });
 
-const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
+const makeText = (text: any): Text => {
+  const self = Object.create(TextProto) as Text;
+  self.text = text;
+  return self;
+};
+
+const makeElem = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
-    case 'string': {
-      const self = Object.create(IntrinsicProto) as Intrinsic;
-      self.key = jsx.key;
-      self.component = jsx.type as string;
-      self.props = makeRestProps(jsx.props);
-      return self;
-    }
-    case 'function': {
-      const self = Object.create(ComponentProto) as Component;
-      self.key = jsx.key;
-      self.component = jsx.type as Fn.FC;
-      self.props = makeProps(jsx.props);
-      return self;
-    }
+    case 'string':
+      const rest = Object.create(IntrinsicProto) as Intrinsic;
+      rest.key = jsx.key;
+      rest.component = jsx.type as string;
+      rest.props = makeRestProps(jsx.props);
+      return rest;
+
+    case 'function':
+      const func = Object.create(ComponentProto) as Component;
+      func.key = jsx.key;
+      func.component = jsx.type as Fn.FC;
+      func.props = makeProps(jsx.props);
+      return func;
   }
   const self = Object.create(FragmentProto) as Fragment;
   self.key = jsx.key;
@@ -193,24 +197,13 @@ const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   return self;
 };
 
-export const toEither = (self: Element): Either.Either<Component, Element> =>
-  isComponent(self)
-  ? Either.right(self)
-  : Either.left(self);
-
-const step = (self: Element) => `${self.depth}:${self.index}`;
-const stepId = (self: Element) => `${step(self.ancestor!)}:${step(self)}`;
-const trieId = (self: Element) => `${self.ancestor!.trie}:${step(self)}`;
-const keyId = (self: Element) => self.key ?? self.trie;
-
-const connect = <A extends Element>(self: Element, that: A, index: number): A => {
-  that._env = self._env;
-  that.ancestor = self;
-  that.depth = self.depth + 1;
-  that.index = index;
-  that.trie = trieId(that);
-  that.step = stepId(that);
-  return that;
+export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
+  const root = makeElem(Jsx.clone(jsx));
+  root._env = env;
+  root.trie = step(root);
+  root.step = step(root);
+  root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
+  return root;
 };
 
 const fromJsxChild = (cur: Element, c: Jsx.Child, index: number): Element => {
@@ -218,8 +211,8 @@ const fromJsxChild = (cur: Element, c: Jsx.Child, index: number): Element => {
     const child = makeText(c);
     return connect(cur, child, index);
   }
-  const child = make(c);
-  child.children = fromJsxChildren(child, child.props?.children);
+  const child = makeElem(c);
+  child.children = fromJsxChildren(child, c.child ?? c.childs);
   return connect(cur, child, index);
 };
 
@@ -239,23 +232,37 @@ export const fromJsxChildren = (cur: Element, cs: Jsx.Children): Element[] | und
   return [fromJsxChild(cur, cs as Jsx.Child, 0)];
 };
 
-export const fromJsx = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
-  const root = make(Jsx.clone(jsx));
-  root._env = env;
-  root.trie = step(root);
-  root.step = step(root);
-  root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
-  return root;
-};
-
 export const fromJsxEntrypoint = (entrypoint: Jsx.Entrypoint, env: Envelope.Envelope): Element => {
-  const root = make(Jsx.clone(entrypoint.component));
+  const root = makeElem(Jsx.clone(entrypoint.component));
   root._env = env;
   root.trie = step(root);
   root.step = step(root);
   root.children = fromJsxChildren(root, entrypoint.component.childs ?? entrypoint.component.childs);
   return root;
 };
+
+const step = (self: Element) => `${self.depth}:${self.index}`;
+
+const stepId = (self: Element) => `${step(self.ancestor!)}:${step(self)}`;
+
+const trieId = (self: Element) => `${self.ancestor!.trie}:${step(self)}`;
+
+const keyId = (self: Element) => self.key ?? self.trie;
+
+const connect = <A extends Element>(self: Element, that: A, index: number): A => {
+  that._env = self._env;
+  that.ancestor = self;
+  that.depth = self.depth + 1;
+  that.index = index;
+  that.trie = trieId(that);
+  that.step = stepId(that);
+  return that;
+};
+
+export const toEither = (self: Element) =>
+  isComponent(self)
+  ? Either.right(self)
+  : Either.left(self);
 
 export const diff = (self: Element, that: Element): Patch.Patch<Element> => {
   if (self === that) {
@@ -412,29 +419,16 @@ const mapChild = (cs: HashMap.HashMap<string, Element>) => {
   return HashMap.toValues(cs);
 };
 
+const emptyDiffer = E.succeed();
+Differ.or
 export const differ = Differ.make({
-  empty  : Patch.skip() as Patch.Patch<Element>,
+  empty  : E.succeed(Patch.skip() as Patch.Patch<Element>),
   combine: (a, b) => b,
-  diff   : (self: Element, that) => {
-    if (self === that) {
-      return Patch.skip();
-    }
-    if (self.text !== that.text) {
-      return Patch.replace(that);
-    }
-    if (self.component !== that.component) {
-      return Patch.replace(that);
-    }
-    if (!Equal.equals(self.props, that.props)) {
-      return Patch.update(that, true);
-    }
-    if (self.polymer) {
-      if (Polymer.isChanged(self.polymer)) {
-        return Patch.skip(true);
-      }
-    }
-    return Patch.skip();
-  },
+  diff   : (self: E.Effect<Element>, that) =>
+    self.pipe(
+      E.zip(that),
+      E.map(([self, that]) => diff(self, that)),
+    ),
   patch: (patch, self) => {
     switch (patch._tag) {
       case 'Skip': {
@@ -458,3 +452,5 @@ export const toStackPush = (self: Element): Element[] => self.children?.toRevers
 export const toProgress = (self: Element): Progress.Partial => {
   return Progress.partial(self._env.entrypoint as any, self);
 };
+
+Differ.
