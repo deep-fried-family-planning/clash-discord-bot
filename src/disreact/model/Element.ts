@@ -167,6 +167,7 @@ const ElementProto: Element = {
   ancestor: undefined,
   children: undefined,
   rendered: undefined,
+  polymer: undefined,
   trie    : '',
   step    : '',
   depth   : 0,
@@ -406,9 +407,6 @@ export const diff = (self: Element, that: Element) => {
   }
   return Patch.skip();
 };
-
-export const lowestCommonAncestor = (elems: Element[]): Option.Option<Element> =>
-  Option.none();
 
 export const unmount = (self: Element) =>
   Effect.sync(() => {

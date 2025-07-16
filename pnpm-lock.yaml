@@ -10,43 +10,43 @@ importers:
     dependencies:
       '@effect-aws/client-api-gateway-management-api':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-dynamodb':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-eventbridge':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-lambda':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-scheduler':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-sqs':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/client-ssm':
         specifier: 1.10.3
-        version: 1.10.3(effect@3.16.14)
+        version: 1.10.3(effect@3.16.16)
       '@effect-aws/lambda':
         specifier: 1.5.1
-        version: 1.5.1(@effect/platform-node-shared@0.44.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
+        version: 1.5.1(@effect/platform-node-shared@0.44.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
       '@effect-aws/lib-dynamodb':
         specifier: 1.10.5
-        version: 1.10.5(@effect-aws/client-dynamodb@1.10.3(effect@3.16.14))(effect@3.16.14)
+        version: 1.10.5(@effect-aws/client-dynamodb@1.10.3(effect@3.16.16))(effect@3.16.16)
       '@effect-aws/ssm':
         specifier: 1.3.3
-        version: 1.3.3(@effect-aws/client-ssm@1.10.3(effect@3.16.14))(effect@3.16.14)
+        version: 1.3.3(@effect-aws/client-ssm@1.10.3(effect@3.16.16))(effect@3.16.16)
       '@effect/opentelemetry':
         specifier: 0.54.1
-        version: 0.54.1(@effect/platform@0.88.1(effect@3.16.14))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.36.0)(effect@3.16.14)
+        version: 0.54.1(@effect/platform@0.88.1(effect@3.16.16))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.36.0)(effect@3.16.16)
       '@effect/platform':
         specifier: 0.88.1
-        version: 0.88.1(effect@3.16.14)
+        version: 0.88.1(effect@3.16.16)
       '@effect/platform-node':
         specifier: 0.91.0
-        version: 0.91.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
+        version: 0.91.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
       '@msgpack/msgpack':
         specifier: 3.1.2
         version: 3.1.2
@@ -67,7 +67,7 @@ importers:
         version: 2.0.1(@opentelemetry/api@1.9.0)
       '@typed/id':
         specifier: 0.17.2
-        version: 0.17.2(effect@3.16.14)
+        version: 0.17.2(effect@3.16.16)
       clashofclans.js:
         specifier: 3.3.22
         version: 3.3.22
@@ -76,13 +76,13 @@ importers:
         version: 1.11.13
       dfx:
         specifier: 0.123.0
-        version: 0.123.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
+        version: 0.123.0(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
       discord-verify:
         specifier: 1.2.0
         version: 1.2.0
       effect:
-        specifier: 3.16.14
-        version: 3.16.14
+        specifier: 3.16.16
+        version: 3.16.16
       pako:
         specifier: 2.1.0
         version: 2.1.0
@@ -118,11 +118,11 @@ importers:
         specifier: 2.2.0
         version: 2.2.0
       '@effect/language-service':
-        specifier: 0.27.0
-        version: 0.27.0
+        specifier: 0.27.1
+        version: 0.27.1
       '@effect/vitest':
         specifier: 0.24.1
-        version: 0.24.1(effect@3.16.14)(vitest@3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
+        version: 0.24.1(effect@3.16.16)(vitest@3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))
       '@eslint/js':
         specifier: 9.31.0
         version: 9.31.0
@@ -139,8 +139,8 @@ importers:
         specifier: 1.4.8
         version: 1.4.8
       '@stylistic/eslint-plugin':
-        specifier: 5.1.0
-        version: 5.1.0(eslint@9.31.0(jiti@2.4.2))
+        specifier: 5.2.0
+        version: 5.2.0(eslint@9.31.0(jiti@2.4.2))
       '@tim-smart/openapi-gen':
         specifier: 0.4.13
         version: 0.4.13
@@ -225,128 +225,64 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-apigatewaymanagementapi@3.844.0':
-    resolution: {integrity: sha512-oNzcj2AXPHZZh2p3+on1ocPan6XOi+ntpscanAZElkInuMA9XSbnHI0tN01H2CtPNJYHBx+XAygCanXxtyk8uA==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/client-apigatewaymanagementapi@3.846.0':
     resolution: {integrity: sha512-lyqmNjsKcQGCFoNPwhSmVZRn+ssLvKFqdBaK+l1VVX+M6TjgD6MfgZdvvxtpVpbbk7hquoom4UkOTBBu6Oo/BQ==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/client-dynamodb@3.844.0':
-    resolution: {integrity: sha512-QpgRluxFBKC/dx62WB1lO+HNmQEFd+xJRvh7oo8JMh9LnH3RIHWPbY2QlhndS4ST46p45cvtLC8LRpquFLpLDg==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/client-dynamodb@3.846.0':
     resolution: {integrity: sha512-E8xWvOgTUmZZ+7wcc78QxGiN6FjOBPDHIuRiM1Ge8p2wkX9fZeMIP/EsQfrtz+1Sg6qgUtbVAnZsgVEOW8eNSg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/client-eventbridge@3.844.0':
-    resolution: {integrity: sha512-LwBNbt9VNU7VEHxLdMBme5dY1QIF65jt6lu5WcCc4AH6sfHyLAAEu2N3HDmFc/4uqWmkxgESQ8Nr/bfFzXz2gw==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/client-eventbridge@3.846.0':
     resolution: {integrity: sha512-RtbrkR8wa2Yg4TWOvunosOpmYD+Nm78dgYqHB/DoyO2WVHvpZnLI6fsZwsJBzZPcJqFp4TQk4msPnFgpA6enLw==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/client-lambda@3.844.0':
-    resolution: {integrity: sha512-tPq+gxhbyZvYP7sqkxPNbDTtxGsOg+RZnyAvoZHH19kFk9zkkHIJi54Qo8ydg8OZqWC7LZtAbpIIQTmRWirVyQ==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/client-lambda@3.846.0':
     resolution: {integrity: sha512-kMOr1XjKXZyazfXhEyYFz8t2Tx/fT/93GVb2arHAd1KZvFaydUmN618SnHlmFnvFEZYc4WQrSi9Eh+3YBOLbhw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/client-scheduler@3.844.0':
-    resolution: {integrity: sha512-TDAa99f62mriUCYmKb7XRBrdbvY42bNqi7gmXXVIFOwPszvJeCDSU8GwiRSUzTJ/fvawEB9wep/VKOiyC+YeOw==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/client-scheduler@3.846.0':
     resolution: {integrity: sha512-EY0qE/7RuiwCkVBW6VgYLfnMiPaRVEW9w1hceQl66CTArlVzVqYo32B7dELF1nHOQQa5on/Xz4HpstEJUV5NZQ==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/client-sqs@3.844.0':
-    resolution: {integrity: sha512-UQXkQfJiyGTMqnNPkQJn+ReC9DGuYKcA9NxGitWp3iEzAwgJaoC7vkXrsMJeiv/kggghjcIaCCAMrxG+6RbXSg==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/client-sqs@3.846.0':
     resolution: {integrity: sha512-o5rmTA/vULgMcLAcW8CA3lM1ryYuPABMbtfdsHoiGn559zrFR0R0zP/IXZs2ZleVkPsGeEmNyZ+dg2cPrEgBaQ==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/client-ssm@3.844.0':
-    resolution: {integrity: sha512-y7E6lU8MJmPSKSWpUfICxZszSL7SufLoI/cFCJeEdhQh3Y6olxcZbF0PxNTYIskVR8ibHXsguUe981zIncRlwg==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/client-ssm@3.846.0':
     resolution: {integrity: sha512-WKXqVsa7r5n1d9RWdbn49B9YOWytL+ohLPd8uHVClCo5igBC0HhUQM7JwLcFiW93RwO/KGy01fKg3veHigiS6g==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/client-sso@3.844.0':
-    resolution: {integrity: sha512-FktodSx+pfUfIqMjoNwZ6t1xqq/G3cfT7I4JJ0HKHoIIZdoCHQB52x0OzKDtHDJAnEQPInasdPS8PorZBZtHmg==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/client-sso@3.846.0':
     resolution: {integrity: sha512-7MgMl3nlwf2ixad5Xe8pFHtcwFchkx37MEvGuB00tn5jyBp3AQQ4dK3iHtj2HjhXcXD0G67zVPvH4/QNOL7/gw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/core@3.844.0':
-    resolution: {integrity: sha512-pfpI54bG5Xf2NkqrDBC2REStXlDXNCw/whORhkEs+Tp5exU872D5QKguzjPA6hH+8Pvbq1qgt5zXMbduISTHJw==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/core@3.846.0':
     resolution: {integrity: sha512-7CX0pM906r4WSS68fCTNMTtBCSkTtf3Wggssmx13gD40gcWEZXsU00KzPp1bYheNRyPlAq3rE22xt4wLPXbuxA==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/credential-provider-env@3.844.0':
-    resolution: {integrity: sha512-WB94Ox86MqcZ4CnRjKgopzaSuZH4hMP0GqdOxG4s1it1lRWOIPOHOC1dPiM0Zbj1uqITIhbXUQVXyP/uaJeNkw==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/credential-provider-env@3.846.0':
     resolution: {integrity: sha512-QuCQZET9enja7AWVISY+mpFrEIeHzvkx/JEEbHYzHhUkxcnC2Kq2c0bB7hDihGD0AZd3Xsm653hk1O97qu69zg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-http@3.844.0':
-    resolution: {integrity: sha512-e+efVqfkhpM8zxYeiLNgTUlX+tmtXzVm3bw1A02U9Z9cWBHyQNb8pi90M7QniLoqRURY1B0C2JqkOE61gd4KNg==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/credential-provider-http@3.846.0':
     resolution: {integrity: sha512-Jh1iKUuepdmtreMYozV2ePsPcOF5W9p3U4tWhi3v6nDvz0GsBjzjAROW+BW8XMz9vAD3I9R+8VC3/aq63p5nlw==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/credential-provider-ini@3.844.0':
-    resolution: {integrity: sha512-jc5ArGz2HfAx5QPXD+Ep36+QWyCKzl2TG6Vtl87/vljfLhVD0gEHv8fRsqWEp3Rc6hVfKnCjLW5ayR2HYcow9w==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/credential-provider-ini@3.846.0':
     resolution: {integrity: sha512-GUxaBBKsYx1kOlRbcs77l6BVyG9K70zekJX+5hdwTEgJq7AoHl/XYoWiDxPf6zQ7J4euixPJoyRhpNbJjAXdFw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-node@3.844.0':
-    resolution: {integrity: sha512-pUqB0StTNyW0R03XjTA3wrQZcie/7FJKSXlYHue921ZXuhLOZpzyDkLNfdRsZTcEoYYWVPSmyS+Eu/g5yVsBNA==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/credential-provider-node@3.846.0':
     resolution: {integrity: sha512-du2DsXYRfQ8VIt/gXGThhT8KdUEt2j9W91W87Bl9IA5DINt4nSZv+gzh8LqHBYsTSqoUpKb+qIfP1RjZM/8r0A==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/credential-provider-process@3.844.0':
-    resolution: {integrity: sha512-VCI8XvIDt2WBfk5Gi/wXKPcWTS3OkAbovB66oKcNQalllH8ESDg4SfLNhchdnN8A5sDGj6tIBJ19nk+dQ6GaqQ==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/credential-provider-process@3.846.0':
     resolution: {integrity: sha512-mEpwDYarJSH+CIXnnHN0QOe0MXI+HuPStD6gsv3z/7Q6ESl8KRWon3weFZCDnqpiJMUVavlDR0PPlAFg2MQoPg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-sso@3.844.0':
-    resolution: {integrity: sha512-UNp/uWufGlb5nWa4dpc6uQnDOB/9ysJJFG95ACowNVL9XWfi1LJO7teKrqNkVhq0CzSJS1tCt3FvX4UfM+aN1g==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/credential-provider-sso@3.846.0':
     resolution: {integrity: sha512-Dxz9dpdjfxUsSfW92SAldu9wy8wgEbskn4BNWBFHslQHTmqurmR0ci4P1SMxJJKd498AUEoIAzZOtjGOC38irQ==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/credential-provider-web-identity@3.844.0':
-    resolution: {integrity: sha512-iDmX4pPmatjttIScdspZRagaFnCjpHZIEEwTyKdXxUaU0iAOSXF8ecrCEvutETvImPOC86xdrq+MPacJOnMzUA==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/credential-provider-web-identity@3.846.0':
@@ -356,12 +292,6 @@ packages:
   '@aws-sdk/endpoint-cache@3.804.0':
     resolution: {integrity: sha512-TQVDkA/lV6ua75ELZaichMzlp6x7tDa1bqdy/+0ZftmODPtKXuOOEcJxmdN7Ui/YRo1gkRz2D9txYy7IlNg1Og==}
     engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/lib-dynamodb@3.844.0':
-    resolution: {integrity: sha512-Zdv0dxyDTbCKN9AwdS8hUtW0QyMBbMuXFeHa1AhZ7mc1XACM8AF9e8840vZpSThLy+Hfp8Z0770xZfk8/DNPbA==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@aws-sdk/client-dynamodb': ^3.844.0
 
   '@aws-sdk/lib-dynamodb@3.846.0':
     resolution: {integrity: sha512-I72ZgPXSKkHyUV75yEHqxIrHeyzc1XjTVZy7buireHtXGsUGPIFpFMSP/X8aD12kAXhh9BwhUDbQ1DwGQEKg5w==}
@@ -385,32 +315,16 @@ packages:
     resolution: {integrity: sha512-Gu7lGDyfddyhIkj1Z1JtrY5NHb5+x/CRiB87GjaSrKxkDaydtX2CU977JIABtt69l9wLbcGDIQ+W0uJ5xPof7g==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/middleware-sdk-s3@3.844.0':
-    resolution: {integrity: sha512-vOD5reqZszXBWMbZFN3EUar203o2i8gcoTdrymY4GMsAPDsh0k8yd3VJRNPuxT/017tP6G+rQepOGzna4umung==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/middleware-sdk-s3@3.846.0':
     resolution: {integrity: sha512-jP9x+2Q87J5l8FOP+jlAd7vGLn0cC6G9QGmf386e5OslBPqxXKcl3RjqGLIOKKos2mVItY3ApP5xdXQx7jGTVA==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/middleware-sdk-sqs@3.844.0':
-    resolution: {integrity: sha512-zDf+a/SR8ODNQH0Jc1xoUEE/M+QzrdOV7eMuhoNla1rdmXyg20bAaJ5tY3AVqtk3P3jo0ssrBkjDG92Qw4nD/w==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/middleware-sdk-sqs@3.845.0':
     resolution: {integrity: sha512-jwRjpOsWgtBhHFSPOsUAVfAIMlQfNFq0WZDZ0gKPxVxxb8Q8LT+7e0wF8fGHrA8s7I6LQQ5opxTefNNDH5DjJg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/middleware-user-agent@3.844.0':
-    resolution: {integrity: sha512-SIbDNUL6ZYXPj5Tk0qEz05sW9kNS1Gl3/wNWEmH+AuUACipkyIeKKWzD6z5433MllETh73vtka/JQF3g7AuZww==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/middleware-user-agent@3.846.0':
     resolution: {integrity: sha512-85/oUc2jMXqQWo+HHH7WwrdqqArzhMmTmBCpXZwklBHG+ZMzTS5Wug2B0HhGDVWo9aYRMeikSq4lsrpHFVd2MQ==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/nested-clients@3.844.0':
-    resolution: {integrity: sha512-p2XILWc7AcevUSpBg2VtQrk79eWQC4q2JsCSY7HxKpFLZB4mMOfmiTyYkR1gEA6AttK/wpCOtfz+hi1/+z2V1A==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/nested-clients@3.846.0':
@@ -421,16 +335,8 @@ packages:
     resolution: {integrity: sha512-Qjnxd/yDv9KpIMWr90ZDPtRj0v75AqGC92Lm9+oHXZ8p1MjG5JE2CW0HL8JRgK9iKzgKBL7pPQRXI8FkvEVfrA==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/signature-v4-multi-region@3.844.0':
-    resolution: {integrity: sha512-QC8nocQcZ3Bj7vTnuL47iNhcuUjMC46E2L85mU+sPQo3LN2qBVGSOTF+xSWGvmSFDpkN4ZXUMVeA0cJoJFEDFA==}
-    engines: {node: '>=18.0.0'}
-
   '@aws-sdk/signature-v4-multi-region@3.846.0':
     resolution: {integrity: sha512-ZMfIMxUljqZzPJGOcraC6erwq/z1puNMU35cO1a/WdhB+LdYknMn1lr7SJuH754QwNzzIlZbEgg4hoHw50+DpQ==}
-    engines: {node: '>=18.0.0'}
-
-  '@aws-sdk/token-providers@3.844.0':
-    resolution: {integrity: sha512-Kh728FEny0fil+LeH8U1offPJCTd/EDh8liBAvLtViLHt2WoX2xC8rk98D38Q5p79aIUhHb3Pf4n9IZfTu/Kog==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/token-providers@3.846.0':
@@ -445,21 +351,11 @@ packages:
     resolution: {integrity: sha512-wmBJqn1DRXnZu3b4EkE6CWnoWMo1ZMvlfkqU5zPz67xx1GMaXlDCchFvKAXMjk4jn/L1O3tKnoFDNsoLV1kgNQ==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/util-dynamodb@3.844.0':
-    resolution: {integrity: sha512-idKpV8wDQUdmv7gDh3073pceujd1D6bGqYZTLXWprHBao44iyHnY97FIx8zhBEHLi4HxzD2HqHzpljTAOwgYjQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@aws-sdk/client-dynamodb': ^3.844.0
-
   '@aws-sdk/util-dynamodb@3.846.0':
     resolution: {integrity: sha512-mQLm2zbDa4T6ZHBwPJyoW8nwdG7AOJ7bbOvsOsK1/OEqBX7AtkWvGlQzwc4SmQmmOJDw9E1MiO9Kbrevozph8w==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@aws-sdk/client-dynamodb': ^3.846.0
-
-  '@aws-sdk/util-endpoints@3.844.0':
-    resolution: {integrity: sha512-1DHh0WTUmxlysz3EereHKtKoxVUG9UC5BsfAw6Bm4/6qDlJiqtY3oa2vebkYN23yltKdfsCK65cwnBRU59mWVg==}
-    engines: {node: '>=18.0.0'}
 
   '@aws-sdk/util-endpoints@3.845.0':
     resolution: {integrity: sha512-MBmOf0Pb4q6xs9V7jXT1+qciW2965yvaoZUlUUnxUEoX6zxWROeIu/gttASc4vSjOHr/+64hmFkxjeBUF37FJA==}
@@ -471,15 +367,6 @@ packages:
 
   '@aws-sdk/util-user-agent-browser@3.840.0':
     resolution: {integrity: sha512-JdyZM3EhhL4PqwFpttZu1afDpPJCCc3eyZOLi+srpX11LsGj6sThf47TYQN75HT1CarZ7cCdQHGzP2uy3/xHfQ==}
-
-  '@aws-sdk/util-user-agent-node@3.844.0':
-    resolution: {integrity: sha512-0eTpURp9Gxbyyeqr78ogARZMSWS5KUMZuN+XMHxNpQLmn2S+J3g+MAyoklCcwhKXlbdQq2aMULEiy0mqIWytuw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      aws-crt: '>=1.0.0'
-    peerDependenciesMeta:
-      aws-crt:
-        optional: true
 
   '@aws-sdk/util-user-agent-node@3.846.0':
     resolution: {integrity: sha512-MXYXCplw76xe8A9ejVaIru6Carum/2LQbVtNHsIa4h0TlafLdfulywsoMWL1F53Y9XxQSeOKyyqDKLNOgRVimw==}
@@ -754,20 +641,20 @@ packages:
       '@effect-aws/client-ssm': ^1.10.3
       effect: '>=3.0.4 <4.0.0'
 
-  '@effect/cluster@0.42.0':
-    resolution: {integrity: sha512-p1yLS1A5P112l2JVX8eb1OpO+TBn43EDi9wZu51aO+0Mtfdlo1RrnXrCXQIGeNGLziw8gbrTAgf5nUkzIlF+Cg==}
+  '@effect/cluster@0.43.0':
+    resolution: {integrity: sha512-qP122717xh+qehsiPRDcTGFg0iaZDbbQQ1AwJ0P5eAhfzU+N0xGLeq6fL6sBq9hIMXGi5oBCi0Or3wn2P693OQ==}
     peerDependencies:
-      '@effect/platform': ^0.88.0
-      '@effect/rpc': ^0.65.0
-      '@effect/sql': ^0.41.0
-      '@effect/workflow': ^0.5.0
-      effect: ^3.16.13
+      '@effect/platform': ^0.88.1
+      '@effect/rpc': ^0.65.1
+      '@effect/sql': ^0.42.0
+      '@effect/workflow': ^0.5.1
+      effect: ^3.16.14
 
-  '@effect/experimental@0.52.0':
-    resolution: {integrity: sha512-SqTmGQMNJTq8IZ0XKu3hDOD09YRiZLDbHfODu4r1yhhAfh93vn2x9waELQtiAbXcsjG/eMpbajcCc0KvFgFFIA==}
+  '@effect/experimental@0.52.2':
+    resolution: {integrity: sha512-CotYjNLYvSAsYYwTE1/NUr/XkiupoYi941lq3NWGrJrYWov3T6v3Gg2om/n29/WqoMYpnFn0ka2AixTWhcq9dg==}
     peerDependencies:
-      '@effect/platform': ^0.88.0
-      effect: ^3.16.13
+      '@effect/platform': ^0.88.1
+      effect: ^3.16.14
       ioredis: ^5
       lmdb: ^3
     peerDependenciesMeta:
@@ -776,38 +663,9 @@ packages:
       lmdb:
         optional: true
 
-  '@effect/language-service@0.27.0':
-    resolution: {integrity: sha512-ILN6c7s1rb7JhR2+yHNtAP+nygkRdsrEWZZRGyEuskGzOJ4QCUjXQk+K3yn6TYoulnzFzOEwW/KvfuKrA3jmAQ==}
+  '@effect/language-service@0.27.1':
+    resolution: {integrity: sha512-BTOiDMdHdEQhvt5LTTeLZUbpUoHSsH4Jy5MEUDJLPEOMMN6vVgi3AZteYHLBhmT9Rv+aTxeICdgRT+hGgCoQXw==}
     hasBin: true
-
-  '@effect/opentelemetry@0.54.0':
-    resolution: {integrity: sha512-2r5A2950Lo2Us1DPMBF+eMzEsJcCgPod2xpqAWwVh5TACR8po3S6bPkbAdarug3ptu6AdfeUpPMxkAFJjs4UlA==}
-    peerDependencies:
-      '@effect/platform': ^0.88.0
-      '@opentelemetry/api': ^1.9
-      '@opentelemetry/resources': ^2.0.0
-      '@opentelemetry/sdk-logs': '*'
-      '@opentelemetry/sdk-metrics': ^2.0.0
-      '@opentelemetry/sdk-trace-base': ^2.0.0
-      '@opentelemetry/sdk-trace-node': ^2.0.0
-      '@opentelemetry/sdk-trace-web': ^2.0.0
-      '@opentelemetry/semantic-conventions': ^1.33.0
-      effect: ^3.16.13
-    peerDependenciesMeta:
-      '@opentelemetry/api':
-        optional: true
-      '@opentelemetry/resources':
-        optional: true
-      '@opentelemetry/sdk-logs':
-        optional: true
-      '@opentelemetry/sdk-metrics':
-        optional: true
-      '@opentelemetry/sdk-trace-base':
-        optional: true
-      '@opentelemetry/sdk-trace-node':
-        optional: true
-      '@opentelemetry/sdk-trace-web':
-        optional: true
 
   '@effect/opentelemetry@0.54.1':
     resolution: {integrity: sha512-R4QecKh4Z6ATpBvo/JvBfMvdVNNeKtMsD9cSv1YiDoOEV3FrT35GKgmqkR5CC2a7iTSg4Z7pwG7ukqYpm2c1yQ==}
@@ -838,15 +696,6 @@ packages:
       '@opentelemetry/sdk-trace-web':
         optional: true
 
-  '@effect/platform-node-shared@0.43.0':
-    resolution: {integrity: sha512-kYlGo5eNDsfOkirBC4B4a83OtESc9x4r+JWCHNtnRswBnKKj8GgC90vL1ksNbfTnESzRCQ8/bfjPeyxHAffDAg==}
-    peerDependencies:
-      '@effect/cluster': ^0.42.0
-      '@effect/platform': ^0.88.0
-      '@effect/rpc': ^0.65.0
-      '@effect/sql': ^0.41.0
-      effect: ^3.16.13
-
   '@effect/platform-node-shared@0.44.0':
     resolution: {integrity: sha512-UvMExEu5TUdlzJRe2O87K8+ttie0VfA26J/82uAXCAMCmi139EQvzBEbX7yE1iYIruH9CmypKXKFLU61VxSlnw==}
     peerDependencies:
@@ -855,15 +704,6 @@ packages:
       '@effect/rpc': ^0.65.1
       '@effect/sql': ^0.42.0
       effect: ^3.16.14
-
-  '@effect/platform-node@0.90.0':
-    resolution: {integrity: sha512-U6WBUghdXYELtg5h+p5nzRV2ih0oPOoxnVrfvmR4UHQaOtvYbwu/Lexho59HBYdIqnYzHCi5KH12z8b6E0kv+Q==}
-    peerDependencies:
-      '@effect/cluster': ^0.42.0
-      '@effect/platform': ^0.88.0
-      '@effect/rpc': ^0.65.0
-      '@effect/sql': ^0.41.0
-      effect: ^3.16.13
 
   '@effect/platform-node@0.91.0':
     resolution: {integrity: sha512-oHDcCilVLX1YEK6u0ukaNuYb03wLaCUTlws5JaGXsBjjdMlf3+bEW9i30bKFmf+B+uXheflf8X3MyZ3p94sXZA==}
@@ -874,34 +714,23 @@ packages:
       '@effect/sql': ^0.42.0
       effect: ^3.16.14
 
-  '@effect/platform@0.88.0':
-    resolution: {integrity: sha512-ObTXedf/DshoKtM2ygEcoP7Kj9rop0KeDvLriQE2HD4Fgo1pxjgbOivkCbSq03MErpNE2/lMYTY6Si6bo4qMqQ==}
-    peerDependencies:
-      effect: ^3.16.13
-
   '@effect/platform@0.88.1':
     resolution: {integrity: sha512-12cRbqva8AFwEqCpa3d9nMmhvEYWk/lh/vo8Um4iOCFyTbc+ASe0zsI2MLJAVf1K0/TmpB0w+byEZLx6qCaxyw==}
     peerDependencies:
       effect: ^3.16.14
 
-  '@effect/rpc@0.65.0':
-    resolution: {integrity: sha512-L2ClFG7EKu0PDrsi2t5vYmUUE7f+CDz05sQiZFy05sDINXWw7mZ4y6SwvcDe8A8a00w/BPmqyHdYWnIascMWDw==}
+  '@effect/rpc@0.65.2':
+    resolution: {integrity: sha512-YRd9D5+1k5kniaAFbboEYbMH/jew8LmWMOS0C3s1w5ORqVQ5jggLIW0j3jpz/hofFLCQcNxiuSU1sP/a1k3pUg==}
     peerDependencies:
-      '@effect/platform': ^0.88.0
-      effect: ^3.16.13
+      '@effect/platform': ^0.88.1
+      effect: ^3.16.14
 
-  '@effect/sql@0.41.0':
-    resolution: {integrity: sha512-P3RuRm/PHEYInkFE0VUijWCWGyCviq2rnLLcTpdIRCy9quwGTh53kOnh9Go1pL+owGkq3WrP1T1hiAr5LzeNfg==}
+  '@effect/sql@0.42.0':
+    resolution: {integrity: sha512-qZGumAGPcrQA+nRIxSUGewvdIE2vXjhemgGt98pbMqPL87RiI4IOaN0GfI8BhYJQ/AQF0iweMUVSa7yIsVw82Q==}
     peerDependencies:
-      '@effect/experimental': ^0.52.0
-      '@effect/platform': ^0.88.0
-      effect: ^3.16.13
-
-  '@effect/vitest@0.24.0':
-    resolution: {integrity: sha512-t3o9OH+UskMIsZSoYv1cpG7PA/wBLbO+5Bzhlhrjp+5TxO1gaAE7/Up6SVUVwckXRprcthzxA1LPITtDHAEOCw==}
-    peerDependencies:
-      effect: ^3.16.13
-      vitest: ^3.2.0
+      '@effect/experimental': ^0.52.1
+      '@effect/platform': ^0.88.1
+      effect: ^3.16.14
 
   '@effect/vitest@0.24.1':
     resolution: {integrity: sha512-q5NVkJcmdiOlFLYhRLmeDfAk3maNDD4BYeeAr0Gy3TTXZWCX7hlWnzLoJpBVuJjjMJDC/HGxq9GFKxbP/oY7mQ==}
@@ -909,12 +738,12 @@ packages:
       effect: ^3.16.14
       vitest: ^3.2.0
 
-  '@effect/workflow@0.5.0':
-    resolution: {integrity: sha512-u50kYN7jt7bpQgywkEba/Oayuio6WInZI39hOhZUycWRVW1/c9MU4EXohhpzaGg0G0F+fRVVP66fx4fwcXnH/Q==}
+  '@effect/workflow@0.5.1':
+    resolution: {integrity: sha512-xPIMar+EXiOAl7QEhzLteE0CoYbsjtsWventyzzWrF3CvxoWNdZuBKtKx7rnyovNYLUr5FdXHz5mmj1tjamVOg==}
     peerDependencies:
-      '@effect/platform': ^0.88.0
-      '@effect/rpc': ^0.65.0
-      effect: ^3.16.13
+      '@effect/platform': ^0.88.1
+      '@effect/rpc': ^0.65.1
+      effect: ^3.16.14
 
   '@emnapi/core@1.4.4':
     resolution: {integrity: sha512-A9CnAbC6ARNMKcIcrQwq6HeHCjpcBZ5wSx4U01WXCqEKlrzB9F9315WDNHkrs2xbx7YjjSxbUYxuN6EQzpcY2g==}
@@ -1944,8 +1773,8 @@ packages:
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
-  '@stylistic/eslint-plugin@5.1.0':
-    resolution: {integrity: sha512-TJRJul4u/lmry5N/kyCU+7RWWOk0wyXN+BncRlDYBqpLFnzXkd7QGVfN7KewarFIXv0IX0jSF/Ksu7aHWEDeuw==}
+  '@stylistic/eslint-plugin@5.2.0':
+    resolution: {integrity: sha512-RCEdbREv9EBiToUBQTlRhVYKG093I6ZnnQ990j08eJ6uRZh71DXkOnoxtTLfDQ6utVCVQzrhZFHZP0zfrfOIjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=9.0.0'
@@ -2740,14 +2569,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.16.13:
-    resolution: {integrity: sha512-xJDgOhD7+3qIY1d8PGfkaPZMfmdJuSp2XAQgc9dVF8pSl1FJL6WK4ZUpMh177R+GH8XgPloT8dlZsEYUYDo1Ag==}
-
-  effect@3.16.14:
-    resolution: {integrity: sha512-nOOljl7q/h3NlV3RzY0CM+YLe6PHU2aOlk9+pWNQlkpLmBBgDGOd6wXaZ6Z6+B0LT64T5jKlzpy3QCrx+wFqnw==}
-
-  electron-to-chromium@1.5.184:
-    resolution: {integrity: sha512-zlaUk/wwnR/27FHNarzOtMgfxD1Q0/2Aby7PnURumQTal7yauqQ3c2HHcG/pjLFTvF3AWv44kMWyArVlfHeDlw==}
+  effect@3.16.16:
+    resolution: {integrity: sha512-q8jsuAJykQJJ9jDkR9VaAR1JeHnEDn49g6+LkveIcfW3nIPUJw6BrC9ZPaVCJWmU23vKoVj9XqJmC/EW8kiI8g==}
 
   electron-to-chromium@1.5.185:
     resolution: {integrity: sha512-dYOZfUk57hSMPePoIQ1fZWl1Fkj+OshhEVuPacNKWzC1efe56OsHY3l/jCfiAgIICOU3VgOIdoq7ahg7r7n6MQ==}
@@ -3620,9 +3443,6 @@ packages:
     resolution: {integrity: sha512-2eznPJP8z2BFLX50tf0LuODrpINqP1RVIm/CObbTcBRITQgmC/TjcREF1NeTBzIcR5XO/ukWo+YHOjBbFwIupg==}
     hasBin: true
 
-  multipasta@0.2.5:
-    resolution: {integrity: sha512-c8eMDb1WwZcE02WVjHoOmUVk7fnKU/RmUcosHACglrWAuPQsEJv+E8430sXj6jNc1jHw0zrS16aCjQh4BcEb4A==}
-
   multipasta@0.2.7:
     resolution: {integrity: sha512-KPA58d68KgGil15oDqXjkUBEBYc00XvbPj5/X+dyzeo/lWm9Nc25pQRlf1D+gv4OpK7NM0J1odrbu9JNNGvynA==}
 
@@ -3889,10 +3709,6 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
-
-  picomatch@4.0.2:
-    resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
-    engines: {node: '>=12'}
 
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
@@ -4796,50 +4612,6 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-apigatewaymanagementapi@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/client-apigatewaymanagementapi@3.846.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
@@ -4881,54 +4653,6 @@ snapshots:
       '@smithy/util-retry': 4.0.6
       '@smithy/util-utf8': 4.0.0
       tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@aws-sdk/client-dynamodb@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-endpoint-discovery': 3.840.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      '@smithy/util-waiter': 4.0.6
-      '@types/uuid': 9.0.8
-      tslib: 2.8.1
-      uuid: 9.0.1
     transitivePeerDependencies:
       - aws-crt
 
@@ -4980,51 +4704,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-eventbridge@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/signature-v4-multi-region': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/client-eventbridge@3.846.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
@@ -5066,55 +4745,6 @@ snapshots:
       '@smithy/util-middleware': 4.0.4
       '@smithy/util-retry': 4.0.6
       '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@aws-sdk/client-lambda@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/eventstream-serde-browser': 4.0.4
-      '@smithy/eventstream-serde-config-resolver': 4.1.2
-      '@smithy/eventstream-serde-node': 4.0.4
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-stream': 4.2.3
-      '@smithy/util-utf8': 4.0.0
-      '@smithy/util-waiter': 4.0.6
       tslib: 2.8.1
     transitivePeerDependencies:
       - aws-crt
@@ -5168,52 +4798,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-scheduler@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      '@types/uuid': 9.0.8
-      tslib: 2.8.1
-      uuid: 9.0.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/client-scheduler@3.846.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
@@ -5260,52 +4844,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sqs@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-sdk-sqs': 3.844.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/md5-js': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/client-sqs@3.846.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
@@ -5349,53 +4887,6 @@ snapshots:
       '@smithy/util-retry': 4.0.6
       '@smithy/util-utf8': 4.0.0
       tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@aws-sdk/client-ssm@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-node': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      '@smithy/util-waiter': 4.0.6
-      '@types/uuid': 9.0.8
-      tslib: 2.8.1
-      uuid: 9.0.1
     transitivePeerDependencies:
       - aws-crt
 
@@ -5446,49 +4937,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/client-sso@3.846.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
@@ -5532,24 +4980,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/core@3.844.0':
-    dependencies:
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/xml-builder': 3.821.0
-      '@smithy/core': 3.7.0
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/property-provider': 4.0.4
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/signature-v4': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-utf8': 4.0.0
-      fast-xml-parser: 5.2.5
-      tslib: 2.8.1
-
   '@aws-sdk/core@3.846.0':
     dependencies:
       '@aws-sdk/types': 3.840.0
@@ -5568,33 +4998,12 @@ snapshots:
       fast-xml-parser: 5.2.5
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-env@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/property-provider': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-
   '@aws-sdk/credential-provider-env@3.846.0':
     dependencies:
       '@aws-sdk/core': 3.846.0
       '@aws-sdk/types': 3.840.0
       '@smithy/property-provider': 4.0.4
       '@smithy/types': 4.3.1
-      tslib: 2.8.1
-
-  '@aws-sdk/credential-provider-http@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/property-provider': 4.0.4
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/util-stream': 4.2.3
       tslib: 2.8.1
 
   '@aws-sdk/credential-provider-http@3.846.0':
@@ -5610,24 +5019,6 @@ snapshots:
       '@smithy/util-stream': 4.2.3
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-ini@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/credential-provider-env': 3.844.0
-      '@aws-sdk/credential-provider-http': 3.844.0
-      '@aws-sdk/credential-provider-process': 3.844.0
-      '@aws-sdk/credential-provider-sso': 3.844.0
-      '@aws-sdk/credential-provider-web-identity': 3.844.0
-      '@aws-sdk/nested-clients': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/credential-provider-imds': 4.0.6
-      '@smithy/property-provider': 4.0.4
-      '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/credential-provider-ini@3.846.0':
     dependencies:
       '@aws-sdk/core': 3.846.0
@@ -5637,23 +5028,6 @@ snapshots:
       '@aws-sdk/credential-provider-sso': 3.846.0
       '@aws-sdk/credential-provider-web-identity': 3.846.0
       '@aws-sdk/nested-clients': 3.846.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/credential-provider-imds': 4.0.6
-      '@smithy/property-provider': 4.0.4
-      '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@aws-sdk/credential-provider-node@3.844.0':
-    dependencies:
-      '@aws-sdk/credential-provider-env': 3.844.0
-      '@aws-sdk/credential-provider-http': 3.844.0
-      '@aws-sdk/credential-provider-ini': 3.844.0
-      '@aws-sdk/credential-provider-process': 3.844.0
-      '@aws-sdk/credential-provider-sso': 3.844.0
-      '@aws-sdk/credential-provider-web-identity': 3.844.0
       '@aws-sdk/types': 3.840.0
       '@smithy/credential-provider-imds': 4.0.6
       '@smithy/property-provider': 4.0.4
@@ -5680,15 +5054,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-process@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/property-provider': 4.0.4
-      '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-
   '@aws-sdk/credential-provider-process@3.846.0':
     dependencies:
       '@aws-sdk/core': 3.846.0
@@ -5698,19 +5063,6 @@ snapshots:
       '@smithy/types': 4.3.1
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-sso@3.844.0':
-    dependencies:
-      '@aws-sdk/client-sso': 3.844.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/token-providers': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/property-provider': 4.0.4
-      '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/credential-provider-sso@3.846.0':
     dependencies:
       '@aws-sdk/client-sso': 3.846.0
@@ -5719,17 +5071,6 @@ snapshots:
       '@aws-sdk/types': 3.840.0
       '@smithy/property-provider': 4.0.4
       '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@aws-sdk/credential-provider-web-identity@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/nested-clients': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/property-provider': 4.0.4
       '@smithy/types': 4.3.1
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -5749,16 +5090,6 @@ snapshots:
   '@aws-sdk/endpoint-cache@3.804.0':
     dependencies:
       mnemonist: 0.38.3
-      tslib: 2.8.1
-
-  '@aws-sdk/lib-dynamodb@3.844.0(@aws-sdk/client-dynamodb@3.844.0)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.844.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/util-dynamodb': 3.844.0(@aws-sdk/client-dynamodb@3.844.0)
-      '@smithy/core': 3.7.0
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
       tslib: 2.8.1
 
   '@aws-sdk/lib-dynamodb@3.846.0(@aws-sdk/client-dynamodb@3.846.0)':
@@ -5800,23 +5131,6 @@ snapshots:
       '@smithy/types': 4.3.1
       tslib: 2.8.1
 
-  '@aws-sdk/middleware-sdk-s3@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-arn-parser': 3.804.0
-      '@smithy/core': 3.7.0
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/signature-v4': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/util-config-provider': 4.0.0
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-stream': 4.2.3
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-
   '@aws-sdk/middleware-sdk-s3@3.846.0':
     dependencies:
       '@aws-sdk/core': 3.846.0
@@ -5834,15 +5148,6 @@ snapshots:
       '@smithy/util-utf8': 4.0.0
       tslib: 2.8.1
 
-  '@aws-sdk/middleware-sdk-sqs@3.844.0':
-    dependencies:
-      '@aws-sdk/types': 3.840.0
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/util-hex-encoding': 4.0.0
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-
   '@aws-sdk/middleware-sdk-sqs@3.845.0':
     dependencies:
       '@aws-sdk/types': 3.840.0
@@ -5850,16 +5155,6 @@ snapshots:
       '@smithy/types': 4.3.1
       '@smithy/util-hex-encoding': 4.0.0
       '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-
-  '@aws-sdk/middleware-user-agent@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@smithy/core': 3.7.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/types': 4.3.1
       tslib: 2.8.1
 
   '@aws-sdk/middleware-user-agent@3.846.0':
@@ -5871,49 +5166,6 @@ snapshots:
       '@smithy/protocol-http': 5.1.2
       '@smithy/types': 4.3.1
       tslib: 2.8.1
-
-  '@aws-sdk/nested-clients@3.844.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/middleware-host-header': 3.840.0
-      '@aws-sdk/middleware-logger': 3.840.0
-      '@aws-sdk/middleware-recursion-detection': 3.840.0
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/region-config-resolver': 3.840.0
-      '@aws-sdk/types': 3.840.0
-      '@aws-sdk/util-endpoints': 3.844.0
-      '@aws-sdk/util-user-agent-browser': 3.840.0
-      '@aws-sdk/util-user-agent-node': 3.844.0
-      '@smithy/config-resolver': 4.1.4
-      '@smithy/core': 3.7.0
-      '@smithy/fetch-http-handler': 5.1.0
-      '@smithy/hash-node': 4.0.4
-      '@smithy/invalid-dependency': 4.0.4
-      '@smithy/middleware-content-length': 4.0.4
-      '@smithy/middleware-endpoint': 4.1.15
-      '@smithy/middleware-retry': 4.1.16
-      '@smithy/middleware-serde': 4.0.8
-      '@smithy/middleware-stack': 4.0.4
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/node-http-handler': 4.1.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-base64': 4.0.0
-      '@smithy/util-body-length-browser': 4.0.0
-      '@smithy/util-body-length-node': 4.0.0
-      '@smithy/util-defaults-mode-browser': 4.0.23
-      '@smithy/util-defaults-mode-node': 4.0.23
-      '@smithy/util-endpoints': 3.0.6
-      '@smithy/util-middleware': 4.0.4
-      '@smithy/util-retry': 4.0.6
-      '@smithy/util-utf8': 4.0.0
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
 
   '@aws-sdk/nested-clients@3.846.0':
     dependencies:
@@ -5967,15 +5219,6 @@ snapshots:
       '@smithy/util-middleware': 4.0.4
       tslib: 2.8.1
 
-  '@aws-sdk/signature-v4-multi-region@3.844.0':
-    dependencies:
-      '@aws-sdk/middleware-sdk-s3': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/signature-v4': 5.1.2
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-
   '@aws-sdk/signature-v4-multi-region@3.846.0':
     dependencies:
       '@aws-sdk/middleware-sdk-s3': 3.846.0
@@ -5984,18 +5227,6 @@ snapshots:
       '@smithy/signature-v4': 5.1.2
       '@smithy/types': 4.3.1
       tslib: 2.8.1
-
-  '@aws-sdk/token-providers@3.844.0':
-    dependencies:
-      '@aws-sdk/core': 3.844.0
-      '@aws-sdk/nested-clients': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/property-provider': 4.0.4
-      '@smithy/shared-ini-file-loader': 4.0.4
-      '@smithy/types': 4.3.1
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
 
   '@aws-sdk/token-providers@3.846.0':
     dependencies:
@@ -6018,22 +5249,9 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@aws-sdk/util-dynamodb@3.844.0(@aws-sdk/client-dynamodb@3.844.0)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.844.0
-      tslib: 2.8.1
-
   '@aws-sdk/util-dynamodb@3.846.0(@aws-sdk/client-dynamodb@3.846.0)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.846.0
-      tslib: 2.8.1
-
-  '@aws-sdk/util-endpoints@3.844.0':
-    dependencies:
-      '@aws-sdk/types': 3.840.0
-      '@smithy/types': 4.3.1
-      '@smithy/url-parser': 4.0.4
-      '@smithy/util-endpoints': 3.0.6
       tslib: 2.8.1
 
   '@aws-sdk/util-endpoints@3.845.0':
@@ -6053,14 +5271,6 @@ snapshots:
       '@aws-sdk/types': 3.840.0
       '@smithy/types': 4.3.1
       bowser: 2.11.0
-      tslib: 2.8.1
-
-  '@aws-sdk/util-user-agent-node@3.844.0':
-    dependencies:
-      '@aws-sdk/middleware-user-agent': 3.844.0
-      '@aws-sdk/types': 3.840.0
-      '@smithy/node-config-provider': 4.1.3
-      '@smithy/types': 4.3.1
       tslib: 2.8.1
 
   '@aws-sdk/util-user-agent-node@3.846.0':
@@ -6408,225 +5618,119 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect-aws/client-api-gateway-management-api@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-apigatewaymanagementapi': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-api-gateway-management-api@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-api-gateway-management-api@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-apigatewaymanagementapi': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-dynamodb@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-dynamodb@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-dynamodb@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-eventbridge@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-eventbridge': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-eventbridge@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-eventbridge@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-eventbridge': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-lambda@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-lambda': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-lambda@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-lambda@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-lambda': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-scheduler@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-scheduler': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-scheduler@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-scheduler@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-scheduler': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-sqs@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-sqs': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-sqs@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-sqs@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-sqs': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/client-ssm@1.10.3(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-ssm': 3.844.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/client-ssm@1.10.3(effect@3.16.14)':
+  '@effect-aws/client-ssm@1.10.3(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-ssm': 3.846.0
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/commons@0.3.0(effect@3.16.13)':
+  '@effect-aws/commons@0.3.0(effect@3.16.16)':
     dependencies:
       '@smithy/protocol-http': 5.1.2
       '@smithy/smithy-client': 4.4.7
       '@smithy/types': 4.3.1
-      effect: 3.16.13
+      effect: 3.16.16
 
-  '@effect-aws/commons@0.3.0(effect@3.16.14)':
-    dependencies:
-      '@smithy/protocol-http': 5.1.2
-      '@smithy/smithy-client': 4.4.7
-      '@smithy/types': 4.3.1
-      effect: 3.16.14
-
-  '@effect-aws/dynamodb@1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@aws-sdk/client-dynamodb': 3.844.0
-      '@aws-sdk/lib-dynamodb': 3.844.0(@aws-sdk/client-dynamodb@3.844.0)
-      '@effect-aws/client-dynamodb': 1.10.3(effect@3.16.13)
-      '@effect-aws/commons': 0.3.0(effect@3.16.13)
-      effect: 3.16.13
-    transitivePeerDependencies:
-      - aws-crt
-
-  '@effect-aws/dynamodb@1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.14))(effect@3.16.14)':
+  '@effect-aws/dynamodb@1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.16))(effect@3.16.16)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.846.0
       '@aws-sdk/lib-dynamodb': 3.846.0(@aws-sdk/client-dynamodb@3.846.0)
-      '@effect-aws/client-dynamodb': 1.10.3(effect@3.16.14)
-      '@effect-aws/commons': 0.3.0(effect@3.16.14)
-      effect: 3.16.14
+      '@effect-aws/client-dynamodb': 1.10.3(effect@3.16.16)
+      '@effect-aws/commons': 0.3.0(effect@3.16.16)
+      effect: 3.16.16
     transitivePeerDependencies:
       - aws-crt
 
-  '@effect-aws/lambda@1.5.1(@effect/platform-node-shared@0.43.0(@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)':
+  '@effect-aws/lambda@1.5.1(@effect/platform-node-shared@0.44.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      '@effect/platform-node-shared': 0.43.0(@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)
-      effect: 3.16.13
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      '@effect/platform-node-shared': 0.44.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
+      effect: 3.16.16
 
-  '@effect-aws/lambda@1.5.1(@effect/platform-node-shared@0.44.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)':
+  '@effect-aws/lib-dynamodb@1.10.5(@effect-aws/client-dynamodb@1.10.3(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@effect/platform-node-shared': 0.44.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
-      effect: 3.16.14
-
-  '@effect-aws/lib-dynamodb@1.10.5(@effect-aws/client-dynamodb@1.10.3(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect-aws/dynamodb': 1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.13))(effect@3.16.13)
+      '@effect-aws/dynamodb': 1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.16))(effect@3.16.16)
     transitivePeerDependencies:
       - '@effect-aws/client-dynamodb'
       - aws-crt
       - effect
 
-  '@effect-aws/lib-dynamodb@1.10.5(@effect-aws/client-dynamodb@1.10.3(effect@3.16.14))(effect@3.16.14)':
+  '@effect-aws/ssm@1.3.3(@effect-aws/client-ssm@1.10.3(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect-aws/dynamodb': 1.0.1(@effect-aws/client-dynamodb@1.10.3(effect@3.16.14))(effect@3.16.14)
-    transitivePeerDependencies:
-      - '@effect-aws/client-dynamodb'
-      - aws-crt
-      - effect
+      '@effect-aws/client-ssm': 1.10.3(effect@3.16.16)
+      effect: 3.16.16
 
-  '@effect-aws/ssm@1.3.3(@effect-aws/client-ssm@1.10.3(effect@3.16.13))(effect@3.16.13)':
+  '@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect-aws/client-ssm': 1.10.3(effect@3.16.13)
-      effect: 3.16.13
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      '@effect/rpc': 0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      '@effect/sql': 0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      '@effect/workflow': 0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
+      effect: 3.16.16
 
-  '@effect-aws/ssm@1.3.3(@effect-aws/client-ssm@1.10.3(effect@3.16.14))(effect@3.16.14)':
+  '@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect-aws/client-ssm': 1.10.3(effect@3.16.14)
-      effect: 3.16.14
-
-  '@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      '@effect/workflow': 0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)
-      effect: 3.16.13
-
-  '@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)':
-    dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@effect/workflow': 0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
-      effect: 3.16.14
-
-  '@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      effect: 3.16.13
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      effect: 3.16.16
       uuid: 11.1.0
 
-  '@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)':
-    dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      effect: 3.16.14
-      uuid: 11.1.0
+  '@effect/language-service@0.27.1': {}
 
-  '@effect/language-service@0.27.0': {}
-
-  '@effect/opentelemetry@0.54.0(@effect/platform@0.88.0(effect@3.16.13))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.36.0)(effect@3.16.13)':
+  '@effect/opentelemetry@0.54.1(@effect/platform@0.88.1(effect@3.16.16))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.36.0)(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
+      '@effect/platform': 0.88.1(effect@3.16.16)
       '@opentelemetry/semantic-conventions': 1.36.0
-      effect: 3.16.13
+      effect: 3.16.16
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/resources': 2.0.1(@opentelemetry/api@1.9.0)
@@ -6636,56 +5740,28 @@ snapshots:
       '@opentelemetry/sdk-trace-node': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-web': 2.0.1(@opentelemetry/api@1.9.0)
 
-  '@effect/opentelemetry@0.54.1(@effect/platform@0.88.1(effect@3.16.14))(@opentelemetry/api@1.9.0)(@opentelemetry/resources@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-logs@0.203.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-metrics@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-node@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-web@2.0.1(@opentelemetry/api@1.9.0))(@opentelemetry/semantic-conventions@1.36.0)(effect@3.16.14)':
+  '@effect/platform-node-shared@0.44.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@opentelemetry/semantic-conventions': 1.36.0
-      effect: 3.16.14
-    optionalDependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/resources': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-logs': 0.203.0(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-metrics': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-base': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-node': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/sdk-trace-web': 2.0.1(@opentelemetry/api@1.9.0)
-
-  '@effect/platform-node-shared@0.43.0(@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect/cluster': 0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
+      '@effect/cluster': 0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      '@effect/rpc': 0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      '@effect/sql': 0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
       '@parcel/watcher': 2.5.1
-      effect: 3.16.13
-      multipasta: 0.2.5
-      ws: 8.18.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@effect/platform-node-shared@0.44.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)':
-    dependencies:
-      '@effect/cluster': 0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@parcel/watcher': 2.5.1
-      effect: 3.16.14
+      effect: 3.16.16
       multipasta: 0.2.7
       ws: 8.18.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@0.90.0(@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)':
+  '@effect/platform-node@0.91.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/cluster': 0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      '@effect/platform-node-shared': 0.43.0(@effect/cluster@0.42.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      effect: 3.16.13
+      '@effect/cluster': 0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      '@effect/platform-node-shared': 0.44.0(@effect/cluster@0.43.0(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)
+      '@effect/rpc': 0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      '@effect/sql': 0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      effect: 3.16.16
       mime: 3.0.0
       undici: 7.11.0
       ws: 8.18.3
@@ -6693,83 +5769,37 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform-node@0.91.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)':
-    dependencies:
-      '@effect/cluster': 0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@effect/platform-node-shared': 0.44.0(@effect/cluster@0.42.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@effect/sql': 0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      effect: 3.16.14
-      mime: 3.0.0
-      undici: 7.11.0
-      ws: 8.18.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@effect/platform@0.88.0(effect@3.16.13)':
-    dependencies:
-      effect: 3.16.13
-      find-my-way-ts: 0.1.6
-      msgpackr: 1.11.4
-      multipasta: 0.2.5
-
-  '@effect/platform@0.88.1(effect@3.16.14)':
+  '@effect/platform@0.88.1(effect@3.16.16)':
     dependencies:
       '@opentelemetry/semantic-conventions': 1.36.0
-      effect: 3.16.14
+      effect: 3.16.16
       find-my-way-ts: 0.1.6
       msgpackr: 1.11.4
       multipasta: 0.2.7
 
-  '@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)':
+  '@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      effect: 3.16.13
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      effect: 3.16.16
 
-  '@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)':
+  '@effect/sql@0.42.0(@effect/experimental@0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      effect: 3.16.14
-
-  '@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect/experimental': 0.52.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      '@effect/platform': 0.88.0(effect@3.16.13)
+      '@effect/experimental': 0.52.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      '@effect/platform': 0.88.1(effect@3.16.16)
       '@opentelemetry/semantic-conventions': 1.36.0
-      effect: 3.16.13
+      effect: 3.16.16
       uuid: 11.1.0
 
-  '@effect/sql@0.41.0(@effect/experimental@0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)':
+  '@effect/vitest@0.24.1(effect@3.16.16)(vitest@3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
-      '@effect/experimental': 0.52.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@opentelemetry/semantic-conventions': 1.36.0
-      effect: 3.16.14
-      uuid: 11.1.0
-
-  '@effect/vitest@0.24.0(effect@3.16.13)(vitest@3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))':
-    dependencies:
-      effect: 3.16.13
+      effect: 3.16.16
       vitest: 3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
 
-  '@effect/vitest@0.24.1(effect@3.16.14)(vitest@3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0))':
+  '@effect/workflow@0.5.1(@effect/platform@0.88.1(effect@3.16.16))(@effect/rpc@0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16))(effect@3.16.16)':
     dependencies:
-      effect: 3.16.14
-      vitest: 3.2.4(@types/node@24.0.14)(jiti@2.4.2)(tsx@4.20.3)(yaml@2.8.0)
-
-  '@effect/workflow@0.5.0(@effect/platform@0.88.0(effect@3.16.13))(@effect/rpc@0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13))(effect@3.16.13)':
-    dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13)
-      effect: 3.16.13
-
-  '@effect/workflow@0.5.0(@effect/platform@0.88.1(effect@3.16.14))(@effect/rpc@0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14))(effect@3.16.14)':
-    dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      '@effect/rpc': 0.65.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14)
-      effect: 3.16.14
+      '@effect/platform': 0.88.1(effect@3.16.16)
+      '@effect/rpc': 0.65.2(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16)
+      effect: 3.16.16
 
   '@emnapi/core@1.4.4':
     dependencies:
@@ -7970,7 +7000,7 @@ snapshots:
 
   '@standard-schema/spec@1.0.0': {}
 
-  '@stylistic/eslint-plugin@5.1.0(eslint@9.31.0(jiti@2.4.2))':
+  '@stylistic/eslint-plugin@5.2.0(eslint@9.31.0(jiti@2.4.2))':
     dependencies:
       '@eslint-community/eslint-utils': 4.7.0(eslint@9.31.0(jiti@2.4.2))
       '@typescript-eslint/types': 8.37.0
@@ -8018,13 +7048,9 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@typed/id@0.17.2(effect@3.16.13)':
+  '@typed/id@0.17.2(effect@3.16.16)':
     dependencies:
-      effect: 3.16.13
-
-  '@typed/id@0.17.2(effect@3.16.14)':
-    dependencies:
-      effect: 3.16.14
+      effect: 3.16.16
 
   '@types/accepts@1.3.7':
     dependencies:
@@ -8814,19 +7840,11 @@ snapshots:
 
   detect-node@2.1.0: {}
 
-  dfx@0.123.0(@effect/platform@0.88.0(effect@3.16.13))(effect@3.16.13):
+  dfx@0.123.0(@effect/platform@0.88.1(effect@3.16.16))(effect@3.16.16):
     dependencies:
-      '@effect/platform': 0.88.0(effect@3.16.13)
+      '@effect/platform': 0.88.1(effect@3.16.16)
       discord-api-types: 0.38.16
-      effect: 3.16.13
-    optionalDependencies:
-      discord-verify: 1.2.0
-
-  dfx@0.123.0(@effect/platform@0.88.1(effect@3.16.14))(effect@3.16.14):
-    dependencies:
-      '@effect/platform': 0.88.1(effect@3.16.14)
-      discord-api-types: 0.38.16
-      effect: 3.16.14
+      effect: 3.16.16
     optionalDependencies:
       discord-verify: 1.2.0
 
@@ -8880,17 +7898,10 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.16.13:
+  effect@3.16.16:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
-
-  effect@3.16.14:
-    dependencies:
-      '@standard-schema/spec': 1.0.0
-      fast-check: 3.23.2
-
-  electron-to-chromium@1.5.184: {}
 
   electron-to-chromium@1.5.185: {}
 
@@ -9160,10 +8171,6 @@ snapshots:
   faye-websocket@0.11.4:
     dependencies:
       websocket-driver: 0.7.4
-
-  fdir@6.4.6(picomatch@4.0.2):
-    optionalDependencies:
-      picomatch: 4.0.2
 
   fdir@6.4.6(picomatch@4.0.3):
     optionalDependencies:
@@ -9787,8 +8794,6 @@ snapshots:
       dns-packet: 5.6.1
       thunky: 1.1.0
 
-  multipasta@0.2.5: {}
-
   multipasta@0.2.7: {}
 
   nanoid@3.3.11: {}
@@ -10049,8 +9054,6 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
-
-  picomatch@4.0.2: {}
 
   picomatch@4.0.3: {}
 
