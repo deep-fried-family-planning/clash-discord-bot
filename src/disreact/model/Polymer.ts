@@ -1,16 +1,19 @@
 /* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Element from '#disreact/model/Element.ts';
-import type * as Fn from '#disreact/model/Fn.ts';
-import type {Effector} from '#disreact/model/Fn.ts';
+import type * as Record from 'effect/Record';
+import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
+import * as PrimaryKey from 'effect/PrimaryKey';
 
 type MTag = Monomer['_tag'];
 type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
 
-type HookFn = (...args: any) => any;
+export namespace Polymer {
+
+}
 
 export interface Polymer<
   T extends MTag = MTag,
@@ -22,32 +25,52 @@ export interface Polymer<
   Traversable.Ancestor<Polymer>,
   Traversable.Descendent<Polymer>
 {
-  id    : string;
-  pc    : number;
-  rc    : number;
-  stack : Monomer[];
-  queue : Updater[];
-  flags : Set<any>;
+  id   : string;
+  pc   : number;
+  rc   : number;
+  stack: Monomer[];
+  queue: Updater[];
+
+  _flags: Set<any>;
+
   inputs: any[];
   assert: T;
   lazy(this: ThisType<Polymer>): Mono<T>;
   output: O;
 }
 
-export const isStateless = (self: Polymer) => self.stack.length === 0;
+export const isStateless = (self: Polymer) =>
+  self.stack.length === 0;
 
-export const isQueued = (self: Polymer) => self.queue.length === 0;
+export const isPending = (self: Polymer) =>
+  self.queue.length > 0;
 
 export const isChanged = (self: Polymer) => {
+  if (!self.stack.length) {
+    return false;
+  }
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+
+    if (monomer._tag === STATE) {
+      if (monomer.changed) {
+        return true;
+      }
+    }
+  }
   return false;
 };
+
+export const fromComponent = (elem: Element.Component): Polymer => elem.polymer;
+
+export const toComponent = (self: Polymer): Element.Component => self.origin!;
 
 const PolymerProto: Polymer = {
   pc    : 0,
   rc    : 0,
   stack : undefined as any,
   queue : undefined as any,
-  flags : undefined as any,
+  _flags: undefined as any,
   assert: undefined as any,
   lazy  : undefined as any,
   output: undefined as any,
@@ -63,34 +86,19 @@ const PolymerProto: Polymer = {
   },
 } as Polymer;
 
-const make = (origin: Element.Component): Polymer => {
+export const make = (elem: Element.Component): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
-  self.origin = origin;
+  self.id = PrimaryKey.value(elem);
+  self.ancestor = elem.origin;
+  self.origin = elem;
   self.stack = [];
   self.queue = [];
-  self.flags = origin._env.flags;
+  self._flags = elem._env.flags;
+
   return self;
 };
 
-export const mount = (origin: Element.Component): Polymer => {
-  return make(origin);
-};
-
-export const dispose = (self?: Polymer) => {
-  if (!self) {
-    return self;
-  }
-  if (self.queue.length) {
-    throw new Error('ope');
-  }
-  self.ancestor = undefined;
-  self.origin = undefined;
-  self.children = undefined;
-  (self.stack as any) = undefined;
-  (self.queue as any) = undefined;
-  (self.flags as any) = undefined;
-  return undefined;
-};
+export const makeStateless = (self: Polymer) => {};
 
 export const commit = (self: Polymer): Polymer => {
   if (!self.stack.length) {
@@ -109,13 +117,51 @@ export const commit = (self: Polymer): Polymer => {
   return self;
 };
 
-export interface H {
+export const dispose = (self: Polymer) => {
+  if (self.queue.length) {
+    throw new Error('ope');
+  }
+  self.ancestor = undefined;
+  self.origin = undefined;
+  self.children = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  (self._flags as any) = undefined;
+  return undefined;
+};
 
+export type Bundle = Record<string, readonly Monomer.Encoded[]>;
+
+export const isEmptyBundle = (bundle: Bundle) =>
+  Object.keys(bundle).length === 0;
+
+export const hydrate = dual<
+  (bundle: Bundle) => (self: Polymer) => Polymer,
+  (self: Polymer, bundle: Bundle) => Polymer
+>(2, (self, bundle) => {
+  if (!(self.id in bundle)) {
+    return self;
+  }
+  self.stack = bundle[self.id].map(hydrateMono);
+  delete bundle[self.id];
+  return self;
+});
+
+export const dehydrate = dual<
+  (bundle: Bundle) => (self: Polymer) => Bundle,
+  (self: Polymer, bundle: Bundle) => Bundle
+>(2, (self, bundle: Bundle) => {
+  bundle[self.id] = self.stack.map(dehydrateMono);
+  return bundle;
+});
+
+export interface Hook {
+  phase: 'Hydrate';
 }
 
 export const enqueue = (self: Polymer, monomer: Effector) => self.queue.push(monomer);
 
-export const dequeue = (self: Polymer) => self.queue.shift()?.dispatch;
+export const dequeue = (self: Polymer) => self.queue.shift();
 
 export const acquire = dual<
   <T extends MTag>(tag: T) => (self: Polymer<MTag>) => Polymer<T>,
@@ -132,14 +178,6 @@ export const lazy = dual<
   self.lazy = lazy;
   return self;
 });
-
-export interface Hook<T extends MTag> {
-  hydrate: boolean;
-  monomer: Mono<T>;
-  flags  : Set<Element.Component>;
-  element: Element.Component;
-  queue  : Effector[];
-}
 
 export const define = dual<
   <T extends MTag, O>(impl: (hook: Hook<T>) => O) => (self: Polymer<T>) => Polymer<T>,
@@ -197,6 +235,15 @@ export const hook = <A extends Monomer>(
   throw new Error('Hooks must be called in the same order as they are defined.');
 };
 
+export type Effector<E = never, R = never> =
+  | Effect.Effect<void, E, R>
+  | (
+      <E = never, R = never>() =>
+        | void
+        | Promise<void>
+        | Effect.Effect<void, E, R>
+      );
+
 export const
   STATE   = 1 as const,
   EFFECT  = 2 as const,
@@ -232,7 +279,7 @@ export namespace Monomer {
   }
   export interface Effect extends Inspectable.Inspectable {
     _tag    : typeof EFFECT;
-    update  : Fn.Effector;
+    update  : Effector;
     deps    : any[] | undefined;
     queued  : boolean;
     encoded?: | typeof EFFECT
@@ -303,7 +350,6 @@ const MonomerProto: Monomer = {
         return {
           _id : 'Monomer',
           _tag: 'Context',
-          _tag: this._tag,
         };
     }
   },
@@ -328,34 +374,6 @@ const MemoProto: Monomer.Memo = Object.assign(Object.create(MonomerProto), {
 const ContextProto: Monomer.Context = Object.assign(Object.create(MonomerProto), {
   _tag: CONTEXT,
 });
-
-const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
-  switch (monomer._tag) {
-    case STATE:
-      return [STATE, monomer.state];
-
-    case EFFECT:
-      if (!monomer.deps) {
-        return EFFECT;
-      }
-      return [EFFECT, monomer.deps];
-
-    case REF:
-      if (typeof monomer.state === 'function') {
-        return REF;
-      }
-      return [REF, monomer.state];
-
-    case MEMO:
-      if (!monomer.deps) {
-        return MEMO;
-      }
-      return [MEMO, monomer.deps];
-
-    case CONTEXT:
-      return CONTEXT;
-  }
-};
 
 const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
   if (Array.isArray(encoded)) {
@@ -408,17 +426,45 @@ const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
   }
 };
 
+const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
+  switch (monomer._tag) {
+    case STATE:
+      return [STATE, monomer.state];
+
+    case EFFECT:
+      if (!monomer.deps) {
+        return EFFECT;
+      }
+      return [EFFECT, monomer.deps];
+
+    case REF:
+      if (typeof monomer.state === 'function') {
+        return REF;
+      }
+      return [REF, monomer.state];
+
+    case MEMO:
+      if (!monomer.deps) {
+        return MEMO;
+      }
+      return [MEMO, monomer.deps];
+
+    case CONTEXT:
+      return CONTEXT;
+  }
+};
+
 export type Updater =
   | Updater.StateUpdater
   | Updater.EffectUpdater;
 
 export namespace Updater {
-  export type StateUpdater = {
+  export interface StateUpdater {
     _tag   : 'State';
     monomer: Monomer.State;
     action(): void;
   };
-  export type EffectUpdater = {
+  export interface EffectUpdater {
     _tag   : 'Effect';
     monomer: Monomer.Effect;
   };

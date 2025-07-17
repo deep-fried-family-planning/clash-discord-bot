@@ -1,4 +1,4 @@
-import * as Elem from '#disreact/model/Element.ts';
+import * as Element from '#disreact/model/Element.ts';
 import type * as Fn from '#disreact/model/Fn.ts';
 import * as Polymer from '#disreact/model/Polymer.ts';
 import type * as Progress from '#disreact/core/Progress.ts';
@@ -36,8 +36,8 @@ export interface Simulated<T extends string, P = any> {
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data      : A;
   entrypoint: string | typeof JsxRuntime.Fragment;
-  root      : Elem.Element;
-  flags     : Set<Elem.Element>;
+  root      : Element.Element;
+  flags     : Set<Element.Element>;
   final     : Deferred.Deferred<Progress.Checkpoint>;
   stream    : Mailbox.Mailbox<Progress.Progress>;
 }
@@ -86,7 +86,7 @@ export const fromFC = (
       self.entrypoint = fc.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('', props);
-      self.root = Elem.makeRoot(jsx, self);
+      self.root = Element.makeRoot(jsx, self);
       return self;
     }),
   );
@@ -100,7 +100,7 @@ export const fromJsx = (
       self.entrypoint = jsx.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
       self.hydrant = Polymer.hydrant('');
-      self.root = Elem.makeRoot(jsx, self);
+      self.root = Element.makeRoot(jsx, self);
       return self;
     }),
   );
@@ -115,7 +115,7 @@ export const fromSimulation = (
       self.entrypoint = entrypoint.id;
       self.hydrant = hydrant;
       self.data = data;
-      self.root = Elem.makeRoot(entrypoint.component, self);
+      self.root = Element.makeRoot(entrypoint.component, self);
       return self;
     }),
   );
@@ -125,7 +125,7 @@ export const forkFromEntrypoint = (self: Envelope, entrypoint: JsxRuntime.Entryp
   forked.entrypoint = entrypoint.id;
   forked.data = self.data;
   forked.hydrant = Polymer.hydrant(entrypoint.id);
-  forked.root = Elem.makeRoot(entrypoint.component, self);
+  forked.root = Element.makeRoot(entrypoint.component, self);
   forked.stream = self.stream;
   forked.final = self.final;
   forked.flags = new Set();

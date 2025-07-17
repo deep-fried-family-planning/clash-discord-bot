@@ -7,141 +7,36 @@ import * as Polymer from '#disreact/model/Polymer.ts';
 import {ModelEncoder} from '#disreact/model/ModelEncoder.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Data from 'effect/Data';
+import * as Effect from 'effect/Effect';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
+import {pipe} from 'effect/Function';
 
 export class RenderError extends Data.TaggedError('RenderError')<{}> {}
 
-export class FlushError extends Data.TaggedError('EffectError')<{}> {}
+const mutex = Effect.unsafeMakeSemaphore(1);
 
-export class InvokeError extends Data.TaggedError('InvokeError')<{}> {}
+const release = pipe(
+  E.sync(() => {
+    Hooks.active.polymer = undefined;
+  }),
+  E.andThen(mutex.release(1)),
+);
 
-export class HydrateError extends Data.TaggedError('HydrateError')<{}> {}
-
-export class DehydrateError extends Data.TaggedError('EncodeError')<{}> {}
-
-const flushComponent = (self: Element.Component) =>
-  E.iterate(self, {
-    while: (c) => Polymer.isQueued(c.polymer),
-    body : (c) => {
-      const effector = Polymer.dequeue(c.polymer)!;
-
-      return Fn.normalizeEffector(effector).pipe(
-        E.as(c),
-      );
-    },
-  });
-
-const
-  mutex   = E.unsafeMakeSemaphore(1),
-  acquire = mutex.take(1),
-  release = mutex.release(1);
-
-const initializeComponent = (elem: Element.Component) =>
-  acquire.pipe(
-    E.tap(() => {
-      Element.mount(elem);
+const renderElement = (elem: Element.Element) =>
+  pipe(
+    Effect.sync(() => {
       Hooks.active.polymer = elem.polymer;
     }),
-    E.andThen(
-      Element.render(elem),
-    ),
-    E.tap(() => {
+    Effect.andThen(Element.render(elem)),
+    Effect.map((children) => {
       Hooks.active.polymer = undefined;
-      return release;
+      return children;
     }),
-    E.tapDefect(() => release),
-    E.map((children) => Element.acceptRender(elem, children)),
-    E.tap(Element.flush(elem)),
+    mutex.withPermits(1),
   );
 
-const initializeFromStack = (stack: Stack.Stack<Element.Element>) =>
-  stack.pipe(
-    Stack.pop,
-    Element.toEither,
-    Either.map((elem) =>
-      elem.pipe(
-        initializeComponent,
-        E.map(Stack.pushAllInto(stack)),
-      ),
-    ),
-    Either.mapLeft((elem) =>
-      stack.pipe(
-        Stack.pushAll(elem.children),
-        E.succeed,
-      ),
-    ),
-    Either.merge,
-  );
 
-export const initialize = (root: Element.Element) =>
-  E.iterate(Stack.make(root), {
-    while: Stack.condition,
-    body : initializeFromStack,
-  });
-
-export const hydrateEntrypoint = (type: Jsx.Entrypoint | Fn.FC | Jsx.Jsx | string) => E.suspend(() => {
-  const id = typeof type === 'string' ? type :
-             typeof type === 'function' ? type.entrypoint :
-             Jsx.isJsx(type) ? type.entrypoint :
-             type.id;
-
-  if (!id) {
-    return E.fail(new HydrateError());
-  }
-  const entrypoint = Jsx.findEntrypoint(id);
-
-  if (!entrypoint) {
-    return E.fail(new HydrateError());
-  }
-  return E.succeed(entrypoint);
-});
-
-const hydrateComponent = (elem: Element.Component) =>
-  acquire.pipe(
-    E.flatMap(() => {
-      elem.polymer = Polymer.make(elem);
-      Hooks.active.polymer = elem.polymer;
-
-      return Fn.normalizePropsFC(elem.type, elem.props);
-    }),
-    E.tap(() => {
-      Hooks.active.polymer = undefined;
-      return release;
-    }),
-    E.tapDefect(() => release),
-    E.map((children) => {
-      Polymer.commit(elem.polymer);
-      elem.children = Element.fromJsxChildren(elem, children);
-      return elem.children;
-    }),
-    E.tap(() => {}),
-  );
-
-const hydrateFromStack = (stack: Stack.Stack<Element.Element>) =>
-  stack.pipe(
-    Stack.pop,
-    Element.toEither,
-    Either.map((elem) =>
-      elem.pipe(
-        hydrateComponent,
-        E.map(Stack.pushAllInto(stack)),
-      ),
-    ),
-    Either.mapLeft((elem) =>
-      stack.pipe(
-        Stack.pushAll(elem.children),
-        E.succeed,
-      ),
-    ),
-    Either.merge,
-  );
-
-export const hydrate = (root: Element.Element) =>
-  E.iterate(Stack.make(root), {
-    while: Stack.condition,
-    body : hydrateFromStack,
-  });
 
 export const encode = (root: Element.Element) => ModelEncoder.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],

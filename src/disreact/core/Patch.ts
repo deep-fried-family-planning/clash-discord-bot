@@ -48,6 +48,12 @@ export type Insert<A> = {
   these: A[];
 };
 
+export type Move<A> = {
+  _tag: 'Move';
+  from: number;
+  to  : number;
+};
+
 export type Remove<A> = {
   _tag : 'Remove';
   at   : number;

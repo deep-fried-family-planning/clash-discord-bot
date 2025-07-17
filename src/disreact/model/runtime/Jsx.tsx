@@ -4,9 +4,12 @@ import * as E from 'effect/Effect';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
+import type * as Pipeable from 'effect/Pipeable';
 
 export interface FC<P = any> {
-  displayName?: string;
+  readonly entrypoint?: string;
+  displayName?        : string;
+
   <E = never, R = never>(props: P):
     | Children
     | Promise<Children>
@@ -70,7 +73,8 @@ export type Type = | string
                    | typeof Fragment
                    | FC;
 
-export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable
+export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable,
+  Pipeable.Pipeable
 {
   readonly [TypeId]   : typeof TypeId;
   readonly jsx        : boolean;
@@ -96,10 +100,12 @@ export type Child = | Value
 export type Children = | Child
                        | readonly Child[];
 
-export const isJsx = (u: Children): u is Jsx =>
+export const isJsx = (u: unknown): u is Jsx =>
   u != null &&
   typeof u === 'object' &&
   TypeId in u;
+
+export const isChilds = (u: unknown): u is readonly Child[] => Array.isArray(u);
 
 const Proto: Jsx = {
   [TypeId]  : TypeId,
@@ -112,17 +118,18 @@ const Proto: Jsx = {
   child     : undefined,
   childs    : undefined as any,
   ...Inspectable.BaseProto,
+  ...Pipeable.Prototype,
   toJSON() {
-    const props = {...this.props};
-    delete props.children;
+    const self = clone(this);
+    delete self.props.children;
 
     return {
       _id       : 'Jsx',
-      entrypoint: this.entrypoint,
-      key       : this.key,
-      type      : this.type === Fragment ? 'Fragment' : this.type,
-      props     : props,
-      children  : this.child ?? this.childs,
+      entrypoint: self.entrypoint,
+      key       : self.key,
+      type      : self.type === Fragment ? 'Fragment' : self.type,
+      props     : self.props,
+      children  : self.child ?? self.childs,
     };
   },
 };
@@ -168,9 +175,9 @@ export interface Entrypoint {
   component: Jsx;
 }
 
-const entries = GlobalValue.globalValue(TypeId, () => new Map<string, Entrypoint>());
+const entries = GlobalValue.globalValue(TypeId, () => new Map<string, FC | Jsx>());
 
-export const makeEntrypoint = (id: string, type: FC | Jsx): Entrypoint => {
+export const makeEntrypoint = <A extends FC | Jsx>(id: string, type: A): A => {
   if (entries.has(id)) {
     throw new Error(`Duplicate entrypoint: ${id}`);
   }

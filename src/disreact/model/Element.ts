@@ -1,30 +1,36 @@
 /* eslint-disable no-case-declarations */
-import {StructProto} from '#disreact/core/constants.ts';
+import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/core/constants.ts';
 import * as Patch from '#disreact/core/Patch.ts';
 import * as Progress from '#disreact/core/Progress.ts';
-import type * as Traversable from '#disreact/core/Traversable.ts';
+import * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/Envelope.ts';
 import * as Event from '#disreact/model/Event.ts';
-import * as Fn from '#disreact/model/Fn.ts';
+import type {JsxEncoding} from '#disreact/model/types.ts';
 import * as Polymer from '#disreact/model/Polymer.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import {Effectable} from 'effect';
+import * as Array from 'effect/Array';
+import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
-import {pipe} from 'effect/Function';
+import {dual, flow, pipe} from 'effect/Function';
 import type * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
+import * as P from 'effect/Predicate';
 import * as Predicate from 'effect/Predicate';
+import * as PrimaryKey from 'effect/PrimaryKey';
 
 export type FCKind = | 'Sync'
                      | 'Async'
                      | 'Effect'
                      | undefined;
 
-export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable, Hash.Hash
+export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable,
+  Hash.Hash
 {
   _tag        : K;
   _id         : string;
@@ -33,7 +39,6 @@ export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable, 
   entrypoint? : string | undefined;
   displayName?: string;
   source      : string;
-
   <P = any, E = never, R = never>(props?: P):
     K extends 'Sync' ? Jsx.Children :
     K extends 'Async' ? Promise<Jsx.Children> :
@@ -59,12 +64,7 @@ const PropsProto: Props = {
   onsubmit: undefined,
   ...StructProto,
   ...Inspectable.BaseProto,
-  toJSON() {
-    return {
-      _id  : 'Props',
-      value: {...this},
-    };
-  },
+  toJSON  : propsToJSON,
 } as Props;
 
 const makeProps = (props: any): Props => {
@@ -74,33 +74,43 @@ const makeProps = (props: any): Props => {
   );
 };
 
-export const TEXT      = 'Text',
-             FRAGMENT  = 'Fragment',
-             INTRINSIC = 'Intrinsic',
-             COMPONENT = 'Component';
+export const TEXT      = 'Text' as const,
+             FRAGMENT  = 'Fragment' as const,
+             INTRINSIC = 'Intrinsic' as const,
+             COMPONENT = 'Component' as const;
 
-export type Type = | Text
-                   | Fragment
-                   | Intrinsic
-                   | Component;
+export namespace Element {
+  export type Effect<E = never, R = never> = Effect.Effect<Element, E, R>;
+  export type Tag = | typeof TEXT
+                    | typeof FRAGMENT
+                    | typeof INTRINSIC
+                    | typeof COMPONENT;
+  export type TType<T extends Tag> =
+    T extends typeof TEXT ? undefined :
+    T extends typeof FRAGMENT ? typeof Jsx.Fragment :
+    T extends typeof INTRINSIC ? string :
+    FC;
+  export type TProps<T extends Tag> =
+    T extends typeof TEXT ? undefined :
+    Props;
+}
 
-export interface Element extends Inspectable.Inspectable,
+export interface Element<T extends Element.Tag = Element.Tag> extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Equal.Equal,
-  Traversable.Meta,
+  PrimaryKey.PrimaryKey,
+  Traversable.Origin<Polymer.Polymer>,
   Traversable.Ancestor<Element>,
-  Traversable.Descendent<Element>
+  Traversable.Descendent<Element>,
+  Traversable.Key
 {
-  binds?   : Boundary;
-  bound    : Boundary;
-  _tag     : typeof TEXT | typeof FRAGMENT | typeof INTRINSIC | typeof COMPONENT;
-  _env     : Envelope.Envelope;
-  key?     : string | undefined;
-  type?    : typeof Jsx.Fragment | string | FC | undefined;
-  props?   : Props | undefined;
-  polymer? : Polymer.Polymer;
-  text?    : any;
-  rendered?: Element[] | undefined;
+  _tag   : T;
+  _env   : Envelope.Envelope;
+  polymer: Polymer.Polymer;
+  key    : string | undefined;
+  type   : Element.TType<T>;
+  props  : Element.TProps<T>;
+  text   : Jsx.Value;
 }
 
 export interface Text extends Element {
@@ -120,10 +130,9 @@ export interface Intrinsic extends Element {
 }
 
 export interface Component extends Element {
-  _tag   : typeof COMPONENT;
-  type   : FC;
-  props  : Props;
-  polymer: Polymer.Polymer;
+  _tag : typeof COMPONENT;
+  type : FC;
+  props: Props;
 }
 
 export const isElement = (u: unknown): u is Element =>
@@ -139,35 +148,50 @@ export const isIntrinsic = (u: Element): u is Intrinsic => u._tag === INTRINSIC;
 
 export const isComponent = (u: Element): u is Component => u._tag === COMPONENT;
 
-export const isEqual = (a: Element, b: Element) =>
-  Equal.equals(a, b);
+export const Equivalence = dual<
+  (that: Element) => (self: Element) => boolean,
+  (self: Element, that: Element) => boolean
+>(2, Equal.equals);
 
-export const isTypeChanged = (a: Element, b: Element) =>
-  a._tag !== b._tag
-  || a.type !== b.type;
+export const TypeDifference = dual<
+  (that: Element) => (self: Element) => boolean,
+  (self: Element, that: Element) => boolean
+>(2, (a, b) => Equal.equals(a.type, b.type));
 
-export const isTextChanged = (a: Element, b: Element) =>
-  a.text !== b.text;
+export const PropsDifference = dual<
+  (that: Element) => (self: Element) => boolean,
+  (self: Element, that: Element) => boolean
+>(2, (a, b) => Equal.equals(a.props, b.props));
 
-export const isPropsChanged = (a: Element, b: Element) =>
-  !Equal.equals(a.props, b.props);
-
-export const isStateChanged = (a: Element) =>
-  a.polymer
+export const StateDifference = (a: Element) =>
+  isComponent(a)
+  && a.polymer
   && Polymer.isChanged(a.polymer);
+
+export const using = dual<
+  <A>(f: (self: Element) => A) => (self: Element) => A,
+  <A>(self: Element, f: (self: Element) => A) => A
+>(2, (self, f) => f(self));
+
+export const modify = dual<
+  <A>(f: (self: Element) => A) => (self: Element) => Element,
+  <A>(self: Element, f: (self: Element) => A) => Element
+>(2, (self, f) => {
+  const that = f(self);
+  return update(self)(that);
+});
 
 const ElementProto: Element = {
   _tag    : INTRINSIC,
   _env    : undefined as any,
-  binds   : undefined as any,
-  bound   : undefined as any,
-  type    : undefined,
-  key     : undefined,
-  text    : undefined,
+  origin  : undefined as any,
   ancestor: undefined,
   children: undefined,
-  rendered: undefined,
-  polymer: undefined,
+  polymer : undefined as any,
+  type    : undefined,
+  props   : undefined as any,
+  key     : undefined,
+  text    : undefined,
   trie    : '',
   step    : '',
   depth   : 0,
@@ -175,18 +199,13 @@ const ElementProto: Element = {
   ...StructProto,
   ...Inspectable.BaseProto,
   ...Pipeable.Prototype,
-  toJSON() {
-    return {
-      _id     : 'Element',
-      _tag    : this._tag,
-      type    : this.type,
-      text    : this.text,
-      key     : this.key,
-      props   : this.props,
-      polymer : this.polymer,
-      children: this.children,
-    };
+  [PrimaryKey.symbol]() {
+    if (!this.ancestor) {
+      return 'root';
+    }
+    return `${PrimaryKey.value(this.ancestor)}`;
   },
+  toJSON: elementToJSON,
 };
 
 const TextProto: Text = Object.assign(Object.create(ElementProto), {
@@ -211,7 +230,7 @@ const makeText = (text: any): Text => {
   return self;
 };
 
-const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
+const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
     case 'string':
       const rest = Object.create(IntrinsicProto) as Intrinsic;
@@ -226,12 +245,17 @@ const make = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
       func.type = jsx.type as FC;
       func.props = makeProps(jsx.props);
       return func;
+
+    case 'symbol':
+      const fragment = Object.create(FragmentProto) as Fragment;
+      fragment.key = jsx.key;
+      fragment.type = jsx.type;
+      fragment.props = makeProps(jsx.props);
+      return fragment;
+
+    default:
+      throw new Error(`Invalid Element type: ${jsx.type}`);
   }
-  const self = Object.create(FragmentProto) as Fragment;
-  self.key = jsx.key;
-  self.type = Jsx.Fragment;
-  self.props = makeProps(jsx.props);
-  return self;
 };
 
 export interface Boundary {
@@ -246,24 +270,43 @@ const makeBoundary = (source?: Element): Boundary => {
   };
 };
 
+export const makeRoot = dual<
+  (env: Envelope.Envelope) => (jsx: Jsx.Jsx) => Element,
+  (jsx: Jsx.Jsx, env: Envelope.Envelope) => Element
+>(2, (jsx, env) =>
+  jsx.pipe(
+    Jsx.clone,
+    fromJsx,
+    Traversable.setRootKey(),
+    Traversable.setOrigin(),
+    Traversable.setChildren,
+  ),
+);
+
 export const makeRoot = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
-  const root = make(Jsx.clone(jsx));
+  const root = fromJsx(Jsx.clone(jsx));
   root._env = env;
-  root.binds = makeBoundary(root);
-  root.bound = root.binds;
   root.trie = step(root);
   root.step = step(root);
   root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
-  return root;
+  return root.pipe(
+    Traversable.setRootKey(),
+    Traversable.setOrigin(Polymer.make(root)),
+    Traversable.setChildren(fromJsxChildren(root, jsx.childs ?? jsx.childs)),
+  );
 };
 
-const fromJsxChild = (cur: Element, c: Jsx.Child, index: number): Element => {
+const fromJsxChild = (
+  cur: Element,
+  c: Jsx.Child,
+  index: number,
+): Element => {
   if (!c || typeof c !== 'object') {
     const child = makeText(c);
-    child.bound = cur.bound;
+    child.origin = cur.origin;
     return connect(cur, child, index);
   }
-  const child = make(c);
+  const child = fromJsx(c);
   child.bound = cur.bound;
 
   if (child._tag === COMPONENT) {
@@ -279,7 +322,7 @@ export const fromJsxChildren = (cur: Element, cs: Jsx.Children): Element[] | und
   if (!cs) {
     return undefined;
   }
-  if (Array.isArray(cs)) {
+  if (globalThis.Array.isArray(cs)) {
     const children = [] as Element[];
 
     for (let i = 0; i < cs.length; i++) {
@@ -303,7 +346,7 @@ const trieId = (self: Element) =>
 const keyId = (self: Element) =>
   self.key ?? self.trie;
 
-const connect = <A extends Element>(self: Element, that: A, index: number): A => {
+const connect = (self: Element, that: Element, index: number): Element => {
   that._env = self._env;
   that.ancestor = self;
   that.depth = self.depth + 1;
@@ -313,13 +356,16 @@ const connect = <A extends Element>(self: Element, that: A, index: number): A =>
   return that;
 };
 
-export const update = (self: Element, that: Element): Element => {
+export const update = dual<
+  (that: Element) => (self: Element) => Element,
+  (self: Element, that: Element) => Element
+>(2, (self, that) => {
+  self.index = that.index;
   self.props = that.props;
-  self.text = that.text;
-  throw new Error();
-};
+  return self;
+});
 
-export const replace = (self: Element, at: number, that: Element): Element => {
+const replace = (self: Element, at: number, that: Element): Element => {
   return self.children!.splice(at, 1, that)[0];
 };
 
@@ -340,10 +386,25 @@ export const toEither = (self: Element): Either.Either<Component, Element> =>
   isComponent(self)
   ? Either.right(self)
   : Either.left(self);
+Array.ensure;
 
-export const toStackPush = (self: Element): Element[] =>
-  self.children?.toReversed()
-  ?? [];
+export const toKey = (s: Element) =>
+  Option.fromNullable(s.key);
+
+export const toType = (s: Element) =>
+  Option.fromNullable(s.type);
+
+export const toProps = (s: Element) =>
+  Option.fromNullable(s.props);
+
+export const toChildren = (s: Element) =>
+  Option.fromNullable(s.children);
+
+export const toStackPush = (self: Element) =>
+  self.pipe(
+    Traversable.toReversedChildren,
+    Option.fromNullable,
+  );
 
 export const toProgress = (self: Element): Progress.Partial => {
   return Progress.partial(self._env.entrypoint as any, self);
@@ -364,72 +425,80 @@ export const fromHashSet = (cs: HashMap.HashMap<string, Element>) =>
     Option.getOrElse(() => cs.pipe(HashMap.toValues)),
   );
 
-export const diffStrict = (self: Element, that: Element) =>
-  Equal.equals(self, that)
-  ? Option.some(Patch.skip())
-  : Option.none();
+export const combine = dual<
+  (that: Patch.Patch<Element>) => (self: Patch.Patch<Element>) => Patch.Patch<Element>,
+  (self: Patch.Patch<Element>, that: Patch.Patch<Element>) => Patch.Patch<Element>
+>(2, (self, that) =>
+  Patch.andThen(self, that),
+);
 
-export const diffType = (self: Element, that: Element) =>
-  isTypeChanged(self, that)
-  ? Option.some(Patch.replace(self, that))
-  : Option.none();
-
-export const diffText = (self: Element, that: Element) =>
-  isTextChanged(self, that)
-  ? Option.some(Patch.replace(self, that))
-  : Option.none();
-
-export const diffProps = (self: Element, that: Element) =>
-  isPropsChanged(self, that)
-  ? Option.some(Patch.update(self, that))
-  : Option.none();
-
-export const diffPolymer = (self: Element, that: Element) =>
-  isStateChanged(self)
-  ? Option.some(Patch.update(self, that))
-  : Option.none();
-
-export const diff = (self: Element, that: Element) => {
-  if (isEqual(self, that)) {
+export const diff = dual<
+  (that: Element) => (self: Element) => Patch.Patch<Element>,
+  (self: Element, that: Element) => Patch.Patch<Element>
+>(2, (s, t) => {
+  if (Equivalence(s, t)) {
     return Patch.skip();
   }
-  if (isTypeChanged(self, that)) {
-    return Patch.replace(self, that);
+  if (TypeDifference(s, t)) {
+    return Patch.replace(s, t);
   }
-  if (isTextChanged(self, that)) {
-    return Patch.update(self, that);
+  if (PropsDifference(s, t)) {
+    return Patch.update(s, t);
   }
-  if (isPropsChanged(self, that)) {
-    return Patch.update(self, that);
-  }
-  if (isStateChanged(self)) {
-    return Patch.update(self, that);
+  if (StateDifference(s)) {
+    return Patch.update(s, t);
   }
   return Patch.skip();
-};
+});
 
-export const unmount = (self: Element) =>
-  Effect.sync(() => {
-    (self._env as any) = undefined;
-    (self.binds as any) = undefined;
-    (self.bound as any) = undefined;
-    (self.props as any) = undefined;
-    (self.polymer as any) = Polymer.dispose(self.polymer);
-    self.ancestor = undefined;
-    self.children = undefined;
-  });
+export const patch = dual<
+  (self: Element) => (patch: Patch.Patch<Element>) => Element,
+  (patch: Patch.Patch<Element>, self: Element) => Element
+>(2, (patch, self) => {
+  switch (patch._tag) {
+    case 'Skip':
+      return self;
+    case 'Replace':
+      return patch.that;
+    case 'Update':
+      return update(self)(patch.that);
+  }
+  return self;
+});
 
-export const mount = (self: Component) => {
-  self.polymer = Polymer.mount(self);
+export const assertComponent = flow(
+  Option.liftPredicate(isComponent),
+  Option.getOrThrow,
+);
+
+export const mount = (input: Element) => {
+  const self = assertComponent(input);
+  self.polymer = Polymer.make(self);
   return self;
 };
 
-export const hydrate = (self: Component) => {
-  throw new Error();
-  return self;
-};
+export const hydrate = dual<
+  (that: Polymer.Bundle) => (self: Element) => Element,
+  (self: Element, that: Polymer.Bundle) => Element
+>(2, (input, encoding) =>
+  input.pipe(
+    assertComponent,
+    Polymer.fromComponent,
+    Polymer.hydrate(encoding),
+    Polymer.toComponent,
+  ),
+);
 
-export const render = (self: Component): Effect.Effect<Jsx.Children> => {
+export const unmount = (self: Element) => Effect.sync(() => {
+  (self._env as any) = undefined;
+  (self.props as any) = undefined;
+  (self.polymer as any) = Polymer.dispose(self.polymer);
+  self.ancestor = undefined;
+  self.children = undefined;
+});
+
+export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
+  const self = elem as Component;
   const fc = self.type;
 
   switch (fc._tag) {
@@ -458,40 +527,16 @@ export const render = (self: Component): Effect.Effect<Jsx.Children> => {
     return children;
   });
 };
-
-export const renderWith = (
-  self: Component,
-  acquire: Effect.Effect<any>,
-  onAcquire: () => void,
-  release: Effect.Effect<any>,
-  onRelease: () => void,
-) =>
-  acquire.pipe(
-    Effect.flatMap(() => {
-      onAcquire();
-      return render(self);
-    }),
-    Effect.tap(() => {
-      onRelease();
-      return release;
-    }),
-    Effect.tapDefect(() => {
-      onRelease();
-      return release;
-    }),
-    Effect.acquireUseRelease(
-      () => {
-        onAcquire();
-        return render(self);
-      },
-      (ope) => {
-        ope;
-        onRelease();
-        return release;
-      },
-    ),
-    Effect.map((ope) => ope),
-  );
+Effectable.EffectPrototype;
+export const bindRender = dual<
+  (that: Element) => (children: Element) => Element,
+  (self: Element, that: Element) => Element
+>(2, (self, that) => {
+  const self_ = assertComponent(self);
+  const that_ = assertComponent(that);
+  self_.binds = that_;
+  return self_;
+});
 
 export const acceptRender = (self: Component, rendered: Jsx.Children): Component => {
   Polymer.commit(self.polymer);
@@ -513,26 +558,116 @@ export const normalizeRender = (self: Component, rendered: Jsx.Children): Compon
   return self;
 };
 
-export const flush = (self: Component) =>
-  Effect.iterate(self, {
-    while: (c) => Polymer.isQueued(c.polymer),
-    body : (c) => {
-      const effector = Polymer.dequeue(c.polymer)!;
+const normalizeEffector = (effector: Polymer.Effector) => {
+  if (typeof effector === 'object') {
+    return effector;
+  }
+  if (effector.constructor === ASYNC_CONSTRUCTOR) {
+    return E.promise(() => effector() as Promise<void>);
+  }
+  return E.suspend(() => {
+    const output = effector();
 
-      return Fn.normalizeEffector(effector).pipe(
-        Effect.as(c),
-      );
-    },
+    if (P.isPromise(output)) {
+      return E.promise(() => output);
+    }
+    if (!E.isEffect(output)) {
+      return E.void;
+    }
+    return output;
   });
+};
+
+const flushPolymer = (polymer: Polymer.Polymer) => {
+  const updater = Polymer.dequeue(polymer)!;
+
+  switch (updater._tag) {
+    case 'State':
+      return Effect.as(
+        Effect.sync(updater.action),
+        polymer,
+      );
+
+    case 'Effect':
+      return Effect.as(
+        normalizeEffector(updater.monomer.update),
+        polymer,
+      );
+  }
+};
+
+export const flush = (self: Element) =>
+  pipe(
+    Effect.iterate(Polymer.fromComponent(assertComponent(self)), {
+      while: Polymer.isPending,
+      body : flushPolymer,
+    }),
+    Effect.map(Polymer.toComponent),
+  );
 
 export const invoke = (self: Intrinsic, event: Event.EventInternal) => {
   const handler = self.props[event.type];
   return Event.invokeWith(event, handler);
 };
 
-export const encode = (
-  self: Element,
-  encoding: Jsx.Encoding,
-) => {
-  return {} as any;
-};
+export const findFirst = dual<
+  <A extends Element>(f: (element: Element) => Option.Option<A>) => (self: Element) => Option.Option<A>,
+  <A extends Element>(self: Element, f: (element: Element) => Option.Option<A>) => Option.Option<A>
+>(2, (self, f) =>
+  self.pipe(
+    Traversable.preOrderEntire,
+    Array.findFirst(f), // todo
+  ),
+);
+
+export const encode = dual<
+  (encoding: JsxEncoding) => (self: Element) => Element,
+  (self: Element, encoding: JsxEncoding) => Element
+>(2, (self, that) => {
+  const self_ = assertComponent(self);
+  const that_ = assertComponent(that);
+  self_.polymer = Polymer.encode(self_.polymer, that_.polymer);
+  return self_;
+});
+
+function propsToJSON(this: Props) {
+  return {
+    _id  : 'Props',
+    value: {
+      ...this,
+    },
+  };
+}
+
+function elementToJSON(this: Element) {
+  switch (this._tag) {
+    case TEXT:
+      return {
+        _tag: this._tag,
+        text: this.text,
+      };
+
+    case FRAGMENT:
+      return {
+        _tag    : this._tag,
+        children: this.children,
+      };
+
+    case INTRINSIC:
+      return {
+        _tag    : this._tag,
+        type    : this.type,
+        props   : this.props,
+        children: this.children,
+      };
+
+    case COMPONENT:
+      return {
+        _tag    : this._tag,
+        type    : (this.type as any)._id,
+        props   : this.props,
+        polymer : this.polymer,
+        children: this.children,
+      };
+  }
+}

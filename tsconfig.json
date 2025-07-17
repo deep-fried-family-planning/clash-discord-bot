@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "target"                      : "esnext",
-    "lib"                         : ["esnext"],
-    "types"                       : ["node"],
+    "lib"                         : ["es2024","esnext"],
     "jsx"                         : "react-jsxdev",
     "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",
@@ -23,7 +22,11 @@
     "plugins"                     : [
       {
         "name"                   : "@effect/language-service",
-        "namespaceImportPackages": ["effect", "@effect/platform", "@effect/platform", ],
+        "namespaceImportPackages": [
+          "effect",
+          "@effect/platform",
+          "@effect/platform"
+        ],
         "diagnosticSeverity"     : {
           "importFromBarrel": "error"
         }

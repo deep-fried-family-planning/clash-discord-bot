@@ -19,7 +19,7 @@ export const $useState = (self?: Polymer.Polymer) => (initial: any) => {
           m.state = next;
         }
         m.changed = true;
-        polymer.flags.add(polymer.origin!);
+        polymer._flags.add(polymer.origin!);
       };
       return m;
     },
