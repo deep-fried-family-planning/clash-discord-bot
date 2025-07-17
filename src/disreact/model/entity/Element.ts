@@ -1,14 +1,13 @@
 /* eslint-disable no-case-declarations */
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/core/constants.ts';
-import * as Patch from '#disreact/core/Patch.ts';
+import * as Amend from '#disreact/core/Amend.ts';
 import * as Progress from '#disreact/core/Progress.ts';
 import * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Envelope from '#disreact/model/Envelope.ts';
-import * as Event from '#disreact/model/Event.ts';
+import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+import * as Event from '#disreact/model/entity/Event.ts';
 import type {JsxEncoding} from '#disreact/model/types.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import {Effectable} from 'effect';
 import * as Array from 'effect/Array';
 import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
@@ -106,7 +105,7 @@ export interface Element<T extends Element.Tag = Element.Tag> extends Inspectabl
 {
   _tag   : T;
   _env   : Envelope.Envelope;
-  polymer: Polymer.Polymer;
+  polymer: Polymer.Polymer | undefined;
   key    : string | undefined;
   type   : Element.TType<T>;
   props  : Element.TProps<T>;
@@ -148,6 +147,11 @@ export const isIntrinsic = (u: Element): u is Intrinsic => u._tag === INTRINSIC;
 
 export const isComponent = (u: Element): u is Component => u._tag === COMPONENT;
 
+export const unsafeComponent = flow(
+  Option.liftPredicate(isComponent),
+  Option.getOrThrow,
+);
+
 export const Equivalence = dual<
   (that: Element) => (self: Element) => boolean,
   (self: Element, that: Element) => boolean
@@ -167,6 +171,18 @@ export const StateDifference = (a: Element) =>
   isComponent(a)
   && a.polymer
   && Polymer.isChanged(a.polymer);
+
+const step = (self: Element) =>
+  `${self.depth}:${self.index}`;
+
+const stepId = (self: Element) =>
+  `${step(self.ancestor!)}:${step(self)}`;
+
+const trieId = (self: Element) =>
+  `${self.ancestor!.trie}:${step(self)}`;
+
+const keyId = (self: Element) =>
+  self.key ?? self.trie;
 
 export const using = dual<
   <A>(f: (self: Element) => A) => (self: Element) => A,
@@ -224,12 +240,6 @@ const ComponentProto: Component = Object.assign(Object.create(ElementProto), {
   _tag: COMPONENT,
 });
 
-const makeText = (text: any): Text => {
-  const self = Object.create(TextProto) as Text;
-  self.text = text;
-  return self;
-};
-
 const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
     case 'string':
@@ -244,6 +254,7 @@ const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
       func.key = jsx.key;
       func.type = jsx.type as FC;
       func.props = makeProps(jsx.props);
+      func.polymer = Polymer.make(func);
       return func;
 
     case 'symbol':
@@ -258,63 +269,22 @@ const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   }
 };
 
-export interface Boundary {
-  source: Element | undefined;
-  fanout: Element[];
-}
-
-const makeBoundary = (source?: Element): Boundary => {
-  return {
-    source: source,
-    fanout: [],
-  };
-};
-
-export const makeRoot = dual<
-  (env: Envelope.Envelope) => (jsx: Jsx.Jsx) => Element,
-  (jsx: Jsx.Jsx, env: Envelope.Envelope) => Element
->(2, (jsx, env) =>
-  jsx.pipe(
-    Jsx.clone,
-    fromJsx,
-    Traversable.setRootKey(),
-    Traversable.setOrigin(),
-    Traversable.setChildren,
-  ),
-);
-
 export const makeRoot = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
   const root = fromJsx(Jsx.clone(jsx));
   root._env = env;
   root.trie = step(root);
   root.step = step(root);
   root.children = fromJsxChildren(root, jsx.childs ?? jsx.childs);
-  return root.pipe(
-    Traversable.setRootKey(),
-    Traversable.setOrigin(Polymer.make(root)),
-    Traversable.setChildren(fromJsxChildren(root, jsx.childs ?? jsx.childs)),
-  );
+  return root;
 };
 
-const fromJsxChild = (
-  cur: Element,
-  c: Jsx.Child,
-  index: number,
-): Element => {
-  if (!c || typeof c !== 'object') {
-    const child = makeText(c);
-    child.origin = cur.origin;
-    return connect(cur, child, index);
+const fromJsxChild = (cur: Element, jsx: Jsx.Child, index: number): Element => {
+  if (!jsx || typeof jsx !== 'object') {
+    const child = Object.create(TextProto) as Text;
+  child.text = jsx;
+    return connectChild(cur, child, index);
   }
-  const child = fromJsx(c);
-  child.bound = cur.bound;
-
-  if (child._tag === COMPONENT) {
-    child.binds = makeBoundary(child);
-  }
-  else {
-    child.children = fromJsxChildren(child, c.child ?? c.childs);
-  }
+  const child = fromJsx(jsx);
   return connect(cur, child, index);
 };
 
@@ -334,17 +304,7 @@ export const fromJsxChildren = (cur: Element, cs: Jsx.Children): Element[] | und
   return [fromJsxChild(cur, cs as Jsx.Child, 0)];
 };
 
-const step = (self: Element) =>
-  `${self.depth}:${self.index}`;
 
-const stepId = (self: Element) =>
-  `${step(self.ancestor!)}:${step(self)}`;
-
-const trieId = (self: Element) =>
-  `${self.ancestor!.trie}:${step(self)}`;
-
-const keyId = (self: Element) =>
-  self.key ?? self.trie;
 
 const connect = (self: Element, that: Element, index: number): Element => {
   that._env = self._env;
@@ -355,6 +315,20 @@ const connect = (self: Element, that: Element, index: number): Element => {
   that.step = stepId(that);
   return that;
 };
+
+export const connectChild = dual<
+  (parent: Element, index?: number) => (self: Element) => Element,
+  (self: Element, parent: Element, index?: number) => Element
+>(3, (self, parent, index = 0) => {
+  self.origin = parent.polymer ?? parent.origin;
+  self._env = parent._env;
+  self.ancestor = parent;
+  self.depth = parent.depth + 1;
+  self.index = index;
+  self.trie = trieId(self);
+  self.step = stepId(self);
+  return self;
+});
 
 export const update = dual<
   (that: Element) => (self: Element) => Element,
@@ -426,34 +400,34 @@ export const fromHashSet = (cs: HashMap.HashMap<string, Element>) =>
   );
 
 export const combine = dual<
-  (that: Patch.Patch<Element>) => (self: Patch.Patch<Element>) => Patch.Patch<Element>,
-  (self: Patch.Patch<Element>, that: Patch.Patch<Element>) => Patch.Patch<Element>
+  (that: Amend.Amend<Element>) => (self: Amend.Amend<Element>) => Amend.Amend<Element>,
+  (self: Amend.Amend<Element>, that: Amend.Amend<Element>) => Amend.Amend<Element>
 >(2, (self, that) =>
-  Patch.andThen(self, that),
+  Amend.andThen(self, that),
 );
 
 export const diff = dual<
-  (that: Element) => (self: Element) => Patch.Patch<Element>,
-  (self: Element, that: Element) => Patch.Patch<Element>
+  (that: Element) => (self: Element) => Amend.Amend<Element>,
+  (self: Element, that: Element) => Amend.Amend<Element>
 >(2, (s, t) => {
   if (Equivalence(s, t)) {
-    return Patch.skip();
+    return Amend.skip();
   }
   if (TypeDifference(s, t)) {
-    return Patch.replace(s, t);
+    return Amend.replace(s, t);
   }
   if (PropsDifference(s, t)) {
-    return Patch.update(s, t);
+    return Amend.update(s, t);
   }
   if (StateDifference(s)) {
-    return Patch.update(s, t);
+    return Amend.update(s, t);
   }
-  return Patch.skip();
+  return Amend.skip();
 });
 
 export const patch = dual<
-  (self: Element) => (patch: Patch.Patch<Element>) => Element,
-  (patch: Patch.Patch<Element>, self: Element) => Element
+  (self: Element) => (patch: Amend.Amend<Element>) => Element,
+  (patch: Amend.Amend<Element>, self: Element) => Element
 >(2, (patch, self) => {
   switch (patch._tag) {
     case 'Skip':
@@ -466,13 +440,8 @@ export const patch = dual<
   return self;
 });
 
-export const assertComponent = flow(
-  Option.liftPredicate(isComponent),
-  Option.getOrThrow,
-);
-
 export const mount = (input: Element) => {
-  const self = assertComponent(input);
+  const self = unsafeComponent(input);
   self.polymer = Polymer.make(self);
   return self;
 };
@@ -482,7 +451,7 @@ export const hydrate = dual<
   (self: Element, that: Polymer.Bundle) => Element
 >(2, (input, encoding) =>
   input.pipe(
-    assertComponent,
+    unsafeComponent,
     Polymer.fromComponent,
     Polymer.hydrate(encoding),
     Polymer.toComponent,
@@ -527,13 +496,13 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
     return children;
   });
 };
-Effectable.EffectPrototype;
+
 export const bindRender = dual<
   (that: Element) => (children: Element) => Element,
   (self: Element, that: Element) => Element
 >(2, (self, that) => {
-  const self_ = assertComponent(self);
-  const that_ = assertComponent(that);
+  const self_ = unsafeComponent(self);
+  const that_ = unsafeComponent(that);
   self_.binds = that_;
   return self_;
 });
@@ -598,7 +567,7 @@ const flushPolymer = (polymer: Polymer.Polymer) => {
 
 export const flush = (self: Element) =>
   pipe(
-    Effect.iterate(Polymer.fromComponent(assertComponent(self)), {
+    Effect.iterate(Polymer.fromComponent(unsafeComponent(self)), {
       while: Polymer.isPending,
       body : flushPolymer,
     }),
@@ -624,8 +593,8 @@ export const encode = dual<
   (encoding: JsxEncoding) => (self: Element) => Element,
   (self: Element, encoding: JsxEncoding) => Element
 >(2, (self, that) => {
-  const self_ = assertComponent(self);
-  const that_ = assertComponent(that);
+  const self_ = unsafeComponent(self);
+  const that_ = unsafeComponent(that);
   self_.polymer = Polymer.encode(self_.polymer, that_.polymer);
   return self_;
 });

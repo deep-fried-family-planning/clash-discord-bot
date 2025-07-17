@@ -1,10 +1,10 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/Hooks.ts';
-import * as Element from '#disreact/model/Element.ts';
-import type * as Event from '#disreact/model/Event.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
+import type * as Event from '#disreact/model/entity/Event.ts';
 import * as Fn from '#disreact/model/Fn.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
-import {ModelEncoder} from '#disreact/model/ModelEncoder.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import {Codec} from '#disreact/model/Codec.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -38,7 +38,7 @@ const renderElement = (elem: Element.Element) =>
 
 
 
-export const encode = (root: Element.Element) => ModelEncoder.use(({encodeText, encodeRest}) => {
+export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
         final = {} as any,
         args  = new WeakMap(),

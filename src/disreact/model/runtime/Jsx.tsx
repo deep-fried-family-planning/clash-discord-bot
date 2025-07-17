@@ -1,10 +1,11 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
-import type * as Element from '#disreact/model/Element.ts';
+import type * as Element from '#disreact/model/entity/Element.ts';
+import type {JsxEncoding} from '#disreact/model/types.ts';
 import * as E from 'effect/Effect';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Pipeable from 'effect/Pipeable';
 
 export interface FC<P = any> {
   readonly entrypoint?: string;
@@ -15,6 +16,10 @@ export interface FC<P = any> {
     | Promise<Children>
     | E.Effect<Children, E, R>;
 }
+
+export const isFC = (u: unknown): u is FC =>
+  u != null &&
+  typeof u === 'function';
 
 const FCProto: Element.FC = {
   _tag       : undefined,
@@ -65,13 +70,11 @@ const makeFC = (type: FC): Element.FC => {
   return self;
 };
 
-export const Fragment = Symbol('disreact/Fragment');
-
-const TypeId = Symbol('disreact/Jsx');
-
 export type Type = | string
                    | typeof Fragment
                    | FC;
+
+const TypeId = Symbol('disreact/Jsx');
 
 export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable
@@ -100,12 +103,23 @@ export type Child = | Value
 export type Children = | Child
                        | readonly Child[];
 
+export const isValue = (u: unknown): u is Value =>
+  u == null &&
+  typeof u !== 'object';
+
 export const isJsx = (u: unknown): u is Jsx =>
   u != null &&
   typeof u === 'object' &&
   TypeId in u;
 
-export const isChilds = (u: unknown): u is readonly Child[] => Array.isArray(u);
+export const isJsxFC = (u: unknown): u is Jsx<FC> =>
+  isJsx(u) &&
+  typeof u === 'function';
+
+export const isChilds = (u: unknown): u is readonly Child[] =>
+  Array.isArray(u);
+
+export const Fragment = Symbol('disreact/Fragment');
 
 const Proto: Jsx = {
   [TypeId]  : TypeId,
@@ -170,47 +184,7 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
-export interface Entrypoint {
-  id       : string;
-  component: Jsx;
-}
-
-const entries = GlobalValue.globalValue(TypeId, () => new Map<string, FC | Jsx>());
-
-export const makeEntrypoint = <A extends FC | Jsx>(id: string, type: A): A => {
-  if (entries.has(id)) {
-    throw new Error(`Duplicate entrypoint: ${id}`);
-  }
-  if (typeof type === 'function') {
-    const fc = makeFC(type);
-    fc.entrypoint = id;
-
-    return entries
-      .set(id, {
-        id       : id,
-        component: makeJsx(fc, {}),
-      })
-      .get(id)!;
-  }
-  return entries
-    .set(id, {
-      id       : id,
-      component: type,
-    })
-    .get(id)!;
-};
-
-export const findEntrypoint = (id: string | FC): Entrypoint | undefined => {
-  return undefined;
-};
-
-export type Encoding = {
-  primitive: string;
-  normalize: Record<string, string>;
-  transform: Record<string, (self: any, acc: any) => any>;
-};
-
-export const encode = (self: Jsx, encoding: Encoding): any => {
+export const encode = (self: Jsx, encoding: JsxEncoding): any => {
   const stack = [self];
   const acc = {};
 

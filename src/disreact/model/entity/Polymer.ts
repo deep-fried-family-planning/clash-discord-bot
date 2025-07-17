@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Element from '#disreact/model/Element.ts';
+import type * as Element from '#disreact/model/entity/Element.ts';
 import type * as Record from 'effect/Record';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
@@ -131,9 +131,6 @@ export const dispose = (self: Polymer) => {
 };
 
 export type Bundle = Record<string, readonly Monomer.Encoded[]>;
-
-export const isEmptyBundle = (bundle: Bundle) =>
-  Object.keys(bundle).length === 0;
 
 export const hydrate = dual<
   (bundle: Bundle) => (self: Polymer) => Polymer,

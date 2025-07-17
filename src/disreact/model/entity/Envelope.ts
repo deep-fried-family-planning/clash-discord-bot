@@ -1,27 +1,23 @@
-import * as Element from '#disreact/model/Element.ts';
-import type * as Fn from '#disreact/model/Fn.ts';
-import * as Polymer from '#disreact/model/Polymer.ts';
 import type * as Progress from '#disreact/core/Progress.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
+import type * as Event from '#disreact/model/entity/Event.ts';
+import type * as Hydrant from '#disreact/model/entity/Hydrant.ts';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as JsxRuntime from '#disreact/model/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
+import {pipe} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
-import type * as Option from 'effect/Option';
-import type * as Event from '#disreact/model/Event.ts';
-
-export interface Hydrant {
-  entrypoint: string;
-  props     : Record<string, any>;
-  state     : Record<string, any>;
-}
+import * as Option from 'effect/Option';
 
 export interface Simulant<A = any> {
   data      : A;
   entrypoint: string;
   props     : Record<string, any>;
   state     : Record<string, any>;
-  hydrant?  : Hydrant;
+  hydrant?  : Hydrant.Encoded;
   event?    : Event.EventInput;
 }
 
@@ -34,37 +30,41 @@ export interface Simulated<T extends string, P = any> {
 }
 
 export interface Envelope<A = any> extends Inspectable.Inspectable {
-  data      : A;
-  entrypoint: string | typeof JsxRuntime.Fragment;
-  root      : Element.Element;
-  flags     : Set<Element.Element>;
-  final     : Deferred.Deferred<Progress.Checkpoint>;
-  stream    : Mailbox.Mailbox<Progress.Progress>;
+  data   : A;
+  hydrant: Hydrant.Hydrant;
+  root   : Element.Element;
+  flags  : Set<Element.Element>;
+  final  : Deferred.Deferred<Progress.Checkpoint>;
+  stream : Mailbox.Mailbox<Progress.Progress>;
 }
 
+const toRoot = (self: Envelope) =>
+    Option.getOrThrow(
+      Option.fromNullable(self.root),
+    );
+
 const Proto: Envelope = {
-  data      : undefined as any,
-  hydrant   : undefined as any,
-  entrypoint: JsxRuntime.Fragment,
-  root      : undefined as any,
-  stream    : undefined as any,
-  final     : undefined as any,
-  flags     : undefined as any,
+  data   : undefined as any,
+  hydrant: undefined as any,
+  root   : undefined as any,
+  stream : undefined as any,
+  final  : undefined as any,
+  flags  : undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
     return {
-      _id       : 'Envelope',
-      entrypoint: this.entrypoint,
-      root      : this.root,
-      data      : this.data,
+      _id : 'Envelope',
+      root: this.root,
+      data: this.data,
     };
   },
 };
 
-const makeEffects = Effect.all([
-  Deferred.make<Progress.Checkpoint>(),
-  Mailbox.make<Progress.Progress>(),
-]).pipe(
+const make = pipe(
+  Effect.all([
+    Deferred.make<Progress.Checkpoint>(),
+    Mailbox.make<Progress.Progress>(),
+  ]),
   Effect.map(([final, stream]) => {
     const self = Object.create(Proto) as Envelope;
     self.stream = stream;
@@ -74,12 +74,44 @@ const makeEffects = Effect.all([
   }),
 );
 
+const jsxOption = Option.liftPredicate(Jsx.isJsx);
+const fcOption = Option.liftPredicate(Jsx.isFC);
+
+const makeRoot = (self: Envelope) =>
+  Option.some(self.hydrant.source).pipe(
+    Option.flatMap(jsxOption),
+    Option.orElse(() => Option.some(self.hydrant.source)),
+  );
+
+export const fromHydrant = (hydrant: Hydrant.Hydrant, data: any) =>
+  make.pipe(Effect.map((self) => {
+    self.data = data;
+    self.hydrant = hydrant;
+    // self.root
+    return self;
+  }));
+
+export const fromSourceFC = (
+  fc: Fn.FC,
+  props: any,
+  data: any,
+) =>
+  make.pipe(
+    Effect.map((self) => {
+      const jsx = JsxRuntime.makeJsx(fc, props);
+    }),
+  );
+
+export const fromSourceJsx = () => {
+
+};
+
 export const fromFC = (
   fc: Fn.FC,
   props: any,
   data: any,
 ) =>
-  makeEffects.pipe(
+  make.pipe(
     Effect.map((self) => {
       const jsx = JsxRuntime.makeJsx(fc, props);
 
@@ -95,7 +127,7 @@ export const fromJsx = (
   jsx: JsxRuntime.Jsx,
   data: any,
 ) =>
-  makeEffects.pipe(
+  make.pipe(
     Effect.map((self) => {
       self.entrypoint = jsx.entrypoint ?? JsxRuntime.Fragment;
       self.data = data;
@@ -110,7 +142,7 @@ export const fromSimulation = (
   hydrant: Polymer.Hydrant,
   data: any,
 ) =>
-  makeEffects.pipe(
+  make.pipe(
     Effect.map((self) => {
       self.entrypoint = entrypoint.id;
       self.hydrant = hydrant;

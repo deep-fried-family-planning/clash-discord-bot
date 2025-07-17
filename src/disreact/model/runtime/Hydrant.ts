@@ -1,5 +1,5 @@
-import type * as Polymer from '#disreact/model/Polymer.ts';
-import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Equal from 'effect/Equal';
 import {dual, hole} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
@@ -7,6 +7,7 @@ import * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 import * as PrimaryKey from 'effect/PrimaryKey';
+import * as equivalence from 'effect/Equivalence';
 
 export type Source = | Jsx.Jsx
                      | Jsx.FC;
@@ -20,7 +21,6 @@ const lookupId = (lookup: Lookup | undefined) =>
   typeof lookup === 'function' ? lookup.entrypoint :
   lookup.entrypoint;
 
-export const symbol = Symbol('disreact/Hydrant');
 
 const registry = GlobalValue
   .globalValue(
@@ -39,6 +39,8 @@ export const register = <A extends Jsx.FC>(id: string, source: A): A => {
   registry.set(id, source); // todo
   return source;
 };
+
+export const symbol = Symbol('disreact/Hydrant');
 
 export interface Hydrant extends Inspectable.Inspectable,
   Pipeable.Pipeable,
@@ -69,6 +71,18 @@ export const hasKnownSource = (u: unknown): u is Hydrant =>
   isHydrant(u) &&
   isRegistered(u.source);
 
+export const Equivalence = equivalence.make<Hydrant>(
+  (a, b) => {
+    if (a === b) {
+      return true;
+    }
+    if (!a.id || !b.id) {
+      return false;
+    }
+    return a.id === b.id;
+  },
+);
+
 const Proto: Hydrant = {
   ...Inspectable.BaseProto,
   ...Pipeable.Prototype,
@@ -80,8 +94,8 @@ const Proto: Hydrant = {
   [Hash.symbol]() {
     return hole();
   },
-  [Equal.symbol]() {
-    return hole();
+  [Equal.symbol](this, that: Hydrant) {
+    return Equivalence(this, that);
   },
   [PrimaryKey.symbol]() {
     return hole();
@@ -99,13 +113,13 @@ const Proto: Hydrant = {
 
 export const fromSource = (
   source: Source,
-  props: any,
-  state: Polymer.Bundle = {},
-) => {
+  props?: any,
+  state?: Polymer.Bundle,
+): Hydrant => {
   const self = Object.create(Proto) as Hydrant;
   self.source = source;
   self.props = structuredClone(props);
-  self.state = structuredClone(state);
+  self.state = structuredClone(state ?? {});
 
   if (!isRegistered(self.source)) {
     return self;
@@ -118,11 +132,11 @@ export const fromSource = (
   return self;
 };
 
-export const fromLookupUnsafe = (
+export const fromLookup = (
   lookup: Lookup,
   props: any,
   state: Polymer.Bundle = {},
-) => {
+): Hydrant => {
   const id = lookupId(lookup);
 
   if (!isRegistered(id)) {
@@ -137,14 +151,6 @@ export const fromLookupUnsafe = (
   self.props = structuredClone(props);
   self.state = structuredClone(state);
   return self;
-};
-
-export const fromHydrant = (self: Hydrant): Hydrant => {
-  return {
-    ...self,
-    props: structuredClone(self.props),
-    state: {},
-  };
 };
 
 export const removeState = dual<
@@ -168,6 +174,9 @@ export const setProps = dual<
   (props: any) => (self: Hydrant) => Hydrant,
   (self: Hydrant, props: any) => Hydrant
 >(2, (self, props) => {
+  if (props.children) {
+    throw new Error('props.children is not rehydratable');
+  }
   self.props = structuredClone(props);
   return self;
 });
@@ -176,6 +185,32 @@ export const setState = dual<
   (state: Polymer.Bundle) => (self: Hydrant) => Hydrant,
   (self: Hydrant, state: Polymer.Bundle) => Hydrant
 >(2, (self, state) => {
-  self.state = state;
+  self.state = structuredClone(state);
   return self;
 });
+
+export interface Encoded {
+  id   : string;
+  state: Polymer.Bundle;
+  props: any;
+}
+
+export const fromEncoded = (encoded: Encoded) => fromLookup(encoded.id, encoded.props, encoded.state);
+
+export const toEncoded = (self: Hydrant): Encoded | undefined =>
+  !self.id ? undefined :
+  ({
+    id   : self.id!,
+    state: structuredClone(self.state),
+    props: structuredClone(self.props),
+  });
+
+export const toSource = (self: Hydrant): Source =>
+  self.source;
+
+export const toJsx = (self: Hydrant): Jsx.Jsx => {
+  if (typeof self.source === 'function') {
+    return Jsx.makeJsx(self.source, self.props, self.id);
+  }
+  return Jsx.clone(self.source);
+};
