@@ -24,7 +24,7 @@ const mountElement = (el: Element.Element) =>
     }),
     Effect.andThen(Element.render(el)),
     Effect.ensuring(release),
-    Effect.map((children) => Element.acceptRender(el, children)),
+    Effect.map(Element.liftJsxInto(el)),
   );
 
 const initializeElement = (el: Element.Element) =>

@@ -417,7 +417,7 @@ export const acceptRender = (self: Element, rendered: Jsx.Children): Element => 
   return self;
 };
 
-export const normalizeRender = (self: Element, rendered: Jsx.Children): Component => {
+export const normalizeRender = (self: Element, rendered: Jsx.Children): Element => {
   Polymer.commit(self.polymer!);
   const children = fromJsxChildren(self, rendered);
   return self;
@@ -486,7 +486,7 @@ export const findFirst = dual<
 );
 
 export const toProgress = (self: Element): Progress.Partial => {
-  return Progress.partial(self._env.entrypoint as any, self);
+  return Progress.partial(self._env as any, self);
 };
 
 export const toHashSet = (children?: Element[]) =>
@@ -593,17 +593,19 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
 };
 
 export const liftJsx = dual<
-  (jsx: Jsx.Children) => (self: Component) => Element[] | undefined,
-  (self: Component, jsx: Jsx.Children) => Element[] | undefined
+  (jsx: Jsx.Children) => (self: Element) => Element[] | undefined,
+  (self: Element, jsx: Jsx.Children) => Element[] | undefined
 >(2, (self, jsx) => {
-
+  self.children = fromJsxChildren(self, jsx);
+  return self.children;
 });
 
 export const liftJsxInto = dual<
-  (self: Component) => (jsx: Jsx.Children) => Element[] | undefined,
-  (jsx: Jsx.Children, self: Component) => Element[] | undefined
+  (self: Element) => (jsx: Jsx.Children) => Element,
+  (jsx: Jsx.Children, self: Element) => Element
 >(2, (jsx, self) => {
-
+  liftJsx(jsx)(self);
+  return self;
 });
 
 export const unmount = (self: Element) => Effect.sync(() => {
@@ -622,6 +624,5 @@ export const encode = dual<
   (self: Element, encoding: JsxEncoding) => Element
 >(2, (self, that) => {
   const self_ = unsafeComponent(self);
-  const that_ = unsafeComponent(that);
   return self_;
 });
