@@ -1,5 +1,5 @@
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Equal from 'effect/Equal';
 import {dual, hole} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
@@ -214,3 +214,12 @@ export const toJsx = (self: Hydrant): Jsx.Jsx => {
   }
   return Jsx.clone(self.source);
 };
+
+export interface EncodedEvent {
+  _tag: 'Step' | 'Custom';
+  id  : string;
+  type: string;
+  data: any;
+}
+
+export const makeEvent = (event: EncodedEvent): EncodedEvent => event;

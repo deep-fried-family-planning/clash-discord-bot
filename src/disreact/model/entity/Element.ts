@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import * as Amend from '#disreact/core/Amend.ts';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/core/constants.ts';
 import * as Progress from '#disreact/core/Progress.ts';
@@ -7,8 +6,9 @@ import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Event from '#disreact/model/entity/Event.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import type {JsxEncoding} from '#disreact/model/types.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Array from 'effect/Array';
+import * as Differ from 'effect/Differ';
 import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -85,21 +85,6 @@ export const TEXT      = 'Text' as const,
              COMPONENT = 'Component' as const;
 
 export declare namespace Element {
-  export interface Text extends Element {
-    _tag: typeof TEXT;
-    text: any;
-  }
-  export interface Fragment extends Element {
-    _tag: typeof FRAGMENT;
-    type: typeof Jsx.Fragment;
-  }
-  export interface Intrinsic extends Element {
-    _tag : typeof INTRINSIC;
-    type : string;
-    props: Props;
-  }
-
-  export type Effect<E = never, R = never> = Effect.Effect<Element, E, R>;
   export type Tag = | typeof TEXT
                     | typeof FRAGMENT
                     | typeof INTRINSIC
@@ -198,6 +183,54 @@ export const StateDifference = (a: Element) =>
   isComponent(a)
   && a.polymer
   && Polymer.isChanged(a.polymer);
+
+export const combine = dual<
+  (that: Amend.Amend<Element>) => (self: Amend.Amend<Element>) => Amend.Amend<Element>,
+  (self: Amend.Amend<Element>, that: Amend.Amend<Element>) => Amend.Amend<Element>
+>(2, (self, that) =>
+  Amend.andThen(self, that),
+);
+
+export const diff = dual<
+  (that: Element) => (self: Element) => Amend.Amend<Element>,
+  (self: Element, that: Element) => Amend.Amend<Element>
+>(2, (s, t) => {
+  if (Equivalence(s, t)) {
+    return Amend.skip();
+  }
+  if (TypeDifference(s, t)) {
+    return Amend.replace(s, t);
+  }
+  if (PropsDifference(s, t)) {
+    return Amend.update(s, t);
+  }
+  if (StateDifference(s)) {
+    return Amend.update(s, t);
+  }
+  return Amend.skip();
+});
+
+export const patch = dual<
+  (self: Element) => (patch: Amend.Amend<Element>) => Element,
+  (patch: Amend.Amend<Element>, self: Element) => Element
+>(2, (patch, self) => {
+  switch (patch._tag) {
+    case 'Skip':
+      return self;
+    case 'Replace':
+      return patch.that;
+    case 'Update':
+      return update(self)(patch.that);
+  }
+  return self;
+});
+
+export const differ = Differ.make({
+  empty  : Amend.skip(),
+  combine: combine,
+  diff   : diff,
+  patch  : patch,
+});
 
 const step = (self: Element) => `${self.depth}:${self.index}`;
 const stepId = (self: Element) => `${step(self.ancestor!)}:${step(self)}`;
@@ -307,20 +340,14 @@ export const makeComponent = (jsx: Jsx.Jsx): Component => {
   return self;
 };
 
-const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
+export const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
     case 'string':
-      const rest = makeIntrinsic(jsx);
-      return rest;
-
+      return makeIntrinsic(jsx);
     case 'function':
-      const func = makeComponent(jsx);
-      return func;
-
+      return makeComponent(jsx);
     case 'symbol':
-      const fragment = makeFragment(jsx);
-      return fragment;
-
+      return makeFragment(jsx);
     default:
       throw new Error(`Invalid Element type: ${jsx.type}`);
   }
@@ -359,6 +386,34 @@ export const fromJsxChildren = (cur: Element, cs: Jsx.Children): Element[] | und
   }
   return [fromJsxChild(cur, cs as Jsx.Child, 0)];
 };
+
+const bindChild = dual<
+  (self: Element) => (jsx: Jsx.Child) => Element,
+  (jsx: Jsx.Child, self: Element) => Element
+>(2, (jsx, self) => {
+  if (!jsx) {
+    return self;
+  }
+  if (typeof jsx !== 'object') {
+    const child = makeText(jsx);
+    return connectChild(self, 0)(child);
+  }
+});
+
+export const bindJsx = dual<
+  (jsx: Jsx.Children) => (self: Element) => Element[] | undefined,
+  (self: Element, jsx: Jsx.Children) => Element[] | undefined
+>(2, (self, jsx) => {
+  return fromJsxChildren(self, jsx);
+});
+
+export const bindJsxInto = dual<
+  (self: Element) => (jsx: Jsx.Children) => Element,
+  (jsx: Jsx.Children, self: Element) => Element
+>(2, (jsx, self) => {
+  self.children = bindJsx(jsx)(self);
+  return self;
+});
 
 const connect = (self: Element, that: Element, index: number): Element => {
   that._env = self._env;
@@ -423,58 +478,6 @@ export const normalizeRender = (self: Element, rendered: Jsx.Children): Element 
   return self;
 };
 
-const normalizeEffector = (effector: Polymer.Effector) => {
-  if (typeof effector === 'object') {
-    return effector;
-  }
-  if (effector.constructor === ASYNC_CONSTRUCTOR) {
-    return E.promise(() => effector() as Promise<void>);
-  }
-  return E.suspend(() => {
-    const output = effector();
-
-    if (P.isPromise(output)) {
-      return E.promise(() => output);
-    }
-    if (!E.isEffect(output)) {
-      return E.void;
-    }
-    return output;
-  });
-};
-
-const flushPolymer = (polymer: Polymer.Polymer) => {
-  const updater = Polymer.dequeue(polymer)!;
-
-  switch (updater._tag) {
-    case 'State':
-      return Effect.as(
-        Effect.sync(updater.action),
-        polymer,
-      );
-
-    case 'Effect':
-      return Effect.as(
-        normalizeEffector(updater.monomer.update),
-        polymer,
-      );
-  }
-};
-
-export const flush = (self: Element) =>
-  pipe(
-    Effect.iterate(Polymer.fromComponent(unsafeComponent(self)), {
-      while: Polymer.isPending,
-      body : flushPolymer,
-    }),
-    Effect.map(Polymer.toComponent),
-  );
-
-export const invoke = (self: Intrinsic, event: Event.EventInternal) => {
-  const handler = self.props[event.type];
-  return Event.invokeWith(event, handler);
-};
-
 export const findFirst = dual<
   <A extends Element>(f: (element: Element) => Option.Option<A>) => (self: Element) => Option.Option<A>,
   <A extends Element>(self: Element, f: (element: Element) => Option.Option<A>) => Option.Option<A>
@@ -503,47 +506,6 @@ export const fromHashSet = (cs: HashMap.HashMap<string, Element>) =>
     Option.map(() => undefined),
     Option.getOrElse(() => cs.pipe(HashMap.toValues)),
   );
-
-export const combine = dual<
-  (that: Amend.Amend<Element>) => (self: Amend.Amend<Element>) => Amend.Amend<Element>,
-  (self: Amend.Amend<Element>, that: Amend.Amend<Element>) => Amend.Amend<Element>
->(2, (self, that) =>
-  Amend.andThen(self, that),
-);
-
-export const diff = dual<
-  (that: Element) => (self: Element) => Amend.Amend<Element>,
-  (self: Element, that: Element) => Amend.Amend<Element>
->(2, (s, t) => {
-  if (Equivalence(s, t)) {
-    return Amend.skip();
-  }
-  if (TypeDifference(s, t)) {
-    return Amend.replace(s, t);
-  }
-  if (PropsDifference(s, t)) {
-    return Amend.update(s, t);
-  }
-  if (StateDifference(s)) {
-    return Amend.update(s, t);
-  }
-  return Amend.skip();
-});
-
-export const patch = dual<
-  (self: Element) => (patch: Amend.Amend<Element>) => Element,
-  (patch: Amend.Amend<Element>, self: Element) => Element
->(2, (patch, self) => {
-  switch (patch._tag) {
-    case 'Skip':
-      return self;
-    case 'Replace':
-      return patch.that;
-    case 'Update':
-      return update(self)(patch.that);
-  }
-  return self;
-});
 
 export const mount = (self: Element) => {
   return self;
@@ -592,23 +554,54 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
   });
 };
 
-export const liftJsx = dual<
-  (jsx: Jsx.Children) => (self: Element) => Element[] | undefined,
-  (self: Element, jsx: Jsx.Children) => Element[] | undefined
->(2, (self, jsx) => {
-  self.children = fromJsxChildren(self, jsx);
-  return self.children;
-});
+const normalizeEffector = (effector: Polymer.Effector) => {
+  if (typeof effector === 'object') {
+    return effector;
+  }
+  if (effector.constructor === ASYNC_CONSTRUCTOR) {
+    return E.promise(() => effector() as Promise<void>);
+  }
+  return E.suspend(() => {
+    const output = effector();
 
-export const liftJsxInto = dual<
-  (self: Element) => (jsx: Jsx.Children) => Element,
-  (jsx: Jsx.Children, self: Element) => Element
->(2, (jsx, self) => {
-  liftJsx(jsx)(self);
-  return self;
-});
+    if (P.isPromise(output)) {
+      return E.promise(() => output);
+    }
+    if (!E.isEffect(output)) {
+      return E.void;
+    }
+    return output;
+  });
+};
 
-export const unmount = (self: Element) => Effect.sync(() => {
+const flushPolymer = (polymer: Polymer.Polymer) => {
+  const updater = Polymer.dequeue(polymer)!;
+
+  switch (updater._tag) {
+    case 'State':
+      return Effect.as(
+        Effect.sync(updater.action),
+        polymer,
+      );
+
+    case 'Effect':
+      return Effect.as(
+        normalizeEffector(updater.monomer.update),
+        polymer,
+      );
+  }
+};
+
+export const flush = (self: Element) =>
+  pipe(
+    Effect.iterate(Polymer.fromComponent(unsafeComponent(self)), {
+      while: Polymer.isPending,
+      body : flushPolymer,
+    }),
+    Effect.map(Polymer.toComponent),
+  );
+
+export const unmount = (self: Element) => {
   self.ancestor = undefined;
   self.children = undefined;
   (self._env as any) = undefined;
@@ -617,6 +610,15 @@ export const unmount = (self: Element) => Effect.sync(() => {
   if (self.polymer) {
     (self.polymer as any) = Polymer.dispose(self.polymer);
   }
+};
+
+export const invoke = dual<
+  (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
+  (self: Element, event: Jsx.Event) => Effect.Effect<void>
+>(2, (self, event) => {
+  // const handler = self.props[event.type];
+  // return Event.invokeWith(event, handler);
+  return Effect.void;
 });
 
 export const encode = dual<

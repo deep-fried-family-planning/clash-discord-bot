@@ -1,7 +1,7 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import {Codec} from '#disreact/model/service/Codec.ts';
-import * as Hooks from '#disreact/runtime/Hook.ts';
+import * as Hooks from '#disreact/model/runtime/Hook.ts';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
@@ -24,7 +24,7 @@ const mountElement = (el: Element.Element) =>
     }),
     Effect.andThen(Element.render(el)),
     Effect.ensuring(release),
-    Effect.map(Element.liftJsxInto(el)),
+    Effect.map(Element.bindJsxInto(el)),
   );
 
 const initializeElement = (el: Element.Element) =>

@@ -1,7 +1,7 @@
 import type * as Progress from '#disreact/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import type * as Event from '#disreact/model/entity/Event.ts';
-import * as Hydrant from '#disreact/runtime/Hydrant.ts';
+import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';

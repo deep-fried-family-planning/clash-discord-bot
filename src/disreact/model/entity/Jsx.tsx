@@ -69,6 +69,16 @@ const makeFC = (type: FC): Element.FC => {
   return self;
 };
 
+export interface Event<A = any> {
+  id    : string;
+  type  : string;
+  target: A;
+  close(): void;
+  open(jsx: Jsx): void;
+  open<P>(fc: FC<P>, props: P): void;
+  open<P>(fc: Jsx | FC<P>, props?: P): void;
+}
+
 export type Type = | string
                    | typeof Fragment
                    | FC;
@@ -102,9 +112,9 @@ export type Child = | Value
 export type Children = | Child
                        | readonly Child[];
 
-export const isValue = (u: unknown): u is Value =>
-  u == null &&
-  typeof u !== 'object';
+export const isFalsy = (u: unknown): u is Value => !u;
+
+export const isValue = (u: unknown): u is Value => typeof u !== 'object';
 
 export const isJsx = (u: unknown): u is Jsx =>
   u != null &&
@@ -198,4 +208,8 @@ export const encode = (self: Jsx, encoding: Encoding): any => {
   const acc = {};
 
   return {};
+};
+
+export const stringifyJsx = (self: Jsx): string => {
+  return '';
 };
