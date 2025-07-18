@@ -1,6 +1,6 @@
 {
   "extends"        : "../tsconfig.json",
-  "include"        : ["../test"],
+  "include"        : ["bench", "fullstack", "unit"],
   "compilerOptions": {
     "types"        : ["vitest/globals"],
     "noImplicitAny": false
