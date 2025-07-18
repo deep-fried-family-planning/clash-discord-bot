@@ -1,13 +1,11 @@
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import {pipe} from 'effect/Function';
-import type * as Fn from '#disreact/model/Fn.ts';
 import type * as Event from '#disreact/model/entity/Event.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/runtime/Hydrant.ts';
 import * as Effect from 'effect/Effect';
 import * as L from 'effect/Layer';
-import * as Memo from 'effect/Memo';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
 

@@ -1,19 +1,15 @@
 /* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
-import type * as Record from 'effect/Record';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 import * as PrimaryKey from 'effect/PrimaryKey';
+import type * as Record from 'effect/Record';
 
 type MTag = Monomer['_tag'];
 type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
-
-export namespace Polymer {
-
-}
 
 export interface Polymer<
   T extends MTag = MTag,
@@ -21,9 +17,7 @@ export interface Polymer<
   O = any,
 > extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Component.Component>,
-  Traversable.Ancestor<Polymer>,
-  Traversable.Descendent<Polymer>
+  Traversable.Origin<Element.Component>
 {
   id   : string;
   pc   : number;
@@ -31,7 +25,11 @@ export interface Polymer<
   stack: Monomer[];
   queue: Updater[];
 
-  _flags: Set<any>;
+  origin : Element.Component;
+  _flags : Set<Element.Component>;
+  mount  : Set<Element.Component>;
+  render : Set<Element.Component>;
+  unmount: Set<Element.Component>;
 
   inputs: any[];
   assert: T;
@@ -60,20 +58,23 @@ export const isChanged = (self: Polymer) => {
   }
   return false;
 };
-import type * as Component from '#disreact/model/entity/Component.ts';
-export const fromComponent = (elem: Component.Component): Polymer => elem.polymer;
 
-export const toComponent = (self: Polymer): Component.Component => self.origin!;
+export const fromComponent = (elem: Element.Component): Polymer => elem.polymer;
+
+export const toComponent = (self: Polymer): Element.Component => self.origin!;
 
 const PolymerProto: Polymer = {
-  pc    : 0,
-  rc    : 0,
-  stack : undefined as any,
-  queue : undefined as any,
-  _flags: undefined as any,
-  assert: undefined as any,
-  lazy  : undefined as any,
-  output: undefined as any,
+  pc     : 0,
+  rc     : 0,
+  stack  : undefined as any,
+  queue  : undefined as any,
+  _flags : undefined as any,
+  mount  : undefined as any,
+  render : undefined as any,
+  unmount: undefined as any,
+  assert : undefined as any,
+  lazy   : undefined as any,
+  output : undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
     return {
@@ -89,7 +90,6 @@ const PolymerProto: Polymer = {
 export const make = (elem: Element.Component): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
   self.id = PrimaryKey.value(elem);
-  self.ancestor = elem.origin;
   self.origin = elem;
   self.stack = [];
   self.queue = [];
@@ -121,9 +121,7 @@ export const dispose = (self: Polymer) => {
   if (self.queue.length) {
     throw new Error('ope');
   }
-  self.ancestor = undefined;
-  self.origin = undefined;
-  self.children = undefined;
+  (self.origin as any) = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
   (self._flags as any) = undefined;

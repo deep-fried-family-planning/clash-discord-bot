@@ -1,38 +1,47 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/Hooks.ts';
-import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
-import type * as Event from '#disreact/model/entity/Event.ts';
+import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Effect from 'effect/Effect';
-import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
-import {pipe} from 'effect/Function';
+
+const releaseSync = Effect.sync(() => {
+  Hooks.active.polymer = undefined;
+});
 
 export const mutex = Effect.unsafeMakeSemaphore(1);
-
-export const mountElement = (start: Element.Element) =>
-  start.pipe(
-
-  );
-
-const release = pipe(
-  E.sync(() => {
-    Hooks.active.polymer = undefined;
-  }),
-  E.andThen(mutex.release(1)),
+export const acquire = mutex.take(1);
+export const release = releaseSync.pipe(
+  Effect.andThen(mutex.release(1)),
 );
 
-const renderElement = (elem: Element.Element) =>
-  pipe(
-    Effect.sync(() => {
-      Hooks.active.polymer = elem.polymer;
+const mountElement = (el: Element.Element) =>
+  acquire.pipe(
+    Effect.map(() => {
+      Hooks.active.polymer = el.polymer;
+      return Element.mount(el);
     }),
-    Effect.andThen(Element.render(elem)),
-    Effect.map((children) => {
-      Hooks.active.polymer = undefined;
-      return children;
-    }),
+    Effect.andThen(Element.render(el)),
+    Effect.ensuring(release),
+    Effect.map((children) => Element.acceptRender(el, children)),
   );
+
+const initializeElement = (el: Element.Element) =>
+  mountElement(el);
+
+export const initialize = (root: Element.Element) =>
+  Effect.iterate(Stack.make(root._env.root), {
+    while: Stack.condition,
+    body : (stack) =>
+      stack.pipe(
+        Stack.pop,
+        Element.either,
+        Either.map(initializeElement),
+        Either.mapLeft(Effect.succeed),
+        Either.merge,
+        Effect.map((el) => Stack.pushAll(stack, el.children)),
+      ),
+  });
 
 export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
@@ -93,84 +102,3 @@ export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeR
   }
   return null;
 });
-
-export const invokeIntrinsicElement = (elem: Element.Element, event: Event.Event) => {
-
-};
-
-const mountFromStack = (stack: Stack.Stack<Element.Element>) =>
-  stack.pipe(
-    Stack.pop,
-    Element.toEither,
-    Either.map((elem) =>
-      elem.pipe(
-        Element.mount,
-
-        E.map(Stack.pushAllInto(stack)),
-      ),
-    ),
-  );
-
-const unmountFromStack = (stack: Stack.Stack<Element.Element>) =>
-  stack.pipe(
-    Stack.pop,
-    Element.toEither,
-    Either.map((elem) =>
-      elem.pipe(
-        Element.unmount,
-        E.map(Stack.pushAllInto(stack)),
-      ),
-    ),
-  );
-
-const renderer = pipe(
-  Effect.liftPredicate(Element.isComponent, (self) => {
-    self;
-  }),
-  Effect.
-);
-
-export const mount = (root: Element.Element) =>
-  E.iterate(Stack.make(root), {
-    while: Stack.condition,
-    body : (stack) =>
-      stack.pipe(
-        Stack.pop,
-        Element.toEither,
-        Either.map((elem) =>
-          elem.pipe(
-            Element.mount,
-            renderElement,
-            Effect.map((children) => {
-              elem.children = Element.fromJsxChildren(elem, children);
-              return Stack.pushAll(stack, elem.children);
-            }),
-          ),
-        ),
-        Either.mapLeft((elem) =>
-          Effect.succeed(
-            Stack.pushAll(stack, elem.children),
-          ),
-        ),
-        Either.merge,
-      ),
-  });
-
-const unmount = (elem: Element.Element) =>
-  E.iterate(Stack.make(elem), {
-    while: Stack.condition,
-    body : (stack) =>
-      stack.pipe(
-        Stack.pop,
-        Element.toEither,
-        Either.map((elem) =>
-          elem.pipe(
-            Element.unmount,
-          ),
-        ),
-      ),
-  });
-
-export const rerender = (root: Element.Element) => {
-  const lca = root;
-};

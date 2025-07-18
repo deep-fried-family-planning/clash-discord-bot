@@ -13,7 +13,7 @@ import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
-import {dual, flow, pipe} from 'effect/Function';
+import {dual, flow, identity, pipe} from 'effect/Function';
 import type * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
@@ -22,7 +22,6 @@ import * as Pipeable from 'effect/Pipeable';
 import * as P from 'effect/Predicate';
 import * as Predicate from 'effect/Predicate';
 import * as PrimaryKey from 'effect/PrimaryKey';
-import type * as Component from './Component';
 
 export type FCKind = | 'Sync'
                      | 'Async'
@@ -64,7 +63,14 @@ const PropsProto: Props = {
   onsubmit: undefined,
   ...StructProto,
   ...Inspectable.BaseProto,
-  toJSON  : propsToJSON,
+  toJSON(this: Props) {
+    return {
+      _id  : 'Props',
+      value: {
+        ...this,
+      },
+    };
+  },
 } as Props;
 
 const makeProps = (props: any): Props => {
@@ -79,7 +85,21 @@ export const TEXT      = 'Text' as const,
              INTRINSIC = 'Intrinsic' as const,
              COMPONENT = 'Component' as const;
 
-export namespace Element {
+export declare namespace Element {
+  export interface Text extends Element {
+    _tag: typeof TEXT;
+    text: any;
+  }
+  export interface Fragment extends Element {
+    _tag: typeof FRAGMENT;
+    type: typeof Jsx.Fragment;
+  }
+  export interface Intrinsic extends Element {
+    _tag : typeof INTRINSIC;
+    type : string;
+    props: Props;
+  }
+
   export type Effect<E = never, R = never> = Effect.Effect<Element, E, R>;
   export type Tag = | typeof TEXT
                     | typeof FRAGMENT
@@ -129,7 +149,12 @@ export interface Intrinsic extends Element {
   props: Props;
 }
 
-export type * as Component from './Component';
+export interface Component extends Element {
+  _tag   : typeof COMPONENT;
+  type   : FC;
+  polymer: Polymer.Polymer;
+  props  : Props;
+}
 
 export const isElement = (u: unknown): u is Element =>
   !!u
@@ -142,7 +167,9 @@ export const isFragment = (u: Element): u is Fragment => u._tag === FRAGMENT;
 
 export const isIntrinsic = (u: Element): u is Intrinsic => u._tag === INTRINSIC;
 
-export const isComponent = (u: Element): u is Component.Component => u._tag === COMPONENT;
+export const isComponent = (u: Element): u is Component => u._tag === COMPONENT;
+
+export const either = Either.liftPredicate(isComponent, identity);
 
 export const unsafeComponent = flow(
   Option.liftPredicate(isComponent),
@@ -157,12 +184,16 @@ export const Equivalence = dual<
 export const TypeDifference = dual<
   (that: Element) => (self: Element) => boolean,
   (self: Element, that: Element) => boolean
->(2, (a, b) => Equal.equals(a.type, b.type));
+>(2, (a, b) =>
+  Equal.equals(a.type, b.type),
+);
 
 export const PropsDifference = dual<
   (that: Element) => (self: Element) => boolean,
   (self: Element, that: Element) => boolean
->(2, (a, b) => Equal.equals(a.props, b.props));
+>(2, (a, b) =>
+  Equal.equals(a.props, b.props),
+);
 
 export const StateDifference = (a: Element) =>
   isComponent(a)
@@ -196,9 +227,40 @@ const ElementProto: Element = {
     if (!this.ancestor) {
       return 'root';
     }
-    return `${PrimaryKey.value(this.ancestor)}`;
+    return `ele${PrimaryKey.value(this.ancestor)}:ope`;
   },
-  toJSON: elementToJSON,
+  toJSON(this: Element) {
+    switch (this._tag) {
+      case TEXT:
+        return {
+          _tag: this._tag,
+          text: this.text,
+        };
+
+      case FRAGMENT:
+        return {
+          _tag    : this._tag,
+          children: this.children,
+        };
+
+      case INTRINSIC:
+        return {
+          _tag    : this._tag,
+          type    : this.type,
+          props   : this.props,
+          children: this.children,
+        };
+
+      case COMPONENT:
+        return {
+          _tag    : this._tag,
+          type    : (this.type as any)._id,
+          props   : this.props,
+          polymer : this.polymer,
+          children: this.children,
+        };
+    }
+  },
 };
 
 const TextProto: Text = Object.assign(Object.create(ElementProto), {
@@ -207,13 +269,14 @@ const TextProto: Text = Object.assign(Object.create(ElementProto), {
 
 const FragmentProto: Fragment = Object.assign(Object.create(ElementProto), {
   _tag: FRAGMENT,
+  type: Jsx.Fragment,
 });
 
 const IntrinsicProto: Intrinsic = Object.assign(Object.create(ElementProto), {
   _tag: INTRINSIC,
 });
 
-const ComponentProto: Component.Component = Object.assign(Object.create(ElementProto), {
+const ComponentProto: Component = Object.assign(Object.create(ElementProto), {
   _tag: COMPONENT,
 });
 
@@ -223,28 +286,29 @@ export const makeText = (text: Jsx.Value): Text => {
   return self;
 };
 
-export const makeFragment = (jsx: Jsx.Jsx<typeof Jsx.Fragment>): Fragment => {
+export const makeFragment = (jsx: Jsx.Jsx): Fragment => {
   const self = Object.create(FragmentProto) as Fragment;
   self.children = fromJsxChildren(self, jsx.child ?? jsx.childs);
   return self;
 };
 
-export const makeIntrinsic = (jsx: Jsx.Jsx<string>): Intrinsic => {
-  const rest = Object.create(IntrinsicProto) as Intrinsic;
-  rest.type = jsx.type;
-  rest.props = makeProps(jsx.props);
-  return rest;
+export const makeIntrinsic = (jsx: Jsx.Jsx): Intrinsic => {
+  const self = Object.create(IntrinsicProto) as Intrinsic;
+  self.type = jsx.type as string;
+  self.props = makeProps(jsx.props);
+  self.children = fromJsxChildren(self, jsx.child ?? jsx.childs);
+  return self;
 };
 
-export const makeComponent = (jsx: Jsx.Jsx<Jsx.FC>): Component.Component => {
-  const func = Object.create(ComponentProto) as Component.Component;
-  func.type = jsx.type as any;
-  func.props = makeProps(jsx.props);
-  func.polymer = Polymer.make(func);
-  return func;
+export const makeComponent = (jsx: Jsx.Jsx): Component => {
+  const self = Object.create(ComponentProto) as Component;
+  self.type = jsx.type as any;
+  self.props = makeProps(jsx.props);
+  self.polymer = Polymer.make(self);
+  return self;
 };
 
-const fromJsx = (jsx: Jsx.Jsx<any>): Fragment | Intrinsic | Component.Component => {
+const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
   switch (typeof jsx.type) {
     case 'string':
       const rest = makeIntrinsic(jsx);
@@ -274,8 +338,7 @@ export const makeRoot = (jsx: Jsx.Jsx, env: Envelope.Envelope): Element => {
 
 const fromJsxChild = (cur: Element, jsx: Jsx.Child, index: number): Element => {
   if (!jsx || typeof jsx !== 'object') {
-    const child = Object.create(TextProto) as Text;
-    child.text = jsx;
+    const child = makeText(jsx);
     return connectChild(cur, index)(child);
   }
   const child = fromJsx(jsx);
@@ -348,24 +411,14 @@ export const insert = (self: Element, at: number, that: Element[]): Element => {
   return self;
 };
 
-export const bindRender = dual<
-  (that: Element) => (children: Element) => Element,
-  (self: Element, that: Element) => Element
->(2, (self, that) => {
-  const self_ = unsafeComponent(self);
-  const that_ = unsafeComponent(that);
-  self_.binds = that_;
-  return self_;
-});
-
-export const acceptRender = (self: Component.Component, rendered: Jsx.Children): Component.Component => {
+export const acceptRender = (self: Element, rendered: Jsx.Children): Element => {
   Polymer.commit(self.polymer!);
   const children = fromJsxChildren(self, rendered);
   self.children = children;
   return self;
 };
 
-export const normalizeRender = (self: Component.Component, rendered: Jsx.Children): Component.Component => {
+export const normalizeRender = (self: Element, rendered: Jsx.Children): Component => {
   Polymer.commit(self.polymer!);
   const children = fromJsxChildren(self, rendered);
   return self;
@@ -433,61 +486,7 @@ export const findFirst = dual<
   ),
 );
 
-export const encode = dual<
-  (encoding: JsxEncoding) => (self: Element) => Element,
-  (self: Element, encoding: JsxEncoding) => Element
->(2, (self, that) => {
-  const self_ = unsafeComponent(self);
-  const that_ = unsafeComponent(that);
-  self_.polymer = Polymer.encode(self_.polymer, that_.polymer);
-  return self_;
-});
-
-function propsToJSON(this: Props) {
-  return {
-    _id  : 'Props',
-    value: {
-      ...this,
-    },
-  };
-}
-
-function elementToJSON(this: Element) {
-  switch (this._tag) {
-    case TEXT:
-      return {
-        _tag: this._tag,
-        text: this.text,
-      };
-
-    case FRAGMENT:
-      return {
-        _tag    : this._tag,
-        children: this.children,
-      };
-
-    case INTRINSIC:
-      return {
-        _tag    : this._tag,
-        type    : this.type,
-        props   : this.props,
-        children: this.children,
-      };
-
-    case COMPONENT:
-      return {
-        _tag    : this._tag,
-        type    : (this.type as any)._id,
-        props   : this.props,
-        polymer : this.polymer,
-        children: this.children,
-      };
-  }
-}
-
-Effect.filter;
-
-export const toEither = (self: Element): Either.Either<Component.Component, Element> =>
+export const toEither = (self: Element): Either.Either<Component, Element> =>
   isComponent(self)
   ? Either.right(self)
   : Either.left(self);
@@ -556,4 +555,85 @@ export const patch = dual<
       return update(self)(patch.that);
   }
   return self;
+});
+
+export const mount = (self: Element) => {
+  return self;
+};
+
+export const hydrate = dual<
+  (that: Polymer.Bundle) => (self: Element) => Element,
+  (self: Element, that: Polymer.Bundle) => Element
+>(2, (input, encoding) =>
+  input.pipe(
+    unsafeComponent,
+    Polymer.fromComponent,
+    Polymer.hydrate(encoding),
+    Polymer.toComponent,
+  ),
+);
+
+export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
+  const self = elem as Component;
+  const fc = self.type;
+
+  switch (fc._tag) {
+    case 'Sync': {
+      return Effect.sync(() => fc(self.props) as Jsx.Children);
+    }
+    case 'Async': {
+      return Effect.promise(() => fc(self.props) as Promise<Jsx.Children>);
+    }
+    case 'Effect': {
+      return Effect.suspend(() => fc(self.props) as Effect.Effect<Jsx.Children>);
+    }
+  }
+  return Effect.suspend(() => {
+    const children = fc(self.props);
+
+    if (Predicate.isPromise(children)) {
+      fc._tag = 'Async';
+      return Effect.promise(() => children);
+    }
+    if (!Effect.isEffect(children)) {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
+    fc._tag = 'Effect';
+    return children;
+  });
+};
+
+export const liftJsx = dual<
+  (jsx: Jsx.Children) => (self: Component) => Element[] | undefined,
+  (self: Component, jsx: Jsx.Children) => Element[] | undefined
+>(2, (self, jsx) => {
+
+});
+
+export const liftJsxInto = dual<
+  (self: Component) => (jsx: Jsx.Children) => Element[] | undefined,
+  (jsx: Jsx.Children, self: Component) => Element[] | undefined
+>(2, (jsx, self) => {
+
+});
+
+export const unmount = (self: Element) => Effect.sync(() => {
+  self.ancestor = undefined;
+  self.children = undefined;
+  (self._env as any) = undefined;
+  (self.props as any) = undefined;
+
+  if (self.polymer) {
+    (self.polymer as any) = Polymer.dispose(self.polymer);
+  }
+});
+
+export const encode = dual<
+  (encoding: JsxEncoding) => (self: Element) => Element,
+  (self: Element, encoding: JsxEncoding) => Element
+>(2, (self, that) => {
+  const self_ = unsafeComponent(self);
+  const that_ = unsafeComponent(that);
+  return self_;
 });

@@ -185,8 +185,6 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
-export const to;
-
 export interface Encoding {
   primitive: string;
   normalize: Record<string, string>;
