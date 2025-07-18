@@ -56,8 +56,9 @@ const makeFC = (type: FC): Element.FC => {
   const source = type.toString();
   const props = type.length !== 0;
   const isAsync = type.constructor === ASYNC_CONSTRUCTOR;
+  const displayName = type.displayName;
 
-  const self = Object.assign(Object.create(FCProto), type) as Element.FC;
+  const self = Object.assign(type, Object.create(FCProto)) as Element.FC;
 
   if (isAsync) {
     self._tag = 'Async';

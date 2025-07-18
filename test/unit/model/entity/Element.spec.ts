@@ -1,5 +1,8 @@
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import * as Element from '#disreact/model/entity/Element.ts';
+import * as Lifecycle from '#disreact/model/lifecycle.ts';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import {it} from '@effect/vitest';
+import * as Effect from 'effect/Effect';
 
 const json = (actual: any) => JSON.stringify(actual, null, 2);
 
@@ -16,15 +19,11 @@ it('should transform text', () => {
 
 it('should transform fragment jsx', () => {
   const jsx = Jsx.makeJsx(Jsx.Fragment, {});
-  const actual = Element.makeIntrinsic(jsx);
+  const actual = Element.makeFragment(jsx);
 
   expect(json(actual)).toMatchInlineSnapshot(`
     "{
-      "_tag": "Intrinsic",
-      "props": {
-        "_id": "Props",
-        "value": {}
-      }
+      "_tag": "Fragment"
     }"
   `);
 });
@@ -37,31 +36,85 @@ it('should transform intrinsic jsx', () => {
     "{
       "_tag": "Intrinsic",
       "type": "div",
-      "props": {
-        "_id": "Props",
-        "value": {}
-      }
+      "props": {}
     }"
   `);
 });
 
 it('should transform function component jsx', () => {
   const jsx = Jsx.makeJsx(() => null, {});
-  const actual = Element.makeIntrinsic(jsx);
+  const actual = Element.makeComponent(jsx);
 
   expect(json(actual)).toMatchInlineSnapshot(`
     "{
-      "_tag": "Intrinsic",
-      "type": {
-        "_id": "FunctionComponent",
-        "name": "Anonymous",
-        "props": false,
-        "state": true
-      },
-      "props": {
-        "_id": "Props",
-        "value": {}
+      "_tag": "Component",
+      "type": "Anonymous",
+      "props": {},
+      "polymer": {
+        "_id": "Polymer",
+        "pc": 0,
+        "rc": 0,
+        "stack": [],
+        "queue": []
       }
     }"
   `);
 });
+
+it.effect('should render function component jsx', Effect.fn(function* () {
+  const jsx = Jsx.makeJsx(
+    () =>
+      Jsx.makeJsx('div1', {
+        children: Jsx.makeJsxs('div2', {
+          children: [
+            Jsx.makeJsx('div3', {}),
+            Jsx.makeJsx('div4', {}),
+          ],
+        }),
+      }),
+    {},
+  );
+  const element = Element.makeComponent(jsx);
+  const actual = yield* Lifecycle.initialize(element);
+
+  expect(json(actual)).toMatchInlineSnapshot(`
+    "{
+      "_tag": "Component",
+      "type": "Anonymous",
+      "props": {},
+      "polymer": {
+        "_id": "Polymer",
+        "pc": 0,
+        "rc": 0,
+        "stack": [],
+        "queue": []
+      },
+      "children": [
+        {
+          "_tag": "Intrinsic",
+          "type": "div1",
+          "props": {},
+          "children": [
+            {
+              "_tag": "Intrinsic",
+              "type": "div2",
+              "props": {},
+              "children": [
+                {
+                  "_tag": "Intrinsic",
+                  "type": "div3",
+                  "props": {}
+                },
+                {
+                  "_tag": "Intrinsic",
+                  "type": "div4",
+                  "props": {}
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }"
+  `);
+}));

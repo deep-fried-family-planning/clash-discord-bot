@@ -1,9 +1,10 @@
 import * as Stack from '#disreact/core/Stack.ts';
-import * as Hooks from '#disreact/Hooks.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import {Codec} from '#disreact/model/service/Codec.ts';
+import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
+import {pipe} from 'effect/Function';
 
 const releaseSync = Effect.sync(() => {
   Hooks.active.polymer = undefined;
@@ -30,18 +31,21 @@ const initializeElement = (el: Element.Element) =>
   mountElement(el);
 
 export const initialize = (root: Element.Element) =>
-  Effect.iterate(Stack.make(root._env.root), {
-    while: Stack.condition,
-    body : (stack) =>
-      stack.pipe(
-        Stack.pop,
-        Element.either,
-        Either.map(initializeElement),
-        Either.mapLeft(Effect.succeed),
-        Either.merge,
-        Effect.map((el) => Stack.pushAll(stack, el.children)),
-      ),
-  });
+  pipe(
+    Effect.iterate(Stack.make(root), {
+      while: Stack.condition,
+      body : (stack) =>
+        stack.pipe(
+          Stack.pop,
+          Element.either,
+          Either.map(initializeElement),
+          Either.mapLeft(Effect.succeed),
+          Either.merge,
+          Effect.map((el) => Stack.pushAll(stack, el.children)),
+        ),
+    }),
+    Effect.as(root),
+  );
 
 export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],

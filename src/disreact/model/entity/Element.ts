@@ -64,11 +64,10 @@ const PropsProto: Props = {
   ...StructProto,
   ...Inspectable.BaseProto,
   toJSON(this: Props) {
+    const self = {...this};
+    delete self.children;
     return {
-      _id  : 'Props',
-      value: {
-        ...this,
-      },
+      ...self,
     };
   },
 } as Props;
@@ -207,7 +206,7 @@ const keyId = (self: Element) => self.key ?? self.trie;
 
 const ElementProto: Element = {
   _tag    : INTRINSIC,
-  _env    : undefined as any,
+  _env    : {} as any,
   origin  : undefined as any,
   ancestor: undefined,
   children: undefined,
@@ -485,17 +484,6 @@ export const findFirst = dual<
     Array.findFirst(f), // todo
   ),
 );
-
-export const toEither = (self: Element): Either.Either<Component, Element> =>
-  isComponent(self)
-  ? Either.right(self)
-  : Either.left(self);
-
-export const toStackPush = (self: Element) =>
-  self.pipe(
-    Traversable.toReversedChildren,
-    Option.fromNullable,
-  );
 
 export const toProgress = (self: Element): Progress.Partial => {
   return Progress.partial(self._env.entrypoint as any, self);

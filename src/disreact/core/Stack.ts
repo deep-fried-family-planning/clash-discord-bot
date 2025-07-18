@@ -1,7 +1,7 @@
 import {dual} from 'effect/Function';
-import type * as Inspectable from 'effect/Inspectable';
+import * as Inspectable from 'effect/Inspectable';
 import * as Iterable from 'effect/Iterable';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Pipeable from 'effect/Pipeable';
 
 export interface Stack<A> extends Inspectable.Inspectable,
   Pipeable.Pipeable
@@ -14,6 +14,8 @@ export interface Stack<A> extends Inspectable.Inspectable,
 }
 
 const StackProto: Stack<any> = {
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
   root     : undefined as any,
   values   : undefined as any,
   push     : undefined as any,
