@@ -1,5 +1,5 @@
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import * as Equal from 'effect/Equal';
 import {dual, hole} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';

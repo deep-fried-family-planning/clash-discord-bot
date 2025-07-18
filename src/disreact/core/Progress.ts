@@ -9,10 +9,10 @@ export type Progress<
   | Done;
 
 const Proto: Progress = {
-  _tag      : 'Start',
-  entrypoint: '',
-  next      : undefined,
-  data      : undefined,
+  _tag: 'Start',
+  id  : '',
+  next: undefined,
+  data: undefined,
 } as Progress;
 
 export type Start = {
@@ -20,21 +20,21 @@ export type Start = {
 };
 
 export type Change = {
-  _tag      : 'Change';
-  entrypoint: string;
-  next      : string | null;
+  _tag: 'Change';
+  id  : string;
+  next: string | null;
 };
 
 export type Partial<A = any> = {
-  _tag      : 'Partial';
-  entrypoint: string;
-  data      : A;
+  _tag: 'Partial';
+  id  : string;
+  data: A;
 };
 
 export type Checkpoint<A = any> = {
-  _tag      : 'Checkpoint';
-  entrypoint: string;
-  data      : A;
+  _tag: 'Checkpoint';
+  id  : string;
+  data: A;
 };
 
 export type Done = {
@@ -47,9 +47,9 @@ const ChangeProto: Change = Object.assign(Object.create(Proto), {
   _tag: 'Change',
 });
 
-export const change = (entrypoint: string, next: string | null): Change => {
+export const change = (id: string, next: string | null): Change => {
   const self = Object.create(ChangeProto) as Change;
-  self.entrypoint = entrypoint;
+  self.id = id;
   self.next = next;
   return self;
 };
@@ -58,9 +58,9 @@ const PartialProto: Partial<any> = Object.assign(Object.create(Proto), {
   _tag: 'Partial',
 });
 
-export const partial = <A = any>(entrypoint: string, data: A): Partial<A> => {
+export const partial = <A = any>(id: string, data: A): Partial<A> => {
   const self = Object.create(PartialProto) as Partial<A>;
-  self.entrypoint = entrypoint;
+  self.id = id;
   self.data = data;
   return self;
 };
@@ -69,9 +69,9 @@ const CheckpointProto: Checkpoint<any> = Object.assign(Object.create(Proto), {
   _tag: 'Checkpoint',
 });
 
-export const checkpoint = <A = any>(entrypoint: string, data: A): Checkpoint<A> => {
+export const checkpoint = <A = any>(id: string, data: A): Checkpoint<A> => {
   const self = Object.create(CheckpointProto) as Checkpoint<A>;
-  self.entrypoint = entrypoint;
+  self.id = id;
   self.data = data;
   return self;
 };
@@ -87,4 +87,4 @@ export const done = (): Done => {
 
 export const isClose = (change: Change) => change.next === null;
 
-export const isOpen = (change: Change) => change.next !== change.entrypoint;
+export const isOpen = (change: Change) => change.next !== change.id;

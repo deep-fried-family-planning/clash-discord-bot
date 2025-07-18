@@ -112,12 +112,13 @@ export const isJsx = (u: unknown): u is Jsx =>
   typeof u === 'object' &&
   TypeId in u;
 
-export const isJsxFC = (u: unknown): u is Jsx<FC> =>
-  isJsx(u) &&
-  typeof u === 'function';
+export const isJsxFragment = (u: Jsx): u is Jsx<typeof Fragment> => u.type === Fragment;
 
-export const isChilds = (u: unknown): u is readonly Child[] =>
-  Array.isArray(u);
+export const isJsxIntrinsic = (u: Jsx): u is Jsx<string> => typeof u.type === 'string';
+
+export const isJsxFC = (u: Jsx): u is Jsx<FC> => typeof u.type === 'function';
+
+export const isChilds = (u: unknown): u is readonly Child[] => Array.isArray(u);
 
 export const Fragment = Symbol('disreact/Fragment');
 
@@ -184,7 +185,18 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
-export const encode = (self: Jsx, encoding: JsxEncoding): any => {
+export const to;
+
+export interface Encoding {
+  primitive: string;
+  normalize: Record<string, string>;
+  transform: Record<
+    string,
+    (self: {props: any}, acc: any) => any
+  >;
+}
+
+export const encode = (self: Jsx, encoding: Encoding): any => {
   const stack = [self];
   const acc = {};
 

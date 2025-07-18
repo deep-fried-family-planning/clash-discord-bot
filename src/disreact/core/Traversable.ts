@@ -1,5 +1,24 @@
 import {dual} from 'effect/Function';
 
+export namespace Root {
+  export type Any = Root<any>;
+  export type Value<A> = A extends Root<infer B> ? B : never;
+}
+
+export interface Root<A> {
+  root: A | undefined;
+}
+
+export const getRoot = <A extends Root.Any>(self: A): A | undefined => self.root;
+
+export const setRoot = dual<
+  <A extends Root.Any>(root?: Root.Value<A>) => (self: A) => A,
+  <A extends Root.Any>(self: A, root?: Root.Value<A>) => A
+>(2, (self, root) => {
+  self.root = root;
+  return self;
+});
+
 export namespace Origin {
   export type Any = Origin<any>;
   export type Value<A> = A extends Origin<infer B> ? B : never;

@@ -74,13 +74,13 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@aws-sdk/client-scheduler": "3.846.0",
-    "@aws-sdk/lib-dynamodb": "3.846.0",
+    "@aws-sdk/client-scheduler": "3.848.0",
+    "@aws-sdk/lib-dynamodb": "3.848.0",
     "@changesets/cli": "2.29.5",
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
     "@discordjs/core": "2.2.0",
-    "@effect/language-service": "0.27.1",
+    "@effect/language-service": "0.27.2",
     "@effect/vitest": "0.24.1",
     "@eslint/js": "9.31.0",
     "@rsdoctor/cli": "1.1.8",

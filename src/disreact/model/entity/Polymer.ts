@@ -21,7 +21,7 @@ export interface Polymer<
   O = any,
 > extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Element.Component>,
+  Traversable.Origin<Component.Component>,
   Traversable.Ancestor<Polymer>,
   Traversable.Descendent<Polymer>
 {
@@ -60,10 +60,10 @@ export const isChanged = (self: Polymer) => {
   }
   return false;
 };
+import type * as Component from '#disreact/model/entity/Component.ts';
+export const fromComponent = (elem: Component.Component): Polymer => elem.polymer;
 
-export const fromComponent = (elem: Element.Component): Polymer => elem.polymer;
-
-export const toComponent = (self: Polymer): Element.Component => self.origin!;
+export const toComponent = (self: Polymer): Component.Component => self.origin!;
 
 const PolymerProto: Polymer = {
   pc    : 0,
@@ -159,44 +159,6 @@ export interface Hook {
 export const enqueue = (self: Polymer, monomer: Effector) => self.queue.push(monomer);
 
 export const dequeue = (self: Polymer) => self.queue.shift();
-
-export const acquire = dual<
-  <T extends MTag>(tag: T) => (self: Polymer<MTag>) => Polymer<T>,
-  <T extends MTag>(self: Polymer<MTag>, tag: T) => Polymer<T>
->(2, (self, tag) => {
-  self.assert = tag;
-  return self as unknown as Polymer<typeof tag>;
-});
-
-export const lazy = dual<
-  <T extends MTag>(lazy: (p: Polymer) => Mono<T>) => (self: Polymer<T>) => Polymer<T>,
-  <T extends MTag>(self: Polymer, lazy: (p: Polymer) => Mono<T>) => Polymer<T>
->(2, (self, lazy) => {
-  self.lazy = lazy;
-  return self;
-});
-
-export const define = dual<
-  <T extends MTag, O>(impl: (hook: Hook<T>) => O) => (self: Polymer<T>) => Polymer<T>,
-  <T extends MTag, O>(self: Polymer<T>, impl: (arg: Hook<T>) => O) => Polymer<T>
->(2, (self, impl) => {
-  const monomer = self.stack[self.pc];
-
-  if (!monomer) {
-
-  }
-  if (monomer._tag !== self.assert) {
-    throw new Error('Hooks must be called in the same order as they are defined.');
-  }
-
-  const hook = {
-    hydrate: false,
-    monomer: undefined as any,
-    flags  : new Set(),
-    element: undefined as any,
-    queue  : [],
-  };
-});
 
 export const release = <T extends MTag, M extends Mono<T>, O>(self: Polymer<T, M, O>): O => {
   const output = self.output;

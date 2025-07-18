@@ -1,20 +1,19 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Hooks from '#disreact/Hooks.ts';
+import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import type * as Event from '#disreact/model/entity/Event.ts';
-import * as Fn from '#disreact/model/Fn.ts';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import {Codec} from '#disreact/model/Codec.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
 import * as E from 'effect/Effect';
 import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
 
-export class RenderError extends Data.TaggedError('RenderError')<{}> {}
+export const mutex = Effect.unsafeMakeSemaphore(1);
 
-const mutex = Effect.unsafeMakeSemaphore(1);
+export const mountElement = (start: Element.Element) =>
+  start.pipe(
+
+  );
 
 const release = pipe(
   E.sync(() => {
@@ -33,10 +32,7 @@ const renderElement = (elem: Element.Element) =>
       Hooks.active.polymer = undefined;
       return children;
     }),
-    mutex.withPermits(1),
   );
-
-
 
 export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],
@@ -127,6 +123,13 @@ const unmountFromStack = (stack: Stack.Stack<Element.Element>) =>
     ),
   );
 
+const renderer = pipe(
+  Effect.liftPredicate(Element.isComponent, (self) => {
+    self;
+  }),
+  Effect.
+);
+
 export const mount = (root: Element.Element) =>
   E.iterate(Stack.make(root), {
     while: Stack.condition,
@@ -137,8 +140,19 @@ export const mount = (root: Element.Element) =>
         Either.map((elem) =>
           elem.pipe(
             Element.mount,
+            renderElement,
+            Effect.map((children) => {
+              elem.children = Element.fromJsxChildren(elem, children);
+              return Stack.pushAll(stack, elem.children);
+            }),
           ),
         ),
+        Either.mapLeft((elem) =>
+          Effect.succeed(
+            Stack.pushAll(stack, elem.children),
+          ),
+        ),
+        Either.merge,
       ),
   });
 
