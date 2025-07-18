@@ -18,7 +18,7 @@ it('should transform text', () => {
 });
 
 it('should transform fragment jsx', () => {
-  const jsx = Jsx.makeJsx(Jsx.Fragment, {});
+  const jsx = Jsx.makeJsx(Jsx.Fragment, {k: 'v'});
   const actual = Element.makeFragment(jsx);
 
   expect(json(actual)).toMatchInlineSnapshot(`
@@ -29,27 +29,31 @@ it('should transform fragment jsx', () => {
 });
 
 it('should transform intrinsic jsx', () => {
-  const jsx = Jsx.makeJsx('div', {});
+  const jsx = Jsx.makeJsx('div', {k: 'v'});
   const actual = Element.makeIntrinsic(jsx);
 
   expect(json(actual)).toMatchInlineSnapshot(`
     "{
       "_tag": "Intrinsic",
       "type": "div",
-      "props": {}
+      "props": {
+        "k": "v"
+      }
     }"
   `);
 });
 
 it('should transform function component jsx', () => {
-  const jsx = Jsx.makeJsx(() => null, {});
+  const jsx = Jsx.makeJsx(() => null, {k: 'v'});
   const actual = Element.makeComponent(jsx);
 
   expect(json(actual)).toMatchInlineSnapshot(`
     "{
       "_tag": "Component",
       "type": "Anonymous",
-      "props": {},
+      "props": {
+        "k": "v"
+      },
       "polymer": {
         "_id": "Polymer",
         "pc": 0,
@@ -68,7 +72,7 @@ it.effect('should render function component jsx', Effect.fn(function* () {
         children: Jsx.makeJsxs('div2', {
           children: [
             Jsx.makeJsx('div3', {}),
-            Jsx.makeJsx('div4', {}),
+            Jsx.makeJsx('div4', {k: 'v'}),
           ],
         }),
       }),
@@ -108,7 +112,9 @@ it.effect('should render function component jsx', Effect.fn(function* () {
                 {
                   "_tag": "Intrinsic",
                   "type": "div4",
-                  "props": {}
+                  "props": {
+                    "k": "v"
+                  }
                 }
               ]
             }

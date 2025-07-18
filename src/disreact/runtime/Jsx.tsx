@@ -1,8 +1,6 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
-import type {JsxEncoding} from '#disreact/model/types.ts';
 import * as E from 'effect/Effect';
-import * as GlobalValue from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
 import * as Pipeable from 'effect/Pipeable';
