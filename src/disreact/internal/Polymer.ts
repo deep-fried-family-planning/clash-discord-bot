@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Element from '#disreact/internal/Element.ts';
+import type * as Element from '#disreact/internal/Elements.ts';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';

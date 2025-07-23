@@ -1,5 +1,5 @@
 import type * as Progress from '#disreact/internal/core/Progress.ts';
-import * as Element from '#disreact/internal/Element.ts';
+import * as Element from '#disreact/internal/Elements.ts';
 import type * as Event from '#disreact/internal/Event.ts';
 import * as Hydrant from '#disreact/internal/Hydrant.ts';
 import type * as Polymer from '#disreact/internal/Polymer.ts';
@@ -11,29 +11,12 @@ import * as Mailbox from 'effect/Mailbox';
 import type * as Option from 'effect/Option';
 import type * as Record from 'effect/Record';
 
-export interface Simulant<A = any> {
-  data      : A;
-  entrypoint: string;
-  props     : Record<string, any>;
-  state     : Record<string, any>;
-  hydrant?  : Hydrant.Encoded;
-  event?    : Event.EventInput;
-}
-
-export interface Simulated<T extends string, P = any> {
-  type      : T;
-  encoded   : P;
-  entrypoint: Option.Option<string>;
-  props     : Record<string, any>;
-  state     : Record<string, any>;
-}
-
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data    : A;
   hydrant : Hydrant.Hydrant;
-  root    : Element.Element;
+  root    : Element.Elements;
   polymers: Record<string, Polymer.Polymer>;
-  flags   : Set<Element.Element>;
+  flags   : Set<Element.Component>;
   final   : Deferred.Deferred<Progress.Checkpoint>;
   stream  : Mailbox.Mailbox<Progress.Progress>;
 }
