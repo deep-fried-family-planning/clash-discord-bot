@@ -1,6 +1,6 @@
 import * as Stack from '#disreact/internal/core/Stack.ts';
-import * as Element from '#disreact/internal/Elements.ts';
-import type * as Hydrant from '#disreact/internal/Hydrant.ts';
+import * as Element from '#disreact/internal/Element.ts';
+import type * as Hydrant from '#disreact/internal/core/Hydrant.ts';
 import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Effect from 'effect/Effect';
@@ -19,7 +19,7 @@ const release = Effect.andThen(
   mutex.release(1),
 );
 
-const mountElement = (el: Element.Elements) =>
+const mountElement = (el: Element.Element) =>
   acquire.pipe(
     Effect.map(() => {
       Hooks.active.polymer = el.polymer;
@@ -30,10 +30,10 @@ const mountElement = (el: Element.Elements) =>
     Effect.map(Element.bindJsxInto(el)),
   );
 
-const initializeElement = (el: Element.Elements) =>
+const initializeElement = (el: Element.Element) =>
   mountElement(el);
 
-export const initialize = (root: Element.Elements) =>
+export const initialize = (root: Element.Element) =>
   pipe(
     Effect.iterate(Stack.make(root), {
       while: Stack.condition,
@@ -50,15 +50,15 @@ export const initialize = (root: Element.Elements) =>
     Effect.as(root),
   );
 
-export const hydrate = (root: Element.Elements, hydrant: Hydrant.Hydrant) => {
+export const hydrate = (root: Element.Element, hydrant: Hydrant.Hydrant) => {
 
 };
 
-export const encode = (root: Element.Elements) => Codec.use(({encodeText, encodeRest}) => {
-  const stack = [root._env.root],
+export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
+  const stack = [root.env.root],
         final = {} as any,
         args  = new WeakMap(),
-        outs  = new WeakMap().set(root._env.root, final);
+        outs  = new WeakMap().set(root.env.root, final);
 
   while (stack.length) {
     const node = stack.pop()!,

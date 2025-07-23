@@ -3,7 +3,7 @@ import {StructProto} from '#disreact/internal/core/constants.ts';
 export type Chain<A> = | A
                        | AndThen<A>;
 
-export type Amend<A> = | Any<A>
+export type Patch<A> = | Any<A>
                        | AndThen<Any<A>>;
 
 type Any<A> = | Empty
@@ -75,7 +75,7 @@ export type Unmount<A> = {
   that: A;
 };
 
-const Proto: Amend<any> = {
+const Proto: Patch<any> = {
   _tag : 'Skip',
   that : undefined,
   at   : undefined,
@@ -83,7 +83,7 @@ const Proto: Amend<any> = {
   and  : undefined,
   then : undefined,
   ...StructProto,
-} as Amend<any>;
+} as Patch<any>;
 
 const EmptyProto: Empty = Object.assign(Object.create(Proto), {
   _tag: 'Empty',

@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Element from '#disreact/internal/Elements.ts';
+import type * as Element from '#disreact/internal/Element.ts';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
@@ -11,11 +11,7 @@ import type * as Record from 'effect/Record';
 type MTag = Monomer['_tag'];
 type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
 
-export interface Polymer<
-  T extends MTag = MTag,
-  I = any,
-  O = any,
-> extends Inspectable.Inspectable,
+export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Origin<Element.Component>
 {
@@ -26,15 +22,10 @@ export interface Polymer<
   queue: Updater[];
 
   origin : Element.Component;
-  _flags : Set<Element.Component>;
+  flags  : Set<Element.Component>;
   mount  : Set<Element.Component>;
   render : Set<Element.Component>;
   unmount: Set<Element.Component>;
-
-  inputs: any[];
-  assert: T;
-  lazy(this: ThisType<Polymer>): Mono<T>;
-  output: O;
 }
 
 export const isStateless = (self: Polymer) =>
@@ -68,13 +59,10 @@ const PolymerProto: Polymer = {
   rc     : 0,
   stack  : undefined as any,
   queue  : undefined as any,
-  _flags : undefined as any,
+  flags  : undefined as any,
   mount  : undefined as any,
   render : undefined as any,
   unmount: undefined as any,
-  assert : undefined as any,
-  lazy   : undefined as any,
-  output : undefined as any,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
@@ -94,7 +82,7 @@ export const make = (elem: Element.Component): Polymer => {
   self.origin = elem;
   self.stack = [];
   self.queue = [];
-  self._flags = elem._env.flags as any;
+  self.flags = elem.env.flags as any;
   return self;
 };
 
@@ -124,7 +112,7 @@ export const dispose = (self: Polymer) => {
   (self.origin as any) = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
-  (self._flags as any) = undefined;
+  (self.flags as any) = undefined;
   return undefined;
 };
 
@@ -154,25 +142,6 @@ export interface Hook {
   phase: 'Hydrate';
 }
 
-export const enqueue = (self: Polymer, monomer: Effector) => self.queue.push(monomer);
-
-export const dequeue = (self: Polymer) => self.queue.shift();
-
-export const release = <T extends MTag, M extends Mono<T>, O>(self: Polymer<T, M, O>): O => {
-  const output = self.output;
-  (self.output as any) = undefined;
-  (self.lazy as any) = undefined;
-  (self.assert as any) = undefined;
-  return output;
-};
-
-export const assert = (self?: Polymer) => {
-  if (!self) {
-    throw new Error('Hooks must be called in a function component rendered by Disreact.');
-  }
-  return self;
-};
-
 export const hook = <A extends Monomer>(
   self: Polymer,
   tag: A['_tag'],
@@ -194,12 +163,7 @@ export const hook = <A extends Monomer>(
 
 export type Effector<E = never, R = never> =
   | Effect.Effect<void, E, R>
-  | (
-      <E = never, R = never>() =>
-        | void
-        | Promise<void>
-        | Effect.Effect<void, E, R>
-      );
+  | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
 
 export const
   STATE   = 1 as const,
@@ -307,23 +271,23 @@ const MonomerProto: Monomer = {
   },
 };
 
-const ReducerProto: Monomer.State = Object.assign(Object.create(MonomerProto), {
+const ReducerProto = Object.assign(Object.create(MonomerProto), {
   _tag: STATE,
 });
 
-const EffectProto: Monomer.Effect = Object.assign(Object.create(MonomerProto), {
+const EffectProto = Object.assign(Object.create(MonomerProto), {
   _tag: EFFECT,
 });
 
-const RefProto: Monomer.Ref = Object.assign(Object.create(MonomerProto), {
+const RefProto = Object.assign(Object.create(MonomerProto), {
   _tag: REF,
 });
 
-const MemoProto: Monomer.Memo = Object.assign(Object.create(MonomerProto), {
+const MemoProto = Object.assign(Object.create(MonomerProto), {
   _tag: MEMO,
 });
 
-const ContextProto: Monomer.Context = Object.assign(Object.create(MonomerProto), {
+const ContextProto = Object.assign(Object.create(MonomerProto), {
   _tag: CONTEXT,
 });
 

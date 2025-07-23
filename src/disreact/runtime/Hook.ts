@@ -5,7 +5,7 @@ export const active = {
 };
 
 export const UseIx = (self?: Polymer.Polymer) => () => {
-  return self!.origin._env.data;
+  return self!.origin.env.data;
 };
 
 export const UseState = (self?: Polymer.Polymer) => (initial: any) => {

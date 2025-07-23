@@ -1,7 +1,7 @@
 import type * as Progress from '#disreact/internal/core/Progress.ts';
-import * as Element from '#disreact/internal/Elements.ts';
-import type * as Event from '#disreact/internal/Event.ts';
-import * as Hydrant from '#disreact/internal/Hydrant.ts';
+import * as Element from '#disreact/internal/Element.ts';
+import type * as Event from '#disreact/internal/core/Event.ts';
+import * as Hydrant from '#disreact/internal/core/Hydrant.ts';
 import type * as Polymer from '#disreact/internal/Polymer.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
@@ -14,7 +14,7 @@ import type * as Record from 'effect/Record';
 export interface Envelope<A = any> extends Inspectable.Inspectable {
   data    : A;
   hydrant : Hydrant.Hydrant;
-  root    : Element.Elements;
+  root    : Element.Element;
   polymers: Record<string, Polymer.Polymer>;
   flags   : Set<Element.Component>;
   final   : Deferred.Deferred<Progress.Checkpoint>;

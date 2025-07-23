@@ -1,21 +1,15 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/internal/core/constants.ts';
-import type * as Element from '#disreact/internal/Elements.ts';
+import type * as Element from '#disreact/internal/Element.ts';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface FC<P = any> {
+  <E = never, R = never>(props: P): Children | Promise<Children> | E.Effect<Children, E, R>;
   readonly entrypoint?: string;
   displayName?        : string;
-
-  <E = never, R = never>(props: P):
-    | Children
-    | Promise<Children>
-    | E.Effect<Children, E, R>;
 }
-
-export const isFC = (u: unknown): u is FC => typeof u === 'function';
 
 const FCProto: Element.FC = {
   _tag       : undefined,
@@ -67,21 +61,11 @@ const makeFC = (type: FC): Element.FC => {
   return self;
 };
 
-export interface Event<A = any> {
-  id    : string;
-  type  : string;
-  target: A;
-  close(): void;
-  open(jsx: Jsx): void;
-  open<P>(fc: FC<P>, props: P): void;
-  open<P>(fc: Jsx | FC<P>, props?: P): void;
-}
+const TypeId = Symbol('disreact/Jsx');
 
 export type Type = | string
                    | typeof Fragment
                    | FC;
-
-const TypeId = Symbol('disreact/Jsx');
 
 export interface Jsx<T extends Type = Type, P = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable
@@ -108,11 +92,11 @@ export type Child = | Value
                     | Jsx;
 
 export type Children = | Child
-                       | readonly Child[];
+                       | Child[];
 
 export const isFalsy = (u: unknown): u is Value => !u;
 
-export const isValue = (u: unknown): u is Value => typeof u !== 'object';
+export const isValue = (u: unknown): u is Value => u == null || typeof u !== 'object';
 
 export const isJsx = (u: unknown): u is Jsx =>
   u != null &&
@@ -129,7 +113,7 @@ export const isChilds = (u: unknown): u is readonly Child[] => Array.isArray(u);
 
 export const Fragment = Symbol('disreact/Fragment');
 
-const Proto: Jsx = {
+const JsxPrototype: Jsx = {
   [TypeId]  : TypeId,
   jsx       : true,
   entrypoint: undefined,
@@ -144,44 +128,34 @@ const Proto: Jsx = {
   toJSON() {
     const self = clone(this);
     delete self.props.children;
-
     return {
-      _id       : 'Jsx',
-      entrypoint: self.entrypoint,
-      key       : self.key,
-      type      : self.type === Fragment ? 'Fragment' : self.type,
-      props     : self.props,
-      children  : self.child ?? self.childs,
+      _id     : 'Jsx',
+      key     : self.key,
+      type    : self.type === Fragment ? 'Fragment' : self.type,
+      props   : self.props,
+      children: self.child ?? self.childs,
     };
   },
 };
 
-export type Key = | string
-                  | undefined;
-
-export interface Setup extends Record<string, any> {
-  key?: string;
-  ref?: any;
-};
-
-export const makeJsx = (type: Type, setup: Setup, key?: Key): Jsx => {
-  const self = Object.create(Proto) as Jsx;
-  (self.entrypoint as any) = setup.entrypoint;
-  (self.key as any) = key;
-  (self.type as any) = typeof type === 'function' ? makeFC(type) : type;
-  (self.props as any) = setup;
-  (self.child as any) = setup.children;
+export const intrinsic = (type: string, props: any) => {
+  const self = Object.create(JsxPrototype) as Jsx;
+  (self.type as any) = type;
+  (self.props as any) = props;
   return self;
 };
 
-export const makeJsxs = (type: Type, setup: Setup, key?: Key): Jsx => {
-  const self = Object.create(Proto) as Jsx;
-  (self.jsx as any) = false;
-  (self.entrypoint as any) = setup.entrypoint;
-  (self.key as any) = key;
-  (self.type as any) = typeof type === 'function' ? makeFC(type) : type;
-  (self.props as any) = setup;
-  (self.childs as any) = setup.children;
+export const component = (type: FC, props: any) => {
+  const self = Object.create(JsxPrototype) as Jsx;
+  (self.type as any) = makeFC(type);
+  (self.props as any) = props;
+  return self;
+};
+
+export const fragment = (props: any) => {
+  const self = Object.create(JsxPrototype) as Jsx;
+  (self.type as any) = Fragment;
+  (self.props as any) = props;
   return self;
 };
 
@@ -190,6 +164,16 @@ export const clone = <A extends Jsx>(self: A): A => {
     ...self,
     props: {...self.props},
   };
+};
+
+export const childs = (self: Jsx): Child[] => {
+  if (self.child) {
+    return [self.child];
+  }
+  if (self.childs) {
+    return self.childs;
+  }
+  return [];
 };
 
 export interface Encoding {
@@ -201,13 +185,14 @@ export interface Encoding {
   >;
 }
 
-export const encode = (self: Jsx, encoding: Encoding): any => {
-  const stack = [self];
-  const acc = {};
 
-  return {};
-};
 
-export const stringifyJsx = (self: Jsx): string => {
-  return '';
-};
+export interface Event<A = any> {
+  id    : string;
+  type  : string;
+  target: A;
+  close(): void;
+  open(jsx: Jsx): void;
+  open<P>(fc: FC<P>, props: P): void;
+  open<P>(fc: Jsx | FC<P>, props?: P): void;
+}
