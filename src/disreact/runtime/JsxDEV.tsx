@@ -1,4 +1,4 @@
-import * as JsxRuntime from '#disreact/model/entity/Jsx.tsx';
+import * as JsxRuntime from '#disreact/internal/Jsx.tsx';
 
 export const Fragment = JsxRuntime.Fragment;
 

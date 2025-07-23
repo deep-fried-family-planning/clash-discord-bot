@@ -1,6 +1,6 @@
 import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
-import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
-import * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
+import type * as Document from '#disreact/internal/core/behaviors/exp/documentold.ts';
+import * as Node from '#disreact/internal/core/behaviors/exp/nodev1.ts';
 import * as E from 'effect/Effect';
 import * as MutableList from 'effect/MutableList';
 

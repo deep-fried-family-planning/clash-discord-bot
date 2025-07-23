@@ -1,4 +1,4 @@
-import {StructProto} from '#disreact/core/constants.ts';
+import {StructProto} from '#disreact/internal/core/constants.ts';
 
 export type Chain<A> = | A
                        | AndThen<A>;

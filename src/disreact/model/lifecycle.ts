@@ -1,20 +1,22 @@
-import * as Stack from '#disreact/core/Stack.ts';
-import * as Element from '#disreact/model/entity/Element.ts';
-import * as Hooks from '#disreact/model/runtime/Hook.ts';
-import type * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
+import * as Stack from '#disreact/internal/core/Stack.ts';
+import * as Element from '#disreact/internal/Element.ts';
+import type * as Hydrant from '#disreact/internal/Hydrant.ts';
 import {Codec} from '#disreact/model/service/Codec.ts';
+import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
+import * as GlobalValue from 'effect/GlobalValue';
 import {pipe} from 'effect/Function';
 
-const releaseSync = Effect.sync(() => {
-  Hooks.active.polymer = undefined;
-});
+const mutex = GlobalValue.globalValue(Symbol.for('disreact/mutex'), () => Effect.unsafeMakeSemaphore(1));
 
-export const mutex = Effect.unsafeMakeSemaphore(1);
-export const acquire = mutex.take(1);
-export const release = releaseSync.pipe(
-  Effect.andThen(mutex.release(1)),
+const acquire = mutex.take(1);
+
+const release = Effect.andThen(
+  Effect.sync(() => {
+    Hooks.active.polymer = undefined;
+  }),
+  mutex.release(1),
 );
 
 const mountElement = (el: Element.Element) =>

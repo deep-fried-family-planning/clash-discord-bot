@@ -1,10 +1,10 @@
-import * as Amend from '#disreact/core/Amend.ts';
-import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/core/constants.ts';
-import * as Progress from '#disreact/core/Progress.ts';
-import * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Envelope from '#disreact/model/entity/Envelope.ts';
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as Amend from '#disreact/internal/core/Amend.ts';
+import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/internal/core/constants.ts';
+import * as Progress from '#disreact/internal/core/Progress.ts';
+import * as Traversable from '#disreact/internal/core/Traversable.ts';
+import type * as Envelope from '#disreact/internal/Envelope.ts';
+import * as Jsx from '#disreact/internal/Jsx.tsx';
+import * as Polymer from '#disreact/internal/Polymer.ts';
 import type {JsxEncoding} from '#disreact/model/types.ts';
 import * as Array from 'effect/Array';
 import * as Differ from 'effect/Differ';
@@ -27,9 +27,7 @@ export type FCKind = | 'Sync'
                      | 'Effect'
                      | undefined;
 
-export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable,
-  Hash.Hash
-{
+export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable, Hash.Hash {
   _tag        : K;
   _id         : string;
   _state      : boolean;
@@ -37,6 +35,7 @@ export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable,
   entrypoint? : string | undefined;
   displayName?: string;
   source      : string;
+
   <P = any, E = never, R = never>(props?: P):
     K extends 'Sync' ? Jsx.Children :
     K extends 'Async' ? Promise<Jsx.Children> :
@@ -57,9 +56,6 @@ export interface Props extends Inspectable.Inspectable,
 }
 
 const PropsProto: Props = {
-  onclick : undefined,
-  onselect: undefined,
-  onsubmit: undefined,
   ...StructProto,
   ...Inspectable.BaseProto,
   toJSON(this: Props) {

@@ -1,5 +1,5 @@
-import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
-import * as Progress from '#disreact/core/Progress.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/internal/core/constants.ts';
+import * as Progress from '#disreact/internal/core/Progress.ts';
 import * as E from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';

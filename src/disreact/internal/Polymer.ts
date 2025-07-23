@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
-import type * as Traversable from '#disreact/core/Traversable.ts';
-import type * as Element from '#disreact/model/entity/Element.ts';
+import type * as Traversable from '#disreact/internal/core/Traversable.ts';
+import type * as Element from '#disreact/internal/Element.ts';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
@@ -75,6 +75,7 @@ const PolymerProto: Polymer = {
   assert : undefined as any,
   lazy   : undefined as any,
   output : undefined as any,
+  ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
     return {
@@ -93,7 +94,7 @@ export const make = (elem: Element.Component): Polymer => {
   self.origin = elem;
   self.stack = [];
   self.queue = [];
-  self._flags = elem._env.flags;
+  self._flags = elem._env.flags as any;
   return self;
 };
 
@@ -257,12 +258,7 @@ export namespace Monomer {
     _tag    : typeof CONTEXT;
     encoded?: | typeof CONTEXT;
   }
-  export type Encoded =
-    | Required<State>['encoded']
-    | Required<Effect>['encoded']
-    | Required<Ref>['encoded']
-    | Required<Memo>['encoded']
-    | Required<Context>['encoded'];
+  export type Encoded = Required<Monomer>['encoded'];
 }
 
 const MonomerProto: Monomer = {

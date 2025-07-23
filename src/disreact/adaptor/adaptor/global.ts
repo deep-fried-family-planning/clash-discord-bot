@@ -1,9 +1,9 @@
 import type * as Element from '#src/disreact/adaptor/adaptor/element.ts';
 import type * as Rehydrant from '#src/disreact/adaptor/adaptor/envelope.ts';
-import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
-import type * as Polymer from '#disreact/core/internal/polymer.ts';
-import type * as Stack from '#disreact/core/behaviors/exp/Stack.ts';
-import type * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
+import type * as Document from '#disreact/internal/core/behaviors/exp/documentold.ts';
+import type * as Polymer from '#disreact/internal/core/internal/polymer.ts';
+import type * as Stack from '#disreact/internal/core/behaviors/exp/Stack.ts';
+import type * as Node from '#disreact/internal/core/behaviors/exp/nodev1.ts';
 
 export let component = undefined as undefined | Element.Func,
            env       = undefined as undefined | Rehydrant.Envelope,

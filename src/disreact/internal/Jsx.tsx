@@ -1,5 +1,5 @@
-import {ASYNC_CONSTRUCTOR} from '#disreact/core/constants.ts';
-import type * as Element from '#disreact/model/entity/Element.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/internal/core/constants.ts';
+import type * as Element from '#disreact/internal/Element.ts';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
@@ -15,9 +15,7 @@ export interface FC<P = any> {
     | E.Effect<Children, E, R>;
 }
 
-export const isFC = (u: unknown): u is FC =>
-  u != null &&
-  typeof u === 'function';
+export const isFC = (u: unknown): u is FC => typeof u === 'function';
 
 const FCProto: Element.FC = {
   _tag       : undefined,
@@ -63,7 +61,7 @@ const makeFC = (type: FC): Element.FC => {
   }
   self._props = props;
   self.source = source;
-  self._id = self.displayName ? self.displayName :
+  self._id = displayName ? displayName :
              self.name ? self.name :
              'Anonymous';
   return self;
