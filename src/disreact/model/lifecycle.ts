@@ -1,7 +1,8 @@
 import * as Stack from '#disreact/core/Stack.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
-import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Hooks from '#disreact/model/runtime/Hook.ts';
+import type * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
+import {Codec} from '#disreact/model/service/Codec.ts';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
@@ -46,6 +47,10 @@ export const initialize = (root: Element.Element) =>
     }),
     Effect.as(root),
   );
+
+export const hydrate = (root: Element.Element, hydrant: Hydrant.Hydrant) => {
+
+};
 
 export const encode = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
   const stack = [root._env.root],

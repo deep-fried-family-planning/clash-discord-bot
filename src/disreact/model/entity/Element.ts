@@ -390,13 +390,7 @@ const bindChild = dual<
   (self: Element) => (jsx: Jsx.Child) => Element,
   (jsx: Jsx.Child, self: Element) => Element
 >(2, (jsx, self) => {
-  if (!jsx) {
-    return self;
-  }
-  if (typeof jsx !== 'object') {
-    const child = makeText(jsx);
-    return connectChild(self, 0)(child);
-  }
+  return self;
 });
 
 export const bindJsx = dual<

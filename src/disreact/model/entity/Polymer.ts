@@ -94,7 +94,6 @@ export const make = (elem: Element.Component): Polymer => {
   self.stack = [];
   self.queue = [];
   self._flags = elem._env.flags;
-
   return self;
 };
 
