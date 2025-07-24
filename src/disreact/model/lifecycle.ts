@@ -1,7 +1,7 @@
-import * as Stack from '#disreact/internal/core/Stack.ts';
-import * as Element from '#disreact/internal/Element.ts';
-import type * as Hydrant from '#disreact/internal/core/Hydrant.ts';
-import {Codec} from '#disreact/model/service/Codec.ts';
+import * as Stack from '#disreact/model/core/Stack.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
+import type * as Hydrant from '#disreact/model/core/Hydrant.ts';
+import {Codec} from '#disreact/model/Codec.ts';
 import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -32,6 +32,10 @@ const mountElement = (el: Element.Element) =>
 
 const initializeElement = (el: Element.Element) =>
   mountElement(el);
+
+const initializeStack = (stack: Stack.Stack<Element.Element>) => {
+
+};
 
 export const initialize = (root: Element.Element) =>
   pipe(

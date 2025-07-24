@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
-import type * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Element from '#disreact/internal/Element.ts';
+import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Element from '#disreact/model/entity/Element.ts';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
@@ -294,79 +294,82 @@ const ContextProto = Object.assign(Object.create(MonomerProto), {
 const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
   if (Array.isArray(encoded)) {
     switch (encoded[0]) {
-      case STATE:
+      case STATE: {
         const state = Object.create(ReducerProto) as Monomer.State;
         state.encoded = encoded;
         state.state = encoded[1];
         return state;
-
-      case EFFECT:
+      }
+      case EFFECT: {
         const effect = Object.create(EffectProto) as Monomer.Effect;
         effect.encoded = encoded;
         effect.deps = encoded[1];
         return effect;
-
-      case REF:
+      }
+      case REF: {
         const ref = Object.create(RefProto) as Monomer.Ref;
         ref.encoded = encoded;
         ref.state = encoded[1];
         return ref;
-
-      case MEMO:
+      }
+      case MEMO: {
         const memo = Object.create(MemoProto) as Monomer.Memo;
         memo.encoded = encoded;
         memo.deps = encoded[1];
         return memo;
+      }
     }
   }
   switch (encoded) {
-    case EFFECT:
+    case EFFECT: {
       const effect = Object.create(EffectProto) as Monomer.Effect;
       effect.encoded = encoded;
       return effect;
-
-    case REF:
+    }
+    case REF: {
       const ref = Object.create(RefProto) as Monomer.Ref;
       ref.encoded = encoded;
       return ref;
-
-    case MEMO:
+    }
+    case MEMO: {
       const memo = Object.create(MemoProto) as Monomer.Memo;
       memo.encoded = encoded;
       return memo;
-
-    case CONTEXT:
+    }
+    case CONTEXT: {
       const context = Object.create(ContextProto) as Monomer.Context;
       context.encoded = encoded;
       return context;
+    }
   }
 };
 
 const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
   switch (monomer._tag) {
-    case STATE:
+    case STATE: {
       return [STATE, monomer.state];
-
-    case EFFECT:
+    }
+    case EFFECT: {
       if (!monomer.deps) {
         return EFFECT;
       }
       return [EFFECT, monomer.deps];
-
-    case REF:
+    }
+    case REF: {
       if (typeof monomer.state === 'function') {
         return REF;
       }
       return [REF, monomer.state];
-
-    case MEMO:
+    }
+    case MEMO: {
       if (!monomer.deps) {
         return MEMO;
       }
       return [MEMO, monomer.deps];
-
-    case CONTEXT:
+    }
+    case CONTEXT: {
       return CONTEXT;
+    }
   }
 };
 

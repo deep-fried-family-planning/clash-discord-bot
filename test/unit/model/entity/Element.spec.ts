@@ -1,6 +1,6 @@
-import * as Element from '#disreact/internal/Element.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
 import * as Lifecycle from '#disreact/model/lifecycle.ts';
-import * as Jsx from '#disreact/internal/Jsx.tsx';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import {it} from '@effect/vitest';
 import * as Effect from 'effect/Effect';
 

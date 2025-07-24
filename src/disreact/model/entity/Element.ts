@@ -1,11 +1,11 @@
-import * as Patch from '#disreact/internal/core/Patch.ts';
-import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/internal/core/constants.ts';
-import * as Progress from '#disreact/internal/core/Progress.ts';
-import {declarePrototype, declareSubtype} from '#disreact/internal/core/proto.ts';
-import type * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Envelope from '#disreact/internal/Envelope.ts';
-import * as Jsx from '#disreact/internal/Jsx.tsx';
-import * as Polymer from '#disreact/internal/Polymer.ts';
+import * as Patch from '#disreact/model/core/Patch.ts';
+import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/model/core/constants.ts';
+import * as Progress from '#disreact/model/core/Progress.ts';
+import {declarePrototype, declareSubtype} from '#disreact/model/core/proto.ts';
+import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import type * as Envelope from '#disreact/model/entity/Envelope.ts';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import type {JsxEncoding} from '#disreact/model/types.ts';
 import * as Arr from 'effect/Array';
 import * as Differ from 'effect/Differ';
@@ -150,15 +150,15 @@ export const unsafeComponent = flow(
 );
 
 const step = (self: Element) => `${self.depth}:${self.index}`;
-const stepId = (self: Element) => `${step(self.ancestor!)}:${step(self)}`;
-const trieId = (self: Element) => `${self.ancestor!.trie}:${step(self)}`;
+const stepId = (self: Element) => `${step(self.parent!)}:${step(self)}`;
+const trieId = (self: Element) => `${self.parent!.trie}:${step(self)}`;
 const keyId = (self: Element) => self.key ?? self.trie;
 
 const ElementPrototype = declarePrototype<Element>({
   _tag    : INTRINSIC,
   env     : {} as any,
   origin  : undefined as any,
-  ancestor: undefined,
+  parent  : undefined,
   children: undefined,
   polymer : undefined as any,
   type    : undefined,
@@ -173,10 +173,10 @@ const ElementPrototype = declarePrototype<Element>({
   ...Inspectable.BaseProto,
   ...Pipeable.Prototype,
   [PrimaryKey.symbol]() {
-    if (!this.ancestor) {
+    if (!this.parent) {
       return 'root';
     }
-    return `ele${PrimaryKey.value(this.ancestor)}:ope`;
+    return `ele${PrimaryKey.value(this.parent)}:ope`;
   },
   toJSON(this: Element) {
     switch (this._tag) {
@@ -270,14 +270,14 @@ const fromJsxChild = (b: Element, j: Jsx.Children, i: number) => {
   if (!j || typeof j !== 'object') {
     const self = Object.create(TextPrototype) as Text;
     self.text = j;
-    self.ancestor = b;
+    self.parent = b;
     self.index = i;
     self.depth = b.depth + 1;
     return self;
   }
   if (Array.isArray(j)) {
     const self = Object.create(ListPrototype) as List;
-    self.ancestor = b;
+    self.parent = b;
     self.index = i;
     self.depth = b.depth + 1;
     self.children = fromJsxChilds(self, j);
@@ -285,7 +285,7 @@ const fromJsxChild = (b: Element, j: Jsx.Children, i: number) => {
   }
   const self = fromJsx(j);
   self.origin = b.origin;
-  self.ancestor = b;
+  self.parent = b;
   self.index = i;
   self.depth = b.depth + 1;
   self.children = fromJsxChildren(self, j.child ?? j.childs);
@@ -335,7 +335,7 @@ export const connectChild = dual<
 >(3, (self, parent, index = 0) => {
   self.origin = parent.polymer ?? parent.origin;
   self.env = parent.env;
-  self.ancestor = parent;
+  self.parent = parent;
   self.depth = parent.depth + 1;
   self.index = index;
   self.trie = trieId(self);
@@ -427,7 +427,7 @@ export const flush = (self: Element) =>
   );
 
 export const unmount = (self: Element) => {
-  self.ancestor = undefined;
+  self.parent = undefined;
   self.children = undefined;
   (self.env as any) = undefined;
   (self.props as any) = undefined;

@@ -1,4 +1,4 @@
-import type * as Polymer from '#disreact/internal/Polymer.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 
 type ActivePolymer = {
   polymer: Polymer.Polymer;

@@ -49,10 +49,10 @@ export namespace Ancestor {
 }
 
 export interface Ancestor<A extends Ancestor<any>> {
-  ancestor: A | undefined;
+  parent: A | undefined;
 }
 
-export const getAncestor = <A extends Ancestor.Any>(self: A): A | undefined => self.ancestor;
+export const getAncestor = <A extends Ancestor.Any>(self: A): A | undefined => self.parent;
 
 export const setAncestor = dual<
   <A extends Ancestor.Any>(ancestor: Ancestor.Value<A>) => (self: A) => A,
@@ -69,8 +69,8 @@ export const disposeAncestor = <A extends Ancestor.Any>(self: A): A => {
 
 export const getRootAncestor = <A extends Ancestor.Any>(node: A): A => {
   let a = node;
-  while (a.ancestor) {
-    a = a.ancestor;
+  while (a.parent) {
+    a = a.parent;
   }
   return a;
 };
@@ -80,7 +80,7 @@ export const getAncestryList = <A extends Ancestor.Any>(node: A): A[] => {
     return [];
   }
   const as = [node];
-  let a = node.ancestor;
+  let a = node.parent;
   while (a) {
     as.push(a);
     a = a.ancestor;
@@ -108,7 +108,7 @@ export const findLowestCommonAncestor = <A extends Ancestor.Any>(iter: Iterable<
         lca = a;
         break;
       }
-      a = a.ancestor;
+      a = a.parent;
     }
   }
   return lca;

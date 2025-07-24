@@ -1,8 +1,8 @@
-import type * as Progress from '#disreact/internal/core/Progress.ts';
-import * as Element from '#disreact/internal/Element.ts';
-import type * as Event from '#disreact/internal/core/Event.ts';
-import * as Hydrant from '#disreact/internal/core/Hydrant.ts';
-import type * as Polymer from '#disreact/internal/Polymer.ts';
+import type * as Progress from '#disreact/model/core/Progress.ts';
+import * as Element from '#disreact/model/entity/Element.ts';
+import type * as Event from '#disreact/model/core/Event.ts';
+import * as Hydrant from '#disreact/model/core/Hydrant.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
 import {dual, pipe} from 'effect/Function';
@@ -71,3 +71,9 @@ export const dispose = (self: Envelope) =>
   Effect.asVoid(
     Effect.die('Not Implemented'),
   );
+
+export const initialize = (self: Envelope) =>
+  Effect.succeed(self);
+
+export const hydrate = (self: Envelope) =>
+  Effect.succeed(self);

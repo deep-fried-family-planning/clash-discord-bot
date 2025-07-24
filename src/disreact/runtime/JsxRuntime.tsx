@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/internal/Jsx.tsx';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 
 export const Fragment = Jsx.Fragment;
 

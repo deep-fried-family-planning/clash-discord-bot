@@ -1,6 +1,6 @@
-import {FRAGMENT, FUNCTIONAL, INTRINSIC, JSX, JSXS, TEXT_NODE} from '#disreact/internal/core/immutable/constants.ts';
-import * as proto from '#disreact/internal/core/behaviors/proto.ts';
-import * as FC from '#disreact/internal/core/internal/fn.ts';
+import {FRAGMENT, FUNCTIONAL, INTRINSIC, JSX, JSXS, TEXT_NODE} from '#disreact/model/core/immutable/constants.ts';
+import * as proto from '#disreact/model/core/behaviors/proto.ts';
+import * as FC from '#disreact/model/core/internal/fn.ts';
 
 export const TypeId   = Symbol.for('disreact/jsx'),
              DevId    = Symbol.for('disreact/jsxDEV'),
