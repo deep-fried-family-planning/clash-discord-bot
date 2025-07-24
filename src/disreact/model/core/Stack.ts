@@ -33,6 +33,8 @@ export const make = <A>(root: A): Stack<A> => {
   return self;
 };
 
+export const root = <A>(self: Stack<A>) => self.root;
+
 export const condition = <A>(self: Stack<A>) => self.values.length > 0;
 
 export const pop = <A>(self: Stack<A>): A => self.values.pop()!;

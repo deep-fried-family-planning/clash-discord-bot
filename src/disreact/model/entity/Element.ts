@@ -1,21 +1,16 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
-import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/model/core/constants.ts';
-import * as Progress from '#disreact/model/core/Progress.ts';
-import {declarePrototype, declareSubtype} from '#disreact/model/core/proto.ts';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import type {JsxEncoding} from '#disreact/model/types.ts';
-import * as Arr from 'effect/Array';
-import * as Differ from 'effect/Differ';
+import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
+import {declarePrototype, declareSubtype} from '#disreact/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual, flow, identity, pipe} from 'effect/Function';
 import type * as Hash from 'effect/Hash';
-import * as HashMap from 'effect/HashMap';
 import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
@@ -23,10 +18,11 @@ import * as P from 'effect/Predicate';
 import * as Predicate from 'effect/Predicate';
 import * as PrimaryKey from 'effect/PrimaryKey';
 
-export type FCKind = | 'Sync'
-                     | 'Async'
-                     | 'Effect'
-                     | undefined;
+export type FCKind =
+  | 'Sync'
+  | 'Async'
+  | 'Effect'
+  | undefined;
 
 export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable, Hash.Hash {
   _tag        : K;
@@ -36,6 +32,7 @@ export interface FC<K extends FCKind = FCKind> extends Inspectable.Inspectable, 
   entrypoint? : string | undefined;
   displayName?: string;
   source      : string;
+  signature?  : Polymer.Signature | undefined;
 
   <P = any, E = never, R = never>(props?: P):
     K extends 'Sync' ? Jsx.Children :
@@ -266,65 +263,68 @@ const fromJsx = (j: Jsx.Jsx): Fragment | Intrinsic | Component => {
   }
 };
 
-const fromJsxChild = (b: Element, j: Jsx.Children, i: number) => {
+const fromJsxChild = (el: Element, j: Jsx.Children, i: number) => {
   if (!j || typeof j !== 'object') {
     const self = Object.create(TextPrototype) as Text;
     self.text = j;
-    self.parent = b;
+    self.parent = el;
     self.index = i;
-    self.depth = b.depth + 1;
+    self.depth = el.depth + 1;
     return self;
   }
   if (Array.isArray(j)) {
     const self = Object.create(ListPrototype) as List;
-    self.parent = b;
+    self.parent = el;
     self.index = i;
-    self.depth = b.depth + 1;
+    self.depth = el.depth + 1;
     self.children = fromJsxChilds(self, j);
     return self;
   }
   const self = fromJsx(j);
-  self.origin = b.origin;
-  self.parent = b;
+  self.origin = el.origin;
+  self.parent = el;
   self.index = i;
-  self.depth = b.depth + 1;
+  self.depth = el.depth + 1;
   self.children = fromJsxChildren(self, j.child ?? j.childs);
   return self;
 };
 
-const fromJsxChilds = (b: Element, js: Jsx.Child[]) => {
+const fromJsxChilds = (el: Element, js: Jsx.Child[]) => {
+  if (js.length === 0) {
+    return undefined;
+  }
   const children = [] as Element[];
 
   for (let i = 0; i < js.length; i++) {
-    const child = fromJsxChild(b, js[i], i);
+    const child = fromJsxChild(el, js[i], i);
     children[i] = child;
   }
   return children;
 };
 
-const fromJsxChildren = (b: Element, js: Jsx.Children) => {
+const fromJsxChildren = (el: Element, js: Jsx.Children) => {
   if (!js) {
     return undefined;
   }
   if (Array.isArray(js)) {
-    return fromJsxChilds(b, js);
+    return fromJsxChilds(el, js);
   }
-  return [fromJsxChild(b, js, 0)];
+  return [fromJsxChild(el, js, 0)];
 };
 
-export const fromJsxRender = (b: Element, js: Jsx.Children) => {
-  Polymer.commit(b.polymer!);
+export const fromRender = (el: Element, js: Jsx.Children) => {
+  Polymer.commit(el.polymer!);
   if (!js) {
     return undefined;
   }
-  return [fromJsxChild(b, js, 0)];
+  return [fromJsxChild(el, js, 0)];
 };
 
 export const makeRoot = (j: Jsx.Jsx, env: Envelope.Envelope): Element => {
   const root = fromJsx(Jsx.clone(j));
   root.env = env;
-  root.trie = step(root);
-  root.step = step(root);
+  root.polymer = Polymer.make(root);
+  root.polymer.type = root.type;
   root.children = fromJsxChildren(root, j.childs ?? j.childs);
   return root;
 };
@@ -340,6 +340,14 @@ export const connectChild = dual<
   self.index = index;
   self.trie = trieId(self);
   self.step = stepId(self);
+  return self;
+});
+
+export const mountWith = dual<
+  (polymer: Polymer.Polymer) => (self: Element) => Element,
+  (self: Element, polymer: Polymer.Polymer) => Element
+>(2, (self, polymer) => {
+  self.polymer = polymer;
   return self;
 });
 
@@ -377,10 +385,15 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
   return Effect.suspend(() => {
     const children = fc(self.props);
 
+    if (!children || typeof children !== 'object') {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
     if (Predicate.isPromise(children)) {
       fc._tag = 'Async';
       return Effect.promise(() => children);
     }
+    if (Jsx.isJsx())
     if (!Effect.isEffect(children)) {
       fc._tag = 'Sync';
       return Effect.succeed(children);
@@ -447,8 +460,8 @@ export const invoke = dual<
 });
 
 export const encode = dual<
-  (encoding: JsxEncoding) => (self: Element) => Element,
-  (self: Element, encoding: JsxEncoding) => Element
+  (encoding: Jsx.Encoding) => (self: Element) => Element,
+  (self: Element, encoding: Jsx.Encoding) => Element
 >(2, (self, that) => {
   const self_ = unsafeComponent(self);
   return self_;
@@ -505,3 +518,22 @@ export const patch = dual<
   }
   return self;
 });
+
+export const use = dual<
+  <A>(f: (self: Element) => A) => (self: Element) => A,
+  <A>(self: Element, f: (self: Element) => A) => A
+>(2, (self, f) => f(self));
+
+export const lowestCommonAncestor = (flags: Set<Element>): Option.Option<Element> => {
+  const elements = [...flags];
+
+  switch (elements.length) {
+    case 0: {
+      return Option.none();
+    }
+    case 1: {
+      return Option.some(elements[0]);
+    }
+  }
+  return Option.some(elements[0].env.root);
+};

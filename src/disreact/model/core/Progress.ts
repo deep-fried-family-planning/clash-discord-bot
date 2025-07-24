@@ -8,13 +8,6 @@ export type Progress<
   | Checkpoint<CData>
   | Done;
 
-const Proto: Progress = {
-  _tag: 'Start',
-  id  : '',
-  next: undefined,
-  data: undefined,
-} as Progress;
-
 export type Start = {
   _tag: 'Start';
 };
@@ -32,20 +25,40 @@ export type Partial<A = any> = {
 };
 
 export type Checkpoint<A = any> = {
-  _tag: 'Checkpoint';
-  id  : string;
-  data: A;
+  _tag : 'Checkpoint';
+  stage: 'Initialize' | 'Hydrate' | 'Rerender';
+  id   : string;
+  data : A;
 };
 
 export type Done = {
   _tag: 'Done';
 };
 
-export const start = (): Start => Proto as Start;
+const Proto: Progress = {
+  _tag: 'Start',
+  id  : '',
+  next: undefined,
+  data: undefined,
+} as Progress;
 
 const ChangeProto: Change = Object.assign(Object.create(Proto), {
   _tag: 'Change',
 });
+
+const PartialProto: Partial<any> = Object.assign(Object.create(Proto), {
+  _tag: 'Partial',
+});
+
+const CheckpointProto: Checkpoint<any> = Object.assign(Object.create(Proto), {
+  _tag: 'Checkpoint',
+});
+
+const DoneProto: Done = Object.assign(Object.create(Proto), {
+  _tag: 'Done',
+});
+
+export const start = (): Start => Proto as Start;
 
 export const change = (id: string, next: string | null): Change => {
   const self = Object.create(ChangeProto) as Change;
@@ -54,10 +67,6 @@ export const change = (id: string, next: string | null): Change => {
   return self;
 };
 
-const PartialProto: Partial<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Partial',
-});
-
 export const partial = <A = any>(id: string, data: A): Partial<A> => {
   const self = Object.create(PartialProto) as Partial<A>;
   self.id = id;
@@ -65,20 +74,12 @@ export const partial = <A = any>(id: string, data: A): Partial<A> => {
   return self;
 };
 
-const CheckpointProto: Checkpoint<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Checkpoint',
-});
-
 export const checkpoint = <A = any>(id: string, data: A): Checkpoint<A> => {
   const self = Object.create(CheckpointProto) as Checkpoint<A>;
   self.id = id;
   self.data = data;
   return self;
 };
-
-const DoneProto: Done = Object.assign(Object.create(Proto), {
-  _tag: 'Done',
-});
 
 export const done = (): Done => {
   const self = Object.create(DoneProto) as Done;

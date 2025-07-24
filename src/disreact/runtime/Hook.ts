@@ -1,10 +1,14 @@
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 
+export class HookError extends Error {
+  _tag = 'HookError' as const;
+}
+
 export const active = {
   polymer: undefined as undefined | Polymer.Polymer,
 };
 
-export const UseIx = (self?: Polymer.Polymer) => () => {
+export const UseInteraction = (self?: Polymer.Polymer) => () => {
   return self!.origin.env.data;
 };
 

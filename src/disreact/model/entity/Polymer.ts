@@ -13,19 +13,21 @@ type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
 
 export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Element.Component>
+  Traversable.Origin<Element.Element>
 {
-  id   : string;
-  pc   : number;
-  rc   : number;
-  stack: Monomer[];
-  queue: Updater[];
-
-  origin : Element.Component;
-  flags  : Set<Element.Component>;
-  mount  : Set<Element.Component>;
-  render : Set<Element.Component>;
-  unmount: Set<Element.Component>;
+  type     : any;
+  id       : string;
+  pc       : number;
+  rc       : number;
+  stack    : Monomer[];
+  fc?      : Element.FC;
+  signature: Monomer.Signature;
+  queue    : Updater[];
+  origin   : Element.Element;
+  flags    : Set<Element.Element>;
+  mount    : Set<Element.Element>;
+  render   : Set<Element.Element>;
+  unmount  : Set<Element.Element>;
 }
 
 export const isStateless = (self: Polymer) =>
@@ -50,10 +52,6 @@ export const isChanged = (self: Polymer) => {
   return false;
 };
 
-export const fromComponent = (elem: Element.Component): Polymer => elem.polymer;
-
-export const toComponent = (self: Polymer): Element.Component => self.origin!;
-
 const PolymerProto: Polymer = {
   pc     : 0,
   rc     : 0,
@@ -76,17 +74,27 @@ const PolymerProto: Polymer = {
   },
 } as Polymer;
 
-export const make = (elem: Element.Component): Polymer => {
+export const make = (elem: Element.Element): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
   self.id = PrimaryKey.value(elem);
   self.origin = elem;
+  self.signature = [];
   self.stack = [];
   self.queue = [];
   self.flags = elem.env.flags as any;
   return self;
 };
 
-export const makeStateless = (self: Polymer) => {};
+export const dispose = (self: Polymer) => {
+  if (self.queue.length) {
+    throw new Error('ope');
+  }
+  (self.origin as any) = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  (self.flags as any) = undefined;
+  return undefined;
+};
 
 export const commit = (self: Polymer): Polymer => {
   if (!self.stack.length) {
@@ -102,19 +110,19 @@ export const commit = (self: Polymer): Polymer => {
   }
   self.pc = 0;
   self.rc++;
+  // todo update signature
   return self;
 };
 
-export const dispose = (self: Polymer) => {
-  if (self.queue.length) {
-    throw new Error('ope');
-  }
-  (self.origin as any) = undefined;
-  (self.stack as any) = undefined;
-  (self.queue as any) = undefined;
-  (self.flags as any) = undefined;
-  return undefined;
+export const flag = (self: Polymer) => {
+  self.flags.add(self.origin);
 };
+
+export const runUpdates = (self: Polymer) => {
+
+};
+
+export type Encoded = readonly Monomer.Encoded[];
 
 export type Bundle = Record<string, readonly Monomer.Encoded[]>;
 
@@ -137,10 +145,6 @@ export const dehydrate = dual<
   bundle[self.id] = self.stack.map(dehydrateMono);
   return bundle;
 });
-
-export interface Hook {
-  phase: 'Hydrate';
-}
 
 export const hook = <A extends Monomer>(
   self: Polymer,
@@ -223,7 +227,9 @@ export namespace Monomer {
     encoded?: | typeof CONTEXT;
   }
   export type Encoded = Required<Monomer>['encoded'];
+  export type Signature = Monomer['_tag'][];
 }
+export type Signature = Monomer['_tag'][];
 
 const MonomerProto: Monomer = {
   _tag   : STATE as any,

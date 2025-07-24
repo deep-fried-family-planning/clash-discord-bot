@@ -1,34 +1,31 @@
 import type * as Progress from '#disreact/model/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
-import type * as Event from '#disreact/model/core/Event.ts';
-import * as Hydrant from '#disreact/model/core/Hydrant.ts';
-import type * as Polymer from '#disreact/model/entity/Polymer.ts';
+import type * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
 import {dual, pipe} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Mailbox from 'effect/Mailbox';
-import type * as Option from 'effect/Option';
-import type * as Record from 'effect/Record';
 
-export interface Envelope<A = any> extends Inspectable.Inspectable {
+export interface Envelope<A = any> extends Inspectable.Inspectable
+{
   data    : A;
   hydrant : Hydrant.Hydrant;
   root    : Element.Element;
-  polymers: Record<string, Polymer.Polymer>;
   flags   : Set<Element.Component>;
+  deferred: Deferred.Deferred<Progress.Checkpoint>;
   final   : Deferred.Deferred<Progress.Checkpoint>;
   stream  : Mailbox.Mailbox<Progress.Progress>;
 }
 
-const Proto: Envelope = {
+const EnvelopePrototype: Envelope = {
   data    : undefined as any,
   hydrant : undefined as any,
   root    : undefined as any,
-  stream  : undefined as any,
-  final   : undefined as any,
   flags   : undefined as any,
-  polymers: undefined as any,
+  stream  : undefined as any,
+  deferred: undefined as any,
+  final   : undefined as any,
   ...Inspectable.BaseProto,
   toJSON() {
     return {
@@ -39,41 +36,56 @@ const Proto: Envelope = {
   },
 };
 
-const make = pipe(
+const makeDeferred = Deferred.make<Progress.Checkpoint>();
+
+const makeEffect = pipe(
   Effect.all([
+    makeDeferred,
     Deferred.make<Progress.Checkpoint>(),
     Mailbox.make<Progress.Progress>(),
   ]),
-  Effect.map(([final, stream]) => {
-    const self = Object.create(Proto) as Envelope;
-    self.stream = stream;
+  Effect.map(([deferred, final, stream]) => {
+    const self = Object.create(EnvelopePrototype) as Envelope;
+    self.deferred = deferred;
     self.final = final;
+    self.stream = stream;
     self.flags = new Set();
     return self;
   }),
 );
 
-export const fromHydrant = dual<
-  (data: any) => (hydrant: Hydrant.Hydrant) => Effect.Effect<Envelope>,
-  (hydrant: Hydrant.Hydrant, data: any) => Effect.Effect<Envelope>
->(2, (hydrant: Hydrant.Hydrant, data: any) =>
-  make.pipe(
+export const make = <A>(data: A, hydrant: Hydrant.Hydrant) =>
+  makeEffect.pipe(
     Effect.map((self) => {
       self.data = data;
       self.hydrant = hydrant;
-      self.root = Element.makeRoot(Hydrant.toJsx(hydrant), self);
-      return self;
+      self.root = Element.makeRoot(hydrant.source, self);
+      return self as Envelope<A>;
     }),
-  ),
-);
-
-export const dispose = (self: Envelope) =>
-  Effect.asVoid(
-    Effect.die('Not Implemented'),
   );
 
-export const initialize = (self: Envelope) =>
-  Effect.succeed(self);
+export const fork = <A>(self: Envelope<A>) =>
+  makeDeferred.pipe(
+    Effect.map((deferred) => {
+      const fork = Object.create(EnvelopePrototype) as Envelope;
+      fork.deferred = deferred;
+      fork.final = self.final;
+      fork.stream = self.stream;
+      fork.flags = self.flags;
+      fork.data = self.data;
+      fork.hydrant = self.hydrant;
+      return fork;
+    }),
+  );
 
-export const hydrate = (self: Envelope) =>
-  Effect.succeed(self);
+export const dispose = (self: Envelope) =>
+  pipe(
+    Deferred.await(self.deferred),
+    Effect.map(() => {
+      (self.flags as any) = undefined;
+      (self.root as any) = undefined;
+      (self.data as any) = undefined;
+      (self.hydrant as any) = undefined;
+      return self;
+    }),
+  );

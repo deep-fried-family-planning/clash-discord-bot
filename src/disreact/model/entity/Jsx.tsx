@@ -1,4 +1,4 @@
-import {ASYNC_CONSTRUCTOR} from '#disreact/model/core/constants.ts';
+import {ASYNC_CONSTRUCTOR} from '#disreact/util/constants.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
@@ -19,6 +19,7 @@ const FCProto: Element.FC = {
   entrypoint : undefined,
   displayName: undefined as any,
   source     : undefined as any,
+  signature  : undefined as any,
   ...Inspectable.BaseProto,
   [Hash.symbol]() {
     return Hash.cached(this, Hash.string(this.source));
@@ -27,6 +28,7 @@ const FCProto: Element.FC = {
     return {
       _id        : 'FunctionComponent',
       _tag       : this._tag,
+      signature  : this.signature,
       entrypoint : this.entrypoint,
       name       : this._id,
       displayName: this.displayName,
@@ -166,26 +168,11 @@ export const clone = <A extends Jsx>(self: A): A => {
   };
 };
 
-export const childs = (self: Jsx): Child[] => {
-  if (self.child) {
-    return [self.child];
-  }
-  if (self.childs) {
-    return self.childs;
-  }
-  return [];
-};
-
 export interface Encoding {
   primitive: string;
   normalize: Record<string, string>;
-  transform: Record<
-    string,
-    (self: {props: any}, acc: any) => any
-  >;
+  transform: Record<string, (self: {props: any}, acc: any) => any>;
 }
-
-
 
 export interface Event<A = any> {
   id    : string;
