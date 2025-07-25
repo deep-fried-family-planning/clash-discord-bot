@@ -59,7 +59,7 @@ export const initializeCycle = (env: Envelope.Envelope) =>
       ),
     ),
     Effect.tap(
-      Effect.map(encode(env), Envelope.addSnapshot(env)),
+      Effect.map(encodeCycle(env), Envelope.addSnapshot(env)),
     ),
     Effect.as(env),
   );
@@ -92,12 +92,12 @@ export const hydrateCycle = (env: Envelope.Envelope) =>
     ),
     // todo assert hydration
     Effect.tap(
-      Effect.map(encode(env), Envelope.addSnapshot(env)),
+      Effect.map(encodeCycle(env), Envelope.addSnapshot(env)),
     ),
     Effect.as(env),
   );
 
-export const dispatchEvent = (env: Envelope.Envelope, event: Hydrant.Event) =>
+export const dispatchCycle = (env: Envelope.Envelope, event: Hydrant.Event) =>
   env.root.pipe(
     Element.findChild((child) => {
       if (!Element.isIntrinsic(child)) {
@@ -139,7 +139,7 @@ const mountElement = (elem: Element.Element) =>
     Effect.tap(Element.flushEffects(elem)),
   );
 
-const mountStack = (root: Element.Element) =>
+const mountCycle = (root: Element.Element) =>
   root.pipe(
     Stack.make,
     Stack.storePassing((elem, stack) =>
@@ -155,7 +155,7 @@ const mountStack = (root: Element.Element) =>
     ),
   );
 
-const unmountStack = (root: Element.Element) =>
+const unmountCycle = (root: Element.Element) =>
   root.pipe(
     Stack.makeWithState(new WeakSet()),
     Stack.storePassingSync((cur, stack, visited) => {
@@ -179,11 +179,11 @@ const patchCycle = (root: Patch.Changeset<Element.Element>) =>
       pipe(
         Effect.forEach(
           changes.mount,
-          mountStack,
+          mountCycle,
         ),
         Effect.tap(Effect.forEach(
           changes.unmount,
-          unmountStack,
+          unmountCycle,
         )),
         Effect.andThen(Effect.forEach(
           changes.render,
@@ -208,13 +208,13 @@ const rerenderSubcycle = (root: Element.Element) =>
     Effect.as(root.env),
     Effect.tap((env) =>
       env.pipe(
-        encode,
+        encodeCycle,
         Effect.map(Envelope.addSnapshot(env)),
       ),
     ),
   );
 
-export const rerender = (env: Envelope.Envelope) =>
+export const rerenderCycle = (env: Envelope.Envelope) =>
   pipe(
     Element.lowestCommonAncestor(env.flags),
     Option.getOrElse(() => env.root),
@@ -248,7 +248,7 @@ const encodeIntrinsic = (node: Elem.Element, acc: any, arg: any) => {
   return acc;
 };
 
-export const encode = (env: Envelope.Envelope) => Effect.sync(() =>
+export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
   env.root.pipe(
     Stack.make,
     Stack.setState({
