@@ -79,7 +79,7 @@ it.effect('should render function component jsx', Effect.fn(function* () {
     {},
   );
   const element = Element.makeComponent(jsx);
-  const actual = yield* Lifecycle.initialize(element);
+  const actual = yield* Lifecycle.initializeCycle(element);
 
   expect(json(actual)).toMatchInlineSnapshot(`
     "{

@@ -1,4 +1,4 @@
-export const declarePrototype = <A>(prototype: Partial<A>) =>
+export const declareProto = <A>(prototype: Partial<A>) =>
   Object.create(prototype) as A;
 
 export const declareSubtype = <
@@ -13,5 +13,5 @@ export const declareSubtype = <
     subtype,
   ) as A;
 
-export const createInstance = <A>(prototype: A) =>
+export const fromProto = <A>(prototype: A) =>
   Object.create(prototype as any) as A;

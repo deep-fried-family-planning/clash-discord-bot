@@ -1,8 +1,11 @@
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as MutableRef from 'effect/MutableRef';
 
 export class HookError extends Error {
   _tag = 'HookError' as const;
 }
+
+export const current = MutableRef.make(undefined as undefined | Polymer.Hook);
 
 export const active = {
   polymer: undefined as undefined | Polymer.Polymer,

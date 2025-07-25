@@ -14,8 +14,8 @@ export type Start = {
 
 export type Change = {
   _tag: 'Change';
-  id  : string;
-  next: string | null;
+  type: 'Same' | 'Next' | 'Exit';
+  id  : string | undefined;
 };
 
 export type Partial<A = any> = {
@@ -36,10 +36,11 @@ export type Done = {
 };
 
 const Proto: Progress = {
-  _tag: 'Start',
-  id  : '',
-  next: undefined,
-  data: undefined,
+  _tag : 'Start',
+  id   : '',
+  type : undefined,
+  stage: undefined,
+  data : undefined,
 } as Progress;
 
 const ChangeProto: Change = Object.assign(Object.create(Proto), {
@@ -60,10 +61,10 @@ const DoneProto: Done = Object.assign(Object.create(Proto), {
 
 export const start = (): Start => Proto as Start;
 
-export const change = (id: string, next: string | null): Change => {
+export const change = (id: string, type: Change['type']): Change => {
   const self = Object.create(ChangeProto) as Change;
   self.id = id;
-  self.next = next;
+  self.type = type;
   return self;
 };
 
@@ -85,7 +86,3 @@ export const done = (): Done => {
   const self = Object.create(DoneProto) as Done;
   return self;
 };
-
-export const isClose = (change: Change) => change.next === null;
-
-export const isOpen = (change: Change) => change.next !== change.id;

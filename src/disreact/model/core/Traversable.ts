@@ -58,12 +58,12 @@ export const setAncestor = dual<
   <A extends Ancestor.Any>(ancestor: Ancestor.Value<A>) => (self: A) => A,
   <A extends Ancestor.Any>(self: A, ancestor: Ancestor.Value<A>) => A
 >(2, (self, ancestor) => {
-  self.ancestor = ancestor;
+  self.parent = ancestor;
   return self;
 });
 
 export const disposeAncestor = <A extends Ancestor.Any>(self: A): A => {
-  self.ancestor = undefined;
+  self.parent = undefined;
   return self;
 };
 

@@ -1,10 +1,10 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
-import type * as Traversable from '#disreact/model/core/Traversable.ts';
+import * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
-import {declarePrototype, declareSubtype} from '#disreact/util/proto.ts';
+import {declareProto, declareSubtype} from '#disreact/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -146,20 +146,15 @@ export const unsafeComponent = flow(
   Option.getOrThrow,
 );
 
-const step = (self: Element) => `${self.depth}:${self.index}`;
-const stepId = (self: Element) => `${step(self.parent!)}:${step(self)}`;
-const trieId = (self: Element) => `${self.parent!.trie}:${step(self)}`;
-const keyId = (self: Element) => self.key ?? self.trie;
-
-const ElementPrototype = declarePrototype<Element>({
+const ElementPrototype = declareProto<Element>({
   _tag    : INTRINSIC,
   env     : {} as any,
-  origin  : undefined as any,
+  origin  : undefined,
   parent  : undefined,
   children: undefined,
-  polymer : undefined as any,
+  polymer : undefined,
   type    : undefined,
-  props   : undefined as any,
+  props   : undefined,
   key     : undefined,
   text    : undefined,
   trie    : '',
@@ -237,113 +232,152 @@ const ComponentPrototype = declareSubtype<Component, Element>(ElementPrototype, 
   _tag: COMPONENT,
 });
 
-const fromJsx = (j: Jsx.Jsx): Fragment | Intrinsic | Component => {
-  switch (typeof j.type) {
+const fromJsx = (jsx: Jsx.Jsx): Fragment | Intrinsic | Component => {
+  switch (typeof jsx.type) {
     case 'string': {
       const self = Object.create(IntrinsicPrototype) as Intrinsic;
-      self.type = j.type;
-      self.props = makeProps(j.props);
+      self.type = jsx.type;
+      self.props = makeProps(jsx.props);
       return self;
     }
     case 'function': {
       const self = Object.create(ComponentPrototype) as Component;
-      self.type = j.type as any;
-      self.props = makeProps(j.props);
+      self.type = jsx.type as any;
+      self.props = makeProps(jsx.props);
       return self;
     }
     case 'symbol': {
       const self = Object.create(FragmentPrototype) as Fragment;
-      self.type = j.type;
-      self.props = makeProps(j.props);
+      self.type = jsx.type;
+      self.props = makeProps(jsx.props);
       return self;
     }
     default: {
-      throw new Error(`Invalid Element type: ${j.type}`);
+      throw new Error(`Invalid Element type: ${jsx.type}`);
     }
   }
 };
 
-const fromJsxChild = (el: Element, j: Jsx.Children, i: number) => {
-  if (!j || typeof j !== 'object') {
+const fromJsxChild = (cur: Element, jsx: Jsx.Children, idx: number) => {
+  if (!jsx || typeof jsx !== 'object') {
     const self = Object.create(TextPrototype) as Text;
-    self.text = j;
-    self.parent = el;
-    self.index = i;
-    self.depth = el.depth + 1;
-    return self;
+    self.text = jsx;
+    return connectChild(self, cur, idx);
   }
-  if (Array.isArray(j)) {
+  if (Array.isArray(jsx)) {
     const self = Object.create(ListPrototype) as List;
-    self.parent = el;
-    self.index = i;
-    self.depth = el.depth + 1;
-    self.children = fromJsxChilds(self, j);
+    connectChild(self, cur, idx);
+    self.children = fromJsxChilds(self, jsx);
     return self;
   }
-  const self = fromJsx(j);
-  self.origin = el.origin;
-  self.parent = el;
-  self.index = i;
-  self.depth = el.depth + 1;
-  self.children = fromJsxChildren(self, j.child ?? j.childs);
+  const self = fromJsx(jsx);
+  connectChild(self, cur, idx);
+  self.children = fromJsxChildren(self, jsx.child ?? jsx.childs);
   return self;
 };
 
-const fromJsxChilds = (el: Element, js: Jsx.Child[]) => {
-  if (js.length === 0) {
+const fromJsxChilds = (cur: Element, jsx: Jsx.Child[]) => {
+  if (jsx.length === 0) {
     return undefined;
   }
-  const children = [] as Element[];
+  const children = Array(jsx.length) as Element[];
 
-  for (let i = 0; i < js.length; i++) {
-    const child = fromJsxChild(el, js[i], i);
-    children[i] = child;
+  for (let i = 0; i < jsx.length; i++) {
+    const child = fromJsxChild(cur, jsx[i], i);
+    children[i] = connectChild(child, cur, i);
   }
   return children;
 };
 
-const fromJsxChildren = (el: Element, js: Jsx.Children) => {
-  if (!js) {
+const fromJsxChildren = (cur: Element, jsx: Jsx.Children) => {
+  if (!jsx) {
     return undefined;
   }
-  if (Array.isArray(js)) {
-    return fromJsxChilds(el, js);
+  if (Array.isArray(jsx)) {
+    return fromJsxChilds(cur, jsx);
   }
-  return [fromJsxChild(el, js, 0)];
+  return [fromJsxChild(cur, jsx, 0)];
 };
 
-export const fromRender = (el: Element, js: Jsx.Children) => {
-  Polymer.commit(el.polymer!);
-  if (!js) {
+export const fromRender = dual<
+  (self: Element) => (jsx: Jsx.Children) => Element[] | undefined,
+  (jsx: Jsx.Children, self: Element) => Element[] | undefined
+>(2, (jsx, self) => {
+  Polymer.commit(self.polymer!);
+  if (!jsx) {
     return undefined;
   }
-  return [fromJsxChild(el, js, 0)];
-};
+  return [fromJsxChild(self, jsx, 0)];
+});
+
+export const bindRenderedJsx = dual<
+  (self: Element) => (jsx: Jsx.Children) => Element,
+  (jsx: Jsx.Children, self: Element) => Element
+>(2, (jsx, self) =>
+  self.pipe(
+    Traversable.setChildren(fromRender(jsx, self)),
+  ),
+);
+
+export const renderInto = dual<
+  (js: Jsx.Children) => (self: Element) => Element,
+  (self: Element, js: Jsx.Children) => Element
+>(2, (self, js) => {
+  self.children = fromJsxChildren(self, js);
+  return self;
+});
 
 export const makeRoot = (j: Jsx.Jsx, env: Envelope.Envelope): Element => {
   const root = fromJsx(Jsx.clone(j));
+  root.origin = Polymer.make(root);
   root.env = env;
-  root.polymer = Polymer.make(root);
+  root.polymer = root.origin;
   root.polymer.type = root.type;
+  root.trie = `0.${String(j.type)}`;
+  root.step = `0.${String(j.type)}`;
   root.children = fromJsxChildren(root, j.childs ?? j.childs);
   return root;
 };
 
 export const connectChild = dual<
-  (parent: Element, index?: number) => (self: Element) => Element,
-  (self: Element, parent: Element, index?: number) => Element
->(3, (self, parent, index = 0) => {
-  self.origin = parent.polymer ?? parent.origin;
-  self.env = parent.env;
-  self.parent = parent;
-  self.depth = parent.depth + 1;
-  self.index = index;
-  self.trie = trieId(self);
-  self.step = stepId(self);
+  (cur: Element, idx: number) => (self: Element) => Element,
+  (self: Element, cur: Element, idx: number) => Element
+>(3, (self, cur, idx) => {
+  self.origin = cur.polymer ?? cur.origin;
+  self.env = cur.env;
+  self.parent = cur;
+  self.depth = cur.depth + 1;
+  self.index = idx;
+  self.trie = `${cur.trie}.${self.index}`;
+  self.step = `${cur.index}.${cur.type.toString()}.${self.index}.${self.type.toString()}`;
   return self;
 });
 
-export const mountWith = dual<
+export const connectWithin = <A extends Element>(self: A): A => {
+  if (!self.children) {
+    return self;
+  }
+  const children = self.children;
+
+  for (let i = 0; i < children.length; i++) {
+    connectChild(children[i], self, i);
+  }
+  return self;
+};
+
+export const connectAllWithin = <A extends Element>(self: A): A => {
+  if (!self.children) {
+    return self;
+  }
+  const children = self.children;
+
+  for (let i = 0; i < children.length; i++) {
+    connectChild(children[i], self, i);
+  }
+  return self;
+};
+
+export const mount = dual<
   (polymer: Polymer.Polymer) => (self: Element) => Element,
   (self: Element, polymer: Polymer.Polymer) => Element
 >(2, (self, polymer) => {
@@ -351,24 +385,17 @@ export const mountWith = dual<
   return self;
 });
 
-export const mount = (self: Element) => {
+export const mountInto = dual<
+  (self: Element) => (polymer: Polymer.Polymer) => Element,
+  (polymer: Polymer.Polymer, self: Element) => Element
+>(2, (polymer, self) => {
+  self.polymer = polymer;
   return self;
-};
-
-export const hydrate = dual<
-  (that: Polymer.Bundle) => (self: Element) => Element,
-  (self: Element, that: Polymer.Bundle) => Element
->(2, (input, encoding) =>
-  input.pipe(
-    unsafeComponent,
-    Polymer.fromComponent,
-    Polymer.hydrate(encoding),
-    Polymer.toComponent,
-  ),
-);
+});
 
 export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
   const self = elem as Component;
+  self.polymer.phase = 'Render';
   const fc = self.type;
 
   switch (fc._tag) {
@@ -393,7 +420,6 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
       fc._tag = 'Async';
       return Effect.promise(() => children);
     }
-    if (Jsx.isJsx())
     if (!Effect.isEffect(children)) {
       fc._tag = 'Sync';
       return Effect.succeed(children);
@@ -433,31 +459,69 @@ const normalizeEffector = (effector: Polymer.Effector) => {
   });
 };
 
-export const flush = (self: Element) =>
-  pipe(
-    Effect.succeed(self),
-    Effect.as(self),
-  );
+export const flushUpdates = (self: Element) => Effect.suspend(() => {
+  return Effect.whileLoop({
+    while: () => false,
+    step : () => {},
+    body : () => Effect.void,
+  });
+});
 
-export const unmount = (self: Element) => {
-  self.parent = undefined;
-  self.children = undefined;
+export const flushEffects = (self: Element) => Effect.suspend(() => {
+  const polymer = self.polymer;
+
+  if (
+    !polymer ||
+    !polymer.effects.length
+  ) {
+    return Effect.void;
+  }
+  polymer.phase = 'Flush';
+
+  return Effect.whileLoop({
+    while: () => false,
+    step : () => {},
+    body : () => Effect.void,
+  });
+});
+
+export const release = (self: Element) => {
   (self.env as any) = undefined;
   (self.props as any) = undefined;
+  self.origin = undefined;
+  self.parent = undefined;
+  self.children = undefined;
 
   if (self.polymer) {
     (self.polymer as any) = Polymer.dispose(self.polymer);
   }
 };
 
-export const invoke = dual<
+export const trigger = dual<
   (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
   (self: Element, event: Jsx.Event) => Effect.Effect<void>
->(2, (self, event) => {
-  // const handler = self.props[event.type];
-  // return Event.invokeWith(event, handler);
-  return Effect.void;
-});
+>(2, (self, event) =>
+  pipe(
+    self.props[event.type],
+    Option.fromNullable,
+    Effect.flatMap((handler) => {
+      if (handler.constructor === ASYNC_CONSTRUCTOR) {
+        return Effect.promise(() => handler(event));
+      }
+      const output = handler(event);
+
+      if (Predicate.isPromise(output)) {
+        return Effect.promise(() => output);
+      }
+      if (Effect.isEffect(output)) {
+        return output as Effect.Effect<void>;
+      }
+      return Effect.void;
+    }),
+    Effect.orDie,
+    Effect.asVoid,
+  ),
+);
 
 export const encode = dual<
   (encoding: Jsx.Encoding) => (self: Element) => Element,
@@ -470,59 +534,135 @@ export const encode = dual<
 export const diff = dual<
   (that: Element) => (self: Element) => Patch.Patch<Element>,
   (self: Element, that: Element) => Patch.Patch<Element>
->(2, (s, t) => {
-  if (s === t) {
-    return Patch.skip();
+>(2, (self, that) => {
+  if (self === that) {
+    return Patch.skip(self);
   }
-  if (s.type !== t.type) {
-    return Patch.replace(s, t);
+  if (self.type !== that.type) {
+    return Patch.replace(self, that);
   }
-  if (s.text !== t.text) {
-    return Patch.replace(s, t);
+  if (self.text !== that.text) {
+    return Patch.replace(self, that);
   }
-  if (!Equal.equals(s.props, t.props)) {
-    return Patch.update(s, t);
+  if (!Equal.equals(self.props, that.props)) {
+    return Patch.update(self, that);
   }
-  if (s.polymer && s) {
-    return Patch.update(s, t);
+  if (self.polymer && Polymer.isChanged(self.polymer)) {
+    return Patch.update(self, that);
   }
-  return Patch.skip();
+  return Patch.skip(self);
 });
 
-export const diffChildren = dual<
-  (that: Element[] | undefined) => (self: Element) => Patch.Patch<Element>[],
-  (self: Element, that: Element[] | undefined) => Patch.Patch<Element>[]
->(2, (s, rs) => {
-  if (!s.children && !rs) {
-    return [Patch.skip()];
+export const diffs = dual<
+  (self: Element) => (rendered: Element[] | undefined) => Patch.Patch<Element>[] | undefined,
+  (rendered: Element[] | undefined, self: Element) => Patch.Patch<Element>[] | undefined
+>(2, (rendered, self) => {
+  const cs = self.children;
+  const rs = rendered;
+
+  if (!cs || cs.length === 0) { // todo key diff algorithm
+    if (!rs || rs.length === 0) {
+      return undefined;
+    }
+    return rs.map(Patch.add);
   }
-  if (s.children && !rs) {
-    return [Patch.skip()];
+  if (!rs || rs.length === 0) {
+    return cs.map(Patch.remove);
   }
-  return [Patch.skip()];
+  const length = Math.max(cs.length, rs.length);
+  const patches = [] as Patch.Patch<Element>[];
+
+  for (let i = 0; i < length; i++) {
+    const s = cs[i];
+    const t = rs[i];
+
+    if (!s && t) {
+      patches.push(Patch.add(t));
+    }
+    else if (!t) {
+      patches.push(Patch.remove(s));
+    }
+    else {
+      patches.push(diff(s, t));
+    }
+  }
+  return patches;
 });
 
-export const patch = dual<
-  (self: Element) => (patch: Patch.Patch<Element>) => Element,
-  (patch: Patch.Patch<Element>, self: Element) => Element
->(2, (patch, self) => {
-  switch (patch._tag) {
-    case 'Skip':
-      return self;
-    case 'Replace':
-      return patch.that;
-    case 'Update':
-      self.text = patch.that.text;
-      self.props = patch.that.props;
-      return self;
+export const delta = dual<
+  (self: Element, changeset?: Patch.Changeset<Element>) => (patches: Patch.Patch<Element>[] | undefined) => Patch.Changeset<Element>,
+  (patches: Patch.Patch<Element>[] | undefined, self: Element, changeset?: Patch.Changeset<Element>) => Patch.Changeset<Element>
+>(2, (patches, self, changeset) => {
+  if (!patches || patches.length === 0) {
+    return Patch.changeset(self, changeset);
   }
-  return self;
+  const changes = Patch.changeset(self, changeset);
+  changes.latest = [];
+
+  for (let i = 0; i < patches.length; i++) {
+    const patch = patches[i];
+
+    switch (patch._tag) {
+      case 'Skip': {
+        changes.latest.push(patch.self);
+        continue;
+      }
+      case 'Update': {
+        switch (patch.self._tag) {
+          case 'Text': {
+            patch.self.text = patch.that.text;
+            changes.latest.push(patch.self);
+            continue;
+          }
+          case 'Component': {
+            patch.self.props = patch.that.props;
+            changes.latest.push(patch.self);
+            changes.render.push(patch.self);
+            continue;
+          }
+          default: {
+            patch.self.props = patch.that.props;
+            changes.latest.push(patch.self);
+            changes.changes.push(
+              delta(
+                diffs(patch.that.children, patch.self),
+                patch.self,
+                changes,
+              ),
+            );
+            continue;
+            // changes.patches.push(patch); todo - might be good to separate diffing from sync patch execution
+          }
+        }
+      }
+      case 'Replace': {
+        changes.latest.push(patch.that);
+        changes.mount.push(patch.that);
+        changes.unmount.push(patch.self);
+        continue;
+      }
+      case 'Add': {
+        changes.latest.push(patch.that);
+        changes.mount.push(patch.that);
+        continue;
+      }
+      case 'Remove': {
+        changes.unmount.push(patch.self);
+        continue;
+      }
+    }
+  }
+  self.children = changes.latest;
+  connectWithin(self);
+  return changes;
 });
 
 export const use = dual<
   <A>(f: (self: Element) => A) => (self: Element) => A,
   <A>(self: Element, f: (self: Element) => A) => A
 >(2, (self, f) => f(self));
+
+export const nextChildren = (self: Element): Element[] | undefined => self.children;
 
 export const lowestCommonAncestor = (flags: Set<Element>): Option.Option<Element> => {
   const elements = [...flags];
@@ -535,5 +675,63 @@ export const lowestCommonAncestor = (flags: Set<Element>): Option.Option<Element
       return Option.some(elements[0]);
     }
   }
-  return Option.some(elements[0].env.root);
+  return Option.some(elements[0].env.root); // todo lol
 };
+
+export const lowerBoundary = (self: Element): Component[] => {
+  const traversal = [] as Component[];
+  const stack = [self] as Element[];
+
+  while (stack.length > 0) {
+    const cur = stack.pop()!;
+
+    if (!cur.children || cur.children.length === 0) {
+      continue;
+    }
+    for (const c of cur.children.toReversed()) {
+      if (isComponent(c)) {
+        traversal.push(c);
+      }
+      else {
+        stack.push(c);
+      }
+    }
+  }
+  return traversal;
+};
+
+export const findChild = dual<
+  <A extends Element>(f: (self: Element) => Option.Option<A>) => (self: Element) => Option.Option<A>,
+  <A extends Element>(self: Element, f: (self: Element) => Option.Option<A>) => Option.Option<A>
+>(2, (self, f) => {
+  const stack = [self];
+
+  while (stack.length > 0) {
+    const cur = stack.pop()!;
+    const res = f(cur);
+
+    if (Option.isSome(res)) {
+      return res;
+    }
+    if (cur.children) {
+      stack.push(...cur.children.toReversed());
+    }
+  }
+  return Option.none();
+});
+
+export const findParent = dual<
+  <A extends Element>(f: (self: Element) => Option.Option<A>) => (self: Element) => Option.Option<A>,
+  <A extends Element>(self: Element, f: (self: Element) => Option.Option<A>) => Option.Option<A>
+>(2, (self, f) => {
+  let cur = self;
+  let check = f(cur);
+
+  while (Option.isNone(check)) {
+    if (cur.parent) {
+      cur = cur.parent;
+      check = f(cur);
+    }
+  }
+  return check;
+});

@@ -1,183 +1,162 @@
-import {StructProto} from '#disreact/util/constants.ts';
+import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
+import * as Inspectable from 'effect/Inspectable';
+import type * as Pipeable from 'effect/Pipeable';
 
-export type Chain<A> = | A
-                       | AndThen<A>;
+export type Patch<A> =
+  | Skip<A>
+  | Update<A>
+  | Replace<A>
+  | Add<A>
+  | Remove<A>;
 
-export type Patch<A> = | Any<A>
-                       | AndThen<Any<A>>;
-
-type Any<A> = | Empty
-              | Skip
-              | Update<A>
-              | Replace<A>
-              | Insert<A>
-              | Remove<A>
-              | Mount<A>
-              | Render<A>
-              | Unmount<A>;
-
-export type Empty = {
-  _tag: 'Empty';
-};
-
-export type Skip = {
+export interface Skip<A> {
   _tag: 'Skip';
+  self: A;
 };
 
-export type AndThen<A> = {
-  _tag: 'AndThen';
-  and : A | AndThen<A>;
-  then: A | AndThen<A>;
-};
-
-export type Update<A> = {
+export interface Update<A> {
   _tag: 'Update';
   self: A;
   that: A;
 };
 
-export type Replace<A> = {
+export interface Replace<A> {
   _tag: 'Replace';
   self: A;
   that: A;
 };
 
-export type Insert<A> = {
-  _tag : 'Insert';
-  at   : number;
-  these: A[];
-};
-
-export type Move<A> = {
-  _tag: 'Move';
-  from: number;
-  to  : number;
-};
-
-export type Remove<A> = {
-  _tag : 'Remove';
-  at   : number;
-  these: number;
-};
-
-export type Mount<A> = {
-  _tag: 'Mount';
+export interface Add<A> {
+  _tag: 'Add';
   that: A;
 };
 
-export type Render<A> = {
-  _tag: 'Render';
-  that: A;
+export interface Remove<A> {
+  _tag: 'Remove';
+  self: A;
 };
 
-export type Unmount<A> = {
-  _tag: 'Unmount';
-  that: A;
-};
-
-const Proto: Patch<any> = {
-  _tag : 'Skip',
-  that : undefined,
-  at   : undefined,
-  these: undefined,
-  and  : undefined,
-  then : undefined,
-  ...StructProto,
-} as Patch<any>;
-
-const EmptyProto: Empty = Object.assign(Object.create(Proto), {
-  _tag: 'Empty',
+const Patch = declareProto<Patch<any>>({
+  _tag: 'Skip' as any,
+  self: undefined as any,
+  that: undefined as any,
 });
 
-const SkipProto: Skip = Object.assign(Object.create(Proto), {
+const Skip = declareSubtype<Skip<any>, Patch<any>>(Patch, {
   _tag: 'Skip',
 });
 
-const AndThenProto: AndThen<any> = Object.assign(Object.create(Proto), {
-  _tag: 'AndThen',
-});
-
-const UpdateProto: Update<any> = Object.assign(Object.create(Proto), {
+const Update = declareSubtype<Update<any>, Patch<any>>(Patch, {
   _tag: 'Update',
 });
 
-const ReplaceProto: Replace<any> = Object.assign(Object.create(Proto), {
+const Replace = declareSubtype<Replace<any>, Patch<any>>(Patch, {
   _tag: 'Replace',
 });
 
-const InsertProto: Insert<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Insert',
+const Add = declareSubtype<Add<any>, Patch<any>>(Patch, {
+  _tag: 'Add',
 });
 
-const RemoveProto: Remove<any> = Object.assign(Object.create(Proto), {
+const Remove = declareSubtype<Remove<any>, Patch<any>>(Patch, {
   _tag: 'Remove',
 });
 
-const MountProto: Mount<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Mount',
-});
-
-const RenderProto: Render<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Render',
-});
-
-const UnmountProto: Unmount<any> = Object.assign(Object.create(Proto), {
-  _tag: 'Unmount',
-});
-
-export const empty = (): Empty => EmptyProto;
-
-export const skip = (): Skip => SkipProto;
-
-export const andThen = <A, B>(and: A, then: B): AndThen<A | B> => {
-  const patch = Object.create(AndThenProto) as AndThen<A | B>;
-  patch.and = and;
-  patch.then = then;
+export const skip = <A>(self: A): Skip<A> => {
+  const patch = fromProto(Skip);
+  patch.self = self;
   return patch;
 };
 
 export const update = <A>(self: A, that: A): Update<A> => {
-  const patch = Object.create(UpdateProto) as Update<A>;
+  const patch = fromProto(Update);
   patch.self = self;
   patch.that = that;
   return patch;
 };
 
 export const replace = <A>(self: A, that: A): Replace<A> => {
-  const patch = Object.create(ReplaceProto) as Replace<A>;
+  const patch = fromProto(Replace);
   patch.self = self;
   patch.that = that;
   return patch;
 };
 
-export const insert = <A>(at: number, these: A[]): Insert<A> => {
-  const patch = Object.create(InsertProto) as Insert<A>;
-  patch.at = at;
-  patch.these = these;
-  return patch;
-};
-
-export const remove = <A>(at: number, these: number): Remove<A> => {
-  const patch = Object.create(RemoveProto) as Remove<A>;
-  patch.at = at;
-  patch.these = these;
-  return patch;
-};
-
-export const mount = <A>(that: A): Mount<A> => {
-  const patch = Object.create(MountProto) as Mount<A>;
+export const add = <A>(that: A): Add<A> => {
+  const patch = fromProto(Add);
   patch.that = that;
   return patch;
 };
 
-export const render = <A>(that: A): Render<A> => {
-  const patch = Object.create(RenderProto) as Render<A>;
-  patch.that = that;
+export const remove = <A>(self: A): Remove<A> => {
+  const patch = fromProto(Remove);
+  patch.self = self;
   return patch;
 };
 
-export const unmount = <A>(that: A): Unmount<A> => {
-  const patch = Object.create(UnmountProto) as Unmount<A>;
-  patch.that = that;
-  return patch;
+export const release = (patch: Patch<any>) => {
+  patch._tag = undefined as any;
+  (patch as Replace<any>).self = undefined as any;
+  (patch as Replace<any>).that = undefined as any;
+};
+
+export interface Changeset<A> extends Inspectable.Inspectable, Pipeable.Pipeable {
+  _tag   : 'Changeset';
+  target : A;
+  latest : A[] | undefined;
+  patches: Update<A>[];
+  mount  : A[];
+  unmount: A[];
+  render : A[];
+  changes: Changeset<A>[];
+};
+
+const Changeset = declareProto<Changeset<any>>({
+  _tag   : 'Changeset',
+  target : undefined as any,
+  latest : undefined as any,
+  patches: undefined as any,
+  mount  : undefined as any,
+  unmount: undefined as any,
+  render : undefined as any,
+  changes: undefined as any,
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return {
+      _id    : 'Changeset',
+      self   : this.target,
+      latest : this.latest?.length,
+      mount  : this.mount?.length,
+      unmount: this.unmount?.length,
+      render : this.render?.length,
+    };
+  },
+});
+
+export const changeset = <A>(target: A, parent?: Changeset<A>): Changeset<A> => {
+  const self = fromProto(Changeset);
+  self.target = target;
+  self.changes = [];
+
+  if (!parent) {
+    self.mount = [];
+    self.unmount = [];
+    self.render = [];
+    return self;
+  }
+  self.mount = parent.mount;
+  self.unmount = parent.unmount;
+  self.render = parent.render;
+  return self;
+};
+
+export const releaseChangeset = (self: Changeset<any>) => {
+  self._tag = undefined as any;
+  self.target = undefined as any;
+  self.latest = undefined as any;
+  self.patches = undefined as any;
+  self.mount = undefined as any;
+  self.unmount = undefined as any;
+  self.render = undefined as any;
 };

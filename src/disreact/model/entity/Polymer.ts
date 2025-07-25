@@ -11,9 +11,20 @@ import type * as Record from 'effect/Record';
 type MTag = Monomer['_tag'];
 type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
 
+export interface Hook {
+  stage  : 'Init' | 'Hydrate' | 'Rerender' | 'Dispatch';
+  phase  : 'Render' | 'Flush' | 'Inactive';
+  pc     : number;
+  stack  : Monomer[];
+  effects: Monomer.Effect[];
+  updates: (() => void)[];
+  flag(): void;
+}
+
 export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Element.Element>
+  Traversable.Origin<Element.Element>,
+  Hook
 {
   type     : any;
   id       : string;
@@ -23,11 +34,6 @@ export interface Polymer extends Inspectable.Inspectable,
   fc?      : Element.FC;
   signature: Monomer.Signature;
   queue    : Updater[];
-  origin   : Element.Element;
-  flags    : Set<Element.Element>;
-  mount    : Set<Element.Element>;
-  render   : Set<Element.Element>;
-  unmount  : Set<Element.Element>;
 }
 
 export const isStateless = (self: Polymer) =>
@@ -53,14 +59,13 @@ export const isChanged = (self: Polymer) => {
 };
 
 const PolymerProto: Polymer = {
-  pc     : 0,
-  rc     : 0,
-  stack  : undefined as any,
-  queue  : undefined as any,
-  flags  : undefined as any,
-  mount  : undefined as any,
-  render : undefined as any,
-  unmount: undefined as any,
+  pc   : 0,
+  rc   : 0,
+  stack: undefined as any,
+  queue: undefined as any,
+  flag() {
+    this.origin!.env.flags.add(this.origin!);
+  },
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
@@ -81,7 +86,6 @@ export const make = (elem: Element.Element): Polymer => {
   self.signature = [];
   self.stack = [];
   self.queue = [];
-  self.flags = elem.env.flags as any;
   return self;
 };
 
@@ -92,11 +96,11 @@ export const dispose = (self: Polymer) => {
   (self.origin as any) = undefined;
   (self.stack as any) = undefined;
   (self.queue as any) = undefined;
-  (self.flags as any) = undefined;
   return undefined;
 };
 
 export const commit = (self: Polymer): Polymer => {
+  self.phase = 'Inactive';
   if (!self.stack.length) {
     self.origin!.type._state = false;
     return self;
@@ -114,21 +118,21 @@ export const commit = (self: Polymer): Polymer => {
   return self;
 };
 
-export const flag = (self: Polymer) => {
-  self.flags.add(self.origin);
-};
-
-export const runUpdates = (self: Polymer) => {
-
-};
-
 export type Encoded = readonly Monomer.Encoded[];
 
-export type Bundle = Record<string, readonly Monomer.Encoded[]>;
+export type TrieData = Record<string, readonly Monomer.Encoded[]>;
+
+export const hydrate2 = dual<
+  (encoded: Encoded) => (self: Polymer) => Polymer,
+  (self: Polymer, encoded: Encoded) => Polymer
+>(2, (self, encoded) => {
+  self.stack = encoded.map(hydrateMono);
+  return self;
+});
 
 export const hydrate = dual<
-  (bundle: Bundle) => (self: Polymer) => Polymer,
-  (self: Polymer, bundle: Bundle) => Polymer
+  (bundle: TrieData) => (self: Polymer) => Polymer,
+  (self: Polymer, bundle: TrieData) => Polymer
 >(2, (self, bundle) => {
   if (!(self.id in bundle)) {
     return self;
@@ -139,9 +143,9 @@ export const hydrate = dual<
 });
 
 export const dehydrate = dual<
-  (bundle: Bundle) => (self: Polymer) => Bundle,
-  (self: Polymer, bundle: Bundle) => Bundle
->(2, (self, bundle: Bundle) => {
+  (bundle: TrieData) => (self: Polymer) => TrieData,
+  (self: Polymer, bundle: TrieData) => TrieData
+>(2, (self, bundle: TrieData) => {
   bundle[self.id] = self.stack.map(dehydrateMono);
   return bundle;
 });
@@ -297,7 +301,7 @@ const ContextProto = Object.assign(Object.create(MonomerProto), {
   _tag: CONTEXT,
 });
 
-const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
+export const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
   if (Array.isArray(encoded)) {
     switch (encoded[0]) {
       case STATE: {
