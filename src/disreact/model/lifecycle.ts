@@ -16,10 +16,7 @@ import * as GlobalValue from 'effect/GlobalValue';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
 
-const mutex = GlobalValue.globalValue(
-  Symbol.for('disreact/mutex'),
-  () => Effect.unsafeMakeSemaphore(1),
-);
+const mutex = GlobalValue.globalValue(Symbol.for('disreact/mutex'), () => Effect.unsafeMakeSemaphore(1));
 
 const take = mutex.take(1);
 
@@ -49,24 +46,22 @@ const initializeElement = (elem: Element.Element) =>
   );
 
 export const initializeCycle = (env: Envelope.Envelope) =>
-  pipe(
-    Stack.make(env.root),
-    Stack.iterate((elem) =>
+  env.root.pipe(
+    Stack.make,
+    Stack.storePassing((elem, stack) =>
       elem.pipe(
         Element.either,
         Either.map(initializeElement),
         Either.mapLeft(Effect.succeed),
         Either.merge,
         Effect.map(Element.nextChildren),
+        Effect.map(Stack.pushAllInto(stack)),
       ),
+    ),
+    Effect.tap(
+      Effect.map(encode(env), Envelope.addSnapshot(env)),
     ),
     Effect.as(env),
-    Effect.tap(
-      Effect.map(
-        encode(env),
-        Envelope.addSnapshot(env),
-      ),
-    ),
   );
 
 const hydrateElement = (elem: Element.Element) =>
@@ -96,16 +91,13 @@ export const hydrateCycle = (env: Envelope.Envelope) =>
       ),
     ),
     // todo assert hydration
-    Effect.as(env),
     Effect.tap(
-      Effect.map(
-        encode(env),
-        Envelope.addSnapshot(env),
-      ),
+      Effect.map(encode(env), Envelope.addSnapshot(env)),
     ),
+    Effect.as(env),
   );
 
-export const dispatch = (env: Envelope.Envelope, event: Hydrant.Event) =>
+export const dispatchEvent = (env: Envelope.Envelope, event: Hydrant.Event) =>
   env.root.pipe(
     Element.findChild((child) => {
       if (!Element.isIntrinsic(child)) {
@@ -119,6 +111,7 @@ export const dispatch = (env: Envelope.Envelope, event: Hydrant.Event) =>
     Effect.flatMap(
       Element.trigger(Envelope.bindEvent(env, event)),
     ),
+    Effect.as(env),
   );
 
 const rerenderElement = (elem: Element.Element) =>
