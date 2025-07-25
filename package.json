@@ -80,7 +80,7 @@
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
     "@discordjs/core": "2.2.0",
-    "@effect/language-service": "0.28.3",
+    "@effect/language-service": "0.29.0",
     "@effect/vitest": "0.25.0",
     "@eslint/js": "9.31.0",
     "@rsdoctor/cli": "1.1.10",
