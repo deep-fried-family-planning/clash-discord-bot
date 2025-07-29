@@ -1,9 +1,9 @@
-import * as Button from '#src/disreact/adaptor/codec/intrinsic/button.ts';
-import * as Container from '#src/disreact/adaptor/codec/intrinsic/container.ts';
-import * as Embed from '#src/disreact/adaptor/codec/intrinsic/embed.ts';
-import * as Markdown from '#src/disreact/adaptor/codec/intrinsic/markdown.ts';
-import * as Norm from '#src/disreact/adaptor/codec/intrinsic/norm.ts';
-import * as Select from '#src/disreact/adaptor/codec/intrinsic/select.ts';
+import * as Button from '#disreact/rest/intrinsic/button.ts';
+import * as Container from '#disreact/rest/intrinsic/container.ts';
+import * as Embed from '#disreact/rest/intrinsic/embed.ts';
+import * as Markdown from '#disreact/rest/intrinsic/markdown.ts';
+import * as Norm from '#disreact/rest/intrinsic/norm.ts';
+import * as Select from '#disreact/rest/intrinsic/select.ts';
 
 export const primitive = Norm.PRIMITIVE;
 

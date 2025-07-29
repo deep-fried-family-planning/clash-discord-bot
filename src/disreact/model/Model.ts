@@ -15,3 +15,14 @@ export const Event = <
     type  : Schema.tag(type),
     target: target,
   });
+
+export const Hydrator = Schema.Struct({
+  src  : Schema.String,
+  props: Schema.Any,
+  state: Schema.Record({
+    key  : Schema.String,
+    value: Schema.Array(Schema.Union(
+      Schema.Literal(0),
+    )),
+  }),
+});

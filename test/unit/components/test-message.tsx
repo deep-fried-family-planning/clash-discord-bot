@@ -1,5 +1,4 @@
-import {useState} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/adaptor/codec/fc.ts';
+// import {useState} from '#src/disreact/index.ts';
 import * as E from 'effect/Effect';
 
 const Header = (props: {title: string; description: string}) => {
@@ -13,7 +12,7 @@ const Header = (props: {title: string; description: string}) => {
 };
 
 export const TestMessage: FC = () => E.gen(function* () {
-  const [num, setNum] = useState(0);
+  // const [num, setNum] = useState(0);
   return (
     <message display={'ephemeral'}>
       <Header
@@ -34,10 +33,10 @@ export const TestMessage: FC = () => E.gen(function* () {
       <actions>
         <button
           onclick={() => {
-            setNum(num + 1);
+            // setNum(num + 1);
           }}
         >
-          {`Start ${num}`}
+          {/* {`Start ${num}`} */}
         </button>
         <secondary
           label={'Help'}

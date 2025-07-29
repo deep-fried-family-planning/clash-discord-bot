@@ -4,7 +4,7 @@ import type {Envelope} from '#src/disreact/adaptor/adaptor/envelope.ts';
 import * as Model from '#src/disreact/adaptor/adaptor/Model.ts';
 import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
 import * as Progress from '#src/disreact/adaptor/codec/old/progress2.ts';
-import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
+import {DiscordDOM} from '#disreact/rest/DiscordDOM.ts';
 import {DokenDefect, DokenState} from '#src/disreact/adaptor/DokenState.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import * as DateTime from 'effect/DateTime';

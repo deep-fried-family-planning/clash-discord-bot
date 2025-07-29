@@ -1,10 +1,4 @@
-import * as Rehydrant from '#disreact/adaptor/adaptor/envelope.ts';
-import * as Deps from '#disreact/adaptor/codec/old/deps.ts';
-import * as Lineage from '#disreact/core/behaviors/lineage.ts';
-import * as Polymer from '#disreact/core/internal/polymer.ts';
-import {MONOMER_STATE} from '#disreact/core/immutable/constants.ts';
-import * as proto from '#disreact/core/behaviors/proto.ts';
-import type * as FC from '#disreact/core/internal/fn.ts';
+import {Deps} from '#disreact/adaptor/codec/old/deps.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';

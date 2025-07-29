@@ -1,7 +1,7 @@
 import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
 import {Rehydrator, type RehydratorConfig} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
-import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
-import {DokenCache} from '#src/disreact/adaptor/DokenCache.ts';
+import {DiscordDOM} from '#disreact/rest/DiscordDOM.ts';
+import {DokenCache} from '#disreact/rest/DokenCache.ts';
 import * as Methods from '#src/disreact/adaptor/methods.ts';
 import * as E from 'effect/Effect';
 import {flow, pipe} from 'effect/Function';

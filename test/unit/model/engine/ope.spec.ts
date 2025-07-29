@@ -23,7 +23,37 @@ it.effect('when rendering sync', E.fn(function* () {
   const init = yield* lifecycle.initializeCycle(root);
   const encoded = yield* lifecycle.encodeCycle(init);
 
-  expect(encoded).toMatchInlineSnapshot();
+  expect(encoded.payload).toMatchInlineSnapshot(`
+    {
+      "components": [
+        {
+          "components": [
+            {
+              "label": "ButtonSync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonAsync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonEffect",
+              "style": 1,
+              "type": 2,
+            },
+          ],
+          "type": 1,
+        },
+      ],
+      "embeds": [
+        {
+          "description": "MessageSync",
+        },
+      ],
+    }
+  `);
 }));
 
 // it.effect('when rendering async', E.fn(function* () {

@@ -2,7 +2,7 @@ import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import type * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
 import {declareProto, declareSubtype} from '#disreact/util/proto.ts';
@@ -350,7 +350,7 @@ export const connectChild = dual<
   self.depth = cur.depth + 1;
   self.index = idx;
   self.trie = `${cur.trie}.${self.index}`;
-  self.step = `${cur.index}.${cur.type.toString()}.${self.index}.${self.type.toString()}`;
+  self.step = `${cur.index}.${cur.type.toString()}.${self.index}.${String(self.type)}`;
   return self;
 });
 
@@ -590,7 +590,6 @@ export const findParent = dual<
 
 export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
   const self = elem as Component;
-  self.polymer.phase = 'Render';
   const fc = self.type;
 
   switch (fc._tag) {
@@ -667,7 +666,7 @@ export const flushEffects = (self: Element) => Effect.suspend(() => {
 
   if (
     !polymer ||
-    !polymer.effects.length
+    !polymer.queue.length
   ) {
     return Effect.void;
   }
@@ -679,61 +678,6 @@ export const flushEffects = (self: Element) => Effect.suspend(() => {
     body : () => Effect.void,
   });
 });
-
-export const initialize = <A extends Element>(self: A): A => {
-  if (self._tag !== 'Component') {
-    return self;
-  }
-  self.polymer = Polymer.make(self);
-  return self;
-};
-
-export const hydrate = dual<
-  <A extends Element>(hydrator: Hydrant.Hydrator) => (self: A) => A,
-  <A extends Element>(self: A, hydrator: Hydrant.Hydrator) => A
->(2, (self, hydrator) => {
-  if (self._tag !== 'Component') {
-    return self;
-  }
-  if (!(self.trie in hydrator.state)) {
-    return self;
-  }
-  const encoded = hydrator.state[self.trie];
-  self.polymer = Polymer.fromEncoded(self, encoded);
-  delete hydrator.state[self.trie];
-  return self;
-});
-
-export const dehydrate = dual<
-  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
-  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
->(2, (self, states) => {
-  if (self._tag !== 'Component') {
-    return states;
-  }
-  states[self.trie] = Polymer.toEncoded(self.polymer!);
-  return states;
-});
-
-export const encode = dual<
-  (encoding: Jsx.Encoding) => (self: Element) => Element,
-  (self: Element, encoding: Jsx.Encoding) => Element
->(2, (self, that) => {
-  const self_ = unsafeComponent(self);
-  return self_;
-});
-
-export const release = (self: Element) => {
-  (self.env as any) = undefined;
-  (self.props as any) = undefined;
-  self.origin = undefined;
-  self.parent = undefined;
-  self.children = undefined;
-
-  if (self.polymer) {
-    (self.polymer as any) = Polymer.dispose(self.polymer);
-  }
-};
 
 export const trigger = dual<
   (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
@@ -760,3 +704,71 @@ export const trigger = dual<
     Effect.asVoid,
   ),
 );
+
+export const initialize = <A extends Element>(self: A): A => {
+  if (self._tag !== 'Component') {
+    return self;
+  }
+  self.polymer = Polymer.make(self);
+  return self;
+};
+
+export const hydrate = dual<
+  <A extends Element>(hydrant: Hydrant.Hydrant) => (self: A) => A,
+  <A extends Element>(self: A, hydrant: Hydrant.Hydrant) => A
+>(2, (self, hydrator) => {
+  if (self._tag !== 'Component') {
+    return self;
+  }
+  if (!(self.trie in hydrator.state)) {
+    return self;
+  }
+  const encoded = hydrator.state[self.trie];
+  self.polymer = Polymer.fromEncoded(self, encoded);
+  delete hydrator.state[self.trie];
+  return self;
+});
+
+export const dehydrate = dual<
+  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
+  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
+>(2, (self, states) => {
+  if (self._tag !== 'Component') {
+    return states;
+  }
+  states[self.trie] = Polymer.toEncoded(self.polymer!);
+  return states;
+});
+
+export const toClonedProps = (self: Element) => {
+  if (self._tag !== 'Intrinsic') {
+    throw new Error();
+  }
+  const props = {...self.props};
+  delete props.children;
+  delete props.ref;
+  delete props.onclick;
+  delete props.onselect;
+  delete props.onsubmit;
+  return structuredClone(props);
+};
+
+export const encode = dual<
+  (encoding: Jsx.Encoding) => (self: Element) => any,
+  (self: Element, encoding: Jsx.Encoding) => any
+>(2, (self, that) => {
+  const self_ = unsafeComponent(self);
+  return self_;
+});
+
+export const release = (self: Element) => {
+  (self.env as any) = undefined;
+  (self.props as any) = undefined;
+  self.origin = undefined;
+  self.parent = undefined;
+  self.children = undefined;
+
+  if (self.polymer) {
+    (self.polymer as any) = Polymer.dispose(self.polymer);
+  }
+};

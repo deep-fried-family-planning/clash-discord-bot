@@ -1,4 +1,4 @@
-import {DiscordDOM} from '#src/disreact/adaptor/DiscordDOM.ts';
+import {DiscordDOM} from '#disreact/rest/DiscordDOM.ts';
 import * as Methods from '#src/disreact/adaptor/methods.ts';
 import * as Runtime from '#src/disreact/adaptor/runtime.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';

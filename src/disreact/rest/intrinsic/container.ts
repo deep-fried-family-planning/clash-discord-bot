@@ -1,8 +1,8 @@
 import {Discord} from 'dfx';
 import * as S from 'effect/Schema';
-import * as Norm from '#src/disreact/adaptor/codec/intrinsic/norm.ts';
-import * as Rest from '#src/disreact/adaptor/codec/rest-element.ts';
-import * as Embed from '#src/disreact/adaptor/codec/intrinsic/embed.ts';
+import * as Norm from '#disreact/rest/intrinsic/norm.ts';
+import * as Rest from '#disreact/adaptor/codec/rest-element.ts';
+import * as Embed from '#disreact/rest/intrinsic/embed.ts';
 
 export const MESSAGE = 'message';
 export const MessageAttributes = Rest.Attributes({

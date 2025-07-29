@@ -1,8 +1,9 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Progress from '#disreact/model/core/Progress.ts';
-import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
+import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/model/entity/Polymer.ts';
 import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
+import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -13,7 +14,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as Record from 'effect/Record';
-import * as Schema from 'effect/Schema';
+import * as S from 'effect/Schema';
 
 export class SourceError extends Data.TaggedError('SourceError')<{
   message: string;
@@ -190,12 +191,6 @@ export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.Tri
   return self;
 };
 
-export const HydratorSchema = Schema.Struct({
-  src  : Schema.String,
-  props: Schema.Any,
-  state: Schema.Any,
-});
-
 export interface Snapshot<A = any, B = any> extends Hydrator {
   stage  : string;
   type   : A;
@@ -238,3 +233,26 @@ export interface Event<A = any> {
   type  : string;
   target: A;
 }
+
+const Monomer = S.Union(
+  S.Tuple(S.Literal(STATE), S.Array(S.Any)),
+  S.Literal(EFFECT),
+  S.Tuple(S.Literal(EFFECT), S.Array(S.Any)),
+  S.Literal(REF),
+  S.Tuple(S.Literal(REF), S.Any),
+  S.Literal(MEMO),
+  S.Tuple(S.Literal(MEMO), S.Array(S.Any)),
+  S.Literal(CONTEXT),
+);
+
+export const Hydrator = S.Struct({
+  src  : S.String,
+  props: S.Record({
+    key  : S.String,
+    value: S.Any,
+  }),
+  state: S.Record({
+    key  : S.String,
+    value: S.Array(Monomer),
+  }),
+});

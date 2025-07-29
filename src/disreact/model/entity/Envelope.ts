@@ -1,7 +1,7 @@
 import * as Progress from '#disreact/model/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import type * as Jsx from '#disreact/runtime/Jsx.tsx';
+import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
@@ -18,12 +18,12 @@ export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Ancestor<Envelope<A>>
 {
-  data?: A;
-  entry: Jsx.Jsx;
-  flags: Set<Element.Element>;
-  curr : Hydrant.Hydrant;
-  next : Hydrant.Hydrant | null;
-  root : Element.Element;
+  data? : A;
+  entry : Jsx.Jsx;
+  flags : Set<Element.Element>;
+  input : Hydrant.Hydrant;
+  target: Hydrant.Hydrant | null;
+  root  : Element.Element;
 
   snapshots: SubscriptionRef.SubscriptionRef<Hydrant.Snapshot>;
   complete : Deferred.Deferred<Hydrant.Snapshot>;
@@ -34,8 +34,8 @@ export interface Envelope<A = any> extends Inspectable.Inspectable,
 const EnvelopePrototype = declareProto<Envelope>({
   data     : undefined as any,
   root     : undefined as any,
-  curr     : undefined as any,
-  next     : null,
+  input    : undefined as any,
+  target   : null,
   flags    : undefined as any,
   parent   : undefined,
   complete : undefined as any,
@@ -77,24 +77,13 @@ export const make = dual<
   effects.pipe(
     Effect.map((self) => {
       self.data = data;
-      self.curr = hydrant;
-      self.next = hydrant;
+      self.input = hydrant;
+      self.target = hydrant;
       self.root = Element.makeRoot(hydrant.entry, self);
       return self as Envelope;
     }),
   ),
 );
-
-export const dispose = (self: Envelope) =>
-  pipe(
-    Deferred.await(self.complete),
-    Effect.map(() => {
-      (self.flags as any) = undefined;
-      (self.root as any) = undefined;
-      (self.data as any) = undefined;
-      return self;
-    }),
-  );
 
 const events = globalValue(Symbol.for('disreact/events'), () => new WeakMap<any, Envelope>());
 
@@ -117,7 +106,7 @@ const EventPrototype = declareProto<Jsx.Event>({
     if (!self) {
       throw new Error('Invalid event handle');
     }
-    self.next = null;
+    self.target = null;
     events.delete(this);
   },
   open(type: any, props: any) {
@@ -132,7 +121,7 @@ const EventPrototype = declareProto<Jsx.Event>({
     if (!Entrypoint.isRegistered(type)) {
       throw new Error('Unregistered source');
     }
-    self.next = Hydrant.unsafeFromRegistry(type, props);
+    self.target = Hydrant.unsafeFromRegistry(type, props);
     events.delete(this);
   },
 });
@@ -188,7 +177,7 @@ export const forkWith = dual<
     Effect.map((forked) => {
       forked._final = self._final;
       forked._stream = self._stream;
-      forked.next = null;
+      forked.target = null;
       forked.parent = self;
       return forked;
     }),
@@ -196,24 +185,24 @@ export const forkWith = dual<
 );
 
 export const fork = (self: Envelope) => Effect.suspend(() => {
-  if (!self.next) {
+  if (!self.target) {
     return Effect.as(
-      self._stream.offer(Progress.change(self.curr.src, 'Exit')),
+      self._stream.offer(Progress.change(self.input.src, 'Exit')),
       self,
     );
   }
-  if (self.next.src === self.curr.src) {
+  if (self.target.src === self.input.src) {
     return Effect.as(
-      self._stream.offer(Progress.change(self.next.src, 'Next')),
+      self._stream.offer(Progress.change(self.target.src, 'Next')),
       self,
     );
   }
-  return self.next.pipe(
+  return self.target.pipe(
     make(self.data),
     Effect.map((forked) => {
       forked._final = self._final;
       forked._stream = self._stream;
-      forked.next = null;
+      forked.target = null;
       forked.parent = self;
       return forked;
     }),
@@ -236,7 +225,7 @@ export const offerPartial = dual<
 >(2, (p, self) =>
   Effect.asVoid(
     self._stream.offer(
-      Progress.partial(self.curr.src, p),
+      Progress.partial(self.input.src, p),
     ),
   ),
 );
@@ -250,7 +239,7 @@ export const offerAllPartial = dual<
   }
   return Effect.asVoid(
     self._stream.offerAll(
-      ps.map((p) => Progress.checkpoint(self.curr.src, p)),
+      ps.map((p) => Progress.checkpoint(self.input.src, p)),
     ),
   );
 });
@@ -261,7 +250,7 @@ export const addSnapshot = dual<
 >(2, (snapshot, self) =>
   pipe(
     self._stream.offer(
-      Progress.checkpoint(self.curr.src, snapshot),
+      Progress.checkpoint(self.input.src, snapshot),
     ),
     Effect.andThen(SubscriptionRef.set(self.snapshots, snapshot)),
     Effect.as(self),
@@ -292,7 +281,7 @@ export const finalizeSnapshot = dual<
     ),
     Effect.andThen(
       self._stream.offerAll([
-        Progress.checkpoint(self.curr.src, snapshot),
+        Progress.checkpoint(self.input.src, snapshot),
         Progress.done(),
       ]),
     ),
@@ -312,3 +301,14 @@ export const streamProgressWith = dual<
 >(2, (f, self) =>
   Effect.void,
 );
+
+export const dispose = (self: Envelope) =>
+  pipe(
+    Deferred.await(self.complete),
+    Effect.map(() => {
+      (self.flags as any) = undefined;
+      (self.root as any) = undefined;
+      (self.data as any) = undefined;
+      return self;
+    }),
+  );

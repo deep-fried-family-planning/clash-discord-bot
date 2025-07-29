@@ -1,4 +1,4 @@
-import * as JsxDefault from '#disreact/adaptor/codec/intrinsic/index.ts';
+import * as JsxDefault from '#disreact/rest/intrinsic/index.ts';
 import {Codec} from '#disreact/model/core/Codec.ts';
 import type * as Patch from '#disreact/model/core/Patch.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
@@ -6,7 +6,7 @@ import type * as Elem from '#disreact/model/entity/Element.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import type * as Jsx from '#disreact/runtime/Jsx.tsx';
+import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
@@ -56,6 +56,7 @@ export const initializeCycle = (env: Envelope.Envelope) =>
         Either.mapLeft(Effect.succeed),
         Either.merge,
         Effect.map(Element.nextChildren),
+        Effect.tap(Envelope.offerAllPartial(env)),
         Effect.map(Stack.pushAllInto(stack)),
       ),
     ),
@@ -67,7 +68,7 @@ export const initializeCycle = (env: Envelope.Envelope) =>
 
 const hydrateElement = (elem: Element.Element) =>
   elem.pipe(
-    Element.hydrate(elem.env.curr),
+    Element.hydrate(elem.env.input),
     acquireGlobalHooks,
     Effect.andThen(Element.render(elem)),
     Effect.ensuring(releaseGlobalHooks),
@@ -221,7 +222,7 @@ export const rerenderCycle = (env: Envelope.Envelope) =>
   );
 
 const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
-  Record.filter(obj, (k, v) => v !== undefined) as A;
+  Record.filter(obj, (v) => v !== undefined) as A;
 
 const primitive = JsxDefault.primitive,
       normalize = JsxDefault.normalization as Record<string, string>,
@@ -252,7 +253,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
   env.root.pipe(
     Stack.make,
     Stack.setState({
-      hydrator: Hydrant.toHydrator(env.curr),
+      hydrator: Hydrant.toHydrator(env.input),
       args    : new WeakMap(),
       outs    : new WeakMap().set(env.root, {}),
     }),
@@ -279,7 +280,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
             encodeIntrinsic(elem, out, {});
             return stack;
           }
-          encodeIntrinsic(elem, out, args.get(elem)!);
+          encodeIntrinsic(elem, out, purgeUndefinedKeys(args.get(elem)!));
           return stack;
         }
         case 'Component': {
@@ -292,77 +293,11 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
       const final = state.outs.get(env.root)!;
       const key = Object.keys(final)[0];
 
-      return Hydrant.toSnapshot(state.hydrator, '', key, final[key][0]);
+      return Hydrant.toSnapshot(state.hydrator, '', key, purgeUndefinedKeys(final[key][0]));
     }),
     Stack.state,
   ),
 );
-
-export const encode123 = (root: Element.Element) => Codec.use(({encodeText, encodeRest}) => {
-  const stack = [root.env.root],
-        final = {} as any,
-        args  = new WeakMap(),
-        outs  = new WeakMap().set(root.env.root, final);
-
-  while (stack.length) {
-    const cur = stack.pop()!,
-          out = outs.get(cur);
-
-    switch (cur._tag) {
-      case Element.TEXT: {
-        if (!cur.text) {
-          continue;
-        }
-        encodeText(cur as Element.Text, out);
-        continue;
-      }
-      case Element.FRAGMENT:
-      case Element.COMPONENT: {
-        if (!cur.children) {
-          continue;
-        }
-        for (const c of cur.children.toReversed()) {
-          outs.set(c, out);
-          stack.push(c);
-        }
-      }
-      case Element.INTRINSIC: {
-        if (args.has(cur)) {
-          encodeRest(cur as Element.Intrinsic, out, args.get(cur)!);
-          continue;
-        }
-        if (!cur.children || cur.children.length === 0) {
-          encodeRest(cur as Element.Intrinsic, out, {});
-          continue;
-        }
-        const arg = {};
-        args.set(cur, arg);
-        stack.push(cur);
-
-        for (const c of cur.children.toReversed()) {
-          outs.set(c, arg);
-          stack.push(cur);
-        }
-      }
-    }
-  }
-  const keys = Object.keys(final);
-
-  if (keys.length === 0) {
-    return null;
-  }
-
-  for (const key of Object.keys(final)) {
-    if (final[key]) {
-      return {
-        _tag   : key,
-        hydrant: {},
-        data   : final[key][0],
-      };
-    }
-  }
-  return null;
-});
 
 export const bootstrapFC = <P, D>(fc: Jsx.FC<P>, props: P, data?: D) =>
   pipe(

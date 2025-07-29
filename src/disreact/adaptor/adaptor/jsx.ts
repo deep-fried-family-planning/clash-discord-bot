@@ -1,5 +1,5 @@
 import * as Element from '#src/disreact/adaptor/adaptor/element.ts';
-import * as proto from '#disreact/core/behaviors/proto.ts';
+import * as proto from '#disreact/model/core/behaviors/proto.ts';
 
 export const Fragment = undefined;
 
