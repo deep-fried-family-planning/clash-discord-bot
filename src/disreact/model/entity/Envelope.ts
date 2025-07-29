@@ -14,19 +14,6 @@ import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
 import * as SubscriptionRef from 'effect/SubscriptionRef';
 
-export interface Hydrator {
-  id: string;
-
-}
-
-export const makeHydrator = () => {
-
-};
-
-export interface Encoded {
-
-}
-
 export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable
 {
@@ -95,8 +82,6 @@ export const make = dual<
     }),
   ),
 );
-
-export const fromHydrator = () => {};
 
 export const dispose = (self: Envelope) =>
   pipe(

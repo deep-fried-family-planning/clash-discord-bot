@@ -294,7 +294,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
       const final = state.outs.get(env.root)!;
       const key = Object.keys(final)[0];
 
-      return Hydrant.snapshot(state.hydrator, '', key, final[key][0]);
+      return Hydrant.toSnapshot(state.hydrator, '', key, final[key][0]);
     }),
     Stack.state,
   ),

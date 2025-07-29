@@ -9,22 +9,34 @@ import * as Option from 'effect/Option';
 import type * as Record from 'effect/Record';
 import * as Lifecycle from '#disreact/model/lifecycle.ts';
 
-export const bootstrapFC = <P, D>(fc: Jsx.FC<P>, props: P, data?: D) =>
+export const bootstrapFC = <P, D>(
+  fc: Jsx.FC<P>,
+  props: P,
+  data?: D,
+) =>
   pipe(
     Hydrant.fromRegistry(fc, props),
     Effect.flatMap(Envelope.make(data)),
     Effect.flatMap(Lifecycle.initializeCycle),
   );
 
-export const bootstrapRoot = <P, D>(root: Jsx.Jsx, data?: D) =>
+export const bootstrapRoot = <D>(
+  root: Jsx.Jsx,
+  data?: D,
+) =>
   pipe(
-    Envelope.make(root.data),
+    Hydrant.fromRegistry(root),
+    Effect.flatMap(Envelope.make(data)),
   );
 
-export const rehydrate = (hydrator: Hydrant.Hydrator) =>
+export const rehydrate = <D>(
+  hydrator: Hydrant.Hydrator,
+  event: Hydrant.Event,
+  data?: D,
+) =>
   pipe(
-
+    Hydrant.fromHydrator(hydrator),
+    Effect.flatMap(Envelope.make(data)),
+    Effect.flatMap(Lifecycle.hydrateCycle),
+    Effect.flatMap((env) => Lifecycle.dispatchCycle(env, event)),
   );
-
-export const render = (hydrator: Hydrant.Hydrator) =>
- pipe();

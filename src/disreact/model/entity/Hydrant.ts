@@ -158,33 +158,24 @@ export const diff = dual<
   ];
 });
 
-export interface Hydrator<A = any, B = any> extends Inspectable.Inspectable, Pipeable.Pipeable {
-  stage  : string;
-  type   : A;
-  payload: B;
-  src    : string | undefined;
-  props  : Record<string, any>;
-  state  : Record<string, Polymer.Encoded>;
+export interface Hydrator extends Inspectable.Inspectable, Pipeable.Pipeable {
+  src  : string | undefined;
+  props: Record<string, any>;
+  state: Record<string, Polymer.Encoded>;
 }
 
 const HydratorProto = declareProto<Hydrator>({
-  stage  : '',
-  type   : undefined,
-  payload: undefined,
-  src    : undefined,
-  props  : undefined as any,
-  state  : undefined as any,
+  src  : undefined,
+  props: undefined as any,
+  state: undefined as any,
   ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
     return {
-      _id    : 'Hydrator',
-      stage  : this.stage,
-      src    : this.src,
-      type   : this.type,
-      payload: this.payload,
-      props  : this.props,
-      state  : this.state,
+      _id  : 'Hydrator',
+      src  : this.src,
+      props: this.props,
+      state: this.state,
     };
   },
 });
@@ -204,24 +195,13 @@ export const toHydrator = (hydrant: Hydrant) => {
 
 export const makeHydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.TrieData) => {
   const self = fromProto(HydratorProto);
-  self.stage = 'Rehydrate';
   self.src = Entrypoint.getId(id);
   self.props = structuredClone(props ?? {});
   self.state = structuredClone(state ?? {});
   return self;
 };
 
-export const pushState = dual<
-  (k: string, v: Polymer.Encoded) => (self: Hydrator) => Hydrator,
-  (self: Hydrator, k: string, v: Polymer.Encoded) => Hydrator
->(3, (self, k, v) => {
-  self.state[k] = v;
-  return self;
-});
-
-export interface Snapshot<A = any, B = any>
-  extends Hydrator
-{
+export interface Snapshot<A = any, B = any> extends Hydrator {
   stage  : string;
   type   : A;
   payload: B;
@@ -244,7 +224,7 @@ const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorProto, {
   },
 });
 
-export const snapshot = dual<
+export const toSnapshot = dual<
   <A, B>(stage: string, type: A, payload: B) => (h: Hydrator) => Snapshot<A, B>,
   <A, B>(h: Hydrator, stage: string, type: A, payload: B) => Snapshot<A, B>
 >(4, (h, stage, type, payload) => {

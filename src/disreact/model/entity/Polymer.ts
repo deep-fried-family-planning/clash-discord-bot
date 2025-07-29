@@ -245,11 +245,9 @@ export interface Polymer extends Inspectable.Inspectable,
   queue    : Updater[];
 }
 
-export const isStateless = (self: Polymer) =>
-  self.stack.length === 0;
+export const isStateless = (self: Polymer) => self.stack.length === 0;
 
-export const isPending = (self: Polymer) =>
-  self.queue.length > 0;
+export const isPending = (self: Polymer) => self.queue.length > 0;
 
 export const isChanged = (self: Polymer) => {
   if (!self.stack.length) {
@@ -306,16 +304,6 @@ export const fromEncoded = (elem: Element.Element, encoded: Encoded): Polymer =>
 
 export const toEncoded = (self: Polymer): Encoded => self.stack.map(dehydrateMono);
 
-export const dispose = (self: Polymer) => {
-  if (self.queue.length) {
-    throw new Error('ope');
-  }
-  (self.origin as any) = undefined;
-  (self.stack as any) = undefined;
-  (self.queue as any) = undefined;
-  return undefined;
-};
-
 export const commit = (self: Polymer): Polymer => {
   self.phase = 'Inactive';
   if (!self.stack.length) {
@@ -335,6 +323,16 @@ export const commit = (self: Polymer): Polymer => {
   return self;
 };
 
+export const dispose = (self: Polymer) => {
+  if (self.queue.length) {
+    throw new Error('ope');
+  }
+  (self.origin as any) = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  return undefined;
+};
+
 export type Encoded = readonly Monomer.Encoded[];
 
 export type TrieData = Record<string, readonly Monomer.Encoded[]>;
@@ -345,26 +343,6 @@ export const hydrate2 = dual<
 >(2, (self, encoded) => {
   self.stack = encoded.map(hydrateMono);
   return self;
-});
-
-export const hydrate = dual<
-  (bundle: TrieData) => (self: Polymer) => Polymer,
-  (self: Polymer, bundle: TrieData) => Polymer
->(2, (self, bundle) => {
-  if (!(self.id in bundle)) {
-    return self;
-  }
-  self.stack = bundle[self.id].map(hydrateMono);
-  delete bundle[self.id];
-  return self;
-});
-
-export const dehydrate = dual<
-  (bundle: TrieData) => (self: Polymer) => TrieData,
-  (self: Polymer, bundle: TrieData) => TrieData
->(2, (self, bundle: TrieData) => {
-  bundle[self.id] = self.stack.map(dehydrateMono);
-  return bundle;
 });
 
 export const hook = <A extends Monomer>(
@@ -389,8 +367,6 @@ export const hook = <A extends Monomer>(
 export type Effector<E = never, R = never> =
   | Effect.Effect<void, E, R>
   | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
-
-
 
 export type Updater =
   | Updater.StateUpdater

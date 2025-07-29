@@ -10,6 +10,7 @@ import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual, flow, identity, pipe} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import type * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -379,187 +380,6 @@ export const connectAllWithin = <A extends Element>(self: A): A => {
 
 export const getRoot = (self: Element): Element => Traversable.getRootAncestor(self);
 
-export const mount = dual<
-  (polymer: Polymer.Polymer) => (self: Element) => Element,
-  (self: Element, polymer: Polymer.Polymer) => Element
->(2, (self, polymer) => {
-  self.polymer = polymer;
-  return self;
-});
-
-export const mountInto = dual<
-  (self: Element) => (polymer: Polymer.Polymer) => Element,
-  (polymer: Polymer.Polymer, self: Element) => Element
->(2, (polymer, self) => {
-  self.polymer = polymer;
-  return self;
-});
-
-export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
-  const self = elem as Component;
-  self.polymer.phase = 'Render';
-  const fc = self.type;
-
-  switch (fc._tag) {
-    case 'Sync': {
-      return Effect.sync(() => fc(self.props) as Jsx.Children);
-    }
-    case 'Async': {
-      return Effect.promise(() => fc(self.props) as Promise<Jsx.Children>);
-    }
-    case 'Effect': {
-      return Effect.suspend(() => fc(self.props) as Effect.Effect<Jsx.Children>);
-    }
-  }
-  return Effect.suspend(() => {
-    const children = fc(self.props);
-
-    if (!children || typeof children !== 'object') {
-      fc._tag = 'Sync';
-      return Effect.succeed(children);
-    }
-    if (Predicate.isPromise(children)) {
-      fc._tag = 'Async';
-      return Effect.promise(() => children);
-    }
-    if (!Effect.isEffect(children)) {
-      fc._tag = 'Sync';
-      return Effect.succeed(children);
-    }
-    fc._tag = 'Effect';
-    return children;
-  });
-};
-
-export const renderWith = dual<
-  (acquire: Effect.Effect<any>, release: Effect.Effect<any>) => (self: Element) => Effect.Effect<Jsx.Children>,
-  (self: Element, acquire: Effect.Effect<any>, release: Effect.Effect<any>) => Effect.Effect<Jsx.Children>
->(3, (self, acquire, release) =>
-  acquire.pipe(
-    Effect.andThen(render(self)),
-    Effect.ensuring(release),
-  ),
-);
-
-const normalizeEffector = (effector: Polymer.Effector) => {
-  if (typeof effector === 'object') {
-    return effector;
-  }
-  if (effector.constructor === ASYNC_CONSTRUCTOR) {
-    return E.promise(() => effector() as Promise<void>);
-  }
-  return E.suspend(() => {
-    const output = effector();
-
-    if (P.isPromise(output)) {
-      return E.promise(() => output);
-    }
-    if (!E.isEffect(output)) {
-      return E.void;
-    }
-    return output;
-  });
-};
-
-export const flushUpdates = (self: Element) => Effect.suspend(() => {
-  return Effect.whileLoop({
-    while: () => false,
-    step : () => {},
-    body : () => Effect.void,
-  });
-});
-
-export const flushEffects = (self: Element) => Effect.suspend(() => {
-  const polymer = self.polymer;
-
-  if (
-    !polymer ||
-    !polymer.effects.length
-  ) {
-    return Effect.void;
-  }
-  polymer.phase = 'Flush';
-
-  return Effect.whileLoop({
-    while: () => false,
-    step : () => {},
-    body : () => Effect.void,
-  });
-});
-
-export const release = (self: Element) => {
-  (self.env as any) = undefined;
-  (self.props as any) = undefined;
-  self.origin = undefined;
-  self.parent = undefined;
-  self.children = undefined;
-
-  if (self.polymer) {
-    (self.polymer as any) = Polymer.dispose(self.polymer);
-  }
-};
-
-export const trigger = dual<
-  (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
-  (self: Element, event: Jsx.Event) => Effect.Effect<void>
->(2, (self, event) =>
-  pipe(
-    self.props[event.type],
-    Option.fromNullable,
-    Effect.flatMap((handler) => {
-      if (handler.constructor === ASYNC_CONSTRUCTOR) {
-        return Effect.promise(() => handler(event));
-      }
-      const output = handler(event);
-
-      if (Predicate.isPromise(output)) {
-        return Effect.promise(() => output);
-      }
-      if (Effect.isEffect(output)) {
-        return output as Effect.Effect<void>;
-      }
-      return Effect.void;
-    }),
-    Effect.orDie,
-    Effect.asVoid,
-  ),
-);
-
-export const encode = dual<
-  (encoding: Jsx.Encoding) => (self: Element) => Element,
-  (self: Element, encoding: Jsx.Encoding) => Element
->(2, (self, that) => {
-  const self_ = unsafeComponent(self);
-  return self_;
-});
-
-export const hydrate = dual<
-  (states: Polymer.TrieData) => (self: Element) => Element,
-  (self: Element, states: Polymer.TrieData) => Element
->(2, (self, states) => {
-  if (self._tag !== 'Component') {
-    return self;
-  }
-  if (!(self.trie in states)) {
-    return self;
-  }
-  const encoded = states[self.trie];
-  self.polymer = Polymer.fromEncoded(self, encoded);
-  delete states[self.trie];
-  return self;
-});
-
-export const dehydrate = dual<
-  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
-  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
->(2, (self, states) => {
-  if (self._tag !== 'Component') {
-    return states;
-  }
-  states[self.trie] = Polymer.toEncoded(self.polymer!);
-  return states;
-});
-
 export const diff = dual<
   (that: Element) => (self: Element) => Patch.Patch<Element>,
   (self: Element, that: Element) => Patch.Patch<Element>
@@ -771,4 +591,186 @@ export const findParent = dual<
     }
   }
   return check;
+});
+
+
+export const mount = dual<
+  (polymer: Polymer.Polymer) => (self: Element) => Element,
+  (self: Element, polymer: Polymer.Polymer) => Element
+>(2, (self, polymer) => {
+  self.polymer = polymer;
+  return self;
+});
+
+export const mountInto = dual<
+  (self: Element) => (polymer: Polymer.Polymer) => Element,
+  (polymer: Polymer.Polymer, self: Element) => Element
+>(2, (polymer, self) => {
+  self.polymer = polymer;
+  return self;
+});
+
+export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
+  const self = elem as Component;
+  self.polymer.phase = 'Render';
+  const fc = self.type;
+
+  switch (fc._tag) {
+    case 'Sync': {
+      return Effect.sync(() => fc(self.props) as Jsx.Children);
+    }
+    case 'Async': {
+      return Effect.promise(() => fc(self.props) as Promise<Jsx.Children>);
+    }
+    case 'Effect': {
+      return Effect.suspend(() => fc(self.props) as Effect.Effect<Jsx.Children>);
+    }
+  }
+  return Effect.suspend(() => {
+    const children = fc(self.props);
+
+    if (!children || typeof children !== 'object') {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
+    if (Predicate.isPromise(children)) {
+      fc._tag = 'Async';
+      return Effect.promise(() => children);
+    }
+    if (!Effect.isEffect(children)) {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
+    fc._tag = 'Effect';
+    return children;
+  });
+};
+
+export const renderWith = dual<
+  (acquire: Effect.Effect<any>, release: Effect.Effect<any>) => (self: Element) => Effect.Effect<Jsx.Children>,
+  (self: Element, acquire: Effect.Effect<any>, release: Effect.Effect<any>) => Effect.Effect<Jsx.Children>
+>(3, (self, acquire, release) =>
+  acquire.pipe(
+    Effect.andThen(render(self)),
+    Effect.ensuring(release),
+  ),
+);
+
+const normalizeEffector = (effector: Polymer.Effector) => {
+  if (typeof effector === 'object') {
+    return effector;
+  }
+  if (effector.constructor === ASYNC_CONSTRUCTOR) {
+    return E.promise(() => effector() as Promise<void>);
+  }
+  return E.suspend(() => {
+    const output = effector();
+
+    if (P.isPromise(output)) {
+      return E.promise(() => output);
+    }
+    if (!E.isEffect(output)) {
+      return E.void;
+    }
+    return output;
+  });
+};
+
+export const flushUpdates = (self: Element) => Effect.suspend(() => {
+  return Effect.whileLoop({
+    while: () => false,
+    step : () => {},
+    body : () => Effect.void,
+  });
+});
+
+export const flushEffects = (self: Element) => Effect.suspend(() => {
+  const polymer = self.polymer;
+
+  if (
+    !polymer ||
+    !polymer.effects.length
+  ) {
+    return Effect.void;
+  }
+  polymer.phase = 'Flush';
+
+  return Effect.whileLoop({
+    while: () => false,
+    step : () => {},
+    body : () => Effect.void,
+  });
+});
+
+export const release = (self: Element) => {
+  (self.env as any) = undefined;
+  (self.props as any) = undefined;
+  self.origin = undefined;
+  self.parent = undefined;
+  self.children = undefined;
+
+  if (self.polymer) {
+    (self.polymer as any) = Polymer.dispose(self.polymer);
+  }
+};
+
+export const trigger = dual<
+  (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
+  (self: Element, event: Jsx.Event) => Effect.Effect<void>
+>(2, (self, event) =>
+  pipe(
+    self.props[event.type],
+    Option.fromNullable,
+    Effect.flatMap((handler) => {
+      if (handler.constructor === ASYNC_CONSTRUCTOR) {
+        return Effect.promise(() => handler(event));
+      }
+      const output = handler(event);
+
+      if (Predicate.isPromise(output)) {
+        return Effect.promise(() => output);
+      }
+      if (Effect.isEffect(output)) {
+        return output as Effect.Effect<void>;
+      }
+      return Effect.void;
+    }),
+    Effect.orDie,
+    Effect.asVoid,
+  ),
+);
+
+export const encode = dual<
+  (encoding: Jsx.Encoding) => (self: Element) => Element,
+  (self: Element, encoding: Jsx.Encoding) => Element
+>(2, (self, that) => {
+  const self_ = unsafeComponent(self);
+  return self_;
+});
+
+export const hydrate = dual<
+  (states: Polymer.TrieData) => (self: Element) => Element,
+  (self: Element, states: Polymer.TrieData) => Element
+>(2, (self, states) => {
+  if (self._tag !== 'Component') {
+    return self;
+  }
+  if (!(self.trie in states)) {
+    return self;
+  }
+  const encoded = states[self.trie];
+  self.polymer = Polymer.fromEncoded(self, encoded);
+  delete states[self.trie];
+  return self;
+});
+
+export const dehydrate = dual<
+  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
+  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
+>(2, (self, states) => {
+  if (self._tag !== 'Component') {
+    return states;
+  }
+  states[self.trie] = Polymer.toEncoded(self.polymer!);
+  return states;
 });
