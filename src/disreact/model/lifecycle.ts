@@ -6,27 +6,28 @@ import type * as Elem from '#disreact/model/entity/Element.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Hooks from '#disreact/model/runtime/Hook.ts';
+import type * as Jsx from '#disreact/runtime/Jsx.tsx';
+import * as Hooks from '#disreact/runtime/Hook.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
-import {flow, pipe} from 'effect/Function';
+import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
 
-const mutex = GlobalValue.globalValue(Symbol.for('disreact/mutex'), () => Effect.unsafeMakeSemaphore(1));
+const mutex = GlobalValue.globalValue(
+  Symbol.for('disreact/mutex'),
+  () => Effect.unsafeMakeSemaphore(1),
+);
 
 const take = mutex.take(1);
 
 const acquireGlobalHooks = (el: Element.Element) =>
-  take.pipe(
-    Effect.map(() => {
-      Hooks.active.polymer = el.polymer;
-      return el;
-    }),
-  );
+  Effect.map(take, () => {
+    Hooks.active.polymer = el.polymer;
+    return el;
+  });
 
 const releaseGlobalHooks = Effect.andThen(
   Effect.sync(() => {
@@ -37,7 +38,7 @@ const releaseGlobalHooks = Effect.andThen(
 
 const initializeElement = (elem: Element.Element) =>
   elem.pipe(
-    Element.mount(Polymer.make(elem)),
+    Element.initialize,
     acquireGlobalHooks,
     Effect.andThen(Element.render(elem)),
     Effect.ensuring(releaseGlobalHooks),
@@ -65,16 +66,12 @@ export const initializeCycle = (env: Envelope.Envelope) =>
   );
 
 const hydrateElement = (elem: Element.Element) =>
-  elem.env.curr.pipe(
-    Hydrant.pullState(elem.trie),
-    Option.map((encoded) => Polymer.make(elem).pipe(Polymer.hydrate2(encoded))),
-    Option.getOrElse(() => Polymer.make(elem)),
-    Element.mountInto(elem),
+  elem.pipe(
+    Element.hydrate(elem.env.curr),
     acquireGlobalHooks,
     Effect.andThen(Element.render(elem)),
     Effect.ensuring(releaseGlobalHooks),
     Effect.map(Element.bindRenderedJsx(elem)),
-    Effect.tap(Element.flushEffects(elem)),
   );
 
 export const hydrateCycle = (env: Envelope.Envelope) =>
@@ -97,7 +94,7 @@ export const hydrateCycle = (env: Envelope.Envelope) =>
     Effect.as(env),
   );
 
-export const dispatchCycle = (env: Envelope.Envelope, event: Hydrant.Event) =>
+export const dispatchCycle = (env: Envelope.Envelope, event: Hydrant.Event) => Effect.suspend(() =>
   env.root.pipe(
     Element.findChild((child) => {
       if (!Element.isIntrinsic(child)) {
@@ -112,7 +109,52 @@ export const dispatchCycle = (env: Envelope.Envelope, event: Hydrant.Event) =>
       Element.trigger(Envelope.bindEvent(env, event)),
     ),
     Effect.as(env),
+  ),
+);
+
+const mountElement = (elem: Element.Element) =>
+  elem.pipe(
+    Element.initialize,
+    acquireGlobalHooks,
+    Effect.andThen(Element.render(elem)),
+    Effect.ensuring(releaseGlobalHooks),
+    Effect.map(Element.bindRenderedJsx(elem)),
+    Effect.tap(Element.flushEffects(elem)),
   );
+
+const mountSubcycle = (root: Element.Element) =>
+  root.pipe(
+    Stack.make,
+    Stack.storePassing((elem, stack) =>
+      elem.pipe(
+        Element.eitherComponent,
+        Either.map(mountElement),
+        Either.mapLeft(Effect.succeed),
+        Either.merge,
+        Effect.map(Element.nextChildren),
+        Effect.map(Stack.pushAllInto(stack)),
+      ),
+    ),
+    Effect.map(Stack.root),
+  );
+
+const unmountSubcycle = (root: Element.Element) => Effect.suspend(() =>
+  root.pipe(
+    Stack.makeWithState(new WeakSet()),
+    Stack.storePassingSync((cur, stack, visited) => {
+      if (visited.has(cur)) {
+        Element.release(cur);
+        return stack;
+      }
+      visited.add(cur);
+      return cur.pipe(
+        Element.nextChildren,
+        Stack.pushAllInto(stack),
+      );
+    }),
+    Effect.succeed,
+  ),
+);
 
 const rerenderElement = (elem: Element.Element) =>
   elem.pipe(
@@ -129,49 +171,6 @@ const rerenderElement = (elem: Element.Element) =>
     Effect.tap(Element.flushEffects(elem)),
   );
 
-const mountElement = (elem: Element.Element) =>
-  elem.pipe(
-    Element.mount(Polymer.make(elem)),
-    acquireGlobalHooks,
-    Effect.andThen(Element.render(elem)),
-    Effect.ensuring(releaseGlobalHooks),
-    Effect.map(Element.bindRenderedJsx(elem)),
-    Effect.tap(Element.flushEffects(elem)),
-  );
-
-const mountCycle = (root: Element.Element) =>
-  root.pipe(
-    Stack.make,
-    Stack.storePassing((elem, stack) =>
-      elem.pipe(
-        Element.eitherComponent,
-        Either.match({
-          onRight: mountElement,
-          onLeft : Effect.succeed,
-        }),
-        Effect.map(Element.nextChildren),
-        Effect.map(Stack.pushAllInto(stack)),
-      ),
-    ),
-  );
-
-const unmountCycle = (root: Element.Element) =>
-  root.pipe(
-    Stack.makeWithState(new WeakSet()),
-    Stack.storePassingSync((cur, stack, visited) => {
-      if (visited.has(cur)) {
-        Element.release(cur);
-        return stack;
-      }
-      visited.add(cur);
-      return cur.pipe(
-        Element.nextChildren,
-        Stack.pushAllInto(stack),
-      );
-    }),
-    Effect.succeed,
-  );
-
 const patchCycle = (root: Patch.Changeset<Element.Element>) =>
   root.pipe(
     Stack.make,
@@ -179,11 +178,11 @@ const patchCycle = (root: Patch.Changeset<Element.Element>) =>
       pipe(
         Effect.forEach(
           changes.mount,
-          mountCycle,
+          mountSubcycle,
         ),
         Effect.tap(Effect.forEach(
           changes.unmount,
-          unmountCycle,
+          unmountSubcycle,
         )),
         Effect.andThen(Effect.forEach(
           changes.render,
@@ -201,9 +200,9 @@ const rerenderSubcycle = (root: Element.Element) =>
       onRight: Array.ensure,
       onLeft : Element.lowerBoundary,
     }),
-    Effect.forEach(rerenderElement, {batching: true}),
+    Effect.forEach(rerenderElement),
     Effect.andThen(
-      Effect.forEach(patchCycle, {batching: true}),
+      Effect.forEach(patchCycle),
     ),
     Effect.as(root.env),
     Effect.tap((env) =>
@@ -219,7 +218,6 @@ export const rerenderCycle = (env: Envelope.Envelope) =>
     Element.lowestCommonAncestor(env.flags),
     Option.getOrElse(() => env.root),
     rerenderSubcycle,
-    Effect.andThen(() => {}),
   );
 
 const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
@@ -365,3 +363,30 @@ export const encode123 = (root: Element.Element) => Codec.use(({encodeText, enco
   }
   return null;
 });
+
+export const bootstrapFC = <P, D>(fc: Jsx.FC<P>, props: P, data?: D) =>
+  pipe(
+    Hydrant.fromRegistry(fc, props),
+    Effect.flatMap(Envelope.make(data)),
+    Effect.flatMap(initializeCycle),
+  );
+
+export const bootstrapJsx = <D>(root: Jsx.Jsx, data?: D) =>
+  pipe(
+    Hydrant.fromRegistry(root),
+    Effect.flatMap(Envelope.make(data)),
+  );
+
+export const rehydrate = <D>(hydrator: Hydrant.Hydrator, event: Hydrant.Event, data?: D) =>
+  pipe(
+    Hydrant.fromHydrator(hydrator),
+    Effect.flatMap(Envelope.make(data)),
+    Effect.tap((env) =>
+      hydrateCycle(env).pipe(
+        Effect.andThen(dispatchCycle(env, event)),
+        Effect.flatMap(() => Effect.void),
+        Effect.fork,
+      ),
+    ),
+  )
+;

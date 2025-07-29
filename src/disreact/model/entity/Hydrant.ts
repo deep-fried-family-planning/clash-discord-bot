@@ -1,8 +1,8 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Progress from '#disreact/model/core/Progress.ts';
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
+import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -13,6 +13,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import type * as Record from 'effect/Record';
+import * as Schema from 'effect/Schema';
 
 export class SourceError extends Data.TaggedError('SourceError')<{
   message: string;
@@ -111,18 +112,6 @@ export const fromHydrator = (hydrator: Hydrator): Effect.Effect<Hydrant, SourceE
   return Effect.succeed(self);
 };
 
-export const pullState = dual<
-  (id: string) => (self: Hydrant) => Option.Option<Polymer.Encoded>,
-  (self: Hydrant, id: string) => Option.Option<Polymer.Encoded>
->(2, (self, id) =>
-  Option.fromNullable(self.state[id]).pipe(
-    Option.tap((v) => {
-      delete self.state[id];
-      return Option.some(v);
-    }),
-  ),
-);
-
 export const hasStates = (self: Hydrant) => Object.keys(self.state).length > 0;
 
 export type HydrantPatch = | Patch.Skip<Hydrant>
@@ -193,13 +182,19 @@ export const toHydrator = (hydrant: Hydrant) => {
   return self;
 };
 
-export const makeHydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.TrieData) => {
+export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.TrieData) => {
   const self = fromProto(HydratorProto);
   self.src = Entrypoint.getId(id);
   self.props = structuredClone(props ?? {});
   self.state = structuredClone(state ?? {});
   return self;
 };
+
+export const HydratorSchema = Schema.Struct({
+  src  : Schema.String,
+  props: Schema.Any,
+  state: Schema.Any,
+});
 
 export interface Snapshot<A = any, B = any> extends Hydrator {
   stage  : string;

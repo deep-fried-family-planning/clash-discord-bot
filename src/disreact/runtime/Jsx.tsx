@@ -96,10 +96,6 @@ export type Child = | Value
 export type Children = | Child
                        | Child[];
 
-export const isFalsy = (u: unknown): u is Value => !u;
-
-export const isValue = (u: unknown): u is Value => u == null || typeof u !== 'object';
-
 export const isJsx = (u: unknown): u is Jsx =>
   u != null &&
   typeof u === 'object' &&

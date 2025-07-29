@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import * as Jsx from '#disreact/runtime/Jsx.tsx';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 
 const json = (actual: any) => JSON.stringify(actual, null, 2);
@@ -30,7 +30,6 @@ it('when transpiling fragment', () => {
   expect(json(jsx)).toMatchInlineSnapshot(`
     "{
       "_id": "Jsx",
-      "key": "key",
       "type": "Fragment",
       "props": {},
       "children": "jsx"
@@ -68,12 +67,6 @@ it('when transpiling function component', () => {
   expect(json(jsx)).toMatchInlineSnapshot(`
     "{
       "_id": "Jsx",
-      "type": {
-        "_id": "FunctionComponent",
-        "name": "Anonymous",
-        "props": false,
-        "state": true
-      },
       "props": {}
     }"
   `);
@@ -107,15 +100,7 @@ describe('given TestDialog', () => {
         "children": undefined,
         "key": undefined,
         "props": {},
-        "type": {
-          "_id": "FunctionComponent",
-          "_tag": undefined,
-          "displayName": undefined,
-          "entrypoint": undefined,
-          "name": undefined,
-          "props": false,
-          "state": true,
-        },
+        "type": [Function],
       }
     `);
   });

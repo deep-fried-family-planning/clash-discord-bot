@@ -1,5 +1,5 @@
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/runtime/Jsx.tsx';
 import {pipe} from 'effect/Function';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
@@ -37,6 +37,12 @@ export const rehydrate = <D>(
   pipe(
     Hydrant.fromHydrator(hydrator),
     Effect.flatMap(Envelope.make(data)),
-    Effect.flatMap(Lifecycle.hydrateCycle),
-    Effect.flatMap((env) => Lifecycle.dispatchCycle(env, event)),
+    Effect.tap((env) =>
+      pipe(
+        Lifecycle.hydrateCycle(env),
+        Effect.andThen(Lifecycle.dispatchCycle(env, event)),
+
+        Effect.fork,
+      ),
+    ),
   );

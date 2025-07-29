@@ -1,11 +1,15 @@
-/* eslint-disable no-case-declarations */
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
 import type * as Effect from 'effect/Effect';
-import {dual} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
+import * as MutableRef from 'effect/MutableRef';
 import * as Pipeable from 'effect/Pipeable';
 import * as PrimaryKey from 'effect/PrimaryKey';
+
+export type Effector<E = never, R = never> =
+  | Effect.Effect<void, E, R>
+  | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
 
 export const
   STATE   = 1 as const,
@@ -242,28 +246,12 @@ export interface Polymer extends Inspectable.Inspectable,
   stack    : Monomer[];
   fc?      : Element.FC;
   signature: Monomer.Signature;
-  queue    : Updater[];
+  queue    : any[];
 }
 
-export const isStateless = (self: Polymer) => self.stack.length === 0;
+export type Encoded = readonly Monomer.Encoded[];
 
-export const isPending = (self: Polymer) => self.queue.length > 0;
-
-export const isChanged = (self: Polymer) => {
-  if (!self.stack.length) {
-    return false;
-  }
-  for (let i = 0; i < self.stack.length; i++) {
-    const monomer = self.stack[i];
-
-    if (monomer._tag === STATE) {
-      if (monomer.changed) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
+export type TrieData = Record<string, readonly Monomer.Encoded[]>;
 
 const PolymerProto: Polymer = {
   pc   : 0,
@@ -333,17 +321,30 @@ export const dispose = (self: Polymer) => {
   return undefined;
 };
 
-export type Encoded = readonly Monomer.Encoded[];
+export const isStateless = (self: Polymer) => self.stack.length === 0;
 
-export type TrieData = Record<string, readonly Monomer.Encoded[]>;
+export const isPending = (self: Polymer) => self.queue.length > 0;
 
-export const hydrate2 = dual<
-  (encoded: Encoded) => (self: Polymer) => Polymer,
-  (self: Polymer, encoded: Encoded) => Polymer
->(2, (self, encoded) => {
-  self.stack = encoded.map(hydrateMono);
-  return self;
-});
+export const isChanged = (self: Polymer) => {
+  if (!self.stack.length) {
+    return false;
+  }
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+
+    if (monomer._tag === STATE) {
+      if (monomer.changed) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const current = globalValue(
+  Symbol.for('disreact/current'),
+  () => MutableRef.make(undefined as undefined | Polymer),
+);
 
 export const hook = <A extends Monomer>(
   self: Polymer,
@@ -362,54 +363,4 @@ export const hook = <A extends Monomer>(
     return monomer as A;
   }
   throw new Error('Hooks must be called in the same order as they are defined.');
-};
-
-export type Effector<E = never, R = never> =
-  | Effect.Effect<void, E, R>
-  | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
-
-export type Updater =
-  | Updater.StateUpdater
-  | Updater.EffectUpdater;
-
-export namespace Updater {
-  export interface StateUpdater {
-    _tag   : 'State';
-    monomer: Monomer.State;
-    action(): void;
-  };
-  export interface EffectUpdater {
-    _tag   : 'Effect';
-    monomer: Monomer.Effect;
-  };
-}
-
-const UpdaterProto: Updater = {
-  _tag   : undefined as any,
-  monomer: undefined as any,
-  action : undefined as any,
-};
-
-const StateUpdaterProto: Updater.StateUpdater = Object.assign(Object.create(UpdaterProto), {
-  _tag: 'State',
-});
-
-const EffectUpdaterProto: Updater.EffectUpdater = Object.assign(Object.create(UpdaterProto), {
-  _tag: 'Effect',
-});
-
-export const updater = (
-  monomer: | Monomer.State
-           | Monomer.Effect,
-) => {
-  switch (monomer._tag) {
-    case STATE:
-      const state = Object.create(StateUpdaterProto) as Updater.StateUpdater;
-      state.monomer = monomer;
-      return state;
-    case EFFECT:
-      const effect = Object.create(EffectUpdaterProto) as Updater.EffectUpdater;
-      effect.monomer = monomer;
-      return effect;
-  }
 };

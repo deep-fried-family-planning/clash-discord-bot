@@ -1,4 +1,4 @@
-import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as MutableRef from 'effect/MutableRef';
 
 export class HookError extends Error {
@@ -12,18 +12,19 @@ export const active = {
 };
 
 export const UseInteraction = (self?: Polymer.Polymer) => () => {
-  return self!.origin.env.data;
+  return self?.origin?.env.data;
+};
+
+export const UseReducer = (self?: Polymer.Polymer) => (reducer: any, initial: any) => {
+  return [initial, () => {}];
 };
 
 export const UseState = (self?: Polymer.Polymer) => (initial: any) => {
-  const polymer = Polymer.assert(self);
-
-
   return [initial, () => {}];
 };
 
 export const UseEffect = (self?: Polymer.Polymer) => (effect: any, deps?: any[]) => {
-  const polymer = Polymer.assert(self);
+
 };
 
 export const UseRef = (self?: Polymer.Polymer) => (initial: any) => {
