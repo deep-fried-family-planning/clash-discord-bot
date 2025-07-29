@@ -7,7 +7,7 @@ import {TestMessage} from '#unit/components/test-message.tsx';
 import * as E from 'effect/Effect';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import * as Entrypoint from '#src/disreact/runtime/Entrypoint.ts';
+import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import * as lifecycle from '#src/disreact/model/lifecycle.ts';
 import {it} from '@effect/vitest';
 

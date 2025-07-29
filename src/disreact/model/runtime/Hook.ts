@@ -1,6 +1,14 @@
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import * as MutableRef from 'effect/MutableRef';
 
+export interface Hook {
+  pc   : number;
+  rc   : number;
+  stack: any[];
+  queue: any[];
+  flag : () => void;
+}
+
 export class HookError extends Error {
   _tag = 'HookError' as const;
 }

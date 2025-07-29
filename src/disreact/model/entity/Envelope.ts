@@ -2,7 +2,7 @@ import * as Progress from '#disreact/model/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
-import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
+import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';

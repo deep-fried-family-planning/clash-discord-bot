@@ -1,4 +1,5 @@
 import * as Patch from '#disreact/model/core/Patch.ts';
+import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import type * as Hydrant from '#disreact/model/entity/Hydrant.ts';
@@ -759,6 +760,14 @@ export const encode = dual<
 >(2, (self, that) => {
   const self_ = unsafeComponent(self);
   return self_;
+});
+
+export const encodeAll = dual<
+  (encoding: Jsx.Encoding) => (self: Element) => any,
+  (self: Element, encoding: Jsx.Encoding) => any
+>(2, (self, encoding) => {
+  const final = {};
+  return final;
 });
 
 export const release = (self: Element) => {
