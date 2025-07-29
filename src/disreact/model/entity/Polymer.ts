@@ -6,172 +6,6 @@ import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 import * as PrimaryKey from 'effect/PrimaryKey';
-import type * as Record from 'effect/Record';
-
-type MTag = Monomer['_tag'];
-type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
-
-export interface Hook {
-  stage  : 'Init' | 'Hydrate' | 'Rerender' | 'Dispatch';
-  phase  : 'Render' | 'Flush' | 'Inactive';
-  pc     : number;
-  stack  : Monomer[];
-  effects: Monomer.Effect[];
-  updates: (() => void)[];
-  flag(): void;
-}
-
-export interface Polymer extends Inspectable.Inspectable,
-  Pipeable.Pipeable,
-  Traversable.Origin<Element.Element>,
-  Hook
-{
-  type     : any;
-  id       : string;
-  pc       : number;
-  rc       : number;
-  stack    : Monomer[];
-  fc?      : Element.FC;
-  signature: Monomer.Signature;
-  queue    : Updater[];
-}
-
-export const isStateless = (self: Polymer) =>
-  self.stack.length === 0;
-
-export const isPending = (self: Polymer) =>
-  self.queue.length > 0;
-
-export const isChanged = (self: Polymer) => {
-  if (!self.stack.length) {
-    return false;
-  }
-  for (let i = 0; i < self.stack.length; i++) {
-    const monomer = self.stack[i];
-
-    if (monomer._tag === STATE) {
-      if (monomer.changed) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-const PolymerProto: Polymer = {
-  pc   : 0,
-  rc   : 0,
-  stack: undefined as any,
-  queue: undefined as any,
-  flag() {
-    this.origin!.env.flags.add(this.origin!);
-  },
-  ...Pipeable.Prototype,
-  ...Inspectable.BaseProto,
-  toJSON() {
-    return {
-      _id  : 'Polymer',
-      pc   : this.pc,
-      rc   : this.rc,
-      stack: this.stack,
-      queue: this.queue,
-    };
-  },
-} as Polymer;
-
-export const make = (elem: Element.Element): Polymer => {
-  const self = Object.create(PolymerProto) as Polymer;
-  self.id = PrimaryKey.value(elem);
-  self.origin = elem;
-  self.signature = [];
-  self.stack = [];
-  self.queue = [];
-  return self;
-};
-
-export const dispose = (self: Polymer) => {
-  if (self.queue.length) {
-    throw new Error('ope');
-  }
-  (self.origin as any) = undefined;
-  (self.stack as any) = undefined;
-  (self.queue as any) = undefined;
-  return undefined;
-};
-
-export const commit = (self: Polymer): Polymer => {
-  self.phase = 'Inactive';
-  if (!self.stack.length) {
-    self.origin!.type._state = false;
-    return self;
-  }
-  for (let i = 0; i < self.stack.length; i++) {
-    const monomer = self.stack[i];
-
-    if (monomer._tag === STATE) {
-      monomer.changed = false;
-    }
-  }
-  self.pc = 0;
-  self.rc++;
-  // todo update signature
-  return self;
-};
-
-export type Encoded = readonly Monomer.Encoded[];
-
-export type TrieData = Record<string, readonly Monomer.Encoded[]>;
-
-export const hydrate2 = dual<
-  (encoded: Encoded) => (self: Polymer) => Polymer,
-  (self: Polymer, encoded: Encoded) => Polymer
->(2, (self, encoded) => {
-  self.stack = encoded.map(hydrateMono);
-  return self;
-});
-
-export const hydrate = dual<
-  (bundle: TrieData) => (self: Polymer) => Polymer,
-  (self: Polymer, bundle: TrieData) => Polymer
->(2, (self, bundle) => {
-  if (!(self.id in bundle)) {
-    return self;
-  }
-  self.stack = bundle[self.id].map(hydrateMono);
-  delete bundle[self.id];
-  return self;
-});
-
-export const dehydrate = dual<
-  (bundle: TrieData) => (self: Polymer) => TrieData,
-  (self: Polymer, bundle: TrieData) => TrieData
->(2, (self, bundle: TrieData) => {
-  bundle[self.id] = self.stack.map(dehydrateMono);
-  return bundle;
-});
-
-export const hook = <A extends Monomer>(
-  self: Polymer,
-  tag: A['_tag'],
-  lazy: () => A,
-): A => {
-  const monomer = self.stack[self.pc];
-
-  if (!monomer) {
-    const next = lazy();
-    self.stack.push(next);
-    self.pc++;
-    return next;
-  }
-  if (monomer._tag === tag) {
-    return monomer as A;
-  }
-  throw new Error('Hooks must be called in the same order as they are defined.');
-};
-
-export type Effector<E = never, R = never> =
-  | Effect.Effect<void, E, R>
-  | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
 
 export const
   STATE   = 1 as const,
@@ -382,6 +216,181 @@ const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
     }
   }
 };
+
+type MTag = Monomer['_tag'];
+type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
+
+export interface Hook {
+  stage  : 'Init' | 'Hydrate' | 'Rerender' | 'Dispatch';
+  phase  : 'Render' | 'Flush' | 'Inactive';
+  pc     : number;
+  stack  : Monomer[];
+  effects: Monomer.Effect[];
+  updates: (() => void)[];
+  flag(): void;
+}
+
+export interface Polymer extends Inspectable.Inspectable,
+  Pipeable.Pipeable,
+  Traversable.Origin<Element.Element>,
+  Hook
+{
+  type     : any;
+  id       : string;
+  pc       : number;
+  rc       : number;
+  stack    : Monomer[];
+  fc?      : Element.FC;
+  signature: Monomer.Signature;
+  queue    : Updater[];
+}
+
+export const isStateless = (self: Polymer) =>
+  self.stack.length === 0;
+
+export const isPending = (self: Polymer) =>
+  self.queue.length > 0;
+
+export const isChanged = (self: Polymer) => {
+  if (!self.stack.length) {
+    return false;
+  }
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+
+    if (monomer._tag === STATE) {
+      if (monomer.changed) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+const PolymerProto: Polymer = {
+  pc   : 0,
+  rc   : 0,
+  stack: undefined as any,
+  queue: undefined as any,
+  flag() {
+    this.origin!.env.flags.add(this.origin!);
+  },
+  ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
+  toJSON() {
+    return {
+      _id  : 'Polymer',
+      pc   : this.pc,
+      rc   : this.rc,
+      stack: this.stack,
+      queue: this.queue,
+    };
+  },
+} as Polymer;
+
+export const make = (elem: Element.Element): Polymer => {
+  const self = Object.create(PolymerProto) as Polymer;
+  self.id = PrimaryKey.value(elem);
+  self.origin = elem;
+  self.signature = [];
+  self.stack = [];
+  self.queue = [];
+  return self;
+};
+
+export const fromEncoded = (elem: Element.Element, encoded: Encoded): Polymer => {
+  const self = make(elem);
+  self.stack = encoded.map(hydrateMono);
+  return self;
+};
+
+export const toEncoded = (self: Polymer): Encoded => self.stack.map(dehydrateMono);
+
+export const dispose = (self: Polymer) => {
+  if (self.queue.length) {
+    throw new Error('ope');
+  }
+  (self.origin as any) = undefined;
+  (self.stack as any) = undefined;
+  (self.queue as any) = undefined;
+  return undefined;
+};
+
+export const commit = (self: Polymer): Polymer => {
+  self.phase = 'Inactive';
+  if (!self.stack.length) {
+    self.origin!.type._state = false;
+    return self;
+  }
+  for (let i = 0; i < self.stack.length; i++) {
+    const monomer = self.stack[i];
+
+    if (monomer._tag === STATE) {
+      monomer.changed = false;
+    }
+  }
+  self.pc = 0;
+  self.rc++;
+  // todo update signature
+  return self;
+};
+
+export type Encoded = readonly Monomer.Encoded[];
+
+export type TrieData = Record<string, readonly Monomer.Encoded[]>;
+
+export const hydrate2 = dual<
+  (encoded: Encoded) => (self: Polymer) => Polymer,
+  (self: Polymer, encoded: Encoded) => Polymer
+>(2, (self, encoded) => {
+  self.stack = encoded.map(hydrateMono);
+  return self;
+});
+
+export const hydrate = dual<
+  (bundle: TrieData) => (self: Polymer) => Polymer,
+  (self: Polymer, bundle: TrieData) => Polymer
+>(2, (self, bundle) => {
+  if (!(self.id in bundle)) {
+    return self;
+  }
+  self.stack = bundle[self.id].map(hydrateMono);
+  delete bundle[self.id];
+  return self;
+});
+
+export const dehydrate = dual<
+  (bundle: TrieData) => (self: Polymer) => TrieData,
+  (self: Polymer, bundle: TrieData) => TrieData
+>(2, (self, bundle: TrieData) => {
+  bundle[self.id] = self.stack.map(dehydrateMono);
+  return bundle;
+});
+
+export const hook = <A extends Monomer>(
+  self: Polymer,
+  tag: A['_tag'],
+  lazy: () => A,
+): A => {
+  const monomer = self.stack[self.pc];
+
+  if (!monomer) {
+    const next = lazy();
+    self.stack.push(next);
+    self.pc++;
+    return next;
+  }
+  if (monomer._tag === tag) {
+    return monomer as A;
+  }
+  throw new Error('Hooks must be called in the same order as they are defined.');
+};
+
+export type Effector<E = never, R = never> =
+  | Effect.Effect<void, E, R>
+  | (<E2 = E, R2 = R>() => void | Promise<void> | Effect.Effect<void, E2, R2>);
+
+
 
 export type Updater =
   | Updater.StateUpdater

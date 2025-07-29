@@ -1,6 +1,6 @@
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
-import type * as Pipeable from 'effect/Pipeable';
+import * as Pipeable from 'effect/Pipeable';
 
 export type Patch<A> =
   | Skip<A>

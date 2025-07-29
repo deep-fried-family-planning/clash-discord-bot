@@ -2,7 +2,7 @@ import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Progress from '#disreact/model/core/Progress.ts';
 import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
+import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -135,15 +135,27 @@ export const diff = dual<
   (self: Hydrant, that: Option.Option<Hydrant>) => readonly [HydrantPatch, Progress.Change]
 >(2, (self, opt) => {
   if (Option.isNone(opt)) {
-    return [Patch.remove(self), Progress.change(self.src!, 'Exit')];
+    return [
+      Patch.remove(self),
+      Progress.change(self.src!, 'Exit'),
+    ];
   }
   if (Equal.equals(self, opt.value)) {
-    return [Patch.skip(self), Progress.change(self.src!, 'Same')];
+    return [
+      Patch.skip(self),
+      Progress.change(self.src!, 'Same'),
+    ];
   }
   if (self.src === opt.value.src) {
-    return [Patch.update(self, opt.value), Progress.change(self.src!, 'Same')];
+    return [
+      Patch.update(self, opt.value),
+      Progress.change(self.src!, 'Same'),
+    ];
   }
-  return [Patch.replace(self, opt.value), Progress.change(self.src!, 'Next')];
+  return [
+    Patch.replace(self, opt.value),
+    Progress.change(self.src!, 'Next'),
+  ];
 });
 
 export interface Hydrator<A = any, B = any> extends Inspectable.Inspectable, Pipeable.Pipeable {

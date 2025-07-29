@@ -7,7 +7,7 @@ import * as Element from '#disreact/model/entity/Element.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
-import * as Hooks from '#disreact/runtime/Hook.ts';
+import * as Hooks from '#disreact/model/runtime/Hook.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -50,7 +50,7 @@ export const initializeCycle = (env: Envelope.Envelope) =>
     Stack.make,
     Stack.storePassing((elem, stack) =>
       elem.pipe(
-        Element.either,
+        Element.eitherComponent,
         Either.map(initializeElement),
         Either.mapLeft(Effect.succeed),
         Either.merge,
@@ -82,7 +82,7 @@ export const hydrateCycle = (env: Envelope.Envelope) =>
     Stack.make,
     Stack.storePassing((elem, stack) =>
       elem.pipe(
-        Element.either,
+        Element.eitherComponent,
         Either.map(hydrateElement),
         Either.mapLeft(Effect.succeed),
         Either.merge,
@@ -144,7 +144,7 @@ const mountCycle = (root: Element.Element) =>
     Stack.make,
     Stack.storePassing((elem, stack) =>
       elem.pipe(
-        Element.either,
+        Element.eitherComponent,
         Either.match({
           onRight: mountElement,
           onLeft : Effect.succeed,
@@ -196,7 +196,7 @@ const patchCycle = (root: Patch.Changeset<Element.Element>) =>
 
 const rerenderSubcycle = (root: Element.Element) =>
   root.pipe(
-    Element.either,
+    Element.eitherComponent,
     Either.match({
       onRight: Array.ensure,
       onLeft : Element.lowerBoundary,
@@ -219,9 +219,11 @@ export const rerenderCycle = (env: Envelope.Envelope) =>
     Element.lowestCommonAncestor(env.flags),
     Option.getOrElse(() => env.root),
     rerenderSubcycle,
+    Effect.andThen(() => {}),
   );
 
-const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A => Record.filter(obj, (k, v) => v !== undefined) as A;
+const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
+  Record.filter(obj, (k, v) => v !== undefined) as A;
 
 const primitive = JsxDefault.primitive,
       normalize = JsxDefault.normalization as Record<string, string>,
@@ -363,29 +365,3 @@ export const encode123 = (root: Element.Element) => Codec.use(({encodeText, enco
   }
   return null;
 });
-
-const mount = (start: Element.Element) =>
-  pipe(
-    Effect.iterate(Stack.make(start), {
-      while: Stack.condition,
-      body : (stack) =>
-        stack.pipe(
-          Stack.pop,
-          Element.either,
-          Either.map(mountElement),
-          Either.mapLeft(Effect.succeed),
-          Either.merge,
-          Effect.map(flow(
-            Element.nextChildren,
-            Stack.pushAllInto(stack),
-            Stack.iterateSyncWhile((el) => {
-              if (Element.isComponent(el)) {
-                return Option.none();
-              }
-              return Option.some(el.children);
-            }),
-          )),
-        ),
-    }),
-    Effect.as(start),
-  );

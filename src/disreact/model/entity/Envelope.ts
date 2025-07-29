@@ -2,7 +2,7 @@ import * as Progress from '#disreact/model/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
-import * as Entrypoint from '#disreact/runtime/Entrypoint.ts';
+import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
@@ -14,14 +14,28 @@ import * as Option from 'effect/Option';
 import type * as Pipeable from 'effect/Pipeable';
 import * as SubscriptionRef from 'effect/SubscriptionRef';
 
+export interface Hydrator {
+  id: string;
+
+}
+
+export const makeHydrator = () => {
+
+};
+
+export interface Encoded {
+
+}
+
 export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable
 {
   data?: A;
+  entry: Jsx.Jsx;
+  flags: Set<Element.Element>;
   curr : Hydrant.Hydrant;
   next : Option.Option<Hydrant.Hydrant>;
   root : Element.Element;
-  flags: Set<Element.Element>;
 
   snapshots: SubscriptionRef.SubscriptionRef<Hydrant.Snapshot>;
   complete : Deferred.Deferred<Hydrant.Snapshot>;
@@ -82,6 +96,8 @@ export const make = dual<
   ),
 );
 
+export const fromHydrator = () => {};
+
 export const dispose = (self: Envelope) =>
   pipe(
     Deferred.await(self.complete),
@@ -115,13 +131,7 @@ export const completeSnapshot = dual<
       self.complete,
       snapshot,
     ),
-    Effect.andThen(
-      self._stream.offer(
-        Progress.checkpoint(self.curr.src, snapshot),
-      ),
-    ),
-    Effect.andThen(SubscriptionRef.set(self.snapshots, snapshot)),
-    Effect.as(self),
+    Effect.andThen(addSnapshot(snapshot, self)),
   ),
 );
 

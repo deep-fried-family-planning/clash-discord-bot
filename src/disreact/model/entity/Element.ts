@@ -139,7 +139,7 @@ export const isIntrinsic = (u: Element): u is Intrinsic => u._tag === INTRINSIC;
 
 export const isComponent = (u: Element): u is Component => u._tag === COMPONENT;
 
-export const either = Either.liftPredicate(isComponent, identity);
+export const eitherComponent = Either.liftPredicate(isComponent, identity);
 
 export const unsafeComponent = flow(
   Option.liftPredicate(isComponent),
@@ -377,6 +377,8 @@ export const connectAllWithin = <A extends Element>(self: A): A => {
   return self;
 };
 
+export const getRoot = (self: Element): Element => Traversable.getRootAncestor(self);
+
 export const mount = dual<
   (polymer: Polymer.Polymer) => (self: Element) => Element,
   (self: Element, polymer: Polymer.Polymer) => Element
@@ -531,6 +533,33 @@ export const encode = dual<
   return self_;
 });
 
+export const hydrate = dual<
+  (states: Polymer.TrieData) => (self: Element) => Element,
+  (self: Element, states: Polymer.TrieData) => Element
+>(2, (self, states) => {
+  if (self._tag !== 'Component') {
+    return self;
+  }
+  if (!(self.trie in states)) {
+    return self;
+  }
+  const encoded = states[self.trie];
+  self.polymer = Polymer.fromEncoded(self, encoded);
+  delete states[self.trie];
+  return self;
+});
+
+export const dehydrate = dual<
+  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
+  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
+>(2, (self, states) => {
+  if (self._tag !== 'Component') {
+    return states;
+  }
+  states[self.trie] = Polymer.toEncoded(self.polymer!);
+  return states;
+});
+
 export const diff = dual<
   (that: Element) => (self: Element) => Patch.Patch<Element>,
   (self: Element, that: Element) => Patch.Patch<Element>
@@ -564,26 +593,34 @@ export const diffs = dual<
     if (!rs || rs.length === 0) {
       return undefined;
     }
-    return rs.map(Patch.add);
+    const patches = Array(rs.length) as Patch.Patch<Element>[];
+    for (let i = 0; i < rs.length; i++) {
+      patches[i] = Patch.add(rs[i]);
+    }
+    return patches;
   }
   if (!rs || rs.length === 0) {
-    return cs.map(Patch.remove);
+    const patches = Array(cs.length) as Patch.Patch<Element>[];
+    for (let i = 0; i < cs.length; i++) {
+      patches[i] = Patch.remove(cs[i]);
+    }
+    return patches;
   }
   const length = Math.max(cs.length, rs.length);
-  const patches = [] as Patch.Patch<Element>[];
+  const patches = Array(length) as Patch.Patch<Element>[];
 
   for (let i = 0; i < length; i++) {
     const s = cs[i];
     const t = rs[i];
 
     if (!s && t) {
-      patches.push(Patch.add(t));
+      patches[i] = Patch.add(t);
     }
     else if (!t) {
-      patches.push(Patch.remove(s));
+      patches[i] = Patch.remove(s);
     }
     else {
-      patches.push(diff(s, t));
+      patches[i] = diff(s, t);
     }
   }
   return patches;
