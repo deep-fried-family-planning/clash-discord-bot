@@ -1,13 +1,12 @@
-import * as JsxDefault from '#disreact/rest/intrinsic/index.ts';
-import {Codec} from '#disreact/model/internal/core/Codec.ts';
 import type * as Patch from '#disreact/model/internal/core/Patch.ts';
 import * as Stack from '#disreact/model/internal/core/Stack.ts';
 import type * as Elem from '#disreact/model/internal/Element.ts';
 import * as Element from '#disreact/model/internal/Element.ts';
 import * as Envelope from '#disreact/model/internal/Envelope.ts';
+import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
-import * as Hooks from '#disreact/model/runtime/Hooks.ts';
+import * as JsxDefault from '#disreact/rest/schema/intrinsic/index.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
@@ -64,9 +63,7 @@ export const initializeCycle = (env: Envelope.Envelope) =>
         // ),
         Effect.tap((elem) =>
           env.progress.offerAll(
-            elem.pipe(
-            Element.toPhaseChildren('Initialized'),
-          ),
+            elem.pipe(Element.toPhaseChildren('Initialize')),
           ),
         ),
         Effect.map(Element.nextChildren),
@@ -299,7 +296,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
       const final = state.outs.get(env.root)!;
       const key = Object.keys(final)[0];
 
-      return Hydrant.toSnapshot(state.hydrator,  key, purgeUndefinedKeys(final[key][0]));
+      return Hydrant.toSnapshot(state.hydrator, key, purgeUndefinedKeys(final[key][0]));
     }),
     Stack.state,
   ),

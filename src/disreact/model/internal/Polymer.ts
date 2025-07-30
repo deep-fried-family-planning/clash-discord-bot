@@ -353,10 +353,9 @@ export const isChanged = (self: Polymer) => {
   return false;
 };
 
-export const current = globalValue(
-  Symbol.for('disreact/current'),
-  () => MutableRef.make(undefined as undefined | Polymer),
-);
+export const unsafe = globalValue(Symbol.for('disreact/polymer'), () => MutableRef.make(undefined as undefined | Polymer));
+
+export const empty = MutableRef.get(unsafe);
 
 export const hook = <A extends Monomer>(
   self: Polymer,

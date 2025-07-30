@@ -1,5 +1,5 @@
-import * as Markdown from '#disreact/rest/intrinsic/markdown.ts';
-import * as Norm from '#disreact/rest/intrinsic/norm.ts';
+import * as Markdown from '#disreact/rest/schema/intrinsic/markdown.ts';
+import * as Norm from '#disreact/rest/schema/intrinsic/norm.ts';
 import * as Rest from '#disreact/adaptor/codec/rest-element.ts';
 import {Discord} from 'dfx';
 import * as S from 'effect/Schema';

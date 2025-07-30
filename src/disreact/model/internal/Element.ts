@@ -13,8 +13,10 @@ import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
 import {dual, flow, identity, pipe} from 'effect/Function';
+import {globalValue} from 'effect/GlobalValue';
 import type * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
+import * as MutableRef from 'effect/MutableRef';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
 import * as Predicate from 'effect/Predicate';
@@ -663,6 +665,20 @@ export const renderUse = (elem: Element): Effect.Effect<Jsx.Children> => {
     return children;
   });
 };
+
+const mutex = globalValue(Symbol.for('disreact/mutex'), () => Effect.unsafeMakeSemaphore(1));
+
+export const renderGlobal = (elem: Element): Effect.Effect<Jsx.Children> =>
+  mutex.take(1).pipe(
+    Effect.map(() => MutableRef.set(Polymer.unsafe, elem.polymer)),
+    Effect.andThen(render(elem)),
+    Effect.ensuring(
+      Effect.andThen(
+        Effect.sync(() => MutableRef.set(Polymer.unsafe, Polymer.empty)),
+        mutex.release(1),
+      ),
+    ),
+  );
 
 export const renderWith = dual<
   (acquire: Effect.Effect<any>, release: Effect.Effect<any>) => (self: Element) => Effect.Effect<Jsx.Children>,

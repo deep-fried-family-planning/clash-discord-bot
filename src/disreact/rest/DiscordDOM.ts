@@ -1,64 +1,76 @@
 import {DiscordRESTEnv} from '#config/external.ts';
-import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
-import {NodeHttpClient} from '@effect/platform-node';
-import type {HttpClientError} from '@effect/platform/HttpClientError';
+import type * as Doken from '#disreact/rest/internal/Doken.ts';
+import * as NodeHttpClient from '@effect/platform-node/NodeHttpClient';
+import type * as HttpClientError from '@effect/platform/HttpClientError';
 import {Discord, DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';
-import * as E from 'effect/Effect';
-import * as L from 'effect/Layer';
+import type {DiscordRestError, ErrorResponse, RatelimitedResponse} from 'dfx/DiscordREST/Generated';
+import * as Data from 'effect/Data';
+import * as Effect from 'effect/Effect';
+import * as Layer from 'effect/Layer';
 
-export type DiscordDOMService = {
-  createModal : (doken: Doken.Doken, data: any) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  createSource: (doken: Doken.Doken, data: any) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  createUpdate: (doken: Doken.Doken, data: any) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  deferSource : (doken: Doken.Doken, isEphemeral?: boolean) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  deferUpdate : (doken: Doken.Doken) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  deferEdit   : (doken: Doken.Doken, body: any) => E.Effect<Discord.MessageResponse, HttpClientError>;
-  discard     : (doken: Doken.Doken) => E.Effect<Discord.InteractionCallbackResponse, HttpClientError>;
-  dismount    : (doken: Doken.Doken) => E.Effect<void, HttpClientError>;
+export class DiscordDOMError extends Data.TaggedError('DiscordDOMError')<{
+  cause: | HttpClientError.HttpClientError
+         | DiscordRestError<'RatelimitedResponse', RatelimitedResponse>
+         | DiscordRestError<'ErrorResponse', ErrorResponse>;
+}>
+{}
+
+export interface DiscordDOMService {
+  createModal : (doken: Doken.Exposed, data: any) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  createSource: (doken: Doken.Exposed, data: any) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  createUpdate: (doken: Doken.Exposed, data: any) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  deferSource : (doken: Doken.Exposed, isEphemeral?: boolean) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  deferUpdate : (doken: Doken.Exposed) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  deferEdit   : (doken: Doken.Exposed, body: any) => Effect.Effect<Discord.MessageResponse, DiscordDOMError>;
+  discard     : (doken: Doken.Exposed) => Effect.Effect<Discord.InteractionCallbackResponse, DiscordDOMError>;
+  dismount    : (doken: Doken.Exposed) => Effect.Effect<void, DiscordDOMError>;
 };
 
-export class DiscordDOM extends E.Service<DiscordDOM>()('disreact/DisReactDOM', {
-  effect: E.gen(function* () {
+export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactDOM', {
+  effect: Effect.gen(function* () {
     const api = yield* DiscordREST;
 
     return {
-      createModal: (doken: Doken.Doken, data: any) =>
+      createModal: (doken: Doken.Exposed, data: any) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.MODAL,
               data: data,
             },
           },
-        ),
-      createSource: (doken: Doken.Doken, data: any) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      createSource: (doken: Doken.Exposed, data: any) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.CHANNEL_MESSAGE_WITH_SOURCE,
               data: data,
             },
           },
-        ),
-      createUpdate: (doken: Doken.Doken, data: any) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      createUpdate: (doken: Doken.Exposed, data: any) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.UPDATE_MESSAGE,
               data: data,
             },
           },
-        ),
-      deferSource: (doken: Doken.Doken, isEphemeral?: boolean) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      deferSource: (doken: Doken.Exposed, isEphemeral?: boolean) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
@@ -67,54 +79,52 @@ export class DiscordDOM extends E.Service<DiscordDOM>()('disreact/DisReactDOM', 
               },
             },
           },
-        ),
-      deferUpdate: (doken: Doken.Doken) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      deferUpdate: (doken: Doken.Exposed) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.DEFERRED_UPDATE_MESSAGE,
             },
           },
-        ),
-      deferEdit: (doken: Doken.Doken, body: any) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      deferEdit: (doken: Doken.Exposed, body: any) =>
         api.updateOriginalWebhookMessage(
-          doken.app,
-          Doken.value(doken),
+          doken.appId,
+          doken.value,
           {
             payload: body,
           },
-        ),
-      discard: (doken: Doken.Doken) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      discard: (doken: Doken.Exposed) =>
         api.createInteractionResponse(
           doken.id,
-          Doken.value(doken),
+          doken.value,
           {
             payload: {
               type: Discord.InteractionCallbackTypes.UPDATE_MESSAGE,
             },
           },
-        ),
-      dismount: (doken: Doken.Doken) =>
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+
+      dismount: (doken: Doken.Exposed) =>
         api.deleteOriginalWebhookMessage(
-          doken.app,
-          Doken.value(doken),
-        ),
-    };
+          doken.appId,
+          doken.value,
+        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+    } as DiscordDOMService;
   }),
   dependencies: [
     DiscordRESTMemoryLive.pipe(
-      L.provideMerge(NodeHttpClient.layerUndici),
-      L.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
+      Layer.provideMerge(NodeHttpClient.layerUndici),
+      Layer.provideMerge(DiscordConfig.layerConfig(DiscordRESTEnv)),
     ),
   ],
   accessors: true,
-}) {}
-
-export class DiscordJsDisReactDOM extends E.Service<DiscordDOMService>()('disreact/DisReactDOM', {
-  effect: E.sync(() => {
-    return {} as DiscordDOM;
-  }),
-  accessors: true,
-}) {}
+})
+{}

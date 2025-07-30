@@ -1,6 +1,6 @@
 import {Codec} from '#src/disreact/adaptor/codec/Codec.ts';
 import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
-import type {DokenCacheDefect} from '#disreact/rest/DokenCache.ts';
+import type {DokenCacheError} from '#disreact/rest/DokenCache.ts';
 import {DokenCache} from '#disreact/rest/DokenCache.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import type {TimeoutException} from 'effect/Cause';
@@ -32,9 +32,9 @@ export class DokenState extends E.Service<DokenState>()('disreact/DokenState', {
     yield* E.logTrace('latest', latest);
 
     const synced = yield* SynchronizedRef.make<Doken.Doken>(latest);
-    const active = yield* Deferred.make<Doken.Active | undefined, DokenCacheDefect | TimeoutException>();
+    const active = yield* Deferred.make<Doken.Active | undefined, DokenCacheError | TimeoutException>();
     const result = yield* Deferred.make<Doken.Doken>();
-    const timing = yield* FiberHandle.make<void, HttpClientError | DokenDefect | DokenCacheDefect>();
+    const timing = yield* FiberHandle.make<void, HttpClientError | DokenDefect | DokenCacheError>();
 
     if (!serial) {
       yield* pipe(

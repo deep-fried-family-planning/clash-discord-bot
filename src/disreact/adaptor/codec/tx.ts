@@ -1,6 +1,6 @@
 import * as DAPI from '#src/disreact/adaptor/codec/dapi/dapi.ts';
 import * as Doken from '#src/disreact/adaptor/codec/doken.ts';
-import * as Container from '#disreact/rest/intrinsic/container.ts';
+import * as Container from '#disreact/rest/schema/intrinsic/container.ts';
 import * as Params from '#src/disreact/adaptor/codec/params.ts';
 import * as Declarations from '#src/disreact/adaptor/codec/old/declarations.ts';
 import {hole as forbidden} from 'effect/Function';
