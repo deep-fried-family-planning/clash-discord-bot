@@ -1,5 +1,5 @@
-import {noop} from '#disreact/model/internal/core/immutable/constants.ts';
-import * as FC from '#disreact/model/internal/core/internal/fn.ts';
+import {noop} from '#disreact/internal/core/immutable/constants.ts';
+import * as FC from '#disreact/internal/core/internal/fn.ts';
 import * as Hooks from '#disreact/adaptor/model/runtime/hooks.ts';
 import * as Jsx from '#disreact/adaptor/model/runtime/jsx.tsx';
 

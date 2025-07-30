@@ -1,11 +1,11 @@
 import * as JsxDefault from '#disreact/rest/intrinsic/index.ts';
-import {Codec} from '#disreact/model/internal/core/Codec.ts';
-import type * as Patch from '#disreact/model/internal/core/Patch.ts';
-import * as Stack from '#disreact/model/internal/core/Stack.ts';
-import type * as Elem from '#disreact/model/internal/Element.ts';
-import * as Element from '#disreact/model/internal/Element.ts';
-import * as Envelope from '#disreact/model/internal/Envelope.ts';
-import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
+import {Codec} from '#disreact/internal/core/Codec.ts';
+import type * as Patch from '#disreact/internal/core/Patch.ts';
+import * as Stack from '#disreact/internal/core/Stack.ts';
+import type * as Elem from '#disreact/internal/Element.ts';
+import * as Element from '#disreact/internal/Element.ts';
+import * as Envelope from '#disreact/internal/Envelope.ts';
+import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
