@@ -3,9 +3,10 @@ import {MessageAsync} from '#unit/components/message-async.tsx';
 import {MessageEffect} from '#unit/components/message-effect.tsx';
 import {MessageSync} from '#unit/components/message-sync.tsx';
 import {TestMessage} from '#unit/components/test-message.tsx';
+import {Effect} from 'effect';
 // import {it} from '#unit/components/TestRegistry.tsx';
 import * as E from 'effect/Effect';
-import * as Envelope from '#disreact/internal/Envelope.ts';
+import * as Envelope from '#disreact/model/internal/Envelope.ts';
 import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import * as lifecycle from '#disreact/model/lifecycles.ts';
@@ -16,8 +17,7 @@ Entrypoint.register('MessageAsync', MessageAsync);
 Entrypoint.register('MessageEffect', MessageEffect);
 Entrypoint.register('TestMessage', TestMessage);
 
-
-it.effect('when rendering sync', E.fn(function* () {
+const check = E.fn(function* () {
   const hydrant = yield* Hydrant.fromRegistry(MessageSync, {});
   const root = yield* Envelope.make(hydrant, {});
   const init = yield* lifecycle.initializeCycle(root);
@@ -55,6 +55,17 @@ it.effect('when rendering sync', E.fn(function* () {
       ],
     }
   `);
+});
+
+it.effect('when rendering sync', check);
+
+it.effect('when rendering syncs', Effect.fn(function* () {
+  let i = 10000;
+
+  while (i) {
+    i--;
+    yield* check();
+  }
 }));
 
 // it.effect('when rendering async', E.fn(function* () {

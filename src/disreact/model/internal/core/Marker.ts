@@ -1,15 +1,17 @@
 import {declareSubtype, fromProto} from '#disreact/util/proto.ts';
 
 export type Stages =
-  | 'Initialized'
+  | 'Initialize'
   | 'Hydrate'
-  | 'Dispatched'
-  | 'Rerendered';
+  | 'Dispatch'
+  | 'Rerender';
 
 export type Phases =
-  | 'Initialized'
-  | 'Hydrated'
-  | 'Rerendered';
+  | 'Initialize'
+  | 'Hydrate'
+  | 'Render'
+  | 'Mount'
+  | 'Unmount';
 
 export type Changes =
   | 'Same'

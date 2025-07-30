@@ -1,5 +1,5 @@
-import type * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Element from '#disreact/internal/Element.ts';
+import type * as Traversable from '#disreact/model/internal/core/Traversable.ts';
+import type * as Element from '#disreact/model/internal/Element.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import type * as Effect from 'effect/Effect';
 import {dual} from 'effect/Function';

@@ -1,9 +1,9 @@
-import * as Marker from '#disreact/internal/core/Marker.ts';
-import * as Patch from '#disreact/internal/core/Patch.ts';
-import * as Stack from '#disreact/internal/core/Stack.ts';
-import * as Traversable from '#disreact/internal/core/Traversable.ts';
-import type * as Envelope from '#disreact/internal/Envelope.ts';
-import * as Polymer from '#disreact/internal/Polymer.ts';
+import * as Marker from '#disreact/model/internal/core/Marker.ts';
+import * as Patch from '#disreact/model/internal/core/Patch.ts';
+import * as Stack from '#disreact/model/internal/core/Stack.ts';
+import * as Traversable from '#disreact/model/internal/core/Traversable.ts';
+import type * as Envelope from '#disreact/model/internal/Envelope.ts';
+import * as Polymer from '#disreact/model/internal/Polymer.ts';
 import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
