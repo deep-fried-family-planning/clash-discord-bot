@@ -168,7 +168,7 @@ export const storePassingSync = dual<
   return s;
 });
 
-export const storePassing = dual<
+export const storePassingEffect = dual<
   <A, B, E, R>(f: (a: A, self: Stack<A, B>, state: B) => Effect.Effect<Stack<A, B>, E, R>) => (self: Stack<A, B>) => Effect.Effect<Stack<A, B>, E, R>,
   <A, B, E, R>(self: Stack<A, B>, f: (a: A, self: Stack<A, B>, state: B) => Effect.Effect<Stack<A, B>, E, R>) => Effect.Effect<Stack<A, B>, E, R>
 >(2, (self, f) =>
@@ -207,15 +207,7 @@ export const iterateSyncWhile = dual<
   return self;
 });
 
-export const as = dual<
-  <A, B, C>(c: C) => (self: Stack<A, B>) => C,
-  <A, B, C>(self: Stack<A, B>, c: C) => C
->(2, (self, c) => {
-  dispose(self);
-  return c;
-});
-
-export const iterate = dual<
+export const iterateEffect = dual<
   <A, B, E, R>(f: (a: A, self: Stack<A, B>) => Effect.Effect<A[] | undefined, E, R>) => (self: Stack<A, B>) => Effect.Effect<Stack<A, B>, E, R>,
   <A, B, E, R>(self: Stack<A, B>, f: (a: A, self: Stack<A, B>) => Effect.Effect<A[] | undefined, E, R>) => Effect.Effect<Stack<A, B>, E, R>
 >(2, (self, f) =>
@@ -228,3 +220,16 @@ export const iterate = dual<
       ),
   }),
 );
+
+export const as = dual<
+  <A, B, C>(c: C) => (self: Stack<A, B>) => C,
+  <A, B, C>(self: Stack<A, B>, c: C) => C
+>(2, (self, c) => {
+  dispose(self);
+  return c;
+});
+
+export const use = dual<
+  <A, B, C>(f: (self: Stack<A, B>) => C) => (self: Stack<A, B>) => C,
+  <A, B, C>(self: Stack<A, B>, f: (self: Stack<A, B>) => C) => C
+>(2, (self, f) => f(self));

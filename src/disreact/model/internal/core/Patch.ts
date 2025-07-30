@@ -2,10 +2,10 @@ import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 
-export type Patch<A> =
+export type Patch<A, B = A> =
   | Skip<A>
-  | Update<A>
-  | Replace<A>
+  | Update<A, B>
+  | Replace<A, B>
   | Add<A>
   | Remove<A>;
 
@@ -14,16 +14,16 @@ export interface Skip<A> {
   self: A;
 };
 
-export interface Update<A> {
+export interface Update<A, B = A> {
   _tag: 'Update';
   self: A;
-  that: A;
+  that: B;
 };
 
-export interface Replace<A> {
+export interface Replace<A, B = A> {
   _tag: 'Replace';
   self: A;
-  that: A;
+  that: B;
 };
 
 export interface Add<A> {

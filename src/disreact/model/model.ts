@@ -7,7 +7,7 @@ import * as Effect from 'effect/Effect';
 import * as L from 'effect/Layer';
 import * as Option from 'effect/Option';
 import type * as Record from 'effect/Record';
-import * as Lifecycle from '#disreact/model/lifecycle.ts';
+import * as Lifecycle from '#disreact/model/lifecycles.ts';
 
 export const bootstrapFC = <P, D>(
   fc: Jsx.FC<P>,

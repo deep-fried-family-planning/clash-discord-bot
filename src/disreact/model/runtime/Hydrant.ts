@@ -1,5 +1,5 @@
+import * as Progress from '#disreact/internal/core/Marker.ts';
 import * as Patch from '#disreact/internal/core/Patch.ts';
-import * as Progress from '#disreact/internal/core/Progress.ts';
 import type * as Polymer from '#disreact/internal/Polymer.ts';
 import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/internal/Polymer.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
@@ -8,7 +8,6 @@ import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
 import * as Equal from 'effect/Equal';
-import * as Equivalence from 'effect/Equivalence';
 import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
@@ -51,12 +50,14 @@ const HydrantProto = declareProto<Hydrant>({
 export const make = (entry: Entrypoint.Entrypoint, setup?: any) => {
   if (typeof entry === 'function') {
     const self = fromProto(HydrantProto);
+    self.src = Entrypoint.getId(entry) ?? String(self.entry.type);
     self.props = structuredClone(setup ?? {});
     self.entry = Jsx.component(entry, self.props);
     self.state = {};
     return self;
   }
   const self = fromProto(HydrantProto);
+  self.src = Entrypoint.getId(entry) ?? String(self.entry.type);
   self.props = structuredClone(entry.props);
   self.entry = Jsx.clone(entry);
   self.state = {};
@@ -179,19 +180,16 @@ export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.Bun
 };
 
 export interface Snapshot<A = any, B = any> extends Hydrator {
-  stage  : string;
   type   : A;
   payload: B;
 }
 
 const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorProto, {
-  stage  : '',
   type   : '',
   payload: undefined,
   toJSON() {
     return {
       _id    : 'Snapshot',
-      stage  : this.stage,
       source : this.src,
       type   : this.type,
       payload: this.payload,
@@ -202,11 +200,10 @@ const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorProto, {
 });
 
 export const toSnapshot = dual<
-  <A, B>(stage: string, type: A, payload: B) => (h: Hydrator) => Snapshot<A, B>,
-  <A, B>(h: Hydrator, stage: string, type: A, payload: B) => Snapshot<A, B>
->(4, (h, stage, type, payload) => {
+  <A, B>(type: A, payload: B) => (h: Hydrator) => Snapshot<A, B>,
+  <A, B>(h: Hydrator, type: A, payload: B) => Snapshot<A, B>
+>(3, (h, type, payload) => {
   const self = fromProto(SnapshotProto);
-  self.stage = stage;
   self.type = type;
   self.payload = payload;
   self.src = h.src;

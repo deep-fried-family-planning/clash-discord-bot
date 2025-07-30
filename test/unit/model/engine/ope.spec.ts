@@ -8,7 +8,7 @@ import * as E from 'effect/Effect';
 import * as Envelope from '#disreact/internal/Envelope.ts';
 import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as lifecycle from '#src/disreact/model/lifecycle.ts';
+import * as lifecycle from '#disreact/model/lifecycles.ts';
 import {it} from '@effect/vitest';
 
 Entrypoint.register('MessageSync', MessageSync);
@@ -21,7 +21,8 @@ it.effect('when rendering sync', E.fn(function* () {
   const hydrant = yield* Hydrant.fromRegistry(MessageSync, {});
   const root = yield* Envelope.make(hydrant, {});
   const init = yield* lifecycle.initializeCycle(root);
-  const encoded = yield* lifecycle.encodeCycle(init);
+  const rerendered = yield* lifecycle.rerenderCycle(init);
+  const encoded = yield* lifecycle.encodeCycle(rerendered);
 
   expect(encoded.payload).toMatchInlineSnapshot(`
     {

@@ -161,10 +161,14 @@ export const fragment = (props: any) => {
 };
 
 export const clone = <A extends Jsx>(self: A): A => {
-  return {
-    ...self,
-    props: {...self.props},
-  };
+  const cloned = Object.create(JsxPrototype) as A;
+  (cloned.key as any) = self.key;
+  (cloned.ref as any) = self.ref;
+  (cloned.type as any) = self.type;
+  (cloned.props as any) = {...self.props};
+  (cloned.child as any) = self.child;
+  (cloned.childs as any) = self.childs;
+  return cloned;
 };
 
 export interface Event<A = any> extends Inspectable.Inspectable {

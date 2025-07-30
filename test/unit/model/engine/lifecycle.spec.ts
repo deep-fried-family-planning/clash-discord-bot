@@ -8,7 +8,7 @@ import * as E from 'effect/Effect';
 import * as Envelope from '#disreact/internal/Envelope.ts';
 import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as lifecycle from '#src/disreact/model/lifecycle.ts';
+import * as lifecycle from '#disreact/model/lifecycles.ts';
 import {it} from '@effect/vitest';
 
 Entrypoint.register('MessageSync', MessageSync);

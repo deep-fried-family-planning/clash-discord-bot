@@ -1,14 +1,14 @@
+import * as Marker from '#disreact/internal/core/Marker.ts';
 import * as Patch from '#disreact/internal/core/Patch.ts';
 import * as Stack from '#disreact/internal/core/Stack.ts';
 import * as Traversable from '#disreact/internal/core/Traversable.ts';
 import type * as Envelope from '#disreact/internal/Envelope.ts';
-import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Polymer from '#disreact/internal/Polymer.ts';
+import * as Hydrant from '#disreact/model/runtime/Hydrant.ts';
 import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
-import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import * as Equal from 'effect/Equal';
@@ -17,7 +17,6 @@ import type * as Hash from 'effect/Hash';
 import * as Inspectable from 'effect/Inspectable';
 import * as Option from 'effect/Option';
 import * as Pipeable from 'effect/Pipeable';
-import * as P from 'effect/Predicate';
 import * as Predicate from 'effect/Predicate';
 import * as PrimaryKey from 'effect/PrimaryKey';
 import type * as Record from 'effect/Record';
@@ -57,15 +56,17 @@ const PropsProto: Props = {
   toJSON(this: Props) {
     const self = {...this};
     delete self.children;
-    return self;
+    return {
+      ...self,
+    };
   },
 } as Props;
 
 const makeProps = (props: any): Props =>
-  ({
-    ...props,
-    ...PropsProto,
-  });
+  Object.assign(
+    Object.create(PropsProto),
+    props,
+  );
 
 export const TEXT      = 'Text' as const,
              LIST      = 'List' as const,
@@ -166,8 +167,8 @@ const ElementPrototype = declareProto<Element>({
   depth   : 0,
   index   : 0,
   ...StructProto,
-  ...Inspectable.BaseProto,
   ...Pipeable.Prototype,
+  ...Inspectable.BaseProto,
   [PrimaryKey.symbol]() {
     if (!this.parent) {
       return 'root';
@@ -195,10 +196,12 @@ const ElementPrototype = declareProto<Element>({
         };
       }
       case INTRINSIC: {
+        const props = {...this.props};
+        delete props.children;
         return {
           _tag    : this._tag,
           type    : this.type,
-          props   : this.props,
+          props   : props,
           children: this.children,
         };
       }
@@ -671,35 +674,7 @@ export const renderWith = dual<
   ),
 );
 
-const normalizeEffector = (effector: Polymer.Effector) => {
-  if (typeof effector === 'object') {
-    return effector;
-  }
-  if (effector.constructor === ASYNC_CONSTRUCTOR) {
-    return E.promise(() => effector() as Promise<void>);
-  }
-  return E.suspend(() => {
-    const output = effector();
-
-    if (P.isPromise(output)) {
-      return E.promise(() => output);
-    }
-    if (!E.isEffect(output)) {
-      return E.void;
-    }
-    return output;
-  });
-};
-
-export const flushUpdates = (self: Element) => Effect.suspend(() => {
-  return Effect.whileLoop({
-    while: () => false,
-    step : () => {},
-    body : () => Effect.void,
-  });
-});
-
-export const flushEffects = (self: Element) => Effect.suspend(() => {
+export const flush = (self: Element) => Effect.suspend(() => {
   const polymer = self.polymer;
 
   if (
@@ -708,18 +683,39 @@ export const flushEffects = (self: Element) => Effect.suspend(() => {
   ) {
     return Effect.void;
   }
+
   return Effect.whileLoop({
-    while: () => false,
     step : () => {},
-    body : () => Effect.void,
+    while: () => polymer.queue.length > 0,
+    body : () => {
+      const effector = polymer.queue.shift()!;
+
+      if (typeof effector === 'object') {
+        return effector as Effect.Effect<void>;
+      }
+      if (effector.constructor === ASYNC_CONSTRUCTOR) {
+        return Effect.promise(() => effector() as Promise<void>);
+      }
+      return Effect.suspend(() => {
+        const output = effector();
+
+        if (Predicate.isPromise(output)) {
+          return Effect.promise(() => output) as Effect.Effect<void>;
+        }
+        if (!Effect.isEffect(output)) {
+          return Effect.void;
+        }
+        return output as Effect.Effect<void>;
+      });
+    },
   });
 });
 
 export const trigger = dual<
   (event: Jsx.Event) => (self: Element) => Effect.Effect<void>,
   (self: Element, event: Jsx.Event) => Effect.Effect<void>
->(2, (self, event) =>
-  pipe(
+>(2, (self, event) => {
+  return pipe(
     self.props[event.type],
     Option.fromNullable,
     Effect.flatMap((handler) => {
@@ -738,13 +734,10 @@ export const trigger = dual<
     }),
     Effect.orDie,
     Effect.asVoid,
-  ),
-);
+  );
+});
 
 export const initialize = <A extends Element>(self: A): A => {
-  if (self._tag !== 'Component') {
-    return self;
-  }
   self.polymer = Polymer.make(self);
   return self;
 };
@@ -766,14 +759,14 @@ export const hydrate = dual<
 });
 
 export const dehydrate = dual<
-  (states: Polymer.Bundle) => (self: Element) => Polymer.Bundle,
-  (self: Element, states: Polymer.Bundle) => Polymer.Bundle
->(2, (self, states) => {
-  if (self._tag !== 'Component') {
-    return states;
+  (hydrator: Hydrant.Hydrator) => (self: Element) => Hydrant.Hydrator,
+  (self: Element, hydrator: Hydrant.Hydrator) => Hydrant.Hydrator
+>(2, (self, hydrator) => {
+  if (!self.polymer) {
+    return hydrator;
   }
-  states[self.trie] = Polymer.toEncoded(self.polymer!);
-  return states;
+  hydrator.state[self.trie] = Polymer.toEncoded(self.polymer!);
+  return hydrator;
 });
 
 export const release = (self: Element) => {
@@ -782,26 +775,25 @@ export const release = (self: Element) => {
   self.origin = undefined;
   self.parent = undefined;
   self.children = undefined;
-
   if (self.polymer) {
     (self.polymer as any) = Polymer.dispose(self.polymer);
   }
 };
 
-export const toClonedProps = (self: Element) => {
-  if (self._tag !== 'Intrinsic') {
-    throw new Error();
-  }
-  const props = {...self.props};
+export const cloneProps = (self: Element) => {
+  const props = self.props ? {...self.props} : {};
   delete props.children;
   delete props.ref;
   delete props.onclick;
   delete props.onselect;
   delete props.onsubmit;
+  delete props.toString;
+  delete props.toJSON;
+  delete props.pipe;
   return structuredClone(props);
 };
 
-export interface Encodable<T extends string, P, C> {
+export interface Encodable<T extends string = string, P = any, C = any> {
   type    : T;
   props   : P;
   children: C;
@@ -818,14 +810,8 @@ export const cloneEncodable = dual<
   <T extends string, P, C>(self: Element, children?: C) => Encodable<T, P, C>
 >(2, (self, children) => {
   const encodable = fromProto(EncodablePrototype);
-  const props = {...self.props};
-  delete props.children;
-  delete props.ref;
-  delete props.onclick;
-  delete props.onselect;
-  delete props.onsubmit;
   encodable.type = self.type;
-  encodable.props = structuredClone(props);
+  encodable.props = self.props;
   encodable.children = children;
   return encodable as Encodable<any, any, any>;
 });
@@ -841,60 +827,103 @@ export const encodeRoot = dual<
       args    : new WeakMap(),
       outs    : new WeakMap().set(self.env.root, {}),
     }),
-    Stack.storePassingSync((elem, stack, state) => {
+    Stack.storePassingSync((cur, stack, state) => {
+      state.hydrator = dehydrate(cur, state.hydrator);
       const {args, outs} = state;
-      const out = outs.get(elem);
+      const out = outs.get(cur);
 
-      switch (elem._tag) {
+      switch (cur._tag) {
         case 'Text': {
-          if (!elem.text) {
+          if (!cur.text) {
             return stack;
           }
           out[encoding.primitive] ??= [];
-          out[encoding.primitive].push(elem.text);
+          out[encoding.primitive].push(cur.text);
           return stack;
         }
         case 'Intrinsic': {
-          if (!args.has(elem)) {
+          if (!args.has(cur)) {
             const arg = {};
-            args.set(elem, arg);
+            args.set(cur, arg);
             return stack.pipe(
-              Stack.push(elem),
-              Stack.tapPushAll(elem.children, (c) => outs.set(c, arg)),
+              Stack.push(cur),
+              Stack.tapPushAll(cur.children, (c) => outs.set(c, arg)),
             );
           }
-          if (!elem.children || elem.children.length === 0) {
-            const key = encoding.normalize[elem.type];
-            const encoder = encoding.transform[elem.type];
-            const encoded = encoder({props: toClonedProps(elem)}, {});
+          if (!cur.children || cur.children.length === 0) {
+            const key = encoding.normalize[cur.type];
+            const encoder = encoding.transform[cur.type];
+            const encoded = encoder({props: cloneProps(cur)}, {});
             out[key] ??= [];
             out[key].push(purgeUndefinedKeys(encoded));
             return stack;
           }
-          const key = encoding.normalize[elem.type];
-          const encoder = encoding.transform[elem.type];
-          const encoded = encoder({props: toClonedProps(elem)}, args.get(elem)!);
+          const key = encoding.normalize[cur.type];
+          const encoder = encoding.transform[cur.type];
+          const encoded = encoder({props: cloneProps(cur)}, args.get(cur)!);
           out[key] ??= [];
           out[key].push(purgeUndefinedKeys(encoded));
           return stack;
         }
-        case 'Component': {
-          state.hydrator.state = dehydrate(elem, state.hydrator.state);
-        }
       }
-      return Stack.tapPushAll(stack, elem.children, (c) => outs.set(c, out));
+      return Stack.tapPushAll(stack, cur.children, (c) => outs.set(c, out));
     }),
     Stack.modifyState((state) => {
       const final = state.outs.get(self.env.root)!;
-      const key = Object.keys(final)[0];
+      const type = Object.keys(final)[0];
+      const payload = purgeUndefinedKeys(final[type][0]);
 
-      return Hydrant.toSnapshot(
-        state.hydrator,
-        '',
-        key,
-        purgeUndefinedKeys(final[key][0]),
-      );
+      return Hydrant.toSnapshot(state.hydrator, type, payload);
     }),
     Stack.state,
   ),
 );
+
+export type PhaseData<P = any> = {
+  type : string;
+  props: P;
+};
+
+const PhaseDataPrototype = declareProto<PhaseData>({
+  type : '',
+  props: undefined,
+});
+
+export const toPhase = dual<
+  (phase: Marker.Phases) => (self: Element) => Marker.Phase<PhaseData>,
+  (self: Element, phase: Marker.Phases) => Marker.Phase<PhaseData>
+>(2, (self, phase) => {
+  const id = self.env.input.src;
+  const data = fromProto(PhaseDataPrototype);
+  data.type = self.type;
+  data.props = cloneProps(self);
+  return Marker.phase(id, phase, data);
+});
+
+export const toPhaseChildren = dual<
+  (phase: Marker.Phases) => (self: Element) => Marker.Phase<PhaseData>[],
+  (self: Element, phase: Marker.Phases) => Marker.Phase<PhaseData>[]
+>(2, (self, phase) => {
+  if (
+    !self.children
+    || self.children.length === 0
+  ) {
+    return [];
+  }
+  const markers = [] as Marker.Phase<PhaseData>[];
+
+  for (let i = 0; i < self.children.length; i++) {
+    markers[i] = toPhase(self.children[i], phase);
+  }
+  return markers;
+});
+
+export const as = dual<
+  <B>(b: B) => (self: Element) => B,
+  <B>(self: Element, b: B) => B
+>(2, (self, b) => b);
+
+export const use = dual<
+  <A extends Element, B>(f: (self: A) => B) => (self: A) => B,
+  <A extends Element, B>(self: A, f: (self: A) => B) => B
+>(2, (self, f) => f(self));

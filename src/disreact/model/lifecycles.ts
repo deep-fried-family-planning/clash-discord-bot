@@ -44,26 +44,38 @@ const initializeElement = (elem: Element.Element) =>
     Effect.andThen(Element.render(elem)),
     Effect.ensuring(releaseGlobalHooks),
     Effect.map(Element.bindRenderedJsx(elem)),
-    Effect.tap(Element.flushEffects(elem)),
+    Effect.tap(Element.flush(elem)),
   );
 
 export const initializeCycle = (env: Envelope.Envelope) =>
   env.root.pipe(
     Stack.make,
-    Stack.storePassing((elem, stack) =>
-      elem.pipe(
+    Stack.storePassingEffect((cur, stack) =>
+      cur.pipe(
         Element.eitherComponent,
         Either.map(initializeElement),
         Either.mapLeft(Effect.succeed),
         Either.merge,
+        // Effect.tap((elem) =>
+        //   elem.pipe(
+        //     Element.toPhaseChildren('Initialized'),
+        //     env.progress.offerAll,
+        //   ),
+        // ),
+        Effect.tap((elem) =>
+          env.progress.offerAll(
+            elem.pipe(
+            Element.toPhaseChildren('Initialized'),
+          ),
+          ),
+        ),
         Effect.map(Element.nextChildren),
-        Effect.tap(Envelope.offerAllPartial(env)),
         Effect.map(Stack.pushAllInto(stack)),
       ),
     ),
-    Effect.tap(
-      Effect.map(encodeCycle(env), Envelope.addSnapshot(env)),
-    ),
+    // Effect.tap(
+    //   Effect.map(encodeCycle(env), Envelope.addSnapshot(env)),
+    // ),
     Effect.as(env),
   );
 
@@ -79,20 +91,23 @@ const hydrateElement = (elem: Element.Element) =>
 export const hydrateCycle = (env: Envelope.Envelope) =>
   env.root.pipe(
     Stack.make,
-    Stack.storePassing((elem, stack) =>
-      elem.pipe(
+    Stack.storePassingEffect((cur, stack) =>
+      cur.pipe(
         Element.eitherComponent,
         Either.map(hydrateElement),
         Either.mapLeft(Effect.succeed),
         Either.merge,
+        // Effect.tap((elem) =>
+        //   elem.pipe(
+        //     Element.toPhaseChildren('Hydrated'),
+        //     env.progress.offerAll,
+        //   ),
+        // ),
         Effect.map(Element.nextChildren),
         Effect.map(Stack.pushAllInto(stack)),
       ),
     ),
     // todo assert hydration
-    Effect.tap(
-      Effect.map(encodeCycle(env), Envelope.addSnapshot(env)),
-    ),
     Effect.as(env),
   );
 
@@ -121,13 +136,13 @@ const mountElement = (elem: Element.Element) =>
     Effect.andThen(Element.render(elem)),
     Effect.ensuring(releaseGlobalHooks),
     Effect.map(Element.bindRenderedJsx(elem)),
-    Effect.tap(Element.flushEffects(elem)),
+    Effect.tap(Element.flush(elem)),
   );
 
 const mountSubcycle = (root: Element.Element) =>
   root.pipe(
     Stack.make,
-    Stack.storePassing((elem, stack) =>
+    Stack.storePassingEffect((elem, stack) =>
       elem.pipe(
         Element.eitherComponent,
         Either.map(mountElement),
@@ -170,13 +185,13 @@ const rerenderElement = (elem: Element.Element) =>
         Element.delta(elem),
       ),
     ),
-    Effect.tap(Element.flushEffects(elem)),
+    Effect.tap(Element.flush(elem)),
   );
 
 const patchCycle = (root: Patch.Changeset<Element.Element>) =>
   root.pipe(
     Stack.make,
-    Stack.storePassing((changes, stack) =>
+    Stack.storePassingEffect((changes, stack) =>
       pipe(
         Effect.forEach(
           changes.mount,
@@ -207,12 +222,6 @@ const rerenderSubcycle = (root: Element.Element) =>
       Effect.forEach(patchCycle),
     ),
     Effect.as(root.env),
-    Effect.tap((env) =>
-      env.pipe(
-        encodeCycle,
-        Effect.map(Envelope.addSnapshot(env)),
-      ),
-    ),
   );
 
 export const rerenderCycle = (env: Envelope.Envelope) =>
@@ -257,6 +266,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
     }),
     Stack.storePassingSync((elem, stack) => {
       const state = stack.state;
+      state.hydrator = Element.dehydrate(elem, state.hydrator);
       const {args, outs} = Stack.state(stack);
       const out = outs.get(elem);
 
@@ -282,9 +292,6 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
           encodeIntrinsic(elem, out, purgeUndefinedKeys(args.get(elem)!));
           return stack;
         }
-        case 'Component': {
-          state.hydrator.state = elem.pipe(Element.dehydrate(state.hydrator.state));
-        }
       }
       return Stack.tapPushAll(stack, elem.children, (c) => outs.set(c, out));
     }),
@@ -292,7 +299,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
       const final = state.outs.get(env.root)!;
       const key = Object.keys(final)[0];
 
-      return Hydrant.toSnapshot(state.hydrator, '', key, purgeUndefinedKeys(final[key][0]));
+      return Hydrant.toSnapshot(state.hydrator,  key, purgeUndefinedKeys(final[key][0]));
     }),
     Stack.state,
   ),
