@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 
 export const Fragment = Jsx.Fragment;
 
@@ -15,42 +15,42 @@ export const jsx = (type: Jsx.Type, setup: Setup, key?: Key): Jsx.Jsx => {
   switch (typeof type) {
     case 'string': {
       const self = Jsx.intrinsic(type, setup);
-      self.key = key;
-      self.child = setup.children;
+      (self.key as any) = key;
+      (self.child as any) = setup.children;
       return self;
     }
     case 'function': {
       const self = Jsx.component(type, setup);
-      self.key = key;
+      (self.key as any) = key;
       return self;
     }
   }
   if (type === Fragment) {
     const self = Jsx.fragment(setup);
-    self.child = setup.children;
+    (self.child as any) = setup.children;
     return self;
   }
-  throw new Error(`Invalid JSX type: ${type}`);
+  throw new Error(`Invalid JSX type: ${String(type)}`);
 };
 
 export const jsxs = (type: Jsx.Type, setup: Setup, key?: Key): Jsx.Jsx => {
   switch (typeof type) {
     case 'string': {
       const self = Jsx.intrinsic(type, setup);
-      self.key = key;
-      self.childs = setup.children;
+      (self.key as any) = key;
+      (self.childs as any) = setup.children;
       return self;
     }
     case 'function': {
       const self = Jsx.component(type, setup);
-      self.key = key;
+      (self.key as any) = key;
       return self;
     }
   }
   if (type === Fragment) {
     const self = Jsx.fragment(setup);
-    self.childs = setup.children;
+    (self.childs as any) = setup.children;
     return self;
   }
-  throw new Error(`Invalid JSX type: ${type}`);
+  throw new Error(`Invalid JSX type: ${String(type)}`);
 };

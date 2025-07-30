@@ -3,9 +3,11 @@ import {EFFECT, HookError, REF, STATE} from '#disreact/model/entity/Polymer.ts';
 import type * as Effect from 'effect/Effect';
 import * as MutableRef from 'effect/MutableRef';
 
-export type UseReducer = <S, A>(reducer: (state: S, action: A) => S, initial: S | (() => S)) => readonly [S, (action: A) => void];
+export type UseReducer = <S, A>(reducer: (state: S, action: A) => S, initial: S | (() => S)) =>
+  readonly [S, (action: A) => void];
 
-export type UseState = <A>(initial: A | (() => A)) => readonly [A, (next: A | ((prev: A) => A)) => void];
+export type UseState = <A>(initial: A | (() => A)) =>
+    readonly [A, (next: A | ((prev: A) => A)) => void];
 
 export type UseEffect = <E = never, R = never>(
   effect: | (() => void)
@@ -15,7 +17,8 @@ export type UseEffect = <E = never, R = never>(
   deps?: any[],
 ) => void;
 
-export type UseRef = <A>(initial: A | (() => A)) => MutableRef.MutableRef<A>;
+export type UseRef = <A>(initial: A | (() => A)) =>
+  MutableRef.MutableRef<A>;
 
 export const interaction = (p: Polymer.Polymer) => () => p.origin!.env.data;
 

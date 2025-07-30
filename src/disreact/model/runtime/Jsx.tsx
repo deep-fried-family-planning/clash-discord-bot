@@ -22,9 +22,6 @@ const FCProto: Element.FC = {
   source     : undefined as any,
   signature  : undefined as any,
   ...Inspectable.BaseProto,
-  [Hash.symbol]() {
-    return Hash.cached(this, Hash.string(this.source));
-  },
   toJSON() {
     return {
       _id        : 'FunctionComponent',
@@ -39,6 +36,9 @@ const FCProto: Element.FC = {
   },
   toString() {
     return this._id;
+  },
+  [Hash.symbol]() {
+    return Hash.cached(this, Hash.string(this.source));
   },
 } as Element.FC;
 
@@ -146,8 +146,10 @@ export const intrinsic = (type: string, props: any) => {
 
 export const component = (type: FC, props: any) => {
   const self = Object.create(JsxPrototype) as Jsx;
-  (self.type as any) = makeFC(type);
+  const fc = makeFC(type);
+  (self.type as any) = fc;
   (self.props as any) = props;
+  (self.entrypoint as any) = fc.entrypoint;
   return self;
 };
 

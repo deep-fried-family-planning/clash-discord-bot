@@ -3,8 +3,8 @@ import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
@@ -626,6 +626,41 @@ export const render = (elem: Element): Effect.Effect<Jsx.Children> => {
   });
 };
 
+export const renderUse = (elem: Element): Effect.Effect<Jsx.Children> => {
+  const self = elem as Component;
+  const fc = self.type;
+
+  switch (fc._tag) {
+    case 'Sync': {
+      return Effect.sync(() => fc(self.props) as Jsx.Children);
+    }
+    case 'Async': {
+      return Effect.promise(() => fc(self.props) as Promise<Jsx.Children>);
+    }
+    case 'Effect': {
+      return Effect.suspend(() => fc(self.props) as Effect.Effect<Jsx.Children>);
+    }
+  }
+  return Effect.suspend(() => {
+    const children = fc(self.props);
+
+    if (!children || typeof children !== 'object') {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
+    if (Predicate.isPromise(children)) {
+      fc._tag = 'Async';
+      return Effect.promise(() => children);
+    }
+    if (!Effect.isEffect(children)) {
+      fc._tag = 'Sync';
+      return Effect.succeed(children);
+    }
+    fc._tag = 'Effect';
+    return children;
+  });
+};
+
 export const renderWith = dual<
   (acquire: Effect.Effect<any>, release: Effect.Effect<any>) => (self: Element) => Effect.Effect<Jsx.Children>,
   (self: Element, acquire: Effect.Effect<any>, release: Effect.Effect<any>) => Effect.Effect<Jsx.Children>
@@ -779,8 +814,8 @@ const EncodablePrototype = declareProto<Encodable<string, any, any>>({
 });
 
 export const cloneEncodable = dual<
-  <T extends string, P, C>(children: C) => (self: Element) => Encodable<T, P, C>,
-  <T extends string, P, C>(self: Element, children: C) => Encodable<T, P, C>
+  <T extends string, P, C>(children?: C) => (self: Element) => Encodable<T, P, C>,
+  <T extends string, P, C>(self: Element, children?: C) => Encodable<T, P, C>
 >(2, (self, children) => {
   const encodable = fromProto(EncodablePrototype);
   const props = {...self.props};

@@ -3,7 +3,7 @@ import * as Progress from '#disreact/model/core/Progress.ts';
 import type * as Polymer from '#disreact/model/entity/Polymer.ts';
 import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/model/entity/Polymer.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -28,19 +28,6 @@ export interface Hydrant extends Inspectable.Inspectable, Pipeable.Pipeable {
   props: Record<string, any>;
   state: Record<string, Polymer.Dehydrated>;
 }
-
-export const equivalence = Equivalence.make<Hydrant>((a, b) => {
-  if (!a.reg && !b.reg) {
-    throw new Error('Cannot compare unregistered hydrants.');
-  }
-  if (a === b) {
-    return true;
-  }
-  if (a.src === b.src) {
-    return true;
-  }
-  return false;
-});
 
 const HydrantProto = declareProto<Hydrant>({
   reg  : false,

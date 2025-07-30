@@ -1,7 +1,7 @@
 import * as Progress from '#disreact/model/core/Progress.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
@@ -13,10 +13,6 @@ import * as Mailbox from 'effect/Mailbox';
 import type * as Pipeable from 'effect/Pipeable';
 import * as SubscriptionRef from 'effect/SubscriptionRef';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
-
-export interface Event {
-
-}
 
 export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable,

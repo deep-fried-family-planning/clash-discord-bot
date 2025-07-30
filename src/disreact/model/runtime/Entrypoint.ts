@@ -1,4 +1,4 @@
-import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import {globalValue} from 'effect/GlobalValue';
 
 export type Entrypoint = | Jsx.Jsx

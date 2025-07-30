@@ -6,15 +6,16 @@ import type * as Elem from '#disreact/model/entity/Element.ts';
 import * as Element from '#disreact/model/entity/Element.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
-import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/model/runtime/Hooks.ts';
+import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
 import {pipe} from 'effect/Function';
 import * as GlobalValue from 'effect/GlobalValue';
 import * as Option from 'effect/Option';
-import * as Record from 'effect/Record';
+import type * as Record from 'effect/Record';
 
 const mutex = GlobalValue.globalValue(
   Symbol.for('disreact/mutex'),
@@ -219,10 +220,7 @@ export const rerenderCycle = (env: Envelope.Envelope) =>
     Element.lowestCommonAncestor(env.flags),
     Option.getOrElse(() => env.root),
     rerenderSubcycle,
-  );
-
-const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
-  Record.filter(obj, (v) => v !== undefined) as A;
+  ); x;
 
 const primitive = JsxDefault.primitive,
       normalize = JsxDefault.normalization as Record<string, string>,
@@ -258,6 +256,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
       outs    : new WeakMap().set(env.root, {}),
     }),
     Stack.storePassingSync((elem, stack) => {
+      const state = stack.state;
       const {args, outs} = Stack.state(stack);
       const out = outs.get(elem);
 
@@ -284,7 +283,7 @@ export const encodeCycle = (env: Envelope.Envelope) => Effect.sync(() =>
           return stack;
         }
         case 'Component': {
-          // todo state hydrator
+          state.hydrator.state = elem.pipe(Element.dehydrate(state.hydrator.state));
         }
       }
       return Stack.tapPushAll(stack, elem.children, (c) => outs.set(c, out));
