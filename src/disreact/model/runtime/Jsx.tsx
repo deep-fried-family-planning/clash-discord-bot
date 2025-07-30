@@ -1,5 +1,5 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/util/constants.ts';
-import type * as Element from '#disreact/model/entity/Element.ts';
+import type * as Element from '#disreact/model/internal/Element.ts';
 import {declareProto} from '#disreact/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';

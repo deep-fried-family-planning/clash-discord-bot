@@ -1,11 +1,11 @@
 import * as JsxDefault from '#disreact/rest/intrinsic/index.ts';
-import {Codec} from '#disreact/model/core/Codec.ts';
-import type * as Patch from '#disreact/model/core/Patch.ts';
-import * as Stack from '#disreact/model/core/Stack.ts';
-import type * as Elem from '#disreact/model/entity/Element.ts';
-import * as Element from '#disreact/model/entity/Element.ts';
-import * as Envelope from '#disreact/model/entity/Envelope.ts';
-import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
+import {Codec} from '#disreact/model/internal/core/Codec.ts';
+import type * as Patch from '#disreact/model/internal/core/Patch.ts';
+import * as Stack from '#disreact/model/internal/core/Stack.ts';
+import type * as Elem from '#disreact/model/internal/Element.ts';
+import * as Element from '#disreact/model/internal/Element.ts';
+import * as Envelope from '#disreact/model/internal/Envelope.ts';
+import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
 import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
 import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
@@ -220,7 +220,7 @@ export const rerenderCycle = (env: Envelope.Envelope) =>
     Element.lowestCommonAncestor(env.flags),
     Option.getOrElse(() => env.root),
     rerenderSubcycle,
-  ); x;
+  );
 
 const primitive = JsxDefault.primitive,
       normalize = JsxDefault.normalization as Record<string, string>,
