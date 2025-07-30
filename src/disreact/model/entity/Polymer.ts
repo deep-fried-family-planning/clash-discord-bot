@@ -1,11 +1,12 @@
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
+import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import type * as Effect from 'effect/Effect';
+import {dual} from 'effect/Function';
 import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as MutableRef from 'effect/MutableRef';
 import * as Pipeable from 'effect/Pipeable';
-import * as PrimaryKey from 'effect/PrimaryKey';
 
 export type Effector<E = never, R = never> =
   | Effect.Effect<void, E, R>
@@ -68,12 +69,12 @@ export namespace Monomer {
     _tag    : typeof CONTEXT;
     encoded?: | typeof CONTEXT;
   }
-  export type Encoded = Required<Monomer>['encoded'];
+  export type Dehydrated = Required<Monomer>['encoded'];
   export type Signature = Monomer['_tag'][];
 }
 export type Signature = Monomer['_tag'][];
 
-const MonomerProto: Monomer = {
+const MonomerProto = declareProto<Monomer>({
   _tag   : STATE as any,
   state  : undefined as any,
   deps   : undefined as any,
@@ -82,7 +83,6 @@ const MonomerProto: Monomer = {
   changed: false,
   queued : false,
   encoded: undefined as any,
-  ...Pipeable.Prototype,
   ...Inspectable.BaseProto,
   toJSON() {
     switch (this._tag) {
@@ -117,7 +117,7 @@ const MonomerProto: Monomer = {
         };
     }
   },
-};
+});
 
 const ReducerProto = Object.assign(Object.create(MonomerProto), {
   _tag: STATE,
@@ -139,7 +139,32 @@ const ContextProto = Object.assign(Object.create(MonomerProto), {
   _tag: CONTEXT,
 });
 
-export const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
+export const reducer = (): Monomer.State => {
+  const self = fromProto(ReducerProto);
+  return self;
+};
+
+export const effect = (): Monomer.Effect => {
+  const self = fromProto(EffectProto);
+  return self;
+};
+
+export const ref = (): Monomer.Ref => {
+  const self = fromProto(RefProto);
+  return self;
+};
+
+export const memo = (): Monomer.Memo => {
+  const self = fromProto(MemoProto);
+  return self;
+};
+
+export const context = (): Monomer.Context => {
+  const self = fromProto(ContextProto);
+  return self;
+};
+
+export const hydrateMono = (encoded: Monomer.Dehydrated): Monomer => {
   if (Array.isArray(encoded)) {
     switch (encoded[0]) {
       case STATE: {
@@ -192,53 +217,38 @@ export const hydrateMono = (encoded: Monomer.Encoded): Monomer => {
   }
 };
 
-const dehydrateMono = (monomer: Monomer): Monomer.Encoded => {
+const dehydrateMono = (monomer: Monomer): Monomer.Dehydrated => {
   switch (monomer._tag) {
-    case STATE: {
+    case STATE:
       return [STATE, monomer.state];
-    }
-    case EFFECT: {
+    case EFFECT:
       if (!monomer.deps) {
         return EFFECT;
       }
       return [EFFECT, monomer.deps];
-    }
-    case REF: {
+    case REF:
       if (typeof monomer.state === 'function') {
         return REF;
       }
       return [REF, monomer.state];
-    }
-    case MEMO: {
+    case MEMO:
       if (!monomer.deps) {
         return MEMO;
       }
       return [MEMO, monomer.deps];
-    }
-    case CONTEXT: {
+    case CONTEXT:
       return CONTEXT;
-    }
   }
 };
 
 type MTag = Monomer['_tag'];
 type Mono<T extends MTag = MTag> = Extract<Monomer, {_tag: T}>;
 
-export interface Hook {
-  stage  : 'Init' | 'Hydrate' | 'Rerender' | 'Dispatch';
-  phase  : 'Render' | 'Flush' | 'Inactive';
-  pc     : number;
-  stack  : Monomer[];
-  effects: Monomer.Effect[];
-  updates: (() => void)[];
-  flag(): void;
-}
-
 export interface Polymer extends Inspectable.Inspectable,
   Pipeable.Pipeable,
-  Traversable.Origin<Element.Element>,
-  Hook
+  Traversable.Origin<Element.Element>
 {
+  stage    : 'Init' | 'Hydrate' | 'Rerender';
   type     : any;
   id       : string;
   pc       : number;
@@ -247,13 +257,15 @@ export interface Polymer extends Inspectable.Inspectable,
   fc?      : Element.FC;
   signature: Monomer.Signature;
   queue    : any[];
+  flag(): void;
 }
 
-export type Encoded = readonly Monomer.Encoded[];
+export type Dehydrated = readonly Monomer.Dehydrated[];
 
-export type TrieData = Record<string, readonly Monomer.Encoded[]>;
+export type Bundle = Record<string, readonly Monomer.Dehydrated[]>;
 
 const PolymerProto: Polymer = {
+  stage: 'Init',
   pc   : 0,
   rc   : 0,
   stack: undefined as any,
@@ -276,7 +288,6 @@ const PolymerProto: Polymer = {
 
 export const make = (elem: Element.Element): Polymer => {
   const self = Object.create(PolymerProto) as Polymer;
-  self.id = PrimaryKey.value(elem);
   self.origin = elem;
   self.signature = [];
   self.stack = [];
@@ -284,16 +295,17 @@ export const make = (elem: Element.Element): Polymer => {
   return self;
 };
 
-export const fromEncoded = (elem: Element.Element, encoded: Encoded): Polymer => {
+export const fromEncoded = (elem: Element.Element, encoded: Dehydrated): Polymer => {
   const self = make(elem);
+  self.stage = 'Hydrate';
   self.stack = encoded.map(hydrateMono);
   return self;
 };
 
-export const toEncoded = (self: Polymer): Encoded => self.stack.map(dehydrateMono);
+export const toEncoded = (self: Polymer): Dehydrated => self.stack.map(dehydrateMono);
 
 export const commit = (self: Polymer): Polymer => {
-  self.phase = 'Inactive';
+  self.stage = 'Rerender';
   if (!self.stack.length) {
     self.origin!.type._state = false;
     return self;
@@ -364,3 +376,35 @@ export const hook = <A extends Monomer>(
   }
   throw new Error('Hooks must be called in the same order as they are defined.');
 };
+
+export class HookError extends Error {
+  readonly _tag = 'HookError';
+}
+
+export const defineHookDual = dual<
+  <M extends Monomer, I extends any[], O>(
+    make: (p: Polymer, ...i: I) => M,
+    init: (p: Polymer, m: M, ...i: I) => O,
+    hydrate: (p: Polymer, m: M, ...i: I) => O,
+    update: (p: Polymer, m: M, ...i: I) => O,
+  ) => (self: Polymer) => (...i: I) => O,
+  <M extends Monomer, I extends any[], O>(
+    self: Polymer,
+    make: (p: Polymer, ...i: I) => M,
+    init: (p: Polymer, m: M, ...i: I) => O,
+    hydrate: (p: Polymer, m: M, ...i: I) => O,
+    update: (p: Polymer, m: M, ...i: I) => void,
+  ) => (...i: I) => O
+>(5, (self, make, init, hydrate, update) => (...i) => {
+  if (self.stage === 'Init') {
+    const monomer = make(self, ...i);
+    const output = init(self, monomer, ...i);
+    self.stack.push(monomer);
+    self.pc++;
+    return output;
+  }
+  if (self.stage === 'Hydrate') {
+    throw new Error('unimplemented');
+  }
+  throw new Error('unimplemented');
+});

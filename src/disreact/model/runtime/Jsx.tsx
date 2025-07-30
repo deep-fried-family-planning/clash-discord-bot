@@ -1,5 +1,6 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/util/constants.ts';
 import type * as Element from '#disreact/model/entity/Element.ts';
+import {declareProto} from '#disreact/util/proto.ts';
 import * as E from 'effect/Effect';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
@@ -111,7 +112,7 @@ export const isChilds = (u: unknown): u is readonly Child[] => Array.isArray(u);
 
 export const Fragment = Symbol('disreact/Fragment');
 
-const JsxPrototype: Jsx = {
+const JsxPrototype = declareProto<Jsx>({
   [TypeId]  : TypeId,
   jsx       : true,
   entrypoint: undefined,
@@ -124,7 +125,7 @@ const JsxPrototype: Jsx = {
   ...Inspectable.BaseProto,
   ...Pipeable.Prototype,
   toJSON() {
-    const self = clone(this);
+    const self = clone(this as any);
     delete self.props.children;
     return {
       _id     : 'Jsx',
@@ -134,7 +135,7 @@ const JsxPrototype: Jsx = {
       children: self.child ?? self.childs,
     };
   },
-};
+});
 
 export const intrinsic = (type: string, props: any) => {
   const self = Object.create(JsxPrototype) as Jsx;

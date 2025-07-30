@@ -2,11 +2,12 @@ import * as Patch from '#disreact/model/core/Patch.ts';
 import * as Stack from '#disreact/model/core/Stack.ts';
 import * as Traversable from '#disreact/model/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/entity/Envelope.ts';
-import type * as Hydrant from '#disreact/model/entity/Hydrant.ts';
+import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import * as Jsx from '#disreact/model/entity/Jsx.tsx';
 import * as Polymer from '#disreact/model/entity/Polymer.ts';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
-import {declareProto, declareSubtype} from '#disreact/util/proto.ts';
+import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
+import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
 import * as E from 'effect/Effect';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';
@@ -19,6 +20,7 @@ import * as Pipeable from 'effect/Pipeable';
 import * as P from 'effect/Predicate';
 import * as Predicate from 'effect/Predicate';
 import * as PrimaryKey from 'effect/PrimaryKey';
+import type * as Record from 'effect/Record';
 
 export type FCKind =
   | 'Sync'
@@ -671,8 +673,6 @@ export const flushEffects = (self: Element) => Effect.suspend(() => {
   ) {
     return Effect.void;
   }
-  polymer.phase = 'Flush';
-
   return Effect.whileLoop({
     while: () => false,
     step : () => {},
@@ -731,8 +731,8 @@ export const hydrate = dual<
 });
 
 export const dehydrate = dual<
-  (states: Polymer.TrieData) => (self: Element) => Polymer.TrieData,
-  (self: Element, states: Polymer.TrieData) => Polymer.TrieData
+  (states: Polymer.Bundle) => (self: Element) => Polymer.Bundle,
+  (self: Element, states: Polymer.Bundle) => Polymer.Bundle
 >(2, (self, states) => {
   if (self._tag !== 'Component') {
     return states;
@@ -740,6 +740,18 @@ export const dehydrate = dual<
   states[self.trie] = Polymer.toEncoded(self.polymer!);
   return states;
 });
+
+export const release = (self: Element) => {
+  (self.env as any) = undefined;
+  (self.props as any) = undefined;
+  self.origin = undefined;
+  self.parent = undefined;
+  self.children = undefined;
+
+  if (self.polymer) {
+    (self.polymer as any) = Polymer.dispose(self.polymer);
+  }
+};
 
 export const toClonedProps = (self: Element) => {
   if (self._tag !== 'Intrinsic') {
@@ -754,30 +766,100 @@ export const toClonedProps = (self: Element) => {
   return structuredClone(props);
 };
 
-export const encode = dual<
-  (encoding: Jsx.Encoding) => (self: Element) => any,
-  (self: Element, encoding: Jsx.Encoding) => any
->(2, (self, that) => {
-  const self_ = unsafeComponent(self);
-  return self_;
+export interface Encodable<T extends string, P, C> {
+  type    : T;
+  props   : P;
+  children: C;
+}
+
+const EncodablePrototype = declareProto<Encodable<string, any, any>>({
+  type    : '',
+  props   : undefined,
+  children: undefined,
 });
 
-export const encodeAll = dual<
-  (encoding: Jsx.Encoding) => (self: Element) => any,
-  (self: Element, encoding: Jsx.Encoding) => any
->(2, (self, encoding) => {
-  const final = {};
-  return final;
+export const cloneEncodable = dual<
+  <T extends string, P, C>(children: C) => (self: Element) => Encodable<T, P, C>,
+  <T extends string, P, C>(self: Element, children: C) => Encodable<T, P, C>
+>(2, (self, children) => {
+  const encodable = fromProto(EncodablePrototype);
+  const props = {...self.props};
+  delete props.children;
+  delete props.ref;
+  delete props.onclick;
+  delete props.onselect;
+  delete props.onsubmit;
+  encodable.type = self.type;
+  encodable.props = structuredClone(props);
+  encodable.children = children;
+  return encodable as Encodable<any, any, any>;
 });
 
-export const release = (self: Element) => {
-  (self.env as any) = undefined;
-  (self.props as any) = undefined;
-  self.origin = undefined;
-  self.parent = undefined;
-  self.children = undefined;
+export const encodeRoot = dual<
+  (encoding: Jsx.Encoding) => (self: Element) => Hydrant.Snapshot,
+  (self: Element, encoding: Jsx.Encoding) => Hydrant.Snapshot
+>(2, (self, encoding) =>
+  self.env.root.pipe(
+    Stack.make,
+    Stack.setState({
+      hydrator: Hydrant.toHydrator(self.env.input),
+      args    : new WeakMap(),
+      outs    : new WeakMap().set(self.env.root, {}),
+    }),
+    Stack.storePassingSync((elem, stack, state) => {
+      const {args, outs} = state;
+      const out = outs.get(elem);
 
-  if (self.polymer) {
-    (self.polymer as any) = Polymer.dispose(self.polymer);
-  }
-};
+      switch (elem._tag) {
+        case 'Text': {
+          if (!elem.text) {
+            return stack;
+          }
+          out[encoding.primitive] ??= [];
+          out[encoding.primitive].push(elem.text);
+          return stack;
+        }
+        case 'Intrinsic': {
+          if (!args.has(elem)) {
+            const arg = {};
+            args.set(elem, arg);
+            return stack.pipe(
+              Stack.push(elem),
+              Stack.tapPushAll(elem.children, (c) => outs.set(c, arg)),
+            );
+          }
+          if (!elem.children || elem.children.length === 0) {
+            const key = encoding.normalize[elem.type];
+            const encoder = encoding.transform[elem.type];
+            const encoded = encoder({props: toClonedProps(elem)}, {});
+            out[key] ??= [];
+            out[key].push(purgeUndefinedKeys(encoded));
+            return stack;
+          }
+          const key = encoding.normalize[elem.type];
+          const encoder = encoding.transform[elem.type];
+          const encoded = encoder({props: toClonedProps(elem)}, args.get(elem)!);
+          out[key] ??= [];
+          out[key].push(purgeUndefinedKeys(encoded));
+          return stack;
+        }
+        case 'Component': {
+          state.hydrator.state = dehydrate(elem, state.hydrator.state);
+        }
+      }
+      return Stack.tapPushAll(stack, elem.children, (c) => outs.set(c, out));
+    }),
+    Stack.modifyState((state) => {
+      const final = state.outs.get(self.env.root)!;
+      const key = Object.keys(final)[0];
+
+      return Hydrant.toSnapshot(
+        state.hydrator,
+        '',
+        key,
+        purgeUndefinedKeys(final[key][0]),
+      );
+    }),
+    Stack.state,
+  ),
+);

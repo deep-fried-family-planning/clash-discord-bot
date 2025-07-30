@@ -7,7 +7,7 @@ import * as Element from '#disreact/model/entity/Element.ts';
 import * as Envelope from '#disreact/model/entity/Envelope.ts';
 import * as Hydrant from '#disreact/model/entity/Hydrant.ts';
 import type * as Jsx from '#disreact/model/entity/Jsx.tsx';
-import * as Hooks from '#disreact/model/runtime/Hook.ts';
+import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';
 import * as Either from 'effect/Either';

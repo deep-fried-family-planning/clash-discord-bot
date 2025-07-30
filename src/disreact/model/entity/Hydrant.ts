@@ -26,7 +26,7 @@ export interface Hydrant extends Inspectable.Inspectable, Pipeable.Pipeable {
   src  : string;
   entry: Jsx.Jsx;
   props: Record<string, any>;
-  state: Record<string, Polymer.Encoded>;
+  state: Record<string, Polymer.Dehydrated>;
 }
 
 export const equivalence = Equivalence.make<Hydrant>((a, b) => {
@@ -151,7 +151,7 @@ export const diff = dual<
 export interface Hydrator extends Inspectable.Inspectable, Pipeable.Pipeable {
   src  : string | undefined;
   props: Record<string, any>;
-  state: Record<string, Polymer.Encoded>;
+  state: Record<string, Polymer.Dehydrated>;
 }
 
 const HydratorProto = declareProto<Hydrator>({
@@ -183,7 +183,7 @@ export const toHydrator = (hydrant: Hydrant) => {
   return self;
 };
 
-export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.TrieData) => {
+export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.Bundle) => {
   const self = fromProto(HydratorProto);
   self.src = Entrypoint.getId(id);
   self.props = structuredClone(props ?? {});

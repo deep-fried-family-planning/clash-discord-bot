@@ -14,6 +14,10 @@ import type * as Pipeable from 'effect/Pipeable';
 import * as SubscriptionRef from 'effect/SubscriptionRef';
 import type * as Traversable from '#disreact/model/core/Traversable.ts';
 
+export interface Event {
+
+}
+
 export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Ancestor<Envelope<A>>
