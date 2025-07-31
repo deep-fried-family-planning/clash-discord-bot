@@ -1,8 +1,8 @@
-import type * as Button from '#disreact/rest/schema/intrinsic/button.ts';
-import type * as Container from '#disreact/rest/schema/intrinsic/container.ts';
-import type * as Embed from '#disreact/rest/schema/intrinsic/embed.ts';
-import type * as Markdown from '#disreact/rest/schema/intrinsic/markdown.ts';
-import type * as Select from '#disreact/rest/schema/intrinsic/select.ts';
+import type * as Button from '#disreact/adaptor/intrinsic/button.ts';
+import type * as Container from '#disreact/adaptor/intrinsic/container.ts';
+import type * as Embed from '#disreact/adaptor/intrinsic/embed.ts';
+import type * as Markdown from '#disreact/adaptor/intrinsic/markdown.ts';
+import type * as Select from '#disreact/adaptor/intrinsic/select.ts';
 
 export interface IntrinsicAttributesMap {
   a         : Markdown.AnchorAttributes & {children?: any};

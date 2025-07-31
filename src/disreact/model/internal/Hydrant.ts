@@ -3,7 +3,7 @@ import * as Patch from '#disreact/model/internal/core/Patch.ts';
 import type * as Polymer from '#disreact/model/internal/Polymer.ts';
 import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/model/internal/Polymer.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import * as Jsx from '#disreact/model/internal/Jsx.tsx';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';
@@ -142,7 +142,7 @@ export interface Hydrator extends Inspectable.Inspectable, Pipeable.Pipeable {
   state: Record<string, Polymer.Dehydrated>;
 }
 
-const HydratorProto = declareProto<Hydrator>({
+export const HydratorPrototype = declareProto<Hydrator>({
   src  : undefined,
   props: undefined as any,
   state: undefined as any,
@@ -159,7 +159,7 @@ const HydratorProto = declareProto<Hydrator>({
 });
 
 export const toHydrator = (hydrant: Hydrant) => {
-  const self = fromProto(HydratorProto);
+  const self = fromProto(HydratorPrototype);
   if (!hydrant.reg) {
     self.src = undefined;
   }
@@ -172,19 +172,19 @@ export const toHydrator = (hydrant: Hydrant) => {
 };
 
 export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.Bundle) => {
-  const self = fromProto(HydratorProto);
+  const self = fromProto(HydratorPrototype);
   self.src = Entrypoint.getId(id);
   self.props = structuredClone(props ?? {});
   self.state = structuredClone(state ?? {});
   return self;
 };
 
-export interface Snapshot<A = any, B = any> extends Hydrator {
-  type   : A;
-  payload: B;
+export interface Snapshot<T = any, P = any> extends Hydrator {
+  type   : T;
+  payload: P;
 }
 
-const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorProto, {
+const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorPrototype, {
   type   : '',
   payload: undefined,
   toJSON() {

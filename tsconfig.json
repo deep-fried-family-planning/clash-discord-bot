@@ -26,7 +26,8 @@
         "namespaceImportPackages": [
           "effect",
           "@effect/platform",
-          "@effect/platform"
+          "@effect/platform-node",
+          "@effect-aws"
         ],
         "diagnosticSeverity"     : {
           "importFromBarrel": "error"

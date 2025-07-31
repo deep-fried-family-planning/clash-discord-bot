@@ -171,13 +171,8 @@ export const clone = <A extends Jsx>(self: A): A => {
   return cloned;
 };
 
-export interface Event<A = any> extends Inspectable.Inspectable {
-  id    : string;
-  type  : string;
-  target: A;
-  close(): void;
-  open(jsx: Jsx, props: never): void;
-  open<P>(fc: FC<P>, props: P): void;
+export interface EncodeUnit {
+
 }
 
 export interface Encoding {
@@ -200,3 +195,13 @@ export const toJsxString = (self: Jsx): string => {
 
   return '';
 };
+
+export interface Event<A = any> extends Inspectable.Inspectable {
+  id    : string;
+  type  : string;
+  target: A;
+  update(jsx: Jsx): void;
+  replace(jsx: Jsx): void;
+  open(jsx: Jsx): void;
+  close(): void;
+}

@@ -1,5 +1,6 @@
-import type * as Jsx from '#disreact/model/runtime/Jsx.tsx';
+import type * as Jsx from '#disreact/model/internal/Jsx.tsx';
 import * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
+import * as Effect from 'effect/Effect';
 
 export const Fragment = JsxRuntime.Fragment;
 

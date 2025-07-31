@@ -1,4 +1,4 @@
-import * as JsxDefault from '#disreact/rest/schema/intrinsic/index.ts';
+import * as JsxDefault from '#disreact/adaptor/intrinsic/index.ts';
 import * as Diff from '#src/disreact/adaptor/codec/old/diffs.ts';
 import * as Component from '#src/disreact/adaptor/adaptor/component.ts';
 import * as Element from '#src/disreact/adaptor/adaptor/element.ts';

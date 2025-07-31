@@ -31,8 +31,8 @@ export type Doken<K extends Kind = Kind> =
 interface Base {
   id    : Redacted.Redacted<Snowflake.Snowflake>;
   appId : Redacted.Redacted<Snowflake.Snowflake>;
-  start : DateTime.DateTime;
-  until : DateTime.DateTime;
+  start : DateTime.Utc;
+  until : DateTime.Utc;
   public: boolean;
 }
 
@@ -149,19 +149,18 @@ export const toSingle = <K extends Kind = Kind>(self: Latest, kind: K): Single<K
     kind: Option.some(kind),
   });
 
-export const duration = (self: Doken) =>
-  DateTime.now.pipe(
-    Effect.map(DateTime.distanceDurationEither(self.until)),
-    Effect.map(Either.getRight),
+export const ttlOption = (self: Doken, now: DateTime.Utc) =>
+  now.pipe(
+    DateTime.distanceDurationEither(self.until),
+    Option.getRight,
+    Option.map((ttl) => [self, ttl] as const),
   );
 
-export const durations = (latest: Latest, active: Active) =>
-  DateTime.now.pipe(
-    Effect.map((now) => [
-      Either.getRight(DateTime.distanceDurationEither(now, latest.until)),
-      Either.getRight(DateTime.distanceDurationEither(now, active.until)),
-    ] as const),
-  );
+export const durations = (latest: Latest, active: Active, now: DateTime.Utc) =>
+  [
+    ttlOption(latest, now),
+    ttlOption(active, now),
+  ] as const;
 
 export interface Exposed<D extends Doken = Doken> {
   _tag  : D['_tag'];
@@ -226,3 +225,19 @@ export const Single = Schema.declare(
     '_tag' in u &&
     u._tag === SINGLE,
 );
+
+export type Serial =
+  | Active
+  | Cached
+  | Single;
+
+export interface Dokens {
+  latest: Latest;
+  active: Option.Option<Active>;
+}
+
+export const dokens = (latest: Latest) =>
+  ({
+    latest: latest,
+    active: Option.none(),
+  });

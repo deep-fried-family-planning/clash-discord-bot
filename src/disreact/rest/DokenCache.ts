@@ -31,6 +31,10 @@ export type DokenCacheConfig = {
   capacity: number;
 };
 
+export interface DokenCacheService {
+  save: (doken: Doken.)
+}
+
 export class DokenCache extends Effect.Service<DokenCache>()('disreact/DokenCache', {
   effect: Effect.fnUntraced(function* (config: DokenCacheConfig) {
     const cache = yield* Cache.makeWith({
