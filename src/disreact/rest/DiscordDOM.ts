@@ -41,7 +41,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               data: data,
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       createSource: (doken: Doken.Exposed, data: any) =>
         api.createInteractionResponse(
@@ -53,7 +53,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               data: data,
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       createUpdate: (doken: Doken.Exposed, data: any) =>
         api.createInteractionResponse(
@@ -65,7 +65,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               data: data,
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       deferSource: (doken: Doken.Exposed, isEphemeral?: boolean) =>
         api.createInteractionResponse(
@@ -79,7 +79,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               },
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       deferUpdate: (doken: Doken.Exposed) =>
         api.createInteractionResponse(
@@ -90,7 +90,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               type: Discord.InteractionCallbackTypes.DEFERRED_UPDATE_MESSAGE,
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       deferEdit: (doken: Doken.Exposed, body: any) =>
         api.updateOriginalWebhookMessage(
@@ -99,7 +99,7 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
           {
             payload: body,
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       discard: (doken: Doken.Exposed) =>
         api.createInteractionResponse(
@@ -110,13 +110,13 @@ export class DiscordDOM extends Effect.Service<DiscordDOM>()('disreact/DisReactD
               type: Discord.InteractionCallbackTypes.UPDATE_MESSAGE,
             },
           },
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
 
       dismount: (doken: Doken.Exposed) =>
         api.deleteOriginalWebhookMessage(
           doken.appId,
           doken.value,
-        ).pipe(Effect.catchAll((error) => new DiscordDOMError({cause: error}))),
+        ).pipe(Effect.catchAll((cause) => new DiscordDOMError({cause}))),
     } as DiscordDOMService;
   }),
   dependencies: [

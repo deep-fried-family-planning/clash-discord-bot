@@ -4,9 +4,9 @@ import type {Discord} from 'dfx';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Types from 'effect/Types';
 
-export type DiscordData = | Message
-                          | Ephemeral
-                          | Modal;
+export type Reply = | Message
+                    | Ephemeral
+                    | Modal;
 
 export interface Message {
   _tag    : 'Message';
@@ -50,7 +50,7 @@ export const modal = (snapshot: Hydrant.Snapshot): Modal => {
   };
 };
 
-export const diff = (self: DiscordData, other: DiscordData): Patch.Patch<DiscordData> => {
+export const diff = (self: Reply, other: Reply): Patch.Patch<Reply> => {
   if (self._tag !== other._tag) {
     return Patch.empty;
   }

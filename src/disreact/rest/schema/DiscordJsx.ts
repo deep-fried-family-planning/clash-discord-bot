@@ -4,6 +4,7 @@ import {Discord} from 'dfx';
 import * as BigInt from 'effect/BigInt';
 import * as S from 'effect/Schema';
 import type * as Types from 'effect/Types';
+import * as DiscordIO from '#disreact/rest/schema/DiscordIO.ts';
 
 export const Emoji = 'emoji';
 export const EmojiAttributes = S.Struct({
@@ -12,11 +13,7 @@ export const EmojiAttributes = S.Struct({
   animated: S.optional(S.Boolean),
 });
 export const EmojiChildren = S.Struct({});
-export const EmojiEncoding = S.Struct({
-  name    : S.optional(S.String),
-  id      : S.optional(S.String),
-  animated: S.optional(S.Boolean),
-});
+export const EmojiEncoding = DiscordIO.EmojiOut;
 export const encodeEmoji: Encoder<typeof Emoji> = (self) => {
   return {
     name    : self.props.name,

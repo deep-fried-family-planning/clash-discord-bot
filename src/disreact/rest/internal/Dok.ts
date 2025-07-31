@@ -1,8 +1,10 @@
 import type * as Snowflake from '#disreact/rest/schema/Snowflake.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
-import type {Discord} from 'dfx';
-
+// import * as Discord from 'dfx/types';
+import {Discord} from 'dfx';
+import * as Flags from 'dfx/Helpers/flags';
 import type * as DateTime from 'effect/DateTime';
+import {dual} from 'effect/Function';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
 import * as Redacted from 'effect/Redacted';
@@ -41,7 +43,7 @@ const DokenPrototype = declareProto<Doken>({
   ...Inspectable.BaseProto,
   toJSON() {
     return {
-      _id  : 'DiscordInteractionToken',
+      _id  : 'Doken',
       app  : this.app,
       state: this.state,
       type : this.type,
@@ -53,28 +55,34 @@ const DokenPrototype = declareProto<Doken>({
 });
 
 export interface Input<S extends State = State, T extends Type = Type> {
-  app  : string;
-  id   : string;
-  state: S;
-  type : S extends 'Fresh' ? T : undefined;
-  value: string | undefined;
-  flags: number | undefined;
+  app   : string;
+  id    : string;
+  state : S;
+  type? : S extends 'Fresh' ? undefined : T;
+  value?: string | undefined;
+  flags : number | undefined;
 }
+import * as Data from 'effect/Data';
 
 export const make = <S extends State, T extends Type>(input: Input<S, T>): Doken<S, T> => {
-  const self = fromProto(DokenPrototype);
+  const self = fromProto(DokenPrototype) as Doken<S, T>;
   self.app = input.app;
-  self.state = input.state;
-  self.type = input.type;
   self.id = input.id;
+  self.state = input.state;
+  self.type = input.type as any;
   self.value = input.value ? Redacted.make(input.value) : CACHE_NULL;
   self.flags = input.flags;
-  return self;
+  return Data.struct(self);
 };
 
-export const fresh = (ix: Discord.APIInteraction): Doken => {
-  const self = fromProto(DokenPrototype);
-};
+export const fromIx = (ix: Discord.APIInteraction): Doken<'Fresh'> =>
+  make({
+    app  : ix.application_id,
+    id   : ix.id,
+    state: 'Fresh',
+    value: ix.token,
+    flags: ix.message?.flags,
+  });
 
 export interface Value {
   app  : Snowflake.Snowflake;
@@ -87,10 +95,12 @@ export const value = <A extends Doken>(self: A): Value => {
   if (!self.type || self.value === CACHE_NULL) {
     throw new Error();
   }
-  return {
+  return Data.struct({
     app  : self.app,
     id   : self.id,
     value: Redacted.value(self.value),
-    flags: self.flags === 64 ? 64 : undefined,
-  };
+    flags: !self.flags ? undefined :
+           Flags.has(Discord.MessageFlags.Ephemeral)(self.flags) ? Discord.MessageFlags.Ephemeral :
+           undefined,
+  });
 };
