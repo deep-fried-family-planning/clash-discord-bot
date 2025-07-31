@@ -1,4 +1,4 @@
-import {Discord, Flags} from 'dfx';
+import {Discord} from 'dfx';
 import * as S from 'effect/Schema';
 
 /**
@@ -596,6 +596,18 @@ export const TextInputParagraphOut = S.Struct({
   id         : Int32IdOut,
   type       : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
   style      : S.tag(Discord.TextInputStyleTypes.PARAGRAPH),
+  custom_id  : CustomIdOut,
+  value      : S.optional(S.String.pipe(S.maxLength(4000))),
+  label      : S.optional(S.String.pipe(S.maxLength(45))),
+  placeholder: S.optional(S.String.pipe(S.maxLength(100))),
+  required   : S.optional(S.Boolean),
+  min_length : S.optional(S.Int.pipe(S.positive(), S.between(0, 4000))),
+  max_length : S.optional(S.Int.pipe(S.positive(), S.between(1, 4000))),
+});
+export const TextInputOut = S.Struct({
+  id         : Int32IdOut,
+  type       : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
+  style      : S.Enums(Discord.TextInputStyleTypes).pipe(S.optionalWith({default: () => Discord.TextInputStyleTypes.SHORT})),
   custom_id  : CustomIdOut,
   value      : S.optional(S.String.pipe(S.maxLength(4000))),
   label      : S.optional(S.String.pipe(S.maxLength(45))),
