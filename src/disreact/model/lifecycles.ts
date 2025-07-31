@@ -1,12 +1,12 @@
-import type * as Patch from '#disreact/model/internal/core/Patch.ts';
-import * as Stack from '#disreact/model/internal/core/Stack.ts';
+import type * as Patch from '#disreact/core/Patch.ts';
+import * as Stack from '#disreact/core/Stack.ts';
 import type * as Elem from '#disreact/model/internal/Element.ts';
 import * as Element from '#disreact/model/internal/Element.ts';
 import * as Envelope from '#disreact/model/internal/Envelope.ts';
 import * as Hooks from '#disreact/model/runtime/Hooks.ts';
 import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
 import type * as Jsx from '#disreact/model/internal/Jsx.tsx';
-import * as JsxDefault from '#disreact/adaptor/intrinsic/index.ts';
+import * as JsxDefault from '#disreact/a/intrinsic/index.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';

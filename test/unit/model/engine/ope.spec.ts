@@ -1,11 +1,8 @@
-// import {Rehydrator} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
 import {MessageAsync} from '#unit/components/message-async.tsx';
 import {MessageEffect} from '#unit/components/message-effect.tsx';
 import {MessageSync} from '#unit/components/message-sync.tsx';
 import {TestMessage} from '#unit/components/test-message.tsx';
-import {Effect} from 'effect';
-// import {it} from '#unit/components/TestRegistry.tsx';
-import * as E from 'effect/Effect';
+import * as Effect from 'effect/Effect';
 import * as Envelope from '#disreact/model/internal/Envelope.ts';
 import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
@@ -17,13 +14,17 @@ Entrypoint.register('MessageAsync', MessageAsync);
 Entrypoint.register('MessageEffect', MessageEffect);
 Entrypoint.register('TestMessage', TestMessage);
 
-const check = E.fn(function* () {
-  const hydrant = yield* Hydrant.fromRegistry(MessageSync, {});
+const testInitialize = Effect.fn(function* (fc: any, props: any) {
+  const hydrant = yield* Hydrant.fromRegistry(fc, props);
   const root = yield* Envelope.make(hydrant, {});
   const init = yield* lifecycle.initializeCycle(root);
   const rerendered = yield* lifecycle.rerenderCycle(init);
   const encoded = yield* lifecycle.encodeCycle(rerendered);
+  return encoded;
+});
 
+it.effect('when rendering sync', Effect.fn(function* () {
+  const encoded = yield* testInitialize(MessageSync, {});
   expect(encoded.payload).toMatchInlineSnapshot(`
     {
       "components": [
@@ -55,18 +56,107 @@ const check = E.fn(function* () {
       ],
     }
   `);
-});
-
-it.effect('when rendering sync', check);
+}));
 
 it.effect('when rendering syncs', Effect.fn(function* () {
   let i = 10000;
 
   while (i) {
     i--;
-    yield* check();
+    yield* testInitialize(MessageSync, {});
   }
 }));
+
+it.effect('when rendering async', Effect.fn(function* () {
+  const encoded = yield* testInitialize(MessageAsync, {});
+  expect(encoded.payload).toMatchInlineSnapshot(`
+    {
+      "components": [
+        {
+          "components": [
+            {
+              "label": "ButtonSync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonAsync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonEffect",
+              "style": 1,
+              "type": 2,
+            },
+          ],
+          "type": 1,
+        },
+      ],
+      "embeds": [
+        {
+          "description": "MessageAsync",
+        },
+      ],
+      "flags": 64,
+    }
+  `);
+}));
+
+it.effect('when rendering asyncs', Effect.fn(function* () {
+  let i = 10000;
+
+  while (i) {
+    i--;
+    yield* testInitialize(MessageAsync, {});
+  }
+}));
+
+it.effect('when rendering effect', Effect.fn(function* () {
+  const encoded = yield* testInitialize(MessageEffect, {});
+  expect(encoded.payload).toMatchInlineSnapshot(`
+    {
+      "components": [
+        {
+          "components": [
+            {
+              "label": "ButtonSync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonAsync",
+              "style": 1,
+              "type": 2,
+            },
+            {
+              "label": "ButtonEffect",
+              "style": 1,
+              "type": 2,
+            },
+          ],
+          "type": 1,
+        },
+      ],
+      "embeds": [
+        {
+          "description": "EphemeralEffect",
+        },
+      ],
+      "flags": 64,
+    }
+  `);
+}));
+
+it.effect('when rendering effects', Effect.fn(function* () {
+  let i = 10000;
+
+  while (i) {
+    i--;
+    yield* testInitialize(MessageEffect, {});
+  }
+}));
+
 
 // it.effect('when rendering async', E.fn(function* () {
 //   const root = yield* Rehydrator.checkout(MessageAsync, {});

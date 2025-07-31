@@ -1,5 +1,5 @@
-import type * as Marker from '#disreact/model/internal/core/Marker.ts';
-import type * as Traversable from '#disreact/model/internal/core/Traversable.ts';
+import type * as Marker from '#disreact/core/Marker.ts';
+import type * as Traversable from '#disreact/core/Traversable.ts';
 import * as Element from '#disreact/model/internal/Element.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
 import * as Hydrant from '#disreact/model/internal/Hydrant.ts';

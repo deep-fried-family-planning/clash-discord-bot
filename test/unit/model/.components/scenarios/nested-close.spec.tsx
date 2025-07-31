@@ -1,7 +1,7 @@
 import {usePage} from '#src/disreact/index.ts';
-import * as Model from '#src/disreact/adaptor/adaptor/Model.ts';
-import {Relay} from '#src/disreact/adaptor/adaptor/Relay.ts';
-import {Rehydrator} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
+import * as Model from '#disreact/a/adaptor/Model.ts';
+import {Relay} from '#disreact/a/adaptor/Relay.ts';
+import {Rehydrator} from '#disreact/a/adaptor/Rehydrator.ts';
 import {sjson} from '#unit/model/.components/scenarios/util.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';

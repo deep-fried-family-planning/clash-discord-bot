@@ -1,5 +1,5 @@
-import * as Progress from '#disreact/model/internal/core/Marker.ts';
-import * as Patch from '#disreact/model/internal/core/Patch.ts';
+import * as Progress from '#disreact/core/Marker.ts';
+import * as Patch from '#disreact/core/Patch.ts';
 import type * as Polymer from '#disreact/model/internal/Polymer.ts';
 import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/model/internal/Polymer.ts';
 import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';

@@ -1,4 +1,4 @@
-import {Rehydrator} from '#src/disreact/adaptor/adaptor/Rehydrator.ts';
+import {Rehydrator} from '#disreact/a/adaptor/Rehydrator.ts';
 import {ButtonEffect} from '#unit/components/button-effect.tsx';
 
 const TestLayer = Rehydrator.Default({

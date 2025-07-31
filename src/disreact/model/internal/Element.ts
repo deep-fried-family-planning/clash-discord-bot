@@ -1,7 +1,7 @@
-import * as Marker from '#disreact/model/internal/core/Marker.ts';
-import * as Patch from '#disreact/model/internal/core/Patch.ts';
-import * as Stack from '#disreact/model/internal/core/Stack.ts';
-import * as Traversable from '#disreact/model/internal/core/Traversable.ts';
+import * as Marker from '#disreact/core/Marker.ts';
+import * as Patch from '#disreact/core/Patch.ts';
+import * as Stack from '#disreact/core/Stack.ts';
+import * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Envelope from '#disreact/model/internal/Envelope.ts';
 import * as Polymer from '#disreact/model/internal/Polymer.ts';
 import * as Hydrant from '#disreact/model/internal/Hydrant.ts';

@@ -1,4 +1,4 @@
-import * as FC from '#src/disreact/adaptor/codec/fc.ts';
+import * as FC from '#disreact/a/codec/fc.ts';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';

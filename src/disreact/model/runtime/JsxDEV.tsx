@@ -1,6 +1,6 @@
 import type * as Jsx from '#disreact/model/internal/Jsx.tsx';
 import * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
-import * as Effect from 'effect/Effect';
+import  * as DiscordJsx from '#disreact/codec/DiscordJsx.ts';
 
 export const Fragment = JsxRuntime.Fragment;
 
@@ -26,5 +26,10 @@ export const makeDEV = (
   }
   (elem as JsxDEV).src = src;
   (elem as JsxDEV).ctx = ctx;
+
+  if (typeof elem.type === 'string') {
+    DiscordJsx.jsxValidateDEV(elem);
+  }
+
   return elem;
 };

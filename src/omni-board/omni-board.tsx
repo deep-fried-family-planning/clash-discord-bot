@@ -1,6 +1,6 @@
 import {StartMenu} from '#src/omni-board/start-menu.tsx';
 import {usePage} from '#src/disreact/index.ts';
-import type {FC} from '#src/disreact/adaptor/codec/fc.ts';
+import type {FC} from '#disreact/a/codec/fc.ts';
 
 export const OmniBoard: FC = () => {
   const page = usePage();

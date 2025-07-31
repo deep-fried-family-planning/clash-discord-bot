@@ -23,6 +23,9 @@ export const get = (lookup: Lookup) => registry.get(getId(lookup)!)!;
 
 export const register = <A extends Jsx.FC>(id: string, source: A): A => {
   if (registry.has(id)) {
+    if (source === registry.get(id)!) {
+      return source;
+    }
     throw new Error(`Duplicate registration: ${id}`);
   }
   registry.set(id, source); // todo
