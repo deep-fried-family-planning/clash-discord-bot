@@ -1,6 +1,6 @@
 import * as S from 'effect/Schema';
 import * as Data from 'effect/Data';
-import * as Spec from '#disreact/codec/JsxSpec.ts';
+import * as Spec from '#disreact/engine/internal/JsxSpec.ts';
 
 const RehydrantId = S.TemplateLiteralParser(
   ...Spec.ControlledId.params,
@@ -14,32 +14,36 @@ const parseRehydrantCustomIdFragment = (id: string) => {
   return fragment as string;
 };
 
-export const impureMergeHydratorString = (hydrator: string, components: any[]) => {
-  const totalRequired = hydrator.length;
-  let totalAvailable = 0;
+export const appendRehydrantCustomIdFragment = (id: string, fragment: string) => {
+  return `${id}/${fragment}`;
+};
 
-  if (totalRequired > 4000) {
+export const impureMergeHydratorString = (hydrator: string, components: any[]) => {
+  const required = hydrator.length;
+
+  if (required > 4000) {
     return false;
   }
 
   const controlled = [] as any[];
+  let available = 0;
 
   for (let i = 0; i < components.length; i++) {
-    const component = components[i];
-    const id = component.custom_id;
+    const c = components[i];
+    const id = c.custom_id;
 
     if (
       id !== undefined &&
-      'custom_id' in component &&
-        Spec.isControlledId(component.custom_id)
+      'custom_id' in c &&
+        Spec.isControlledId(c.custom_id)
     ) {
-      const available = 99 - component.custom_id.length;
-      controlled.push([component, `/${hydrator.substring(totalAvailable, totalAvailable + available)}`]);
-      totalAvailable += available;
+      const space = 99 - c.custom_id.length;
+      controlled.push([c, `/${hydrator.substring(available, available + space)}`]);
+      available += space;
     }
   }
 
-  if (totalAvailable < totalRequired) {
+  if (available < required) {
     return false;
   }
 

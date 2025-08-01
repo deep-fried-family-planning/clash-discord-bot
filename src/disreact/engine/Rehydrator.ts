@@ -7,4 +7,5 @@ export class Rehydrator extends Effect.Service<Rehydrator>()('disreact/Rehydrato
     };
   }),
   accessors: true,
-}) {}
+})
+{}

@@ -1,4 +1,5 @@
 import * as Data from 'effect/Data';
+import * as Equal from 'effect/Equal';
 import * as Record from 'effect/Record';
 
 export const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
@@ -6,6 +7,9 @@ export const purgeUndefinedKeys = <A extends Record<string, any>>(obj: A): A =>
 
 export const unsafeDeepHash = <A>(data: A): A => {
   if (!data || typeof data !== 'object') {
+    return data;
+  }
+  if (Equal.isEqual(data)) {
     return data;
   }
   if (Array.isArray(data)) {

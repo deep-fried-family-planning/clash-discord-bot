@@ -1,5 +1,5 @@
-import * as Rest from '#disreact/codec/a/codec/rest-element.ts';
-import * as Norm from '#disreact/codec/a/intrinsic/norm.ts';
+import * as Rest from '#disreact/core/a/codec/rest-element.ts';
+import * as Norm from '#disreact/core/a/intrinsic/norm.ts';
 import * as DiscordIO from '#disreact/codec/DiscordIO.ts';
 import type * as Jsx from '#disreact/engine/internal/Jsx.tsx';
 import {Discord} from 'dfx';

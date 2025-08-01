@@ -6,7 +6,7 @@ import * as Envelope from '#disreact/engine/internal/Envelope.ts';
 import * as Hooks from '#disreact/engine/runtime/Hooks.ts';
 import * as Hydrant from '#disreact/engine/internal/Hydrant.ts';
 import type * as Jsx from '#disreact/engine/internal/Jsx.tsx';
-import * as JsxDefault from '#disreact/codec/a/intrinsic/index.ts';
+import * as JsxDefault from '#disreact/core/a/intrinsic/index.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
 import * as Array from 'effect/Array';
 import * as Effect from 'effect/Effect';

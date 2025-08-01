@@ -12,17 +12,17 @@ export class ModelDecodeError extends Data.TaggedError('ModelDecodeError')<{
 }>
 {}
 
-export type CodecUnit = {
-  type    : string;
-  props   : Record<string, any>;
-  children: CodecUnit[];
+export type CodecConfig = {
+  primitive: string;
+  normalize: Record<string, string>;
+  transform: Record<string, (self: any) => any>;
 };
 
-export type CodecConfig = {};
-
-export class Codec extends Effect.Service<Codec>()('disreact/Transformer', {
+export class Codec extends Effect.Service<Codec>()('disreact/Codec', {
   effect: Effect.fnUntraced(function* (config: CodecConfig) {
-    return {};
+    return {
+
+    };
   }),
   accessors: true,
 })

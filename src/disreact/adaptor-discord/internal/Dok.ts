@@ -1,4 +1,4 @@
-import type * as Snowflake from '#disreact/codec/Snowflake.ts';
+import type * as Snowflake from '#disreact/codec/constants/Snowflake.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 // import * as Discord from 'dfx/types';
 import {Discord} from 'dfx';

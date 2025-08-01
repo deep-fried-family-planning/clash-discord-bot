@@ -1,4 +1,4 @@
-import * as Hook from '#disreact/codec/a/model/runtime/hooks.ts';
+import * as Hook from '#disreact/core/a/model/runtime/hooks.ts';
 
 export const useState = Hook.$useState;
 export const useReducer = Hook.$useReducer;

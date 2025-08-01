@@ -1,9 +1,9 @@
-import {Codec} from '#disreact/codec/a/codec/Codec.ts';
-import type {Envelope} from '#disreact/codec/a/adaptor/envelope.ts';
-import {Rehydrator, type RehydratorConfig} from '#disreact/codec/a/adaptor/Rehydrator.ts';
+import {Codec} from '#disreact/core/a/codec/Codec.ts';
+import type {Envelope} from '#disreact/core/a/adaptor/envelope.ts';
+import {Rehydrator, type RehydratorConfig} from '#disreact/core/a/adaptor/Rehydrator.ts';
 import {DiscordDOM} from '#disreact/adaptor-discord/service/DiscordDOM.ts';
 import {DokenCache, type DokenCacheConfig} from '#disreact/adaptor-discord/service/DokenCache.ts';
-import * as Methods from '#disreact/codec/a/methods.ts';
+import * as Methods from '#disreact/core/a/methods.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as L from 'effect/Layer';
