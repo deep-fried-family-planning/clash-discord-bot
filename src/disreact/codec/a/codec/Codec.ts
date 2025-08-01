@@ -1,5 +1,5 @@
-import {Rx} from '#disreact/a/codec/rx.ts';
-import {Tx} from '#disreact/a/codec/tx.ts';
+import {Rx} from '#disreact/codec/a/codec/rx.ts';
+import {Tx} from '#disreact/codec/a/codec/tx.ts';
 import * as E from 'effect/Effect';
 import * as S from 'effect/Schema';
 

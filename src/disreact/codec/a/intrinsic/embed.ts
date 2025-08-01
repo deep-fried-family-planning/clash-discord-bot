@@ -1,6 +1,6 @@
 import * as S from 'effect/Schema';
-import * as Norm from '#disreact/a/intrinsic/norm.ts';
-import * as Rest from '#disreact/a/codec/rest-element.ts';
+import * as Norm from '#disreact/codec/a/intrinsic/norm.ts';
+import * as Rest from '#disreact/codec/a/codec/rest-element.ts';
 
 export const AUTHOR = 'author';
 export const AuthorAttributes = Rest.Attributes({

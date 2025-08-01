@@ -1,7 +1,7 @@
-import {Codec} from '#disreact/a/codec/Codec.ts';
-import * as Doken from '#disreact/a/codec/doken.ts';
-import type {DokenCacheError} from '#disreact/adaptor/DokenCache.ts';
-import {DokenCache} from '#disreact/adaptor/DokenCache.ts';
+import {Codec} from '#disreact/codec/a/codec/Codec.ts';
+import * as Doken from '#disreact/codec/a/codec/doken.ts';
+import type {DokenCacheError} from '#disreact/adaptor-discord/service/DokenCache.ts';
+import {DokenCache} from '#disreact/adaptor-discord/service/DokenCache.ts';
 import type {HttpClientError} from '@effect/platform/HttpClientError';
 import type {TimeoutException} from 'effect/Cause';
 import * as Data from 'effect/Data';

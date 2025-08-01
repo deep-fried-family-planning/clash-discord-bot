@@ -5,10 +5,10 @@ import {MessageSync} from '#unit/components/message-sync.tsx';
 import {TestMessage} from '#unit/components/test-message.tsx';
 // import {it} from '#unit/components/TestRegistry.tsx';
 import * as E from 'effect/Effect';
-import * as Envelope from '#disreact/model/internal/Envelope.ts';
-import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
-import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as lifecycle from '#disreact/model/lifecycles.ts';
+import * as Envelope from '#disreact/engine/internal/Envelope.ts';
+import * as Hydrant from '#disreact/engine/internal/Hydrant.ts';
+import * as Entrypoint from '#disreact/engine/runtime/Entrypoint.ts';
+import * as lifecycle from '#disreact/engine/lifecycles.ts';
 import {it} from '@effect/vitest';
 
 Entrypoint.register('MessageSync', MessageSync);

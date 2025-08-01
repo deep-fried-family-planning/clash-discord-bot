@@ -1,7 +1,7 @@
 import {noop} from '#disreact/core/immutable/constants.ts';
 import * as FC from '#disreact/core/internal/fn.ts';
-import * as Hooks from '#disreact/a/model/runtime/hooks.ts';
-import * as Jsx from '#disreact/a/model/runtime/jsx.tsx';
+import * as Hooks from '#disreact/codec/a/model/runtime/hooks.ts';
+import * as Jsx from '#disreact/codec/a/model/runtime/jsx.tsx';
 
 export const useInteraction = Hooks.$useInteraction;
 export const useState = Hooks.$useState;

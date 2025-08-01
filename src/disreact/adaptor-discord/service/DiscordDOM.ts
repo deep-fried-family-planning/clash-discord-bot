@@ -1,5 +1,5 @@
 import {DiscordRESTEnv} from '#config/external.ts';
-import type * as Doken from '#disreact/adaptor/internal/Doken.ts';
+import type * as Doken from '#disreact/adaptor-discord/internal/Doken.ts';
 import * as NodeHttpClient from '@effect/platform-node/NodeHttpClient';
 import type * as HttpClientError from '@effect/platform/HttpClientError';
 import {Discord, DiscordConfig, DiscordREST, DiscordRESTMemoryLive} from 'dfx';

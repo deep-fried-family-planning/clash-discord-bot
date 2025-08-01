@@ -3,7 +3,7 @@ import type * as Duration from 'effect/Duration';
 import {hole} from 'effect/Function';
 import * as S from 'effect/Schema';
 
-export * as Snowflake from '#disreact/a/codec/dapi/snowflake.ts';
+export * as Snowflake from '#disreact/codec/a/codec/dapi/snowflake.ts';
 export type Snowflake = string;
 
 export const toDateTime = (id: string) =>

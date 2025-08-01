@@ -1,5 +1,5 @@
-import type {DokenCacheError} from '#disreact/adaptor/DokenCache.ts';
-import * as Doken from '#disreact/adaptor/internal/Doken.ts';
+import type {DokenCacheError} from '#disreact/adaptor-discord/service/DokenCache.ts';
+import * as Doken from '#disreact/adaptor-discord/internal/Doken.ts';
 import type {Discord} from 'dfx';
 import * as DateTime from 'effect/DateTime';
 import * as Effect from 'effect/Effect';

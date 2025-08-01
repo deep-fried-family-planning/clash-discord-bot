@@ -1,4 +1,4 @@
-import {Snowflake} from '#disreact/a/codec/dapi/snowflake.ts';
+import {Snowflake} from '#disreact/codec/a/codec/dapi/snowflake.ts';
 import * as DateTime from 'effect/DateTime';
 import * as Duration from 'effect/Duration';
 import * as E from 'effect/Effect';

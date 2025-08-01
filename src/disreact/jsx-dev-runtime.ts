@@ -1,4 +1,4 @@
-import * as JsxDEV from '#disreact/model/runtime/JsxDEV.tsx';
+import * as JsxDEV from '#disreact/engine/runtime/JsxDEV.tsx';
 import type * as DiscordJsx from '#disreact/codec/DiscordJsx.ts';
 
 export const Fragment = JsxDEV.Fragment,

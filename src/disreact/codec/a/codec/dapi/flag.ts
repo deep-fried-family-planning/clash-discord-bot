@@ -1,6 +1,6 @@
 import {Literal} from 'effect/Schema';
 
-export * as Flag from '#disreact/a/codec/dapi/flag.ts';
+export * as Flag from '#disreact/codec/a/codec/dapi/flag.ts';
 
 export const FRESH = 0;
 export const PUBLIC = 1;

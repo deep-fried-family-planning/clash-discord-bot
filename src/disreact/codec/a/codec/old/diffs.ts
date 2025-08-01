@@ -1,4 +1,4 @@
-import * as Element from '#disreact/a/adaptor/element.ts';
+import * as Element from '#disreact/codec/a/adaptor/element.ts';
 import * as Polymer from '#disreact/core/internal/polymer.ts';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';

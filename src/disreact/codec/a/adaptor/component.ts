@@ -1,9 +1,9 @@
 import {proto} from '#disreact/core/behaviors/proto.ts';
-import * as Element from '#disreact/a/adaptor/element.ts';
+import * as Element from '#disreact/codec/a/adaptor/element.ts';
 import * as FC from '#disreact/core/internal/fn.ts';
-import type * as Rehydrant from '#disreact/a/adaptor/envelope.ts';
+import type * as Rehydrant from '#disreact/codec/a/adaptor/envelope.ts';
 import * as Polymer from '#disreact/core/internal/polymer.ts';
-import * as Mutex from '#disreact/a/adaptor/mutex.ts';
+import * as Mutex from '#disreact/codec/a/adaptor/mutex.ts';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';
 import * as P from 'effect/Predicate';

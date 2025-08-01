@@ -1,12 +1,12 @@
-import * as DAPI from '#disreact/a/codec/dapi/dapi.ts';
-import * as Doken from '#disreact/a/codec/doken.ts';
-import * as Container from '#disreact/a/intrinsic/container.ts';
-import * as Params from '#disreact/a/codec/params.ts';
-import * as Declarations from '#disreact/a/codec/old/declarations.ts';
+import * as DAPI from '#disreact/codec/a/codec/dapi/dapi.ts';
+import * as Doken from '#disreact/codec/a/codec/doken.ts';
+import * as Container from '#disreact/codec/a/intrinsic/container.ts';
+import * as Params from '#disreact/codec/a/codec/params.ts';
+import * as Declarations from '#disreact/codec/a/codec/old/declarations.ts';
 import {hole as forbidden, pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
 
-export * as Rx from '#disreact/a/codec/rx.ts';
+export * as Rx from '#disreact/codec/a/codec/rx.ts';
 export type Rx = never;
 
 const Modal = pipe(

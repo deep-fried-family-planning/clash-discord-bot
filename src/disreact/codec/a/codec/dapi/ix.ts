@@ -1,9 +1,9 @@
-import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#disreact/a/codec/dapi/common.ts';
+import {AssetHash, AvatarHash, BannerHash, ChannelId, CustomId, EmailAddress, EmailVerified, InteractionId, LocaleOption, MessageId, MFAEnabled, OAuth2BotUser, OfficialSystemUser, RoleId, SnowFlake, UserDiscordTag, UserDisplayName, UserId, UserName, VisiblePlainText} from '#disreact/codec/a/codec/dapi/common.ts';
 import * as S from 'effect/Schema';
 import {PremiumTypes} from 'dfx/types';
-import {DAPIMessage} from '#disreact/a/codec/dapi/dapi-message.ts';
+import {DAPIMessage} from '#disreact/codec/a/codec/dapi/dapi-message.ts';
 
-export * as Ix from '#disreact/a/codec/dapi/ix.ts';
+export * as Ix from '#disreact/codec/a/codec/dapi/ix.ts';
 export type Ix = never;
 
 const InteractionMetadataUser = S.Struct({

@@ -1,12 +1,12 @@
-import * as DAPI from '#disreact/a/codec/dapi/dapi.ts';
-import * as Doken from '#disreact/a/codec/doken.ts';
-import * as Container from '#disreact/a/intrinsic/container.ts';
-import * as Params from '#disreact/a/codec/params.ts';
-import * as Declarations from '#disreact/a/codec/old/declarations.ts';
+import * as DAPI from '#disreact/codec/a/codec/dapi/dapi.ts';
+import * as Doken from '#disreact/codec/a/codec/doken.ts';
+import * as Container from '#disreact/codec/a/intrinsic/container.ts';
+import * as Params from '#disreact/codec/a/codec/params.ts';
+import * as Declarations from '#disreact/codec/a/codec/old/declarations.ts';
 import {hole as forbidden} from 'effect/Function';
 import * as S from 'effect/Schema';
 
-export * as Tx from '#disreact/a/codec/tx.ts';
+export * as Tx from '#disreact/codec/a/codec/tx.ts';
 export type Tx = never;
 
 const Modal = S.transform(

@@ -1,5 +1,5 @@
-import type * as Jsx from '#disreact/model/internal/Jsx.tsx';
-import * as JsxRuntime from '#disreact/model/runtime/JsxRuntime.tsx';
+import type * as Jsx from '#disreact/engine/internal/Jsx.tsx';
+import * as JsxRuntime from '#disreact/engine/runtime/JsxRuntime.tsx';
 import  * as DiscordJsx from '#disreact/codec/DiscordJsx.ts';
 
 export const Fragment = JsxRuntime.Fragment;

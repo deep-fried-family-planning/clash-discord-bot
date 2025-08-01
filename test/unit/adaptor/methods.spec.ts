@@ -1,7 +1,7 @@
-import {Snowflake} from '#disreact/a/codec/dapi/snowflake';
-import {DiscordDOM} from '#disreact/adaptor/DiscordDOM.ts';
-import * as Methods from '#disreact/a/methods.ts';
-import * as Runtime from '#disreact/a/runtime.ts';
+import {Snowflake} from '#disreact/codec/a/codec/dapi/snowflake';
+import {DiscordDOM} from '#disreact/adaptor-discord/service/DiscordDOM.ts';
+import * as Methods from '#disreact/codec/a/methods.ts';
+import * as Runtime from '#disreact/codec/a/runtime.ts';
 import {TestMessage} from '#test/unit/components/test-message.tsx';
 import {testmessage} from '#unit/adaptor/methods.testdata.ts';
 import {SNAP} from '#test/unit/snapkey.ts';

@@ -1,6 +1,6 @@
-import * as Doken from '#disreact/a/codec/doken.ts';
+import * as Doken from '#disreact/codec/a/codec/doken.ts';
 import * as S from 'effect/Schema';
-import * as Declarations from '#disreact/a/codec/old/declarations.ts';
+import * as Declarations from '#disreact/codec/a/codec/old/declarations.ts';
 
 export const SourceCustomId = S.transform(
   S.TemplateLiteralParser(

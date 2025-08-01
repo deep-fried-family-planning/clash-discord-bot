@@ -1,9 +1,9 @@
 import type * as Marker from '#disreact/core/Marker.ts';
 import type * as Traversable from '#disreact/core/Traversable.ts';
-import * as Element from '#disreact/model/internal/Element.ts';
-import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as Hydrant from '#disreact/model/internal/Hydrant.ts';
-import type * as Jsx from '#disreact/model/internal/Jsx.tsx';
+import * as Element from '#disreact/engine/internal/Element.ts';
+import * as Entrypoint from '#disreact/engine/runtime/Entrypoint.ts';
+import * as Hydrant from '#disreact/engine/internal/Hydrant.ts';
+import type * as Jsx from '#disreact/engine/internal/Jsx.tsx';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';

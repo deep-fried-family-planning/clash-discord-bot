@@ -1,7 +1,7 @@
 import {pipe} from 'effect/Function';
 import * as S from 'effect/Schema';
 
-export * as DAPIComponent from '#disreact/a/codec/dapi/dapi-component.ts';
+export * as DAPIComponent from '#disreact/codec/a/codec/dapi/dapi-component.ts';
 export type DAPIComponent = never;
 
 export const ACTION_ROW     = 1,

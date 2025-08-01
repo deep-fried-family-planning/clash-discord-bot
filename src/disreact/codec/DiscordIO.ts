@@ -1,6 +1,36 @@
 import {parseHex} from '#disreact/util/utils.ts';
 import {Discord} from 'dfx';
+import * as DateTime from 'effect/DateTime';
+import type * as Duration from 'effect/Duration';
 import * as S from 'effect/Schema';
+
+export const
+  Epoch     = 1_420_070_400_000,
+  EpochBits = 22n;
+
+export const parseMillis = (snowflake: string | bigint) =>
+  Number(BigInt(snowflake) >> EpochBits) + Epoch;
+
+export const parseUtc = (snowflake: string | bigint) =>
+  DateTime.unsafeMake(
+    parseMillis(snowflake),
+  );
+
+export const Snowflake = S.String;
+
+export type Snowflake = bigint | string;
+
+export type SnowflakeJSON = string;
+
+export const TimeToLive = (duration: Duration.Duration) =>
+  S.transform(
+    Snowflake,
+    S.typeSchema(S.DateTimeUtcFromSelf),
+    {
+      encode: () => '',
+      decode: (id) => DateTime.addDuration(parseUtc(id), duration),
+    },
+  );
 
 export const
   Int32IdInput   = S.optional(S.Number),
@@ -678,3 +708,17 @@ export const ModalOutput = S.Struct({
   title     : Str45,
   components: S.Array(ModalRowOutput).pipe(S.minItems(1), S.maxItems(5)),
 });
+
+export const
+  bold      = (s: string) => `**${s}**`,
+  italic    = (s: string) => `*${s}*`,
+  underline = (s: string) => `__${s}__`,
+  strike    = (s: string) => `~~${s}~~`,
+  spoiler   = (s: string) => `||${s}||`,
+  code      = (s: string) => `\`${s}\``,
+  newline = (s: string) => `\n${s}`,
+  quote     = (s: string) => `> ${s}`,
+  quotes    = (s: string) => `>> ${s}`,
+  hide      = (s: string) => `<${s}>`,
+  mask      = (s: string, t: string) => ``,
+  indent    = (s: string) => `  ${s}`;

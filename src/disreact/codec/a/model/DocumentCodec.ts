@@ -1,4 +1,4 @@
-import * as JsxDefault from '#disreact/a/intrinsic/index.ts';
+import * as JsxDefault from '#disreact/codec/a/intrinsic/index.ts';
 import type * as Document from '#disreact/core/behaviors/exp/documentold.ts';
 import * as Node from '#disreact/core/behaviors/exp/nodev1.ts';
 import * as E from 'effect/Effect';

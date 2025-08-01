@@ -1,5 +1,5 @@
 import type * as Patch from '#disreact/core/Patch.ts';
-import type * as Hydrant from '#disreact/model/internal/Hydrant.ts';
+import type * as Hydrant from '#disreact/engine/internal/Hydrant.ts';
 import type {Discord} from 'dfx';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Types from 'effect/Types';

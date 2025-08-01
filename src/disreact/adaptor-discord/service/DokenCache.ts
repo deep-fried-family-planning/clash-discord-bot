@@ -1,4 +1,4 @@
-import * as Doken from '#disreact/adaptor/internal/Doken.ts';
+import * as Doken from '#disreact/adaptor-discord/internal/Doken.ts';
 import type * as Cause from 'effect/Cause';
 import * as Cache from 'effect/Cache';
 import * as Data from 'effect/Data';
@@ -31,9 +31,7 @@ export type DokenCacheConfig = {
   capacity: number;
 };
 
-export interface DokenCacheService {
-  save: (doken: Doken.)
-}
+
 
 export class DokenCache extends Effect.Service<DokenCache>()('disreact/DokenCache', {
   effect: Effect.fnUntraced(function* (config: DokenCacheConfig) {

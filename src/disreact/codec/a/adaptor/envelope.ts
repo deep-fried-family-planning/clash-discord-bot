@@ -1,6 +1,6 @@
-import type * as Declarations from '#disreact/a/codec/old/declarations.ts';
-import type * as FC from '#disreact/a/codec/fc.ts';
-import type {Relay} from '#disreact/a/adaptor/Relay.ts';
+import type * as Declarations from '#disreact/codec/a/codec/old/declarations.ts';
+import type * as FC from '#disreact/codec/a/codec/fc.ts';
+import type {Relay} from '#disreact/codec/a/adaptor/Relay.ts';
 import * as Pipeable from 'effect/Pipeable';
 
 export interface Rehydrant {

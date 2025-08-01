@@ -1,6 +1,6 @@
 import * as S from 'effect/Schema';
 
-export * as DAPIEmbed from '#disreact/a/codec/dapi/dapi-embed.ts';
+export * as DAPIEmbed from '#disreact/codec/a/codec/dapi/dapi-embed.ts';
 export type DAPIEmbed = never;
 
 export const Embed = S.Struct({

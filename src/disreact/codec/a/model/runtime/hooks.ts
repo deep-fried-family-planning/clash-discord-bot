@@ -1,4 +1,4 @@
-import {Deps} from '#disreact/a/codec/old/deps.ts';
+import {Deps} from '#disreact/codec/a/codec/old/deps.ts';
 import type {Discord} from 'dfx';
 import type * as E from 'effect/Effect';
 import * as Equal from 'effect/Equal';

@@ -1,8 +1,8 @@
 import * as S from 'effect/Schema';
-import {DAPIComponent} from '#disreact/a/codec/dapi/dapi-component.ts';
-import {DAPIEmbed} from '#disreact/a/codec/dapi/dapi-embed.ts';
+import {DAPIComponent} from '#disreact/codec/a/codec/dapi/dapi-component.ts';
+import {DAPIEmbed} from '#disreact/codec/a/codec/dapi/dapi-embed.ts';
 
-export * as DAPIMessage from '#disreact/a/codec/dapi/dapi-message.ts';
+export * as DAPIMessage from '#disreact/codec/a/codec/dapi/dapi-message.ts';
 export type DAPIMessage = never;
 
 export const Base = S.Struct({

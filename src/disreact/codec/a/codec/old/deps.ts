@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import type * as El from '#disreact/a/adaptor/element.ts';
-import type * as Rehydrant from '#disreact/a/adaptor/envelope.ts';
+import type * as El from '#disreact/codec/a/adaptor/element.ts';
+import type * as Rehydrant from '#disreact/codec/a/adaptor/envelope.ts';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
 import * as GlobalValue from 'effect/GlobalValue';

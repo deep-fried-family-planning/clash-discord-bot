@@ -1,7 +1,7 @@
-import type {Envelope} from '#disreact/a/adaptor/envelope.ts';
-import type {EventDefect, RenderDefect, UpdateDefect} from '#disreact/a/adaptor/lifecycle.ts';
-import type {SourceDefect} from '#disreact/a/adaptor/Rehydrator.ts';
-import * as Progress from '#disreact/a/codec/old/progress2.ts';
+import type {Envelope} from '#disreact/codec/a/adaptor/envelope.ts';
+import type {EventDefect, RenderDefect, UpdateDefect} from '#disreact/codec/a/adaptor/lifecycle.ts';
+import type {SourceDefect} from '#disreact/codec/a/adaptor/Rehydrator.ts';
+import * as Progress from '#disreact/codec/a/codec/old/progress2.ts';
 import * as Deferred from 'effect/Deferred';
 import * as E from 'effect/Effect';
 import {pipe} from 'effect/Function';

@@ -1,5 +1,5 @@
 import * as Effect from 'effect/Effect';
-import type * as Doken from '#disreact/adaptor/internal/Doken.ts';
+import type * as Doken from '#disreact/adaptor-discord/internal/Doken.ts';
 import type * as Option from 'effect/Option';
 
 export interface Dokens {

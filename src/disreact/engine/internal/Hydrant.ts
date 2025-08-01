@@ -1,9 +1,9 @@
 import * as Progress from '#disreact/core/Marker.ts';
 import * as Patch from '#disreact/core/Patch.ts';
-import type * as Polymer from '#disreact/model/internal/Polymer.ts';
-import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/model/internal/Polymer.ts';
-import * as Entrypoint from '#disreact/model/runtime/Entrypoint.ts';
-import * as Jsx from '#disreact/model/internal/Jsx.tsx';
+import type * as Polymer from '#disreact/engine/internal/Polymer.ts';
+import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/engine/internal/Polymer.ts';
+import * as Entrypoint from '#disreact/engine/runtime/Entrypoint.ts';
+import * as Jsx from '#disreact/engine/internal/Jsx.tsx';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';

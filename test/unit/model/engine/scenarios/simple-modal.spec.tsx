@@ -1,4 +1,4 @@
-import { Snowflake } from '#disreact/a/codec/dapi/snowflake.ts';
+import { Snowflake } from '#disreact/codec/a/codec/dapi/snowflake.ts';
 import {SimpleMessage} from '#unit/components/simple-message.tsx';
 import {SimpleModal, SimpleModalService, SimpleModalServiceLogger} from '#unit/components/simple-modal.tsx';
 import {makeTestRuntime} from '#unit/util.ts';
