@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "engineStrict": true,
   "engines": {
     "node": "22.15.0"
@@ -75,13 +75,13 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@aws-sdk/client-scheduler": "3.857.0",
-    "@aws-sdk/lib-dynamodb": "3.857.0",
+    "@aws-sdk/client-scheduler": "3.858.0",
+    "@aws-sdk/lib-dynamodb": "3.858.0",
     "@changesets/cli": "2.29.5",
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
     "@discordjs/core": "2.2.0",
-    "@effect/language-service": "0.32.0",
+    "@effect/language-service": "0.33.1",
     "@effect/vitest": "0.25.0",
     "@eslint/js": "9.32.0",
     "@rsdoctor/cli": "1.1.10",
@@ -104,7 +104,7 @@
     "swagger-typescript-api": "13.2.7",
     "tsoa": "6.6.0",
     "tsx": "4.20.3",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "typescript-eslint": "8.38.0",
     "typescript-language-server": "4.3.4",
     "vite-tsconfig-paths": "5.1.4",
