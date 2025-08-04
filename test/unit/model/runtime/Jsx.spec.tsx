@@ -1,4 +1,4 @@
-import * as Jsx from '#disreact/engine/internal/Jsx.tsx';
+import * as Jsx from '#disreact/engine/entity/Jsx.tsx';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 
 const json = (actual: any) => JSON.stringify(actual, null, 2);

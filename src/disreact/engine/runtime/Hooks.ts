@@ -1,5 +1,5 @@
-import * as Polymer from '#disreact/engine/internal/Polymer.ts';
-import {EFFECT, HookError, REF, STATE} from '#disreact/engine/internal/Polymer.ts';
+import * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import {EFFECT, HookError, REF, STATE} from '#disreact/engine/entity/Polymer.ts';
 import type * as Effect from 'effect/Effect';
 import * as MutableRef from 'effect/MutableRef';
 

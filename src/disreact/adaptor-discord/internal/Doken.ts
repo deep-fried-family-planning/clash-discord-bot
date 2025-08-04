@@ -1,4 +1,4 @@
-import type {Base} from '#disreact/core/a/codec/dapi/dapi-message.ts';
+import type {Base} from '#src/internal/a/codec/dapi/dapi-message.ts';
 import * as Snowflake from '#disreact/codec/constants/Snowflake.ts';
 import type {Discord} from 'dfx';
 import * as DateTime from 'effect/DateTime';

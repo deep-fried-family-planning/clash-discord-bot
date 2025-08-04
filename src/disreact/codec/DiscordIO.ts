@@ -68,11 +68,13 @@ export const HexColor = S.transform(
   },
 );
 
+export type EmojiInput = typeof EmojiInput.Type;
 export const EmojiInput = S.Struct({
   id      : S.optional(S.String),
   name    : S.optional(S.String),
   animated: S.optional(S.Boolean),
 });
+export type EmojiOutput = typeof EmojiOutput.Type;
 export const EmojiOutput = S.Struct({
   id      : S.optional(S.String),
   name    : S.optional(S.String),
@@ -82,6 +84,7 @@ export const EmojiOutput = S.Struct({
 /**
  * @link https://discord.com/developers/docs/components/reference#unfurled-media-item-structure
  */
+export type UnfurledMediaItemInput = typeof UnfurledMediaItemInput.Type;
 export const UnfurledMediaItemInput = S.Struct({
   url          : S.String,
   proxy_url    : S.optional(S.String),
@@ -91,15 +94,18 @@ export const UnfurledMediaItemInput = S.Struct({
   attachment_id: S.optional(S.String),
 });
 
+export type UnfurledMediaItemOutput = typeof UnfurledMediaItemOutput.Type;
 export const UnfurledMediaItemOutput = S.Struct({
   url: S.String,
 });
 
+export type ButtonData = typeof ButtonData.Type;
 export const ButtonData = S.Struct({
   component_type: S.tag(Discord.MessageComponentTypes.BUTTON),
   custom_id     : CustomIdInput,
 });
 
+export type ButtonPrimaryInput = typeof ButtonPrimaryInput.Type;
 export const ButtonPrimaryInput = S.Struct({
   id       : Int32IdInput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -109,6 +115,7 @@ export const ButtonPrimaryInput = S.Struct({
   label    : S.optional(S.String),
   disabled : S.optional(S.Boolean),
 });
+export type ButtonPrimaryOutput = typeof ButtonPrimaryOutput.Type;
 export const ButtonPrimaryOutput = S.Struct({
   id       : Int32IdOutput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -119,6 +126,7 @@ export const ButtonPrimaryOutput = S.Struct({
   disabled : S.optional(S.Boolean),
 });
 
+export type ButtonSecondaryInput = typeof ButtonSecondaryInput.Type;
 export const ButtonSecondaryInput = S.Struct({
   id       : Int32IdInput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -128,6 +136,7 @@ export const ButtonSecondaryInput = S.Struct({
   label    : S.optional(S.String),
   disabled : S.optional(S.Boolean),
 });
+export type ButtonSecondaryOutput = typeof ButtonSecondaryOutput.Type;
 export const ButtonSecondaryOutput = S.Struct({
   id       : Int32IdOutput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -138,6 +147,7 @@ export const ButtonSecondaryOutput = S.Struct({
   disabled : S.optional(S.Boolean),
 });
 
+export type ButtonSuccessInput = typeof ButtonSuccessInput.Type;
 export const ButtonSuccessInput = S.Struct({
   id       : Int32IdInput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -147,6 +157,7 @@ export const ButtonSuccessInput = S.Struct({
   label    : S.optional(S.String),
   disabled : S.optional(S.Boolean),
 });
+export type ButtonSuccessOutput = typeof ButtonSuccessOutput.Type;
 export const ButtonSuccessOutput = S.Struct({
   id       : Int32IdOutput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -157,6 +168,7 @@ export const ButtonSuccessOutput = S.Struct({
   disabled : S.optional(S.Boolean),
 });
 
+export type ButtonDangerInput = typeof ButtonDangerInput.Type;
 export const ButtonDangerInput = S.Struct({
   id       : Int32IdInput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -166,6 +178,7 @@ export const ButtonDangerInput = S.Struct({
   label    : S.optional(S.String),
   disabled : S.optional(S.Boolean),
 });
+export type ButtonDangerOutput = typeof ButtonDangerOutput.Type;
 export const ButtonDangerOutput = S.Struct({
   id       : Int32IdOutput,
   type     : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -176,6 +189,7 @@ export const ButtonDangerOutput = S.Struct({
   disabled : S.optional(S.Boolean),
 });
 
+export type ButtonLinkInput = typeof ButtonLinkInput.Type;
 export const ButtonLinkInput = S.Struct({
   id      : Int32IdInput,
   type    : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -185,6 +199,7 @@ export const ButtonLinkInput = S.Struct({
   label   : S.optional(S.String),
   disabled: S.optional(S.Boolean),
 });
+export type ButtonLinkOutput = typeof ButtonLinkOutput.Type;
 export const ButtonLinkOutput = S.Struct({
   id      : Int32IdOutput,
   type    : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -195,12 +210,14 @@ export const ButtonLinkOutput = S.Struct({
   disabled: S.optional(S.Boolean),
 });
 
+export type ButtonPremiumInput = typeof ButtonPremiumInput.Type;
 export const ButtonPremiumInput = S.Struct({
   id    : Int32IdInput,
   type  : S.tag(Discord.MessageComponentTypes.BUTTON),
   style : S.tag(Discord.ButtonStyleTypes.PREMIUM),
   sku_id: S.String,
 });
+export type ButtonPremiumOutput = typeof ButtonPremiumOutput.Type;
 export const ButtonPremiumOutput = S.Struct({
   id      : Int32IdOutput,
   type    : S.tag(Discord.MessageComponentTypes.BUTTON),
@@ -226,17 +243,20 @@ export const ButtonOutput = S.Union(
   ButtonPremiumOutput,
 );
 
+export type ButtonRowInput = typeof ButtonRowInput.Type;
 export const ButtonRowInput = S.Struct({
   id        : Int32IdInput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(ButtonInput),
 });
+export type ButtonRowOutput = typeof ButtonRowOutput.Type;
 export const ButtonRowOutput = S.Struct({
   id        : Int32IdOutput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(ButtonOutput).pipe(S.minItems(1), S.maxItems(5)),
 });
 
+export type StringSelectOptionInput = typeof StringSelectOptionInput.Type;
 export const StringSelectOptionInput = S.Struct({
   value      : S.String,
   label      : S.String,
@@ -244,6 +264,7 @@ export const StringSelectOptionInput = S.Struct({
   default    : S.optional(S.Boolean),
   emoji      : S.optional(EmojiInput),
 });
+export type StringSelectOptionOutput = typeof StringSelectOptionOutput.Type;
 export const StringSelectOptionOutput = S.Struct({
   value      : Str100,
   label      : Str100,
@@ -252,6 +273,7 @@ export const StringSelectOptionOutput = S.Struct({
   emoji      : S.optional(EmojiOutput),
 });
 
+export type StringSelectInput = typeof StringSelectInput.Type;
 export const StringSelectInput = S.Struct({
   id         : Int32IdInput,
   type       : S.tag(Discord.MessageComponentTypes.STRING_SELECT),
@@ -259,12 +281,14 @@ export const StringSelectInput = S.Struct({
   placeholder: S.optional(S.String),
   options    : S.Array(StringSelectOptionInput),
 });
+export type StringSelectData = typeof StringSelectData.Type;
 export const StringSelectData = S.Struct({
   id            : Int32IdOutput,
   component_type: S.tag(Discord.MessageComponentTypes.STRING_SELECT),
   custom_id     : CustomIdInput,
   values        : S.Array(S.String),
 });
+export type StringSelectOutput = typeof StringSelectOutput.Type;
 export const StringSelectOutput = S.Struct({
   type       : S.tag(Discord.MessageComponentTypes.STRING_SELECT),
   custom_id  : CustomIdOutput,
@@ -275,15 +299,18 @@ export const StringSelectOutput = S.Struct({
   disabled   : S.optional(S.Boolean),
 });
 
+export type ChannelSelectValueInput = typeof ChannelSelectValueInput.Type;
 export const ChannelSelectValueInput = S.Struct({
   type: S.tag('channel'),
   id  : S.String,
 });
+export type ChannelSelectValueOutput = typeof ChannelSelectValueOutput.Type;
 export const ChannelSelectValueOutput = S.Struct({
   type: S.tag('channel'),
   id  : S.String,
 });
 
+export type ChannelSelectInput = typeof ChannelSelectInput.Type;
 export const ChannelSelectInput = S.Struct({
   id            : Int32IdInput,
   type          : S.tag(Discord.MessageComponentTypes.CHANNEL_SELECT),
@@ -295,11 +322,13 @@ export const ChannelSelectInput = S.Struct({
   max_values    : S.optional(S.Number),
   disabled      : S.optional(S.Boolean),
 });
+export type ChannelSelectData = typeof ChannelSelectData.Type;
 export const ChannelSelectData = S.Struct({
   component_type: S.tag(Discord.MessageComponentTypes.CHANNEL_SELECT),
   custom_id     : CustomIdInput,
   values        : S.Array(S.String),
 });
+export type ChannelSelectOutput = typeof ChannelSelectOutput.Type;
 export const ChannelSelectOutput = S.Struct({
   id            : Int32IdOutput,
   type          : S.tag(Discord.MessageComponentTypes.CHANNEL_SELECT),
@@ -312,15 +341,18 @@ export const ChannelSelectOutput = S.Struct({
   disabled      : S.optional(S.Boolean),
 });
 
+export type RoleSelectValueInput = typeof RoleSelectValueInput.Type;
 export const RoleSelectValueInput = S.Struct({
   type: S.tag('role'),
   id  : S.String,
 });
+export type RoleSelectValueOutput = typeof RoleSelectValueOutput.Type;
 export const RoleSelectValueOutput = S.Struct({
   type: S.tag('role'),
   id  : S.String,
 });
 
+export type RoleSelectInput = typeof RoleSelectInput.Type;
 export const RoleSelectInput = S.Struct({
   id            : Int32IdInput,
   type          : S.tag(Discord.MessageComponentTypes.ROLE_SELECT),
@@ -331,11 +363,13 @@ export const RoleSelectInput = S.Struct({
   max_values    : S.optional(S.Number),
   disabled      : S.optional(S.Boolean),
 });
+export type RoleSelectData = typeof RoleSelectData.Type;
 export const RoleSelectData = S.Struct({
   component_type: S.tag(Discord.MessageComponentTypes.ROLE_SELECT),
   custom_id     : CustomIdInput,
   values        : S.Array(S.String),
 });
+export type RoleSelectOutput = typeof RoleSelectOutput.Type;
 export const RoleSelectOutput = S.Struct({
   id            : Int32IdOutput,
   type          : S.tag(Discord.MessageComponentTypes.ROLE_SELECT),
@@ -347,15 +381,18 @@ export const RoleSelectOutput = S.Struct({
   disabled      : S.optional(S.Boolean),
 });
 
+export type UserSelectValueInput = typeof UserSelectValueInput.Type;
 export const UserSelectValueInput = S.Struct({
   type: S.tag('user'),
   id  : S.String,
 });
+export type UserSelectValueOutput = typeof UserSelectValueOutput.Type;
 export const UserSelectValueOutput = S.Struct({
   type: S.tag('user'),
   id  : S.String,
 });
 
+export type UserSelectInput = typeof UserSelectInput.Type;
 export const UserSelectInput = S.Struct({
   id            : Int32IdInput,
   type          : S.tag(Discord.MessageComponentTypes.USER_SELECT),
@@ -366,11 +403,13 @@ export const UserSelectInput = S.Struct({
   max_values    : S.optional(S.Number),
   disabled      : S.optional(S.Boolean),
 });
+export type UserSelectData = typeof UserSelectData.Type;
 export const UserSelectData = S.Struct({
   component_type: S.tag(Discord.MessageComponentTypes.USER_SELECT),
   custom_id     : CustomIdInput,
   values        : S.Array(S.String),
 });
+export type UserSelectOutput = typeof UserSelectOutput.Type;
 export const UserSelectOutput = S.Struct({
   id            : Int32IdOutput,
   type          : S.tag(Discord.MessageComponentTypes.USER_SELECT),
@@ -385,6 +424,7 @@ export const UserSelectOutput = S.Struct({
 export const MentionableSelectValueInput = S.Union(ChannelSelectValueInput, RoleSelectValueInput, UserSelectValueInput);
 export const MentionableSelectValueOutput = S.Union(ChannelSelectValueOutput, RoleSelectValueOutput, UserSelectValueOutput);
 
+export type MentionableSelectInput = typeof MentionableSelectInput.Type;
 export const MentionableSelectInput = S.Struct({
   id            : Int32IdInput,
   type          : S.tag(Discord.MessageComponentTypes.MENTIONABLE_SELECT),
@@ -395,11 +435,13 @@ export const MentionableSelectInput = S.Struct({
   max_values    : S.optional(S.Number),
   disabled      : S.optional(S.Boolean),
 });
+export type MentionableSelectData = typeof MentionableSelectData.Type;
 export const MentionableSelectData = S.Struct({
   component_type: S.tag(Discord.MessageComponentTypes.MENTIONABLE_SELECT),
   custom_id     : CustomIdInput,
   values        : S.Array(S.String),
 });
+export type MentionableSelectOutput = typeof MentionableSelectOutput.Type;
 export const MentionableSelectOutput = S.Struct({
   id            : Int32IdOutput,
   type          : S.tag(Discord.MessageComponentTypes.MENTIONABLE_SELECT),
@@ -433,28 +475,33 @@ export const SelectMenuOutput = S.Union(
   MentionableSelectOutput,
 );
 
+export type SelectRowInput = typeof SelectRowInput.Type;
 export const SelectRowInput = S.Struct({
   id        : Int32IdInput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(SelectMenuInput),
 });
+export type SelectRowOutput = typeof SelectRowOutput.Type;
 export const SelectRowOutput = S.Struct({
   id        : Int32IdOutput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(SelectMenuOutput).pipe(S.itemsCount(1)),
 });
 
+export type TextDisplayInput = typeof TextDisplayInput.Type;
 export const TextDisplayInput = S.Struct({
   id     : Int32IdInput,
   type   : S.tag(Discord.MessageComponentTypes.TEXT_DISPLAY),
   content: S.String,
 });
+export type TextDisplayOutput = typeof TextDisplayOutput.Type;
 export const TextDisplayOutput = S.Struct({
   id     : Int32IdOutput,
   type   : S.tag(Discord.MessageComponentTypes.TEXT_DISPLAY),
   content: Str1000,
 });
 
+export type ThumbnailInput = typeof ThumbnailInput.Type;
 export const ThumbnailInput = S.Struct({
   id         : Int32IdInput,
   type       : S.tag(Discord.MessageComponentTypes.THUMBNAIL),
@@ -462,6 +509,7 @@ export const ThumbnailInput = S.Struct({
   description: S.optional(S.String),
   spoiler    : S.optional(S.Boolean),
 });
+export type ThumbnailOutput = typeof ThumbnailOutput.Type;
 export const ThumbnailOutput = S.Struct({
   id         : Int32IdOutput,
   type       : S.tag(Discord.MessageComponentTypes.THUMBNAIL),
@@ -470,12 +518,14 @@ export const ThumbnailOutput = S.Struct({
   spoiler    : S.optional(S.Boolean),
 });
 
+export type SectionInput = typeof SectionInput.Type;
 export const SectionInput = S.Struct({
   id        : Int32IdInput,
   type      : S.tag(Discord.MessageComponentTypes.SECTION),
   components: S.Array(TextDisplayInput),
   accessory : S.Union(ButtonInput, ThumbnailInput),
 });
+export type SectionOutput = typeof SectionOutput.Type;
 export const SectionOutput = S.Struct({
   id        : Int32IdOutput,
   type      : S.tag(Discord.MessageComponentTypes.SECTION),
@@ -483,28 +533,33 @@ export const SectionOutput = S.Struct({
   accessory : S.Union(ButtonOutput, ThumbnailOutput),
 });
 
+export type MediaGalleryItemInput = typeof MediaGalleryItemInput.Type;
 export const MediaGalleryItemInput = S.Struct({
   media      : UnfurledMediaItemInput,
   description: S.optional(S.String),
   spoiler    : S.optional(S.Boolean),
 });
+export type MediaGalleryItemOutput = typeof MediaGalleryItemOutput.Type;
 export const MediaGalleryItemOutput = S.Struct({
   media      : UnfurledMediaItemOutput,
   description: S.optional(Str1024),
   spoiler    : S.optional(S.Boolean),
 });
 
+export type MediaGalleryInput = typeof MediaGalleryInput.Type;
 export const MediaGalleryInput = S.Struct({
   id   : Int32IdInput,
   type : S.tag(Discord.MessageComponentTypes.MEDIA_GALLERY),
   media: S.Array(MediaGalleryItemInput),
 });
+export type MediaGalleryOutput = typeof MediaGalleryOutput.Type;
 export const MediaGalleryOutput = S.Struct({
   id   : Int32IdOutput,
   type : S.tag(Discord.MessageComponentTypes.MEDIA_GALLERY),
   media: S.Array(MediaGalleryItemOutput).pipe(S.minItems(1), S.maxItems(10)),
 });
 
+export type FileInput = typeof FileInput.Type;
 export const FileInput = S.Struct({
   id     : Int32IdInput,
   type   : S.tag(Discord.MessageComponentTypes.FILE),
@@ -513,6 +568,7 @@ export const FileInput = S.Struct({
   name   : S.String,
   size   : S.Number,
 });
+export type FileOutput = typeof FileOutput.Type;
 export const FileOutput = S.Struct({
   id     : Int32IdOutput,
   type   : S.tag(Discord.MessageComponentTypes.FILE),
@@ -520,12 +576,14 @@ export const FileOutput = S.Struct({
   spoiler: S.optional(S.Boolean),
 });
 
+export type SeparatorInput = typeof SeparatorInput.Type;
 export const SeparatorInput = S.Struct({
   id     : Int32IdInput,
   type   : S.tag(Discord.MessageComponentTypes.SEPARATOR),
   divider: S.optional(S.Boolean),
   spacing: S.optional(S.Enums(Discord.MessageComponentSeparatorSpacingSize)),
 });
+export type SeparatorOutput = typeof SeparatorOutput.Type;
 export const SeparatorOutput = S.Struct({
   id     : Int32IdOutput,
   type   : S.tag(Discord.MessageComponentTypes.SEPARATOR),
@@ -536,6 +594,7 @@ export const SeparatorOutput = S.Struct({
 /**
  * https://discord.com/channels/613425648685547541/1364347506200416307/1366842924230508557
  */
+export type ContainerInput = typeof ContainerInput.Type;
 export const ContainerInput = S.Struct({
   id          : Int32IdInput,
   type        : S.tag(Discord.MessageComponentTypes.CONTAINER),
@@ -543,6 +602,7 @@ export const ContainerInput = S.Struct({
   accent_color: S.optional(S.Number),
   spoiler     : S.optional(S.Boolean),
 });
+export type ContainerOutput = typeof ContainerOutput.Type;
 export const ContainerOutput = S.Struct({
   id          : Int32IdOutput,
   type        : S.tag(Discord.MessageComponentTypes.CONTAINER),
@@ -551,60 +611,73 @@ export const ContainerOutput = S.Struct({
   spoiler     : S.optional(S.Boolean),
 });
 
+export type MessageV2Input = typeof MessageV2Input.Type;
 export const MessageV2Input = S.Struct({
   flags     : S.tag(Discord.MessageFlags.IsComponentsV2),
   components: S.Array(S.Union(ButtonRowInput, SelectRowInput, TextDisplayInput, SectionInput, MediaGalleryInput, FileInput, SeparatorInput, ContainerInput)),
 });
+export type MessageV2Output = typeof MessageV2Output.Type;
 export const MessageV2Output = S.Struct({
   flags     : S.tag(Discord.MessageFlags.IsComponentsV2),
   components: S.Array(S.Union(ButtonRowOutput, SelectRowOutput, TextDisplayOutput, SectionOutput, MediaGalleryOutput, FileOutput, SeparatorOutput, ContainerOutput)),
 });
 
+export type EphemeralV2Input = typeof EphemeralV2Input.Type;
 export const EphemeralV2Input = S.Struct({
   ...MessageV2Input.fields,
   flags: S.tag(Discord.MessageFlags.Ephemeral | Discord.MessageFlags.IsComponentsV2),
 });
+export type EphemeralV2Output = typeof EphemeralV2Output.Type;
 export const EphemeralV2Output = S.Struct({
   ...MessageV2Output.fields,
   flags: S.tag(Discord.MessageFlags.Ephemeral | Discord.MessageFlags.IsComponentsV2),
 });
 
+export type EmbedAuthorInput = typeof EmbedAuthorInput.Type;
 export const EmbedAuthorInput = S.Struct({
   name: S.String,
 });
 
+export type EmbedAuthorOutput = typeof EmbedAuthorOutput.Type;
 export const EmbedAuthorOutput = S.Struct({
   name: S.String.pipe(S.maxLength(256)),
 });
 
+export type EmbedFieldInput = typeof EmbedFieldInput.Type;
 export const EmbedFieldInput = S.Struct({
   name  : S.String,
   value : S.String,
   inline: S.optional(S.Boolean),
 });
 
+export type EmbedFieldOutput = typeof EmbedFieldOutput.Type;
 export const EmbedFieldOutput = S.Struct({
   name  : Str256,
   value : Str1024,
   inline: S.optional(S.Boolean),
 });
 
+export type EmbedFooterInput = typeof EmbedFooterInput.Type;
 export const EmbedFooterInput = S.Struct({
   text: S.String,
 });
 
+export type EmbedFooterOutput = typeof EmbedFooterOutput.Type;
 export const EmbedFooterOutput = S.Struct({
   text: Str2048,
 });
 
+export type EmbedImageInput = typeof EmbedImageInput.Type;
 export const EmbedImageInput = S.Struct({
   url: S.String,
 });
 
+export type EmbedImageOutput = typeof EmbedImageOutput.Type;
 export const EmbedImageOutput = S.Struct({
   url: S.String,
 });
 
+export type EmbedInput = typeof EmbedInput.Type;
 export const EmbedInput = S.Struct({
   color      : S.optional(S.Number),
   image      : S.optional(EmbedImageInput),
@@ -615,6 +688,7 @@ export const EmbedInput = S.Struct({
   footer     : S.optional(EmbedFooterInput),
 });
 
+export type EmbedOutput = typeof EmbedOutput.Type;
 export const EmbedOutput = S.Struct({
   color      : S.optional(HexColor),
   image      : S.optional(EmbedImageOutput),
@@ -625,32 +699,38 @@ export const EmbedOutput = S.Struct({
   footer     : S.optional(EmbedFooterOutput),
 });
 
+export type MessageV1Input = typeof MessageV1Input.Type;
 export const MessageV1Input = S.Struct({
   content   : S.optional(S.String),
   embeds    : S.optional(S.Array(EmbedInput)),
   components: S.optional(S.Array(S.Union(ButtonRowInput, SelectRowInput))),
 });
+export type MessageV1Output = typeof MessageV1Output.Type;
 export const MessageV1Output = S.Struct({
   content   : S.optional(Str2000),
   embeds    : S.optional(S.Array(EmbedInput).pipe(S.maxItems(10))),
   components: S.optional(S.Array(S.Union(ButtonRowOutput, SelectRowOutput)).pipe(S.maxItems(5))),
 });
 
+export type EphemeralV1Input = typeof EphemeralV1Input.Type;
 export const EphemeralV1Input = S.Struct({
   ...MessageV1Input.fields,
   flags: S.tag(Discord.MessageFlags.Ephemeral),
 });
+export type EphemeralV1Output = typeof EphemeralV1Output.Type;
 export const EphemeralV1Output = S.Struct({
   ...MessageV1Output.fields,
   flags: S.tag(Discord.MessageFlags.Ephemeral),
 });
 
+export type TextInputData = typeof TextInputData.Type;
 export const TextInputData = S.Struct({
   id       : Int32IdInput,
   type     : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
   custom_id: CustomIdInput,
   value    : S.String,
 });
+export type TextInputShortOutput = typeof TextInputShortOutput.Type;
 export const TextInputShortOutput = S.Struct({
   id         : Int32IdOutput,
   type       : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
@@ -663,6 +743,7 @@ export const TextInputShortOutput = S.Struct({
   min_length : S.optional(Int0to4000),
   max_length : S.optional(Int1to4000),
 });
+export type TextInputParagraphOutput = typeof TextInputParagraphOutput.Type;
 export const TextInputParagraphOutput = S.Struct({
   id         : Int32IdOutput,
   type       : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
@@ -675,6 +756,7 @@ export const TextInputParagraphOutput = S.Struct({
   min_length : S.optional(Int0to4000),
   max_length : S.optional(Int1to4000),
 });
+export type TextInputOutput = typeof TextInputOutput.Type;
 export const TextInputOutput = S.Struct({
   id         : Int32IdOutput,
   type       : S.tag(Discord.MessageComponentTypes.TEXT_INPUT),
@@ -688,30 +770,30 @@ export const TextInputOutput = S.Struct({
   max_length : S.optional(Int1to4000),
 });
 
+export type ModalRowData = typeof ModalRowData.Type;
 export const ModalRowData = S.Struct({
   id        : Int32IdInput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(TextInputData),
 });
+export type ModalRowOutput = typeof ModalRowOutput.Type;
 export const ModalRowOutput = S.Struct({
   id        : Int32IdOutput,
   type      : S.tag(Discord.MessageComponentTypes.ACTION_ROW),
   components: S.Array(S.Union(TextInputShortOutput, TextInputParagraphOutput)).pipe(S.itemsCount(1)),
 });
 
+export type ModalData = typeof ModalData.Type;
 export const ModalData = S.Struct({
   custom_id : CustomIdInput,
   components: S.Array(ModalRowData),
 });
+export type ModalOutput = typeof ModalOutput.Type;
 export const ModalOutput = S.Struct({
   custom_id : CustomIdOutput,
   title     : Str45,
   components: S.Array(ModalRowOutput).pipe(S.minItems(1), S.maxItems(5)),
 });
-
-export type InteractionInput =
-  | Discord.APIMessageComponentInteraction
-  | Discord.APIModalSubmitInteraction;
 
 export const
   Indent     = '  ',
@@ -754,3 +836,151 @@ export const
   quotes     = (s: string) => `>> ${s}`,
   uli        = (s: string) => `- ${s}`,
   oli        = (s: string) => `1. ${s}`;
+
+export type InteractionInput =
+  | ComponentInteractionInput
+  | ModalSubmitInteractionInput;
+
+export type ComponentInteractionInput = Discord.APIMessageComponentInteraction;
+export type ModalSubmitInteractionInput = Discord.APIModalSubmitInteraction;
+
+export type Interactable = | MessageV1Output
+                           | MessageV2Output
+                           | ModalOutput;
+
+import * as Spec from '#disreact/codec/JsxSpec.ts';
+import {decode, encode} from '@msgpack/msgpack';
+import {URL} from 'node:url';
+import {deflate, inflate} from 'pako';
+
+const RehydrantId = S.TemplateLiteralParser(
+  ...Spec.ControlledId.params,
+  '/', S.String,
+);
+
+export const isRehydrantFragment = S.is(RehydrantId);
+
+const flattenComponents = (components?: any[]): Discord.AllComponents[] =>
+  components?.flatMap((c) => {
+    if (c.accessory) {
+      return [c, c.accessory, ...c.components];
+    }
+    if (c.components) {
+      return [c, ...flattenComponents(c.components)];
+    }
+    return [c];
+  })
+  ?? [];
+
+const unsafeParseComponents = (components: Discord.AllComponents[]) =>
+  components.map((c) => {
+    if (
+      'custom_id' in c &&
+      isRehydrantFragment(c.custom_id)
+    ) {
+      const [i, f] = c.custom_id.split('/');
+      (c.custom_id as any) = i;
+      return f;
+    }
+    return '';
+  }).join();
+
+const unsafeMergeComponents = (components: Discord.AllComponents[], hydrator: string) =>
+  components.reduce((h, c) => {
+    if (
+      'custom_id' in c &&
+      Spec.isControlledId(c.custom_id) &&
+      c.custom_id.length < 99
+    ) {
+      const a = 99 - c.custom_id.length;
+      const f = h.substring(0, a);
+      (c.custom_id as any) = `${c.custom_id}/${f}`;
+      return h.substring(a);
+    }
+    return h;
+  }, hydrator);
+
+const unsafeParseEmbeds = (embeds?: Discord.RichEmbed[]) =>
+  embeds?.map((e) => {
+    if (!e.image?.url) {
+      return '';
+    }
+    const url = new URL(e.image.url);
+
+    if (url.pathname.startsWith('/_')) {
+      const fragment = url.pathname.substring(1);
+      url.pathname = '';
+      (e.image.url as any) = url.href;
+      return fragment;
+    }
+    return '';
+  }).join()
+  ?? '';
+
+const unsafeMergeEmbeds = (embeds: Discord.RichEmbed[], hydrator: string) =>
+  embeds.reduce((h, e) => {
+    if (
+      e.image?.url &&
+      isRehydrantFragment(e.image.url)
+    ) {
+      const fragment = e.image.url.substring(e.image.url.indexOf('/') + 1);
+      (e.image.url as any) = fragment;
+      return h.replace(fragment, '');
+    }
+    return h;
+  }, hydrator);
+
+const unsafeUnpack = (str: string) => {
+    const buff = Buffer.from(str, 'base64url');
+    const pako = inflate(buff);
+    return decode(pako) as any;
+};
+
+const unsafePack = (obj: any) => {
+    const pack = encode(obj);
+    const pako = deflate(pack);
+    return Buffer.from(pako).toString('base64url');
+};
+
+export const parseInteraction = (ix: InteractionInput) => {
+  const components = flattenComponents(ix.message?.components);
+  const hydrator = unsafeParseComponents(components) +
+                   unsafeParseEmbeds(ix.message?.embeds);
+
+  return {
+    components: components,
+    hydrator  : unsafeUnpack(hydrator),
+  };
+};
+
+export const mergeInteractable = (ix: Interactable, params: any) => {
+  const hydrator = unsafePack(params);
+
+  if ('custom_id' in ix) {
+    return ix;
+  }
+  if ('embeds' in ix) {
+    if (ix.components) {
+      const remaining = unsafeMergeEmbeds(
+        ix.embeds as any,
+        unsafeMergeComponents(ix.components as any, hydrator),
+      );
+      if (remaining.length) {
+        throw new Error();
+      }
+      return ix;
+    }
+    else {
+      const remaining = unsafeMergeEmbeds(ix.embeds as any, hydrator);
+      if (remaining.length) {
+        throw new Error();
+      }
+      return ix;
+    }
+  }
+  if (!ix.components) {
+    throw new Error();
+  }
+};
+
+const Type = Discord.MessageComponentTypes;

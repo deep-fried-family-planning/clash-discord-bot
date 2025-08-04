@@ -1,7 +1,7 @@
 import {CloseButton} from '#src/components/close-button.tsx';
 import {OmniUser} from '#src/omni-board/accounts/omni-user.tsx';
 import {useIx, usePage} from '#src/disreact/index.ts';
-import type {FC} from '#disreact/core/a/codec/fc.ts';
+import type {FC} from '#src/internal/a/codec/fc.ts';
 import console from 'node:console';
 
 export const StartMenu: FC = () => {

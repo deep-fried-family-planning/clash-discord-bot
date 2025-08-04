@@ -1,5 +1,5 @@
-import {Model} from '#disreact/core/a/adaptor/Model.ts';
-import {Relay} from '#disreact/core/a/adaptor/Relay.ts';
+import {Model} from '#src/internal/a/adaptor/Model.ts';
+import {Relay} from '#src/internal/a/adaptor/Relay.ts';
 import {TestMessage} from '#unit/components/test-message.tsx';
 import {sjson} from '#unit/model/.components/scenarios/util.ts';
 import {it} from '@effect/vitest';

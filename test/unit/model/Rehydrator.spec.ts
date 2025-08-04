@@ -1,5 +1,5 @@
-import * as Element from '#disreact/core/a/adaptor/element.ts';
-import {Rehydrator} from '#disreact/core/a/adaptor/Rehydrator.ts';
+import * as Element from '#src/internal/a/adaptor/element.ts';
+import {Rehydrator} from '#src/internal/a/adaptor/Rehydrator.ts';
 import {TestDialog} from '#unit/components/test-dialog.tsx';
 import {it} from '@effect/vitest';
 import * as E from 'effect/Effect';

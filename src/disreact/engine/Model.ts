@@ -1,8 +1,8 @@
-import type * as Polymer from '#disreact/engine/internal/Polymer.ts';
-import type * as Jsx from '#disreact/engine/internal/Jsx.tsx';
+import type * as Polymer from '#disreact/engine/entity/Polymer.ts';
+import type * as Jsx from '#disreact/engine/entity/Jsx.tsx';
 import {pipe} from 'effect/Function';
-import * as Envelope from '#disreact/engine/internal/Envelope.ts';
-import * as Hydrant from '#disreact/engine/internal/Hydrant.ts';
+import * as Envelope from '#disreact/engine/entity/Envelope.ts';
+import * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
 import * as Effect from 'effect/Effect';
 import * as L from 'effect/Layer';
 import * as Option from 'effect/Option';
