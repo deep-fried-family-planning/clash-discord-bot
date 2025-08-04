@@ -110,7 +110,7 @@ export const mergeInteractable = (ix: DiscordIO.Interactable, params: any) => {
   const hydrator = unsafePack(params);
 
   if ('custom_id' in ix) {
-
+    return ix;
   }
   if ('embeds' in ix) {
     if (ix.components) {

@@ -171,31 +171,6 @@ export const clone = <A extends Jsx>(self: A): A => {
   return cloned;
 };
 
-export interface EncodeUnit {
-
-}
-
-export interface Encoding {
-  primitive: string;
-  normalize: Record<string, string>;
-  transform: Record<string, (self: {props: any}, acc: any) => any>;
-}
-
-export const encode = (self: Jsx, encoding: Encoding): any => {
-  const primitive = encoding.primitive;
-  const normalize = encoding.normalize;
-  const transform = encoding.transform;
-
-  const stack = [self];
-  const final = {};
-};
-
-export const toJsxString = (self: Jsx): string => {
-  const stack = [self];
-
-  return '';
-};
-
 export interface Event<A = any> extends Inspectable.Inspectable {
   id    : string;
   type  : string;
@@ -205,3 +180,22 @@ export interface Event<A = any> extends Inspectable.Inspectable {
   open(jsx: Jsx): void;
   close(): void;
 }
+
+const EventPrototype = declareProto<Event>({
+  id     : undefined as any,
+  type   : undefined as any,
+  target : undefined as any,
+  ...Inspectable.BaseProto,
+  update : undefined as any,
+  replace: undefined as any,
+  open   : undefined as any,
+  close  : undefined as any,
+  toJSON() {
+    return {
+      _id   : 'Event',
+      id    : this.id,
+      type  : this.type,
+      target: this.target,
+    };
+  },
+});

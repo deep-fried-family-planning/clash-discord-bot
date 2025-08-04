@@ -101,48 +101,13 @@ export const fromHydrator = (hydrator: Hydrator): Effect.Effect<Hydrant, SourceE
   return Effect.succeed(self);
 };
 
-export const hasStates = (self: Hydrant) => Object.keys(self.state).length > 0;
-
-export type HydrantPatch = | Patch.Skip<Hydrant>
-                           | Patch.Remove<Hydrant>
-                           | Patch.Replace<Hydrant>
-                           | Patch.Update<Hydrant>;
-
-export const diff = dual<
-  (that: Option.Option<Hydrant>) => (self: Hydrant) => readonly [HydrantPatch, Progress.Change],
-  (self: Hydrant, that: Option.Option<Hydrant>) => readonly [HydrantPatch, Progress.Change]
->(2, (self, opt) => {
-  if (Option.isNone(opt)) {
-    return [
-      Patch.remove(self),
-      Progress.change(self.src!, 'Exit'),
-    ];
-  }
-  if (Equal.equals(self, opt.value)) {
-    return [
-      Patch.skip(self),
-      Progress.change(self.src!, 'Same'),
-    ];
-  }
-  if (self.src === opt.value.src) {
-    return [
-      Patch.update(self, opt.value),
-      Progress.change(self.src!, 'Same'),
-    ];
-  }
-  return [
-    Patch.replace(self, opt.value),
-    Progress.change(self.src!, 'Next'),
-  ];
-});
-
 export interface Hydrator extends Inspectable.Inspectable, Pipeable.Pipeable {
   src  : string | undefined;
   props: Record<string, any>;
   state: Record<string, Polymer.Dehydrated>;
 }
 
-export const HydratorPrototype = declareProto<Hydrator>({
+const HydratorPrototype = declareProto<Hydrator>({
   src  : undefined,
   props: undefined as any,
   state: undefined as any,
@@ -180,21 +145,21 @@ export const hydrator = (id: Entrypoint.Lookup, props?: any, state?: Polymer.Bun
 };
 
 export interface Snapshot<T = any, P = any> extends Hydrator {
-  type   : T;
-  payload: P;
+  type: T;
+  data: P;
 }
 
 const SnapshotProto = declareSubtype<Snapshot, Hydrator>(HydratorPrototype, {
-  type   : '',
-  payload: undefined,
+  type: undefined,
+  data: undefined,
   toJSON() {
     return {
-      _id    : 'Snapshot',
-      source : this.src,
-      type   : this.type,
-      payload: this.payload,
-      props  : this.props,
-      state  : this.state,
+      _id  : 'Snapshot',
+      src  : this.src,
+      type : this.type,
+      data : this.data,
+      props: this.props,
+      state: this.state,
     };
   },
 });
@@ -205,10 +170,10 @@ export const toSnapshot = dual<
 >(3, (h, type, payload) => {
   const self = fromProto(SnapshotProto);
   self.type = type;
-  self.payload = payload;
+  self.data = payload;
   self.src = h.src;
-  self.props = h.props;
-  self.state = h.state;
+  self.props = structuredClone(h.props);
+  self.state = structuredClone(h.state);
   return self;
 });
 

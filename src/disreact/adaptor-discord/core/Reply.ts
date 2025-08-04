@@ -30,7 +30,7 @@ export const message = (snapshot: Hydrant.Snapshot): Message => {
   return {
     _tag    : 'Message',
     snapshot: snapshot,
-    payload : snapshot.payload,
+    payload : snapshot.data,
   };
 };
 
@@ -38,7 +38,7 @@ export const ephemeral = (snapshot: Hydrant.Snapshot): Ephemeral => {
   return {
     _tag    : 'Ephemeral',
     snapshot: snapshot,
-    payload : snapshot.payload,
+    payload : snapshot.data,
   };
 };
 
@@ -46,7 +46,7 @@ export const modal = (snapshot: Hydrant.Snapshot): Modal => {
   return {
     _tag    : 'Modal',
     snapshot: snapshot,
-    payload : snapshot.payload,
+    payload : snapshot.data,
   };
 };
 

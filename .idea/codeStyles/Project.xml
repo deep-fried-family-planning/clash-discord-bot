@@ -16,7 +16,6 @@
       <option name="ENFORCE_QUOTES_ON_FORMAT" value="true" />
     </CssCodeStyleSettings>
     <HCL-Terraform>
-      <option name="RUN_TF_FMT_ON_REFORMAT" value="true" />
       <option name="OBJECT_WRAPPING" value="0" />
       <option name="ARRAY_WRAPPING" value="0" />
     </HCL-Terraform>

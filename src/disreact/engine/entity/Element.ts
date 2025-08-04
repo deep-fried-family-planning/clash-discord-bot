@@ -833,8 +833,8 @@ export const cloneEncodable = dual<
 });
 
 export const encodeRoot = dual<
-  (encoding: Jsx.Encoding) => (self: Element) => Hydrant.Snapshot,
-  (self: Element, encoding: Jsx.Encoding) => Hydrant.Snapshot
+  (encoding: any) => (self: Element) => Hydrant.Snapshot,
+  (self: Element, encoding: any) => Hydrant.Snapshot
 >(2, (self, encoding) =>
   self.env.root.pipe(
     Stack.make,

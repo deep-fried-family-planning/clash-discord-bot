@@ -1,4 +1,4 @@
-import * as Doken from '#disreact/adaptor-discord/internal/Doken.ts';
+import * as Doken from '#disreact/adaptor-discord/core/Doken.ts';
 import type * as Cause from 'effect/Cause';
 import * as Cache from 'effect/Cache';
 import * as Data from 'effect/Data';
@@ -13,9 +13,9 @@ export class DokenCacheError extends Data.TaggedError('DokenCacheDefect')<{
   cause: Cause.Cause<Error> | Error;
 }> {}
 
-const timeToLive = (exit: Exit.Exit<Doken.Active | undefined, DokenCacheError>): Duration.Duration =>
-  pipe(
-    Exit.getOrElse(exit, () => undefined),
+const timeToLive = (exit: Exit.Exit<Doken.Value, DokenCacheError>): Duration.Duration =>
+  exit.pipe(
+    Exit.getOrElse(() => undefined),
     Option.fromNullable,
     Option.flatMap((doken) =>
       pipe(
@@ -36,19 +36,19 @@ export class DokenCache extends Effect.Service<DokenCache>()('disreact/DokenCach
     const cache = yield* Cache.makeWith({
       timeToLive,
       capacity: config.capacity,
-      lookup  : (_: string): Effect.Effect<Doken.Active, DokenCacheError> =>
+      lookup  : (_: string): Effect.Effect<Doken.Value, DokenCacheError> =>
         new DokenCacheError({
           cause: new Error('not cached'),
         }),
     });
 
     return {
-      save: (doken: Doken.Active): Effect.Effect<void, DokenCacheError> => {
-        const exposed = Doken.expose(doken);
+      save: (doken: Doken.Defer): Effect.Effect<void, DokenCacheError> => {
+        const exposed = Doken.toValue(doken);
 
-        return cache.set(exposed.id, doken);
+        return cache.set(exposed.id, exposed);
       },
-      load: (id: string): Effect.Effect<Option.Option<Doken.Active>, DokenCacheError> => cache.getOptionComplete(id),
+      load: (id: string): Effect.Effect<Doken.Value, DokenCacheError> => cache.get(id),
       free: (id: string): Effect.Effect<void, DokenCacheError> => cache.invalidate(id),
     };
   }),
