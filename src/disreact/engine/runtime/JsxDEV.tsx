@@ -1,4 +1,4 @@
-import type * as Jsx from '#disreact/engine/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/engine/entity/Jsx.ts';
 import * as JsxRuntime from '#disreact/engine/runtime/JsxRuntime.tsx';
 import  * as DiscordJsx from '#disreact/codec/DiscordJsx.ts';
 

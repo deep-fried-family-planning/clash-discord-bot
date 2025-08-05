@@ -3,7 +3,7 @@ import * as Patch from '#disreact/core/Patch.ts';
 import type * as Polymer from '#disreact/engine/entity/Polymer.ts';
 import {CONTEXT, EFFECT, MEMO, REF, STATE} from '#disreact/engine/entity/Polymer.ts';
 import * as Entrypoint from '#disreact/engine/runtime/Entrypoint.ts';
-import * as Jsx from '#disreact/engine/entity/Jsx.tsx';
+import * as Jsx from '#disreact/engine/entity/Jsx.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import * as Data from 'effect/Data';
 import * as Effect from 'effect/Effect';

@@ -1,8 +1,9 @@
-import type * as Patch from '#disreact/core/Patch.ts';
+import * as Patch from '#disreact/core/Patch.ts';
 import type * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
 import type {Discord} from 'dfx';
 import type * as Inspectable from 'effect/Inspectable';
 import type * as Types from 'effect/Types';
+import * as Equal from 'effect/Equal';
 
 export type Reply = | Message
                     | Ephemeral
@@ -51,8 +52,8 @@ export const modal = (snapshot: Hydrant.Snapshot): Modal => {
 };
 
 export const diff = (self: Reply, other: Reply): Patch.Patch<Reply> => {
-  if (self._tag !== other._tag) {
-    return Patch.empty;
+  if (Equal.equals(self, other)) {
+    return Patch.skip(self);
   }
-  return Patch.empty;
+  return Patch.skip(self);
 };

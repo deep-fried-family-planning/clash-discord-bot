@@ -3,7 +3,7 @@ import type * as Traversable from '#disreact/core/Traversable.ts';
 import * as Element from '#disreact/engine/entity/Element.ts';
 import * as Entrypoint from '#disreact/engine/runtime/Entrypoint.ts';
 import * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
-import type * as Jsx from '#disreact/engine/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/engine/entity/Jsx.ts';
 import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as Deferred from 'effect/Deferred';
 import * as Effect from 'effect/Effect';
@@ -18,7 +18,7 @@ export interface Envelope<A = any> extends Inspectable.Inspectable,
   Pipeable.Pipeable,
   Traversable.Ancestor<Envelope<A>>
 {
-  src   : string;
+  source: string;
   data  : A | null;
   flags : Set<Element.Element>;
   input : Hydrant.Hydrant;
@@ -52,7 +52,7 @@ const EnvelopePrototype = declareProto<Envelope>({
   completed  : undefined as any,
   final      : undefined as any,
   flags      : undefined as any,
-  src        : '',
+  source     : '',
   data       : null,
   input      : undefined as any,
   root       : undefined as any,
@@ -83,12 +83,46 @@ const effects = pipe(
   }),
 );
 
+export const
+
+export interface Hydrator {
+  source: string;
+  props : any;
+  state : any;
+}
+
+export const fromFunction = dual<
+  (fn: (props: any, state: any) => any) => (hydrant: Hydrant.Hydrant) => Effect.Effect<Envelope>,
+  (hydrant: Hydrant.Hydrant, fn: (props: any, state: any) => any) => Effect.Effect<Envelope>
+>(2, (hydrant, fn) =>
+  Effect.map(effects, (self) => {
+    self.source = hydrant.src;
+    self.data = fn(hydrant.props, hydrant.state);
+    self.input = hydrant;
+    self.target = hydrant;
+    self.root = Element.makeRoot(hydrant.entry, self);
+  }),
+);
+
+export const fromJsx = dual<
+  (jsx: Jsx.Jsx) => (hydrant: Hydrant.Hydrant) => Effect.Effect<Envelope>,
+  (hydrant: Hydrant.Hydrant, jsx: Jsx.Jsx) => Effect.Effect<Envelope>
+>(2, (hydrant, jsx) =>
+  Effect.map(effects, (self) => {
+    self.source = hydrant.src;
+    self.data = jsx.props.children;
+    self.input = hydrant;
+    self.target = hydrant;
+    self.root = Element.makeRoot(hydrant.entry, self);
+  }),
+);
+
 export const make = dual<
   (data?: any) => (hydrant: Hydrant.Hydrant) => Effect.Effect<Envelope>,
   (hydrant: Hydrant.Hydrant, data?: any) => Effect.Effect<Envelope>
 >(2, (hydrant, data) =>
   Effect.map(effects, (self) => {
-    self.src = hydrant.src;
+    self.source = hydrant.src;
     self.data = data;
     self.input = hydrant;
     self.target = hydrant;
@@ -102,7 +136,7 @@ export const fork = (self: Envelope) =>
     forked.progress = self.progress;
     forked.current = self.current;
     forked.final = self.final;
-    forked.src = self.target!.src;
+    forked.source = self.target!.src;
     forked.data = self.data;
     forked.input = self.target!;
     forked.target = self.target!;
@@ -181,9 +215,15 @@ const EventPrototype = declareProto<Jsx.Event>({
   },
 });
 
+export interface EventInput<A = any> {
+  id    : string;
+  type  : string;
+  target: A
+}
+
 export const bindEvent = dual<
-  (input: Hydrant.Event) => (self: Envelope) => Jsx.Event,
-  (self: Envelope, input: Hydrant.Event) => Jsx.Event
+  (input: Jsx.EventInput) => (self: Envelope) => Jsx.Event,
+  (self: Envelope, input: Jsx.EventInput) => Jsx.Event
 >(2, (self, input) => {
   const event = fromProto(EventPrototype);
   event.id = input.id;

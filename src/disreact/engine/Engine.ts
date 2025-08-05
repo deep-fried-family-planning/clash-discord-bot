@@ -5,4 +5,14 @@ const engine = Effect.gen(function* () {
   const codec = yield* Codec;
 
   const hydrateElement = (element: any) => {};
+
+  return {
+
+  };
 });
+
+export class Engine extends Effect.Service<Engine>()('disreact/Engine', {
+  effect      : engine,
+  dependencies: [],
+  accessors   : true,
+}) {}

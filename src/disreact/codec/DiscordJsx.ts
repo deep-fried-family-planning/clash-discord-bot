@@ -1,7 +1,7 @@
 import * as Rest from '#src/internal/a/codec/rest-element.ts';
 import * as Norm from '#src/internal/a/intrinsic/norm.ts';
 import * as DiscordIO from '#disreact/codec/DiscordIO.ts';
-import type * as Jsx from '#disreact/engine/entity/Jsx.tsx';
+import type * as Jsx from '#disreact/engine/entity/Jsx.ts';
 import {Discord} from 'dfx';
 import * as BigInt from 'effect/BigInt';
 import * as S from 'effect/Schema';

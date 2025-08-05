@@ -5,7 +5,7 @@ import * as Traversable from '#disreact/core/Traversable.ts';
 import type * as Envelope from '#disreact/engine/entity/Envelope.ts';
 import * as Polymer from '#disreact/engine/entity/Polymer.ts';
 import * as Hydrant from '#disreact/engine/entity/Hydrant.ts';
-import * as Jsx from '#disreact/engine/entity/Jsx.tsx';
+import * as Jsx from '#disreact/engine/entity/Jsx.ts';
 import {ASYNC_CONSTRUCTOR, StructProto} from '#disreact/util/constants.ts';
 import {declareProto, declareSubtype, fromProto} from '#disreact/util/proto.ts';
 import {purgeUndefinedKeys} from '#disreact/util/utils.ts';
@@ -809,11 +809,36 @@ export const cloneProps = (self: Element) => {
   return structuredClone(props);
 };
 
+export interface Info<T extends string = string, P = any> {
+  type : T;
+  props: P;
+}
+
+export const toInfo = (self: Element): Info => {
+  const props = cloneProps(self);
+  return {
+    type : self.type,
+    props: props,
+  };
+};
+
+export const toInfoChildren = (self: Element): Info[] => {
+  if (!self.children) {
+    return [];
+  }
+  return self.children.map(toInfo);
+};
+
 export interface Encodable<T extends string = string, P = any, C = any> {
   type    : T;
   props   : P;
   children: C;
 }
+
+export const toEncodable = (self: Element) => {
+  const props = cloneProps(self);
+  const children = self.children;
+};
 
 const EncodablePrototype = declareProto<Encodable<string, any, any>>({
   type    : '',

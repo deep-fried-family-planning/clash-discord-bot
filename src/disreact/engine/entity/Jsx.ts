@@ -1,7 +1,8 @@
 import {ASYNC_CONSTRUCTOR} from '#disreact/util/constants.ts';
 import type * as Element from '#disreact/engine/entity/Element.ts';
-import {declareProto} from '#disreact/util/proto.ts';
+import {declareProto, fromProto} from '#disreact/util/proto.ts';
 import * as E from 'effect/Effect';
+import {globalValue} from 'effect/GlobalValue';
 import * as Inspectable from 'effect/Inspectable';
 import * as Hash from 'effect/Hash';
 import * as Pipeable from 'effect/Pipeable';
@@ -171,6 +172,46 @@ export const clone = <A extends Jsx>(self: A): A => {
   return cloned;
 };
 
+const entries = globalValue(TypeId, () => new Map<string, FC>());
+
+export const register = <A extends FC>(id: string, type: A): A => {
+  if (entries.has(id)) {
+    if (entries.get(id) === type) {
+      return type;
+    }
+    throw new Error(`Duplicate registration of ${id}`);
+  }
+  const fc = makeFC(type);
+  fc.entrypoint = id;
+  return type;
+};
+
+export const entrypoint = (id: string, props: any): Jsx | undefined => {
+  if (!entries.has(id)) {
+    return undefined;
+  }
+  const registered = entries.get(id)!;
+  return component(registered, props);
+};
+
+export interface Encoding {
+  primitive: string;
+  normalize: Record<string, string>;
+  transform: Record<string, any>;
+}
+
+export interface Encodable<
+  T extends string = string,
+  P = any,
+  A extends Record<string, any> = Record<string, any>,
+> {
+  type : T;
+  props: P;
+  acc  : {
+    [K in keyof A]?: A[K][]
+  };
+}
+
 export interface Event<A = any> extends Inspectable.Inspectable {
   id    : string;
   type  : string;
@@ -185,11 +226,11 @@ const EventPrototype = declareProto<Event>({
   id     : undefined as any,
   type   : undefined as any,
   target : undefined as any,
-  ...Inspectable.BaseProto,
   update : undefined as any,
   replace: undefined as any,
   open   : undefined as any,
   close  : undefined as any,
+  ...Inspectable.BaseProto,
   toJSON() {
     return {
       _id   : 'Event',
@@ -199,3 +240,24 @@ const EventPrototype = declareProto<Event>({
     };
   },
 });
+
+export interface EventInput<A = any> {
+  id    : string;
+  type  : string;
+  target: A;
+}
+
+export const event = <A>(
+  input: EventInput<A>,
+  methods: Pick<Event, 'update' | 'replace' | 'open' | 'close'>,
+): Event<A> => {
+  const self = fromProto(EventPrototype) as Event<A>;
+  self.id = input.id;
+  self.type = input.type;
+  self.target = input.target;
+  self.update = methods.update;
+  self.replace = methods.replace;
+  self.open = methods.open;
+  self.close = methods.close;
+  return self;
+};
