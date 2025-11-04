@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "types": "tsc --project tsconfig.build.json"
+    "types": "tsc --project tsconfig.build.json",
+    "lint": "eslint",
+    "fixlint": "eslint . --fix"
   },
   "dependencies": {
     "@effect-aws/client-api-gateway-management-api": "1.10.3",
@@ -33,9 +35,10 @@
     "@eslint/js": "9.32.0",
     "@rspack/cli": "1.4.11",
     "@rspack/core": "1.4.11",
-    "@stylistic/eslint-plugin": "5.2.2",
+    "@stylistic/eslint-plugin": "3.1.0",
+    "@types/node": "24.10.0",
     "@vitest/coverage-v8": "3.2.4",
-    "eslint": "9.32.0",
+    "eslint": "8.57.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.39.0",
     "vite-tsconfig-paths": "5.1.4",

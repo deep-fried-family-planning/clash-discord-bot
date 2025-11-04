@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "types": "tsc --project tsconfig.build.json",
+    "lint": "eslint .",
+    "fixlint": "eslint . --fix",
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
-    "lint": "eslint .",
     "preview": "rsbuild preview"
   },
   "dependencies": {
