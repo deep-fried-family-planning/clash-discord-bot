@@ -13,6 +13,7 @@
     "preserveSymlinks"            : false,
     "useDefineForClassFields"     : true,
     "strict"                      : true,
+    "skipLibCheck"                : true,
     "noUncheckedSideEffectImports": true,
     "exactOptionalPropertyTypes"  : true,
     "plugins"                     : [
