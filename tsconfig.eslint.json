@@ -1,7 +1,0 @@
-{
-  "extends": ["tsconfig.old.json"],
-  "include": [
-    "./**/*",
-    "src/aws.env.d.ts"
-  ]
-}

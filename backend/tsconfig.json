@@ -3,6 +3,8 @@
     "target"                      : "esnext",
     "lib"                         : ["esnext"],
     "types"                       : ["node"],
+    "jsx"                         : "react-jsx",
+    "jsxImportSource"             : "src/disreact",
     "module"                      : "esnext",
     "moduleDetection"             : "force",
     "moduleResolution"            : "bundler",
@@ -13,10 +15,19 @@
     "preserveSymlinks"            : false,
     "useDefineForClassFields"     : true,
     "strict"                      : true,
+    "skipDefaultLibCheck"         : true,
     "skipLibCheck"                : true,
     "experimentalDecorators"      : true,
     "noUncheckedSideEffectImports": true,
     "exactOptionalPropertyTypes"  : true,
+    "allowImportingTsExtensions"  : true,
+    "baseUrl"                     : ".",
+    "paths"                       : {
+      "#src/*": ["src/*"],
+      "src/*": ["src/*"],
+      "#config/*": ["src/config/*"],
+      "config/*": ["src/config/*"],
+    },
     "plugins"                     : [
       {
         "name"                   : "@effect/language-service",
