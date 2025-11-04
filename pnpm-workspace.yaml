@@ -10,7 +10,7 @@ gitBranchLockfile: true
 mergeGitBranchLockfilesBranchPattern:
   - main
 
-nodeOptions: ${NODE_OPTIONS:- } --enable-source-maps
+nodeOptions: ${NODE_OPTIONS:- } --enable-source-maps --experimental-strip-types
 
 nodeVersion: 22.21.1
 
