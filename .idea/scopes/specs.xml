@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="specs" pattern="file:test/**/*.spec.*" />
-</component>

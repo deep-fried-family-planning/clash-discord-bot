@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target"                      : "esnext",
+    "lib"                         : ["esnext"],
+    "types"                       : ["node"],
+    "module"                      : "esnext",
+    "moduleDetection"             : "force",
+    "moduleResolution"            : "bundler",
+    "esModuleInterop"             : true,
+    "isolatedModules"             : true,
+    "resolveJsonModule"           : true,
+    "verbatimModuleSyntax"        : true,
+    "preserveSymlinks"            : false,
+    "useDefineForClassFields"     : true,
+    "strict"                      : true,
+    "skipLibCheck"                : true,
+    "experimentalDecorators"      : true,
+    "noUncheckedSideEffectImports": true,
+    "exactOptionalPropertyTypes"  : true,
+    "plugins"                     : [
+      {
+        "name"                   : "@effect/language-service",
+        "namespaceImportPackages": ["effect", "@effect/platform", "@effect/platform-node", "@effect-aws"],
+        "diagnosticSeverity"     : {
+          "importFromBarrel": "error"
+        }
+      }
+    ]
+  }
+}

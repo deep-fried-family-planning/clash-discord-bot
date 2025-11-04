@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target"                      : "esnext",
+    "lib"                         : ["dom", "esnext"],
+    "jsx"                         : "react-jsx",
+    "module"                      : "esnext",
+    "moduleDetection"             : "force",
+    "moduleResolution"            : "bundler",
+    "verbatimModuleSyntax"        : true,
+    "resolveJsonModule"           : true,
+    "noUncheckedSideEffectImports": true,
+    "useDefineForClassFields"     : true,
+    "preserveSymlinks"            : false,
+    "strict"                      : true,
+    "skipLibCheck"                : true,
+    "plugins"                     : [
+      {
+        "name"                   : "@effect/language-service",
+        "namespaceImportPackages": ["effect", "@effect/platform", "@effect/platform-browser"],
+        "diagnosticSeverity"     : {
+          "importFromBarrel": "error"
+        }
+      }
+    ]
+  }
+}

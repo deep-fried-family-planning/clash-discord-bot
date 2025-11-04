@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="source" pattern="(!file[clash-discord-bot]:*/||file[clash-discord-bot]:src//*)&amp;&amp;!file[clash-discord-bot]:internal//*" />
-</component>

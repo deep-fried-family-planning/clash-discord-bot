@@ -1,5 +1,5 @@
 {
-  "extends"        : ["./tsconfig.json"],
+  "extends"        : ["tsconfig.old.json"],
   "include"        : ["config", "dev", "scripts", "src"],
   "compilerOptions": {
     "noEmit"             : true,
