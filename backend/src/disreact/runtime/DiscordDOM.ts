@@ -112,7 +112,6 @@ export class DiscordDOM extends E.Service<DiscordDOM>()('disreact/DisReactDOM', 
   accessors: true,
 }) {}
 
-// @ts-ignore
 export class DiscordJsDisReactDOM extends E.Service<DiscordJsDisReactDOM>()('disreact/DisReactDOM', {
   effect: E.sync(() => {
     return {} as DiscordDOM;
