@@ -14,6 +14,7 @@
     "allowSyntheticDefaultImports": true,
     "allowArbitraryExtensions"    : true,
     "allowImportingTsExtensions"  : true,
+    "preserveSymlinks"            : false,
     "strict"                      : true,
     "noUnusedLocals"              : false,
     "exactOptionalPropertyTypes"  : true,

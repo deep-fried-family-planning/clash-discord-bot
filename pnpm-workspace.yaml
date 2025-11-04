@@ -1,0 +1,26 @@
+packages:
+  - backend
+  - client
+
+engineStrict: true
+
+gitBranchLockfile: true
+
+mergeGitBranchLockfilesBranchPattern:
+  - main
+
+nodeOptions: ${NODE_OPTIONS:- } --enable-source-maps
+
+nodeVersion: 22.21.1
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js
+  - esbuild
+  - msgpackr-extract
+
+saveExact: true
+
+sharedWorkspaceLockfile: true
+
+useNodeVersion: 22.21.1

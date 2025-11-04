@@ -1,5 +1,5 @@
 .code
-.DS_store
+.DS_Store
 .pnpm
 .husky/_
 .terraform
@@ -19,3 +19,4 @@ coverage
 autogen
 .autogen
 .dist
+.idea
