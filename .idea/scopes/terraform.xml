@@ -1,3 +1,0 @@
-<component name="DependencyValidationManager">
-  <scope name="terraform" pattern="file[clash-discord-bot]:terraform/*&amp;&amp;!file:terraform/.terraform.lock.hcl&amp;&amp;!file:terraform/.plan.tfplan&amp;&amp;!file:terraform/.secret.tfvars&amp;&amp;!file[clash-discord-bot]:internal//*" />
-</component>
