@@ -1,7 +1,7 @@
 import {defineConfig} from '@rspack/cli';
 import {EnvironmentPlugin, SwcJsMinimizerRspackPlugin} from '@rspack/core';
 import {resolve} from 'node:path';
-import tsconfig from './tsconfig.json' with {type: 'json'};
+import tsconfig from './tsconfig.old.json' with {type: 'json'};
 
 export default defineConfig({
   mode  : 'production',

@@ -11,6 +11,6 @@
     "node": "22.21.1"
   },
   "scripts": {
-
+    "versions": "pnpm -v && node -v"
   }
 }
