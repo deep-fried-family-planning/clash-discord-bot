@@ -1,14 +1,21 @@
 version: 2
-
-
 updates:
+  - package-ecosystem: github-actions
+    schedule:
+      interval: weekly
 
   - package-ecosystem: npm
-    directory        : /
-    schedule         :
+    directories:
+      - /
+      - /backend
+      - /client
+    schedule:
       interval: weekly
 
   - package-ecosystem: terraform
-    directory        : /terraform
-    schedule         :
+    directories:
+      - /
+      - /backend/cloud
+      - /client/cloud
+    schedule:
       interval: weekly

@@ -1,8 +1,0 @@
-{
-  "extends"        : "tsconfig.old.json",
-  "include"        : ["./unit"],
-  "compilerOptions": {
-    "types"        : ["node", "vitest/globals"],
-    "noImplicitAny": false
-  }
-}

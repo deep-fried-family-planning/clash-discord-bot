@@ -13,10 +13,11 @@ locals.tf
 terraform.tfstate.d
 .secret.tfvars
 test/unit/scratch
-src/scratch
+backend/src/old/scratch
 coverage
 .coverage
 autogen
 .autogen
 .dist
 .idea
+.node_modules

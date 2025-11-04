@@ -6,6 +6,7 @@ engineStrict: true
 
 gitBranchLockfile: true
 
+
 mergeGitBranchLockfilesBranchPattern:
   - main
 
