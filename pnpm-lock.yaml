@@ -112,8 +112,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0
       '@effect/language-service':
-        specifier: 0.34.0
-        version: 0.34.0
+        specifier: 0.55.2
+        version: 0.55.2
       '@effect/vitest':
         specifier: 0.25.0
         version: 0.25.0(effect@3.18.4)(vitest@3.2.4(@types/node@24.10.0)(jiti@2.6.1))
@@ -596,8 +596,8 @@ packages:
       lmdb:
         optional: true
 
-  '@effect/language-service@0.34.0':
-    resolution: {integrity: sha512-gweg1jchswd0zN6FmLR08e5IkSTdW1jNZn2VMdyxuSPhMGNHgM14KvFcVm0N4c6a0GxyKZ00KE/9EkkzZZn7eQ==}
+  '@effect/language-service@0.55.2':
+    resolution: {integrity: sha512-qagsdSuwwfyPw4Ns98c7YtkVS1gnYLtYIBVcwgAy29o2iVuC2h+u1GKVmD5zC9FvSWz3rAwbdVxij4cglrQBhw==}
     hasBin: true
 
   '@effect/platform-browser@0.72.0':
@@ -4507,7 +4507,7 @@ snapshots:
       effect: 3.18.4
       uuid: 11.1.0
 
-  '@effect/language-service@0.34.0': {}
+  '@effect/language-service@0.55.2': {}
 
   '@effect/platform-browser@0.72.0(@effect/platform@0.92.1(effect@3.18.4))(effect@3.18.4)':
     dependencies:

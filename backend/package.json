@@ -39,7 +39,7 @@
     "@aws-sdk/client-scheduler": "3.922.0",
     "@aws-sdk/lib-dynamodb": "3.922.0",
     "@discordjs/core": "2.2.0",
-    "@effect/language-service": "0.34.0",
+    "@effect/language-service": "0.55.2",
     "@effect/vitest": "0.25.0",
     "@eslint/js": "9.35.0",
     "@rspack/cli": "1.4.11",
