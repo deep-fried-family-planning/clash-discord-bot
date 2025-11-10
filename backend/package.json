@@ -44,7 +44,7 @@
     "@eslint/js": "9.35.0",
     "@rspack/cli": "1.4.11",
     "@rspack/core": "1.4.11",
-    "@stylistic/eslint-plugin": "3.1.0",
+    "@stylistic/eslint-plugin": "5.5.0",
     "@types/aws-lambda": "8.10.157",
     "@types/node": "24.10.0",
     "@types/string-similarity": "4.0.2",
